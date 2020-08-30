@@ -1,0 +1,58 @@
+template: 'facelessuser:master-labels:labels.yml:master'
+
+# Wildcard labels
+
+brace_expansion: true
+extended_glob: true
+minus_negate: false
+
+rules:
+  - labels: ['C: infrastructure']
+    patterns: ['*|{tools,requirements,.github}/**|!*.md']
+
+  - labels: ['C: source']
+    patterns: ['colorcss/**']
+
+  - labels: ['C: tests']
+    patterns: ['tests/**']
+
+  - labels: ['C: docs']
+    patterns: ['docs/**|*.md']
+
+  - labels: ['C: rgb']
+    patterns: ['**/?(test_)rgb*|!docs/**']
+
+  - labels: ['C: hsl']
+    patterns: ['**/?(test_)hsl*|!docs/**']
+
+  - labels: ['C: hwb']
+    patterns: ['**/?(test_)hwb*|!docs/**']
+
+  - labels: ['C: lab']
+    patterns: ['**/?(test_)lab*|!docs/**']
+
+  - labels: ['C: lch']
+    patterns: ['**/?(test_)lch*|!docs/**']
+
+# Label management
+
+labels:
+- name: 'C: rgb'
+  color: subcategory
+  description: RGB colors.
+
+- name: 'C: hsl'
+  color: subcategory
+  description: HSL colors.
+
+- name: 'C: hwb'
+  color: subcategory
+  description: HWB colors.
+
+- name: 'C: lab'
+  color: subcategory
+  description: LAB colors.
+
+- name: 'C: lch'
+  color: subcategory
+  description: LCH colors.
