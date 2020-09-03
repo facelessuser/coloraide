@@ -1,4 +1,6 @@
 """Colors."""
+import re
+import functools
 from .srgb import _SRGB
 from .hsl import _HSL
 from .hwb import _HWB
@@ -7,6 +9,8 @@ from .lch import _LCH
 from .util import convert
 
 __all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH")
+
+RE_VARS = re.compile(r'(?i)\b(var\(\s*([-\w][-\w\d]*)\s*\))')
 
 
 class _ColorConvert:
@@ -237,8 +241,27 @@ for obj in SUPPORTED:
     CS_MAP[obj.get_colorspace()] = obj
 
 
-def colorcss(string):
+def _var_replace(m, var=None):
+    """Replace variables."""
+
+    replacement = var.get(m.group(2))
+    return replacement if replacement is not None else ""
+
+
+def handle_vars(string, variables):
+    """Handle CSS variables."""
+
+    n = 1
+    while n:
+        string, n = RE_VARS.subn(functools.partial(_var_replace, var=variables), string)
+    return string
+
+
+def colorcss(string, variables=None):
     """Parse a CSS color."""
+
+    if variables:
+        string = handle_vars(string, variables)
 
     for colorspace in SUPPORTED:
         value = colorspace.css_match(string)

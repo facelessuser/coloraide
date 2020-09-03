@@ -1,7 +1,7 @@
 """Color-mod."""
 import re
 from .colors.util import parse
-from .colors import SUPPORTED, colorcss, HSL
+from .colors import SUPPORTED, colorcss, HSL, handle_vars
 import traceback
 
 RE_ADJUSTERS = {
@@ -506,6 +506,7 @@ class ColorMod:
 
     def saturation(self, value, op=""):
         """Saturation."""
+
         this = self._color.convert("hsl") if self._color.get_colorspace() != "hsl" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
@@ -537,8 +538,11 @@ class ColorMod:
         self._color.mutate(this)
 
 
-def colormod(string):
+def colormod(string, variables=None):
     """Color mod."""
+
+    if variables is not None:
+        string = handle_vars(string, variables)
 
     if RE_COLOR_START.match(string):
         obj = ColorMod().adjust(string)
