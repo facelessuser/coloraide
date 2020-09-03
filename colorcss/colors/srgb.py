@@ -53,6 +53,41 @@ class _SRGB(_ColorTools, _Color):
         super().__init__(color)
         self._c4 = 0.0
 
+        if isinstance(color, _Color):
+            if color.get_colorspace() == "srgb":
+                self._cr, self._cg, self._cb, self._alpha = color._cr, color._cg, color._cb, color._alpha
+            elif color.get_colorspace() == "hsl":
+                self._cr, self._cg, self._cb = convert.hsl_to_rgb(color._ch, color._cs, color._cl)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "hwb":
+                self._cr, self._cg, self._cb = convert.hwb_to_rgb(color._ch, color._cw, color._cb)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "lab":
+                self._cr, self._cg, self._cb = convert.lab_to_rgb(color._cl, color._ca, color._cb)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "lch":
+                self._cr, self._cg, self._cb = convert.lch_to_rgb(color._cl, color._cc, color._ch)
+                self._alpha = color._alpha
+            else:
+                raise TypeError("Unexpected color space '{}' received".format(color.get_colorspace()))
+        elif isinstance(color, str):
+            if color is None:
+                color = self.DEF_BG
+            values = self.css_match(color)
+            if values is None:
+                raise ValueError("'{}' does not appear to be a valid color".format(color))
+            self._cr, self._cg, self._cb, self._alpha = values
+        elif isinstance(color, (list, tuple)):
+            if not (3 <= len(color) <= 4):
+                raise ValueError("A list of channel values should be of length 3 or 4.")
+            self._cr = color[0]
+            self._cg = color[1]
+            self._cb = color[2]
+            self._alpha = 1.0 if len(color) == 3 else color[3]
+        else:
+            raise TypeError("Unexpected type '{}' received".format(type(color)))
+        self._update_hue()
+
     def _update_hue(self):
         """Update hue."""
 

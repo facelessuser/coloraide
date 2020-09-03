@@ -2,6 +2,7 @@
 from .base import _Color
 from .tools import _ColorTools
 from .util import parse
+from .util import convert
 from . import util
 import re
 
@@ -28,6 +29,40 @@ class _LAB(_ColorTools, _Color):
         """Initialize."""
 
         super().__init__(color)
+
+        if isinstance(color, _Color):
+            if color.get_colorspace() == "lab":
+                self._cl, self._ca, self._cb, self._alpha = color._cl, color._ca, color._cb, color._alpha
+            elif color.get_colorspace() == "srgb":
+                self._cl, self._ca, self._cb = convert.rgb_to_lab(color._cr, color._cg, color._cb)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "hsl":
+                self._cl, self._ca, self._cb = convert.hsl_to_lab(color._ch, color._cs, color._cl)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "hwb":
+                self._cl, self._ca, self._cb = convert.hwb_to_lab(color._ch, color._cw, color._cb)
+                self._alpha = color._alpha
+            elif color.get_colorspace() == "lch":
+                self._cl, self._ca, self._cb = convert.lch_to_lab(color._cl, color._cc, color._ch)
+                self._alpha = color._alpha
+            else:
+                raise TypeError("Unexpected color space '{}' received".format(color.get_colorspace()))
+        elif isinstance(color, str):
+            if color is None:
+                color = self.DEF_BG
+            values = self.css_match(color)
+            if values is None:
+                raise ValueError("'{}' does not appear to be a valid color".format(color))
+            self._cl, self._ca, self._cb, self._alpha = values
+        elif isinstance(color, (list, tuple)):
+            if not (3 <= len(color) <= 4):
+                raise ValueError("A list of channel values should be of length 3 or 4.")
+            self._cl = color[0]
+            self._ca = color[1]
+            self._cb = color[2]
+            self._alpha = 1.0 if len(color) == 3 else color[3]
+        else:
+            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     @property
     def _cl(self):
