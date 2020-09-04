@@ -42,6 +42,8 @@ class _Color:
     def to_css(self):
         """Convert values to CSS."""
 
+        raise NotImplementedError("Base _Color class does not implement 'to_css' directly.")
+
     def mutate(self, obj):
         """Update from color."""
 
@@ -72,8 +74,10 @@ class _Color:
     def _split_channels(cls, color):
         """Split channels."""
 
+        raise NotImplementedError("Base _Color class does not implement '_split_channels' directly.")
+
     @classmethod
     def css_match(cls, string):
         """Match a if CSS color value."""
 
-        return None
+        raise NotImplementedError("Base _Color class does not implement 'css_match' directly.")

@@ -3,6 +3,7 @@ from .base import _Color
 from .tools import _ColorTools
 from .util import parse
 from .util import convert
+from .variables import handle_vars
 from . import util
 import re
 
@@ -12,6 +13,7 @@ class _LAB(_ColorTools, _Color):
 
     COLORSPACE = "lab"
     DEF_BG = "lab(0% 0 0 / 1.0)"
+    START = re.compile(r'(?i)lab\(')
     CSS_MATCH = re.compile(
         r"""(?xi)
         lab\(\s*
@@ -50,7 +52,7 @@ class _LAB(_ColorTools, _Color):
         elif isinstance(color, str):
             if color is None:
                 color = self.DEF_BG
-            values = self.css_match(color)
+            values = self.css_match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
             self._cl, self._ca, self._cb, self._alpha = values
@@ -212,12 +214,20 @@ class _LAB(_ColorTools, _Color):
         return channels
 
     @classmethod
-    def css_match(cls, string):
+    def css_match(cls, string, start=0, fullmatch=True, variables=None):
         """Match a CSS color string."""
 
-        m = cls.CSS_MATCH.match(string)
-        if m is not None and m.end(0) == len(string):
-            return cls._split_channels(string)
-        return None
+        # We will only match variables within `func()` if variables are at the root level,
+        # they should be handled by `colorcss`, not the color class.
+        end = None
+        if variables and cls.START:
+            end = parse.bracket_match(cls.START, string, start, fullmatch)
+            if end is not None:
+                string = handle_vars(string, variables)
+
+        m = cls.CSS_MATCH.match(string, start)
+        if m is not None and (not fullmatch or m.end(0) == len(string)):
+            return cls._split_channels(string[m.start(0):m.end(0)]), end if end is not None else m.end(0)
+        return None, None
 
     __repr__ = __str__

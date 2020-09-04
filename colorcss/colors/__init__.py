@@ -6,6 +6,7 @@ from .hsl import _HSL
 from .hwb import _HWB
 from .lab import _LAB
 from .lch import _LCH
+from .match import ColorMatch
 
 __all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH")
 
@@ -103,12 +104,26 @@ def handle_vars(string, variables):
 def colorcss(string, variables=None):
     """Parse a CSS color."""
 
+    match = colorcss_match(string, variables, fullmatch=True)
+    if match is not None:
+        return match.color
+
+
+def colorcss_match(string, variables=None, start=0, fullmatch=False):
+    """Match a color at the given position."""
+
+    end = None
     if variables:
-        string = handle_vars(string, variables)
+        m = RE_VARS.match(string, start)
+        if m and (not fullmatch or len(string) == m.end(0)):
+            end = m.end(0)
+            start = 0
+            string = string[start:end]
+            string = handle_vars(string, variables)
+            variables = None
 
     for colorspace in SUPPORTED:
-        value = colorspace.css_match(string)
+        value, match_end = colorspace.css_match(string, start, fullmatch, variables)
         if value is not None:
             obj = colorspace(value)
-            return obj
-    raise ValueError("'{}' doesn't appear to be a valid and/or supported CSS color".format(string))
+            return ColorMatch(obj, start, end if end is not None else match_end)

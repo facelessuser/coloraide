@@ -1,7 +1,8 @@
 """Color-mod."""
 import re
 from .colors.util import parse
-from .colors import SUPPORTED, colorcss, HSL, handle_vars
+from .colors import SUPPORTED, colorcss, colorcss_match, HSL, handle_vars
+from .colors.match import ColorMatch
 import traceback
 
 RE_ADJUSTERS = {
@@ -55,6 +56,7 @@ RE_ADJUSTERS = {
 RE_COLOR_START = re.compile(r'(?i)color\(\s*')
 RE_BLEND_END = re.compile(r'(?i)\s+({percent})(?:\s*(rgb|hsl|hwb))?\s*\)'.format(**parse.COLOR_PARTS))
 RE_HUE = re.compile(r'(?i){angle}'.format(**parse.COLOR_PARTS))
+RE_BRACKETS = re.compile(r'(?:(\()|(\))|[^()]+)')
 
 
 def contrast_ratio(lum1, lum2):
@@ -66,7 +68,7 @@ def contrast_ratio(lum1, lum2):
 class ColorMod:
     """Color utilities."""
 
-    def __init__(self):
+    def __init__(self, fullmatch=True):
         """Associate with parent."""
 
         self.OP_MAP = {
@@ -78,6 +80,7 @@ class ColorMod:
 
         self.adjusting = False
         self._color = None
+        self.fullmatch = fullmatch
 
     @staticmethod
     def _op_mult(a, b):
@@ -185,7 +188,7 @@ class ColorMod:
             print(traceback.format_exc())
             pass
 
-        if not done:
+        if not done or (self.fullmatch and start != len(string)):
             result = None
         else:
             result = self._color
@@ -210,11 +213,11 @@ class ColorMod:
                 "'{}' doesn't appear to be a valid and/or supported CSS color or color-mod instruction".format(string)
             )
 
-    def adjust(self, string):
+    def adjust(self, string, start=0):
         """Adjust."""
 
-        color = self._adjust(string)[0]
-        return color
+        color, end = self._adjust(string, start=start)
+        return color, end
 
     def process_rgb(self, name, m):
         """Process R, G, and B."""
@@ -539,17 +542,43 @@ class ColorMod:
 
 
 def colormod(string, variables=None):
-    """Color mod."""
+    """Parse a CSS color."""
 
-    if variables is not None:
-        string = handle_vars(string, variables)
+    match = colormod_match(string, variables, fullmatch=True)
+    if match is not None:
+        return match.color
 
-    if RE_COLOR_START.match(string):
-        obj = ColorMod().adjust(string)
+
+def colormod_match(string, variables=None, start=0, fullmatch=False):
+    """Match a color at the given position."""
+
+    # Handle variable
+    end = None
+    is_mod = False
+    if variables:
+        m = parse.RE_VARS.match(string, start)
+        if m and (not fullmatch or len(string) == m.end(0)):
+            end = m.end(0)
+            start = 0
+            string = string[start:end]
+            string = handle_vars(string, variables)
+            variables = None
+
+    temp = parse.bracket_match(RE_COLOR_START, string, start, fullmatch)
+    if end is None and temp:
+        end = temp
+        is_mod = True
+    elif end is not None and temp is not None:
+        is_mod = True
+
+    if is_mod:
+        if variables:
+            string = handle_vars(string, variables)
+        obj, match_end = ColorMod(fullmatch).adjust(string, start)
         if obj is not None:
-            return obj
-        raise ValueError(
-            "'{}' doesn't appear to be a valid and/or supported CSS color or color-mod instruction".format(string)
-        )
+            return ColorMatch(obj, start, end if end is not None else match_end)
     else:
-        return colorcss(string)
+        obj = colorcss_match(string, start=start, fullmatch=fullmatch, variables=variables)
+        if end:
+            obj.end = end
+        return obj
