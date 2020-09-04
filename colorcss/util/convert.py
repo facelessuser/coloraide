@@ -109,7 +109,7 @@ def lab_to_lch(l, a, b):
     return (
         l,
         math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        math.atan2(b, a)
+        math.atan2(b, a) * 180 / math.pi
     )
 
 

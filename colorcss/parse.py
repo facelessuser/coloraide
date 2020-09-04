@@ -73,7 +73,7 @@ def norm_alpha_channel(value):
 def norm_lab_lightness(value):
     """Normalize lab channel."""
 
-    return float(value)
+    return float(value.strip('%'))
 
 
 def norm_hex_channel(value):
@@ -110,11 +110,12 @@ def norm_hue_channel(value):
 def norm_deg_channel(value, scale=360.0):
     """Normalize degree channel."""
 
-    angle = float(value)
+    value = float(value)
     value /= scale
-    if not (0.0 <= angle <= 1.0):
-        angle % 1.0
-    return angle
+
+    if not (0.0 <= value <= 1.0):
+        value = value % 1.0
+    return value
 
 
 def bracket_match(match, string, start, fullmatch):
