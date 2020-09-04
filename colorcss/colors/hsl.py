@@ -1,31 +1,16 @@
 """HSL class."""
 from .base import _Color
 from .tools import _ColorTools
-from .util import parse
-from . import util
-from .util import convert
-from .variables import handle_vars
-import re
+from .. import parse
+from .. import util
+from ..util import convert
 
 
 class _HSL(_ColorTools, _Color):
     """HSL class."""
 
     COLORSPACE = "hsl"
-    DEF_BG = "hsl(0 0% 0% / 1.0)"
-    START = re.compile(r'(?i)hsla?\(')
-    CSS_MATCH = re.compile(
-        r"""(?xi)
-        hsla?\(\s*
-        (?:
-            # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |
-            # comma separated format
-            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
-        )
-        \s*\)
-        """.format(**parse.COLOR_PARTS)
-    )
+    DEF_BG = "[0, 0, 0, 1]"
 
     def __init__(self, color=None):
         """Initialize."""
@@ -52,7 +37,7 @@ class _HSL(_ColorTools, _Color):
         elif isinstance(color, str):
             if color is None:
                 color = self.DEF_BG
-            values = self.css_match(color)[0]
+            values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
             self._ch, self._cs, self._cl, self._alpha = values
@@ -105,9 +90,9 @@ class _HSL(_ColorTools, _Color):
     def __str__(self):
         """String."""
 
-        return self.to_css(alpha=True)
+        return self.to_string(alpha=True)
 
-    def is_achromatic(self, scale=16):
+    def is_achromatic(self, scale=util.INF):
         """Check if the color is achromatic."""
 
         return util.round_half_up(self._cs * 360.0, scale) <= 0.0
@@ -125,41 +110,6 @@ class _HSL(_ColorTools, _Color):
         self._cl = self._mix_channel(self._cl, color._cl, factor, factor2)
         self._cs = self._mix_channel(self._cs, color._cs, factor, factor2)
 
-    def to_css(
-        self, *, alpha=None, comma=False, scale=0
-    ):
-        """Convert to CSS."""
-
-        value = ''
-        if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_hsla(comma=comma, scale=scale)
-        else:
-            value = self._get_hsl(comma=comma, scale=scale)
-        return value
-
-    def _get_hsl(self, *, comma=False, scale=0):
-        """Get RGB color."""
-
-        template = "hsl({}, {}%, {}%)" if comma else "hsl({} {}% {}%)"
-
-        return template.format(
-            util.fmt_float(self._ch * 360.0, scale),
-            util.fmt_float(self._cs * 100.0, scale),
-            util.fmt_float(self._cl * 100.0, scale)
-        )
-
-    def _get_hsla(self, *, comma=False, scale=0):
-        """Get RGB color with alpha channel."""
-
-        template = "hsla({}, {}%, {}%, {})" if comma else "hsl({} {}% {}% / {})"
-
-        return template.format(
-            util.fmt_float(self._ch * 360.0, scale),
-            util.fmt_float(self._cs * 100.0, scale),
-            util.fmt_float(self._cl * 100.0, scale),
-            util.fmt_float(self._alpha, max(3, scale))
-        )
-
     @property
     def hue(self):
         """Hue channel."""
@@ -170,7 +120,7 @@ class _HSL(_ColorTools, _Color):
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = parse.norm_hue_channel(value) if isinstance(value, str) else float(value)
+        self._ch = self.tx_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def saturation(self):
@@ -182,7 +132,7 @@ class _HSL(_ColorTools, _Color):
     def saturation(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
-        self._cs = parse.norm_percent_channel(value) if isinstance(value, str) else float(value)
+        self._cs = self.tx_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def lightness(self):
@@ -194,40 +144,29 @@ class _HSL(_ColorTools, _Color):
     def lightness(self, value):
         """Set lightness channel."""
 
-        self._cl = parse.norm_percent_channel(value) if isinstance(value, str) else float(value)
+        self._cl = self.tx_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def _split_channels(cls, color):
+    def tx_channel(cls, channel, value):
+        """Translate channel string."""
+
+        if channel == 0:
+            return parse.norm_deg_channel(value, 1.0)
+        elif channel in (1, 2):
+            return float(value)
+        elif channel == -1:
+            return float(value)
+
+    @classmethod
+    def split_channels(cls, color):
         """Split channels."""
 
-        start = 5 if color[:4].lower() == 'hsla' else 4
         channels = []
-        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-            if i == 0:
-                channels.append(parse.norm_hue_channel(c))
-            elif i == 3:
-                channels.append(parse.norm_alpha_channel(c))
+        for i, c in enumerate(parse.RE_COMMA_SPLIT.split(color[1:-1].strip()), 0):
+            if i <= 2:
+                channels.append(cls.tx_channel(i, c))
             else:
-                channels.append(parse.norm_percent_channel(c))
+                channels.append(cls.tx_channel(-1, c))
         if len(channels) == 3:
             channels.append(1.0)
         return channels
-
-    @classmethod
-    def css_match(cls, string, start=0, fullmatch=True, variables=None):
-        """Match a CSS color string."""
-
-        # We will only match variables within `func()` if variables are at the root level,
-        # they should be handled by `colorcss`, not the color class.
-        end = None
-        if variables and cls.START:
-            end = parse.bracket_match(cls.START, string, start, fullmatch)
-            if end is not None:
-                string = handle_vars(string, variables)
-
-        m = cls.CSS_MATCH.match(string)
-        if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return cls._split_channels(string[m.start(0):m.end(0)]), end if end is not None else m.end(0)
-        return None, None
-
-    __repr__ = __str__

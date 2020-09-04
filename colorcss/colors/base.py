@@ -1,6 +1,7 @@
 """Color base."""
-from . import util
-from .util import parse
+from .. import util
+from .. import parse
+import re
 
 
 class _Color:
@@ -8,10 +9,16 @@ class _Color:
 
     DEF_BG = ""
     COLORSPACE = ""
+    MATCH = re.compile(
+        r"""(?xi)
+        \[{float}(?:{comma}{float})(?:{comma}{float})\]
+        """.format(**parse.COLOR_PARTS)
+    )
 
     def __init__(self, color=None):
         """Initialize."""
 
+        self._c0 = 0.0
         self._c1 = 0.0
         self._c2 = 0.0
         self._c3 = 0.0
@@ -39,11 +46,6 @@ class _Color:
 
         return cls.COLORSPACE
 
-    def to_css(self):
-        """Convert values to CSS."""
-
-        raise NotImplementedError("Base _Color class does not implement 'to_css' directly.")
-
     def mutate(self, obj):
         """Update from color."""
 
@@ -68,16 +70,55 @@ class _Color:
     def alpha(self, value):
         """Adjust alpha."""
 
-        self._alpha = parse.norm_alpha_channel(value) if isinstance(value, str) else float(value)
+        self._alpha = self.tx_channel(-1, value) if isinstance(value, str) else float(value)
+
+    def __str__(self):
+        """String."""
+
+        return self.to_string(alpha=True)
+
+    def __repr__(self):
+        """Representation."""
+
+        return "<{} object; cs='{}' {}>".format(type(self).__name__, self.COLORSPACE, str(self))
+
+    ###################################
+    # Override for specific functionality
+    ###################################
 
     @classmethod
-    def _split_channels(cls, color):
+    def tx_channel(cls, channel, value):
+        """Set a non-alpha color channel."""
+
+        raise NotImplementedError("Base _Color class does not implement 'tx_channel' directly.")
+
+    @classmethod
+    def split_channels(cls, color):
         """Split channels."""
 
-        raise NotImplementedError("Base _Color class does not implement '_split_channels' directly.")
+        raise NotImplementedError("Base _Color class does not implement 'split_channels' directly.")
 
     @classmethod
-    def css_match(cls, string):
-        """Match a if CSS color value."""
+    def match(cls, string, start=0, fullmatch=True):
+        """Match a color by string."""
 
-        raise NotImplementedError("Base _Color class does not implement 'css_match' directly.")
+        m = cls.MATCH.match(string, start)
+        if m is not None and (not fullmatch or m.end(0) == len(string)):
+            return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
+        return None, None
+
+    def to_string(
+        self, *, alpha=None, scale=util.INF, **kwargs
+    ):
+        """Convert to CSS."""
+
+        template = "[{}, {}, {}, {}]" if alpha else "[{}, {}, {}]"
+        values = [
+            util.fmt_float(self._c1, scale),
+            util.fmt_float(self._c2, scale),
+            util.fmt_float(self._c3, scale)
+        ]
+        if alpha:
+            values.append(util.fmt_float(self._alpha, max(scale, 3)))
+
+        return template.format(*values)

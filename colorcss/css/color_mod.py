@@ -1,8 +1,8 @@
 """Color-mod."""
 import re
-from .colors.util import parse
-from .colors import SUPPORTED, colorcss, colorcss_match, HSL, handle_vars
-from .colors.match import ColorMatch
+from .colors import SUPPORTED
+from .color_css import colorcss, colorcss_match, ColorMatch
+from .. import parse
 import traceback
 
 RE_ADJUSTERS = {
@@ -123,7 +123,7 @@ class ColorMod:
                 m = RE_HUE.match(string, start)
                 if m:
                     hue = parse.norm_hue_channel(m.group(0))
-                    color = HSL([hue, 1, 0.5]).convert("srgb")
+                    color = SUPPORTED["hsl"]([hue, 1, 0.5]).convert("srgb")
                     start = m.end(0)
                 if color is None:
                     m = RE_COLOR_START.match(string, start)
@@ -134,7 +134,9 @@ class ColorMod:
                         color = color2.convert("srgb")
                 if color is None:
                     for obj in SUPPORTED:
-                        m = obj.CSS_MATCH.match(string, start)
+                        print('---attempt---')
+                        print(obj.MATCH.pattern)
+                        m = obj.MATCH.match(string, start)
                         if m:
                             try:
                                 color = colorcss(string[start:m.end(0)])
@@ -176,7 +178,7 @@ class ColorMod:
                     elif name == "contrast":
                         start = self.process_contrast(m)
                     elif name == "blend_start":
-                        start = self.process_blend(m)
+                        start = self.process_blend(m, string)
                     elif name == "end":
                         done = True
                         start = m.end(0)
@@ -204,7 +206,7 @@ class ColorMod:
         """Adjust base."""
 
         self._color = base
-        pattern = "color({} {})".format(self._color.to_css(alpha=True), string)
+        pattern = "color({} {})".format(self._color.to_string(alpha=True), string)
         color, start = self._adjust(pattern)
         if color is not None:
             self._color.mutate(color)
@@ -338,7 +340,7 @@ class ColorMod:
         else:
             color2 = None
             for obj in SUPPORTED:
-                m = obj.CSS_MATCH.match(string, start)
+                m = obj.MATCH.match(string, start)
                 if m:
                     color2 = colorcss(string[start:m.end(0)])
                     start = m.end(0)
@@ -561,7 +563,7 @@ def colormod_match(string, variables=None, start=0, fullmatch=False):
             end = m.end(0)
             start = 0
             string = string[start:end]
-            string = handle_vars(string, variables)
+            string = parse.handle_vars(string, variables)
             variables = None
 
     temp = parse.bracket_match(RE_COLOR_START, string, start, fullmatch)
@@ -573,7 +575,7 @@ def colormod_match(string, variables=None, start=0, fullmatch=False):
 
     if is_mod:
         if variables:
-            string = handle_vars(string, variables)
+            string = parse.handle_vars(string, variables)
         obj, match_end = ColorMod(fullmatch).adjust(string, start)
         if obj is not None:
             return ColorMatch(obj, start, end if end is not None else match_end)

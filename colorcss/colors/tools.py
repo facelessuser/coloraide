@@ -1,5 +1,5 @@
 """Color tools."""
-from . import util
+from .. import util
 
 
 class _ColorTools:
@@ -72,7 +72,7 @@ class _ColorTools:
         if self._alpha < 1.0:
             # Blend the channels using the alpha channel values as the factors
             # Afterwards, blend the alpha channels. This is different than blend.
-            self._mix(self._c1, background._c2, self._alpha, background._alpha)
+            self._mix(background, self._alpha, background._alpha)
             self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
         return self
 
