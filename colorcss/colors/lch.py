@@ -59,7 +59,13 @@ class _LCH(_ColorTools, _Color):
 
     @_cl.setter
     def _cl(self, value):
-        """Set lightness channel."""
+        """
+        Set lightness channel.
+
+        Theoretically, there is no upper bound here. HDR may use much higher.
+
+        TODO: Do we clamp the higher end or not?
+        """
 
         self._c1 = util.clamp(value, 0.0, None)
 
@@ -71,7 +77,14 @@ class _LCH(_ColorTools, _Color):
 
     @_cc.setter
     def _cc(self, value):
-        """Set chroma channel."""
+        """
+        Set chroma channel.
+
+        Theoretically, there is no upper bound here. Useful range is probably below 230,
+        but visible range in most settings is probably less.
+
+        TODO: Do we clamp the higher end or not?
+        """
 
         self._c2 = util.clamp(value, 0.0, None)
 

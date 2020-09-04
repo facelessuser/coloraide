@@ -59,7 +59,13 @@ class _LAB(_ColorTools, _Color):
 
     @_cl.setter
     def _cl(self, value):
-        """Set hue channel."""
+        """
+        Set hue channel.
+
+        Theoretically, there is no upper bound here. HDR may use much higher.
+
+        TODO: Do we clamp the higher end or not?
+        """
 
         self._c1 = util.clamp(value, 0.0, None)
 
@@ -71,9 +77,16 @@ class _LAB(_ColorTools, _Color):
 
     @_ca.setter
     def _ca(self, value):
-        """Set A on LAB axis."""
+        """
+        Set A on LAB axis.
 
-        self._c2 = float(value)
+        Theoretically unbounded. It is mentioned in the
+        specification that generally the range is +/- 160.
+
+        TODO: Should we not clamp this?
+        """
+
+        self._c2 = util.clamp(value, None, None)
 
     @property
     def _cb(self):
@@ -83,9 +96,15 @@ class _LAB(_ColorTools, _Color):
 
     @_cb.setter
     def _cb(self, value):
-        """Set B on LAB axis."""
+        """
+        Set B on LAB axis.
 
-        self._c3 = float(value)
+        Theoretically unbounded.
+
+        TODO: Should we not clamp this?
+        """
+
+        self._c3 = util.clamp(value, None, None)
 
     def __str__(self):
         """String."""
