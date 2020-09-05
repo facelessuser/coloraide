@@ -42,7 +42,7 @@ class _ColorTools:
     def luminance(self):
         """Get perceived luminance."""
 
-        srgb = self.convert("srgb") if self.space() != "srgb" else this
+        srgb = self.convert("srgb") if self.space() != "srgb" else self
         srgb = convert.lin_srgb([srgb._cr, srgb._cg, srgb._cb])
         vector = [0.2126, 0.7152, 0.0722]
         return sum([r * v for r, v in zip(srgb, vector)])

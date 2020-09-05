@@ -454,7 +454,7 @@ class ColorMod:
         else:
             color2 = None
             for obj in SUPPORTED:
-                m = obj.CSS_MATCH.match(string, start)
+                m = obj.MATCH.match(string, start)
                 if m:
                     color2 = colorcss(string[start:m.end(0)])
                     start = m.end(0)
@@ -662,6 +662,6 @@ def colormod_match(string, variables=None, start=0, fullmatch=False):
             return ColorMatch(obj, start, end if end is not None else match_end)
     else:
         obj = colorcss_match(string, start=start, fullmatch=fullmatch, variables=variables)
-        if end:
+        if obj is not None and end:
             obj.end = end
         return obj
