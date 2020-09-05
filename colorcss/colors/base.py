@@ -41,7 +41,7 @@ class _Color:
         self._c0 = util.clamp(value, 0.0, 1.0)
 
     @classmethod
-    def get_colorspace(cls):
+    def space(cls):
         """Get the color space."""
 
         return cls.COLORSPACE

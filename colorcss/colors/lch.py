@@ -18,22 +18,22 @@ class _LCH(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            if color.get_colorspace() == "lch":
+            if color.space() == "lch":
                 self._cl, self._cc, self._ch, self._alpha = color._cl, color._cc, color._ch, color._alpha
-            elif color.get_colorspace() == "srgb":
+            elif color.space() == "srgb":
                 self._cl, self._cc, self._ch = convert.rgb_to_lch(color._cr, color._cg, color._cb)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "hsl":
+            elif color.space() == "hsl":
                 self._cl, self._cc, self._ch = convert.hsl_to_lch(color._ch, color._cs, color._cl)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "hwb":
+            elif color.space() == "hwb":
                 self._cl, self._cc, self._ch = convert.hwb_to_lch(color._ch, color._cw, color._cb)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "lab":
+            elif color.space() == "lab":
                 self._cl, self._cc, self._ch = convert.lab_to_lch(color._cl, color._ca, color._cb)
                 self._alpha = color._alpha
             else:
-                raise TypeError("Unexpected color space '{}' received".format(color.get_colorspace()))
+                raise TypeError("Unexpected color space '{}' received".format(color.space()))
         elif isinstance(color, str):
             if color is None:
                 color = self.DEF_BG

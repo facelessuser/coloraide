@@ -142,7 +142,7 @@ class ColorMod:
                         if m:
                             try:
                                 color = colorcss(string[start:m.end(0)])
-                                if color.get_colorspace() != "srgb":
+                                if color.space() != "srgb":
                                     color = color.convert("srgb")
                                 start = m.end(0)
                                 break
@@ -525,10 +525,10 @@ class ColorMod:
             raise ValueError(
                 "ColorMod's does not support the '{}' colorspace, only 'srgb', 'hsl', and 'hwb' are SUPPORTED"
             ).format(cs)
-        this = self._color.convert(cs) if self._color.get_colorspace() != cs else self._color
+        this = self._color.convert(cs) if self._color.space() != cs else self._color
         this._ch = self._color._ch
 
-        if color.get_colorspace() != cs:
+        if color.space() != cs:
             hue = color._ch
             color = color.convert(cs)
             color._ch = hue
@@ -539,7 +539,7 @@ class ColorMod:
     def red(self, value, op=""):
         """Red."""
 
-        this = self._color.convert("SRGB") if self._color.get_colorspace() != "srgb" else self._color
+        this = self._color.convert("SRGB") if self._color.space() != "srgb" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
         this._cr = op(this._cr, value)
@@ -548,7 +548,7 @@ class ColorMod:
     def green(self, value, op=""):
         """Green."""
 
-        this = self._color.convert("SRGB") if self._color.get_colorspace() != "srgb" else self._color
+        this = self._color.convert("SRGB") if self._color.space() != "srgb" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
         this._cg = op(this._cg, value)
@@ -557,7 +557,7 @@ class ColorMod:
     def blue(self, value, op=""):
         """Blue."""
 
-        this = self._color.convert("SRGB") if self._color.get_colorspace() != "srgb" else self._color
+        this = self._color.convert("SRGB") if self._color.space() != "srgb" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
         this._cb = op(this._cb, value)
@@ -576,7 +576,7 @@ class ColorMod:
 
         if self._color.is_achromatic():
             return
-        this = self._color.convert("hsl") if self._color.get_colorspace() != "hsl" else self._color
+        this = self._color.convert("hsl") if self._color.space() != "hsl" else self._color
         op = self.OP_MAP.get(op, self._op_null)
         this._ch = op(this._ch, value)
         self._color.mutate(this)
@@ -584,7 +584,7 @@ class ColorMod:
     def lightness(self, value, op=""):
         """Lightness."""
 
-        this = self._color.convert("hsl") if self._color.get_colorspace() != "hsl" else self._color
+        this = self._color.convert("hsl") if self._color.space() != "hsl" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
         this._cl = op(this._cl, value)
@@ -593,7 +593,7 @@ class ColorMod:
     def saturation(self, value, op=""):
         """Saturation."""
 
-        this = self._color.convert("hsl") if self._color.get_colorspace() != "hsl" else self._color
+        this = self._color.convert("hsl") if self._color.space() != "hsl" else self._color
         this._ch = self._color._ch
         op = self.OP_MAP.get(op, self._op_null)
         this._cs = op(this._cs, value)
@@ -602,7 +602,7 @@ class ColorMod:
     def whiteness(self, value, op=""):
         """White."""
 
-        this = self._color.convert('hsb') if self._color.get_colorspace() != "hwb" else self._color
+        this = self._color.convert('hsb') if self._color.space() != "hwb" else self._color
         this._ch = self._color._ch
         achromatic = this.is_achromatic()
         op = self.OP_MAP.get(op, self._op_null)
@@ -614,7 +614,7 @@ class ColorMod:
     def blackness(self, value, op=""):
         """Black."""
 
-        this = self._color.convert('hsb') if self._color.get_colorspace() != "hwb" else self._color
+        this = self._color.convert('hsb') if self._color.space() != "hwb" else self._color
         this._ch = self._color._ch
         achromatic = this.is_achromatic()
         op = self.OP_MAP.get(op, self._op_null)

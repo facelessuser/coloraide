@@ -77,4 +77,4 @@ SUPPORTED = [HSL, HWB, LAB, LCH, SRGB]
 
 CS_MAP = {}
 for obj in SUPPORTED:
-    CS_MAP[obj.get_colorspace()] = obj
+    CS_MAP[obj.space()] = obj

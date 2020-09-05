@@ -42,7 +42,7 @@ class _ColorTools:
     def luminance(self):
         """Get perceived luminance."""
 
-        srgb = self.convert("srgb") if self.get_colorspace() != "srgb" else this
+        srgb = self.convert("srgb") if self.space() != "srgb" else this
         srgb = convert.lin_srgb([srgb._cr, srgb._cg, srgb._cb])
         vector = [0.2126, 0.7152, 0.0722]
         return sum([r * v for r, v in zip(srgb, vector)])
@@ -92,7 +92,7 @@ class _ColorTools:
         factor = util.clamp(float(percent), 0.0, 1.0)
 
         this = None
-        if self.get_colorspace() == cs:
+        if self.space() == cs:
             this = self
         else:
             this = self.convert(cs)
@@ -110,7 +110,7 @@ class _ColorTools:
     def invert(self):
         """Invert the color."""
 
-        this = self.convert("srgb") if self.get_colorspace() != "srgb" else self
+        this = self.convert("srgb") if self.space() != "srgb" else self
         this._cr ^= 0xFF
         this._cg ^= 0xFF
         this._cb ^= 0xFF

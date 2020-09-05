@@ -19,22 +19,22 @@ class _SRGB(_ColorTools, _Color):
         self._c4 = 0.0
 
         if isinstance(color, _Color):
-            if color.get_colorspace() == "srgb":
+            if color.space() == "srgb":
                 self._cr, self._cg, self._cb, self._alpha = color._cr, color._cg, color._cb, color._alpha
-            elif color.get_colorspace() == "hsl":
+            elif color.space() == "hsl":
                 self._cr, self._cg, self._cb = convert.hsl_to_rgb(color._ch, color._cs, color._cl)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "hwb":
+            elif color.space() == "hwb":
                 self._cr, self._cg, self._cb = convert.hwb_to_rgb(color._ch, color._cw, color._cb)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "lab":
+            elif color.space() == "lab":
                 self._cr, self._cg, self._cb = convert.lab_to_rgb(color._cl, color._ca, color._cb)
                 self._alpha = color._alpha
-            elif color.get_colorspace() == "lch":
+            elif color.space() == "lch":
                 self._cr, self._cg, self._cb = convert.lch_to_rgb(color._cl, color._cc, color._ch)
                 self._alpha = color._alpha
             else:
-                raise TypeError("Unexpected color space '{}' received".format(color.get_colorspace()))
+                raise TypeError("Unexpected color space '{}' received".format(color.space()))
         elif isinstance(color, str):
             if color is None:
                 color = self.DEF_BG
