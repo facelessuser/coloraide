@@ -48,15 +48,17 @@ RE_ADJUSTERS = {
     "blackness": re.compile(r'(?i)\s+b(?:lackness)?\((\+\s|\-\s|\*)?\s*({percent})\s*\)'.format(**parse.COLOR_PARTS)),
     "tint": re.compile(r'(?i)\s+tint\(\s*({percent})\s*\)'.format(**parse.COLOR_PARTS)),
     "shade": re.compile(r'(?i)\s+shade\(\s*({percent})\s*\)'.format(**parse.COLOR_PARTS)),
+    "min-contrast_start": re.compile(r'(?i)\s+min-contrast\(\s*'),
     "contrast": re.compile(r'(?i)\s+contrast\(\s*({percent})\s*\)'.format(**parse.COLOR_PARTS)),
     "blend_start": re.compile(r'(?i)\s+blenda?\(\s*'),
     "end": re.compile(r'(?i)\s*\)')
 }
 
 RE_COLOR_START = re.compile(r'(?i)color\(\s*')
-RE_BLEND_END = re.compile(r'(?i)\s+({percent})(?:\s*(rgb|hsl|hwb))?\s*\)'.format(**parse.COLOR_PARTS))
+RE_BLEND_END = re.compile(r'(?i)\s+({percent})(?:\s+(rgb|hsl|hwb))?\s*\)'.format(**parse.COLOR_PARTS))
 RE_HUE = re.compile(r'(?i){angle}'.format(**parse.COLOR_PARTS))
 RE_BRACKETS = re.compile(r'(?:(\()|(\))|[^()]+)')
+RE_MIN_CONTRAST_END = re.compile(r'(?i)\s+({float})\s*\)'.format(**parse.COLOR_PARTS))
 
 
 def contrast_ratio(lum1, lum2):
@@ -177,6 +179,8 @@ class ColorMod:
                         start = self.process_tint_shade(name, m)
                     elif name == "contrast":
                         start = self.process_contrast(m)
+                    elif name == "min-contrast_start":
+                        start = self.process_min_contrast(m, string)
                     elif name == "blend_start":
                         start = self.process_blend(m, string)
                     elif name == "end":
@@ -435,6 +439,83 @@ class ColorMod:
 
         max_hwb.mix(min_hwb, percent, cs="hwb")
         self._color.mutate(max_hwb)
+
+    def process_min_contrast(self, m, string):
+        """Process blend."""
+
+        # Gather the min-contrast parameters
+        start = m.end(0)
+        alpha = m.group(0).startswith('blenda')
+        m = RE_COLOR_START.match(string, start)
+        if m:
+            color2, start = self._adjust(string, start=start)
+            if color2 is None:
+                raise ValueError("Found unterminated or invalid 'color('")
+        else:
+            color2 = None
+            for obj in SUPPORTED:
+                m = obj.CSS_MATCH.match(string, start)
+                if m:
+                    color2 = colorcss(string[start:m.end(0)])
+                    start = m.end(0)
+                    break
+            if color2 is None:
+                raise ValueError("Could not find a valid color for 'min-contrast'")
+        m = RE_MIN_CONTRAST_END.match(string, start)
+        if m:
+            value = float(m.group(1))
+            start = m.end(0)
+        else:
+            raise ValueError("Found unterminated or invalid 'min-contrast('")
+
+        # We can work with contrast lower than zero
+        if value < 0:
+            value = 0
+
+        # Calculate current contrast ratio
+        lum1 = self._color.luminance()
+        temp = self._color.convert("srgb")
+        lum2 = temp.luminance()
+        ratio = contrast_ratio(lum1, lum2)
+
+        # Set contrast range
+        if (lum2 < 0.5 and ratio < value) or (lum2 >= 0.5 and ratio > value):
+            max_contrast = 1.0 - min(min(temp.red, temp.green), temp.blue)
+            min_contrast = 0.0
+        else:
+            max_contrast = 1.0 - max(max(temp.red, temp.green), temp.blue)
+            min_contrast = -1.0
+
+        # Set the max ratio as the current best
+        last_ratio = ratio
+        last_contrast = max_contrast
+
+        # Use a binary search to quickly get close to the desired contrast
+        mid = temp.clone()
+        while (ratio < value or ratio > value + 0.1) and abs(min_contrast - max_contrast) > 0.01:
+            mid_contrast = round((max_contrast + min_contrast) / 2, 3)
+            mid.red = temp.red + mid_contrast
+            mid.green = temp.green + mid_contrast
+            mid.blue = temp.blue + mid_contrast
+            lum2 = mid.luminance()
+            ratio = contrast_ratio(lum1, lum2)
+
+            if ratio < value:
+                max_contrast = max_contrast
+                min_contrast = mid_contrast
+            else:
+                max_contrast = min_contrast
+                min_contrast = mid_contrast
+
+            if (last_ratio < value and ratio > value) or (last_ratio > value and ration < last_ratio):
+                last_contrast = ratio
+                last_contrast = mid_contrast
+
+        mid.red = temp.red + last_contrast
+        mid.green = temp.green + last_contrast
+        mid.blue = temp.blue + last_contrast
+        self._color.mutate(mid)
+        return start
 
     def blend(self, color, percent, alpha=False, cs="srgb"):
         """Blend color."""

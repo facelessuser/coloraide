@@ -1,5 +1,6 @@
 """Color tools."""
 from .. import util
+from ..util import convert
 
 
 class _ColorTools:
@@ -41,10 +42,18 @@ class _ColorTools:
     def luminance(self):
         """Get perceived luminance."""
 
-        srgb = self.convert("srgb")
-        srgb = util.lin_srgb([srgb._cr, srgb._cg, srgb._cb])
+        srgb = self.convert("srgb") if self.get_colorspace() != "srgb" else this
+        srgb = convert.lin_srgb([srgb._cr, srgb._cg, srgb._cb])
         vector = [0.2126, 0.7152, 0.0722]
         return sum([r * v for r, v in zip(srgb, vector)])
+
+    def contrast_ratio(self, color):
+        """Get contrast ratio."""
+
+        lum1 = self.luminance()
+        lum2 = color.luminance()
+
+        return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
 
     def is_dark(self):
         """Check if color is dark."""
