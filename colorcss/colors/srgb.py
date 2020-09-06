@@ -68,7 +68,7 @@ class _SRGB(_ColorTools, _Color):
             return
 
         if not isinstance(obj, type(self)):
-            obj = type(self)(obj)
+            obj = self.new(obj)
 
         self._c1 = obj._c1
         self._c2 = obj._c2

@@ -352,26 +352,26 @@ class ColorMod:
         m = RE_BLEND_END.match(string, start)
         if m:
             value = float(m.group(1).strip('%')) * parse.SCALE_PERCENT
-            cs = "srgb"
+            space = "srgb"
             if m.group(2):
-                cs = m.group(2).lower()
-                if cs == "rgb":
-                    cs = "srgb"
+                space = m.group(2).lower()
+                if space == "rgb":
+                    space = "srgb"
             start = m.end(0)
         else:
             raise ValueError("Found unterminated or invalid 'blend('")
-        self.blend(color2, value, alpha, cs=cs)
+        self.blend(color2, value, alpha, space=space)
         return start
 
     def tint(self, percent):
         """Tint color."""
 
-        self.blend(self._color.new("srgb", 'white'), percent, cs="srgb")
+        self.blend(self._color.new('white', "srgb"), percent, space="srgb")
 
     def shade(self, percent):
         """Tint color."""
 
-        self.blend(self._color.new("srgb", 'black'), percent, cs="srgb")
+        self.blend(self._color.new('black', "srgb"), percent, space="srgb")
 
     def contrast(self, percent):
         """
@@ -435,7 +435,7 @@ class ColorMod:
         else:
             min_hwb = max_hwb.clone()
 
-        max_hwb.mix(min_hwb, percent, cs="hwb")
+        max_hwb.mix(min_hwb, percent, space="hwb")
         self._color.mutate(max_hwb)
 
     def process_min_contrast(self, m, string):
@@ -468,23 +468,23 @@ class ColorMod:
         self.min_contrast(color2, value)
         return start
 
-    def blend(self, color, percent, alpha=False, cs="srgb"):
+    def blend(self, color, percent, alpha=False, space="srgb"):
         """Blend color."""
 
-        cs = cs.lower()
-        if cs not in ("srgb", "hsl", "hwb"):
+        space = space.lower()
+        if space not in ("srgb", "hsl", "hwb"):
             raise ValueError(
                 "ColorMod's does not support the '{}' colorspace, only 'srgb', 'hsl', and 'hwb' are SUPPORTED"
-            ).format(cs)
-        this = self._color.convert(cs) if self._color.space() != cs else self._color
+            ).format(space)
+        this = self._color.convert(space) if self._color.space() != space else self._color
         this._ch = self._color._ch
 
-        if color.space() != cs:
+        if color.space() != space:
             hue = color._ch
-            color = color.convert(cs)
+            color = color.convert(space)
             color._ch = hue
 
-        this.mix(color, percent, alpha=False, cs=cs)
+        this.mix(color, percent, alpha=False, space=space)
         self._color.mutate(this)
 
     def red(self, value, op=""):

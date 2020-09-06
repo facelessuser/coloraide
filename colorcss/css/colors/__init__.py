@@ -19,8 +19,11 @@ class _ColorConvert:
             raise ValueError("'{}' is not a valid color space".format(space))
         return obj(self)
 
-    def new(self, space, value):
+    def new(self, value, space=None):
         """Create new color in color space."""
+
+        if space is None:
+            space = self.space()
 
         obj = CS_MAP.get(space.lower())
         if obj is None:

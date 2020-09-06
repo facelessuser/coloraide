@@ -26,7 +26,7 @@ class _Color:
     def clone(self):
         """Clone."""
 
-        return type(self)(self)
+        return self.new(self)
 
     @property
     def _alpha(self):
@@ -80,7 +80,7 @@ class _Color:
     def __repr__(self):
         """Representation."""
 
-        return "<{} object; cs='{}' {}>".format(type(self).__name__, self.COLORSPACE, str(self))
+        return "<{} object; space='{}' {}>".format(type(self).__name__, self.COLORSPACE, str(self))
 
     ###################################
     # Override for specific functionality

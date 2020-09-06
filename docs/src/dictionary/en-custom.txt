@@ -4,6 +4,7 @@ CSS
 Changelog
 Chroma
 ColorCSS
+HDR
 HSL
 HSL
 HWB

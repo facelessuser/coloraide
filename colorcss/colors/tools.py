@@ -73,7 +73,7 @@ class _ColorTools:
             required_lum = target * (lum2 + 0.05) - 0.05
 
         if ratio < target:
-            mix = self.new("srgb", "white" if lum2 < lum1 else "black")
+            mix = self.new("white" if lum2 < lum1 else "black", "srgb")
         else:
             mix = color.convert("srgb")
 
@@ -134,9 +134,9 @@ class _ColorTools:
         """
 
         if background is None:
-            background = type(self)(self.DEF_BG)
+            background = self.new(self.DEF_BG)
         elif not isinstance(background, type(self)):
-            background = type(self)(background)
+            background = self.new(background)
 
         if self._alpha < 1.0:
             # Blend the channels using the alpha channel values as the factors
@@ -145,23 +145,23 @@ class _ColorTools:
             self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
         return self
 
-    def mix(self, color, percent, alpha=False, cs="lch"):
+    def mix(self, color, percent, alpha=False, space="lch"):
         """Blend color."""
 
-        cs = cs.lower()
+        space = space.lower()
         factor = util.clamp(float(percent), 0.0, 1.0)
 
         this = None
-        if self.space() == cs:
+        if self.space() == space:
             this = self
         else:
-            this = self.convert(cs)
+            this = self.convert(space)
 
-        if color.space() != cs:
-            color = color.convert(cs)
+        if color.space() != space:
+            color = color.convert(space)
 
         if this is None:
-            raise ValueError('Invalid colorspace value: {}'.format(str(cs)))
+            raise ValueError('Invalid colorspace value: {}'.format(space))
 
         this._mix(color, factor)
         if alpha:
