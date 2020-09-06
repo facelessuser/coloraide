@@ -3,6 +3,12 @@ from .. import util
 from ..util import convert
 
 
+def calc_contrast_ratio(lum1, lum2):
+    """Get contrast ratio."""
+
+    return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
+
+
 class _ColorTools:
     """Color utilities."""
 
@@ -47,13 +53,67 @@ class _ColorTools:
         vector = [0.2126, 0.7152, 0.0722]
         return sum([r * v for r, v in zip(srgb, vector)])
 
-    def contrast_ratio(self, color):
-        """Get contrast ratio."""
+    def min_contrast(self, color, target):
+        """
+        Get the color with the best contrast.
+
+        # https://drafts.csswg.org/css-color/#contrast-adjuster
+        """
 
         lum1 = self.luminance()
         lum2 = color.luminance()
+        ratio = calc_contrast_ratio(lum1, lum2)
 
-        return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
+        if target <= 0:
+            self.mutate(color)
+            return
+
+        required_lum = ((lum2 + 0.05) / target) - 0.05
+        if required_lum < 0:
+            required_lum = target * (lum2 + 0.05) - 0.05
+
+        if ratio < target:
+            mix = self.new("srgb", "white" if lum2 < lum1 else "black")
+        else:
+            mix = color.convert("srgb")
+
+        min_mix = 0.0
+        max_mix = 1.0
+
+        temp = self.clone().convert("srgb")
+        r, g, b = temp._cr, temp._cg, temp._cb
+
+        last_lum = 1000
+        last_mix = 0
+
+        while abs(min_mix - max_mix) > 0.001:
+            mid_mix = (max_mix + min_mix) / 2
+
+            temp._cr = self._mix_channel(r, mix._cr, mid_mix)
+            temp._cg = self._mix_channel(g, mix._cg, mid_mix)
+            temp._cb = self._mix_channel(b, mix._cb, mid_mix)
+
+            lum2 = temp.luminance()
+
+            if lum2 > required_lum:
+                min_mix = mid_mix
+            else:
+                max_mix = mid_mix
+
+            if lum2 >= required_lum and lum2 < last_lum:
+                last_lum = lum2
+                last_mix = mid_mix
+
+        # Use the best, last values
+        temp._cr = self._mix_channel(r, mix._cr, last_mix)
+        temp._cg = self._mix_channel(g, mix._cg, last_mix)
+        temp._cb = self._mix_channel(b, mix._cb, last_mix)
+        self.mutate(temp)
+
+    def contrast_ratio(self, color):
+        """Get contrast ratio."""
+
+        return calc_contrast_ratio(self.luminance(), color.luminance())
 
     def is_dark(self):
         """Check if color is dark."""
@@ -97,13 +157,16 @@ class _ColorTools:
         else:
             this = self.convert(cs)
 
+        if color.space() != cs:
+            color = color.convert(cs)
+
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(str(cs)))
 
         this._mix(color, factor)
         if alpha:
             # This is a simple channel blend and not alpha compositing.
-            this._alpha = util.mix_channel(this._alpha, color._alpha, factor)
+            this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
 
         self.mutate(this)
 

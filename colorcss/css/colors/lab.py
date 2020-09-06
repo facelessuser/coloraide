@@ -9,10 +9,10 @@ class _LAB(generic._LAB):
     """LAB class."""
 
     DEF_BG = "lab(0% 0 0 / 1)"
-    START = re.compile(r'(?i)lab\(')
+    START = re.compile(r'(?i)\blab\(')
     MATCH = re.compile(
         r"""(?xi)
-        lab\(\s*
+        \blab\(\s*
         (?:
             # Space separated format
             {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |

@@ -136,8 +136,6 @@ class ColorMod:
                         color = color2.convert("srgb")
                 if color is None:
                     for obj in SUPPORTED:
-                        print('---attempt---')
-                        print(obj.MATCH.pattern)
                         m = obj.MATCH.match(string, start)
                         if m:
                             try:
@@ -404,7 +402,7 @@ class ColorMod:
             min_white = min_hwb.whiteness
             min_black = min_hwb.blackness
 
-            last_ratio = ratio
+            last_ratio = 1000
             last_values = (max_white, max_black)
 
             while (abs(min_white - max_white) > 0.01 or abs(min_black - max_black) > 0.01):
@@ -445,7 +443,6 @@ class ColorMod:
 
         # Gather the min-contrast parameters
         start = m.end(0)
-        alpha = m.group(0).startswith('blenda')
         m = RE_COLOR_START.match(string, start)
         if m:
             color2, start = self._adjust(string, start=start)
@@ -468,53 +465,7 @@ class ColorMod:
         else:
             raise ValueError("Found unterminated or invalid 'min-contrast('")
 
-        # We can work with contrast lower than zero
-        if value < 0:
-            value = 0
-
-        # Calculate current contrast ratio
-        lum1 = self._color.luminance()
-        temp = self._color.convert("srgb")
-        lum2 = temp.luminance()
-        ratio = contrast_ratio(lum1, lum2)
-
-        # Set contrast range
-        if (lum2 < 0.5 and ratio < value) or (lum2 >= 0.5 and ratio > value):
-            max_contrast = 1.0 - min(min(temp.red, temp.green), temp.blue)
-            min_contrast = 0.0
-        else:
-            max_contrast = 1.0 - max(max(temp.red, temp.green), temp.blue)
-            min_contrast = -1.0
-
-        # Set the max ratio as the current best
-        last_ratio = ratio
-        last_contrast = max_contrast
-
-        # Use a binary search to quickly get close to the desired contrast
-        mid = temp.clone()
-        while (ratio < value or ratio > value + 0.1) and abs(min_contrast - max_contrast) > 0.01:
-            mid_contrast = round((max_contrast + min_contrast) / 2, 3)
-            mid.red = temp.red + mid_contrast
-            mid.green = temp.green + mid_contrast
-            mid.blue = temp.blue + mid_contrast
-            lum2 = mid.luminance()
-            ratio = contrast_ratio(lum1, lum2)
-
-            if ratio < value:
-                max_contrast = max_contrast
-                min_contrast = mid_contrast
-            else:
-                max_contrast = min_contrast
-                min_contrast = mid_contrast
-
-            if (last_ratio < value and ratio > value) or (last_ratio > value and ration < last_ratio):
-                last_contrast = ratio
-                last_contrast = mid_contrast
-
-        mid.red = temp.red + last_contrast
-        mid.green = temp.green + last_contrast
-        mid.blue = temp.blue + last_contrast
-        self._color.mutate(mid)
+        self.min_contrast(color2, value)
         return start
 
     def blend(self, color, percent, alpha=False, cs="srgb"):

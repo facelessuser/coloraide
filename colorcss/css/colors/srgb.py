@@ -12,12 +12,12 @@ class _SRGB(generic._SRGB):
     """SRGB class."""
 
     DEF_BG = "rgb(0 0 0 / 1)"
-    START = re.compile(r'(?i)rgba?\(')
+    START = re.compile(r'(?i)\brgba?\(')
     MATCH = re.compile(
         r"""(?xi)
         (?:
             # RGB syntax
-            rgba?\(\s*
+            \brgba?\(\s*
             (?:
                 # Space separated format
                 (?:
@@ -38,7 +38,7 @@ class _SRGB(generic._SRGB):
             # Hex syntax
             \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?) |
             # Names
-            [a-z0-9]+
+            \b[a-z]{{3,}}\b
         )
         """.format(**parse.COLOR_PARTS)
     )

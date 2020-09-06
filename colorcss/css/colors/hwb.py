@@ -9,10 +9,10 @@ class _HWB(generic._HWB):
     """HWB class."""
 
     DEF_BG = "hwb(0 0% 0% / 1)"
-    START = re.compile(r'(?i)hwb\(')
+    START = re.compile(r'(?i)\bhwb\(')
     MATCH = re.compile(
         r"""(?xi)
-        hwb\(\s*
+        \bhwb\(\s*
         (?:
             # Space separated format
             {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |

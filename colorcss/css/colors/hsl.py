@@ -9,10 +9,10 @@ class _HSL(generic._HSL):
     """HSL class."""
 
     DEF_BG = "hsl(0 0% 0% / 1)"
-    START = re.compile(r'(?i)hsla?\(')
+    START = re.compile(r'(?i)\bhsla?\(')
     MATCH = re.compile(
         r"""(?xi)
-        hsla?\(\s*
+        \bhsla?\(\s*
         (?:
             # Space separated format
             {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |

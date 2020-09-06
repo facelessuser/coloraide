@@ -9,11 +9,11 @@ class _LCH(generic._LCH):
     """LCH class."""
 
     DEF_BG = "lch(0% 0 0 / 1)"
-    START = re.compile(r'(?i)(?:lch|gray)\(')
+    START = re.compile(r'(?i)\b(?:lch|gray)\(')
     MATCH = re.compile(
         r"""(?xi)
         (?:
-            lch\(\s*
+            \blch\(\s*
             (?:
                 # Space separated format
                 {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
@@ -21,7 +21,7 @@ class _LCH(generic._LCH):
                 {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
             )
             \s*\) |
-            gray\(
+            \bgray\(
             (?:
                # Space separated format
                {float}(?:{slash}(?:{percent}|{float}))? |
