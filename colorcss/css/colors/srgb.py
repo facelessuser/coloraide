@@ -217,7 +217,7 @@ class _SRGB(generic._SRGB):
 
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            if not string[start:5].lower().startswith(('#', 'rgb(', 'rgba(')):
+            if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
                 string = css_names.name2hex(string[m.start(0):m.end(0)])
                 if string is not None:
                     return cls.split_channels(string), end if end is not None else m.end(0)

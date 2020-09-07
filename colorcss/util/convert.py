@@ -60,7 +60,7 @@ def hwb_to_hsl(h, w, b):
     """HWB to HSL."""
 
     r, g, b = hwb_to_rgb(h, w, b)
-    return rgb_to_hwb(r, g, b)
+    return rgb_to_hsl(r, g, b)
 
 
 def hsl_to_lab(h, s, l):

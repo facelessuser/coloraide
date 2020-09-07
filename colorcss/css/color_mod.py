@@ -465,7 +465,7 @@ class ColorMod:
         else:
             raise ValueError("Found unterminated or invalid 'min-contrast('")
 
-        self.min_contrast(color2, value)
+        self._color.min_contrast(color2, value)
         return start
 
     def blend(self, color, percent, alpha=False, space="srgb"):
