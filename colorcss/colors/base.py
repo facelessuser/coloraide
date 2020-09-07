@@ -28,6 +28,25 @@ class _Color:
 
         return self.new(self)
 
+    def convert(self, space):
+        """Convert to color space."""
+
+        obj = self.spaces.get(space.lower())
+        if obj is None:
+            raise ValueError("'{}' is not a valid color space".format(space))
+        return obj(self)
+
+    def new(self, value, space=None):
+        """Create new color in color space."""
+
+        if space is None:
+            space = self.space()
+
+        obj = self.spaces.get(space.lower())
+        if obj is None:
+            raise ValueError("'{}' is not a valid color space".format(space))
+        return obj(value)
+
     @property
     def _alpha(self):
         """Alpha channel."""

@@ -7,77 +7,64 @@ from .lch import _LCH
 
 __all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH")
 
-
-class _ColorConvert:
-    """A mix-in to allow converting between the various classes."""
-
-    def convert(self, space):
-        """Convert to color space."""
-
-        obj = CS_MAP.get(space.lower())
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        return obj(self)
-
-    def new(self, value, space=None):
-        """Create new color in color space."""
-
-        if space is None:
-            space = self.space()
-
-        obj = CS_MAP.get(space.lower())
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        return obj(value)
+CS_MAP = {}
 
 
-class SRGB(_ColorConvert, _SRGB):
+class SRGB(_SRGB):
     """RGB color class."""
 
+    spaces = CS_MAP
+
     def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
 
 
-class HSL(_ColorConvert, _HSL):
+class HSL(_HSL):
     """HSL color class."""
 
+    spaces = CS_MAP
+
     def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
 
 
-class HWB(_ColorConvert, _HWB):
+class HWB(_HWB):
     """HWB color class."""
 
+    spaces = CS_MAP
+
     def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
 
 
-class LAB(_ColorConvert, _LAB):
+class LAB(_LAB):
     """HWB color class."""
 
+    spaces = CS_MAP
+
     def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
 
 
-class LCH(_ColorConvert, _LCH):
+class LCH(_LCH):
     """HWB color class."""
 
+    spaces = CS_MAP
+
     def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
 
 
-SUPPORTED = [HSL, HWB, LAB, LCH, SRGB]
-
-CS_MAP = {}
+SUPPORTED = (HSL, HWB, LAB, LCH, SRGB)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
