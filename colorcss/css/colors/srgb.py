@@ -36,14 +36,14 @@ class _SRGB(generic._SRGB):
             )
             \s*\) |
             # Hex syntax
-            \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?) |
+            \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?)\b |
             # Names
-            \b[a-z]{{3,}}\b
+            \b(?<!\#)[a-z]{{3,}}(?!\()\b
         )
         """.format(**parse.COLOR_PARTS)
     )
 
-    HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)".format(**parse.COLOR_PARTS))
+    HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)\b".format(**parse.COLOR_PARTS))
 
     def __init__(self, color=None):
         """Initialize."""
