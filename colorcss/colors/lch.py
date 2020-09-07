@@ -45,7 +45,7 @@ class _LCH(_ColorTools, _Color):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
             self._cl = color[0]
-            self._cc = color[0]
+            self._cc = color[1]
             self._ch = color[2]
             self._alpha = 1.0 if len(color) == 3 else color[3]
         else:
