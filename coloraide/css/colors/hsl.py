@@ -2,7 +2,7 @@
 import re
 from ...colors import hsl as generic
 from ... import util
-from ... import parse
+from ...util import parse
 
 
 class _HSL(generic._HSL):

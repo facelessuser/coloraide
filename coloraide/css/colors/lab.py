@@ -2,7 +2,7 @@
 import re
 from ...colors import lab as generic
 from ... import util
-from ... import parse
+from ...util import parse
 
 
 class _LAB(generic._LAB):

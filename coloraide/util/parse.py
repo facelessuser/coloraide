@@ -2,7 +2,7 @@
 import re
 import math
 import functools
-from . import util
+from .. import util
 
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0

@@ -1,9 +1,9 @@
 """LAB class."""
 from .base import _Color
 from .tools import _ColorTools
-from .. import parse
-from ..util import convert
 from .. import util
+from ..util import parse
+from ..util import convert
 
 
 class _LAB(_ColorTools, _Color):

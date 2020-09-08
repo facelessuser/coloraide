@@ -2,7 +2,7 @@
 import re
 from .colors import SUPPORTED
 from .color_css import colorcss, colorcss_match, ColorMatch
-from .. import parse
+from ..util import parse
 import traceback
 
 WHITE = [1.0] * 3

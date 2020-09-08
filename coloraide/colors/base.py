@@ -1,6 +1,6 @@
 """Color base."""
 from .. import util
-from .. import parse
+from ..util import parse
 import re
 
 

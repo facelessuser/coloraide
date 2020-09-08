@@ -2,7 +2,7 @@
 import re
 from ...colors import hwb as generic
 from ... import util
-from ... import parse
+from ...util import parse
 
 
 class _HWB(generic._HWB):

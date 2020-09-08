@@ -2,7 +2,7 @@
 import re
 from ...colors import lch as generic
 from ... import util
-from ... import parse
+from ...util import parse
 
 
 class _LCH(generic._LCH):

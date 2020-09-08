@@ -1,5 +1,5 @@
 """CSS matching."""
-from .. import parse
+from ..util import parse
 from .colors import SUPPORTED
 
 

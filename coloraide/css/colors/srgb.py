@@ -3,7 +3,7 @@ from . import css_names
 import re
 from ...colors import srgb as generic
 from ... import util
-from ... import parse
+from ...util import parse
 
 RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**parse.COLOR_PARTS))
 
