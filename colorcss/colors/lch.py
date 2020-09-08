@@ -99,12 +99,12 @@ class _LCH(_ColorTools, _Color):
 
         self._cc = 0
 
-    def _mix(self, color, factor, factor2=1.0):
+    def _mix(self, coords1, coords2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2)
-        self._cc = self._mix_channel(self._cc, color._cc, factor, factor2)
-        self._ch = self._hue_mix_channel(self._ch, color._ch, factor, factor2, scale=1.0)
+        self._cl = self._mix_channel(coords1[0], coords2[0], factor, factor2)
+        self._cc = self._mix_channel(coords1[1], ccoords2[1], factor, factor2)
+        self._ch = self._hue_mix_channel(coords1[2], coords2[2], factor, factor2, scale=1.0)
 
     @property
     def lightness(self):

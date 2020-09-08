@@ -2,6 +2,9 @@
 from .. import util
 from ..util import convert
 
+WHITE = [1.0] * 3
+BLACK = [0.0] * 3
+
 
 def calc_contrast_ratio(lum1, lum2):
     """Get contrast ratio."""
@@ -30,7 +33,7 @@ class _ColorTools:
         as we normally overlay a transparent color on an opaque one.
         """
 
-        return util.clamp(abs(c1 * f1 + c2 * f2 * (1 - f1)))
+        return abs(c1 * f1 + c2 * f2 * (1 - f1))
 
     def _hue_mix_channel(self, c1, c2, f1, f2=1.0, scale=360.0):
         """Blend the hue style channel."""
@@ -44,7 +47,7 @@ class _ColorTools:
             else:
                 c2 += 360.0
 
-        value = abs(c1 * f1 + c2 * f2 * (1 - f1))
+        value = self._mix_channel(c1, c2, f1, f2)
         if not (0.0 <= value <= 360.0):
             value = value % 360.0
 
@@ -75,7 +78,7 @@ class _ColorTools:
             required_lum = target * (lum2 + 0.05) - 0.05
 
         if ratio < target:
-            mix = self.new("white" if lum2 < lum1 else "black", "srgb")
+            mix = self.new(WHITE if lum2 < lum1 else BLACK, "srgb")
         else:
             mix = color.convert("srgb")
 
@@ -85,15 +88,13 @@ class _ColorTools:
         temp = self.clone().convert("srgb")
         r, g, b = temp._cr, temp._cg, temp._cb
 
-        last_lum = float('inf')
+        last_lum = util.INF
         last_mix = 0
 
         while abs(min_mix - max_mix) > 0.001:
             mid_mix = (max_mix + min_mix) / 2
 
-            temp._cr = self._mix_channel(r, mix._cr, mid_mix)
-            temp._cg = self._mix_channel(g, mix._cg, mid_mix)
-            temp._cb = self._mix_channel(b, mix._cb, mid_mix)
+            temp._mix([r, g, b], mix.coords(), mid_mix)
 
             lum2 = temp.luminance()
 
@@ -107,9 +108,7 @@ class _ColorTools:
                 last_mix = mid_mix
 
         # Use the best, last values
-        temp._cr = self._mix_channel(r, mix._cr, last_mix)
-        temp._cg = self._mix_channel(g, mix._cg, last_mix)
-        temp._cb = self._mix_channel(b, mix._cb, last_mix)
+        temp._mix([r, g, b], mix.coords(), last_mix)
         self.mutate(temp)
 
     def contrast_ratio(self, color):
@@ -165,7 +164,7 @@ class _ColorTools:
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._mix(color, factor)
+        this._mix(this.coords(), color.coords(), factor)
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)

@@ -129,12 +129,12 @@ class _SRGB(_ColorTools, _Color):
         self._cg = self.luminance()
         self._cb = self.luminance()
 
-    def _mix(self, color, factor, factor2=1.0):
+    def _mix(self, coords1, coords2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cr = self._mix_channel(self._cr, color._cr, factor, factor2)
-        self._cg = self._mix_channel(self._cg, color._cg, factor, factor2)
-        self._cb = self._mix_channel(self._cb, color._cb, factor, factor2)
+        self._cr = self._mix_channel(coords1[0], coords2[0], factor, factor2)
+        self._cg = self._mix_channel(coords1[1], coords2[1], factor, factor2)
+        self._cb = self._mix_channel(coords1[2], coords2[2], factor, factor2)
         self._update_hue()
 
     @property

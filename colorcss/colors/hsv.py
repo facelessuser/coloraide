@@ -87,12 +87,12 @@ class _HSV(_ColorTools, _Color):
         self._c1 = 0.0
         self._cs = 0.0
 
-    def _mix(self, color, factor, factor2=1.0):
+    def _mix(self, coords1, coords2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._ch = self._hue_mix_channel(self._ch, color._ch, factor, factor2)
-        self._cs = self._mix_channel(self._cs, color._cs, factor, factor2)
-        self._cv = self._mix_channel(self._cv, color._cv, factor, factor2)
+        self._ch = self._hue_mix_channel(coords1[0], coords2[0], factor, factor2)
+        self._cs = self._mix_channel(coords1[1], coords2[1], factor, factor2)
+        self._cv = self._mix_channel(coords1[2], coords2[2], factor, factor2)
 
     @property
     def hue(self):

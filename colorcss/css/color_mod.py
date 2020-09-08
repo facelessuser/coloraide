@@ -5,6 +5,9 @@ from .color_css import colorcss, colorcss_match, ColorMatch
 from .. import parse
 import traceback
 
+WHITE = [1.0] * 3
+BLACK = [0.0] * 3
+
 RE_ADJUSTERS = {
     "red": re.compile(
         r'(?i)\s+red\(\s*(?:(\+\s+|\-\s+)?({percent}|{float})|(\*)?\s*({percent}|{float}))\s*\)'.format(
@@ -366,12 +369,12 @@ class ColorMod:
     def tint(self, percent):
         """Tint color."""
 
-        self.blend(self._color.new('white', "srgb"), percent, space="srgb")
+        self.blend(self._color.new(WHITE, "srgb"), percent, space="srgb")
 
     def shade(self, percent):
         """Tint color."""
 
-        self.blend(self._color.new('black', "srgb"), percent, space="srgb")
+        self.blend(self._color.new(BLACK, "srgb"), percent, space="srgb")
 
     def contrast(self, percent):
         """
