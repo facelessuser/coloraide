@@ -23,6 +23,11 @@ class _Color:
         self._c2 = 0.0
         self._c3 = 0.0
 
+    def coords(self):
+        """Coordinates."""
+
+        return self._c1, self._c2, self._c3
+
     def clone(self):
         """Clone."""
 
@@ -100,10 +105,6 @@ class _Color:
         """Representation."""
 
         return "<{} object; space='{}' {}>".format(type(self).__name__, self.COLORSPACE, str(self))
-
-    ###################################
-    # Override for specific functionality
-    ###################################
 
     @classmethod
     def tx_channel(cls, channel, value):

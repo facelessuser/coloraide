@@ -18,25 +18,9 @@ class _HWB(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            if color.space() == "hwb":
-                self._ch, self._cw, self._cb, self._alpha = color._ch, color._cw, color._cb, color._alpha
-            elif color.space() == "srgb":
-                self._ch, self._cw, self._cb = convert.rgb_to_hwb(color._cr, color._cg, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "hsl":
-                self._ch, self._cw, self._cb = convert.hsl_to_hwb(color._ch, color._cs, color._cl)
-                self._alpha = color._alpha
-            elif color.space() == "lab":
-                self._ch, self._cw, self._cb = convert.lab_to_hwb(color._cl, color._ca, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "lch":
-                self._ch, self._cw, self._cb = convert.lch_to_hwb(color._cl, color._cc, color._ch)
-                self._alpha = color._alpha
-            else:
-                raise TypeError("Unexpected color space '{}' received".format(color.space()))
+            self._ch, self._cw, self._cb = convert.convert(color.coords(), color.space(), self.space())
+            self._alpha = color._alpha
         elif isinstance(color, str):
-            if color is None:
-                color = self.DEF_BG
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))

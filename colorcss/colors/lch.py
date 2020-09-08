@@ -18,25 +18,9 @@ class _LCH(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            if color.space() == "lch":
-                self._cl, self._cc, self._ch, self._alpha = color._cl, color._cc, color._ch, color._alpha
-            elif color.space() == "srgb":
-                self._cl, self._cc, self._ch = convert.rgb_to_lch(color._cr, color._cg, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "hsl":
-                self._cl, self._cc, self._ch = convert.hsl_to_lch(color._ch, color._cs, color._cl)
-                self._alpha = color._alpha
-            elif color.space() == "hwb":
-                self._cl, self._cc, self._ch = convert.hwb_to_lch(color._ch, color._cw, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "lab":
-                self._cl, self._cc, self._ch = convert.lab_to_lch(color._cl, color._ca, color._cb)
-                self._alpha = color._alpha
-            else:
-                raise TypeError("Unexpected color space '{}' received".format(color.space()))
+            self._cl, self._cc, self._ch = convert.convert(color.coords(), color.space(), self.space())
+            self._alpha = color._alpha
         elif isinstance(color, str):
-            if color is None:
-                color = self.DEF_BG
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
@@ -118,8 +102,8 @@ class _LCH(_ColorTools, _Color):
     def _mix(self, color, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2, clamp_range=(0.0, None))
-        self._cc = self._mix_channel(self._cc, color._cc, factor, factor2, clamp_range=(0.0, None))
+        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2)
+        self._cc = self._mix_channel(self._cc, color._cc, factor, factor2)
         self._ch = self._hue_mix_channel(self._ch, color._ch, factor, factor2, scale=1.0)
 
     @property

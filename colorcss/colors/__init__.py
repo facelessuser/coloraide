@@ -15,7 +15,7 @@ class SRGB(_SRGB):
 
     spaces = CS_MAP
 
-    def __init__(self, color=None):
+    def __init__(self, color=_SRGB.DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -26,7 +26,7 @@ class HSL(_HSL):
 
     spaces = CS_MAP
 
-    def __init__(self, color=None):
+    def __init__(self, color=_HSL.DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -34,9 +34,10 @@ class HSL(_HSL):
 
 class HWB(_HWB):
     """HWB color class."""
+
     spaces = CS_MAP
 
-    def __init__(self, color=None):
+    def __init__(self, color=_HWB.DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -47,7 +48,7 @@ class LAB(_LAB):
 
     spaces = CS_MAP
 
-    def __init__(self, color=None):
+    def __init__(self, color=_LAB.DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -58,7 +59,7 @@ class LCH(_LCH):
 
     spaces = CS_MAP
 
-    def __init__(self, color=None):
+    def __init__(self, color=_LCH.DEF_BG):
         """Initialize."""
 
         super().__init__(color)

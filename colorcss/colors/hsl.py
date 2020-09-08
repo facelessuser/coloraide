@@ -18,25 +18,9 @@ class _HSL(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            if color.space() == "hsl":
-                self._ch, self._cs, self._cl, self._alpha = color._ch, color._cs, color._cl, color._alpha
-            elif color.space() == "srgb":
-                self._ch, self._cs, self._cl = convert.rgb_to_hsl(color._cr, color._cg, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "hwb":
-                self._ch, self._cs, self._cl = convert.hwb_to_hsl(color._ch, color._cw, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "lab":
-                self._ch, self._cs, self._cl = convert.lab_to_hsl(color._cl, color._ca, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "lch":
-                self._ch, self._cs, self._cl = convert.lch_to_hsl(color._cl, color._cc, color._ch)
-                self._alpha = color._alpha
-            else:
-                raise TypeError("Unexpected color space '{}' received".format(color.space()))
+            self._ch, self._cs, self.hl = convert.convert(color.coords(), color.space(), self.space())
+            self._alpha = color._alpha
         elif isinstance(color, str):
-            if color is None:
-                color = self.DEF_BG
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))

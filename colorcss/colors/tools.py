@@ -9,10 +9,18 @@ def calc_contrast_ratio(lum1, lum2):
     return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
 
 
+def calc_luminance(srgb):
+    """Calculate luminance from `srgb` coordinates."""
+
+    lsrgb = convert.lin_srgb(srgb)
+    vector = [0.2126, 0.7152, 0.0722]
+    return sum([r * v for r, v in zip(lsrgb, vector)])
+
+
 class _ColorTools:
     """Color utilities."""
 
-    def _mix_channel(self, c1, c2, f1, f2=1.0, clamp_range=(None, None)):
+    def _mix_channel(self, c1, c2, f1, f2=1.0):
         """
         Blend the channel.
 
@@ -22,10 +30,7 @@ class _ColorTools:
         as we normally overlay a transparent color on an opaque one.
         """
 
-        return util.clamp(
-            abs(c1 * f1 + c2 * f2 * (1 - f1)),
-            clamp_range[0], clamp_range[1]
-        )
+        return util.clamp(abs(c1 * f1 + c2 * f2 * (1 - f1)))
 
     def _hue_mix_channel(self, c1, c2, f1, f2=1.0, scale=360.0):
         """Blend the hue style channel."""
@@ -48,10 +53,7 @@ class _ColorTools:
     def luminance(self):
         """Get perceived luminance."""
 
-        srgb = self.convert("srgb") if self.space() != "srgb" else self
-        srgb = convert.lin_srgb([srgb._cr, srgb._cg, srgb._cb])
-        vector = [0.2126, 0.7152, 0.0722]
-        return sum([r * v for r, v in zip(srgb, vector)])
+        return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
 
     def min_contrast(self, color, target):
         """
@@ -83,7 +85,7 @@ class _ColorTools:
         temp = self.clone().convert("srgb")
         r, g, b = temp._cr, temp._cg, temp._cb
 
-        last_lum = 1000
+        last_lum = float('inf')
         last_mix = 0
 
         while abs(min_mix - max_mix) > 0.001:

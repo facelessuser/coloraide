@@ -6,6 +6,8 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab")
+
 
 def mat_mul_vec(mat, vec):
     """Multiply the matrix by the vector."""
@@ -21,26 +23,26 @@ def cbrt(x):
     return -(-x) ** (1.0 / 3.0)
 
 
-def rgb_to_hsl(r, g, b):
+def srgb_to_hsl(r, g, b):
     """RGB to HSL."""
 
     h, l, s = rgb_to_hls(r, g, b)
     return h, s, l
 
 
-def hsl_to_rgb(h, s, l):
+def hsl_to_srgb(h, s, l):
     """HSL to RGB."""
 
     return hls_to_rgb(h, l, s)
 
 
-def hwb_to_rgb(h, w, b):
+def hwb_to_srgb(h, w, b):
     """HWB to RGB."""
 
-    return [v * (1 - w - b) + w for v in hsl_to_rgb(h, 1.0, .5)]
+    return [v * (1 - w - b) + w for v in hsl_to_srgb(h, 1.0, .5)]
 
 
-def rgb_to_hwb(r, g, b):
+def srgb_to_hwb(r, g, b):
     """RGB to HWB."""
 
     h, s, v = rgb_to_hsv(r, g, b)
@@ -52,42 +54,42 @@ def rgb_to_hwb(r, g, b):
 def hsl_to_hwb(h, s, l):
     """HSL to HWB."""
 
-    r, g, b = hsl_to_rgb(h, s, l)
-    return rgb_to_hwb(r, g, b)
+    r, g, b = hsl_to_srgb(h, s, l)
+    return srgb_to_hwb(r, g, b)
 
 
 def hwb_to_hsl(h, w, b):
     """HWB to HSL."""
 
-    r, g, b = hwb_to_rgb(h, w, b)
-    return rgb_to_hsl(r, g, b)
+    r, g, b = hwb_to_srgb(h, w, b)
+    return srgb_to_hsl(r, g, b)
 
 
 def hsl_to_lab(h, s, l):
     """HSL to LAB."""
 
-    return rgb_to_lab(*hsl_to_rgb(h, s, l))
+    return srgb_to_lab(*hsl_to_srgb(h, s, l))
 
 
 def lab_to_hsl(l, a, b):
     """LAB to HSL."""
 
-    return rgb_to_hsl(*lab_to_rgb(l, a, b))
+    return srgb_to_hsl(*lab_to_srgb(l, a, b))
 
 
 def hwb_to_lab(h, w, b):
     """HWB to LAB."""
 
-    return rgb_to_lab(*hwb_to_rgb(h, w, b))
+    return srgb_to_lab(*hwb_to_srgb(h, w, b))
 
 
 def lab_to_hwb(l, a, b):
     """LAB to HWB."""
 
-    return rgb_to_hwb(*lab_to_rgb(l, a, b))
+    return srgb_to_hwb(*lab_to_srgb(l, a, b))
 
 
-def lab_to_rgb(l, a, b):
+def lab_to_srgb(l, a, b):
     """LAB to RGB."""
 
     xyz = d50_to_d65(lab_to_xyz(l, a, b))
@@ -95,7 +97,7 @@ def lab_to_rgb(l, a, b):
     return gam_srgb(srgb)
 
 
-def rgb_to_lab(r, g, b):
+def srgb_to_lab(r, g, b):
     """RGB to LAB."""
 
     srgb = lin_srgb([r, g, b])
@@ -123,40 +125,40 @@ def lch_to_lab(l, c, h):
     )
 
 
-def rgb_to_lch(r, g, b):
+def srgb_to_lch(r, g, b):
     """RGB to LCH."""
 
-    return lab_to_lch(*rgb_to_lab(r, g, b))
+    return lab_to_lch(*srgb_to_lab(r, g, b))
 
 
-def lch_to_rgb(l, c, h):
+def lch_to_srgb(l, c, h):
     """LCH to RGB."""
 
-    return lab_to_rgb(*lch_to_lab(l, c, h))
+    return lab_to_srgb(*lch_to_lab(l, c, h))
 
 
 def hsl_to_lch(h, s, l):
     """HSL to LCH."""
 
-    return lab_to_lch(*rgb_to_lab(*hsl_to_rgb(h, s, l)))
+    return lab_to_lch(*srgb_to_lab(*hsl_to_srgb(h, s, l)))
 
 
 def lch_to_hsl(l, c, h):
     """LCH to HSL."""
 
-    return rgb_to_hsl(*lab_to_rgb(*lch_to_lab(l, c, h)))
+    return srgb_to_hsl(*lab_to_srgb(*lch_to_lab(l, c, h)))
 
 
 def hwb_to_lch(h, w, b):
     """HWB to LCH."""
 
-    return lab_to_lch(*rgb_to_lab(*hwb_to_rgb(h, w, b)))
+    return lab_to_lch(*srgb_to_lab(*hwb_to_srgb(h, w, b)))
 
 
 def lch_to_hwb(l, c, h):
     """LCH to HWB."""
 
-    return rgb_to_hwb(*lab_to_rgb(*lch_to_lab(l, c, h)))
+    return srgb_to_hwb(*lab_to_srgb(*lch_to_lab(l, c, h)))
 
 
 def xyz_to_lab(x, y, z):
@@ -276,3 +278,17 @@ def gam_srgb(rgb):
     """
 
     return [(1.055 * math.pow(i, 1 / 2.4) - 0.055) if i > 0.0031308 else (12.92 * i) for i in rgb]
+
+
+def convert(coords, current, wanted):
+    """Convert."""
+
+    if current not in CONVERT_SPACES:
+        raise ValueError("'{}' is not a supported color space for conversion".format(current))
+    elif wanted not in CONVERT_SPACES:
+        raise ValueError("'{}' is not a supported color space for conversion".format(wanted))
+
+    if current == wanted:
+        return coords
+
+    return globals()['{}_to_{}'.format(current, wanted)](*coords)

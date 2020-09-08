@@ -18,25 +18,9 @@ class _LAB(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            if color.space() == "lab":
-                self._cl, self._ca, self._cb, self._alpha = color._cl, color._ca, color._cb, color._alpha
-            elif color.space() == "srgb":
-                self._cl, self._ca, self._cb = convert.rgb_to_lab(color._cr, color._cg, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "hsl":
-                self._cl, self._ca, self._cb = convert.hsl_to_lab(color._ch, color._cs, color._cl)
-                self._alpha = color._alpha
-            elif color.space() == "hwb":
-                self._cl, self._ca, self._cb = convert.hwb_to_lab(color._ch, color._cw, color._cb)
-                self._alpha = color._alpha
-            elif color.space() == "lch":
-                self._cl, self._ca, self._cb = convert.lch_to_lab(color._cl, color._cc, color._ch)
-                self._alpha = color._alpha
-            else:
-                raise TypeError("Unexpected color space '{}' received".format(color.space()))
+            self._cl, self._ca, self._cb = convert.convert(color.coords(), color.space(), self.space())
+            self._alpha = color._alpha
         elif isinstance(color, str):
-            if color is None:
-                color = self.DEF_BG
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
@@ -125,9 +109,9 @@ class _LAB(_ColorTools, _Color):
     def _mix(self, color, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2, clamp_range=(0.0, None))
-        self._ca = self._mix_channel(self._ca, color._ca, factor, factor2, clamp_range=(None, None))
-        self._cb = self._mix_channel(self._cb, color._cb, factor, factor2, clamp_range=(None, None))
+        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2)
+        self._ca = self._mix_channel(self._ca, color._ca, factor, factor2)
+        self._cb = self._mix_channel(self._cb, color._cb, factor, factor2)
 
     @property
     def l(self):
