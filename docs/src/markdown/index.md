@@ -1,4 +1,4 @@
-# ColorCSS
+# ColorAide
 
 ## Overview
 

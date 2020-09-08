@@ -3,7 +3,7 @@ CIE
 CSS
 Changelog
 Chroma
-ColorCSS
+ColorAide
 HDR
 HSL
 HSL

@@ -10,7 +10,7 @@ import traceback
 def get_version():
     """Get version and version_info without importing the entire module."""
 
-    path = os.path.join(os.path.dirname(__file__), 'colorcss')
+    path = os.path.join(os.path.dirname(__file__), 'coloraide')
     fp, pathname, desc = imp.find_module('__meta__', [path])
     try:
         vi = imp.load_module('__meta__', fp, pathname, desc).__version_info__
@@ -43,7 +43,7 @@ def get_description():
 VER, DEVSTATUS = get_version()
 
 setup(
-    name='colorcss',
+    name='coloraide',
     python_requires=">=3.5",
     version=VER,
     keywords='css color',
@@ -52,7 +52,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Isaac Muse',
     author_email='Isaac.Muse@gmail.com',
-    url='https://github.com/facelessuser/colorcss',
+    url='https://github.com/facelessuser/coloraide',
     packages=find_packages(exclude=['tests', 'tools']),
     install_requires=get_requirements("requirements/project.txt"),
     license='MIT License',

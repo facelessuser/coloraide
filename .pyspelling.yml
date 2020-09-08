@@ -48,7 +48,7 @@ matrix:
 - name: python
   sources:
   - setup.py
-  - "{colorcss,tests,tools}/**/*.py"
+  - "{coloraide,tests,tools}/**/*.py"
   hunspell:
     d: docs/src/dictionary/hunspell/en_US
   aspell:

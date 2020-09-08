@@ -1,6 +1,6 @@
 """Test SRGB library."""
 import unittest
-from colorcss import SRGB
+from coloraide.css import SRGB
 
 
 class TestSRGBParse(unittest.TestCase):

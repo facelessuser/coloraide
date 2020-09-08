@@ -11,7 +11,7 @@ rules:
     patterns: ['*|{tools,requirements,.github}/**|!*.md']
 
   - labels: ['C: source']
-    patterns: ['colorcss/**']
+    patterns: ['coloraide/**']
 
   - labels: ['C: tests']
     patterns: ['tests/**']
@@ -33,6 +33,9 @@ rules:
 
   - labels: ['C: lch']
     patterns: ['**/?(test_)lch*|!docs/**']
+
+  - labels: ['C: hsv']
+    patterns: ['**/?(test_)hsv*|!docs/**']
 
 # Label management
 
@@ -56,3 +59,7 @@ labels:
 - name: 'C: lch'
   color: subcategory
   description: LCH colors.
+
+- name: 'C: hsv'
+  color: subcategory
+  description: HSV colors.

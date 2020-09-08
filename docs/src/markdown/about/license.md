@@ -1,6 +1,6 @@
 # License
 
-## ColorCSS
+## ColorAide
 
 The MIT License (MIT)
 

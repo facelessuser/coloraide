@@ -103,7 +103,7 @@ class _LCH(_ColorTools, _Color):
         """Blend the color with the given color."""
 
         self._cl = self._mix_channel(coords1[0], coords2[0], factor, factor2)
-        self._cc = self._mix_channel(coords1[1], ccoords2[1], factor, factor2)
+        self._cc = self._mix_channel(coords1[1], coords2[1], factor, factor2)
         self._ch = self._hue_mix_channel(coords1[2], coords2[2], factor, factor2, scale=1.0)
 
     @property

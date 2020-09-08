@@ -1,6 +1,6 @@
-site_name: ColorCSS Documentation
-site_url: https://facelessuser.github.io/colorcss
-repo_url: https://github.com/facelessuser/colorcss
+site_name: ColorAide Documentation
+site_url: https://facelessuser.github.io/coloraide
+repo_url: https://github.com/facelessuser/coloraide
 edit_uri: tree/master/docs/src/markdown
 site_description: A wildcard file name matching library
 copyright: |
@@ -23,7 +23,7 @@ theme:
     - tabs
 
 nav:
-  - ColorCSS: index.md
+  - ColorAide: index.md
   - About:
       - Contributing &amp; Support: about/contributing.md
       - Changelog: about/changelog.md
@@ -61,7 +61,7 @@ markdown_extensions:
       repo_url_shorthand: true
       social_url_shorthand: true
       user: facelessuser
-      repo: colorcss
+      repo: coloraide
   - pymdownx.tilde:
   - pymdownx.caret:
   - pymdownx.smartsymbols:
