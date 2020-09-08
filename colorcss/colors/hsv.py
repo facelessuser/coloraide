@@ -1,4 +1,4 @@
-"""HSL class."""
+"""HSV class."""
 from .base import _Color
 from .tools import _ColorTools
 from .. import parse
@@ -6,10 +6,10 @@ from .. import util
 from ..util import convert
 
 
-class _HSL(_ColorTools, _Color):
+class _HSV(_ColorTools, _Color):
     """HSL class."""
 
-    COLORSPACE = "hsl"
+    COLORSPACE = "hsv"
     DEF_BG = "[0, 0, 0, 1]"
 
     def __init__(self, color=None):
@@ -30,7 +30,7 @@ class _HSL(_ColorTools, _Color):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
             self._ch = color[0]
             self._cs = color[1]
-            self._cl = color[2]
+            self._cv = color[2]
             self._alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
@@ -60,14 +60,14 @@ class _HSL(_ColorTools, _Color):
         self._c2 = util.clamp(value, 0.0, 1.0)
 
     @property
-    def _cl(self):
-        """Lightness channel."""
+    def _cv(self):
+        """Value channel."""
 
         return self._c3
 
-    @_cl.setter
-    def _cl(self, value):
-        """Set lightness channel."""
+    @_cv.setter
+    def _cv(self, value):
+        """Set value channel."""
 
         self._c3 = util.clamp(value, 0.0, 1.0)
 
@@ -79,7 +79,7 @@ class _HSL(_ColorTools, _Color):
     def is_achromatic(self, scale=util.INF):
         """Check if the color is achromatic."""
 
-        return util.round_half_up(self._cs * 360.0, scale) <= 0.0
+        return util.round_half_up(self._cs * 100.0, scale) <= 0.0
 
     def _grayscale(self):
         """Convert to grayscale."""
@@ -92,7 +92,7 @@ class _HSL(_ColorTools, _Color):
 
         self._ch = self._hue_mix_channel(self._ch, color._ch, factor, factor2)
         self._cs = self._mix_channel(self._cs, color._cs, factor, factor2)
-        self._cl = self._mix_channel(self._cl, color._cl, factor, factor2)
+        self._cv = self._mix_channel(self._cv, color._cv, factor, factor2)
 
     @property
     def hue(self):
@@ -119,16 +119,16 @@ class _HSL(_ColorTools, _Color):
         self._cs = self.tx_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
-    def lightness(self):
-        """Lightness channel."""
+    def value(self):
+        """Value channel."""
 
-        return self._cl
+        return self._cv
 
-    @lightness.setter
-    def lightness(self, value):
-        """Set lightness channel."""
+    @value.setter
+    def value(self, value):
+        """Set value channel."""
 
-        self._cl = self.tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cv = self.tx_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
     def tx_channel(cls, channel, value):

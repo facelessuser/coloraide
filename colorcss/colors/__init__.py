@@ -1,13 +1,25 @@
 """Colors."""
+from .hsv import _HSV
 from .srgb import _SRGB
 from .hsl import _HSL
 from .hwb import _HWB
 from .lab import _LAB
 from .lch import _LCH
 
-__all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH")
+__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH")
 
 CS_MAP = {}
+
+
+class HSV(_HSV):
+    """HSV color class."""
+
+    spaces = CS_MAP
+
+    def __init__(self, color=_HSV.DEF_BG):
+        """Initialize."""
+
+        super().__init__(color)
 
 
 class SRGB(_SRGB):
@@ -65,6 +77,6 @@ class LCH(_LCH):
         super().__init__(color)
 
 
-SUPPORTED = (HSL, HWB, LAB, LCH, SRGB)
+SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
