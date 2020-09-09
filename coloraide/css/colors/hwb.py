@@ -29,41 +29,41 @@ class _HWB(generic._HWB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, scale=util.INF, raw=False, **kwargs
+        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return super().to_string(alpha=alpha, scale=scale)
+            return super().to_string(alpha=alpha, precision=precision)
 
         value = ''
         if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_hwba(comma=comma, scale=scale)
+            value = self._get_hwba(comma=comma, precision=precision)
         else:
-            value = self._get_hwb(comma=comma, scale=scale)
+            value = self._get_hwb(comma=comma, precision=precision)
         return value
 
-    def _get_hwb(self, *, comma=False, scale=0):
+    def _get_hwb(self, *, comma=False, precision=util.DEF_PREC):
         """Get RGB color."""
 
         template = "hwb({}, {}%, {}%)" if comma else "hwb({} {}% {}%)"
 
         return template.format(
-            util.fmt_float(self._ch * 360.0, scale),
-            util.fmt_float(self._cw * 100.0, scale),
-            util.fmt_float(self._cb * 100.0, scale)
+            util.fmt_float(self._ch * 360.0, precision),
+            util.fmt_float(self._cw * 100.0, precision),
+            util.fmt_float(self._cb * 100.0, precision)
         )
 
-    def _get_hwba(self, *, comma=False, scale=0):
+    def _get_hwba(self, *, comma=False, precision=util.DEF_PREC):
         """Get RGB color with alpha channel."""
 
         template = "hwb({}, {}%, {}%, {})" if comma else "hwb({} {}% {}% / {})"
 
         return template.format(
-            util.fmt_float(self._ch * 360.0, scale),
-            util.fmt_float(self._cw * 100.0, scale),
-            util.fmt_float(self._cb * 100.0, scale),
-            util.fmt_float(self._alpha, max(3, scale))
+            util.fmt_float(self._ch * 360.0, precision),
+            util.fmt_float(self._cw * 100.0, precision),
+            util.fmt_float(self._cb * 100.0, precision),
+            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
     @classmethod

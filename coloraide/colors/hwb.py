@@ -71,11 +71,6 @@ class _HWB(_ColorTools, _Color):
 
         self._c3 = util.clamp(value, 0.0, 1.0)
 
-    def is_achromatic(self, scale=util.INF):
-        """Check if the color is achromatic."""
-
-        return util.round_half_up(self._cw * 100.0, scale) + util.round_half_up(self._cb * 100.0, scale) >= 100.0
-
     def _grayscale(self):
         """Convert to grayscale."""
 
@@ -86,6 +81,10 @@ class _HWB(_ColorTools, _Color):
     def _mix(self, coords1, coords2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
+        if self._is_achromatic(coords1):
+            coords1[0] = util.NAN
+        if self._is_achromatic(coords2):
+            coords2[0] = util.NAN
         self._ch = self._hue_mix_channel(coords1[0], coords2[0], factor, factor2)
         self._cw = self._mix_channel(coords1[1], coords2[1], factor, factor2)
         self._cb = self._mix_channel(coords1[2], coords2[2], factor, factor2)

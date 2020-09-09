@@ -18,7 +18,7 @@ class _HSL(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            self._ch, self._cs, self.hl = convert.convert(color.coords(), color.space(), self.space())
+            self._ch, self._cs, self._cl = convert.convert(color.coords(), color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -76,11 +76,6 @@ class _HSL(_ColorTools, _Color):
 
         return self.to_string(alpha=True)
 
-    def is_achromatic(self, scale=util.INF):
-        """Check if the color is achromatic."""
-
-        return util.round_half_up(self._cs * 360.0, scale) <= 0.0
-
     def _grayscale(self):
         """Convert to grayscale."""
 
@@ -90,6 +85,10 @@ class _HSL(_ColorTools, _Color):
     def _mix(self, coords1, coords2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
+        if self._is_achromatic(coords1):
+            coords1[0] = util.NAN
+        if self._is_achromatic(coords2):
+            coords2[0] = util.NAN
         self._ch = self._hue_mix_channel(coords1[0], coords2[0], factor, factor2)
         self._cl = self._mix_channel(coords1[1], coords2[1], factor, factor2)
         self._cs = self._mix_channel(coords1[2], coords2[2], factor, factor2)

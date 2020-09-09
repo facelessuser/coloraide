@@ -39,66 +39,66 @@ class _LCH(generic._LCH):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, gray=False, scale=util.INF, raw=False, **kwargs
+        self, *, alpha=None, comma=False, gray=False, precision=util.DEF_PREC, raw=False, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return super().to_string(alpha=alpha, scale=scale)
+            return super().to_string(alpha=alpha, precision=precision)
 
         value = ''
-        if gray and self.is_achromatic(scale):
+        if gray and self.is_achromatic():
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_gray(scale=scale)
+                value = self._get_gray(precision=precision)
             else:
-                value = self._get_graya(comma=comma, scale=scale)
+                value = self._get_graya(comma=comma, precision=precision)
         else:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_lcha(comma=comma, scale=scale)
+                value = self._get_lcha(comma=comma, precision=precision)
             else:
-                value = self._get_lch(comma=comma, scale=scale)
+                value = self._get_lch(comma=comma, precision=precision)
         return value
 
-    def _get_lch(self, *, comma=False, scale=0):
+    def _get_lch(self, *, comma=False, precision=util.DEF_PREC):
         """Get LCH color."""
 
         template = "lch({}%, {}, {})" if comma else "lch({}% {} {})"
 
         return template.format(
-            util.fmt_float(self._cl, scale),
-            util.fmt_float(self._cc, scale),
-            util.fmt_float(self._ch, scale)
+            util.fmt_float(self._cl, precision),
+            util.fmt_float(self._cc, precision),
+            util.fmt_float(self._ch, precision)
         )
 
-    def _get_lcha(self, *, comma=False, scale=0):
+    def _get_lcha(self, *, comma=False, precision=util.DEF_PREC):
         """Get LCH color with alpha channel."""
 
         template = "lch({}%, {}, {}, {})" if comma else "lch({}% {} {} / {})"
 
         return template.format(
-            util.fmt_float(self._cl, scale),
-            util.fmt_float(self._cc, scale),
-            util.fmt_float(self._ch, scale),
-            util.fmt_float(self._alpha, max(3, scale))
+            util.fmt_float(self._cl, precision),
+            util.fmt_float(self._cc, precision),
+            util.fmt_float(self._ch, precision),
+            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_gray(self, *, scale=0):
+    def _get_gray(self, *, precision=util.DEF_PREC):
         """Get gray color with alpha."""
 
         template = "gray({})"
 
         return template.format(
-            util.fmt_float(self._cl, scale)
+            util.fmt_float(self._cl, precision)
         )
 
-    def _get_graya(self, *, comma=False, scale=0):
+    def _get_graya(self, *, comma=False, precision=util.DEF_PREC):
         """Get gray color with alpha."""
 
         template = "gray({}, {})" if comma else "gray({} / {})"
 
         return template.format(
-            util.fmt_float(self._cl, scale),
-            util.fmt_float(self._alpha, max(3, scale))
+            util.fmt_float(self._cl, precision),
+            util.fmt_float(self._alpha, max(3, precision))
         )
 
     @classmethod

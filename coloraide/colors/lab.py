@@ -95,11 +95,6 @@ class _LAB(_ColorTools, _Color):
 
         return self.to_string(alpha=True)
 
-    def is_achromatic(self, scale=util.INF):
-        """Check if the color is achromatic."""
-
-        return util.round_half_up(self._ca, scale) == 0.0 and util.round_half_up(self._cb, scale) == 0.0
-
     def _grayscale(self):
         """Convert to grayscale."""
 

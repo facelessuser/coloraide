@@ -26,7 +26,7 @@ class _Color:
     def coords(self):
         """Coordinates."""
 
-        return self._c1, self._c2, self._c3
+        return [self._c1, self._c2, self._c3]
 
     def clone(self):
         """Clone."""
@@ -128,17 +128,17 @@ class _Color:
         return None, None
 
     def to_string(
-        self, *, alpha=None, scale=util.INF, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, **kwargs
     ):
         """Convert to CSS."""
 
         template = "[{}, {}, {}, {}]" if alpha else "[{}, {}, {}]"
         values = [
-            util.fmt_float(self._c1, scale),
-            util.fmt_float(self._c2, scale),
-            util.fmt_float(self._c3, scale)
+            util.fmt_float(self._c1, precision),
+            util.fmt_float(self._c2, precision),
+            util.fmt_float(self._c3, precision)
         ]
         if alpha:
-            values.append(util.fmt_float(self._alpha, max(scale, 3)))
+            values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
 
         return template.format(*values)

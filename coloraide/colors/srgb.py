@@ -113,15 +113,6 @@ class _SRGB(_ColorTools, _Color):
 
         return self.to_string(alpha=True)
 
-    def is_achromatic(self, scale=util.INF):
-        """Check if the color is achromatic."""
-
-        r = util.round_half_up(self._cr * 255.0, scale)
-        g = util.round_half_up(self._cg * 255.0, scale)
-        b = util.round_half_up(self._cb * 255.0, scale)
-
-        return r == g and g == b
-
     def _grayscale(self):
         """Convert to grayscale."""
 

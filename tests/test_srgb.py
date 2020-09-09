@@ -9,7 +9,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_comma_comma(self):
         """Test comma format."""
 
-        args = {"comma": True, "scale": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgb(30, 100, 200)"
         rgb = SRGB(color)
@@ -26,7 +26,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_space_space(self):
         """Test space format."""
 
-        args = {"scale": 0}
+        args = {"precision": 0}
 
         color = "rgb(30 100 200)"
         rgb = SRGB(color)
@@ -79,7 +79,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_alias(self):
         """Test that `rgba` is an alias for `rgb`."""
 
-        args = {"comma": True, "scale": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgba(30, 100, 200)"
         rgb = SRGB(color)
@@ -102,7 +102,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_percent(self):
         """Test that `rgba` is an alias for `rgb`."""
 
-        args = {"comma": True, "scale": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgb(30%, 100%, 200%)"
         rgb = SRGB(color)
@@ -133,7 +133,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_no_alpha(self):
         """Test no alpha."""
 
-        args = {"comma": True, "scale": 0, "alpha": False}
+        args = {"comma": True, "precision": 0, "alpha": False}
 
         color = "rgb(30, 100, 200, 0.2)"
         rgb = SRGB(color)
@@ -154,7 +154,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_force_alpha(self):
         """Test force alpha."""
 
-        args = {"comma": True, "scale": 0, "alpha": True}
+        args = {"comma": True, "precision": 0, "alpha": True}
 
         color = "rgb(30, 100, 200, 100%)"
         rgb = SRGB(color)

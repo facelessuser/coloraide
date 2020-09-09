@@ -29,41 +29,41 @@ class _LAB(generic._LAB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, scale=util.INF, raw=False, **kwargs
+        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return super().to_string(alpha=alpha, scale=scale)
+            return super().to_string(alpha=alpha, precision=precision)
 
         value = ''
         if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_laba(comma=comma, scale=scale)
+            value = self._get_laba(comma=comma, precision=precision)
         else:
-            value = self._get_lab(comma=comma, scale=scale)
+            value = self._get_lab(comma=comma, precision=precision)
         return value
 
-    def _get_lab(self, *, comma=False, scale=0):
+    def _get_lab(self, *, comma=False, precision=util.DEF_PREC):
         """Get LAB color."""
 
         template = "lab({}%, {}, {})" if comma else "lab({}% {} {})"
 
         return template.format(
-            util.fmt_float(self._cl, scale),
-            util.fmt_float(self._ca, scale),
-            util.fmt_float(self._cb, scale)
+            util.fmt_float(self._cl, precision),
+            util.fmt_float(self._ca, precision),
+            util.fmt_float(self._cb, precision)
         )
 
-    def _get_laba(self, *, comma=False, scale=0):
+    def _get_laba(self, *, comma=False, precision=util.DEF_PREC):
         """Get LAB color with alpha channel."""
 
         template = "lab({}%, {}, {}, {})" if comma else "lab({}% {} {} / {})"
 
         return template.format(
-            util.fmt_float(self._cl, scale),
-            util.fmt_float(self._ca, scale),
-            util.fmt_float(self._cb, scale),
-            util.fmt_float(self._alpha, max(3, scale))
+            util.fmt_float(self._cl, precision),
+            util.fmt_float(self._ca, precision),
+            util.fmt_float(self._cb, precision),
+            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
     @classmethod

@@ -52,12 +52,12 @@ class _SRGB(generic._SRGB):
 
     def to_string(
         self, *, alpha=None, name=False, hex_code=False, hex_upper=False, compress=False, comma=False, percent=False,
-        scale=util.INF, raw=False
+        precision=util.DEF_PREC, raw=False
     ):
         """Convert to CSS."""
 
         if raw:
-            return super().to_string(alpha=alpha, scale=scale)
+            return super().to_string(alpha=alpha, precision=precision)
 
         value = ''
         if hex_code or name:
@@ -77,12 +77,12 @@ class _SRGB(generic._SRGB):
                     value = n
         if not value:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_rgba(comma=comma, percent=percent, scale=scale)
+                value = self._get_rgba(comma=comma, percent=percent, precision=precision)
             else:
-                value = self._get_rgb(comma=comma, percent=percent, scale=scale)
+                value = self._get_rgb(comma=comma, percent=percent, precision=precision)
         return value
 
-    def _get_rgb(self, *, comma=False, percent=False, scale=0):
+    def _get_rgb(self, *, comma=False, percent=False, precision=util.DEF_PREC):
         """Get RGB color."""
 
         factor = 100.0 if percent else 255.0
@@ -93,12 +93,12 @@ class _SRGB(generic._SRGB):
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
         return template.format(
-            util.fmt_float(self._cr * factor, scale),
-            util.fmt_float(self._cg * factor, scale),
-            util.fmt_float(self._cb * factor, scale)
+            util.fmt_float(self._cr * factor, precision),
+            util.fmt_float(self._cg * factor, precision),
+            util.fmt_float(self._cb * factor, precision)
         )
 
-    def _get_rgba(self, *, comma=False, percent=False, scale=0):
+    def _get_rgba(self, *, comma=False, percent=False, precision=util.DEF_PREC):
         """Get RGB color with alpha channel."""
 
         factor = 100.0 if percent else 255.0
@@ -109,10 +109,10 @@ class _SRGB(generic._SRGB):
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
         return template.format(
-            util.fmt_float(self._cr * factor, scale),
-            util.fmt_float(self._cg * factor, scale),
-            util.fmt_float(self._cb * factor, scale),
-            util.fmt_float(self._alpha, max(3, scale))
+            util.fmt_float(self._cr * factor, precision),
+            util.fmt_float(self._cg * factor, precision),
+            util.fmt_float(self._cb * factor, precision),
+            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
     def _get_hexa(self, *, compress=False, hex_upper=False):
@@ -123,10 +123,10 @@ class _SRGB(generic._SRGB):
             template = template.upper()
 
         value = template.format(
-            round(self._cr * 255.0),
-            round(self._cg * 255.0),
-            round(self._cb * 255.0),
-            round(self._alpha * 255.0)
+            int(util.round_half_up(self._cr * 255.0)),
+            int(util.round_half_up(self._cg * 255.0)),
+            int(util.round_half_up(self._cb * 255.0)),
+            int(util.round_half_up(self._alpha * 255.0))
         )
 
         if compress:
@@ -143,9 +143,9 @@ class _SRGB(generic._SRGB):
             template = template.upper()
 
         value = template.format(
-            round(self._cr * 255.0),
-            round(self._cg * 255.0),
-            round(self._cb * 255.0)
+            int(util.round_half_up(self._cr * 255.0)),
+            int(util.round_half_up(self._cg * 255.0)),
+            int(util.round_half_up(self._cb * 255.0))
         )
 
         if compress:
