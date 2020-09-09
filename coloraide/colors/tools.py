@@ -54,19 +54,16 @@ class _ColorTools:
         as we normally overlay a transparent color on an opaque one.
         """
 
-        return abs(c1 * f1 + c2 * f2 * (1 - f1))
+        return abs(c2 * f1 + c1 * f2 * (1 - f1))
 
     def _hue_mix_channel(self, c1, c2, f1, f2=1.0, scale=360.0):
         """Blend the hue style channel."""
 
         if math.isnan(c1) and math.isnan(c2):
-            print('NULL')
             return 0.0
         elif math.isnan(c1):
-            print('NULL, but give second')
             return c2
         elif math.isnan(c2):
-            print('NULL, but give first')
             return c1
 
         c1 *= scale
@@ -100,41 +97,44 @@ class _ColorTools:
         lum2 = color.luminance()
         ratio = calc_contrast_ratio(lum1, lum2)
 
-        if target <= 0:
-            self.mutate(color)
+        # We already meet the minimum or the target is impossible
+        if target < 1 or ratio >= target:
             return
 
         required_lum = ((lum2 + 0.05) / target) - 0.05
         if required_lum < 0:
             required_lum = target * (lum2 + 0.05) - 0.05
 
-        if ratio < target:
-            mix = self.new(WHITE if lum2 < lum1 else BLACK, "srgb")
+        is_dark = lum2 < lum1
+        mix = self.new(WHITE if is_dark else BLACK, "srgb")
+        if is_dark:
+            min_mix = 0.0
+            max_mix = 1.0
+            last_lum = 1.0
         else:
-            mix = color.convert("srgb")
-
-        min_mix = 0.0
-        max_mix = 1.0
+            max_mix = 0.0
+            min_mix = 1.0
+            last_lum = 0.0
+        last_mix = 1.0
 
         temp = self.clone().convert("srgb")
         c1, c2, c3 = temp.coords()
-
-        last_lum = util.INF
-        last_mix = 0
 
         while abs(min_mix - max_mix) > 0.001:
             mid_mix = (max_mix + min_mix) / 2
 
             temp._mix([c1, c2, c3], mix.coords(), mid_mix)
-
             lum2 = temp.luminance()
 
             if lum2 > required_lum:
-                min_mix = mid_mix
-            else:
                 max_mix = mid_mix
+            else:
+                min_mix = mid_mix
 
-            if lum2 >= required_lum and lum2 < last_lum:
+            if (
+                (is_dark and lum2 >= required_lum and lum2 < last_lum) or
+                (not is_dark and lum2 <= required_lum and lum2 > last_lum)
+            ):
                 last_lum = lum2
                 last_mix = mid_mix
 

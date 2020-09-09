@@ -363,7 +363,8 @@ class ColorMod:
             start = m.end(0)
         else:
             raise ValueError("Found unterminated or invalid 'blend('")
-        self.blend(color2, value, alpha, space=space)
+
+        self.blend(color2, 1.0 - value, alpha, space=space)
         return start
 
     def tint(self, percent):
@@ -408,12 +409,12 @@ class ColorMod:
             last_ratio = 1000
             last_values = (max_white, max_black)
 
-            while (abs(min_white - max_white) > 0.01 or abs(min_black - max_black) > 0.01):
+            while (abs(min_white - max_white) > 0.001 if lum1 < 0.5 else abs(min_black - max_black) > 0.001):
                 if lum1 < 0.5:
-                    mid_white = round((max_white + min_white) / 2, 3)
+                    mid_white = (max_white + min_white) / 2
                     mid_black = 1.0 - mid_white
                 else:
-                    mid_black = round((max_black + min_black) / 2, 3)
+                    mid_black = (max_black + min_black) / 2
                     mid_white = 1.0 - mid_black
 
                 min_hwb.whiteness = mid_white
@@ -428,7 +429,7 @@ class ColorMod:
                     min_white = mid_white
                     min_black = mid_black
 
-                if ratio < last_ratio and ratio > 4.5:
+                if ratio < last_ratio and ratio >= 4.5:
                     last_ratio = ratio
                     last_values = (mid_white, mid_black)
 
@@ -438,7 +439,7 @@ class ColorMod:
         else:
             min_hwb = max_hwb.clone()
 
-        max_hwb.mix(min_hwb, percent, space="hwb")
+        max_hwb.mix(min_hwb, 1.0 - percent, space="hwb")
         self._color.mutate(max_hwb)
 
     def process_min_contrast(self, m, string):
