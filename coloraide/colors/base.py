@@ -3,17 +3,27 @@ from .. import util
 from ..util import parse
 import re
 
+MATCH = re.compile(
+    r"(?xi)color\(\s*([-a-z0-9]+)\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+)
+
+
+def split_channels(cls, color):
+    """Split channels."""
+
+    channels = []
+    for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color.strip()), 0):
+        channels.append(float(c))
+    if len(channels) == 3:
+        channels.append(1.0)
+    return channels
+
 
 class _Color:
     """Base color object."""
 
     DEF_BG = ""
-    COLORSPACE = ""
-    MATCH = re.compile(
-        r"""(?xi)
-        \[{float}(?:{comma}{float})(?:{comma}{float})\]
-        """.format(**parse.COLOR_PARTS)
-    )
+    SPACE = ""
 
     def __init__(self, color=None):
         """Initialize."""
@@ -68,7 +78,7 @@ class _Color:
     def space(cls):
         """Get the color space."""
 
-        return cls.COLORSPACE
+        return cls.SPACE
 
     def mutate(self, obj):
         """Update from color."""
@@ -104,7 +114,11 @@ class _Color:
     def __repr__(self):
         """Representation."""
 
-        return "<{} object; space='{}' {}>".format(type(self).__name__, self.COLORSPACE, str(self))
+        return 'color({} {} / {})'.format(
+            self.space(),
+            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
+            util.fmt_float(self._alpha, util.DEF_PREC)
+        )
 
     @classmethod
     def tx_channel(cls, channel, value):
@@ -113,18 +127,12 @@ class _Color:
         raise NotImplementedError("Base _Color class does not implement 'tx_channel' directly.")
 
     @classmethod
-    def split_channels(cls, color):
-        """Split channels."""
-
-        raise NotImplementedError("Base _Color class does not implement 'split_channels' directly.")
-
-    @classmethod
     def match(cls, string, start=0, fullmatch=True):
         """Match a color by string."""
 
-        m = cls.MATCH.match(string, start)
-        if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
+        m = MATCH.match(string, start)
+        if m is not None and m.group(1).lower() == cls.space() and (not fullmatch or m.end(0) == len(string)):
+            return split_channels(cls, m.group(2)), m.end(0)
         return None, None
 
     def to_string(
@@ -132,7 +140,7 @@ class _Color:
     ):
         """Convert to CSS."""
 
-        template = "[{}, {}, {}, {}]" if alpha else "[{}, {}, {}]"
+        template = "color({} {} {} {} {})" if alpha else "color({} {} {} {})"
         values = [
             util.fmt_float(self._c1, precision),
             util.fmt_float(self._c2, precision),
@@ -141,4 +149,4 @@ class _Color:
         if alpha:
             values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
 
-        return template.format(*values)
+        return template.format(self.space(), *values)

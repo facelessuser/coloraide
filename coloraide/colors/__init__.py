@@ -5,8 +5,11 @@ from .hsl import _HSL
 from .hwb import _HWB
 from .lab import _LAB
 from .lch import _LCH
+from ..matcher import color_match, color_fullmatch
 
 __all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH")
+
+SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab"})
 
 CS_MAP = {}
 
@@ -16,21 +19,11 @@ class HSV(_HSV):
 
     spaces = CS_MAP
 
-    def __init__(self, color=_HSV.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
-
 
 class SRGB(_SRGB):
     """RGB color class."""
 
     spaces = CS_MAP
-
-    def __init__(self, color=_SRGB.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
 
 
 class HSL(_HSL):
@@ -38,21 +31,11 @@ class HSL(_HSL):
 
     spaces = CS_MAP
 
-    def __init__(self, color=_HSL.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
-
 
 class HWB(_HWB):
     """HWB color class."""
 
     spaces = CS_MAP
-
-    def __init__(self, color=_HWB.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
 
 
 class LAB(_LAB):
@@ -60,23 +43,25 @@ class LAB(_LAB):
 
     spaces = CS_MAP
 
-    def __init__(self, color=_LAB.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
-
 
 class LCH(_LCH):
     """HWB color class."""
 
     spaces = CS_MAP
 
-    def __init__(self, color=_LCH.DEF_BG):
-        """Initialize."""
-
-        super().__init__(color)
-
 
 SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
+
+
+def colorgen(string, spaces=SPACES):
+    """Match a color and return a match object."""
+
+    return color_fullmatch(string, SUPPORTED, SPACES)
+
+
+def colorgen_match(string, start=0, fullmatch=False, spaces=SPACES):
+    """Match a color and return a match object."""
+
+    return color_match(string, start, fullmatch, SUPPORTED, SPACES)

@@ -1,4 +1,5 @@
 """SRGB color class."""
+import re
 from .base import _Color
 from .tools import _ColorTools
 from .. import util
@@ -9,10 +10,13 @@ from ..util import convert
 class _SRGB(_ColorTools, _Color):
     """SRGB class."""
 
-    COLORSPACE = "srgb"
-    DEF_BG = "[0, 0, 0, 1]"
+    SPACE = "srgb"
+    DEF_BG = "color(srgb 0 0 0 / 1)"
+    _MATCH = re.compile(
+        r"(?xi)color\(\s*srgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
 
-    def __init__(self, color=None):
+    def __init__(self, color=DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -172,17 +176,3 @@ class _SRGB(_ColorTools, _Color):
         """Translate channel string."""
 
         return float(value)
-
-    @classmethod
-    def split_channels(cls, color):
-        """Split channels."""
-
-        channels = []
-        for i, c in enumerate(parse.RE_COMMA_SPLIT.split(color[1:-1].strip()), 0):
-            if i <= 2:
-                channels.append(cls.tx_channel(i, c))
-            else:
-                channels.append(cls.tx_channel(-1, c))
-        if len(channels) == 3:
-            channels.append(1.0)
-        return channels

@@ -1,12 +1,31 @@
 """Color-mod."""
 import re
-from .colors import SUPPORTED
-from .color_css import colorcss, colorcss_match, ColorMatch
+from .colors import SUPPORTED, SPACES
+from .colors import colorcss, colorcss_match
+from ..matcher import ColorMatch
 from ..util import parse
+import functools
 import traceback
 
 WHITE = [1.0] * 3
 BLACK = [0.0] * 3
+
+TOKENS = {
+    "units": re.compile(
+        r"""(?xi)
+        # Some number of units separated by valid separators
+        (?:
+            {float} |
+            {angle} |
+            {percent} |
+            \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?) |
+            [\w][\w\d]*
+        )
+        """.format(**parse.COLOR_PARTS)
+    ),
+    "functions": re.compile(r'(?i)[\w][\w\d]*\('),
+    "separators": re.compile(r'(?:{comma}|{space}|{slash})'.format(**parse.COLOR_PARTS))
+}
 
 RE_ADJUSTERS = {
     "red": re.compile(
@@ -62,6 +81,88 @@ RE_BLEND_END = re.compile(r'(?i)\s+({percent})(?:\s+(rgb|hsl|hwb))?\s*\)'.format
 RE_HUE = re.compile(r'(?i){angle}'.format(**parse.COLOR_PARTS))
 RE_BRACKETS = re.compile(r'(?:(\()|(\))|[^()]+)')
 RE_MIN_CONTRAST_END = re.compile(r'(?i)\s+({float})\s*\)'.format(**parse.COLOR_PARTS))
+RE_VARS = re.compile(r'(?i)(?:(?<=^)|(?<=[\s\t\(,/]))(var\(\s*([-\w][-\w\d]*)\s*\))(?!\()(?=[\s\t\),/]|$)')
+
+
+def validate_vars(var, good_vars):
+    """
+    Validate variables.
+
+    We will blindly replace values, but if we are fairly confident they follow
+    the pattern of a valid, complete unit, if you replace them in a bad place,
+    it will break the color (as it should) and if not, it is likely to parse fine,
+    unless it breaks the syntax of the color being evaluated.
+    """
+
+    for k, v in var.items():
+        v = v.strip()
+        start = 0
+        need_sep = False
+        length = len(v)
+        while True:
+            if start == length:
+                good_vars[k] = v
+                break
+            try:
+                # Each item should be separated by some valid separator
+                if need_sep:
+                    m = TOKENS["separators"].match(v, start)
+                    if m:
+                        start = m.end(0)
+                        need_sep = False
+                        continue
+                    else:
+                        break
+
+                # Validate things like `rgb()`, `contrast()` etc.
+                m = TOKENS["functions"].match(v, start)
+                if m:
+                    end = None
+                    brackets = 1
+                    for m in RE_BRACKETS.finditer(v, start + 6):
+                        if m.group(2):
+                            brackets -= 1
+                        elif m.group(1):
+                            brackets += 1
+
+                        if brackets == 0:
+                            end = m.end(0)
+                            break
+                    if end is None:
+                        break
+                    start = end
+                    need_sep = True
+                    continue
+
+                # Validate that units such as percents, floats, hex colors, etc.
+                m = TOKENS["units"].match(v, start)
+                if m:
+                    start = m.end(0)
+                    need_sep = True
+                    continue
+                break
+            except Exception:
+                break
+
+
+def _var_replace(m, var=None, parents=None):
+    """Replace variables but try to prevent infinite recursion."""
+
+    name = m.group(2)
+    replacement = var.get(m.group(2))
+    string = replacement if replacement and name not in parents is not None else ""
+    parents.add(name)
+    return RE_VARS.sub(functools.partial(_var_replace, var=var, parents=parents), string)
+
+
+def handle_vars(string, variables, parents=None):
+    """Handle CSS variables."""
+
+    temp_vars = {}
+    validate_vars(variables, temp_vars)
+    parent_vars = set() if parents is None else parents
+
+    return RE_VARS.sub(functools.partial(_var_replace, var=temp_vars, parents=parent_vars), string)
 
 
 def contrast_ratio(lum1, lum2):
@@ -139,17 +240,18 @@ class ColorMod:
                         color = color2.convert("srgb")
                 if color is None:
                     for obj in SUPPORTED:
-                        m = obj.MATCH.match(string, start)
-                        if m:
-                            try:
-                                color = colorcss(string[start:m.end(0)])
-                                if color.space() != "srgb":
-                                    color = color.convert("srgb")
-                                start = m.end(0)
-                                break
-                            except Exception:
-                                print(traceback.format_exc())
-                                pass
+                        try:
+                            temp, end = obj.match(string, start=start, fullmatch=False)
+                            if temp is None:
+                                continue
+                            color = obj(temp)
+                            if color.space() != "srgb":
+                                color = color.convert("srgb")
+                            start = end
+                            break
+                        except Exception:
+                            print(traceback.format_exc())
+                            pass
 
             if color is not None:
                 self._color = color
@@ -345,11 +447,15 @@ class ColorMod:
         else:
             color2 = None
             for obj in SUPPORTED:
-                m = obj.MATCH.match(string, start)
-                if m:
-                    color2 = colorcss(string[start:m.end(0)])
-                    start = m.end(0)
+                try:
+                    temp, end = obj.match(string, start=start, fullmatch=False)
+                    if temp is None:
+                        continue
+                    color2 = obj(temp)
+                    start = end
                     break
+                except Exception:
+                    pass
             if color2 is None:
                 raise ValueError("Could not find a valid color for 'blend'")
         m = RE_BLEND_END.match(string, start)
@@ -455,11 +561,15 @@ class ColorMod:
         else:
             color2 = None
             for obj in SUPPORTED:
-                m = obj.MATCH.match(string, start)
-                if m:
-                    color2 = colorcss(string[start:m.end(0)])
-                    start = m.end(0)
+                try:
+                    temp, end = obj.match(string, start=start, fullmatch=False)
+                    if temp is None:
+                        continue
+                    color2 = obj(temp)
+                    start = end
                     break
+                except Exception:
+                    pass
             if color2 is None:
                 raise ValueError("Could not find a valid color for 'min-contrast'")
         m = RE_MIN_CONTRAST_END.match(string, start)
@@ -579,27 +689,26 @@ class ColorMod:
         self._color.mutate(this)
 
 
-def colormod(string, variables=None):
-    """Parse a CSS color."""
+def colormod(string, spaces=SPACES, variables=None):
+    """Match a color and return a match object."""
 
-    match = colormod_match(string, variables, fullmatch=True)
-    if match is not None:
-        return match.color
+    m = colormod_match(string, 0, True, spaces, variables)
+    return m.color if m is not None else None
 
 
-def colormod_match(string, variables=None, start=0, fullmatch=False):
-    """Match a color at the given position."""
+def colormod_match(string, start=0, fullmatch=False, spaces=SPACES, variables=None):
+    """Match a color and return a match object."""
 
     # Handle variable
     end = None
     is_mod = False
     if variables:
-        m = parse.RE_VARS.match(string, start)
+        m = RE_VARS.match(string, start)
         if m and (not fullmatch or len(string) == m.end(0)):
             end = m.end(0)
             start = 0
             string = string[start:end]
-            string = parse.handle_vars(string, variables)
+            string = handle_vars(string, variables)
             variables = None
 
     temp = parse.bracket_match(RE_COLOR_START, string, start, fullmatch)
@@ -611,12 +720,12 @@ def colormod_match(string, variables=None, start=0, fullmatch=False):
 
     if is_mod:
         if variables:
-            string = parse.handle_vars(string, variables)
+            string = handle_vars(string, variables)
         obj, match_end = ColorMod(fullmatch).adjust(string, start)
         if obj is not None:
             return ColorMatch(obj, start, end if end is not None else match_end)
     else:
-        obj = colorcss_match(string, start=start, fullmatch=fullmatch, variables=variables)
+        obj = colorcss_match(string, start=start, fullmatch=fullmatch, spaces=SPACES)
         if obj is not None and end:
             obj.end = end
         return obj

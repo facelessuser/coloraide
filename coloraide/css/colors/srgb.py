@@ -45,7 +45,7 @@ class _SRGB(generic._SRGB):
 
     HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)\b".format(**parse.COLOR_PARTS))
 
-    def __init__(self, color=None):
+    def __init__(self, color=DEF_BG):
         """Initialize."""
 
         super().__init__(color)
@@ -173,6 +173,8 @@ class _SRGB(generic._SRGB):
     def split_channels(cls, color):
         """Split channels."""
 
+        print(color)
+
         if color[:3].lower().startswith('rgb'):
             start = 5 if color[:4].lower().startswith('rgba') else 4
             channels = []
@@ -203,24 +205,18 @@ class _SRGB(generic._SRGB):
                 )
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=True, variables=None):
+    def match(cls, string, start=0, fullmatch=True):
         """Match a CSS color string."""
 
-        # We will only match variables within `func()` if variables are at the root level,
-        # they should be handled by `colorcss`, not the color class.
-        end = None
-        if variables and cls.START:
-            end = parse.bracket_match(cls.START, string, start, fullmatch)
-            if end is not None:
-                string = parse.handle_vars(string, variables)
-                start = 0
-
+        channels, end = super().match(string, start, fullmatch)
+        if channels is not None:
+            return channels, end
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
                 string = css_names.name2hex(string[m.start(0):m.end(0)])
                 if string is not None:
-                    return cls.split_channels(string), end if end is not None else m.end(0)
+                    return cls.split_channels(string), m.end(0)
             else:
-                return cls.split_channels(string[m.start(0):m.end(0)]), end if end is not None else m.end(0)
+                return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
         return None, None

@@ -1,4 +1,5 @@
 """HSL class."""
+import re
 from .base import _Color
 from .tools import _ColorTools
 from .. import util
@@ -9,10 +10,13 @@ from ..util import convert
 class _HSL(_ColorTools, _Color):
     """HSL class."""
 
-    COLORSPACE = "hsl"
-    DEF_BG = "[0, 0, 0, 1]"
+    SPACE = "hsl"
+    DEF_BG = "color(hsl 0 0 0 / 1)"
+    _MATCH = re.compile(
+        r"(?xi)color\(\s*hsl\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
 
-    def __init__(self, color=None):
+    def __init__(self, color=DEF_BG):
         """Initialize."""
 
         super().__init__(color)
