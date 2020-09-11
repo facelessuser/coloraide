@@ -104,29 +104,29 @@ class TestSRGBParse(unittest.TestCase):
 
         args = {"comma": True, "precision": 0}
 
-        color = "rgb(30%, 100%, 200%)"
+        color = "rgb(30%, 100%, 100%)"
         rgb = SRGB(color)
         self.assertEqual("rgb(77, 255, 255)", rgb.to_string(**args))
 
-        color = "rgba(30%, 100%, 200%, 100%)"
+        color = "rgba(30%, 100%, 100%, 100%)"
         rgb = SRGB(color)
         self.assertEqual("rgb(77, 255, 255)", rgb.to_string(**args))
 
-        color = "rgba(30%, 100%, 200%, 20%)"
+        color = "rgba(30%, 100%, 100%, 20%)"
         rgb = SRGB(color)
         self.assertEqual("rgba(77, 255, 255, 0.2)", rgb.to_string(**args))
 
         args["comma"] = False
 
-        color = "rgb(30% 100% 200%)"
+        color = "rgb(30% 100% 100%)"
         rgb = SRGB(color)
         self.assertEqual("rgb(77 255 255)", rgb.to_string(**args))
 
-        color = "rgba(30% 100% 200% / 100%)"
+        color = "rgba(30% 100% 100% / 100%)"
         rgb = SRGB(color)
         self.assertEqual("rgb(77 255 255)", rgb.to_string(**args))
 
-        color = "rgba(30% 100% 200% / 20%)"
+        color = "rgba(30% 100% 100% / 20%)"
         rgb = SRGB(color)
         self.assertEqual("rgb(77 255 255 / 0.2)", rgb.to_string(**args))
 

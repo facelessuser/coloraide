@@ -1,6 +1,6 @@
 """HWB class."""
 import re
-from .base import _Color
+from .base import _Color, GamutBound, GamutHue
 from .tools import _ColorTools
 from .. import util
 from ..util import parse
@@ -14,6 +14,12 @@ class _HWB(_ColorTools, _Color):
     DEF_BG = "color(hwb 0 0 0 / 1)"
     _MATCH = re.compile(
         r"(?xi)color\(\s*hwb\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
+
+    _gamut = (
+        (GamutHue(0.0), GamutHue(360.0)),
+        (GamutBound(0.0), GamutBound(100.0)),
+        (GamutBound(0.0), GamutBound(100.0))
     )
 
     def __init__(self, color=DEF_BG):
@@ -49,7 +55,7 @@ class _HWB(_ColorTools, _Color):
     def _ch(self, value):
         """Set hue channel."""
 
-        self._c1 = value if 0.0 <= value <= 360.0 else value % 360.0
+        self._c1 = value
 
     @property
     def _cw(self):
@@ -61,7 +67,7 @@ class _HWB(_ColorTools, _Color):
     def _cw(self, value):
         """Set whiteness channel."""
 
-        self._c2 = util.clamp(value, 0.0, 100.0)
+        self._c2 = value
 
     @property
     def _cb(self):
@@ -73,12 +79,12 @@ class _HWB(_ColorTools, _Color):
     def _cb(self, value):
         """Set blackness channel."""
 
-        self._c3 = util.clamp(value, 0.0, 100.0)
+        self._c3 = value
 
     def _grayscale(self):
         """Convert to grayscale."""
 
-        factor = 1.0 / (self._cw + self._cb)
+        factor = 100.0 / (self._cw + self._cb)
         self._c2 = self._cw + factor
         self._c3 = self._cb + factor
 
@@ -138,4 +144,4 @@ class _HWB(_ColorTools, _Color):
         elif channel in (1, 2):
             return float(value)
         elif channel == -1:
-            return float(value)
+            return parse.norm_alpha_channel(value)

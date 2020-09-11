@@ -1,8 +1,7 @@
 """LAB class."""
 import re
-from .base import _Color
+from .base import _Color, GamutUnbound
 from .tools import _ColorTools
-from .. import util
 from ..util import parse
 from ..util import convert
 
@@ -14,6 +13,12 @@ class _LAB(_ColorTools, _Color):
     DEF_BG = "color(lab 0 0 0 / 1)"
     _MATCH = re.compile(
         r"(?xi)color\(\s*lab\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
+
+    _gamut = (
+        (GamutUnbound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
+        (GamutUnbound(-160), GamutUnbound(160)),  # No limit, but we could impose one +/-160?
+        (GamutUnbound(-160), GamutUnbound(160))  # No limit, but we could impose one +/-160?
     )
 
     def __init__(self, color=DEF_BG):
@@ -55,7 +60,7 @@ class _LAB(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c1 = util.clamp(value, 0.0, None)
+        self._c1 = value
 
     @property
     def _ca(self):
@@ -74,7 +79,7 @@ class _LAB(_ColorTools, _Color):
         TODO: Should we not clamp this?
         """
 
-        self._c2 = util.clamp(value, None, None)
+        self._c2 = value
 
     @property
     def _cb(self):
@@ -92,7 +97,7 @@ class _LAB(_ColorTools, _Color):
         TODO: Should we not clamp this?
         """
 
-        self._c3 = util.clamp(value, None, None)
+        self._c3 = value
 
     def __str__(self):
         """String."""
@@ -152,4 +157,4 @@ class _LAB(_ColorTools, _Color):
     def tx_channel(cls, channel, value):
         """Translate channel string."""
 
-        return float(value)
+        return float(value) if channel > 0 else parse.norm_alpha_channel(value)

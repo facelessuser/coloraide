@@ -1,6 +1,6 @@
 """LCH class."""
 import re
-from .base import _Color
+from .base import _Color, GamutUnbound, GamutHue
 from .tools import _ColorTools
 from .. import util
 from ..util import parse
@@ -14,6 +14,12 @@ class _LCH(_ColorTools, _Color):
     DEF_BG = "color(lch 0 0 0 / 1)"
     _MATCH = re.compile(
         r"(?xi)color\(\s*lch\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
+
+    _gamut = (
+        (GamutUnbound(0.0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
+        (GamutUnbound(0.0), GamutUnbound(100.0)),  # Again, I think chroma should be clamped on the zero side.
+        (GamutHue(0.0), GamutHue(360.0)),
     )
 
     def __init__(self, color=DEF_BG):
@@ -55,7 +61,7 @@ class _LCH(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c1 = util.clamp(value, 0.0, None)
+        self._c1 = value
 
     @property
     def _cc(self):
@@ -74,7 +80,7 @@ class _LCH(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c2 = util.clamp(value, 0.0, None)
+        self._c2 = value
 
     @property
     def _ch(self):
@@ -86,7 +92,7 @@ class _LCH(_ColorTools, _Color):
     def _ch(self, value):
         """Set B on LAB axis."""
 
-        self._c3 = value if 0.0 <= value <= 360.0 else value % 360.0
+        self._c3 = value
 
     def __str__(self):
         """String."""
@@ -149,7 +155,9 @@ class _LCH(_ColorTools, _Color):
     def tx_channel(cls, channel, value):
         """Translate channel string."""
 
-        if channel in (1, 0, -1):
+        if channel in (1, 0):
             return float(value)
         elif channel == 2:
             return parse.norm_deg_channel(value)
+        elif channel == -1:
+            return parse.norm_alpha_channel(value)

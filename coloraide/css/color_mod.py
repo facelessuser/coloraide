@@ -1,7 +1,7 @@
 """Color-mod."""
 import re
 from .colors import SUPPORTED, SPACES
-from .colors import colorcss, colorcss_match
+from .colors import colorcss_match
 from ..matcher import ColorMatch
 from ..util import parse
 import functools

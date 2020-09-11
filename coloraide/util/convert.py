@@ -279,7 +279,7 @@ def lab_to_display_p3(l, a, b):
 
     xyz = d50_to_d65(lab_to_xyz(l, a, b))
     prgb = xyz_to_lin_p3(xyz)
-    return gam_p3(srgb)
+    return gam_p3(prgb)
 
 
 ############
@@ -430,6 +430,7 @@ def xyz_to_lin_srgb(xyz):
 def lin_p3_to_xyz(rgb):
     """
     Convert an array of linear-light image-p3 values to CIE XYZ using  D65 (no chromatic adaptation).
+
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
@@ -444,7 +445,7 @@ def lin_p3_to_xyz(rgb):
 
 
 def xyz_to_lin_p3(xyz):
-    """convert XYZ to linear-light P3."""
+    """Convert XYZ to linear-light P3."""
 
     m = [
         [2.493496911941425, -0.9313836179191239, -0.40271078445071684],
@@ -456,15 +457,15 @@ def xyz_to_lin_p3(xyz):
 
 
 def lin_p3(rgb):
-    """Convert an array of image-p3 RGB values in the range 0.0 - 1.0 to linear light (un-companded) form."""
+    """Convert an array of image-p3 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
-    return lin_srgb(rgb);  # same as sRGB
+    return lin_srgb(rgb)  # same as sRGB
 
 
 def gam_p3(rgb):
     """Convert an array of linear-light image-p3 RGB  in the range 0.0-1.0 to gamma corrected form."""
 
-    return gam_srgb(rgb);  # same as sRGB
+    return gam_srgb(rgb)  # same as sRGB
 
 
 def lin_srgb(rgb):

@@ -1,6 +1,6 @@
 """Display-p3 color class."""
 import re
-from .base import _Color
+from .base import _Color, GamutBound
 from .tools import _ColorTools
 from .. import util
 from ..util import parse
@@ -14,6 +14,12 @@ class _Display_P3(_ColorTools, _Color):
     DEF_BG = "color(display-p3 0 0 0 / 1)"
     _MATCH = re.compile(
         r"(?xi)color\(\s*display-p3\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
+
+    _gamut = (
+        (GamutBound(0.0), GamutBound(1.0)),
+        (GamutBound(0.0), GamutBound(1.0)),
+        (GamutBound(0.0), GamutBound(1.0))
     )
 
     def __init__(self, color=DEF_BG):
@@ -175,4 +181,4 @@ class _Display_P3(_ColorTools, _Color):
     def tx_channel(cls, channel, value):
         """Translate channel string."""
 
-        return float(value)
+        return float(value) if channel > 0 else parse.norm_alpha_channel(value)

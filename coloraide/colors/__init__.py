@@ -50,6 +50,7 @@ class LCH(_LCH):
 
     spaces = CS_MAP
 
+
 class Display_P3(_Display_P3):
     """Display-p3 color class."""
 

@@ -27,17 +27,18 @@ COLOR_PARTS = {
 }
 
 
-def norm_percent_channel(value):
+def norm_percent_channel(value, scale=False):
     """Normalize percent channel."""
 
-    return float(value.strip('%'))
+    value = float(value.strip('%'))
+    return value / 100.0 if scale else value
 
 
 def norm_rgb_channel(value):
     """Normalize RGB channel."""
 
     if value.endswith("%"):
-        return norm_percent_channel(value)
+        return norm_percent_channel(value, True)
     else:
         return float(value) * RGB_CHANNEL_SCALE
 
@@ -46,7 +47,7 @@ def norm_alpha_channel(value):
     """Normalize alpha channel."""
 
     if value.endswith("%"):
-        value = norm_percent_channel(value)
+        value = norm_percent_channel(value, True)
     else:
         value = float(value)
     return util.clamp(value, 0.0, 1.0)

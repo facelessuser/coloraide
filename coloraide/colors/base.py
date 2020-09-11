@@ -4,7 +4,9 @@ from ..util import parse
 import re
 
 MATCH = re.compile(
-    r"(?xi)color\(\s*([-a-z0-9]+)\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    r"(?xi)color\(\s*([-a-z0-9]+)\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+        **parse.COLOR_PARTS
+    )
 )
 
 
@@ -17,6 +19,45 @@ def split_channels(cls, color):
     if len(channels) == 3:
         channels.append(1.0)
     return channels
+
+
+def gamut_clip(obj):
+    """Gamut clipping."""
+
+    coords = obj.coords()
+    gamut = obj._gamut
+    fit = []
+
+    for i, value in enumerate(coords):
+        a, b = gamut[i]
+
+        # Normalize hue
+        if isinstance(a, GamutHue) and isinstance(b, GamutHue):
+            fit.append(value if 0.0 <= value <= 360.0 else value % 360.0)
+            continue
+
+        # These parameters are unbounded
+        if isinstance(a, GamutUnbound):
+            a = None
+        if isinstance(b, GamutUnbound):
+            b = None
+
+        if a is not None or b is not None:
+            fit.append(util.clamp(value, a, b))
+
+    return fit
+
+
+class GamutHue(float):
+    """Gamut hue."""
+
+
+class GamutBound(float):
+    """Bounded gamut value."""
+
+
+class GamutUnbound(float):
+    """Unbounded gamut value."""
 
 
 class _Color:
@@ -61,6 +102,14 @@ class _Color:
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
         return obj(value)
+
+    def fit_gamut(self, method=gamut_clip):
+        """Fit the gamut using the provided method."""
+
+        fit = method(self)
+        self._c1 = fit[0]
+        self._c2 = fit[1]
+        self._c3 = fit[2]
 
     @property
     def _alpha(self):

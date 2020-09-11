@@ -1,8 +1,7 @@
 """SRGB color class."""
 import re
-from .base import _Color
+from .base import _Color, GamutBound
 from .tools import _ColorTools
-from .. import util
 from ..util import parse
 from ..util import convert
 
@@ -14,6 +13,12 @@ class _SRGB(_ColorTools, _Color):
     DEF_BG = "color(srgb 0 0 0 / 1)"
     _MATCH = re.compile(
         r"(?xi)color\(\s*srgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+    )
+
+    _gamut = (
+        (GamutBound(0.0), GamutBound(1.0)),
+        (GamutBound(0.0), GamutBound(1.0)),
+        (GamutBound(0.0), GamutBound(1.0))
     )
 
     def __init__(self, color=DEF_BG):
@@ -74,7 +79,7 @@ class _SRGB(_ColorTools, _Color):
     def _cr(self, value):
         """Set red channel."""
 
-        self._c1 = util.clamp(value, 0.0, 1.0)
+        self._c1 = value
 
     @property
     def _cg(self):
@@ -86,7 +91,7 @@ class _SRGB(_ColorTools, _Color):
     def _cg(self, value):
         """Set green channel."""
 
-        self._c2 = util.clamp(value, 0.0, 1.0)
+        self._c2 = value
 
     @property
     def _cb(self):
@@ -98,7 +103,7 @@ class _SRGB(_ColorTools, _Color):
     def _cb(self, value):
         """Set blue channel."""
 
-        self._c3 = util.clamp(value, 0.0, 1.0)
+        self._c3 = value
 
     @property
     def _ch(self):
@@ -175,4 +180,4 @@ class _SRGB(_ColorTools, _Color):
     def tx_channel(cls, channel, value):
         """Translate channel string."""
 
-        return float(value)
+        return float(value) if channel > 0 else parse.norm_alpha_channel(value)
