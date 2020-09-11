@@ -1,7 +1,7 @@
 """LCH class."""
 import re
-from .base import _Color, GamutUnbound, GamutHue
-from .tools import _ColorTools
+from ._base import _Color, GamutUnbound, GamutHue
+from ._tools import _ColorTools
 from .. import util
 from ..util import parse
 from ..util import convert

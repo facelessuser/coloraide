@@ -1,7 +1,7 @@
 """LAB class."""
 import re
-from .base import _Color, GamutUnbound
-from .tools import _ColorTools
+from ._base import _Color, GamutUnbound
+from ._tools import _ColorTools
 from ..util import parse
 from ..util import convert
 

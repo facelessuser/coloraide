@@ -1,20 +1,12 @@
-"""Display-p3 color class."""
-import re
+"""SRGB color class."""
 from ._base import _Color, GamutBound
 from ._tools import _ColorTools
-from .. import util
 from ..util import parse
 from ..util import convert
 
 
-class _Display_P3(_ColorTools, _Color):
-    """Display-p3 class."""
-
-    SPACE = "display-p3"
-    DEF_BG = "color(display-p3 0 0 0 / 1)"
-    _MATCH = re.compile(
-        r"(?xi)color\(\s*display-p3\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
-    )
+class _RGBColor(_ColorTools, _Color):
+    """SRGB class."""
 
     _gamut = (
         (GamutBound(0.0), GamutBound(1.0)),
@@ -22,11 +14,10 @@ class _Display_P3(_ColorTools, _Color):
         (GamutBound(0.0), GamutBound(1.0))
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=None):
         """Initialize."""
 
         super().__init__(color)
-        self._c4 = 0.0
 
         if isinstance(color, _Color):
             self._cr, self._cg, self._cb = convert.convert(color.coords(), color.space(), self.space())
@@ -45,20 +36,11 @@ class _Display_P3(_ColorTools, _Color):
             self._alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
-        self._update_hue()
-
-    def _update_hue(self):
-        """Update hue."""
-
-        if not self.is_achromatic():
-            h = convert.display_p3_to_hsv(self._cr, self._cg, self._cb)[0]
-            self._c4 = h if 0.0 <= h <= 1.0 else h % 1.0
 
     def mutate(self, obj):
         """Update from color."""
 
         if self is obj:
-            self._update_hue()
             return
 
         if not isinstance(obj, type(self)):
@@ -68,7 +50,6 @@ class _Display_P3(_ColorTools, _Color):
         self._c2 = obj._c2
         self._c3 = obj._c3
         self._alpha = obj._alpha
-        self._update_hue()
 
     @property
     def _cr(self):
@@ -80,7 +61,7 @@ class _Display_P3(_ColorTools, _Color):
     def _cr(self, value):
         """Set red channel."""
 
-        self._c1 = util.clamp(value, 0.0, 1.0)
+        self._c1 = value
 
     @property
     def _cg(self):
@@ -92,7 +73,7 @@ class _Display_P3(_ColorTools, _Color):
     def _cg(self, value):
         """Set green channel."""
 
-        self._c2 = util.clamp(value, 0.0, 1.0)
+        self._c2 = value
 
     @property
     def _cb(self):
@@ -104,19 +85,7 @@ class _Display_P3(_ColorTools, _Color):
     def _cb(self, value):
         """Set blue channel."""
 
-        self._c3 = util.clamp(value, 0.0, 1.0)
-
-    @property
-    def _ch(self):
-        """Hue channel."""
-
-        return self._c4
-
-    @_ch.setter
-    def _ch(self, value):
-        """Set hue channel."""
-
-        self._c4 = value if 0.0 <= value <= 1.0 else value % 1.0
+        self._c3 = value
 
     def __str__(self):
         """String."""
@@ -136,7 +105,6 @@ class _Display_P3(_ColorTools, _Color):
         self._cr = self._mix_channel(coords1[0], coords2[0], factor, factor2)
         self._cg = self._mix_channel(coords1[1], coords2[1], factor, factor2)
         self._cb = self._mix_channel(coords1[2], coords2[2], factor, factor2)
-        self._update_hue()
 
     @property
     def red(self):
@@ -149,7 +117,6 @@ class _Display_P3(_ColorTools, _Color):
         """Adjust red."""
 
         self._cr = self.tx_channel(0, value) if isinstance(value, str) else float(value)
-        self._update_hue()
 
     @property
     def green(self):
@@ -162,7 +129,6 @@ class _Display_P3(_ColorTools, _Color):
         """Adjust green."""
 
         self._cg = self.tx_channel(1, value) if isinstance(value, str) else float(value)
-        self._update_hue()
 
     @property
     def blue(self):
@@ -175,7 +141,6 @@ class _Display_P3(_ColorTools, _Color):
         """Adjust blue."""
 
         self._cb = self.tx_channel(2, value) if isinstance(value, str) else float(value)
-        self._update_hue()
 
     @classmethod
     def tx_channel(cls, channel, value):
