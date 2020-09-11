@@ -107,7 +107,7 @@ class _LCH(_ColorTools, _Color):
             coords2[2] = util.NAN
         self._cl = self._mix_channel(coords1[0], coords2[0], factor, factor2)
         self._cc = self._mix_channel(coords1[1], coords2[1], factor, factor2)
-        self._ch = self._hue_mix_channel(coords1[2], coords2[2], factor, factor2, scale=1.0)
+        self._ch = self._hue_mix_channel(coords1[2], coords2[2], factor, factor2)
 
     @property
     def lightness(self):
@@ -152,4 +152,4 @@ class _LCH(_ColorTools, _Color):
         if channel in (1, 0, -1):
             return float(value)
         elif channel == 2:
-            return parse.norm_deg_channel(value) * 360.0
+            return parse.norm_deg_channel(value)

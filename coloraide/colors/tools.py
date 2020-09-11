@@ -56,7 +56,7 @@ class _ColorTools:
 
         return abs(c2 * f1 + c1 * f2 * (1 - f1))
 
-    def _hue_mix_channel(self, c1, c2, f1, f2=1.0, scale=360.0):
+    def _hue_mix_channel(self, c1, c2, f1, f2=1.0):
         """Blend the hue style channel."""
 
         if math.isnan(c1) and math.isnan(c2):
@@ -65,9 +65,6 @@ class _ColorTools:
             return c2
         elif math.isnan(c2):
             return c1
-
-        c1 *= scale
-        c2 *= scale
 
         if abs(c1 % 360 - c2) > 180.0:
             if c1 < c2:
@@ -79,7 +76,7 @@ class _ColorTools:
         if not (0.0 <= value <= 360.0):
             value = value % 360.0
 
-        return value / scale
+        return value
 
     def luminance(self):
         """Get perceived luminance."""
@@ -105,6 +102,9 @@ class _ColorTools:
         if required_lum < 0:
             required_lum = target * (lum2 + 0.05) - 0.05
 
+        # Too much precision isn't helpful
+        required_lum = round(required_lum, 3)
+
         is_dark = lum2 < lum1
         mix = self.new(WHITE if is_dark else BLACK, "srgb")
         if is_dark:
@@ -120,8 +120,8 @@ class _ColorTools:
         temp = self.clone().convert("srgb")
         c1, c2, c3 = temp.coords()
 
-        while abs(min_mix - max_mix) > 0.001:
-            mid_mix = (max_mix + min_mix) / 2
+        while abs(min_mix - max_mix) >= 0.002:
+            mid_mix = round((max_mix + min_mix) / 2, 3)
 
             temp._mix([c1, c2, c3], mix.coords(), mid_mix)
             lum2 = temp.luminance()
@@ -131,10 +131,7 @@ class _ColorTools:
             else:
                 min_mix = mid_mix
 
-            if (
-                (is_dark and lum2 >= required_lum and lum2 < last_lum) or
-                (not is_dark and lum2 <= required_lum and lum2 > last_lum)
-            ):
+            if ((lum2 >= required_lum and lum2 < last_lum) if is_dark else (lum2 <= required_lum and lum2 > last_lum)):
                 last_lum = lum2
                 last_mix = mid_mix
 
@@ -199,7 +196,6 @@ class _ColorTools:
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
-
         self.mutate(this)
 
     def invert(self):

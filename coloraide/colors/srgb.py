@@ -45,8 +45,8 @@ class _SRGB(_ColorTools, _Color):
         """Update hue."""
 
         if not self.is_achromatic():
-            h = convert.rgb_to_hsv(self._cr, self._cg, self._cb)[0]
-            self._c4 = h if 0.0 <= h <= 1.0 else h % 1.0
+            h = convert.srgb_to_hsv(self._cr, self._cg, self._cb)[0]
+            self._c4 = h if 0.0 <= h <= 360.0 else h % 360.0
 
     def mutate(self, obj):
         """Update from color."""
@@ -110,7 +110,7 @@ class _SRGB(_ColorTools, _Color):
     def _ch(self, value):
         """Set hue channel."""
 
-        self._c4 = value if 0.0 <= value <= 1.0 else value % 1.0
+        self._c4 = value if 0.0 <= value <= 360.0 else value % 360.0
 
     def __str__(self):
         """String."""

@@ -495,11 +495,11 @@ class ColorMod:
         max_hwb = self._color.convert("hwb")
         max_hwb._ch = self._color._ch
         if lum1 < 0.5:
-            max_hwb.whiteness = 1.0
+            max_hwb.whiteness = 100.0
             max_hwb.blackness = 0.0
         else:
             max_hwb.whiteness = 0.0
-            max_hwb.blackness = 1.0
+            max_hwb.blackness = 100.0
 
         max_white = max_hwb.whiteness
         max_black = max_hwb.blackness
@@ -518,10 +518,10 @@ class ColorMod:
             while (abs(min_white - max_white) > 0.001 if lum1 < 0.5 else abs(min_black - max_black) > 0.001):
                 if lum1 < 0.5:
                     mid_white = (max_white + min_white) / 2
-                    mid_black = 1.0 - mid_white
+                    mid_black = 100.0 - mid_white
                 else:
                     mid_black = (max_black + min_black) / 2
-                    mid_white = 1.0 - mid_black
+                    mid_white = 100.0 - mid_black
 
                 min_hwb.whiteness = mid_white
                 min_hwb.blackness = mid_black

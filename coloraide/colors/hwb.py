@@ -49,7 +49,7 @@ class _HWB(_ColorTools, _Color):
     def _ch(self, value):
         """Set hue channel."""
 
-        self._c1 = value if 0.0 <= value <= 1.0 else value % 1.0
+        self._c1 = value if 0.0 <= value <= 360.0 else value % 360.0
 
     @property
     def _cw(self):
@@ -61,7 +61,7 @@ class _HWB(_ColorTools, _Color):
     def _cw(self, value):
         """Set whiteness channel."""
 
-        self._c2 = util.clamp(value, 0.0, 1.0)
+        self._c2 = util.clamp(value, 0.0, 100.0)
 
     @property
     def _cb(self):
@@ -73,7 +73,7 @@ class _HWB(_ColorTools, _Color):
     def _cb(self, value):
         """Set blackness channel."""
 
-        self._c3 = util.clamp(value, 0.0, 1.0)
+        self._c3 = util.clamp(value, 0.0, 100.0)
 
     def _grayscale(self):
         """Convert to grayscale."""
@@ -134,7 +134,7 @@ class _HWB(_ColorTools, _Color):
         """Translate channel string."""
 
         if channel == 0:
-            return parse.norm_deg_channel(value, 1.0)
+            return parse.norm_deg_channel(value)
         elif channel in (1, 2):
             return float(value)
         elif channel == -1:

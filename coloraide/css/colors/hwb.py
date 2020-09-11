@@ -49,9 +49,9 @@ class _HWB(generic._HWB):
         template = "hwb({}, {}%, {}%)" if comma else "hwb({} {}% {}%)"
 
         return template.format(
-            util.fmt_float(self._ch * 360.0, precision),
-            util.fmt_float(self._cw * 100.0, precision),
-            util.fmt_float(self._cb * 100.0, precision)
+            util.fmt_float(self._ch, precision),
+            util.fmt_float(self._cw, precision),
+            util.fmt_float(self._cb, precision)
         )
 
     def _get_hwba(self, *, comma=False, precision=util.DEF_PREC):
@@ -60,9 +60,9 @@ class _HWB(generic._HWB):
         template = "hwb({}, {}%, {}%, {})" if comma else "hwb({} {}% {}% / {})"
 
         return template.format(
-            util.fmt_float(self._ch * 360.0, precision),
-            util.fmt_float(self._cw * 100.0, precision),
-            util.fmt_float(self._cb * 100.0, precision),
+            util.fmt_float(self._ch, precision),
+            util.fmt_float(self._cw, precision),
+            util.fmt_float(self._cb, precision),
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 

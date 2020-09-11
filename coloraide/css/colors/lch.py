@@ -110,7 +110,7 @@ class _LCH(generic._LCH):
         elif channel == 1:
             return float(value)
         elif channel == 2:
-            return parse.norm_hue_channel(value) * 360.0
+            return parse.norm_hue_channel(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
 

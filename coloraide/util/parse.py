@@ -30,7 +30,7 @@ COLOR_PARTS = {
 def norm_percent_channel(value):
     """Normalize percent channel."""
 
-    return float(value.strip('%')) * SCALE_PERCENT
+    return float(value.strip('%'))
 
 
 def norm_rgb_channel(value):
@@ -89,15 +89,11 @@ def norm_hue_channel(value):
     return norm_deg_channel(angle)
 
 
-def norm_deg_channel(value, scale=360.0):
+def norm_deg_channel(value):
     """Normalize degree channel."""
 
     value = float(value)
-    value /= scale
-
-    if not (0.0 <= value <= 1.0):
-        value = value % 1.0
-    return value
+    return value if not (0.0 <= value <= 360) else value % 360.0
 
 
 def bracket_match(match, string, start, fullmatch):
