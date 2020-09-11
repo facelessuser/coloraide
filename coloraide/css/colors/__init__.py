@@ -7,11 +7,12 @@ from .lch import _LCH
 from ...colors import _HSV
 from ...colors import _Display_P3
 from ...colors import _A98_RGB
+from ...colors import _ProPhoto_RGB
 from ...matcher import color_fullmatch, color_match
 
-__all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH", "HSV", "Display_P3", "a98-rgb")
+__all__ = ("SRGB", "HSL", "HWB", "LAB", "LCH", "HSV", "Display_P3", "a98-rgb", "prophoto-rgb")
 
-SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3", "a98-rgb"})
+SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3", "a98-rgb", "prophoto-rgb"})
 
 CS_MAP = {}
 
@@ -64,7 +65,13 @@ class A98_RGB(_A98_RGB):
     spaces = CS_MAP
 
 
-SUPPORTED = (HSL, HWB, LAB, LCH, SRGB, HSV, Display_P3, A98_RGB)
+class ProPhoto_RGB(_ProPhoto_RGB):
+    """ProPhoto RGB color class."""
+
+    spaces = CS_MAP
+
+
+SUPPORTED = (HSL, HWB, LAB, LCH, SRGB, HSV, Display_P3, A98_RGB, ProPhoto_RGB)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
 

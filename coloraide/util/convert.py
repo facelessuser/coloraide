@@ -6,7 +6,7 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
-CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb")
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb")
 
 
 def mat_mul_vec(mat, vec):
@@ -70,6 +70,13 @@ def hsv_to_a98_rgb(h, s, v):
     return srgb_to_a98_rgb(*srgb)
 
 
+def hsv_to_prophoto_rgb(h, s, v):
+    """HSV to ProPhoto RGB."""
+
+    srgb = hsv_to_srgb(h, s, v)
+    return srgb_to_prophoto_rgb(*srgb)
+
+
 ############
 # SRGB
 ############
@@ -124,6 +131,13 @@ def srgb_to_a98_rgb(r, g, b):
     return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
 
 
+def srgb_to_prophoto_rgb(r, g, b):
+    """SRGB to ProPhoto RGB."""
+
+    xyz = d65_to_d50(lin_srgb_to_xyz(lin_srgb([r, g, b])))
+    return gam_prophoto(xyz_to_lin_prophoto(xyz))
+
+
 ############
 # Display P3
 ############
@@ -172,6 +186,13 @@ def display_p3_to_a98_rgb(r, g, b):
 
     xyz = lin_p3_to_xyz(lin_p3([r, g, b]))
     return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
+def display_p3_to_prophoto_rgb(r, g, b):
+    """Display P3 to ProPhoto RGB."""
+
+    xyz = d50_to_d65(lin_p3_to_xyz(lin_p3([r, g, b])))
+    return gam_prophoto(xyz_to_lin_prophoto(xyz))
 
 
 ############
@@ -224,6 +245,70 @@ def a98_rgb_to_display_p3(r, g, b):
     return gam_p3(xyz_to_lin_p3(xyz))
 
 
+def a98_rgb_to_prophoto_rgb(r, g, b):
+    """A98 RGB to ProPhoto RGB."""
+
+    xyz = d65_to_d50(lin_a98rgb_to_xyz(lin_a98rgb([r, g, b])))
+    return gam_prophoto(xyz_to_lin_prophoto(xyz))
+
+
+############
+# ProPhoto RGB
+############
+def prophoto_rgb_to_hsv(r, g, b):
+    """ProPhoto RGB to HSV."""
+
+    r, g, b = prophoto_rgb_to_srgb(r, g, b)
+    return rgb_to_hsv(r, g, b)
+
+
+def prophoto_rgb_to_srgb(r, g, b):
+    """ProPhoto RGB to SRGB."""
+
+    xyz = d50_to_d65(lin_prophoto_to_xyz(lin_prophoto([r, g, b])))
+    return gam_srgb(xyz_to_lin_srgb(xyz))
+
+
+def prophoto_rgb_to_hsl(r, g, b):
+    """ProPhoto RGB to HSL."""
+
+    return srgb_to_hsl(*prophoto_rgb_to_srgb(r, g, b))
+
+
+def prophoto_rgb_to_hwb(r, g, b):
+    """ProPhoto RGB to HWB."""
+
+    return srgb_to_hwb(prophoto_rgb_to_srgb(r, g, b))
+
+
+def prophoto_rgb_to_lab(r, g, b):
+    """ProPhoto RGB to LAB."""
+
+    prgb = lin_prophoto([r, g, b])
+    x, y, z = lin_prophoto_to_xyz(prgb)
+    return xyz_to_lab(x, y, z)
+
+
+def prophoto_rgb_to_lch(r, g, b):
+    """ProPhoto RGB to LCH."""
+
+    return lab_to_lch(*prophoto_rgb_to_lab(r, g, b))
+
+
+def prophoto_rgb_to_display_p3(r, g, b):
+    """ProPhoto RGB to SRGB."""
+
+    xyz = d50_to_d65(lin_prophoto_to_xyz(lin_prophoto([r, g, b])))
+    return gam_p3(xyz_to_lin_p3(xyz))
+
+
+def prophoto_rgb_to_a98_rgb(r, g, b):
+    """ProPhoto RGB to A98 RGB."""
+
+    xyz = d50_to_d65(lin_prophoto_to_xyz(lin_prophoto([r, g, b])))
+    return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
 ############
 # HSL
 ############
@@ -272,6 +357,13 @@ def hsl_to_a98_rgb(h, s, l):
     return srgb_to_a98_rgb(*srgb)
 
 
+def hsl_to_prophoto_rgb(h, s, l):
+    """HSL to ProPhoto RGB."""
+
+    srgb = hsl_to_srgb(h, s, l)
+    return srgb_to_prophoto_rgb(*srgb)
+
+
 ############
 # HWB
 ############
@@ -318,6 +410,13 @@ def hwb_to_a98_rgb(h, w, b):
 
     srgb = hwb_to_srgb(h, w, b)
     return srgb_to_a98_rgb(*srgb)
+
+
+def hwb_to_prophoto_rgb(h, w, b):
+    """HWB to ProPhoto RGB."""
+
+    srgb = hwb_to_srgb(h, w, b)
+    return srgb_to_prophoto_rgb(*srgb)
 
 
 ############
@@ -375,6 +474,14 @@ def lab_to_a98_rgb(l, a, b):
     return gam_a98rgb(prgb)
 
 
+def lab_to_prophoto_rgb(l, a, b):
+    """LAB to ProPhoto RGB."""
+
+    xyz = lab_to_xyz(l, a, b)
+    prgb = xyz_to_lin_prophoto(xyz)
+    return gam_prophoto(prgb)
+
+
 ############
 # LCH
 ############
@@ -419,9 +526,15 @@ def lch_to_display_p3(l, c, h):
 
 
 def lch_to_a98_rgb(l, c, h):
-    """LCH to Display P3."""
+    """LCH to A98 RGB."""
 
     return lab_to_a98_rgb(*lch_to_lab(l, c, h))
+
+
+def lch_to_prophoto_rgb(l, c, h):
+    """LCH to ProPhoto RGB."""
+
+    return lab_to_prophoto_rgb(*lch_to_lab(l, c, h))
 
 
 ############
@@ -555,20 +668,9 @@ def xyz_to_lin_p3(xyz):
     return mat_mul_vec(m, xyz)
 
 
-def lin_a98rgb(rgb):
-    """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
-
-    return [math.pow(val, 563 / 256) for val in rgb]
-
-
-def gam_a98rgb(rgb):
-    """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
-
-    return [math.pow(val, 256 / 563) for val in rgb]
-
-
 def lin_a98rgb_to_xyz(rgb):
-    """Convert an array of linear-light a98-rgb values to CIE XYZ using D50.D65.
+    """
+    Convert an array of linear-light a98-rgb values to CIE XYZ using D50.D65.
 
     (so no chromatic adaptation needed afterwards)
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
@@ -595,6 +697,67 @@ def xyz_to_lin_a98rgb(xyz):
     ]
 
     return mat_mul_vec(m, xyz)
+
+
+def lin_prophoto_to_xyz(rgb):
+    """
+    Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.D50.
+
+    (so no chromatic adaptation needed afterwards)
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    """
+
+    m = [
+        [0.7977604896723027, 0.13518583717574031, 0.0313493495815248],
+        [0.2880711282292934, 0.7118432178101014, 0.00008565396060525902],
+        [0.0, 0.0, 0.8251046025104601]
+    ]
+
+    return mat_mul_vec(m, rgb)
+
+
+def xyz_to_lin_prophoto(xyz):
+    """Convert XYZ to linear-light prophoto-rgb."""
+
+    m = [
+        [1.3457989731028281, -0.25558010007997534, -0.05110628506753401],
+        [-0.5446224939028347, 1.5082327413132781, 0.02053603239147973],
+        [0.0, 0.0, 1.2119675456389454]
+    ]
+
+    return mat_mul_vec(m, xyz)
+
+
+def lin_prophoto(rgb):
+    """
+    Convert an array of prophoto-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form.
+
+    Transfer curve is gamma 1.8 with a small linear portion.
+    """
+
+    return [c / 16 if c < 0.031248 else math.pow(c, 1.8) for c in rgb]
+
+
+def gam_prophoto(rgb):
+    """
+    Convert an array of linear-light prophoto-rgb  in the range 0.0-1.0 to gamma corrected form.
+
+    Transfer curve is gamma 1.8 with a small linear portion.
+    """
+
+    return [math.pow(c, 1 / 1.8) if c > 0.001953 else 16 * c for c in rgb]
+
+
+def lin_a98rgb(rgb):
+    """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
+
+    return [math.pow(val, 563 / 256) for val in rgb]
+
+
+def gam_a98rgb(rgb):
+    """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
+
+    return [math.pow(val, 256 / 563) for val in rgb]
 
 
 def lin_p3(rgb):

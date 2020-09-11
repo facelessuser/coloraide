@@ -16,6 +16,7 @@ MERCHANTABILITY
 Matcher
 MkDocs
 NONINFRINGEMENT
+ProPhoto
 RGB
 SRGB
 TODO
@@ -28,6 +29,7 @@ luminance
 pre
 prerelease
 prereleases
+prophoto
 rgb
 sRGB
 sRGB's
