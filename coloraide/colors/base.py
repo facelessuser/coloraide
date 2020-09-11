@@ -15,8 +15,11 @@ def split_channels(cls, color):
 
     channels = []
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color.strip()), 0):
-        channels.append(float(c))
-    if len(channels) == 3:
+        if i < cls.NUM_CHANNELS:
+            channels.append(float(c))
+        elif i == cls.NUM_CHANNELS:
+            channels.append(parse.norm_alpha_channel(c))
+    if len(channels) == cls.NUM_CHANNELS:
         channels.append(1.0)
     return channels
 
@@ -65,6 +68,7 @@ class _Color:
 
     DEF_BG = ""
     SPACE = ""
+    NUM_CHANNELS = 3
 
     def __init__(self, color=None):
         """Initialize."""

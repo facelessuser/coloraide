@@ -28,6 +28,7 @@ luminance
 pre
 prerelease
 prereleases
+rgb
 sRGB
 sRGB's
 sublicense

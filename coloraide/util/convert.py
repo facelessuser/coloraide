@@ -6,7 +6,7 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
-CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3")
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb")
 
 
 def mat_mul_vec(mat, vec):
@@ -63,6 +63,13 @@ def hsv_to_display_p3(h, s, v):
     return srgb_to_display_p3(*srgb)
 
 
+def hsv_to_a98_rgb(h, s, v):
+    """HSV to A98 RGB."""
+
+    srgb = hsv_to_srgb(h, s, v)
+    return srgb_to_a98_rgb(*srgb)
+
+
 ############
 # SRGB
 ############
@@ -110,6 +117,13 @@ def srgb_to_display_p3(r, g, b):
     return gam_p3(xyz_to_lin_p3(xyz))
 
 
+def srgb_to_a98_rgb(r, g, b):
+    """SRGB to A98 RGB."""
+
+    xyz = lin_srgb_to_xyz(lin_srgb([r, g, b]))
+    return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
 ############
 # Display P3
 ############
@@ -153,6 +167,63 @@ def display_p3_to_lch(r, g, b):
     return lab_to_lch(*display_p3_to_lab(r, g, b))
 
 
+def display_p3_to_a98_rgb(r, g, b):
+    """Display P3 to A98 RGB."""
+
+    xyz = lin_p3_to_xyz(lin_p3([r, g, b]))
+    return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
+############
+# A98 RGB
+############
+def a98_rgb_to_hsv(r, g, b):
+    """A98 RGB to HSV."""
+
+    r, g, b = a98_rgb_to_srgb(r, g, b)
+    return rgb_to_hsv(r, g, b)
+
+
+def a98_rgb_to_srgb(r, g, b):
+    """A98 RGB to SRGB."""
+
+    xyz = lin_a98rgb_to_xyz(lin_a98rgb([r, g, b]))
+    return gam_srgb(xyz_to_lin_srgb(xyz))
+
+
+def a98_rgb_to_hsl(r, g, b):
+    """A98 RGB to HSL."""
+
+    return srgb_to_hsl(*a98_rgb_to_srgb(r, g, b))
+
+
+def a98_rgb_to_hwb(r, g, b):
+    """A98 RGB to HWB."""
+
+    return srgb_to_hwb(a98_rgb_to_srgb(r, g, b))
+
+
+def a98_rgb_to_lab(r, g, b):
+    """A98 RGB to LAB."""
+
+    prgb = lin_a98rgb([r, g, b])
+    x, y, z = d65_to_d50(lin_a98rgb_to_xyz(prgb))
+    return xyz_to_lab(x, y, z)
+
+
+def a98_rgb_to_lch(r, g, b):
+    """A98 RGB to LCH."""
+
+    return lab_to_lch(*a98_rgb_to_lab(r, g, b))
+
+
+def a98_rgb_to_display_p3(r, g, b):
+    """A98 RGB to SRGB."""
+
+    xyz = lin_a98rgb_to_xyz(lin_a98rgb([r, g, b]))
+    return gam_p3(xyz_to_lin_p3(xyz))
+
+
 ############
 # HSL
 ############
@@ -194,6 +265,13 @@ def hsl_to_display_p3(h, s, l):
     return srgb_to_display_p3(*srgb)
 
 
+def hsl_to_a98_rgb(h, s, l):
+    """HSL to A98 RGB."""
+
+    srgb = hsl_to_srgb(h, s, l)
+    return srgb_to_a98_rgb(*srgb)
+
+
 ############
 # HWB
 ############
@@ -233,6 +311,13 @@ def hwb_to_display_p3(h, w, b):
 
     srgb = hwb_to_srgb(h, w, b)
     return srgb_to_display_p3(*srgb)
+
+
+def hwb_to_a98_rgb(h, w, b):
+    """HWB to A98 RGB."""
+
+    srgb = hwb_to_srgb(h, w, b)
+    return srgb_to_a98_rgb(*srgb)
 
 
 ############
@@ -282,6 +367,14 @@ def lab_to_display_p3(l, a, b):
     return gam_p3(prgb)
 
 
+def lab_to_a98_rgb(l, a, b):
+    """LAB to A98 RGB."""
+
+    xyz = d50_to_d65(lab_to_xyz(l, a, b))
+    prgb = xyz_to_lin_a98rgb(xyz)
+    return gam_a98rgb(prgb)
+
+
 ############
 # LCH
 ############
@@ -323,6 +416,12 @@ def lch_to_display_p3(l, c, h):
     """LCH to Display P3."""
 
     return lab_to_display_p3(*lch_to_lab(l, c, h))
+
+
+def lch_to_a98_rgb(l, c, h):
+    """LCH to Display P3."""
+
+    return lab_to_a98_rgb(*lch_to_lab(l, c, h))
 
 
 ############
@@ -451,6 +550,48 @@ def xyz_to_lin_p3(xyz):
         [2.493496911941425, -0.9313836179191239, -0.40271078445071684],
         [-0.8294889695615747, 1.7626640603183463, 0.023624685841943577],
         [0.03584583024378447, -0.07617238926804182, 0.9568845240076872]
+    ]
+
+    return mat_mul_vec(m, xyz)
+
+
+def lin_a98rgb(rgb):
+    """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
+
+    return [math.pow(val, 563 / 256) for val in rgb]
+
+
+def gam_a98rgb(rgb):
+    """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
+
+    return [math.pow(val, 256 / 563) for val in rgb]
+
+
+def lin_a98rgb_to_xyz(rgb):
+    """Convert an array of linear-light a98-rgb values to CIE XYZ using D50.D65.
+
+    (so no chromatic adaptation needed afterwards)
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    which has greater numerical precision than section 4.3.5.3 of
+    https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
+    """
+
+    m = [
+        [0.5766690429101305, 0.1855582379065463, 0.1882286462349947],
+        [0.29734497525053605, 0.6273635662554661, 0.07529145849399788],
+        [0.02703136138641234, 0.07068885253582723, 0.9913375368376388]
+    ]
+
+    return mat_mul_vec(m, rgb)
+
+
+def xyz_to_lin_a98rgb(xyz):
+    """Convert XYZ to linear-light a98-rgb."""
+
+    m = [
+        [2.0415879038107465, -0.5650069742788596, -0.34473135077832956],
+        [-0.9692436362808795, 1.8759675015077202, 0.04155505740717557],
+        [0.013444280632031142, -0.11836239223101838, 1.0151749943912054]
     ]
 
     return mat_mul_vec(m, xyz)

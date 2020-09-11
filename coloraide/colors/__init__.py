@@ -6,11 +6,12 @@ from .hwb import _HWB
 from .lab import _LAB
 from .lch import _LCH
 from .display_p3 import _Display_P3
+from .a98_rgb import _A98_RGB
 from ..matcher import color_match, color_fullmatch
 
-__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH", "Display_P3")
+__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH", "Display_P3", "a98-rgb")
 
-SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3"})
+SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3", "a98-rgb"})
 
 CS_MAP = {}
 
@@ -57,7 +58,13 @@ class Display_P3(_Display_P3):
     spaces = CS_MAP
 
 
-SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB, Display_P3)
+class A98_RGB(_A98_RGB):
+    """A98 RGB color class."""
+
+    spaces = CS_MAP
+
+
+SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB, Display_P3, A98_RGB)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
 
