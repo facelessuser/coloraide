@@ -6,7 +6,7 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
-CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb")
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb", "rec-2020")
 
 
 def mat_mul_vec(mat, vec):
@@ -77,6 +77,13 @@ def hsv_to_prophoto_rgb(h, s, v):
     return srgb_to_prophoto_rgb(*srgb)
 
 
+def hsv_to_rec_2020(h, s, v):
+    """HSV to ProPhoto RGB."""
+
+    srgb = hsv_to_srgb(h, s, v)
+    return srgb_to_rec_2020(*srgb)
+
+
 ############
 # SRGB
 ############
@@ -138,6 +145,13 @@ def srgb_to_prophoto_rgb(r, g, b):
     return gam_prophoto(xyz_to_lin_prophoto(xyz))
 
 
+def srgb_to_rec_2020(r, g, b):
+    """SRGB to Rec 2020."""
+
+    xyz = lin_srgb_to_xyz(lin_srgb([r, g, b]))
+    return gam_2020(xyz_to_lin_2020(xyz))
+
+
 ############
 # Display P3
 ############
@@ -195,6 +209,13 @@ def display_p3_to_prophoto_rgb(r, g, b):
     return gam_prophoto(xyz_to_lin_prophoto(xyz))
 
 
+def display_p3_to_rec_2020(r, g, b):
+    """Display P3 to Rec 2020."""
+
+    xyz = lin_p3_to_xyz(lin_p3([r, g, b]))
+    return gam_2020(xyz_to_lin_2020(xyz))
+
+
 ############
 # A98 RGB
 ############
@@ -227,8 +248,8 @@ def a98_rgb_to_hwb(r, g, b):
 def a98_rgb_to_lab(r, g, b):
     """A98 RGB to LAB."""
 
-    prgb = lin_a98rgb([r, g, b])
-    x, y, z = d65_to_d50(lin_a98rgb_to_xyz(prgb))
+    a98 = lin_a98rgb([r, g, b])
+    x, y, z = d65_to_d50(lin_a98rgb_to_xyz(a98))
     return xyz_to_lab(x, y, z)
 
 
@@ -250,6 +271,13 @@ def a98_rgb_to_prophoto_rgb(r, g, b):
 
     xyz = d65_to_d50(lin_a98rgb_to_xyz(lin_a98rgb([r, g, b])))
     return gam_prophoto(xyz_to_lin_prophoto(xyz))
+
+
+def a98_rgb_to_rec_2020(r, g, b):
+    """A98 RGB to Rec 2020."""
+
+    xyz = lin_a98rgb_to_xyz(lin_a98rgb([r, g, b]))
+    return gam_2020(xyz_to_lin_2020(xyz))
 
 
 ############
@@ -284,8 +312,8 @@ def prophoto_rgb_to_hwb(r, g, b):
 def prophoto_rgb_to_lab(r, g, b):
     """ProPhoto RGB to LAB."""
 
-    prgb = lin_prophoto([r, g, b])
-    x, y, z = lin_prophoto_to_xyz(prgb)
+    pro = lin_prophoto([r, g, b])
+    x, y, z = lin_prophoto_to_xyz(pro)
     return xyz_to_lab(x, y, z)
 
 
@@ -307,6 +335,77 @@ def prophoto_rgb_to_a98_rgb(r, g, b):
 
     xyz = d50_to_d65(lin_prophoto_to_xyz(lin_prophoto([r, g, b])))
     return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
+def prophoto_rgb_to_rec_2020(r, g, b):
+    """ProPhoto RGB to Rec 2020."""
+
+    xyz = d50_to_d65(lin_prophoto_to_xyz(lin_prophoto([r, g, b])))
+    return gam_2020(xyz_to_lin_2020(xyz))
+
+
+############
+# Rec 2020
+############
+def rec_2020_to_hsv(r, g, b):
+    """Rec 2020 to HSV."""
+
+    r, g, b = rec_2020_to_srgb(r, g, b)
+    return rgb_to_hsv(r, g, b)
+
+
+def rec_2020_to_srgb(r, g, b):
+    """Rec 2020 to SRGB."""
+
+    xyz = lin_2020_to_xyz(lin_2020([r, g, b]))
+    return gam_srgb(xyz_to_lin_srgb(xyz))
+
+
+def rec_2020_to_hsl(r, g, b):
+    """Rec 2020 to HSL."""
+
+    return srgb_to_hsl(*rec_2020_to_srgb(r, g, b))
+
+
+def rec_2020_to_hwb(r, g, b):
+    """Rec 2020 to HWB."""
+
+    return srgb_to_hwb(rec_2020_to_srgb(r, g, b))
+
+
+def rec_2020_to_lab(r, g, b):
+    """Rec 2020 to LAB."""
+
+    rec = lin_2020([r, g, b])
+    x, y, z = d65_to_d50(lin_2020_to_xyz(rec))
+    return xyz_to_lab(x, y, z)
+
+
+def rec_2020_to_lch(r, g, b):
+    """Rec 2020 to LCH."""
+
+    return lab_to_lch(*rec_2020_to_lab(r, g, b))
+
+
+def rec_2020_to_display_p3(r, g, b):
+    """Rec 2020 to SRGB."""
+
+    xyz = lin_2020_to_xyz(lin_2020([r, g, b]))
+    return gam_p3(xyz_to_lin_p3(xyz))
+
+
+def rec_2020_to_a98_rgb(r, g, b):
+    """Rec 2020 to A98 RGB."""
+
+    xyz = lin_2020_to_xyz(lin_2020([r, g, b]))
+    return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+
+
+def rec_2020_to_prophoto_rgb(r, g, b):
+    """Rec 2020 to ProPhoto RGB."""
+
+    xyz = d65_to_d50(lin_2020_to_xyz(lin_2020([r, g, b])))
+    return gam_prophoto(xyz_to_lin_prophoto(xyz))
 
 
 ############
@@ -364,6 +463,13 @@ def hsl_to_prophoto_rgb(h, s, l):
     return srgb_to_prophoto_rgb(*srgb)
 
 
+def hsl_to_rec_2020(h, s, l):
+    """HSL to Rec 2020."""
+
+    srgb = hsl_to_srgb(h, s, l)
+    return srgb_to_rec_2020(*srgb)
+
+
 ############
 # HWB
 ############
@@ -417,6 +523,13 @@ def hwb_to_prophoto_rgb(h, w, b):
 
     srgb = hwb_to_srgb(h, w, b)
     return srgb_to_prophoto_rgb(*srgb)
+
+
+def hwb_to_rec_2020(h, w, b):
+    """HWB to Rec 2020."""
+
+    srgb = hwb_to_srgb(h, w, b)
+    return srgb_to_rec_2020(*srgb)
 
 
 ############
@@ -482,6 +595,14 @@ def lab_to_prophoto_rgb(l, a, b):
     return gam_prophoto(prgb)
 
 
+def lab_to_rec_2020(l, a, b):
+    """LAB to Rec 2020."""
+
+    xyz = d50_to_d65(lab_to_xyz(l, a, b))
+    prgb = xyz_to_lin_2020(xyz)
+    return gam_2020(prgb)
+
+
 ############
 # LCH
 ############
@@ -535,6 +656,12 @@ def lch_to_prophoto_rgb(l, c, h):
     """LCH to ProPhoto RGB."""
 
     return lab_to_prophoto_rgb(*lch_to_lab(l, c, h))
+
+
+def lch_to_rec_2020(l, c, h):
+    """LCH to Rec 2020."""
+
+    return lab_to_rec_2020(*lch_to_lab(l, c, h))
 
 
 ############
@@ -726,6 +853,54 @@ def xyz_to_lin_prophoto(xyz):
     ]
 
     return mat_mul_vec(m, xyz)
+
+
+def lin_2020_to_xyz(rgb):
+    """
+    Convert an array of linear-light rec-2020 values to CIE XYZ using  D65.
+
+    (no chromatic adaptation)
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    """
+
+    m = [
+        [0.6369580483012914, 0.14461690358620832, 0.1688809751641721],
+        [0.2627002120112671, 0.6779980715188708, 0.05930171646986196],
+        [0.000000000000000, 0.028072693049087428, 1.060985057710791]
+    ]
+
+    # 0 is actually calculated as 4.994106574466076e-17
+    return mat_mul_vec(m, rgb)
+
+
+def xyz_to_lin_2020(xyz):
+    """Convert XYZ to linear-light rec-2020."""
+
+    m = [
+        [1.7166511879712674, -0.35567078377639233, -0.25336628137365974],
+        [-0.6666843518324892, 1.6164812366349395, 0.01576854581391113],
+        [0.017639857445310783, -0.042770613257808524, 0.9421031212354738]
+    ]
+
+    return mat_mul_vec(m, xyz)
+
+
+def lin_2020(rgb):
+    """Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
+
+    alpha = 1.09929682680944
+    beta = 0.018053968510807
+
+    return [c / 4.5 if c < beta * 4.5 else math.pow((c + alpha - 1) / alpha, 2.4) for c in rgb]
+
+
+def gam_2020(rgb):
+    """Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form."""
+
+    alpha = 1.09929682680944
+    beta = 0.018053968510807
+
+    return [alpha * math.pow(c, 1 / 2.4) - (alpha - 1) if c > beta else 4.5 * c for c in rgb]
 
 
 def lin_prophoto(rgb):
