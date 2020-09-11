@@ -6,7 +6,7 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
-CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv")
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3")
 
 
 def mat_mul_vec(mat, vec):
@@ -56,25 +56,32 @@ def hsv_to_lch(h, s, v):
     return srgb_to_lch(*hsv_to_srgb(h, s, v))
 
 
+def hsv_to_display_p3(h, s, v):
+    """HSV to Display P3."""
+
+    srgb = hsv_to_srgb(h, s, v)
+    return srgb_to_display_p3(*srgb)
+
+
 ############
 # SRGB
 ############
 def srgb_to_hsv(r, g, b):
-    """RGB to HSV."""
+    """SRGB to HSV."""
 
     h, s, v = rgb_to_hsv(r, g, b)
     return h * 360.0, s * 100.0, v * 100.0
 
 
 def srgb_to_hsl(r, g, b):
-    """RGB to HSL."""
+    """SRGB to HSL."""
 
     h, l, s = rgb_to_hls(r, g, b)
     return h * 360.0, s * 100.0, l * 100.0
 
 
 def srgb_to_hwb(r, g, b):
-    """RGB to HWB."""
+    """SRGB to HWB."""
 
     h, s, v = srgb_to_hsv(r, g, b)
     w = v * (100.0 - s) / 100.0
@@ -83,7 +90,7 @@ def srgb_to_hwb(r, g, b):
 
 
 def srgb_to_lab(r, g, b):
-    """RGB to LAB."""
+    """SRGB to LAB."""
 
     srgb = lin_srgb([r, g, b])
     x, y, z = d65_to_d50(lin_srgb_to_xyz(srgb))
@@ -91,9 +98,59 @@ def srgb_to_lab(r, g, b):
 
 
 def srgb_to_lch(r, g, b):
-    """RGB to LCH."""
+    """SRGB to LCH."""
 
     return lab_to_lch(*srgb_to_lab(r, g, b))
+
+
+def srgb_to_display_p3(r, g, b):
+    """SRGB to Display P3."""
+
+    xyz = lin_srgb_to_xyz(lin_srgb([r, g, b]))
+    return gam_p3(xyz_to_lin_p3(xyz))
+
+
+############
+# Display P3
+############
+def display_p3_to_hsv(r, g, b):
+    """Display P3 to HSV."""
+
+    r, g, b = display_p3_to_srgb(r, g, b)
+    return rgb_to_hsv(r, g, b)
+
+
+def display_p3_to_srgb(r, g, b):
+    """Display P3 to SRGB."""
+
+    xyz = lin_p3_to_xyz(lin_p3([r, g, b]))
+    return gam_srgb(xyz_to_lin_srgb(xyz))
+
+
+def display_p3_to_hsl(r, g, b):
+    """Display P3 to HSL."""
+
+    return srgb_to_hsl(*display_p3_to_srgb(r, g, b))
+
+
+def display_p3_to_hwb(r, g, b):
+    """Display P3 to HWB."""
+
+    return srgb_to_hwb(display_p3_to_srgb(r, g, b))
+
+
+def display_p3_to_lab(r, g, b):
+    """Display P3 to LAB."""
+
+    prgb = lin_p3([r, g, b])
+    x, y, z = d65_to_d50(lin_p3_to_xyz(prgb))
+    return xyz_to_lab(x, y, z)
+
+
+def display_p3_to_lch(r, g, b):
+    """Display P3 to LCH."""
+
+    return lab_to_lch(*display_p3_to_lab(r, g, b))
 
 
 ############
@@ -130,6 +187,13 @@ def hsl_to_lch(h, s, l):
     return lab_to_lch(*srgb_to_lab(*hsl_to_srgb(h, s, l)))
 
 
+def hsl_to_display_p3(h, s, l):
+    """HSL to Display P3."""
+
+    srgb = hsl_to_srgb(h, s, l)
+    return srgb_to_display_p3(*srgb)
+
+
 ############
 # HWB
 ############
@@ -162,6 +226,13 @@ def hwb_to_lch(h, w, b):
     """HWB to LCH."""
 
     return lab_to_lch(*srgb_to_lab(*hwb_to_srgb(h, w, b)))
+
+
+def hwb_to_display_p3(h, w, b):
+    """HWB to Display P3."""
+
+    srgb = hwb_to_srgb(h, w, b)
+    return srgb_to_display_p3(*srgb)
 
 
 ############
@@ -203,6 +274,14 @@ def lab_to_lch(l, a, b):
     )
 
 
+def lab_to_display_p3(l, a, b):
+    """LAB to Display P3."""
+
+    xyz = d50_to_d65(lab_to_xyz(l, a, b))
+    prgb = xyz_to_lin_p3(xyz)
+    return gam_p3(srgb)
+
+
 ############
 # LCH
 ############
@@ -238,6 +317,12 @@ def lch_to_lab(l, c, h):
         c * math.cos(h * math.pi / 180.0),
         c * math.sin(h * math.pi / 180.0)
     )
+
+
+def lch_to_display_p3(l, c, h):
+    """LCH to Display P3."""
+
+    return lab_to_display_p3(*lch_to_lab(l, c, h))
 
 
 ############
@@ -342,6 +427,46 @@ def xyz_to_lin_srgb(xyz):
     return mat_mul_vec(m, xyz)
 
 
+def lin_p3_to_xyz(rgb):
+    """
+    Convert an array of linear-light image-p3 values to CIE XYZ using  D65 (no chromatic adaptation).
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    """
+
+    m = [
+        [0.4865709486482162, 0.26566769316909306, 0.1982172852343625],
+        [0.2289745640697488, 0.6917385218365064, 0.079286914093745],
+        [0.0000000000000000, 0.04511338185890264, 1.043944368900976]
+    ]
+
+    # 0 was computed as -3.972075516933488e-17
+    return mat_mul_vec(m, rgb)
+
+
+def xyz_to_lin_p3(xyz):
+    """convert XYZ to linear-light P3."""
+
+    m = [
+        [2.493496911941425, -0.9313836179191239, -0.40271078445071684],
+        [-0.8294889695615747, 1.7626640603183463, 0.023624685841943577],
+        [0.03584583024378447, -0.07617238926804182, 0.9568845240076872]
+    ]
+
+    return mat_mul_vec(m, xyz)
+
+
+def lin_p3(rgb):
+    """Convert an array of image-p3 RGB values in the range 0.0 - 1.0 to linear light (un-companded) form."""
+
+    return lin_srgb(rgb);  # same as sRGB
+
+
+def gam_p3(rgb):
+    """Convert an array of linear-light image-p3 RGB  in the range 0.0-1.0 to gamma corrected form."""
+
+    return gam_srgb(rgb);  # same as sRGB
+
+
 def lin_srgb(rgb):
     """
     Convert an array of sRGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
@@ -365,6 +490,8 @@ def gam_srgb(rgb):
 def convert(coords, current, wanted):
     """Convert."""
 
+    current = current.lower()
+    wanted = wanted.lower()
     if current not in CONVERT_SPACES:
         raise ValueError("'{}' is not a supported color space for conversion".format(current))
     elif wanted not in CONVERT_SPACES:
@@ -373,4 +500,4 @@ def convert(coords, current, wanted):
     if current == wanted:
         return coords
 
-    return globals()['{}_to_{}'.format(current, wanted)](*coords)
+    return globals()['{}_to_{}'.format(current.replace('-', '_'), wanted.replace('-', '_'))](*coords)

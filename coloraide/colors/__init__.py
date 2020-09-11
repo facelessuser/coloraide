@@ -5,11 +5,12 @@ from .hsl import _HSL
 from .hwb import _HWB
 from .lab import _LAB
 from .lch import _LCH
+from .display_p3 import _Display_P3
 from ..matcher import color_match, color_fullmatch
 
-__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH")
+__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH", "Display_P3")
 
-SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab"})
+SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3"})
 
 CS_MAP = {}
 
@@ -49,8 +50,13 @@ class LCH(_LCH):
 
     spaces = CS_MAP
 
+class Display_P3(_Display_P3):
+    """Display-p3 color class."""
 
-SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB)
+    spaces = CS_MAP
+
+
+SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB, Display_P3)
 for obj in SUPPORTED:
     CS_MAP[obj.space()] = obj
 
