@@ -47,6 +47,12 @@ class _HSL(_ColorTools, _Color):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
+    def _is_achromatic(self, channels):
+        """Is achromatic."""
+
+        h, s, l = self.coords()
+        return s < util.ZERO_POINT 
+
     @property
     def _ch(self):
         """Hue channel."""

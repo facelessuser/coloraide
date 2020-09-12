@@ -54,10 +54,12 @@ class _Gamut:
             c = self.convert(space)
             c.fit_gamut(method=method)
             self.mutate(c)
+            self._on_convert()
         else:
             fit = method(self)
             for i in range(len(fit)):
                 self._channels[i] = fit[i]
+            self._on_convert()
 
     def in_gamut(self, space=None):
         """Check if current color is in gamut."""

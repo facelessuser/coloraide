@@ -46,6 +46,12 @@ class _LAB(_ColorTools, _Color):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
+    def _is_achromatic(self, channels):
+        """Is achromatic."""
+
+        l, a, b = self.coords()
+        return (abs(a) + abs(b)) < util.ZERO_POINT
+
     @property
     def _cl(self):
         """Hue channel."""

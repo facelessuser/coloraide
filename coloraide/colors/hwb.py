@@ -47,6 +47,12 @@ class _HWB(_ColorTools, _Color):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
+    def _is_achromatic(self, channels):
+        """Is achromatic."""
+
+        h, w, b = self.coords()
+        return (w + b) > (100.0 - util.ZERO_POINT)
+
     @property
     def _ch(self):
         """Hue channel."""

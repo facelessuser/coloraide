@@ -53,7 +53,9 @@ class _Color:
         obj = self.spaces.get(space.lower())
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
-        return obj(self)
+        result = obj(self)
+        result._on_convert()
+        return result
 
     def new(self, value, space=None):
         """Create new color in color space."""
@@ -65,6 +67,13 @@ class _Color:
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
         return obj(value)
+
+    def _on_convert(self):
+        """
+        Run after a convert opiton.
+
+        Gives us an oportunity to normalize hues and things like that.
+        """
 
     @property
     def _alpha(self):
@@ -88,6 +97,7 @@ class _Color:
         """Update from color."""
 
         if self is obj:
+            self._on_convert()
             return
 
         if not isinstance(obj, type(self)):
@@ -96,6 +106,7 @@ class _Color:
         for i, value in enumerate(obj._channels):
             self._channels[i] = value
         self._alpha = obj._alpha
+        self._on_convert()
 
     @property
     def alpha(self):

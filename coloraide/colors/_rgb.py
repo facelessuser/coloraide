@@ -3,6 +3,7 @@ from ._base import _Color
 from ._tools import _ColorTools, GamutBound
 from ..util import parse
 from ..util import convert
+from .. import util
 
 
 class _RGBColor(_ColorTools, _Color):
@@ -36,6 +37,14 @@ class _RGBColor(_ColorTools, _Color):
             self._alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
+
+    def _is_achromatic(self, channels):
+        """Is achromatic."""
+
+        r, g, b = self.coords()
+        less = min(r, min(g, b))
+        more = max(r, max(g, b))
+        return abs(more - less) < util.ZERO_POINT 
 
     @property
     def _cr(self):

@@ -1,5 +1,5 @@
 """Color tools."""
-from ._gamut import _Gamut, GamutBound, GamutUnbound, GamutHue  # noqa: F401
+from ._gamut import _Gamut, GamutBound, GamutUnbound, GamutHue, gamut_clip  # noqa: F401
 from .. import util
 from ..util import convert
 import math
@@ -29,21 +29,6 @@ class _ColorTools(_Gamut):
         """Check if the color is achromatic."""
 
         return self._is_achromatic(self._channels)
-
-    def _is_achromatic(self, channels):
-        """
-        Is achromatic.
-
-        A consistent way to come up with a way to check achromatic. This basically
-        uses the Lab color space to do the check. The idea came from: https://github.com/LeaVerou/color.js.
-
-        It isn't exactly perfect, but technically no way is when converting a color across different spaces.
-        With this approach, Lab is bigger than RGB based color spaces, so there will be no clipping.
-        It is reasonably close though.
-        """
-
-        a, b = convert.convert(channels, self.space(), "lab")[1:]
-        return abs(a) < util.ZERO_POINT and abs(b) < util.ZERO_POINT
 
     def _mix_channel(self, c1, c2, f1, f2=1.0):
         """

@@ -47,6 +47,12 @@ class _LCH(_ColorTools, _Color):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
+    def _is_achromatic(self, channels):
+        """Is achromatic."""
+
+        l, c, h = self.coords()
+        return c < util.ZERO_POINT
+
     @property
     def _cl(self):
         """Lightness channel."""
