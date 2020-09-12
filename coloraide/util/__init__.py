@@ -5,7 +5,7 @@ import re
 
 __all__ = ("clamp", "fmt_float", "NAN", "ZERO_POINT")
 
-RE_FLOAT_TRIM = re.compile(r'^(?P<keep>\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
+RE_FLOAT_TRIM = re.compile(r'^(?P<keep>-?\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
 NAN = float('nan')
 INF = float('inf')
 ZERO_POINT = 0.0005
@@ -25,6 +25,34 @@ def clamp(value, mn=None, mx=None):
         return max(min(value, mx), mn)
 
 
+def adjust_precision(f, p):
+    """Adjust precision and scale."""
+
+    with decimal.localcontext() as ctx:
+        if p > 0:
+             # Set precision
+            ctx.prec = p
+        ctx.rounding = decimal.ROUND_HALF_UP
+
+        if p == -1:
+            # Full precision
+            value = decimal.Decimal(f)
+        elif p == 0:
+            # Just round to integer
+            value = decimal.Decimal(round_half_up(f))
+        else:
+            # Round to precision
+            value = (decimal.Decimal(f) * decimal.Decimal('1.0'))
+            exp = value.as_tuple().exponent
+            if exp < 0 and abs(value.as_tuple().exponent) > p:
+                value = value.quantize(decimal.Decimal(10) ** -p)
+
+        if value.is_zero():
+            value = abs(value)
+
+        return float(value)
+
+
 def fmt_float(f, p=0):
     """
     Set float precision and trim precision zeros.
@@ -34,16 +62,8 @@ def fmt_float(f, p=0):
     <positive number>: precision level
     """
 
-    if p == -1:
-        string = str(decimal.Decimal(f))
-    elif p == 0:
-        string = str(round_half_up(f))
-    else:
-        with decimal.localcontext() as ctx:
-            ctx.prec = p
-            ctx.rounding = decimal.ROUND_HALF_UP
-            string = str(decimal.Decimal(f) * decimal.Decimal(1.0))
-
+    value = adjust_precision(f, p)
+    string = ('{{:{}f}}'.format('' if p == -1 else '.' + str(p))).format(value)
     m = RE_FLOAT_TRIM.match(string)
     if m:
         string = m.group('keep')

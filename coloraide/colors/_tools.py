@@ -1,4 +1,5 @@
 """Color tools."""
+from ._gamut import _Gamut, GamutBound, GamutUnbound, GamutHue  # noqa: F401
 from .. import util
 from ..util import convert
 import math
@@ -21,15 +22,15 @@ def calc_luminance(srgb):
     return sum([r * v for r, v in zip(lsrgb, vector)])
 
 
-class _ColorTools:
+class _ColorTools(_Gamut):
     """Color utilities."""
 
     def is_achromatic(self):
         """Check if the color is achromatic."""
 
-        return self._is_achromatic(self.coords())
+        return self._is_achromatic(self._channels)
 
-    def _is_achromatic(self, coords):
+    def _is_achromatic(self, channels):
         """
         Is achromatic.
 
@@ -41,7 +42,7 @@ class _ColorTools:
         It is reasonably close though.
         """
 
-        a, b = convert.convert(coords, self.space(), "lab")[1:]
+        a, b = convert.convert(channels, self.space(), "lab")[1:]
         return abs(a) < util.ZERO_POINT and abs(b) < util.ZERO_POINT
 
     def _mix_channel(self, c1, c2, f1, f2=1.0):
@@ -81,7 +82,7 @@ class _ColorTools:
     def luminance(self):
         """Get perceived luminance."""
 
-        return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
+        return calc_luminance(convert.convert(self._channels, self.space(), "srgb"))
 
     def min_contrast(self, color, target):
         """
@@ -118,12 +119,12 @@ class _ColorTools:
         last_mix = 1.0
 
         temp = self.clone().convert("srgb")
-        c1, c2, c3 = temp.coords()
+        c1, c2, c3 = temp._channels
 
         while abs(min_mix - max_mix) >= 0.002:
             mid_mix = round((max_mix + min_mix) / 2, 3)
 
-            temp._mix([c1, c2, c3], mix.coords(), mid_mix)
+            temp._mix([c1, c2, c3], mix._channels, mid_mix)
             lum2 = temp.luminance()
 
             if lum2 > required_lum:
@@ -136,7 +137,7 @@ class _ColorTools:
                 last_mix = mid_mix
 
         # Use the best, last values
-        temp._mix([c1, c2, c3], mix.coords(), last_mix)
+        temp._mix([c1, c2, c3], mix._channels, last_mix)
         self.mutate(temp)
 
     def contrast_ratio(self, color):
@@ -170,7 +171,7 @@ class _ColorTools:
         if self._alpha < 1.0:
             # Blend the channels using the alpha channel values as the factors
             # Afterwards, blend the alpha channels. This is different than blend.
-            self._mix(self.coords(), background.coords(), self._alpha, background._alpha)
+            self._mix(self._channels, background._channels, self._alpha, background._alpha)
             self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
         return self
 
@@ -192,7 +193,7 @@ class _ColorTools:
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._mix(this.coords(), color.coords(), factor)
+        this._mix(this._channels, color._channels, factor)
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)

@@ -1,7 +1,7 @@
 """LCH class."""
 import re
-from ._base import _Color, GamutUnbound, GamutHue
-from ._tools import _ColorTools
+from ._base import _Color
+from ._tools import _ColorTools, GamutUnbound, GamutHue
 from .. import util
 from ..util import parse
 from ..util import convert
@@ -13,7 +13,9 @@ class _LCH(_ColorTools, _Color):
     SPACE = "lch"
     DEF_BG = "color(lch 0 0 0 / 1)"
     _MATCH = re.compile(
-        r"(?xi)color\(\s*lch\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+        r"(?xi)color\(\s*lch\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+            **parse.COLOR_PARTS
+        )
     )
 
     _gamut = (
@@ -28,7 +30,7 @@ class _LCH(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            self._cl, self._cc, self._ch = convert.convert(color.coords(), color.space(), self.space())
+            self._cl, self._cc, self._ch = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -49,7 +51,7 @@ class _LCH(_ColorTools, _Color):
     def _cl(self):
         """Lightness channel."""
 
-        return self._c1
+        return self._channels[0]
 
     @_cl.setter
     def _cl(self, value):
@@ -61,13 +63,13 @@ class _LCH(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c1 = value
+        self._channels[0] = value
 
     @property
     def _cc(self):
         """Chroma channel."""
 
-        return self._c2
+        return self._channels[1]
 
     @_cc.setter
     def _cc(self, value):
@@ -80,19 +82,19 @@ class _LCH(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c2 = value
+        self._channels[1] = value
 
     @property
     def _ch(self):
         """Hue channel."""
 
-        return self._c3
+        return self._channels[2]
 
     @_ch.setter
     def _ch(self, value):
         """Set B on LAB axis."""
 
-        self._c3 = value
+        self._channels[2] = value
 
     def __str__(self):
         """String."""
@@ -104,16 +106,16 @@ class _LCH(_ColorTools, _Color):
 
         self._cc = 0
 
-    def _mix(self, coords1, coords2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        if self._is_achromatic(coords1):
-            coords1[2] = util.NAN
-        if self._is_achromatic(coords2):
-            coords2[2] = util.NAN
-        self._cl = self._mix_channel(coords1[0], coords2[0], factor, factor2)
-        self._cc = self._mix_channel(coords1[1], coords2[1], factor, factor2)
-        self._ch = self._hue_mix_channel(coords1[2], coords2[2], factor, factor2)
+        if self._is_achromatic(channels1):
+            channels1[2] = util.NAN
+        if self._is_achromatic(channels2):
+            channels2[2] = util.NAN
+        self._cl = self._mix_channel(channels1[0], channels2[0], factor, factor2)
+        self._cc = self._mix_channel(channels1[1], channels2[1], factor, factor2)
+        self._ch = self._hue_mix_channel(channels1[2], channels2[2], factor, factor2)
 
     @property
     def lightness(self):

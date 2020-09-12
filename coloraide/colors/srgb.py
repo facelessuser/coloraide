@@ -11,13 +11,15 @@ class _SRGB(_RGBColor):
     SPACE = "srgb"
     DEF_BG = "color(srgb 0 0 0 / 1)"
     _MATCH = re.compile(
-        r"(?xi)color\(\s*srgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+        r"(?xi)color\(\s*srgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+            **parse.COLOR_PARTS
+        )
     )
 
     def __init__(self, color=DEF_BG):
         """Initialize."""
 
-        self._c4 = 0.0
+        self._channel_hue = 0.0
         super().__init__(color)
         self._update_hue()
 
@@ -26,7 +28,7 @@ class _SRGB(_RGBColor):
 
         if not self.is_achromatic():
             h = convert.srgb_to_hsv(self._cr, self._cg, self._cb)[0]
-            self._c4 = h if 0.0 <= h <= 360.0 else h % 360.0
+            self._channel_hue = h if 0.0 <= h <= 360.0 else h % 360.0
 
     def mutate(self, obj):
         """Update from color."""
@@ -38,23 +40,23 @@ class _SRGB(_RGBColor):
         super().mutate(obj)
         self._update_hue()
 
-    def _mix(self, coords1, coords2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        super()._mix(coords1, coords2, factor, factor2)
+        super()._mix(channels1, channels2, factor, factor2)
         self._update_hue()
 
     @property
     def _ch(self):
         """Hue channel."""
 
-        return self._c4
+        return self._channel_hue
 
     @_ch.setter
     def _ch(self, value):
         """Set hue channel."""
 
-        self._c4 = value if 0.0 <= value <= 360.0 else value % 360.0
+        self._channel_hue = value if 0.0 <= value <= 360.0 else value % 360.0
 
     @property
     def red(self):

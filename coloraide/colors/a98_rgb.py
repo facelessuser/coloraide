@@ -10,7 +10,9 @@ class _A98_RGB(_RGBColor):
     SPACE = "a98-rgb"
     DEF_BG = "color(a98-rgb 0 0 0 / 1)"
     _MATCH = re.compile(
-        r"(?xi)color\(\s*a98-rgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+        r"(?xi)color\(\s*a98-rgb\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+            **parse.COLOR_PARTS
+        )
     )
 
     def __init__(self, color=DEF_BG):

@@ -24,45 +24,6 @@ def split_channels(cls, color):
     return channels
 
 
-def gamut_clip(obj):
-    """Gamut clipping."""
-
-    coords = obj.coords()
-    gamut = obj._gamut
-    fit = []
-
-    for i, value in enumerate(coords):
-        a, b = gamut[i]
-
-        # Normalize hue
-        if isinstance(a, GamutHue) and isinstance(b, GamutHue):
-            fit.append(value if 0.0 <= value <= 360.0 else value % 360.0)
-            continue
-
-        # These parameters are unbounded
-        if isinstance(a, GamutUnbound):
-            a = None
-        if isinstance(b, GamutUnbound):
-            b = None
-
-        if a is not None or b is not None:
-            fit.append(util.clamp(value, a, b))
-
-    return fit
-
-
-class GamutHue(float):
-    """Gamut hue."""
-
-
-class GamutBound(float):
-    """Bounded gamut value."""
-
-
-class GamutUnbound(float):
-    """Unbounded gamut value."""
-
-
 class _Color:
     """Base color object."""
 
@@ -73,15 +34,13 @@ class _Color:
     def __init__(self, color=None):
         """Initialize."""
 
-        self._c0 = 0.0
-        self._c1 = 0.0
-        self._c2 = 0.0
-        self._c3 = 0.0
+        self._channel_alpha = 0.0
+        self._channels = [0.0] * self.NUM_CHANNELS
 
     def coords(self):
         """Coordinates."""
 
-        return [self._c1, self._c2, self._c3]
+        return [util.adjust_precision(c, util.DEF_PREC) for c in self._channels]
 
     def clone(self):
         """Clone."""
@@ -107,25 +66,17 @@ class _Color:
             raise ValueError("'{}' is not a valid color space".format(space))
         return obj(value)
 
-    def fit_gamut(self, method=gamut_clip):
-        """Fit the gamut using the provided method."""
-
-        fit = method(self)
-        self._c1 = fit[0]
-        self._c2 = fit[1]
-        self._c3 = fit[2]
-
     @property
     def _alpha(self):
         """Alpha channel."""
 
-        return self._c0
+        return self._channel_alpha
 
     @_alpha.setter
     def _alpha(self, value):
         """Set alpha channel."""
 
-        self._c0 = util.clamp(value, 0.0, 1.0)
+        self._channel_alpha = util.clamp(value, 0.0, 1.0)
 
     @classmethod
     def space(cls):
@@ -142,9 +93,8 @@ class _Color:
         if not isinstance(obj, type(self)):
             obj = type(self)(obj)
 
-        self._c1 = obj._c1
-        self._c2 = obj._c2
-        self._c3 = obj._c3
+        for i, value in enumerate(obj._channels):
+            self._channels[i] = value
         self._alpha = obj._alpha
 
     @property
@@ -193,11 +143,12 @@ class _Color:
     ):
         """Convert to CSS."""
 
+        coords = self.coords()
         template = "color({} {} {} {} {})" if alpha else "color({} {} {} {})"
         values = [
-            util.fmt_float(self._c1, precision),
-            util.fmt_float(self._c2, precision),
-            util.fmt_float(self._c3, precision)
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision)
         ]
         if alpha:
             values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))

@@ -667,13 +667,13 @@ class ColorMod:
     def whiteness(self, value, op=""):
         """White."""
 
-        this = self._color.convert('hsb') if self._color.space() != "hwb" else self._color
+        this = self._color.convert('hwb') if self._color.space() != "hwb" else self._color
         this._ch = self._color._ch
         achromatic = this.is_achromatic()
         op = self.OP_MAP.get(op, self._op_null)
         this._cw = op(this._cw, value)
         if achromatic:
-            self._c3 = 1.0 - self._c2
+            self._cb = 1.0 - self._cw
         self._color.mutate(this)
 
     def blackness(self, value, op=""):
@@ -685,7 +685,7 @@ class ColorMod:
         op = self.OP_MAP.get(op, self._op_null)
         this._cb = op(this._cb, value)
         if achromatic:
-            self._c2 = 1.0 - self._c3
+            self._cw = 1.0 - self._cb
         self._color.mutate(this)
 
 

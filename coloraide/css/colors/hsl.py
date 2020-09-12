@@ -48,10 +48,11 @@ class _HSL(generic._HSL):
 
         template = "hsl({}, {}%, {}%)" if comma else "hsl({} {}% {}%)"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._ch, precision),
-            util.fmt_float(self._cs, precision),
-            util.fmt_float(self._cl, precision)
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision)
         )
 
     def _get_hsla(self, *, comma=False, precision=util.DEF_PREC):
@@ -59,10 +60,11 @@ class _HSL(generic._HSL):
 
         template = "hsla({}, {}%, {}%, {})" if comma else "hsl({} {}% {}% / {})"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._ch, precision),
-            util.fmt_float(self._cs, precision),
-            util.fmt_float(self._cl, precision),
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision),
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 

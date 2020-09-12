@@ -92,10 +92,11 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._cr * factor, precision),
-            util.fmt_float(self._cg * factor, precision),
-            util.fmt_float(self._cb * factor, precision)
+            util.fmt_float(coords[0] * factor, precision),
+            util.fmt_float(coords[1] * factor, precision),
+            util.fmt_float(coords[2] * factor, precision)
         )
 
     def _get_rgba(self, *, comma=False, percent=False, precision=util.DEF_PREC):
@@ -108,10 +109,11 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._cr * factor, precision),
-            util.fmt_float(self._cg * factor, precision),
-            util.fmt_float(self._cb * factor, precision),
+            util.fmt_float(coords[0] * factor, precision),
+            util.fmt_float(coords[1] * factor, precision),
+            util.fmt_float(coords[2] * factor, precision),
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
@@ -122,10 +124,11 @@ class _SRGB(generic._SRGB):
         if hex_upper:
             template = template.upper()
 
+        coords = self.coords()
         value = template.format(
-            int(util.round_half_up(self._cr * 255.0)),
-            int(util.round_half_up(self._cg * 255.0)),
-            int(util.round_half_up(self._cb * 255.0)),
+            int(util.round_half_up(coords[0] * 255.0)),
+            int(util.round_half_up(coords[1] * 255.0)),
+            int(util.round_half_up(coords[2] * 255.0)),
             int(util.round_half_up(self._alpha * 255.0))
         )
 
@@ -142,10 +145,11 @@ class _SRGB(generic._SRGB):
         if hex_upper:
             template = template.upper()
 
+        coords = self.coords()
         value = template.format(
-            int(util.round_half_up(self._cr * 255.0)),
-            int(util.round_half_up(self._cg * 255.0)),
-            int(util.round_half_up(self._cb * 255.0))
+            int(util.round_half_up(coords[0] * 255.0)),
+            int(util.round_half_up(coords[1] * 255.0)),
+            int(util.round_half_up(coords[2] * 255.0))
         )
 
         if compress:
@@ -172,8 +176,6 @@ class _SRGB(generic._SRGB):
     @classmethod
     def split_channels(cls, color):
         """Split channels."""
-
-        print(color)
 
         if color[:3].lower().startswith('rgb'):
             start = 5 if color[:4].lower().startswith('rgba') else 4

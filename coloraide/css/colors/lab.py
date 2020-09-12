@@ -48,10 +48,11 @@ class _LAB(generic._LAB):
 
         template = "lab({}%, {}, {})" if comma else "lab({}% {} {})"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._cl, precision),
-            util.fmt_float(self._ca, precision),
-            util.fmt_float(self._cb, precision)
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision)
         )
 
     def _get_laba(self, *, comma=False, precision=util.DEF_PREC):
@@ -59,10 +60,11 @@ class _LAB(generic._LAB):
 
         template = "lab({}%, {}, {}, {})" if comma else "lab({}% {} {} / {})"
 
+        coords = self.coords()
         return template.format(
-            util.fmt_float(self._cl, precision),
-            util.fmt_float(self._ca, precision),
-            util.fmt_float(self._cb, precision),
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision),
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 

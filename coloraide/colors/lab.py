@@ -1,7 +1,7 @@
 """LAB class."""
 import re
-from ._base import _Color, GamutUnbound
-from ._tools import _ColorTools
+from ._base import _Color
+from ._tools import _ColorTools, GamutUnbound
 from ..util import parse
 from ..util import convert
 
@@ -12,7 +12,9 @@ class _LAB(_ColorTools, _Color):
     SPACE = "lab"
     DEF_BG = "color(lab 0 0 0 / 1)"
     _MATCH = re.compile(
-        r"(?xi)color\(\s*lab\s+((?:{float}{sep}){{2}}{float}(?:{asep}{float})?)\s*\)".format(**parse.COLOR_PARTS)
+        r"(?xi)color\(\s*lab\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+            **parse.COLOR_PARTS
+        )
     )
 
     _gamut = (
@@ -27,7 +29,7 @@ class _LAB(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            self._cl, self._ca, self._cb = convert.convert(color.coords(), color.space(), self.space())
+            self._cl, self._ca, self._cb = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -48,7 +50,7 @@ class _LAB(_ColorTools, _Color):
     def _cl(self):
         """Hue channel."""
 
-        return self._c1
+        return self._channels[0]
 
     @_cl.setter
     def _cl(self, value):
@@ -60,13 +62,13 @@ class _LAB(_ColorTools, _Color):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._c1 = value
+        self._channels[0] = value
 
     @property
     def _ca(self):
         """A on LAB axis."""
 
-        return self._c2
+        return self._channels[1]
 
     @_ca.setter
     def _ca(self, value):
@@ -79,13 +81,13 @@ class _LAB(_ColorTools, _Color):
         TODO: Should we not clamp this?
         """
 
-        self._c2 = value
+        self._channels[1] = value
 
     @property
     def _cb(self):
         """B on LAB axis."""
 
-        return self._c3
+        return self._channels[2]
 
     @_cb.setter
     def _cb(self, value):
@@ -97,7 +99,7 @@ class _LAB(_ColorTools, _Color):
         TODO: Should we not clamp this?
         """
 
-        self._c3 = value
+        self._channels[2] = value
 
     def __str__(self):
         """String."""
@@ -110,12 +112,12 @@ class _LAB(_ColorTools, _Color):
         self._ca = 0
         self._cb = 0
 
-    def _mix(self, coords1, coords2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cl = self._mix_channel(coords1[0], coords2[0], factor, factor2)
-        self._ca = self._mix_channel(coords1[1], coords2[1], factor, factor2)
-        self._cb = self._mix_channel(coords1[2], coords2[2], factor, factor2)
+        self._cl = self._mix_channel(channels1[0], channels2[0], factor, factor2)
+        self._ca = self._mix_channel(channels1[1], channels2[1], factor, factor2)
+        self._cb = self._mix_channel(channels1[2], channels2[2], factor, factor2)
 
     @property
     def l(self):

@@ -1,6 +1,6 @@
 """SRGB color class."""
-from ._base import _Color, GamutBound
-from ._tools import _ColorTools
+from ._base import _Color
+from ._tools import _ColorTools, GamutBound
 from ..util import parse
 from ..util import convert
 
@@ -20,7 +20,7 @@ class _RGBColor(_ColorTools, _Color):
         super().__init__(color)
 
         if isinstance(color, _Color):
-            self._cr, self._cg, self._cb = convert.convert(color.coords(), color.space(), self.space())
+            self._cr, self._cg, self._cb = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -37,55 +37,41 @@ class _RGBColor(_ColorTools, _Color):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def mutate(self, obj):
-        """Update from color."""
-
-        if self is obj:
-            return
-
-        if not isinstance(obj, type(self)):
-            obj = self.new(obj)
-
-        self._c1 = obj._c1
-        self._c2 = obj._c2
-        self._c3 = obj._c3
-        self._alpha = obj._alpha
-
     @property
     def _cr(self):
         """Red channel."""
 
-        return self._c1
+        return self._channels[0]
 
     @_cr.setter
     def _cr(self, value):
         """Set red channel."""
 
-        self._c1 = value
+        self._channels[0] = value
 
     @property
     def _cg(self):
         """Green channel."""
 
-        return self._c2
+        return self._channels[1]
 
     @_cg.setter
     def _cg(self, value):
         """Set green channel."""
 
-        self._c2 = value
+        self._channels[1] = value
 
     @property
     def _cb(self):
         """Blue channel."""
 
-        return self._c3
+        return self._channels[2]
 
     @_cb.setter
     def _cb(self, value):
         """Set blue channel."""
 
-        self._c3 = value
+        self._channels[2] = value
 
     def __str__(self):
         """String."""
@@ -99,12 +85,12 @@ class _RGBColor(_ColorTools, _Color):
         self._cg = self.luminance()
         self._cb = self.luminance()
 
-    def _mix(self, coords1, coords2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cr = self._mix_channel(coords1[0], coords2[0], factor, factor2)
-        self._cg = self._mix_channel(coords1[1], coords2[1], factor, factor2)
-        self._cb = self._mix_channel(coords1[2], coords2[2], factor, factor2)
+        self._cr = self._mix_channel(channels1[0], channels2[0], factor, factor2)
+        self._cg = self._mix_channel(channels1[1], channels2[1], factor, factor2)
+        self._cb = self._mix_channel(channels1[2], channels2[2], factor, factor2)
 
     @property
     def red(self):
