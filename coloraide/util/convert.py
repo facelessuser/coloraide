@@ -1,18 +1,13 @@
 """Convert utilities."""
 from colorsys import rgb_to_hls, hls_to_rgb, rgb_to_hsv, hsv_to_rgb  # noqa: F401
 import math
+from .. import util
 
 KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
 CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb", "rec-2020")
-
-
-def mat_mul_vec(mat, vec):
-    """Multiply the matrix by the vector."""
-
-    return [sum([x * y for x, y in zip(row, vec)]) for row in mat]
 
 
 def cbrt(x):
@@ -671,7 +666,7 @@ def xyz_to_lab(x, y, z):
     """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = [i / j for i, j in zip([x, y, z], D50_REF_WHITE)]
+    xyz = util.divide([x, y, z], D50_REF_WHITE)
     # Compute `f`
     f = [cbrt(i) if i > EPSILON else (KAPPA * i + 16.0) / 116.0 for i in xyz]
 
@@ -702,7 +697,7 @@ def lab_to_xyz(l, a, b):
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return [i * j for i, j in zip(xyz, D50_REF_WHITE)]
+    return util.multiply(xyz, D50_REF_WHITE)
 
 
 def d50_to_d65(xyz):
@@ -714,7 +709,7 @@ def d50_to_d65(xyz):
         [0.0122982, -0.0204830, 1.3299098]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def d65_to_d50(xyz):
@@ -734,7 +729,7 @@ def d65_to_d50(xyz):
         [-0.0092345, 0.0150436, 0.7521316]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_srgb_to_xyz(rgb):
@@ -751,7 +746,7 @@ def lin_srgb_to_xyz(rgb):
         [0.0193339, 0.1191920, 0.9503041]
     ]
 
-    return mat_mul_vec(m, rgb)
+    return util.dot(m, rgb)
 
 
 def xyz_to_lin_srgb(xyz):
@@ -763,7 +758,7 @@ def xyz_to_lin_srgb(xyz):
         [0.0556434, -0.2040259, 1.0572252]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_p3_to_xyz(rgb):
@@ -780,7 +775,7 @@ def lin_p3_to_xyz(rgb):
     ]
 
     # 0 was computed as -3.972075516933488e-17
-    return mat_mul_vec(m, rgb)
+    return util.dot(m, rgb)
 
 
 def xyz_to_lin_p3(xyz):
@@ -792,7 +787,7 @@ def xyz_to_lin_p3(xyz):
         [0.03584583024378447, -0.07617238926804182, 0.9568845240076872]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_a98rgb_to_xyz(rgb):
@@ -811,7 +806,7 @@ def lin_a98rgb_to_xyz(rgb):
         [0.02703136138641234, 0.07068885253582723, 0.9913375368376388]
     ]
 
-    return mat_mul_vec(m, rgb)
+    return util.dot(m, rgb)
 
 
 def xyz_to_lin_a98rgb(xyz):
@@ -823,7 +818,7 @@ def xyz_to_lin_a98rgb(xyz):
         [0.013444280632031142, -0.11836239223101838, 1.0151749943912054]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_prophoto_to_xyz(rgb):
@@ -840,7 +835,7 @@ def lin_prophoto_to_xyz(rgb):
         [0.0, 0.0, 0.8251046025104601]
     ]
 
-    return mat_mul_vec(m, rgb)
+    return util.dot(m, rgb)
 
 
 def xyz_to_lin_prophoto(xyz):
@@ -852,7 +847,7 @@ def xyz_to_lin_prophoto(xyz):
         [0.0, 0.0, 1.2119675456389454]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_2020_to_xyz(rgb):
@@ -870,7 +865,7 @@ def lin_2020_to_xyz(rgb):
     ]
 
     # 0 is actually calculated as 4.994106574466076e-17
-    return mat_mul_vec(m, rgb)
+    return util.dot(m, rgb)
 
 
 def xyz_to_lin_2020(xyz):
@@ -882,7 +877,7 @@ def xyz_to_lin_2020(xyz):
         [0.017639857445310783, -0.042770613257808524, 0.9421031212354738]
     ]
 
-    return mat_mul_vec(m, xyz)
+    return util.dot(m, xyz)
 
 
 def lin_2020(rgb):

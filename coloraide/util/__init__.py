@@ -1,6 +1,7 @@
 """Utilities."""
 import decimal
 import math
+import numbers
 import re
 
 __all__ = ("clamp", "fmt_float", "NAN", "ZERO_POINT")
@@ -10,6 +11,105 @@ NAN = float('nan')
 INF = float('inf')
 ZERO_POINT = 0.0005
 DEF_PREC = 5
+
+
+def dot(a, b):
+    """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
+
+    is_a_num = isinstance(a, numbers.Number)
+    is_b_num = isinstance(b, numbers.Number)
+    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
+    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_mat = not is_a_num and not is_a_vec
+    is_b_mat = not is_b_num and not is_b_vec
+
+    if is_a_num or is_b_num:
+        # Trying to dot a number with a vector or a matrix, so just multiply
+        value = multiply(a, b)
+    elif is_a_vec and is_b_vec:
+        # Dot product of two vectors
+        value = sum([x * y for x, y in zip(a, b)])
+    elif is_a_mat and is_b_vec:
+        # Dot product of matrix and a vector
+        value = [sum([x * y for x, y in zip(row, b)]) for row in a]
+    elif is_a_vec and is_b_mat:
+        # Dot product of vector and a matrix
+        value =  [sum([x * y for x, y in zip(a, col)]) for col in zip(*b)]
+    else:
+        # Dot product of two matrices
+        value = [[sum(x * y for x, y in zip(row, col)) for col in zip(*b)] for row in a]
+
+    return value
+
+
+def multiply(a, b):
+    """Multiply simple numbers, vectors, and 2D matrices."""
+
+    is_a_num = isinstance(a, numbers.Number)
+    is_b_num = isinstance(b, numbers.Number)
+    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
+    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_mat = not is_a_num and not is_a_vec
+    is_b_mat = not is_b_num and not is_b_vec
+
+    if is_a_num and is_b_num:
+        # Multiply two numbers
+        value = a * b
+    elif is_a_num and not is_b_num:
+        # Multiply a number and vector/matrix
+        value = [multiply(a, i) for i in b]
+    elif is_b_num and not is_a_num:
+        # Multiply a vector/matrix and number
+        value = [multiply(i, b) for i in a]
+    elif is_a_vec and is_b_vec:
+        # Multiply two vectors
+        value =  [x * y for x, y in zip(a, b)]
+    elif is_a_mat and is_b_vec:
+        # Multiply matrix and a vector
+        value =  [[x * y for x, y in zip(row, b)] for row in a]
+    elif is_a_vec and is_b_mat:
+        # Multiply vector and a matrix
+        value =  [[x * y for x, y in zip(row, a)] for row in b]
+    else:
+        # Multiply two matrices
+        value =  [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+
+    return value
+
+
+def divide(a, b):
+    """Divide simple numbers, vectors, and 2D matrices."""
+
+    is_a_num = isinstance(a, numbers.Number)
+    is_b_num = isinstance(b, numbers.Number)
+    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
+    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_mat = not is_a_num and not is_a_vec
+    is_b_mat = not is_b_num and not is_b_vec
+
+    if is_a_num and is_b_num:
+        # Divde two numbers
+        value = a / b
+    elif is_a_num and not is_b_num:
+        # Divde a number and vector/matrix
+        value = [divide(a, i) for i in b]
+    elif is_b_num and not is_a_num:
+        # Divde a vector/matrix and number
+        value = [divide(i, b) for i in a]
+    elif is_a_vec and is_b_vec:
+        # Divide two vectors
+        value =  [x / y for x, y in zip(a, b)]
+    elif is_a_mat and is_b_vec:
+        # Divide matrix and a vector
+        value =  [[x / y for x, y in zip(row, b)] for row in a]
+    elif is_a_vec and is_b_mat:
+        # Divide vector and a matrix
+        value =  [[x / y for x, y in zip(row, a)] for row in b]
+    else:
+        # Divide two matrices
+        value =  [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+
+    return value
 
 
 def clamp(value, mn=None, mx=None):
