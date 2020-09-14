@@ -421,7 +421,7 @@ class ColorMod:
         """Process hue."""
 
         value = m.group(2)
-        value = parse.norm_angle(value) * parse.HUE_SCALE
+        value = parse.norm_angle(value)
         op = m.group(1).strip() if m.group(1) else ""
         self.hue(value, hue, op=op)
         if not self._color.is_achromatic():
@@ -432,7 +432,7 @@ class ColorMod:
         """Process HWB and HSL channels (except hue)."""
 
         value = m.group(2)
-        value = float(value.strip('%')) * parse.SCALE_PERCENT
+        value = float(value.strip('%'))
         op = m.group(1).strip() if m.group(1) else ""
         getattr(self, name)(value, op=op, hue=hue)
         if not self._color.is_achromatic():
@@ -443,7 +443,7 @@ class ColorMod:
         """Process tint/shade."""
 
         value = m.group(1)
-        value = float(value.strip('%')) * parse.SCALE_PERCENT
+        value = float(value.strip('%'))
         getattr(self, name)(value)
         if not self._color.is_achromatic():
             hue = convert.srgb_to_hsv(*self._color._channels)[0]
@@ -453,13 +453,13 @@ class ColorMod:
         """Process contrast."""
 
         value = m.group(1)
-        value = float(value.strip('%')) * parse.SCALE_PERCENT
+        value = float(value.strip('%'))
         self.contrast(value)
         if not self._color.is_achromatic():
             hue = convert.srgb_to_hsv(*self._color._channels)[0]
         return m.end(0), hue
 
-    def process_blend(self, m, string):
+    def process_blend(self, m, string, hue):
         """Process blend."""
 
         start = m.end(0)
