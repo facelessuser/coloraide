@@ -70,9 +70,9 @@ class _Color:
 
     def _on_convert(self):
         """
-        Run after a convert opiton.
+        Run after a convert operation.
 
-        Gives us an oportunity to normalize hues and things like that.
+        Gives us an opportunity to normalize hues and things like that, if we desire.
         """
 
     @property

@@ -51,7 +51,7 @@ class _HSV(_ColorTools, _Color):
         """Is achromatic."""
 
         h, s, v = self.coords()
-        return s < util.ACHROMATIC_THRESHOLD 
+        return s < util.ACHROMATIC_THRESHOLD
 
     @property
     def _ch(self):

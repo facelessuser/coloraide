@@ -493,7 +493,7 @@ class ColorMod:
         self.blend(color2, 1.0 - value, alpha, space=space)
         if not self._color.is_achromatic():
             hue = convert.srgb_to_hsv(*self._color._channels)[0]
-        return start
+        return start, hue
 
     def tint(self, percent):
         """Tint color."""

@@ -32,7 +32,7 @@ def dot(a, b):
         value = [sum([x * y for x, y in zip(row, b)]) for row in a]
     elif is_a_vec and is_b_mat:
         # Dot product of vector and a matrix
-        value =  [sum([x * y for x, y in zip(a, col)]) for col in zip(*b)]
+        value = [sum([x * y for x, y in zip(a, col)]) for col in zip(*b)]
     else:
         # Dot product of two matrices
         value = [[sum(x * y for x, y in zip(row, col)) for col in zip(*b)] for row in a]
@@ -61,16 +61,16 @@ def multiply(a, b):
         value = [multiply(i, b) for i in a]
     elif is_a_vec and is_b_vec:
         # Multiply two vectors
-        value =  [x * y for x, y in zip(a, b)]
+        value = [x * y for x, y in zip(a, b)]
     elif is_a_mat and is_b_vec:
         # Multiply matrix and a vector
-        value =  [[x * y for x, y in zip(row, b)] for row in a]
+        value = [[x * y for x, y in zip(row, b)] for row in a]
     elif is_a_vec and is_b_mat:
         # Multiply vector and a matrix
-        value =  [[x * y for x, y in zip(row, a)] for row in b]
+        value = [[x * y for x, y in zip(row, a)] for row in b]
     else:
         # Multiply two matrices
-        value =  [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+        value = [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
 
     return value
 
@@ -86,26 +86,26 @@ def divide(a, b):
     is_b_mat = not is_b_num and not is_b_vec
 
     if is_a_num and is_b_num:
-        # Divde two numbers
+        # Divide two numbers
         value = a / b
     elif is_a_num and not is_b_num:
-        # Divde a number and vector/matrix
+        # Divide a number and vector/matrix
         value = [divide(a, i) for i in b]
     elif is_b_num and not is_a_num:
-        # Divde a vector/matrix and number
+        # Divide a vector/matrix and number
         value = [divide(i, b) for i in a]
     elif is_a_vec and is_b_vec:
         # Divide two vectors
-        value =  [x / y for x, y in zip(a, b)]
+        value = [x / y for x, y in zip(a, b)]
     elif is_a_mat and is_b_vec:
         # Divide matrix and a vector
-        value =  [[x / y for x, y in zip(row, b)] for row in a]
+        value = [[x / y for x, y in zip(row, b)] for row in a]
     elif is_a_vec and is_b_mat:
         # Divide vector and a matrix
-        value =  [[x / y for x, y in zip(row, a)] for row in b]
+        value = [[x / y for x, y in zip(row, a)] for row in b]
     else:
         # Divide two matrices
-        value =  [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+        value = [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
 
     return value
 
@@ -128,7 +128,7 @@ def adjust_precision(f, p):
 
     with decimal.localcontext() as ctx:
         if p > 0:
-             # Set precision
+            # Set precision
             ctx.prec = p
         ctx.rounding = decimal.ROUND_HALF_UP
 

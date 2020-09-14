@@ -96,7 +96,7 @@ class _HWB(_ColorTools, _Color):
         self._cw = self._cw + factor
         self._cb = self._cb + factor
 
-    def _mix(self, channels1, coords2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
         if self._is_achromatic(channels1):

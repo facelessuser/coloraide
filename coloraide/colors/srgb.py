@@ -2,7 +2,6 @@
 import re
 from ._rgb import _RGBColor
 from ..util import parse
-from ..util import convert
 
 
 class _SRGB(_RGBColor):
