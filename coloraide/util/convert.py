@@ -477,7 +477,7 @@ def hwb_to_hsv(h, w, b):
 def hwb_to_srgb(h, w, b):
     """HWB to RGB."""
 
-    return [v * (1.0 - (w / 100.0) - (b / 100.0)) + w for v in hsl_to_srgb(h, 100.0, 50.0)]
+    return [(v * (1.0 - (w / 100.0) - (b / 100.0)) + w) / 100.0 for v in hsl_to_srgb(h, 100.0, 50.0)]
 
 
 def hwb_to_hsl(h, w, b):
