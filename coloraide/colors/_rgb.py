@@ -41,10 +41,8 @@ class _RGBColor(_ColorTools, _Color):
     def _is_achromatic(self, channels):
         """Is achromatic."""
 
-        r, g, b = self.coords()
-        less = min(r, min(g, b))
-        more = max(r, max(g, b))
-        return abs(more - less) < util.ZERO_POINT 
+        r, g, b = [util.round_half_up(c * 255.0) for c in self.coords()]
+        return min(r, min(g, b)) == max(r, max(g, b))
 
     @property
     def _cr(self):

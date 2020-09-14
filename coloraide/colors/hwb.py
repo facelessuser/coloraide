@@ -51,7 +51,7 @@ class _HWB(_ColorTools, _Color):
         """Is achromatic."""
 
         h, w, b = self.coords()
-        return (w + b) > (100.0 - util.ZERO_POINT)
+        return (w + b) > (100.0 - util.ACHROMATIC_THRESHOLD)
 
     @property
     def _ch(self):

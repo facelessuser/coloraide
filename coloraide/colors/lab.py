@@ -4,6 +4,7 @@ from ._base import _Color
 from ._tools import _ColorTools, GamutUnbound
 from ..util import parse
 from ..util import convert
+from .. import util
 
 
 class _LAB(_ColorTools, _Color):
@@ -50,7 +51,7 @@ class _LAB(_ColorTools, _Color):
         """Is achromatic."""
 
         l, a, b = self.coords()
-        return (abs(a) + abs(b)) < util.ZERO_POINT
+        return abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD
 
     @property
     def _cl(self):

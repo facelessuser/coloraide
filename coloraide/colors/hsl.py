@@ -51,7 +51,7 @@ class _HSL(_ColorTools, _Color):
         """Is achromatic."""
 
         h, s, l = self.coords()
-        return s < util.ZERO_POINT 
+        return s < util.ACHROMATIC_THRESHOLD 
 
     @property
     def _ch(self):

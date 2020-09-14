@@ -4,12 +4,10 @@ import math
 import numbers
 import re
 
-__all__ = ("clamp", "fmt_float", "NAN", "ZERO_POINT")
-
 RE_FLOAT_TRIM = re.compile(r'^(?P<keep>-?\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
 NAN = float('nan')
 INF = float('inf')
-ZERO_POINT = 0.0005
+ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
 
 

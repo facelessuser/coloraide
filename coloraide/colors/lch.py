@@ -51,7 +51,7 @@ class _LCH(_ColorTools, _Color):
         """Is achromatic."""
 
         l, c, h = self.coords()
-        return c < util.ZERO_POINT
+        return c < util.ACHROMATIC_THRESHOLD
 
     @property
     def _cl(self):
