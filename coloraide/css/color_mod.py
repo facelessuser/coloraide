@@ -261,6 +261,8 @@ class ColorMod:
 
             if color is not None:
                 self._color = color
+                if not self._color.in_gamut():
+                    self._color.fit_gamut()
 
                 while not done:
                     m = None
@@ -297,6 +299,9 @@ class ColorMod:
                         start = m.end(0)
                     else:
                         break
+
+                    if not self._color.in_gamut():
+                        self._color.fit_gamut()
             else:
                 raise ValueError('Could not calculate base color')
         except Exception:
