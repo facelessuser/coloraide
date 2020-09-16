@@ -1,5 +1,4 @@
 """LCH class."""
-import re
 from ._base import _Color
 from ._tools import _ColorTools, GamutUnbound, GamutHue
 from .. import util
@@ -12,11 +11,6 @@ class _LCH(_ColorTools, _Color):
 
     SPACE = "lch"
     DEF_BG = "color(lch 0 0 0 / 1)"
-    _MATCH = re.compile(
-        r"(?xi)color\(\s*lch\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
-            **parse.COLOR_PARTS
-        )
-    )
 
     _gamut = (
         (GamutUnbound(0.0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.

@@ -1,5 +1,4 @@
 """LAB class."""
-import re
 from ._base import _Color
 from ._tools import _ColorTools, GamutUnbound
 from ..util import parse
@@ -12,11 +11,6 @@ class _LAB(_ColorTools, _Color):
 
     SPACE = "lab"
     DEF_BG = "color(lab 0 0 0 / 1)"
-    _MATCH = re.compile(
-        r"(?xi)color\(\s*lab\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
-            **parse.COLOR_PARTS
-        )
-    )
 
     _gamut = (
         (GamutUnbound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.

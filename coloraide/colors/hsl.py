@@ -1,5 +1,4 @@
 """HSL class."""
-import re
 from ._base import _Color
 from ._tools import _ColorTools, GamutBound, GamutHue
 from .. import util
@@ -12,11 +11,6 @@ class _HSL(_ColorTools, _Color):
 
     SPACE = "hsl"
     DEF_BG = "color(hsl 0 0 0 / 1)"
-    _MATCH = re.compile(
-        r"(?xi)color\(\s*hsl\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
-            **parse.COLOR_PARTS
-        )
-    )
 
     _gamut = (
         (GamutHue(0.0), GamutHue(360.0)),

@@ -4,7 +4,15 @@ from ..util import parse
 import re
 
 MATCH = re.compile(
-    r"(?xi)color\(\s*([-a-z0-9]+)\s+((?:{float}{sep}){{2}}{float}(?:{asep}(?:{percent}|{float}))?)\s*\)".format(
+    r"""
+    (?xi)color\(\s*
+    (?:([-a-z0-9]+)\s+)?
+    (
+        {float}(?:{space}{float}){{,2}}(?:{slash}(?:{percent}|{float}))? |
+        {float}(?:{comma}{float}){{,2}}(?:{slash}(?:{percent}|{float}))?
+    )
+    \s*\)
+    """.format(
         **parse.COLOR_PARTS
     )
 )
@@ -30,6 +38,7 @@ class _Color:
     DEF_BG = ""
     SPACE = ""
     NUM_CHANNELS = 3
+    IS_DEFAULT = False
 
     def __init__(self, color=None):
         """Initialize."""
@@ -135,6 +144,12 @@ class _Color:
         """Match a color by string."""
 
         m = MATCH.match(string, start)
-        if m is not None and m.group(1).lower() == cls.space() and (not fullmatch or m.end(0) == len(string)):
+        if (
+            m is not None and
+            (
+                (m.group(1) and m.group(1).lower() == cls.space()) or
+                (not m.group(1) and cls.IS_DEFAULT)
+            ) and (not fullmatch or m.end(0) == len(string))
+        ):
             return split_channels(cls, m.group(2)), m.end(0)
         return None, None
