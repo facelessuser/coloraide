@@ -1,6 +1,5 @@
 """Rec 2020 color class."""
 from ._rgb import _RGBColor
-from ..util import parse
 
 
 class _Rec_2020(_RGBColor):

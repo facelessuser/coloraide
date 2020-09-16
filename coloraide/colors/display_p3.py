@@ -1,6 +1,5 @@
 """Display-p3 color class."""
 from ._rgb import _RGBColor
-from ..util import parse
 
 
 class _Display_P3(_RGBColor):

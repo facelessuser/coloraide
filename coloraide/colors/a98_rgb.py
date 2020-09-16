@@ -1,6 +1,5 @@
 """A98 RGB color class."""
 from ._rgb import _RGBColor
-from ..util import parse
 
 
 class _A98_RGB(_RGBColor):

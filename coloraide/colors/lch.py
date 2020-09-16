@@ -47,6 +47,16 @@ class _LCH(_ColorTools, _Color):
         l, c, h = self.coords()
         return c < util.ACHROMATIC_THRESHOLD
 
+    def _on_convert(self):
+        """
+        Run after a convert operation.
+
+        Gives us an opportunity to normalize hues and things like that, if we desire.
+        """
+
+        if not (0.0 <= self._ch <= 360.0):
+            self._ch = self._ch % 360.0
+
     @property
     def _cl(self):
         """Lightness channel."""

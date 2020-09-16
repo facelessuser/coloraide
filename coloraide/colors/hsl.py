@@ -47,6 +47,16 @@ class _HSL(_ColorTools, _Color):
         h, s, l = self.coords()
         return s < util.ACHROMATIC_THRESHOLD
 
+    def _on_convert(self):
+        """
+        Run after a convert operation.
+
+        Gives us an opportunity to normalize hues and things like that, if we desire.
+        """
+
+        if not (0.0 <= self._ch <= 360.0):
+            self._ch = self._ch % 360.0
+
     @property
     def _ch(self):
         """Hue channel."""

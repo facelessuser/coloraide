@@ -1,6 +1,5 @@
 """Pro Photo RGB color class."""
 from ._rgb import _RGBColor
-from ..util import parse
 
 
 class _ProPhoto_RGB(_RGBColor):

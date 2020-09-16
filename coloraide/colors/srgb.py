@@ -1,6 +1,5 @@
 """SRGB color class."""
 from ._rgb import _RGBColor
-from ..util import parse
 
 
 class _SRGB(_RGBColor):
