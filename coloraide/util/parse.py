@@ -13,6 +13,7 @@ CONVERT_GRAD = 90 / 100
 RE_BRACKETS = re.compile(r'(?:(\()|(\))|[^()]+)')
 RE_CHAN_SPLIT = re.compile(r'(?:\s*[,/]\s*|\s+)')
 RE_COMMA_SPlIT = re.compile(r'(?:\s*,\s*)')
+RE_SLASH_SPLIT = re.compile(r'(?:\s*/\s*)')
 
 COLOR_PARTS = {
     "percent": r"[+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)%",

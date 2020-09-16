@@ -3,14 +3,14 @@ from .. import util
 from ..util import parse
 import re
 
+# Technically this form can handle any number of channels as long as any
+# extra are thrown away. We only support 6 currently. Even if we supported
+# more, we'd still have to cap for performance.
 MATCH = re.compile(
-    r"""
-    (?xi)color\(\s*
+    r"""(?xi)
+    color\(\s*
     (?:([-a-z0-9]+)\s+)?
-    (
-        {float}(?:{space}{float}){{,2}}(?:{slash}(?:{percent}|{float}))? |
-        {float}(?:{comma}{float}){{,2}}(?:{slash}(?:{percent}|{float}))?
-    )
+    ({float}(?:{space}{float}){{,5}}(?:{slash}(?:{percent}|{float}))?)
     \s*\)
     """.format(
         **parse.COLOR_PARTS
@@ -21,14 +21,22 @@ MATCH = re.compile(
 def split_channels(cls, color):
     """Split channels."""
 
+    if color is None:
+        color = ""
+
     channels = []
-    for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color.strip()), 0):
-        if i < cls.NUM_CHANNELS:
+    color = color.strip()
+    split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
+    alpha = None
+    if len(split) > 1:
+        alpha = parse.norm_alpha_channel(split[-1])
+    for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
+        if i and i < cls.NUM_CHANNELS:
             channels.append(float(c))
-        elif i == cls.NUM_CHANNELS:
-            channels.append(parse.norm_alpha_channel(c))
-    if len(channels) == cls.NUM_CHANNELS:
-        channels.append(1.0)
+    if len(channels) < cls.NUM_CHANNELS:
+        diff = cls.NUM_CHANNELS - len(channels)
+        channels.extend([0.0] * diff)
+    channels.append(alpha if alpha is not None else 1.0)
     return channels
 
 
