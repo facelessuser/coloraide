@@ -153,7 +153,10 @@ name2hex_map = {
     'white': '#ffffff',
     'whitesmoke': '#f5f5f5',
     'yellow': '#ffff00',
-    'yellowgreen': '#9acd32'
+    'yellowgreen': '#9acd32',
+
+    # Transparent
+    'transparent': '#00000000'
 }
 
 hex2name_map = dict([(v, k) for k, v in name2hex_map.items()])
