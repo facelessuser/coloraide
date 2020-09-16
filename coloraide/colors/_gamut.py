@@ -44,7 +44,7 @@ def lch_chroma(base, color):
         threshold = .001
         low = 0.0
         high = mapcolor.chroma
-        error = color.delta(clipped)
+        error = color.delta(mapcolor)
 
         while (high - low) > threshold and error < base_error:
             clipped = mapcolor.clone()
@@ -109,7 +109,7 @@ class _Gamut:
         else:
             c = self.clone()
 
-        fit = func(self, c)
+        fit = func(self.clone(), c)
         for i in range(len(fit)):
             c._channels[i] = fit[i]
         self.mutate(c)
