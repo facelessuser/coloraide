@@ -171,3 +171,8 @@ class _HSL(_ColorTools, _Color):
         if len(channels) == 3:
             channels.append(1.0)
         return channels
+
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs):
+        """To string."""
+
+        return self.to_generic_string(alpha=alpha, precision=precision, fit_gamut=fit_gamut)

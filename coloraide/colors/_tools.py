@@ -3,6 +3,7 @@ from ._gamut import _Gamut, GamutBound, GamutUnbound, GamutHue, gamut_clip  # no
 from .. import util
 from ..util import convert
 import math
+from . _delta import delta_e2000
 
 WHITE = [1.0] * 3
 BLACK = [0.0] * 3
@@ -24,6 +25,34 @@ def calc_luminance(srgb):
 
 class _ColorTools(_Gamut):
     """Color utilities."""
+
+    def convert(self, space, fit_gamut=False):
+        """Convert to color space."""
+
+        if fit_gamut:
+            space = self.space() if not isinstance(fit_gamut, str) else fit_gamut
+            if not self.in_gamut(space):
+                clone = self.clone()
+                clone.fit_gamut(space)
+                return clone.convert()
+
+        obj = self.spaces.get(space.lower())
+        if obj is None:
+            raise ValueError("'{}' is not a valid color space".format(space))
+        result = obj(self)
+        result._on_convert()
+        return result
+
+    def get_coords(self, fit_gamut=False):
+        """Get coordinates within this space or fit to another space."""
+
+        if fit_gamut:
+            space = self.space() if not isinstance(fit_gamut, str) else fit_gamut
+            if not self.in_gamut(space):
+                clone = self.clone()
+                clone.fit_gamut(space)
+                return clone.coords()
+        return self.coords()
 
     def is_achromatic(self):
         """Check if the color is achromatic."""
@@ -63,6 +92,11 @@ class _ColorTools(_Gamut):
             value = value % 360.0
 
         return value
+
+    def delta(self, color2):
+        """Delta."""
+
+        return delta_e2000(self, color2)
 
     def luminance(self):
         """Get perceived luminance."""
@@ -197,3 +231,20 @@ class _ColorTools(_Gamut):
         """Convert the color with a grayscale filter."""
 
         self._grayscale()
+
+    def to_generic_string(
+        self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs
+    ):
+        """Convert to CSS."""
+
+        coords = self.get_coords(fit_gamut=fit_gamut)
+        template = "color({} {} {} {} {})" if alpha else "color({} {} {} {})"
+        values = [
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(coords[1], precision),
+            util.fmt_float(coords[2], precision)
+        ]
+        if alpha:
+            values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
+
+        return template.format(self.space(), *values)

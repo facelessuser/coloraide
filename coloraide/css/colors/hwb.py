@@ -29,38 +29,38 @@ class _HWB(generic._HWB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, **kwargs
+        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, fit_gamut=False, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return super().to_string(alpha=alpha, precision=precision)
+            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit_gamut=fit_gamut, **kwargs)
 
         value = ''
         if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_hwba(comma=comma, precision=precision)
+            value = self._get_hwba(comma=comma, precision=precision, fit_gamut=fit_gamut)
         else:
-            value = self._get_hwb(comma=comma, precision=precision)
+            value = self._get_hwb(comma=comma, precision=precision, fit_gamut=fit_gamut)
         return value
 
-    def _get_hwb(self, *, comma=False, precision=util.DEF_PREC):
+    def _get_hwb(self, *, comma=False, precision=util.DEF_PREC, fit_gamut=False):
         """Get RGB color."""
 
         template = "hwb({}, {}%, {}%)" if comma else "hwb({} {}% {}%)"
 
-        coords = self.coords()
+        coords = self.get_coords(fit_gamut=fit_gamut)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_hwba(self, *, comma=False, precision=util.DEF_PREC):
+    def _get_hwba(self, *, comma=False, precision=util.DEF_PREC, fit_gamut=False):
         """Get RGB color with alpha channel."""
 
         template = "hwb({}, {}%, {}%, {})" if comma else "hwb({} {}% {}% / {})"
 
-        coords = self.coords()
+        coords = self.get_coords(fit_gamut=fit_gamut)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

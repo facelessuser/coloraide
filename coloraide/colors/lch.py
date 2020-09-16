@@ -169,3 +169,8 @@ class _LCH(_ColorTools, _Color):
             return parse.norm_deg_channel(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs):
+        """To string."""
+
+        return self.to_generic_string(alpha=alpha, precision=precision, fit_gamut=fit_gamut)

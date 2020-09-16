@@ -12,6 +12,7 @@ HWB
 HWB
 LAB
 LCH
+Lilley
 MERCHANTABILITY
 Matcher
 MkDocs
@@ -21,6 +22,7 @@ RGB
 SRGB
 TODO
 Twemoji
+Verou
 XYZ
 accessor
 chroma

@@ -47,16 +47,6 @@ class _Color:
 
         return self.new(self)
 
-    def convert(self, space):
-        """Convert to color space."""
-
-        obj = self.spaces.get(space.lower())
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        result = obj(self)
-        result._on_convert()
-        return result
-
     def new(self, value, space=None):
         """Create new color in color space."""
 
@@ -148,20 +138,3 @@ class _Color:
         if m is not None and m.group(1).lower() == cls.space() and (not fullmatch or m.end(0) == len(string)):
             return split_channels(cls, m.group(2)), m.end(0)
         return None, None
-
-    def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, **kwargs
-    ):
-        """Convert to CSS."""
-
-        coords = self.coords()
-        template = "color({} {} {} {} {})" if alpha else "color({} {} {} {})"
-        values = [
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        ]
-        if alpha:
-            values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
-
-        return template.format(self.space(), *values)
