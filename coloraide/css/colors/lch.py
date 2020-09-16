@@ -130,7 +130,7 @@ class _LCH(generic._LCH):
                 if i == 0:
                     channels.append(cls.tx_channel(i, c))
                 else:
-                    channels.append(cls.tx_channel(-1, c))
+                    alpha = cls.tx_channel(-1, c)
             channels.extend([0.0, 0.0])
             channels.append(1.0 if alpha is None else alpha)
         else:
