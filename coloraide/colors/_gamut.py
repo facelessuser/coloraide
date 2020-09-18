@@ -99,10 +99,7 @@ def gamut_clip(base, color):
             b = None
 
         # Fit value in bounds.
-        if (a is not None and value < (a - THRESHOLD)) or (b is not None and value > (b + THRESHOLD)):
-            fit.append(util.clamp(value, a, b))
-        else:
-            fit.append(value)
+        fit.append(util.clamp(value, a, b))
     return fit
 
 
