@@ -47,7 +47,7 @@ class _ColorTools(_Gamut):
         result._on_convert()
         return result
 
-    def get_coords(self, fit=False):
+    def get_coords(self, fit=False, scale=util.DEF_PREC):
         """Get coordinates within this space or fit to another space."""
 
         if fit:
@@ -111,7 +111,10 @@ class _ColorTools(_Gamut):
         """
         Get the color with the best contrast.
 
-        # https://drafts.csswg.org/css-color/#contrast-adjuster
+        This mimics Sublime Text's custom `min-contrast` for `color-mod` (now defunct - the CSS version).
+        It ensure the color has at least the specified contrast ratio.
+
+        Algorithm is close but not exactly like Sublime. We are sometimes just a little off, but really close.
         """
 
         lum1 = self.luminance()
@@ -225,7 +228,7 @@ class _ColorTools(_Gamut):
 
         alpha = alpha is not False and (alpha is True or self._alpha < 1.0)
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
         values = [
             util.fmt_float(coords[0], precision),

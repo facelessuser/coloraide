@@ -62,9 +62,9 @@ class _SRGB(generic._SRGB):
         value = ''
         if hex_code or name:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                h = self._get_hexa(compress=compress, hex_upper=hex_upper, fit=fit)
+                h = self._get_hexa(compress=compress, hex_upper=hex_upper, precision=precision, fit=fit)
             else:
-                h = self._get_hex(compress=compress, hex_upper=hex_upper, fit=fit)
+                h = self._get_hex(compress=compress, hex_upper=hex_upper, precision=precision, fit=fit)
             if hex_code:
                 value = h
             if name:
@@ -92,7 +92,7 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -109,7 +109,7 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -117,7 +117,7 @@ class _SRGB(generic._SRGB):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_hexa(self, *, compress=False, hex_upper=False, fit="clip"):
+    def _get_hexa(self, *, compress=False, hex_upper=False, precision=util.DEF_PREC, fit="clip"):
         """Get the RGB color with the alpha channel."""
 
         if not fit:
@@ -127,7 +127,7 @@ class _SRGB(generic._SRGB):
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
@@ -141,7 +141,7 @@ class _SRGB(generic._SRGB):
                 value = m.expand(r"#\1\2\3\4")
         return value
 
-    def _get_hex(self, *, compress=False, hex_upper=False, fit="clip"):
+    def _get_hex(self, *, compress=False, hex_upper=False, precision=util.DEF_PREC, fit="clip"):
         """Get the `RGB` value."""
 
         if not fit:
@@ -151,7 +151,7 @@ class _SRGB(generic._SRGB):
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),

@@ -1,5 +1,5 @@
 """Convert utilities."""
-from colorsys import rgb_to_hls, hls_to_rgb, rgb_to_hsv, hsv_to_rgb  # noqa: F401
+from colorsys import rgb_to_hsv, hsv_to_rgb  # noqa: F401
 import math
 from .. import util
 
@@ -92,8 +92,23 @@ def srgb_to_hsv(r, g, b):
 def srgb_to_hsl(r, g, b):
     """SRGB to HSL."""
 
-    h, l, s = rgb_to_hls(r, g, b)
-    return h * 360.0, s * 100.0, l * 100.0
+    mx = max(r, max(g, b))
+    mn = min(r, min(g, b))
+    h = 0.0
+    s = 0.0
+    l = (mn + mx) / 2
+    c = mx - mn
+
+    if c != 0.0:
+        s = c / (1.0 - abs(2.0 * l - 1))
+        if mx == r:
+            h = (g - b) / c
+        elif mx == g:
+            h = (b - r) / c + 2.0
+        else:
+            h = (r - g) / c + 4.0
+
+    return [h * 60.0, s * 100.0, l * 100.0]
 
 
 def srgb_to_hwb(r, g, b):
@@ -413,9 +428,23 @@ def hsl_to_hsv(h, s, l):
 
 
 def hsl_to_srgb(h, s, l):
-    """HSL to RGB."""
+    """
+    HSL to RGB.
 
-    return hls_to_rgb(h / 360.0, l / 100.0, s / 100.0)
+    https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
+    """
+
+    h = h % 360
+    s /= 100.0
+    l /= 100.0
+
+    def f(n):
+        """Calculate the channels."""
+        k = (n + h / 30) % 12
+        a = s * min(l, 1 - l)
+        return l - a * max(-1, min(k - 3, 9 - k, 1))
+
+    return f(0), f(8), f(4)
 
 
 def hsl_to_hwb(h, s, l):

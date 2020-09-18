@@ -89,7 +89,7 @@ class _LCH(generic._LCH):
 
         template = "gray({})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0], precision)
         )
@@ -99,7 +99,7 @@ class _LCH(generic._LCH):
 
         template = "gray({}, {})" if comma else "gray({} / {})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(self._alpha, max(3, precision))

@@ -48,7 +48,7 @@ class _LAB(generic._LAB):
 
         template = "lab({}%, {}, {})" if comma else "lab({}% {} {})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
@@ -60,7 +60,7 @@ class _LAB(generic._LAB):
 
         template = "lab({}%, {}, {}, {})" if comma else "lab({}% {} {} / {})"
 
-        coords = self.get_coords(fit=fit)
+        coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

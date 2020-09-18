@@ -55,10 +55,10 @@ class _Color:
         self._channel_alpha = 0.0
         self._channels = [0.0] * self.NUM_CHANNELS
 
-    def coords(self):
+    def coords(self, scale=util.DEF_PREC):
         """Coordinates."""
 
-        return [util.adjust_precision(c, util.DEF_PREC) for c in self._channels]
+        return [util.round_half_up(c, scale) for c in self._channels]
 
     def clone(self):
         """Clone."""
@@ -129,11 +129,11 @@ class _Color:
 
         self._alpha = self.tx_channel(-1, value) if isinstance(value, str) else float(value)
 
-    def set(self, name, value):
+    def set(self, name, value):  # noqa: A003
         """Set the given channel."""
 
         if name not in self.CHANNEL_NAMES:
-            raise ValueError("'{}' is an invalid channel name".format(channel))
+            raise ValueError("'{}' is an invalid channel name".format(name))
 
         setattr(self, name, value)
         return self
@@ -142,7 +142,7 @@ class _Color:
         """Get the given channel's value."""
 
         if name not in self.CHANNEL_NAMES:
-            raise ValueError("'{}' is an invalid channel name".format(channel))
+            raise ValueError("'{}' is an invalid channel name".format(name))
         return getattr(self, name)
 
     def __repr__(self):
