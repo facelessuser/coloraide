@@ -141,4 +141,4 @@ class _RGBColor(_ColorTools, _Color):
     def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
-        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit_gamut)
+        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)
