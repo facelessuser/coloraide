@@ -52,19 +52,19 @@ class _SRGB(generic._SRGB):
 
     def to_string(
         self, *, alpha=None, name=False, hex_code=False, hex_upper=False, compress=False, comma=False, percent=False,
-        precision=util.DEF_PREC, raw=False, fit_gamut=False, **kwargs
+        precision=util.DEF_PREC, raw=False, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit_gamut=fit_gamut, **kwargs)
+            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit=fit, **kwargs)
 
         value = ''
         if hex_code or name:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                h = self._get_hexa(compress=compress, hex_upper=hex_upper, fit_gamut=fit_gamut)
+                h = self._get_hexa(compress=compress, hex_upper=hex_upper, fit=fit)
             else:
-                h = self._get_hex(compress=compress, hex_upper=hex_upper, fit_gamut=fit_gamut)
+                h = self._get_hex(compress=compress, hex_upper=hex_upper, fit=fit)
             if hex_code:
                 value = h
             if name:
@@ -77,12 +77,12 @@ class _SRGB(generic._SRGB):
                     value = n
         if not value:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_rgba(comma=comma, percent=percent, precision=precision, fit_gamut=fit_gamut)
+                value = self._get_rgba(comma=comma, percent=percent, precision=precision, fit=fit)
             else:
-                value = self._get_rgb(comma=comma, percent=percent, precision=precision, fit_gamut=fit_gamut)
+                value = self._get_rgb(comma=comma, percent=percent, precision=precision, fit=fit)
         return value
 
-    def _get_rgb(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit_gamut=False):
+    def _get_rgb(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color."""
 
         factor = 100.0 if percent else 255.0
@@ -92,14 +92,14 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
             util.fmt_float(coords[2] * factor, precision)
         )
 
-    def _get_rgba(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit_gamut=False):
+    def _get_rgba(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color with alpha channel."""
 
         factor = 100.0 if percent else 255.0
@@ -109,7 +109,7 @@ class _SRGB(generic._SRGB):
         else:
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -117,14 +117,17 @@ class _SRGB(generic._SRGB):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_hexa(self, *, compress=False, hex_upper=False, fit_gamut=False):
+    def _get_hexa(self, *, compress=False, hex_upper=False, fit="clip"):
         """Get the RGB color with the alpha channel."""
+
+        if not fit:
+            fit == "clip"
 
         template = "#{:02x}{:02x}{:02x}{:02x}"
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
@@ -138,14 +141,17 @@ class _SRGB(generic._SRGB):
                 value = m.expand(r"#\1\2\3\4")
         return value
 
-    def _get_hex(self, *, compress=False, hex_upper=False, fit_gamut=False):
+    def _get_hex(self, *, compress=False, hex_upper=False, fit="clip"):
         """Get the `RGB` value."""
+
+        if not fit:
+            fit == "clip"
 
         template = "#{:02x}{:02x}{:02x}"
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),

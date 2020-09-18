@@ -29,38 +29,38 @@ class _HWB(generic._HWB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, fit_gamut=False, **kwargs
+        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
         if raw:
-            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit_gamut=fit_gamut, **kwargs)
+            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit=fit, **kwargs)
 
         value = ''
         if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_hwba(comma=comma, precision=precision, fit_gamut=fit_gamut)
+            value = self._get_hwba(comma=comma, precision=precision, fit=fit)
         else:
-            value = self._get_hwb(comma=comma, precision=precision, fit_gamut=fit_gamut)
+            value = self._get_hwb(comma=comma, precision=precision, fit=fit)
         return value
 
-    def _get_hwb(self, *, comma=False, precision=util.DEF_PREC, fit_gamut=False):
+    def _get_hwb(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color."""
 
         template = "hwb({}, {}%, {}%)" if comma else "hwb({} {}% {}%)"
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_hwba(self, *, comma=False, precision=util.DEF_PREC, fit_gamut=False):
+    def _get_hwba(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color with alpha channel."""
 
         template = "hwb({}, {}%, {}%, {})" if comma else "hwb({} {}% {}% / {})"
 
-        coords = self.get_coords(fit_gamut=fit_gamut)
+        coords = self.get_coords(fit=fit)
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

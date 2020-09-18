@@ -262,7 +262,7 @@ class ColorMod:
             if color is not None:
                 self._color = color
                 if not self._color.in_gamut():
-                    self._color.fit_gamut()
+                    self._color.fit(method="clip")
 
                 while not done:
                     m = None
@@ -301,7 +301,7 @@ class ColorMod:
                         break
 
                     if not self._color.in_gamut():
-                        self._color.fit_gamut()
+                        self._color.fit(method="clip")
             else:
                 raise ValueError('Could not calculate base color')
         except Exception:
@@ -324,7 +324,7 @@ class ColorMod:
         """Adjust base."""
 
         self._color = base
-        pattern = "color({} {})".format(self._color.to_string(alpha=True), string)
+        pattern = "color({} {})".format(self._color.to_string(fit="clip"), string)
         color, start = self._adjust(pattern)
         if color is not None:
             self._color.mutate(color)

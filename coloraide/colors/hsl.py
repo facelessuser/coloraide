@@ -1,6 +1,6 @@
 """HSL class."""
 from ._base import _Color
-from ._tools import _ColorTools, GamutBound, GamutHue
+from ._tools import _ColorTools, GamutBound, GamutAngle
 from .. import util
 from ..util import parse
 from ..util import convert
@@ -13,7 +13,7 @@ class _HSL(_ColorTools, _Color):
     DEF_BG = "color(hsl 0 0 0 / 1)"
 
     _gamut = (
-        (GamutHue(0.0), GamutHue(360.0)),
+        (GamutAngle(0.0), GamutAngle(360.0)),
         (GamutBound(0.0), GamutBound(100.0)),
         (GamutBound(0.0), GamutBound(100.0))
     )
@@ -93,11 +93,6 @@ class _HSL(_ColorTools, _Color):
 
         self._channels[2] = value
 
-    def __str__(self):
-        """String."""
-
-        return self.to_string(alpha=True)
-
     def _grayscale(self):
         """Convert to grayscale."""
 
@@ -176,7 +171,7 @@ class _HSL(_ColorTools, _Color):
             channels.append(1.0)
         return channels
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
-        return self.to_generic_string(alpha=alpha, precision=precision, fit_gamut=fit_gamut)
+        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)

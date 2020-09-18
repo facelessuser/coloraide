@@ -1,6 +1,6 @@
 """LAB class."""
 from ._base import _Color
-from ._tools import _ColorTools, GamutUnbound
+from ._tools import _ColorTools, GamutUnbound, GamutBound
 from ..util import parse
 from ..util import convert
 from .. import util
@@ -13,7 +13,7 @@ class _LAB(_ColorTools, _Color):
     DEF_BG = "color(lab 0 0 0 / 1)"
 
     _gamut = (
-        (GamutUnbound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
+        (GamutBound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
         (GamutUnbound(-160), GamutUnbound(160)),  # No limit, but we could impose one +/-160?
         (GamutUnbound(-160), GamutUnbound(160))  # No limit, but we could impose one +/-160?
     )
@@ -102,11 +102,6 @@ class _LAB(_ColorTools, _Color):
 
         self._channels[2] = value
 
-    def __str__(self):
-        """String."""
-
-        return self.to_string(alpha=True)
-
     def _grayscale(self):
         """Convert to grayscale."""
 
@@ -162,7 +157,7 @@ class _LAB(_ColorTools, _Color):
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
-        return self.to_generic_string(alpha=alpha, precision=precision, fit_gamut=fit_gamut)
+        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)

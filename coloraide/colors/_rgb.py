@@ -80,11 +80,6 @@ class _RGBColor(_ColorTools, _Color):
 
         self._channels[2] = value
 
-    def __str__(self):
-        """String."""
-
-        return self.to_string(alpha=True)
-
     def _grayscale(self):
         """Convert to grayscale."""
 

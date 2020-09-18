@@ -31,7 +31,7 @@ def split_channels(cls, color):
     if len(split) > 1:
         alpha = parse.norm_alpha_channel(split[-1])
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-        if i and i < cls.NUM_CHANNELS:
+        if c and i < cls.NUM_CHANNELS:
             channels.append(float(c))
     if len(channels) < cls.NUM_CHANNELS:
         diff = cls.NUM_CHANNELS - len(channels)
@@ -127,11 +127,6 @@ class _Color:
 
         self._alpha = self.tx_channel(-1, value) if isinstance(value, str) else float(value)
 
-    def __str__(self):
-        """String."""
-
-        return self.to_string(alpha=True)
-
     def __repr__(self):
         """Representation."""
 
@@ -140,6 +135,8 @@ class _Color:
             ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
             util.fmt_float(self._alpha, util.DEF_PREC)
         )
+
+    __str__ = __repr__
 
     @classmethod
     def tx_channel(cls, channel, value):
