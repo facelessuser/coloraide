@@ -11,6 +11,7 @@ class _HWB(_ColorTools, _Color):
 
     SPACE = "hwb"
     DEF_BG = "color(hwb 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["hue", "blackness", "whiteness", "alpha"])
 
     _gamut = (
         (GamutAngle(0.0), GamutAngle(360.0)),

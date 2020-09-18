@@ -11,6 +11,7 @@ class _LCH(_ColorTools, _Color):
 
     SPACE = "lch"
     DEF_BG = "color(lch 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
 
     _gamut = (
         (GamutBound(0.0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.

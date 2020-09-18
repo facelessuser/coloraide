@@ -15,6 +15,8 @@ class _RGBColor(_ColorTools, _Color):
         (GamutBound(0.0), GamutBound(1.0))
     )
 
+    CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])
+
     def __init__(self, color=None):
         """Initialize."""
 
@@ -136,7 +138,7 @@ class _RGBColor(_ColorTools, _Color):
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit_gamut=False, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
-        return self.to_generic_string(alpha=alpha, precision=precision, fit_gamut=fit_gamut)
+        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit_gamut)

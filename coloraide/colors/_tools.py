@@ -120,7 +120,7 @@ class _ColorTools(_Gamut):
 
         # We already meet the minimum or the target is impossible
         if target < 1 or ratio >= target:
-            return
+            return self
 
         required_lum = ((lum2 + 0.05) / target) - 0.05
         if required_lum < 0:
@@ -161,22 +161,12 @@ class _ColorTools(_Gamut):
 
         # Use the best, last values
         temp._mix([c1, c2, c3], mix._channels, last_mix)
-        self.mutate(temp)
+        return self.mutate(temp)
 
     def contrast_ratio(self, color):
         """Get contrast ratio."""
 
         return calc_contrast_ratio(self.luminance(), color.luminance())
-
-    def is_dark(self):
-        """Check if color is dark."""
-
-        return self.luminance() < 0.5
-
-    def is_light(self):
-        """Check if color is light."""
-
-        return self.luminance() >= 0.5
 
     def alpha_composite(self, background=None):
         """
@@ -220,21 +210,13 @@ class _ColorTools(_Gamut):
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
-        self.mutate(this)
-
-    def invert(self):
-        """Invert the color."""
-
-        this = self.convert("srgb") if self.space() != "srgb" else self
-        this._cr ^= 0xFF
-        this._cg ^= 0xFF
-        this._cb ^= 0xFF
-        self.mutate(this)
+        return self.mutate(this)
 
     def grayscale(self):
         """Convert the color with a grayscale filter."""
 
         self._grayscale()
+        return self
 
     def to_generic_string(
         self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs

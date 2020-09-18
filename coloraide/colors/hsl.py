@@ -11,6 +11,7 @@ class _HSL(_ColorTools, _Color):
 
     SPACE = "hsl"
     DEF_BG = "color(hsl 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
 
     _gamut = (
         (GamutAngle(0.0), GamutAngle(360.0)),

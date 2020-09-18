@@ -11,6 +11,7 @@ class _HSV(_ColorTools, _Color):
 
     SPACE = "hsv"
     DEF_BG = "color(hsv 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["hue", "saturation", "value", "alpha"])
 
     _gamut = (
         (GamutAngle(0.0), GamutAngle(360.0)),

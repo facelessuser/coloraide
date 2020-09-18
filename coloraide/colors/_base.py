@@ -47,6 +47,7 @@ class _Color:
     SPACE = ""
     NUM_CHANNELS = 3
     IS_DEFAULT = False
+    CHANNEL_NAMES = frozenset(["alpha"])
 
     def __init__(self, color=None):
         """Initialize."""
@@ -114,6 +115,7 @@ class _Color:
             self._channels[i] = value
         self._alpha = obj._alpha
         self._on_convert()
+        return self
 
     @property
     def alpha(self):
@@ -126,6 +128,22 @@ class _Color:
         """Adjust alpha."""
 
         self._alpha = self.tx_channel(-1, value) if isinstance(value, str) else float(value)
+
+    def set(self, name, value):
+        """Set the given channel."""
+
+        if name not in self.CHANNEL_NAMES:
+            raise ValueError("'{}' is an invalid channel name".format(channel))
+
+        setattr(self, name, value)
+        return self
+
+    def get(self, name):
+        """Get the given channel's value."""
+
+        if name not in self.CHANNEL_NAMES:
+            raise ValueError("'{}' is an invalid channel name".format(channel))
+        return getattr(self, name)
 
     def __repr__(self):
         """Representation."""

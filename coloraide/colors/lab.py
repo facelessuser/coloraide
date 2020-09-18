@@ -11,6 +11,7 @@ class _LAB(_ColorTools, _Color):
 
     SPACE = "lab"
     DEF_BG = "color(lab 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["l", "a", "b", "alpha"])
 
     _gamut = (
         (GamutBound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
