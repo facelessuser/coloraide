@@ -51,23 +51,25 @@ class _SRGB(generic._SRGB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, name=False, hex_code=False, hex_upper=False, compress=False, comma=False, percent=False,
-        precision=util.DEF_PREC, raw=False, fit=util.DEF_FIT, **kwargs
+        self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
-        if raw:
-            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit=fit, **kwargs)
+        if options is None:
+            options = {}
+
+        if options.get("color"):
+            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if hex_code or name:
+        if options.get("hex") or options.get("names"):
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                h = self._get_hexa(compress=compress, hex_upper=hex_upper, precision=precision, fit=fit)
+                h = self._get_hexa(options, precision=precision, fit=fit)
             else:
-                h = self._get_hex(compress=compress, hex_upper=hex_upper, precision=precision, fit=fit)
-            if hex_code:
+                h = self._get_hex(options, precision=precision, fit=fit)
+            if options.get("hex"):
                 value = h
-            if name:
+            if options.get("names"):
                 length = len(h) - 1
                 index = int(length / 4)
                 if length in (8, 4) and h[-index:].lower() == ("f" * index):
@@ -75,15 +77,19 @@ class _SRGB(generic._SRGB):
                 n = css_names.hex2name(h)
                 if n is not None:
                     value = n
+
         if not value:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_rgba(comma=comma, percent=percent, precision=precision, fit=fit)
+                value = self._get_rgba(options, precision=precision, fit=fit)
             else:
-                value = self._get_rgb(comma=comma, percent=percent, precision=precision, fit=fit)
+                value = self._get_rgb(options, precision=precision, fit=fit)
         return value
 
-    def _get_rgb(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_rgb(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color."""
+
+        percent = options.get("percent", False)
+        comma = options.get("comma", False)
 
         factor = 100.0 if percent else 255.0
 
@@ -99,8 +105,11 @@ class _SRGB(generic._SRGB):
             util.fmt_float(coords[2] * factor, precision)
         )
 
-    def _get_rgba(self, *, comma=False, percent=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_rgba(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get RGB color with alpha channel."""
+
+        percent = options.get("percent", False)
+        comma = options.get("comma", False)
 
         factor = 100.0 if percent else 255.0
 
@@ -117,8 +126,11 @@ class _SRGB(generic._SRGB):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_hexa(self, *, compress=False, hex_upper=False, precision=util.DEF_PREC, fit="clip"):
+    def _get_hexa(self, options, *, precision=util.DEF_PREC, fit="clip"):
         """Get the RGB color with the alpha channel."""
+
+        hex_upper = options.get("hex_upper", False)
+        compress = options.get("compress", False)
 
         if not fit:
             fit == "clip"
@@ -141,8 +153,11 @@ class _SRGB(generic._SRGB):
                 value = m.expand(r"#\1\2\3\4")
         return value
 
-    def _get_hex(self, *, compress=False, hex_upper=False, precision=util.DEF_PREC, fit="clip"):
+    def _get_hex(self, options, *, precision=util.DEF_PREC, fit="clip"):
         """Get the `RGB` value."""
+
+        hex_upper = options.get("hex_upper", False)
+        compress = options.get("compress", False)
 
         if not fit:
             fit == "clip"

@@ -158,7 +158,7 @@ class _LAB(_ColorTools, _Color):
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
+    def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
         return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)

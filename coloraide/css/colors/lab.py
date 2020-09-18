@@ -29,24 +29,27 @@ class _LAB(generic._LAB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, precision=util.DEF_PREC, raw=False, fit=util.DEF_FIT, **kwargs
+        self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
-        if raw:
-            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit=fit, **kwargs)
+        if options is None:
+            options = {}
+
+        if options.get("color"):
+            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
         if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_laba(comma=comma, precision=precision, fit=fit)
+            value = self._get_laba(options, precision=precision, fit=fit)
         else:
-            value = self._get_lab(comma=comma, precision=precision, fit=fit)
+            value = self._get_lab(options, precision=precision, fit=fit)
         return value
 
-    def _get_lab(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lab(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LAB color."""
 
-        template = "lab({}%, {}, {})" if comma else "lab({}% {} {})"
+        template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
 
         coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
@@ -55,10 +58,10 @@ class _LAB(generic._LAB):
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_laba(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_laba(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LAB color with alpha channel."""
 
-        template = "lab({}%, {}, {}, {})" if comma else "lab({}% {} {} / {})"
+        template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
 
         coords = self.get_coords(fit=fit, scale=precision)
         return template.format(

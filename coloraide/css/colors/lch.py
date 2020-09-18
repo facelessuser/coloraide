@@ -39,30 +39,33 @@ class _LCH(generic._LCH):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, comma=False, gray=False, precision=util.DEF_PREC, raw=False, fit=util.DEF_FIT, **kwargs
+        self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
-        if raw:
-            return self.to_generic_string(alpha=alpha, precision=precision, raw=raw, fit=fit, **kwargs)
+        if options is None:
+            options = {}
+
+        if options.get("color"):
+            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if gray and self.is_achromatic():
+        if options.get("gray") and self.is_achromatic():
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_gray(precision=precision, fit=fit)
+                value = self._get_gray(options, precision=precision, fit=fit)
             else:
-                value = self._get_graya(comma=comma, precision=precision, fit=fit)
+                value = self._get_graya(options, precision=precision, fit=fit)
         else:
             if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_lcha(comma=comma, precision=precision, fit=fit)
+                value = self._get_lcha(options, precision=precision, fit=fit)
             else:
-                value = self._get_lch(comma=comma, precision=precision, fit=fit)
+                value = self._get_lch(options, precision=precision, fit=fit)
         return value
 
-    def _get_lch(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lch(self, options,  *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LCH color."""
 
-        template = "lch({}%, {}, {})" if comma else "lch({}% {} {})"
+        template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
 
         coords = self.get_coords(fit=fit)
         return template.format(
@@ -71,10 +74,10 @@ class _LCH(generic._LCH):
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_lcha(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lcha(self, options,  *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LCH color with alpha channel."""
 
-        template = "lch({}%, {}, {}, {})" if comma else "lch({}% {} {} / {})"
+        template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
 
         coords = self.get_coords(fit=fit)
         return template.format(
@@ -84,7 +87,7 @@ class _LCH(generic._LCH):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_gray(self, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_gray(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get gray color with alpha."""
 
         template = "gray({})"
@@ -94,10 +97,10 @@ class _LCH(generic._LCH):
             util.fmt_float(coords[0], precision)
         )
 
-    def _get_graya(self, *, comma=False, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_graya(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get gray color with alpha."""
 
-        template = "gray({}, {})" if comma else "gray({} / {})"
+        template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
 
         coords = self.get_coords(fit=fit, scale=precision)
         return template.format(
