@@ -5,7 +5,7 @@ from ... import util
 from ...util import parse
 
 
-class _LCH(generic._LCH):
+class LCH(generic.LCH):
     """LCH class."""
 
     DEF_BG = "lch(0% 0 0 / 1)"
@@ -62,7 +62,7 @@ class _LCH(generic._LCH):
                 value = self._get_lch(options, precision=precision, fit=fit)
         return value
 
-    def _get_lch(self, options,  *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LCH color."""
 
         template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
@@ -74,7 +74,7 @@ class _LCH(generic._LCH):
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_lcha(self, options,  *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
         """Get LCH color with alpha channel."""
 
         template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"

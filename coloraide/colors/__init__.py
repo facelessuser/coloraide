@@ -1,95 +1,213 @@
 """Colors."""
-from .hsv import _HSV
-from .srgb import _SRGB
-from .hsl import _HSL
-from .hwb import _HWB
-from .lab import _LAB
-from .lch import _LCH
-from .display_p3 import _Display_P3
-from .a98_rgb import _A98_RGB
-from .prophoto_rgb import _ProPhoto_RGB
-from .rec_2020 import _Rec_2020
-from ..matcher import color_match, color_fullmatch
-
-__all__ = ("HSV", "SRGB", "HSL", "HWB", "LAB", "LCH", "Display_P3", "a98-rgb", "prophoto-rgb", "rec-2020")
-
-SPACES = frozenset({"srgb", "hsl", "hsv", "hwb", "lch", "lab", "display-p3", "a98-rgb", "prophoto-rgb", "rec-2020"})
-
-CS_MAP = {}
+from .hsv import HSV
+from .srgb import SRGB
+from .hsl import HSL
+from .hwb import HWB
+from .lab import LAB
+from .lch import LCH
+from .display_p3 import Display_P3
+from .a98_rgb import A98_RGB
+from .prophoto_rgb import ProPhoto_RGB
+from .rec_2020 import Rec_2020
+from .. import util
 
 
-class HSV(_HSV):
-    """HSV color class."""
+class ColorMatch:
+    """Color match object."""
 
-    spaces = CS_MAP
+    def __init__(self, color, start, end):
+        """Initialize."""
 
+        self.color = color
+        self.start = start
+        self.end = end
 
-class SRGB(_SRGB):
-    """RGB color class."""
+    def __str__(self):
+        """String."""
 
-    spaces = CS_MAP
+        return "ColorMatch(color={!r}, start={}, end={})".format(self.color, self.start, self.end)
 
-
-class HSL(_HSL):
-    """HSL color class."""
-
-    spaces = CS_MAP
-
-
-class HWB(_HWB):
-    """HWB color class."""
-
-    spaces = CS_MAP
+    __repr__ = __str__
 
 
-class LAB(_LAB):
-    """HWB color class."""
+class Color:
+    """Color wrapper class."""
 
-    spaces = CS_MAP
+    SUPPORTED = (
+        HSL, HWB, LAB, LCH, SRGB, HSV,
+        Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
+    )
+    CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
+    def __init__(self, color, data=None, filters=None):
+        """Initialize."""
 
-class LCH(_LCH):
-    """HWB color class."""
+        self._attach(self._parse(color, data, filters))
 
-    spaces = CS_MAP
+    def __repr__(self):
+        """Representation."""
 
+        return repr(self._color)
 
-class Display_P3(_Display_P3):
-    """Display-p3 color class."""
+    __str__ = __repr__
 
-    spaces = CS_MAP
+    def _attach(self, color):
+        """Attach the this objects convert space to the color."""
 
+        self._color = color
+        self._color.spaces = {k: v for k, v in self.CS_MAP.items()}
 
-class A98_RGB(_A98_RGB):
-    """A98 RGB color class."""
+    @classmethod
+    def _parse(cls, color, data=None, filters=None):
+        """Parse the color."""
 
-    spaces = CS_MAP
+        obj = None
+        if data is not None:
+            filters = set(filters) if filters is not None else set()
+            for space in cls.SUPPORTED:
+                s = color.lower()
+                if space.SPACE == s and (not filters or s in filters):
+                    obj = space(data)
+                    return obj
+        elif isinstance(color, Color):
+            if not filters or color.space() in filters:
+                obj = cls.CS_MAP[color.space()](color._color)
+        else:
+            m = cls._match(color, fullmatch=True, filters=filters)
+            if m is None:
+                raise ValueError("'{}' is not a valid color".format(color))
+            obj = m.color
+        if obj is None:
+            raise ValueError("Could not process the provided color")
+        return obj
 
+    @classmethod
+    def _match(cls, string, start=0, fullmatch=False, filters=None):
+        """Match a color in a buffer and return a color object."""
 
-class ProPhoto_RGB(_ProPhoto_RGB):
-    """ProPhoto RGB color class."""
+        filters = set(filters) if filters is not None else set()
 
-    spaces = CS_MAP
+        for space in cls.SUPPORTED:
+            if space.SPACE not in cls.CS_MAP or (filters and space.SPACE not in filters):
+                continue
+            value, match_end = space.match(string, start, fullmatch)
+            if value is not None:
+                color = space(value)
+                return ColorMatch(color, start, match_end)
+        return None
 
+    @classmethod
+    def match(cls, string, start=0, fullmatch=False, filters=None):
+        """Match color."""
 
-class Rec_2020(_Rec_2020):
-    """Rec 2020 color class."""
+        obj = cls._match(string, start, fullmatch, filters)
+        if obj is not None:
+            obj.color = cls(obj.color.space(), obj.color._channels + [obj.color.alpha])
+        return obj
 
-    spaces = CS_MAP
+    def space(self):
+        """The current color space."""
 
+        return self._color.space()
 
-SUPPORTED = (HSV, HSL, HWB, LAB, LCH, SRGB, Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020)
-for obj in SUPPORTED:
-    CS_MAP[obj.space()] = obj
+    def coords(self, scale=util.DEF_PREC):
+        """Coordinates."""
 
+        return self._color.coords(scale=scale)
 
-def colorgen(string, spaces=SPACES):
-    """Match a color and return a match object."""
+    @classmethod
+    def new(cls, color, data=None, filters=None):
+        """Create new color object."""
 
-    return color_fullmatch(string, SUPPORTED, SPACES)
+        return cls(color, data, filters)
 
+    def clone(self):
+        """Clone."""
 
-def colorgen_match(string, start=0, fullmatch=False, spaces=SPACES):
-    """Match a color and return a match object."""
+        clone = self._color.clone()
+        return type(self)(clone.space(), clone._channels + [clone.alpha])
 
-    return color_match(string, start, fullmatch, SUPPORTED, SPACES)
+    def convert(self, space, fit=False):
+        """Convert."""
+
+        obj = self._color.convert(space, fit)
+        return type(self)(obj.space(), obj._channels + [obj.alpha])
+
+    def update(self, color, data=None, filters=None):
+        """Update the existing color space with the provided color."""
+
+        obj = self._parse(color, data, filters)
+        self._color.update(obj)
+        return self
+
+    def mutate(self, color, data=None, filters=None):
+        """Mutate the current color to a new color."""
+
+        self._attach(self._parse(color, data, filters))
+        return self
+
+    def to_string(self, **kwargs):
+        """To string."""
+
+        return self._color.to_string(**kwargs)
+
+    def get(self, name):
+        """Get channel."""
+
+        return self._color.get(name)
+
+    def set(self, name, value):  # noqa: A003
+        """Set channel."""
+
+        self._color.set(name, value)
+        return self
+
+    def is_achromatic(self):
+        """Check if color is is_achromatic."""
+
+        return self._color.is_achromatic()
+
+    def delta(self, color):
+        """Get distance between this color and the provided color."""
+
+        return self._color.delta(color._color)
+
+    def luminance(self):
+        """Get color's luminance."""
+
+        return self._color.luminance()
+
+    def contrast_ratio(self, color):
+        """Compare the contrast ration of this color and the provided color."""
+
+        return self._color(color._color)
+
+    def alpha_composite(self, background=None):
+        """Apply the given transparency with the given background."""
+
+        if background is not None:
+            background = background._color
+
+        self._color.alpha_composite(background)
+        return self
+
+    def mix(self, color, percent, alpha=False, space="lch"):
+        """Mix the two colors."""
+
+        self._color.mix(color._color, percent, alpha=alpha, space=space)
+        return self
+
+    def __getattr__(self, name):
+        """Get attribute."""
+
+        if name != '_color':
+            return getattr(self._color, name)
+
+    def __setattr__(self, name, value):
+        """Set attribute."""
+
+        try:
+            if name in self._color.CHANNEL_NAMES:
+                setattr(self._color, name, value)
+        except AttributeError:
+            super().__setattr__(name, value)

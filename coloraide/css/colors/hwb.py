@@ -5,7 +5,7 @@ from ... import util
 from ...util import parse
 
 
-class _HWB(generic._HWB):
+class HWB(generic.HWB):
     """HWB class."""
 
     DEF_BG = "hwb(0 0% 0% / 1)"

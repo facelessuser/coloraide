@@ -5,7 +5,7 @@ from ... import util
 from ...util import parse
 
 
-class _LAB(generic._LAB):
+class LAB(generic.LAB):
     """LAB class."""
 
     DEF_BG = "lab(0% 0 0 / 1)"

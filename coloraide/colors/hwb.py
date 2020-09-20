@@ -6,7 +6,7 @@ from ..util import parse
 from ..util import convert
 
 
-class _HWB(_ColorTools, _Color):
+class HWB(_ColorTools, _Color):
     """HWB class."""
 
     SPACE = "hwb"

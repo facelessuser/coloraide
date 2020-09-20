@@ -52,6 +52,7 @@ class _Color:
     def __init__(self, color=None):
         """Initialize."""
 
+        self.spaces = {}
         self._channel_alpha = 0.0
         self._channels = [0.0] * self.NUM_CHANNELS
 
@@ -74,7 +75,9 @@ class _Color:
         obj = self.spaces.get(space.lower())
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
-        return obj(value)
+        color = obj(value)
+        color.spaces = {k: v for k, v in self.spaces.items()}
+        return color
 
     def _on_convert(self):
         """
@@ -101,7 +104,7 @@ class _Color:
 
         return cls.SPACE
 
-    def mutate(self, obj):
+    def update(self, obj):
         """Update from color."""
 
         if self is obj:

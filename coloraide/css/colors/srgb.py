@@ -8,7 +8,7 @@ from ...util import parse
 RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**parse.COLOR_PARTS))
 
 
-class _SRGB(generic._SRGB):
+class SRGB(generic.SRGB):
     """SRGB class."""
 
     DEF_BG = "rgb(0 0 0 / 1)"

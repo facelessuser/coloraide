@@ -2,7 +2,7 @@
 from ._rgb import _RGBColor
 
 
-class _Rec_2020(_RGBColor):
+class Rec_2020(_RGBColor):
     """Rec 2020 class."""
 
     SPACE = "rec-2020"

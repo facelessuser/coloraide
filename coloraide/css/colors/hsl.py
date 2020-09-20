@@ -5,7 +5,7 @@ from ... import util
 from ...util import parse
 
 
-class _HSL(generic._HSL):
+class HSL(generic.HSL):
     """HSL class."""
 
     DEF_BG = "hsl(0 0% 0% / 1)"

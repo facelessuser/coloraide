@@ -2,7 +2,7 @@
 from ._rgb import _RGBColor
 
 
-class _Display_P3(_RGBColor):
+class Display_P3(_RGBColor):
     """Display-p3 class."""
 
     SPACE = "display-p3"

@@ -6,7 +6,7 @@ from ..util import parse
 from ..util import convert
 
 
-class _HSV(_ColorTools, _Color):
+class HSV(_ColorTools, _Color):
     """HSL class."""
 
     SPACE = "hsv"

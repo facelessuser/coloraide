@@ -2,7 +2,7 @@
 from ._rgb import _RGBColor
 
 
-class _SRGB(_RGBColor):
+class SRGB(_RGBColor):
     """SRGB class."""
 
     SPACE = "srgb"

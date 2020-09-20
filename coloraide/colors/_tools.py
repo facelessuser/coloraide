@@ -164,7 +164,7 @@ class _ColorTools(_Gamut):
 
         # Use the best, last values
         temp._mix([c1, c2, c3], mix._channels, last_mix)
-        return self.mutate(temp)
+        return self.update(temp)
 
     def contrast_ratio(self, color):
         """Get contrast ratio."""
@@ -213,7 +213,7 @@ class _ColorTools(_Gamut):
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
-        return self.mutate(this)
+        return self.update(this)
 
     def grayscale(self):
         """Convert the color with a grayscale filter."""

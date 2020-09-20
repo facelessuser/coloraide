@@ -6,7 +6,7 @@ from ..util import convert
 from .. import util
 
 
-class _LAB(_ColorTools, _Color):
+class LAB(_ColorTools, _Color):
     """LAB class."""
 
     SPACE = "lab"

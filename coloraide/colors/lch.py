@@ -6,7 +6,7 @@ from ..util import parse
 from ..util import convert
 
 
-class _LCH(_ColorTools, _Color):
+class LCH(_ColorTools, _Color):
     """LCH class."""
 
     SPACE = "lch"

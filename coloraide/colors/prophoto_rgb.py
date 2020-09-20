@@ -2,7 +2,7 @@
 from ._rgb import _RGBColor
 
 
-class _ProPhoto_RGB(_RGBColor):
+class ProPhoto_RGB(_RGBColor):
     """Pro Photo RGB class."""
 
     SPACE = "prophoto-rgb"

@@ -69,11 +69,11 @@ def lch_chroma(base, color):
                 high = mapcolor.chroma
             mapcolor.chroma = (high + low) / 2
         # Trim off noise allowed by our tolerance
-        color.mutate(mapcolor)
+        color.update(mapcolor)
         color.fit(space, method="clip")
     else:
         # We are close enough that we should just clip.
-        color.mutate(clipped)
+        color.update(clipped)
     return color._channels
 
 
@@ -134,7 +134,7 @@ class _Gamut:
             c._channels[i] = fit[i]
 
         # Adjust the "this" color
-        self.mutate(c)
+        self.update(c)
         self._on_convert()
 
     def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
