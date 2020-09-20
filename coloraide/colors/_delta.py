@@ -20,9 +20,9 @@ def delta_e2000(color, color2, kl=1, kc=1, kh=1):
     lab1 = color.convert("lab")
     lab2 = color2.convert("lab")
 
-    l1, a1, b1 = lab1._channels
+    l1, a1, b1 = lab1.coords()
     c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
-    l2, a2, b2 = lab2._channels
+    l2, a2, b2 = lab2.coords()
     c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
 
     cm = (c1 + c2) / 2

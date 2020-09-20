@@ -31,10 +31,10 @@ def split_channels(cls, color):
     if len(split) > 1:
         alpha = parse.norm_alpha_channel(split[-1])
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-        if c and i < cls.NUM_CHANNELS:
+        if c and i < cls.NUM_COLOR_CHANNELS:
             channels.append(float(c))
-    if len(channels) < cls.NUM_CHANNELS:
-        diff = cls.NUM_CHANNELS - len(channels)
+    if len(channels) < cls.NUM_COLOR_CHANNELS:
+        diff = cls.NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)
     channels.append(alpha if alpha is not None else 1.0)
     return channels
@@ -45,7 +45,7 @@ class Space:
 
     DEF_BG = ""
     SPACE = ""
-    NUM_CHANNELS = 3
+    NUM_COLOR_CHANNELS = 3
     IS_DEFAULT = False
     CHANNEL_NAMES = frozenset(["alpha"])
 
@@ -54,12 +54,17 @@ class Space:
 
         self.spaces = {}
         self._channel_alpha = 0.0
-        self._channels = [0.0] * self.NUM_CHANNELS
+        self._coords = [0.0] * self.NUM_COLOR_CHANNELS
 
-    def coords(self, scale=util.DEF_PREC):
+    def coords(self):
         """Coordinates."""
 
-        return [util.round_half_up(c, scale) for c in self._channels]
+        return self._coords[:]
+
+    def raw(self):
+        """Get all the color data unaltered."""
+
+        return self.coords() + [self.alpha]
 
     def clone(self):
         """Clone."""
@@ -114,8 +119,8 @@ class Space:
         if not isinstance(obj, type(self)):
             obj = type(self)(obj)
 
-        for i, value in enumerate(obj._channels):
-            self._channels[i] = value
+        for i, value in enumerate(obj.coords()):
+            self._coords[i] = value
         self._alpha = obj._alpha
         self._on_convert()
         return self

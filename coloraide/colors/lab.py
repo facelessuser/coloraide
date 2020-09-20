@@ -25,7 +25,7 @@ class LAB(Tools, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._cl, self._ca, self._cb = convert.convert(color._channels, color.space(), self.space())
+            self._cl, self._ca, self._cb = convert.convert(color.coords(), color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -42,17 +42,17 @@ class LAB(Tools, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, channels):
+    def _is_achromatic(self, coords):
         """Is achromatic."""
 
-        l, a, b = self.coords()
+        l, a, b = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
         return abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD
 
     @property
     def _cl(self):
         """Hue channel."""
 
-        return self._channels[0]
+        return self._coords[0]
 
     @_cl.setter
     def _cl(self, value):
@@ -64,13 +64,13 @@ class LAB(Tools, Space):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._channels[0] = value
+        self._coords[0] = value
 
     @property
     def _ca(self):
         """A on LAB axis."""
 
-        return self._channels[1]
+        return self._coords[1]
 
     @_ca.setter
     def _ca(self, value):
@@ -83,13 +83,13 @@ class LAB(Tools, Space):
         TODO: Should we not clamp this?
         """
 
-        self._channels[1] = value
+        self._coords[1] = value
 
     @property
     def _cb(self):
         """B on LAB axis."""
 
-        return self._channels[2]
+        return self._coords[2]
 
     @_cb.setter
     def _cb(self, value):
@@ -101,7 +101,7 @@ class LAB(Tools, Space):
         TODO: Should we not clamp this?
         """
 
-        self._channels[2] = value
+        self._coords[2] = value
 
     def _grayscale(self):
         """Convert to grayscale."""

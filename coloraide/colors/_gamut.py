@@ -74,13 +74,13 @@ def lch_chroma(base, color):
     else:
         # We are close enough that we should just clip.
         color.update(clipped)
-    return color._channels
+    return color.coords()
 
 
 def clip(base, color):
     """Gamut clipping."""
 
-    channels = color._channels
+    channels = color.coords()
     gamut = color._gamut
     fit = []
 
@@ -131,7 +131,7 @@ class Gamut:
         # Apply mapping/clipping/etc.
         fit = func(self.clone(), c)
         for i in range(len(fit)):
-            c._channels[i] = fit[i]
+            c._coords[i] = fit[i]
 
         # Adjust the "this" color
         self.update(c)
@@ -146,7 +146,7 @@ class Gamut:
             return c.in_gamut()
 
         # Verify the values are in bound
-        channels = self._channels
+        channels = self.coords()
         for i, value in enumerate(channels):
             a, b = self._gamut[i]
 

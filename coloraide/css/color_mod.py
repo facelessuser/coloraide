@@ -4,6 +4,7 @@ from . import Color as ColorCSS
 from ..colors import ColorMatch
 from ..colors import _convert as convert
 from ..colors import _parse as parse
+from . import util
 import functools
 import traceback
 
@@ -240,7 +241,7 @@ class ColorMod:
                             raise ValueError("Found unterminated or invalid 'color('")
                         color = color2.convert("srgb")
                         if not color.is_achromatic():
-                            hue = convert.srgb_to_hsv(*color._color._channels)[0]
+                            hue = convert.srgb_to_hsv(*color._color.coords())[0]
                 if color is None:
                     obj = Color.match(string, start=start, fullmatch=False)
                     if obj is not None:
@@ -248,7 +249,7 @@ class ColorMod:
                         if color.space != "srgb":
                             color = color.convert("srgb")
                         if not color.is_achromatic():
-                            hue = convert.srgb_to_hsv(*color._color._channels)[0]
+                            hue = convert.srgb_to_hsv(*color._color.coords())[0]
                         start = obj.end
 
             if color is not None:
@@ -349,7 +350,7 @@ class ColorMod:
             op = m.group(3).strip()
         getattr(self, name)(value, op=op)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_rgb_multi(self, m, hue):
@@ -370,7 +371,7 @@ class ColorMod:
         self.green(values[1], op=op)
         self.blue(values[2], op=op)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_hex(self, m, hue):
@@ -387,7 +388,7 @@ class ColorMod:
         self.green(values[1], op=op)
         self.blue(values[2], op=op)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_alpha(self, m, hue):
@@ -417,7 +418,7 @@ class ColorMod:
         op = m.group(1).strip() if m.group(1) else ""
         self.hue(value, hue, op=op)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_hwb_hsl_channels(self, name, m, hue):
@@ -428,7 +429,7 @@ class ColorMod:
         op = m.group(1).strip() if m.group(1) else ""
         getattr(self, name)(value, op=op, hue=hue)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_tint_shade(self, name, m, hue):
@@ -438,7 +439,7 @@ class ColorMod:
         value = float(value.strip('%'))
         getattr(self, name)(value)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_contrast(self, m, hue):
@@ -448,7 +449,7 @@ class ColorMod:
         value = float(value.strip('%'))
         self.contrast(value)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return m.end(0), hue
 
     def process_blend(self, m, string, hue):
@@ -483,7 +484,7 @@ class ColorMod:
 
         self.blend(color2, 1.0 - value, alpha, space=space)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return start, hue
 
     def tint(self, percent):
@@ -584,7 +585,7 @@ class ColorMod:
 
         self._color.min_contrast(color2, value)
         if not self._color.is_achromatic():
-            hue = convert.srgb_to_hsv(*self._color._color._channels)[0]
+            hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return start, hue
 
     def blend(self, color, percent, alpha=False, space="srgb"):
@@ -697,13 +698,13 @@ class ColorMod:
 class Color(ColorCSS):
     """Color modify class."""
 
-    def __init__(self, color, data=None, filters=None, variables=None):
+    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
         """Initialize."""
 
-        self._attach(self._parse(color, data, filters, variables))
+        self._attach(self._parse(color, data, alpha, filters, variables))
 
     @classmethod
-    def _parse(cls, color, data=None, filters=None, variables=None):
+    def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
         """Parse the color."""
 
         obj = None
@@ -712,7 +713,7 @@ class Color(ColorCSS):
             for space in cls.SUPPORTED:
                 s = color.lower()
                 if space.SPACE == s and (not filters or s in filters):
-                    obj = space(data)
+                    obj = space(data[:space.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -779,24 +780,24 @@ class Color(ColorCSS):
 
         obj = cls._match(string, start, fullmatch, filters, variables)
         if obj is not None:
-            obj.color = cls(obj.color.space(), obj.color._channels + [obj.color.alpha])
+            obj.color = cls(obj.color.space(), obj.color.coords(), obj.color.alpha)
         return obj
 
     @classmethod
-    def new(cls, color, data=None, filters=None, variables=None):
+    def new(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
         """Create new color object."""
 
-        return cls(color, data, filters, variables)
+        return cls(color, data, alpha, filters, variables)
 
-    def update(self, color, data=None, filters=None, variables=None):
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
         """Update the existing color space with the provided color."""
 
-        obj = self._parse(color, data, filters, variables)
+        obj = self._parse(color, data, alpha, filters, variables)
         self._color.update(obj)
         return self
 
-    def mutate(self, color, data=None, filters=None, variables=None):
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, filters, variables))
+        self._attach(self._parse(color, data, alpha, filters, variables))
         return self

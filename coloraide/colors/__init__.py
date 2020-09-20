@@ -39,10 +39,10 @@ class Color:
     )
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
-    def __init__(self, color, data=None, filters=None):
+    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Initialize."""
 
-        self._attach(self._parse(color, data, filters))
+        self._attach(self._parse(color, data, alpha, filters))
 
     def __repr__(self):
         """Representation."""
@@ -58,7 +58,7 @@ class Color:
         self._color.spaces = {k: v for k, v in self.CS_MAP.items()}
 
     @classmethod
-    def _parse(cls, color, data=None, filters=None):
+    def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Parse the color."""
 
         obj = None
@@ -67,7 +67,7 @@ class Color:
             for space in cls.SUPPORTED:
                 s = color.lower()
                 if space.SPACE == s and (not filters or s in filters):
-                    obj = space(data)
+                    obj = space(data[:space.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -106,7 +106,7 @@ class Color:
 
         obj = cls._match(string, start, fullmatch, filters)
         if obj is not None:
-            obj.color = cls(obj.color.space(), obj.color._channels + [obj.color.alpha])
+            obj.color = cls(obj.color.space(), obj.color.coords(), obj.color.alpha)
         return obj
 
     def space(self):
@@ -114,40 +114,40 @@ class Color:
 
         return self._color.space()
 
-    def coords(self, scale=util.DEF_PREC):
+    def coords(self):
         """Coordinates."""
 
-        return self._color.coords(scale=scale)
+        return self._color.coords()
 
     @classmethod
-    def new(cls, color, data=None, filters=None):
+    def new(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Create new color object."""
 
-        return cls(color, data, filters)
+        return cls(color, data, alpha, filters)
 
     def clone(self):
         """Clone."""
 
         clone = self._color.clone()
-        return type(self)(clone.space(), clone._channels + [clone.alpha])
+        return type(self)(clone.space(), clone.coords(), clone.alpha)
 
     def convert(self, space, fit=False):
         """Convert."""
 
         obj = self._color.convert(space, fit)
-        return type(self)(obj.space(), obj._channels + [obj.alpha])
+        return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def update(self, color, data=None, filters=None):
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Update the existing color space with the provided color."""
 
-        obj = self._parse(color, data, filters)
+        obj = self._parse(color, data, alpha, filters)
         self._color.update(obj)
         return self
 
-    def mutate(self, color, data=None, filters=None):
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, filters))
+        self._attach(self._parse(color, data, alpha, filters))
         return self
 
     def to_string(self, **kwargs):
@@ -221,7 +221,7 @@ class Color:
             result = getattr(self, "_color")
             if result is not None:
                 names = result.CHANNEL_NAMES
-            # If requested attribue is a channel name, return the attribute from the Space instance.
+            # If requested attribute is a channel name, return the attribute from the Space instance.
             if name in names:
                 return getattr(result, name)
 

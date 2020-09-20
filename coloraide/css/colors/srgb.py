@@ -98,7 +98,7 @@ class SRGB(generic.SRGB):
         else:
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -118,7 +118,7 @@ class SRGB(generic.SRGB):
         else:
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -139,7 +139,7 @@ class SRGB(generic.SRGB):
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
@@ -166,7 +166,7 @@ class SRGB(generic.SRGB):
         if hex_upper:
             template = template.upper()
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),

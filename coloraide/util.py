@@ -11,6 +11,7 @@ ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
 DEF_FIT = "lch-chroma"
 DEF_FIT_TOLERANCE = 0.000075
+DEF_ALPHA = 1.0
 
 
 def dot(a, b):
@@ -174,6 +175,9 @@ def fmt_float(f, p=0):
 
 def round_half_up(n, scale=0):
     """Round half up."""
+
+    if scale == -1:
+        return n
 
     mult = 10 ** scale
     return math.floor(n * mult + 0.5) / mult

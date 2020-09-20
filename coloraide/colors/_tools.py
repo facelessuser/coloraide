@@ -47,21 +47,21 @@ class Tools(Gamut):
         result._on_convert()
         return result
 
-    def get_coords(self, fit=False, scale=util.DEF_PREC):
+    def fit_coords(self, space=None, method=util.DEF_FIT):
         """Get coordinates within this space or fit to another space."""
 
-        if fit:
-            method = self.space() if not isinstance(fit, str) else fit
-            if not self.in_gamut():
-                clone = self.clone()
-                clone.fit(method=method)
-                return clone.coords()
+        space = (self.space() if space is None else space).lower()
+        method = self.space() if method is None else method
+        if not self.in_gamut(space=space):
+            clone = self.clone()
+            clone.fit(method=method)
+            return clone.coords()
         return self.coords()
 
     def is_achromatic(self):
         """Check if the color is achromatic."""
 
-        return self._is_achromatic(self._channels)
+        return self._is_achromatic(self.coords())
 
     def _mix_channel(self, c1, c2, f1, f2=1.0):
         """
@@ -105,7 +105,7 @@ class Tools(Gamut):
     def luminance(self):
         """Get perceived luminance."""
 
-        return calc_luminance(convert.convert(self._channels, self.space(), "srgb"))
+        return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
 
     def min_contrast(self, color, target):
         """
@@ -145,12 +145,12 @@ class Tools(Gamut):
         last_mix = 1.0
 
         temp = self.clone().convert("srgb")
-        c1, c2, c3 = temp._channels
+        c1, c2, c3 = temp.coords()
 
         while abs(min_mix - max_mix) >= 0.002:
             mid_mix = round((max_mix + min_mix) / 2, 3)
 
-            temp._mix([c1, c2, c3], mix._channels, mid_mix)
+            temp._mix([c1, c2, c3], mix.coords(), mid_mix)
             lum2 = temp.luminance()
 
             if lum2 > required_lum:
@@ -163,7 +163,7 @@ class Tools(Gamut):
                 last_mix = mid_mix
 
         # Use the best, last values
-        temp._mix([c1, c2, c3], mix._channels, last_mix)
+        temp._mix([c1, c2, c3], mix.coords(), last_mix)
         return self.update(temp)
 
     def contrast_ratio(self, color):
@@ -187,7 +187,7 @@ class Tools(Gamut):
         if self._alpha < 1.0:
             # Blend the channels using the alpha channel values as the factors
             # Afterwards, blend the alpha channels. This is different than blend.
-            self._mix(self._channels, background._channels, self._alpha, background._alpha)
+            self._mix(self.coords(), background.coords(), self._alpha, background._alpha)
             self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
         return self
 
@@ -209,7 +209,7 @@ class Tools(Gamut):
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._mix(this._channels, color._channels, factor)
+        this._mix(this.coords(), color.coords(), factor)
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
@@ -228,7 +228,7 @@ class Tools(Gamut):
 
         alpha = alpha is not False and (alpha is True or self._alpha < 1.0)
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
         values = [
             util.fmt_float(coords[0], precision),

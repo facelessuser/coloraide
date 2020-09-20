@@ -52,7 +52,7 @@ class HSL(generic.HSL):
 
         template = "hsl({}, {}%, {}%)" if options.get("comma") else "hsl({} {}% {}%)"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
@@ -64,7 +64,7 @@ class HSL(generic.HSL):
 
         template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

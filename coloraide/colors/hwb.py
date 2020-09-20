@@ -25,7 +25,7 @@ class HWB(Tools, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._ch, self._cw, self._cb = convert.convert(color._channels, color.space(), self.space())
+            self._ch, self._cw, self._cb = convert.convert(color.coords(), color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -42,10 +42,10 @@ class HWB(Tools, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, channels):
+    def _is_achromatic(self, coords):
         """Is achromatic."""
 
-        h, w, b = self.coords()
+        h, w, b = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
         return (w + b) > (100.0 - util.ACHROMATIC_THRESHOLD)
 
     def _on_convert(self):
@@ -62,37 +62,37 @@ class HWB(Tools, Space):
     def _ch(self):
         """Hue channel."""
 
-        return self._channels[0]
+        return self._coords[0]
 
     @_ch.setter
     def _ch(self, value):
         """Set hue channel."""
 
-        self._channels[0] = value
+        self._coords[0] = value
 
     @property
     def _cw(self):
         """Whiteness channel."""
 
-        return self._channels[1]
+        return self._coords[1]
 
     @_cw.setter
     def _cw(self, value):
         """Set whiteness channel."""
 
-        self._channels[1] = value
+        self._coords[1] = value
 
     @property
     def _cb(self):
         """Blackness channel."""
 
-        return self._channels[2]
+        return self._coords[2]
 
     @_cb.setter
     def _cb(self, value):
         """Set blackness channel."""
 
-        self._channels[2] = value
+        self._coords[2] = value
 
     def _grayscale(self):
         """Convert to grayscale."""

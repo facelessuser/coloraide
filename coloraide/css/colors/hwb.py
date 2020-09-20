@@ -51,7 +51,7 @@ class HWB(generic.HWB):
 
         template = "hwb({}, {}%, {}%)" if options.get("comma") else "hwb({} {}% {}%)"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
@@ -63,7 +63,7 @@ class HWB(generic.HWB):
 
         template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"
 
-        coords = self.get_coords(fit=fit, scale=precision)
+        coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

@@ -25,7 +25,7 @@ class LCH(Tools, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._cl, self._cc, self._ch = convert.convert(color._channels, color.space(), self.space())
+            self._cl, self._cc, self._ch = convert.convert(color.coords(), color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -42,10 +42,10 @@ class LCH(Tools, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, channels):
+    def _is_achromatic(self, coords):
         """Is achromatic."""
 
-        l, c, h = self.coords()
+        l, c, h = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
         return c < util.ACHROMATIC_THRESHOLD
 
     def _on_convert(self):
@@ -62,7 +62,7 @@ class LCH(Tools, Space):
     def _cl(self):
         """Lightness channel."""
 
-        return self._channels[0]
+        return self._coords[0]
 
     @_cl.setter
     def _cl(self, value):
@@ -74,13 +74,13 @@ class LCH(Tools, Space):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._channels[0] = value
+        self._coords[0] = value
 
     @property
     def _cc(self):
         """Chroma channel."""
 
-        return self._channels[1]
+        return self._coords[1]
 
     @_cc.setter
     def _cc(self, value):
@@ -93,19 +93,19 @@ class LCH(Tools, Space):
         TODO: Do we clamp the higher end or not?
         """
 
-        self._channels[1] = value
+        self._coords[1] = value
 
     @property
     def _ch(self):
         """Hue channel."""
 
-        return self._channels[2]
+        return self._coords[2]
 
     @_ch.setter
     def _ch(self, value):
         """Set B on LAB axis."""
 
-        self._channels[2] = value
+        self._coords[2] = value
 
     def _grayscale(self):
         """Convert to grayscale."""

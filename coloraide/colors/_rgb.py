@@ -23,7 +23,7 @@ class RGB(Tools, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._cr, self._cg, self._cb = convert.convert(color._channels, color.space(), self.space())
+            self._cr, self._cg, self._cb = convert.convert(color.coords(), color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -40,47 +40,47 @@ class RGB(Tools, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, channels):
+    def _is_achromatic(self, coords):
         """Is achromatic."""
 
-        r, g, b = [util.round_half_up(c * 255.0) for c in self.coords()]
+        r, g, b = [util.round_half_up(c * 255.0) for c in coords]
         return min(r, min(g, b)) == max(r, max(g, b))
 
     @property
     def _cr(self):
         """Red channel."""
 
-        return self._channels[0]
+        return self._coords[0]
 
     @_cr.setter
     def _cr(self, value):
         """Set red channel."""
 
-        self._channels[0] = value
+        self._coords[0] = value
 
     @property
     def _cg(self):
         """Green channel."""
 
-        return self._channels[1]
+        return self._coords[1]
 
     @_cg.setter
     def _cg(self, value):
         """Set green channel."""
 
-        self._channels[1] = value
+        self._coords[1] = value
 
     @property
     def _cb(self):
         """Blue channel."""
 
-        return self._channels[2]
+        return self._coords[2]
 
     @_cb.setter
     def _cb(self, value):
         """Set blue channel."""
 
-        self._channels[2] = value
+        self._coords[2] = value
 
     def _grayscale(self):
         """Convert to grayscale."""
