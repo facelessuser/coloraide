@@ -4,7 +4,7 @@ from . import Color as ColorCSS
 from ..colors import ColorMatch
 from ..colors import _convert as convert
 from ..colors import _parse as parse
-from . import util
+from .. import util
 import functools
 import traceback
 
@@ -583,10 +583,68 @@ class ColorMod:
         else:
             raise ValueError("Found unterminated or invalid 'min-contrast('")
 
-        self._color.min_contrast(color2, value)
+        self.min_contrast(color2, value)
         if not self._color.is_achromatic():
             hue = convert.srgb_to_hsv(*self._color._color.coords())[0]
         return start, hue
+
+    def min_contrast(self, color, target):
+        """
+        Get the color with the best contrast.
+
+        This mimics Sublime Text's custom `min-contrast` for `color-mod` (now defunct - the CSS version).
+        It ensure the color has at least the specified contrast ratio.
+
+        Algorithm is close but not exactly like Sublime. We are sometimes just a little off, but really close.
+        """
+
+        ratio = self._color.contrast_ratio(color)
+
+        # We already meet the minimum or the target is impossible
+        lum1 = self._color.luminance()
+        lum2 = color.luminance()
+        if target < 1 or ratio >= target:
+            return self
+
+        required_lum = ((lum2 + 0.05) / target) - 0.05
+        if required_lum < 0:
+            required_lum = target * (lum2 + 0.05) - 0.05
+
+        # Too much precision isn't helpful
+        required_lum = round(required_lum, 3)
+
+        is_dark = lum2 < lum1
+        mix = self._color.new("srgb", WHITE if is_dark else BLACK)
+        if is_dark:
+            min_mix = 0.0
+            max_mix = 1.0
+            last_lum = 1.0
+        else:
+            max_mix = 0.0
+            min_mix = 1.0
+            last_lum = 0.0
+        last_mix = 1.0
+
+        orig = self._color.clone().convert("srgb")
+        temp = orig.clone()
+
+        while abs(min_mix - max_mix) >= 0.002:
+            mid_mix = round((max_mix + min_mix) / 2, 3)
+
+            lum2 = temp.update(orig).mix(mix, mid_mix, space="srgb").luminance()
+
+            if lum2 > required_lum:
+                max_mix = mid_mix
+            else:
+                min_mix = mid_mix
+
+            if ((lum2 >= required_lum and lum2 < last_lum) if is_dark else (lum2 <= required_lum and lum2 > last_lum)):
+                last_lum = lum2
+                last_mix = mid_mix
+
+        # Use the best, last values
+        orig.mix(mix, last_mix, space="srgb")
+        return self._color.update(orig)
 
     def blend(self, color, percent, alpha=False, space="srgb"):
         """Blend color."""

@@ -184,7 +184,7 @@ class Color:
     def contrast_ratio(self, color):
         """Compare the contrast ration of this color and the provided color."""
 
-        return self._color(color._color)
+        return self._color.contrast_ratio(color._color)
 
     def alpha_composite(self, background=None):
         """Apply the given transparency with the given background."""

@@ -107,65 +107,6 @@ class Tools(Gamut):
 
         return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
 
-    def min_contrast(self, color, target):
-        """
-        Get the color with the best contrast.
-
-        This mimics Sublime Text's custom `min-contrast` for `color-mod` (now defunct - the CSS version).
-        It ensure the color has at least the specified contrast ratio.
-
-        Algorithm is close but not exactly like Sublime. We are sometimes just a little off, but really close.
-        """
-
-        lum1 = self.luminance()
-        lum2 = color.luminance()
-        ratio = calc_contrast_ratio(lum1, lum2)
-
-        # We already meet the minimum or the target is impossible
-        if target < 1 or ratio >= target:
-            return self
-
-        required_lum = ((lum2 + 0.05) / target) - 0.05
-        if required_lum < 0:
-            required_lum = target * (lum2 + 0.05) - 0.05
-
-        # Too much precision isn't helpful
-        required_lum = round(required_lum, 3)
-
-        is_dark = lum2 < lum1
-        mix = self.new(WHITE if is_dark else BLACK, "srgb")
-        if is_dark:
-            min_mix = 0.0
-            max_mix = 1.0
-            last_lum = 1.0
-        else:
-            max_mix = 0.0
-            min_mix = 1.0
-            last_lum = 0.0
-        last_mix = 1.0
-
-        temp = self.clone().convert("srgb")
-        c1, c2, c3 = temp.coords()
-
-        while abs(min_mix - max_mix) >= 0.002:
-            mid_mix = round((max_mix + min_mix) / 2, 3)
-
-            temp._mix([c1, c2, c3], mix.coords(), mid_mix)
-            lum2 = temp.luminance()
-
-            if lum2 > required_lum:
-                max_mix = mid_mix
-            else:
-                min_mix = mid_mix
-
-            if ((lum2 >= required_lum and lum2 < last_lum) if is_dark else (lum2 <= required_lum and lum2 > last_lum)):
-                last_lum = lum2
-                last_mix = mid_mix
-
-        # Use the best, last values
-        temp._mix([c1, c2, c3], mix.coords(), last_mix)
-        return self.update(temp)
-
     def contrast_ratio(self, color):
         """Get contrast ratio."""
 

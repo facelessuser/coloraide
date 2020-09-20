@@ -45,7 +45,7 @@ class HSL(Tools, Space):
     def _is_achromatic(self, coords):
         """Is achromatic."""
 
-        h, s, l = [util.round_half_up(c, scale=util.DEF_PRC) for c in coords]
+        h, s, l = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
         return s < util.ACHROMATIC_THRESHOLD
 
     def _on_convert(self):
