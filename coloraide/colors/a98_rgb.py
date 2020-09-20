@@ -1,8 +1,8 @@
 """A98 RGB color class."""
-from ._rgb import _RGBColor
+from ._rgb import RGB
 
 
-class A98_RGB(_RGBColor):
+class A98_RGB(RGB):
     """A98 RGB class."""
 
     SPACE = "a98-rgb"

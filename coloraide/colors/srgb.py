@@ -1,8 +1,8 @@
 """SRGB color class."""
-from ._rgb import _RGBColor
+from ._rgb import RGB
 
 
-class SRGB(_RGBColor):
+class SRGB(RGB):
     """SRGB class."""
 
     SPACE = "srgb"

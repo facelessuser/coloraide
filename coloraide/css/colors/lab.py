@@ -1,8 +1,8 @@
 """LAB class."""
 import re
 from ...colors import lab as generic
+from ...colors import _parse as parse
 from ... import util
-from ...util import parse
 
 
 class LAB(generic.LAB):

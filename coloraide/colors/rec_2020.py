@@ -1,8 +1,8 @@
 """Rec 2020 color class."""
-from ._rgb import _RGBColor
+from ._rgb import RGB
 
 
-class Rec_2020(_RGBColor):
+class Rec_2020(RGB):
     """Rec 2020 class."""
 
     SPACE = "rec-2020"

@@ -1,12 +1,12 @@
 """SRGB color class."""
-from ._base import _Color
-from ._tools import _ColorTools, GamutBound
-from ..util import parse
-from ..util import convert
+from ._space import Space
+from ._tools import Tools, GamutBound
+from . import _convert as convert
+from . import _parse as parse
 from .. import util
 
 
-class _RGBColor(_ColorTools, _Color):
+class RGB(Tools, Space):
     """SRGB class."""
 
     _gamut = (
@@ -22,7 +22,7 @@ class _RGBColor(_ColorTools, _Color):
 
         super().__init__(color)
 
-        if isinstance(color, _Color):
+        if isinstance(color, Space):
             self._cr, self._cg, self._cb = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):

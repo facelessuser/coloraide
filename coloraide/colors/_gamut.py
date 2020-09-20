@@ -77,7 +77,7 @@ def lch_chroma(base, color):
     return color._channels
 
 
-def gamut_clip(base, color):
+def clip(base, color):
     """Gamut clipping."""
 
     channels = color._channels
@@ -103,7 +103,7 @@ def gamut_clip(base, color):
     return fit
 
 
-class _Gamut:
+class Gamut:
     """Gamut handling."""
 
     def fit(self, space=None, method="lch-chroma"):
@@ -111,7 +111,7 @@ class _Gamut:
 
         # Select appropriate mapping algorithm
         if method == "clip":
-            func = gamut_clip
+            func = clip
         elif method == "lch-chroma":
             func = lch_chroma
         else:

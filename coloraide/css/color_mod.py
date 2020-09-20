@@ -2,8 +2,8 @@
 import re
 from . import Color as ColorCSS
 from ..colors import ColorMatch
-from ..util import parse
-from ..util import convert
+from ..colors import _convert as convert
+from ..colors import _parse as parse
 import functools
 import traceback
 

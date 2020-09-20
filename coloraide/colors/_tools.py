@@ -1,7 +1,7 @@
 """Color tools."""
-from ._gamut import _Gamut, GamutBound, GamutUnbound, GamutAngle, gamut_clip  # noqa: F401
+from ._gamut import Gamut, GamutBound, GamutUnbound, GamutAngle  # noqa: F401
 from .. import util
-from ..util import convert
+from . import _convert as convert
 import math
 from . _delta import delta_e2000
 
@@ -23,7 +23,7 @@ def calc_luminance(srgb):
     return sum([r * v for r, v in zip(lsrgb, vector)])
 
 
-class _ColorTools(_Gamut):
+class Tools(Gamut):
     """Color utilities."""
 
     def convert(self, space, fit=False):

@@ -1,6 +1,6 @@
 """Color base."""
 from .. import util
-from ..util import parse
+from . import _parse as parse
 import re
 
 # Technically this form can handle any number of channels as long as any
@@ -40,8 +40,8 @@ def split_channels(cls, color):
     return channels
 
 
-class _Color:
-    """Base color object."""
+class Space:
+    """Base color space object."""
 
     DEF_BG = ""
     SPACE = ""

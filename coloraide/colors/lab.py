@@ -1,12 +1,12 @@
 """LAB class."""
-from ._base import _Color
-from ._tools import _ColorTools, GamutUnbound, GamutBound
-from ..util import parse
-from ..util import convert
+from ._space import Space
+from ._tools import Tools, GamutUnbound, GamutBound
+from . import _convert as convert
+from . import _parse as parse
 from .. import util
 
 
-class LAB(_ColorTools, _Color):
+class LAB(Tools, Space):
     """LAB class."""
 
     SPACE = "lab"
@@ -24,7 +24,7 @@ class LAB(_ColorTools, _Color):
 
         super().__init__(color)
 
-        if isinstance(color, _Color):
+        if isinstance(color, Space):
             self._cl, self._ca, self._cb = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):

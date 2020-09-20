@@ -1,12 +1,12 @@
 """LCH class."""
-from ._base import _Color
-from ._tools import _ColorTools, GamutUnbound, GamutAngle, GamutBound
+from ._space import Space
+from ._tools import Tools, GamutUnbound, GamutAngle, GamutBound
+from . import _convert as convert
+from . import _parse as parse
 from .. import util
-from ..util import parse
-from ..util import convert
 
 
-class LCH(_ColorTools, _Color):
+class LCH(Tools, Space):
     """LCH class."""
 
     SPACE = "lch"
@@ -24,7 +24,7 @@ class LCH(_ColorTools, _Color):
 
         super().__init__(color)
 
-        if isinstance(color, _Color):
+        if isinstance(color, Space):
             self._cl, self._cc, self._ch = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):

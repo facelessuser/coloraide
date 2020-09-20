@@ -1,8 +1,8 @@
 """Pro Photo RGB color class."""
-from ._rgb import _RGBColor
+from ._rgb import RGB
 
 
-class ProPhoto_RGB(_RGBColor):
+class ProPhoto_RGB(RGB):
     """Pro Photo RGB class."""
 
     SPACE = "prophoto-rgb"

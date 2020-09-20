@@ -1,8 +1,8 @@
 """Display-p3 color class."""
-from ._rgb import _RGBColor
+from ._rgb import RGB
 
 
-class Display_P3(_RGBColor):
+class Display_P3(RGB):
     """Display-p3 class."""
 
     SPACE = "display-p3"

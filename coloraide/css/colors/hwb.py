@@ -1,8 +1,8 @@
 """HWB class."""
 import re
 from ...colors import hwb as generic
+from ...colors import _parse as parse
 from ... import util
-from ...util import parse
 
 
 class HWB(generic.HWB):

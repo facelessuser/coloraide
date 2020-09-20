@@ -1,8 +1,8 @@
 """LCH class."""
 import re
 from ...colors import lch as generic
+from ...colors import _parse as parse
 from ... import util
-from ...util import parse
 
 
 class LCH(generic.LCH):

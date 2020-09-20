@@ -1,8 +1,8 @@
 """HSL class."""
 import re
 from ...colors import hsl as generic
+from ...colors import _parse as parse
 from ... import util
-from ...util import parse
 
 
 class HSL(generic.HSL):

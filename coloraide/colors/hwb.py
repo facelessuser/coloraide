@@ -1,12 +1,12 @@
 """HWB class."""
-from ._base import _Color
-from ._tools import _ColorTools, GamutBound, GamutAngle
+from ._space import Space
+from ._tools import Tools, GamutBound, GamutAngle
+from . import _convert as convert
+from . import _parse as parse
 from .. import util
-from ..util import parse
-from ..util import convert
 
 
-class HWB(_ColorTools, _Color):
+class HWB(Tools, Space):
     """HWB class."""
 
     SPACE = "hwb"
@@ -24,7 +24,7 @@ class HWB(_ColorTools, _Color):
 
         super().__init__(color)
 
-        if isinstance(color, _Color):
+        if isinstance(color, Space):
             self._ch, self._cw, self._cb = convert.convert(color._channels, color.space(), self.space())
             self._alpha = color._alpha
         elif isinstance(color, str):
