@@ -164,7 +164,7 @@ def fmt_float(f, p=0):
     """
 
     value = adjust_precision(f, p)
-    string = ('{{:{}f}}'.format('' if p == -1 else '.' + str(p))).format(value)
+    string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
     m = RE_FLOAT_TRIM.match(string)
     if m:
         string = m.group('keep')
