@@ -728,7 +728,11 @@ class Color(ColorCSS):
 
     @classmethod
     def _match(cls, string, start=0, fullmatch=False, filters=None, variables=None):
-        """Match a color in a buffer and return a color object."""
+        """
+        Match a color in a buffer and return a color object.
+
+        This must return the color space, not the Color object.
+        """
 
         # Handle variable
         end = None
@@ -754,7 +758,7 @@ class Color(ColorCSS):
                 string = handle_vars(string, variables)
             obj, match_end = ColorMod(fullmatch).adjust(string, start)
             if obj is not None:
-                return ColorMatch(obj, start, end if end is not None else match_end)
+                return ColorMatch(obj._color, start, end if end is not None else match_end)
         else:
             filters = set(filters) if filters is not None else set()
             obj = None

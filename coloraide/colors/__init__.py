@@ -83,7 +83,11 @@ class Color:
 
     @classmethod
     def _match(cls, string, start=0, fullmatch=False, filters=None):
-        """Match a color in a buffer and return a color object."""
+        """
+        Match a color in a buffer and return a color object.
+
+        This must return the color space, not the Color object.
+        """
 
         filters = set(filters) if filters is not None else set()
 
@@ -197,17 +201,39 @@ class Color:
         self._color.mix(color._color, percent, alpha=alpha, space=space)
         return self
 
+    def fit(self, space=None, method=util.DEF_FIT):
+        """Fit gamut."""
+
+        self._color.fit(space, method)
+
+    def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
+        """Check if in gamut."""
+
+        return self._color.in_gamut(space, tolerance)
+
     def __getattr__(self, name):
         """Get attribute."""
 
-        if name != '_color':
-            return getattr(self._color, name)
+        # Don't test `_color` as it is used to get Space channel attributes.
+        if name != "_color":
+            # Get channel names
+            names = set()
+            result = getattr(self, "_color")
+            if result is not None:
+                names = result.CHANNEL_NAMES
+            # If requested attribue is a channel name, return the attribute from the Space instance.
+            if name in names:
+                return getattr(result, name)
 
     def __setattr__(self, name, value):
         """Set attribute."""
 
         try:
+            # See if we need to set the space specific channel attributes.
             if name in self._color.CHANNEL_NAMES:
                 setattr(self._color, name, value)
+                return
         except AttributeError:
-            super().__setattr__(name, value)
+            pass
+        # Set all attributes on the Color class.
+        super().__setattr__(name, value)
