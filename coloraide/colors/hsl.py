@@ -108,8 +108,8 @@ class HSL(Tools, Space):
         if self._is_achromatic(channels2):
             channels2[0] = util.NAN
         self._ch = self._hue_mix_channel(channels1[0], channels2[0], factor, factor2)
-        self._cl = self._mix_channel(channels1[1], channels2[1], factor, factor2)
-        self._cs = self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        self._cs = self._mix_channel(channels1[1], channels2[1], factor, factor2)
+        self._cl = self._mix_channel(channels1[2], channels2[2], factor, factor2)
 
     @property
     def hue(self):
