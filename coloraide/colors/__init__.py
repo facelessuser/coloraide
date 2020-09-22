@@ -11,6 +11,11 @@ from .prophoto_rgb import ProPhoto_RGB
 from .rec_2020 import Rec_2020
 from .. import util
 
+SUPPORTED = (
+    HSL, HWB, LAB, LCH, SRGB, HSV,
+    Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
+)
+
 
 class ColorMatch:
     """Color match object."""
@@ -33,10 +38,6 @@ class ColorMatch:
 class Color:
     """Color wrapper class."""
 
-    SUPPORTED = (
-        HSL, HWB, LAB, LCH, SRGB, HSV,
-        Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
-    )
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
     def __init__(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
@@ -64,10 +65,10 @@ class Color:
         obj = None
         if data is not None:
             filters = set(filters) if filters is not None else set()
-            for space in cls.SUPPORTED:
+            for space, space_class in cls.CS_MAP.items():
                 s = color.lower()
-                if space.SPACE == s and (not filters or s in filters):
-                    obj = space(data[:space.NUM_COLOR_CHANNELS] + [alpha])
+                if space == s and (not filters or s in filters):
+                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -91,12 +92,12 @@ class Color:
 
         filters = set(filters) if filters is not None else set()
 
-        for space in cls.SUPPORTED:
-            if space.SPACE not in cls.CS_MAP or (filters and space.SPACE not in filters):
+        for space, space_class in cls.CS_MAP.items():
+            if filters and space not in filters:
                 continue
-            value, match_end = space.match(string, start, fullmatch)
+            value, match_end = space_class.match(string, start, fullmatch)
             if value is not None:
-                color = space(value)
+                color = space_class(value)
                 return ColorMatch(color, start, match_end)
         return None
 
@@ -195,7 +196,7 @@ class Color:
         self._color.alpha_composite(background)
         return self
 
-    def mix(self, color, percent, alpha=False, space="lch"):
+    def mix(self, color, percent, alpha=False, space=None):
         """Mix the two colors."""
 
         self._color.mix(color._color, percent, alpha=alpha, space=space)

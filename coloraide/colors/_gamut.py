@@ -133,7 +133,7 @@ class Gamut:
         for i in range(len(fit)):
             c._coords[i] = fit[i]
 
-        # Adjust the "this" color
+        # Adjust "this" color
         self.update(c)
         self._on_convert()
 

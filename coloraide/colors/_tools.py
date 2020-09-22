@@ -132,10 +132,14 @@ class Tools(Gamut):
             self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
         return self
 
-    def mix(self, color, percent, alpha=False, space="lch"):
+    def mix(self, color, percent, alpha=False, space=None):
         """Blend color."""
 
-        space = space.lower()
+        if space is None:
+            space = self.space()
+        else:
+            space = space.lower()
+
         factor = util.clamp(float(percent), 0.0, 1.0)
 
         this = None

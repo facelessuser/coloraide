@@ -652,7 +652,7 @@ class ColorMod:
         space = space.lower()
         if space not in ("srgb", "hsl", "hwb"):
             raise ValueError(
-                "ColorMod's does not support the '{}' colorspace, only 'srgb', 'hsl', and 'hwb' are SUPPORTED"
+                "ColorMod's does not support the '{}' colorspace, only 'srgb', 'hsl', and 'hwb' are supported"
             ).format(space)
         this = self._color.convert(space) if self._color.space() != space else self._color
 
@@ -768,10 +768,10 @@ class Color(ColorCSS):
         obj = None
         if data is not None:
             filters = set(filters) if filters is not None else set()
-            for space in cls.SUPPORTED:
+            for space, space_class in cls.CS_MAP.items():
                 s = color.lower()
-                if space.SPACE == s and (not filters or s in filters):
-                    obj = space(data[:space.NUM_COLOR_CHANNELS] + [alpha])
+                if space == s and (not filters or s in filters):
+                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -821,12 +821,12 @@ class Color(ColorCSS):
         else:
             filters = set(filters) if filters is not None else set()
             obj = None
-            for space in cls.SUPPORTED:
-                if space.SPACE not in cls.CS_MAP or (filters and space.SPACE not in filters):
+            for space, space_class in cls.CS_MAP.items():
+                if filters and space not in filters:
                     continue
-                value, match_end = space.match(string, start, fullmatch)
+                value, match_end = space_class.match(string, start, fullmatch)
                 if value is not None:
-                    color = space(value)
+                    color = space_class(value)
                     obj = ColorMatch(color, start, match_end)
             if obj is not None and end:
                 obj.end = end

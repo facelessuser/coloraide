@@ -55,6 +55,8 @@ class Space:
         self.spaces = {}
         self._channel_alpha = 0.0
         self._coords = [0.0] * self.NUM_COLOR_CHANNELS
+        if isinstance(color, Space):
+            self.spaces = {k: v for k, v in color.spaces.items()}
 
     def coords(self):
         """Coordinates."""

@@ -11,12 +11,13 @@ from ...colors import ProPhoto_RGB
 from ...colors import Rec_2020
 from ...colors import Color as GenericColor
 
+SUPPORTED = (
+    HSL, HWB, LAB, LCH, SRGB, HSV,
+    Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
+)
+
 
 class Color(GenericColor):
     """Color wrapper class."""
 
-    SUPPORTED = (
-        HSL, HWB, LAB, LCH, SRGB, HSV,
-        Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
-    )
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
