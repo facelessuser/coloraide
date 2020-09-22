@@ -112,7 +112,7 @@ class Tools(Gamut):
 
         return calc_contrast_ratio(self.luminance(), color.luminance())
 
-    def alpha_composite(self, background=None):
+    def alpha_composite(self, background, space=None):
         """
         Apply the given transparency with the given background.
 
@@ -120,16 +120,31 @@ class Tools(Gamut):
         the transparent color against the given background.
         """
 
-        if background is None:
-            background = self.new(self.DEF_BG)
-        elif not isinstance(background, type(self)):
-            background = self.new(background)
-
         if self._alpha < 1.0:
+            if space is None:
+                space = self.space()
+            else:
+                space = space.lower()
+
+            this = self.convert(space)
+            if background.space() != background:
+                background = background.convert(space)
+
+            if this is None:
+                raise ValueError('Invalid colorspace value: {}'.format(space))
+
             # Blend the channels using the alpha channel values as the factors
             # Afterwards, blend the alpha channels. This is different than blend.
-            self._mix(self.coords(), background.coords(), self._alpha, background._alpha)
-            self._alpha = self._alpha + background._alpha * (1.0 - self._alpha)
+
+            # We reverse our mix to give an intuitive interface:
+            #    when given `color1.mix(color2, percent))`, `percent` will apply to `color2`
+            #    opposed to `color1`
+            # Because of this, we need to feed our colors in reverse order.
+            # We are mixing our color into the background at the percentage of our our alpha.
+            this._mix(background.coords(), this.coords(), this._alpha, background._alpha)
+            this._alpha = this._alpha + background._alpha * (1.0 - this._alpha)
+            self.update(this)
+
         return self
 
     def mix(self, color, percent, alpha=False, space=None):
@@ -142,12 +157,7 @@ class Tools(Gamut):
 
         factor = util.clamp(float(percent), 0.0, 1.0)
 
-        this = None
-        if self.space() == space:
-            this = self
-        else:
-            this = self.convert(space)
-
+        this = self.convert(space)
         if color.space() != space:
             color = color.convert(space)
 
@@ -157,7 +167,7 @@ class Tools(Gamut):
         this._mix(this.coords(), color.coords(), factor)
         if alpha:
             # This is a simple channel blend and not alpha compositing.
-            this._alpha = self._mix_channel(this._alpha, color._alpha, factor)
+            this._alpha = this._mix_channel(this._alpha, color._alpha, factor)
         return self.update(this)
 
     def grayscale(self):

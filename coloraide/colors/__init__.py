@@ -187,19 +187,30 @@ class Color:
 
         return self._color.contrast_ratio(color._color)
 
-    def alpha_composite(self, background=None):
+    def alpha_composite(self, background=None, space=None):
         """Apply the given transparency with the given background."""
 
-        if background is not None:
+        if isinstance(background, Color):
             background = background._color
+        elif isinstance(background, str):
+            background = self.new(background)._color
+        else:
+            raise TypeError("Unexpected type '{}'".format(type(background)))
 
-        self._color.alpha_composite(background)
+        self._color.alpha_composite(background, space)
         return self
 
     def mix(self, color, percent, alpha=False, space=None):
         """Mix the two colors."""
 
-        self._color.mix(color._color, percent, alpha=alpha, space=space)
+        if isinstance(color, Color):
+            color = color._color
+        elif isinstance(color, str):
+            color = self.new(color)._color
+        else:
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+
+        self._color.mix(color, percent, alpha=alpha, space=space)
         return self
 
     def fit(self, space=None, method=util.DEF_FIT):
