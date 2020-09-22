@@ -82,19 +82,14 @@ class RGB(Tools, Space):
 
         self._coords[2] = value
 
-    def _grayscale(self):
-        """Convert to grayscale."""
-
-        self._cr = self.luminance()
-        self._cg = self.luminance()
-        self._cb = self.luminance()
-
     def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cr = self._mix_channel(channels1[0], channels2[0], factor, factor2)
-        self._cg = self._mix_channel(channels1[1], channels2[1], factor, factor2)
-        self._cb = self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        return (
+            self._mix_channel(channels1[0], channels2[0], factor, factor2),
+            self._mix_channel(channels1[1], channels2[1], factor, factor2),
+            self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        )
 
     @property
     def red(self):

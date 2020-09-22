@@ -12,6 +12,7 @@ DEF_PREC = 5
 DEF_FIT = "lch-chroma"
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
+DEF_MIX = 0.5
 
 
 def dot(a, b):

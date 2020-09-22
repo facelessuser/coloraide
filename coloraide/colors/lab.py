@@ -103,18 +103,14 @@ class LAB(Tools, Space):
 
         self._coords[2] = value
 
-    def _grayscale(self):
-        """Convert to grayscale."""
-
-        self._ca = 0
-        self._cb = 0
-
     def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        self._cl = self._mix_channel(channels1[0], channels2[0], factor, factor2)
-        self._ca = self._mix_channel(channels1[1], channels2[1], factor, factor2)
-        self._cb = self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        return (
+            self._mix_channel(channels1[0], channels2[0], factor, factor2),
+            self._mix_channel(channels1[1], channels2[1], factor, factor2),
+            self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        )
 
     @property
     def l(self):

@@ -120,9 +120,10 @@ class Tools(Gamut):
         the transparent color against the given background.
         """
 
+        current_space = self.space()
         if self._alpha < 1.0:
             if space is None:
-                space = self.space()
+                space = current_space
             else:
                 space = space.lower()
 
@@ -141,17 +142,18 @@ class Tools(Gamut):
             #    opposed to `color1`
             # Because of this, we need to feed our colors in reverse order.
             # We are mixing our color into the background at the percentage of our our alpha.
-            this._mix(background.coords(), this.coords(), this._alpha, background._alpha)
+            this._coords = [c for c in this._mix(background.coords(), this.coords(), this._alpha, background._alpha)]
             this._alpha = this._alpha + background._alpha * (1.0 - this._alpha)
-            self.update(this)
+        else:
+            this = self
+        return this.convert(current_space)
 
-        return self
-
-    def mix(self, color, percent, alpha=False, space=None):
+    def mix(self, color, percent=util.DEF_MIX, alpha=False, space=None):
         """Blend color."""
 
+        current_space = self.space()
         if space is None:
-            space = self.space()
+            space = current_space
         else:
             space = space.lower()
 
@@ -164,17 +166,11 @@ class Tools(Gamut):
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._mix(this.coords(), color.coords(), factor)
+        this._coords = [c for c in this._mix(this.coords(), color.coords(), factor)]
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = this._mix_channel(this._alpha, color._alpha, factor)
-        return self.update(this)
-
-    def grayscale(self):
-        """Convert the color with a grayscale filter."""
-
-        self._grayscale()
-        return self
+        return this.convert(current_space)
 
     def to_generic_string(
         self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs

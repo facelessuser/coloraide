@@ -557,8 +557,7 @@ class ColorMod:
         else:
             min_hwb = max_hwb.clone()
 
-        max_hwb.mix(min_hwb, 1.0 - percent, space="hwb")
-        self._color.update(max_hwb)
+        self._color.update(max_hwb.mix(min_hwb, 1.0 - percent, space="hwb"))
 
     def process_min_contrast(self, m, string, hue):
         """Process blend."""
@@ -630,12 +629,11 @@ class ColorMod:
         last_mix = 1.0
 
         orig = color1.clone().convert("srgb")
-        temp = orig.clone()
 
         while abs(min_mix - max_mix) >= 0.002:
             mid_mix = round((max_mix + min_mix) / 2, 3)
 
-            lum2 = temp.update(orig).mix(mix, mid_mix, space="srgb", alpha=True).luminance()
+            lum2 = orig.mix(mix, mid_mix, space="srgb", alpha=True).luminance()
 
             if lum2 > required_lum:
                 max_mix = mid_mix
@@ -647,8 +645,7 @@ class ColorMod:
                 last_mix = mid_mix
 
         # Use the best, last values
-        orig.mix(mix, last_mix, space="srgb", alpha=True)
-        color1.update(orig)
+        color1.update(orig.mix(mix, last_mix, space="srgb", alpha=True))
 
     def blend(self, color, percent, alpha=False, space="srgb"):
         """Blend color."""
@@ -665,8 +662,7 @@ class ColorMod:
             color = color.convert(space)
             color.hue = hue
 
-        this.mix(color, percent, alpha=False, space=space)
-        self._color.update(this)
+        self._color.update(this.mix(color, percent, alpha=False, space=space))
 
     def red(self, value, op=""):
         """Red."""

@@ -94,23 +94,16 @@ class HWB(Tools, Space):
 
         self._coords[2] = value
 
-    def _grayscale(self):
-        """Convert to grayscale."""
-
-        factor = 100.0 / (self._cw + self._cb)
-        self._cw = self._cw + factor
-        self._cb = self._cb + factor
-
     def _mix(self, channels1, channels2, factor, factor2=1.0):
         """Blend the color with the given color."""
 
-        if self._is_achromatic(channels1):
-            channels1[0] = util.NAN
-        if self._is_achromatic(channels2):
-            channels2[0] = util.NAN
-        self._ch = self._hue_mix_channel(channels1[0], channels2[0], factor, factor2)
-        self._cw = self._mix_channel(channels1[1], channels2[1], factor, factor2)
-        self._cb = self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        hue1 = util.NAN if self._is_achromatic(channels1) else channels1[0]
+        hue2 = util.NAN if self._is_achromatic(channels2) else channels2[0]
+        return (
+            self._hue_mix_channel(hue1, hue2, factor, factor2),
+            self._mix_channel(channels1[1], channels2[1], factor, factor2),
+            self._mix_channel(channels1[2], channels2[2], factor, factor2)
+        )
 
     @property
     def hue(self):

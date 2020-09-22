@@ -197,21 +197,21 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(background)))
 
-        self._color.alpha_composite(background, space)
-        return self
+        obj = self._color.alpha_composite(background, space)
+        return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def mix(self, color, percent, alpha=False, space=None):
+    def mix(self, color, percent=util.DEF_MIX, alpha=False, space=None):
         """Mix the two colors."""
 
-        if isinstance(color, Color):
+        if isinstance(color, type(self)):
             color = color._color
         elif isinstance(color, str):
             color = self.new(color)._color
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
 
-        self._color.mix(color, percent, alpha=alpha, space=space)
-        return self
+        obj = self._color.mix(color, percent, alpha=alpha, space=space)
+        return type(self)(obj.space(), obj.coords(), obj.alpha)
 
     def fit(self, space=None, method=util.DEF_FIT):
         """Fit gamut."""
