@@ -9,17 +9,28 @@ class LAB(generic.LAB):
     """LAB class."""
 
     DEF_BG = "lab(0% 0 0 / 1)"
-    START = re.compile(r'(?i)\blab\(')
+    START = re.compile(r'(?i)\b(?:lab|gray)\(')
     MATCH = re.compile(
         r"""(?xi)
-        \blab\(\s*
         (?:
-            # Space separated format
-            {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |
-            # comma separated format
-            {percent}{comma}{float}{comma}{float}(?:{comma}(?:{percent}|{float}))?
+            \blab\(\s*
+            (?:
+                # Space separated format
+                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |
+                # comma separated format
+                {percent}{comma}{float}{comma}{float}(?:{comma}(?:{percent}|{float}))?
+            )
+            \s*\) |
+            # Shorthand for desaturated colors
+            \bgray\(\s*
+            (?:
+               # Space separated format
+               {float}(?:{slash}(?:{percent}|{float}))? |
+               # comma separated format
+               {float}(?:{comma}(?:{percent}|{float}))?
+            )
+            \s*\)
         )
-        \s*\)
         """.format(**parse.COLOR_PARTS)
     )
 
@@ -40,10 +51,16 @@ class LAB(generic.LAB):
             return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if alpha is not False and (alpha is True or self._alpha < 1.0):
-            value = self._get_laba(options, precision=precision, fit=fit)
+        if options.get("gray") and self.is_achromatic():
+            if alpha is not False and (alpha is True or self._alpha < 1.0):
+                value = self._get_graya(options, precision=precision, fit=fit)
+            else:
+                value = self._get_gray(options, precision=precision, fit=fit)
         else:
-            value = self._get_lab(options, precision=precision, fit=fit)
+            if alpha is not False and (alpha is True or self._alpha < 1.0):
+                value = self._get_laba(options, precision=precision, fit=fit)
+            else:
+                value = self._get_lab(options, precision=precision, fit=fit)
         return value
 
     def _get_lab(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
@@ -71,6 +88,27 @@ class LAB(generic.LAB):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
+    def _get_gray(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+        """Get gray color with alpha."""
+
+        template = "gray({})"
+
+        coords = self.fit_coords(method=fit) if fit else self.coords()
+        return template.format(
+            util.fmt_float(coords[0], precision)
+        )
+
+    def _get_graya(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+        """Get gray color with alpha."""
+
+        template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
+
+        coords = self.fit_coords(method=fit) if fit else self.coords()
+        return template.format(
+            util.fmt_float(coords[0], precision),
+            util.fmt_float(self._alpha, max(3, precision))
+        )
+
     @classmethod
     def tx_channel(cls, channel, value):
         """Translate channel string."""
@@ -86,15 +124,27 @@ class LAB(generic.LAB):
     def split_channels(cls, color):
         """Split channels."""
 
-        start = 4
-        channels = []
-        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-            if i <= 2:
-                channels.append(cls.tx_channel(i, c))
-            else:
-                channels.append(cls.tx_channel(-1, c))
-        if len(channels) == 3:
-            channels.append(1.0)
+        if color[:4].lower().startswith('gray'):
+            start = 5
+            channels = []
+            alpha = None
+            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+                if i == 0:
+                    channels.append(cls.tx_channel(i, c))
+                else:
+                    alpha = cls.tx_channel(-1, c)
+            channels.extend([0.0, 0.0])
+            channels.append(1.0 if alpha is None else alpha)
+        else:
+            start = 4
+            channels = []
+            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+                if i <= 2:
+                    channels.append(cls.tx_channel(i, c))
+                else:
+                    channels.append(cls.tx_channel(-1, c))
+            if len(channels) == 3:
+                channels.append(1.0)
         return channels
 
     @classmethod

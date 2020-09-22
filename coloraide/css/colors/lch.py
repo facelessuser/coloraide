@@ -9,27 +9,17 @@ class LCH(generic.LCH):
     """LCH class."""
 
     DEF_BG = "lch(0% 0 0 / 1)"
-    START = re.compile(r'(?i)\b(?:lch|gray)\(')
+    START = re.compile(r'(?i)\blch\(')
     MATCH = re.compile(
         r"""(?xi)
+        \blch\(\s*
         (?:
-            \blch\(\s*
-            (?:
-                # Space separated format
-                {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
-                # comma separated format
-                {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
-            )
-            \s*\) |
-            \bgray\(
-            (?:
-               # Space separated format
-               {float}(?:{slash}(?:{percent}|{float}))? |
-               # comma separated format
-               {float}(?:{comma}(?:{percent}|{float}))?
-            )
-            \)
+            # Space separated format
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
+            # comma separated format
+            {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
         )
+        \s*\)
         """.format(**parse.COLOR_PARTS)
     )
 
@@ -50,16 +40,10 @@ class LCH(generic.LCH):
             return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if options.get("gray") and self.is_achromatic():
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_gray(options, precision=precision, fit=fit)
-            else:
-                value = self._get_graya(options, precision=precision, fit=fit)
+        if alpha is not False and (alpha is True or self._alpha < 1.0):
+            value = self._get_lcha(options, precision=precision, fit=fit)
         else:
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
-                value = self._get_lcha(options, precision=precision, fit=fit)
-            else:
-                value = self._get_lch(options, precision=precision, fit=fit)
+            value = self._get_lch(options, precision=precision, fit=fit)
         return value
 
     def _get_lch(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
@@ -87,27 +71,6 @@ class LCH(generic.LCH):
             util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_gray(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
-        """Get gray color with alpha."""
-
-        template = "gray({})"
-
-        coords = self.fit_coords(method=fit) if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision)
-        )
-
-    def _get_graya(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
-        """Get gray color with alpha."""
-
-        template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
-
-        coords = self.fit_coords(method=fit) if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(self._alpha, max(3, precision))
-        )
-
     @classmethod
     def tx_channel(cls, channel, value):
         """Translate channel string."""
@@ -125,27 +88,15 @@ class LCH(generic.LCH):
     def split_channels(cls, color):
         """Split channels."""
 
-        if color[:4].lower().startswith('gray'):
-            start = 5
-            channels = []
-            alpha = None
-            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-                if i == 0:
-                    channels.append(cls.tx_channel(i, c))
-                else:
-                    alpha = cls.tx_channel(-1, c)
-            channels.extend([0.0, 0.0])
-            channels.append(1.0 if alpha is None else alpha)
-        else:
-            start = 4
-            channels = []
-            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-                if i <= 2:
-                    channels.append(cls.tx_channel(i, c))
-                else:
-                    channels.append(cls.tx_channel(-1, c))
-            if len(channels) == 3:
-                channels.append(1.0)
+        start = 4
+        channels = []
+        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+            if i <= 2:
+                channels.append(cls.tx_channel(i, c))
+            else:
+                channels.append(cls.tx_channel(-1, c))
+        if len(channels) == 3:
+            channels.append(1.0)
         return channels
 
     @classmethod
