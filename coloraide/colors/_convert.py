@@ -7,15 +7,7 @@ KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 
-CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb", "rec-2020")
-
-
-def cbrt(x):
-    """Cube root."""
-
-    if 0 <= x:
-        return x ** (1.0 / 3.0)
-    return -(-x) ** (1.0 / 3.0)
+CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-rgb", "prophoto-rgb", "rec-2020", "xyz")
 
 
 ############
@@ -37,6 +29,13 @@ def hsv_to_hwb(h, s, v):
     """HSV to HWB."""
 
     return srgb_to_hwb(*hsv_to_srgb(h, s, v))
+
+
+def hsv_to_xyz(h, s, v):
+    """HSV to XYZ."""
+
+    r, g, b = hsv_to_srgb(h, s, v)
+    return srgb_to_xyz(r, g, b)
 
 
 def hsv_to_lab(h, s, v):
@@ -120,11 +119,17 @@ def srgb_to_hwb(r, g, b):
     return h, w, b
 
 
+def srgb_to_xyz(r, g, b):
+    """SRGB to XYZ."""
+
+    srgb = lin_srgb([r, g, b])
+    return d65_to_d50(lin_srgb_to_xyz(srgb))
+
+
 def srgb_to_lab(r, g, b):
     """SRGB to LAB."""
 
-    srgb = lin_srgb([r, g, b])
-    x, y, z = d65_to_d50(lin_srgb_to_xyz(srgb))
+    x, y, z = srgb_to_xyz(r, g, b)
     return xyz_to_lab(x, y, z)
 
 
@@ -191,6 +196,13 @@ def display_p3_to_hwb(r, g, b):
     return srgb_to_hwb(display_p3_to_srgb(r, g, b))
 
 
+def display_p3_to_xyz(r, g, b):
+    """Display p3 to XYZ."""
+
+    prgb = lin_p3([r, g, b])
+    return d65_to_d50(lin_p3_to_xyz(prgb))
+
+
 def display_p3_to_lab(r, g, b):
     """Display P3 to LAB."""
 
@@ -253,6 +265,13 @@ def a98_rgb_to_hwb(r, g, b):
     """A98 RGB to HWB."""
 
     return srgb_to_hwb(a98_rgb_to_srgb(r, g, b))
+
+
+def a98_rgb_to_xyz(r, g, b):
+    """A98 RGB to XYZ."""
+
+    a98 = lin_a98rgb([r, g, b])
+    return d65_to_d50(lin_a98rgb_to_xyz(a98))
 
 
 def a98_rgb_to_lab(r, g, b):
@@ -319,6 +338,13 @@ def prophoto_rgb_to_hwb(r, g, b):
     return srgb_to_hwb(prophoto_rgb_to_srgb(r, g, b))
 
 
+def prophoto_rgb_to_xyz(r, g, b):
+    """ProPhoto RGB to XYZ."""
+
+    pro = lin_prophoto([r, g, b])
+    return lin_prophoto_to_xyz(pro)
+
+
 def prophoto_rgb_to_lab(r, g, b):
     """ProPhoto RGB to LAB."""
 
@@ -381,6 +407,13 @@ def rec_2020_to_hwb(r, g, b):
     """Rec 2020 to HWB."""
 
     return srgb_to_hwb(rec_2020_to_srgb(r, g, b))
+
+
+def rec_2020_to_xyz(r, g, b):
+    """Rec 2020 to XYZ."""
+
+    rec = lin_2020([r, g, b])
+    return d65_to_d50(lin_2020_to_xyz(rec))
 
 
 def rec_2020_to_lab(r, g, b):
@@ -454,6 +487,13 @@ def hsl_to_hwb(h, s, l):
     return srgb_to_hwb(r, g, b)
 
 
+def hsl_to_xyz(h, s, l):
+    """HSL to XYZ."""
+
+    r, g, b = hsl_to_srgb(h, s, l)
+    return srgb_to_xyz(r, g, b)
+
+
 def hsl_to_lab(h, s, l):
     """HSL to LAB."""
 
@@ -522,6 +562,13 @@ def hwb_to_hsl(h, w, b):
 
     r, g, b = hwb_to_srgb(h, w, b)
     return srgb_to_hsl(r, g, b)
+
+
+def hwb_to_xyz(h, w, b):
+    """HWB to XYZ."""
+
+    r, g, b = hwb_to_srgb(h, w, b)
+    return srgb_to_xyz(r, g, b)
 
 
 def hwb_to_lab(h, w, b):
@@ -593,6 +640,29 @@ def lab_to_hwb(l, a, b):
     return srgb_to_hwb(*lab_to_srgb(l, a, b))
 
 
+def lab_to_xyz(l, a, b):
+    """
+    Convert Lab to D50-adapted XYZ.
+
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    """
+
+    # compute `f`, starting with the luminance-related term
+    f1 = (l + 16) / 116
+    f0 = a / 500 + f1
+    f2 = f1 - b / 200
+
+    # compute `xyz`
+    xyz = [
+        math.pow(f0, 3) if math.pow(f0, 3) > EPSILON else (116 * f0 - 16) / KAPPA,
+        math.pow((l + 16) / 116, 3) if l > KAPPA * EPSILON else l / KAPPA,
+        math.pow(f2, 3) if math.pow(f2, 3) > EPSILON else (116 * f2 - 16) / KAPPA
+    ]
+
+    # Compute XYZ by scaling `xyz` by reference `white`
+    return util.multiply(xyz, D50_REF_WHITE)
+
+
 def lab_to_lch(l, a, b):
     """LAB to LCH."""
 
@@ -662,6 +732,13 @@ def lch_to_hwb(l, c, h):
     return srgb_to_hwb(*lab_to_srgb(*lch_to_lab(l, c, h)))
 
 
+def lch_to_xyz(l, c, h):
+    """LCH to XYZ."""
+
+    l, a, b = lch_to_lab(l, c, h)
+    return lab_to_xyz(l, a, b)
+
+
 def lch_to_lab(l, c, h):
     """LCH to LAB."""
 
@@ -697,15 +774,39 @@ def lch_to_rec_2020(l, c, h):
 
 
 ############
-# Other
+# XYZ
 ############
+def xyz_to_hsv(x, y, z):
+    """XYZ to HSV."""
+
+    return srgb_to_hsv(*xyz_to_srgb(x, y, z))
+
+
+def xyz_to_srgb(x, y, z):
+    """XYZ to SRGB."""
+
+    return gam_srgb(xyz_to_lin_srgb(d50_to_d65([x, y, z])))
+
+
+def xyz_to_hsl(x, y, z):
+    """XYZ to HSL."""
+
+    return srgb_to_hsl(*xyz_to_srgb(x, y, z))
+
+
+def xyz_to_hwb(x, y, z):
+    """XYZ to HWB."""
+
+    return srgb_to_hwb(*xyz_to_srgb(x, y, z))
+
+
 def xyz_to_lab(x, y, z):
     """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
     xyz = util.divide([x, y, z], D50_REF_WHITE)
     # Compute `f`
-    f = [cbrt(i) if i > EPSILON else (KAPPA * i + 16.0) / 116.0 for i in xyz]
+    f = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16.0) / 116.0 for i in xyz]
 
     return (
         (116.0 * f[1]) - 16.0,
@@ -714,29 +815,33 @@ def xyz_to_lab(x, y, z):
     )
 
 
-def lab_to_xyz(l, a, b):
-    """
-    Convert Lab to D50-adapted XYZ.
+def xyz_to_lch(x, y, z):
+    """XYZ to LCH."""
 
-    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-    """
-
-    # compute `f`, starting with the luminance-related term
-    f1 = (l + 16) / 116
-    f0 = a / 500 + f1
-    f2 = f1 - b / 200
-
-    # compute `xyz`
-    xyz = [
-        math.pow(f0, 3) if math.pow(f0, 3) > EPSILON else (116 * f0 - 16) / KAPPA,
-        math.pow((l + 16) / 116, 3) if l > KAPPA * EPSILON else l / KAPPA,
-        math.pow(f2, 3) if math.pow(f2, 3) > EPSILON else (116 * f2 - 16) / KAPPA
-    ]
-
-    # Compute XYZ by scaling `xyz` by reference `white`
-    return util.multiply(xyz, D50_REF_WHITE)
+    return lab_to_lch(*xyz_to_lab(x, y, z))
 
 
+def xyz_to_display_p3(x, y, z):
+    """XYZ to SRGB."""
+
+    return gam_p3(xyz_to_lin_p3(d50_to_d65([x, y, z])))
+
+
+def xyz_to_a98_rgb(x, y, z):
+    """XYZ to A98 RGB."""
+
+    return gam_a98rgb(xyz_to_lin_a98rgb(d50_to_d65([x, y, z])))
+
+
+def xyz_to_prophoto_rgb(x, y, z):
+    """XYZ to ProPhoto RGB."""
+
+    return gam_a98rgb(xyz_to_lin_prophoto([x, y, z]))
+
+
+############
+# White point
+############
 def d50_to_d65(xyz):
     """Bradford chromatic adaptation from D50 to D65."""
 
@@ -769,6 +874,9 @@ def d65_to_d50(xyz):
     return util.dot(m, xyz)
 
 
+############
+# Linear
+############
 def lin_srgb_to_xyz(rgb):
     """
     Convert an array of linear-light sRGB values to CIE XYZ using sRGB's own white.
@@ -917,6 +1025,9 @@ def xyz_to_lin_2020(xyz):
     return util.dot(m, xyz)
 
 
+############
+# Gama
+############
 def lin_2020(rgb):
     """Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
@@ -999,6 +1110,9 @@ def gam_srgb(rgb):
     return [(1.055 * math.pow(i, 1 / 2.4) - 0.055) if i > 0.0031308 else (12.92 * i) for i in rgb]
 
 
+############
+# Convert
+############
 def convert(coords, current, wanted):
     """Convert."""
 

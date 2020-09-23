@@ -114,6 +114,14 @@ def divide(a, b):
     return value
 
 
+def cbrt(x):
+    """Cube root."""
+
+    if 0 <= x:
+        return x ** (1.0 / 3.0)
+    return -(-x) ** (1.0 / 3.0)
+
+
 def clamp(value, mn=None, mx=None):
     """Clamp the value to the the given minimum and maximum."""
 

@@ -9,11 +9,12 @@ from .display_p3 import Display_P3
 from .a98_rgb import A98_RGB
 from .prophoto_rgb import ProPhoto_RGB
 from .rec_2020 import Rec_2020
+from .xyz import XYZ
 from .. import util
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, HSV,
-    Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020
+    Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020, XYZ
 )
 
 
