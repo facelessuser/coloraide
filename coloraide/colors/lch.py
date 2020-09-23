@@ -1,6 +1,6 @@
 """LCH class."""
 from ._space import Space
-from ._tools import Tools, GamutUnbound, GamutAngle, GamutBound
+from ._tools import Tools, GamutUnbound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
@@ -14,8 +14,12 @@ class LCH(Tools, Space):
     CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
 
     _gamut = (
-        (GamutBound(0.0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
-        (GamutBound(0.0), GamutUnbound(100.0)),  # Again, I think chroma should be clamped on the zero side.
+        # I think chroma, specifically should be clamped. Generally many
+        # some don't to prevent rounding issues. We should only get
+        # negative chroma via direct user input, but when translating to
+        # Lab, this will be corrected.
+        (GamutUnbound(0.0), GamutUnbound(100.0)),
+        (GamutUnbound(0.0), GamutUnbound(100.0)),
         (GamutAngle(0.0), GamutAngle(360.0)),
     )
 

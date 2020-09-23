@@ -218,6 +218,7 @@ class Color:
         """Fit gamut."""
 
         self._color.fit(space, method)
+        return self
 
     def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if in gamut."""

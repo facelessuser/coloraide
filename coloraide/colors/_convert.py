@@ -666,10 +666,19 @@ def lab_to_xyz(l, a, b):
 def lab_to_lch(l, a, b):
     """LAB to LCH."""
 
+    # This hue correction is taken from https://github.com/LeaVerou/color.js/blob/master/src/spaces/lch.js
+    # This appears to be a little smoothing as we get really close to zero.
+    # I'm sure it is meant to correct some specific corner case, but not sure what.
+    # For now, we will do it as well.
+    if abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD:
+        hue = 0
+    else:
+        hue = math.atan2(b, a) * 180 / math.pi
+
     return (
         l,
         math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        math.atan2(b, a) * 180 / math.pi
+        hue
     )
 
 
@@ -741,6 +750,11 @@ def lch_to_xyz(l, c, h):
 
 def lch_to_lab(l, c, h):
     """LCH to LAB."""
+
+    # If, for whatever reason (mainly direct user input),
+    # if chroma is less than zero, clamp to zero.
+    if c < 0.0:
+        c = 0.0
 
     return (
         l,

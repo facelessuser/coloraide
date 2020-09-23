@@ -32,12 +32,6 @@ def lch_chroma(base, color):
     License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
     """
 
-    # Ensure we are working with LCH without negative chroma
-    if base.space() == "lch":
-        base.fit("lch", method="clip")
-    if color.space() == "lch":
-        color.fit("lch", method="clip")
-
     # Compare clipped against original to
     # judge how far we are off with the worst case fitting
     space = color.space()
@@ -136,6 +130,7 @@ class Gamut:
         # Adjust "this" color
         self.update(c)
         self._on_convert()
+        return self
 
     def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if current color is in gamut."""
