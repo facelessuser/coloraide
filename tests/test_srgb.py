@@ -9,7 +9,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_comma_comma(self):
         """Test comma format."""
 
-        args = {"options": {"comma": True}, "precision": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgb(30, 100, 200)"
         rgb = Color(color)
@@ -43,7 +43,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_hex_hex(self):
         """Test hex input."""
 
-        args = {"options": {"hex": True}, "precision": 0}
+        args = {"hex": True, "precision": 0}
 
         color = "#AA33DD"
         rgb = Color(color)
@@ -60,7 +60,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_hex_compressed(self):
         """Test hex input."""
 
-        args = {"options": {"hex": True, "compress": True}}
+        args = {"hex": True, "compress": True}
 
         color = "#AA33DD"
         rgb = Color(color)
@@ -79,7 +79,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_alias(self):
         """Test that `rgba` is an alias for `rgb`."""
 
-        args = {"options": {"comma": True}, "precision": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgba(30, 100, 200)"
         rgb = Color(color)
@@ -89,7 +89,7 @@ class TestSRGBParse(unittest.TestCase):
         rgb = Color(color)
         self.assertEqual("rgb(30, 100, 200)", rgb.to_string(**args))
 
-        args["options"]["comma"] = False
+        args["comma"] = False
 
         color = "rgba(30 100 200)"
         rgb = Color(color)
@@ -102,7 +102,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_percent(self):
         """Test that `rgba` is an alias for `rgb`."""
 
-        args = {"options": {"comma": True}, "precision": 0}
+        args = {"comma": True, "precision": 0}
 
         color = "rgb(30%, 100%, 100%)"
         rgb = Color(color)
@@ -116,7 +116,7 @@ class TestSRGBParse(unittest.TestCase):
         rgb = Color(color)
         self.assertEqual("rgba(77, 255, 255, 0.2)", rgb.to_string(**args))
 
-        args["options"]["comma"] = False
+        args["comma"] = False
 
         color = "rgb(30% 100% 100%)"
         rgb = Color(color)
@@ -133,19 +133,19 @@ class TestSRGBParse(unittest.TestCase):
     def test_no_alpha(self):
         """Test no alpha."""
 
-        args = {"options": {"comma": True}, "alpha": False, "precision": 0}
+        args = {"comma": True, "alpha": False, "precision": 0}
 
         color = "rgb(30, 100, 200, 0.2)"
         rgb = Color(color)
         self.assertEqual("rgb(30, 100, 200)", rgb.to_string(**args))
 
-        args["options"]["comma"] = False
+        args["comma"] = False
 
         color = "rgb(30 100 200 / 0.2)"
         rgb = Color(color)
         self.assertEqual("rgb(30 100 200)", rgb.to_string(**args))
 
-        args["options"]["hex"] = True
+        args["hex"] = True
 
         color = "#AA33DD22"
         rgb = Color(color)
@@ -154,19 +154,19 @@ class TestSRGBParse(unittest.TestCase):
     def test_force_alpha(self):
         """Test force alpha."""
 
-        args = {"options": {"comma": True}, "precision": 0, "alpha": True}
+        args = {"comma": True, "precision": 0, "alpha": True}
 
         color = "rgb(30, 100, 200, 100%)"
         rgb = Color(color)
         self.assertEqual("rgba(30, 100, 200, 1)", rgb.to_string(**args))
 
-        args["options"]["comma"] = False
+        args["comma"] = False
 
         color = "rgb(30 100 200 / 100%)"
         rgb = Color(color)
         self.assertEqual("rgb(30 100 200 / 1)", rgb.to_string(**args))
 
-        args["options"]["hex"] = True
+        args["hex"] = True
 
         color = "#AA33DDFF"
         rgb = Color(color)
@@ -175,7 +175,7 @@ class TestSRGBParse(unittest.TestCase):
     def test_name_name(self):
         """Test color names."""
 
-        args = {"options": {"names": True}}
+        args = {"names": True}
 
         color = "rebeccapurple"
         rgb = Color(color)
@@ -185,14 +185,14 @@ class TestSRGBParse(unittest.TestCase):
         rgb = Color(color)
         self.assertEqual("rebeccapurple", rgb.to_string(**args))
 
-        args["options"]["hex"] = True
-        args["options"]["names"] = False
+        args["hex"] = True
+        args["names"] = False
 
         color = "#663399"
         rgb = Color(color)
         self.assertEqual("#663399", rgb.to_string(**args))
 
-        args["options"]["names"] = True
+        args["names"] = True
 
         color = "#663399"
         rgb = Color(color)

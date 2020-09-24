@@ -154,7 +154,7 @@ class HWB(Tools, Space):
         elif channel == -1:
             return parse.norm_alpha_channel(value)
 
-    def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
         return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)

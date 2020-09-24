@@ -29,12 +29,11 @@ class HSL(generic.HSL):
         super().__init__(color)
 
     def to_string(
-        self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
     ):
         """Convert to CSS."""
 
-        if options is None:
-            options = {}
+        options = kwargs
         alpha = options.get("alpha")
 
         if options.get("color"):

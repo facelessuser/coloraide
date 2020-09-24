@@ -1,7 +1,6 @@
 """Color base."""
 from .. import util
 from . import _parse as parse
-import re
 
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
