@@ -1,9 +1,10 @@
 """LCH class."""
-from ._space import Space
+from ._space import Space, RE_GENERIC_MATCH
 from ._tools import Tools, GamutUnbound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
+import re
 
 
 class LCH(Tools, Space):
@@ -12,6 +13,7 @@ class LCH(Tools, Space):
     SPACE = "lch"
     DEF_BG = "color(lch 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
+    GENERIC_MATCH = re.compile(RE_GENERIC_MATCH.format(color_space=SPACE))
 
     _gamut = (
         # I think chroma, specifically should be clamped. Generally many

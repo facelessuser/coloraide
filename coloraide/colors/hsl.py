@@ -1,9 +1,10 @@
 """HSL class."""
-from ._space import Space
+from ._space import Space, RE_GENERIC_MATCH
 from ._tools import Tools, GamutBound, GamutAngle
 from . import _parse as parse
 from . import _convert as convert
 from .. import util
+import re
 
 
 class HSL(Tools, Space):
@@ -12,6 +13,7 @@ class HSL(Tools, Space):
     SPACE = "hsl"
     DEF_BG = "color(hsl 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
+    GENERIC_MATCH = re.compile(RE_GENERIC_MATCH.format(color_space=SPACE))
 
     _gamut = (
         (GamutAngle(0.0), GamutAngle(360.0)),

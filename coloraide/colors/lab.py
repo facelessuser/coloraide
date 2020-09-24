@@ -1,9 +1,10 @@
 """LAB class."""
-from ._space import Space
+from ._space import Space, RE_GENERIC_MATCH
 from ._tools import Tools, GamutUnbound, GamutBound
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
+import re
 
 
 class LAB(Tools, Space):
@@ -12,6 +13,7 @@ class LAB(Tools, Space):
     SPACE = "lab"
     DEF_BG = "color(lab 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["l", "a", "b", "alpha"])
+    GENERIC_MATCH = re.compile(RE_GENERIC_MATCH.format(color_space=SPACE))
 
     _gamut = (
         (GamutBound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.

@@ -83,7 +83,7 @@ def delta_e2000(color, color2, kl=1, kc=1, kh=1):
 
     cpm7 = math.pow(cpm, 7)
     rc = 2 * math.sqrt(cpm7 / (cpm7 + G_CONST))
-    l_temp = (lpm - 50) ** 2
+    l_temp = math.pow(lpm - 50, 2)
     sl = 1 + ((0.015 * l_temp) / math.sqrt(20 + l_temp))
     sc = 1 + 0.045 * cpm
     sh = 1 + 0.015 * cpm * t
