@@ -201,7 +201,7 @@ class Color:
         obj = self._color.alpha_composite(background, space=space)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue="shorter"):
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ):
         """Mix the two colors."""
 
         if isinstance(color, type(self)):

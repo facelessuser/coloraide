@@ -75,7 +75,7 @@ class Tools(Gamut):
 
         return abs(c2 * f1 + c1 * f2 * (1 - f1))
 
-    def _hue_mix_channel(self, c1, c2, f1, f2=1.0, *, hue="shorter"):
+    def _hue_mix_channel(self, c1, c2, f1, f2=1.0, *, hue=util.DEF_HUE_ADJ):
         """Blend the hue channel."""
 
         if math.isnan(c1) and math.isnan(c2):
@@ -175,7 +175,7 @@ class Tools(Gamut):
             this = self
         return this.convert(current_space)
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue="shorter"):
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ):
         """Blend color."""
 
         current_space = self.space()

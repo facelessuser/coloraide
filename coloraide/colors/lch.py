@@ -113,7 +113,7 @@ class LCH(Tools, Space):
 
         self._coords[2] = value
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0, hue="shorter", **kwargs):
+    def _mix(self, channels1, channels2, factor, factor2=1.0, hue=util.DEF_HUE_ADJ, **kwargs):
         """Blend the color with the given color."""
 
         hue1 = util.NAN if self._is_achromatic(channels1) else channels1[2]
