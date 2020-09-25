@@ -12,6 +12,7 @@ HWB
 HWB
 LAB
 LCH
+Lch
 Lilley
 MERCHANTABILITY
 Matcher
@@ -27,6 +28,7 @@ XYZ
 accessor
 chroma
 grayscale
+js
 luminance
 pre
 prerelease
