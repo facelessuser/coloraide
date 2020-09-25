@@ -41,10 +41,10 @@ class Color:
 
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
-    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
+    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
         """Initialize."""
 
-        self._attach(self._parse(color, data, alpha, filters))
+        self._attach(self._parse(color, data, alpha, filters=filters))
 
     def __repr__(self):
         """Representation."""
@@ -103,10 +103,10 @@ class Color:
         return None
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=False, filters=None):
+    def match(cls, string, start=0, fullmatch=False, *, filters=None):
         """Match color."""
 
-        obj = cls._match(string, start, fullmatch, filters)
+        obj = cls._match(string, start, fullmatch, filters=filters)
         if obj is not None:
             obj.color = cls(obj.color.space(), obj.color.coords(), obj.color.alpha)
         return obj
@@ -122,10 +122,10 @@ class Color:
         return self._color.coords()
 
     @classmethod
-    def new(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None):
+    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
         """Create new color object."""
 
-        return cls(color, data, alpha, filters)
+        return cls(color, data, alpha, filters=filters)
 
     def clone(self):
         """Clone."""
@@ -133,23 +133,23 @@ class Color:
         clone = self._color.clone()
         return type(self)(clone.space(), clone.coords(), clone.alpha)
 
-    def convert(self, space, fit=False):
+    def convert(self, space, *, fit=False):
         """Convert."""
 
-        obj = self._color.convert(space, fit)
+        obj = self._color.convert(space, fit=fit)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def update(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
         """Update the existing color space with the provided color."""
 
-        obj = self._parse(color, data, alpha, filters)
+        obj = self._parse(color, data, alpha, filters=filters)
         self._color.update(obj)
         return self
 
-    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, filters=None):
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, alpha, filters))
+        self._attach(self._parse(color, data, alpha, filters=filters))
         return self
 
     def to_string(self, **kwargs):
@@ -188,7 +188,7 @@ class Color:
 
         return self._color.contrast_ratio(color._color)
 
-    def alpha_composite(self, background=None, space=None):
+    def alpha_composite(self, background=None, *, space=None):
         """Apply the given transparency with the given background."""
 
         if isinstance(background, Color):
@@ -198,10 +198,10 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(background)))
 
-        obj = self._color.alpha_composite(background, space)
+        obj = self._color.alpha_composite(background, space=space)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def mix(self, color, percent=util.DEF_MIX, alpha=False, space=None):
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue="shorter"):
         """Mix the two colors."""
 
         if isinstance(color, type(self)):
@@ -211,19 +211,19 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
 
-        obj = self._color.mix(color, percent, alpha=alpha, space=space)
+        obj = self._color.mix(color, percent, alpha=alpha, space=space, hue=hue)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def fit(self, space=None, method=util.DEF_FIT):
+    def fit(self, space=None, *, method=util.DEF_FIT):
         """Fit gamut."""
 
-        self._color.fit(space, method)
+        self._color.fit(space, method=method)
         return self
 
-    def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
+    def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if in gamut."""
 
-        return self._color.in_gamut(space, tolerance)
+        return self._color.in_gamut(space, tolerance=tolerance)
 
     def __getattr__(self, name):
         """Get attribute."""

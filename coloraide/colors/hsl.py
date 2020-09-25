@@ -96,13 +96,13 @@ class HSL(Tools, Space):
 
         self._coords[2] = value
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0, hue="shorter", **kwargs):
         """Blend the color with the given color."""
 
         hue1 = util.NAN if self._is_achromatic(channels1) else channels1[0]
         hue2 = util.NAN if self._is_achromatic(channels2) else channels2[0]
         return (
-            self._hue_mix_channel(hue1, hue2, factor, factor2),
+            self._hue_mix_channel(hue1, hue2, factor, factor2, hue=hue),
             self._mix_channel(channels1[1], channels2[1], factor, factor2),
             self._mix_channel(channels1[2], channels2[2], factor, factor2)
         )
@@ -117,7 +117,7 @@ class HSL(Tools, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self.tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._ch = self._tx_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def saturation(self):
@@ -129,7 +129,7 @@ class HSL(Tools, Space):
     def saturation(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
-        self._cs = self.tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._cs = self._tx_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def lightness(self):
@@ -141,10 +141,10 @@ class HSL(Tools, Space):
     def lightness(self, value):
         """Set lightness channel."""
 
-        self._cl = self.tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cl = self._tx_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel == 0:
@@ -161,9 +161,9 @@ class HSL(Tools, Space):
         channels = []
         for i, c in enumerate(parse.RE_COMMA_SPLIT.split(color[1:-1].strip()), 0):
             if i <= 2:
-                channels.append(cls.tx_channel(i, c))
+                channels.append(cls._tx_channel(i, c))
             else:
-                channels.append(cls.tx_channel(-1, c))
+                channels.append(cls._tx_channel(-1, c))
         if len(channels) == 3:
             channels.append(1.0)
         return channels

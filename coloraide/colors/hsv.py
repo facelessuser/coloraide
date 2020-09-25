@@ -96,13 +96,13 @@ class HSV(Tools, Space):
 
         self._coords[2] = value
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0, hue="shorter", **kwargs):
         """Blend the color with the given color."""
 
         hue1 = util.NAN if self._is_achromatic(channels1) else channels1[0]
         hue2 = util.NAN if self._is_achromatic(channels2) else channels2[0]
         return (
-            self._hue_mix_channel(hue1, hue2, factor, factor2),
+            self._hue_mix_channel(hue1, hue2, factor, factor2, hue=hue),
             self._mix_channel(channels1[1], channels2[1], factor, factor2),
             self._mix_channel(channels1[2], channels2[2], factor, factor2)
         )
@@ -117,7 +117,7 @@ class HSV(Tools, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self.tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._ch = self._tx_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def saturation(self):
@@ -129,7 +129,7 @@ class HSV(Tools, Space):
     def saturation(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
-        self._cs = self.tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._cs = self._tx_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def value(self):
@@ -141,10 +141,10 @@ class HSV(Tools, Space):
     def value(self, value):
         """Set value channel."""
 
-        self._cv = self.tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cv = self._tx_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel == 0:

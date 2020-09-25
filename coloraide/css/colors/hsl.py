@@ -72,7 +72,7 @@ class HSL(generic.HSL):
         )
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Translate channel."""
 
         if channel == 0:
@@ -92,9 +92,9 @@ class HSL(generic.HSL):
         channels = []
         for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
             if i <= 2:
-                channels.append(cls.tx_channel(i, c))
+                channels.append(cls._tx_channel(i, c))
             else:
-                channels.append(cls.tx_channel(-1, c))
+                channels.append(cls._tx_channel(-1, c))
         if len(channels) == 3:
             channels.append(1.0)
         return channels

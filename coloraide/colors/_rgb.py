@@ -82,7 +82,7 @@ class RGB(Tools, Space):
 
         self._coords[2] = value
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0, **kwargs):
         """Blend the color with the given color."""
 
         return (
@@ -101,7 +101,7 @@ class RGB(Tools, Space):
     def red(self, value):
         """Adjust red."""
 
-        self._cr = self.tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._cr = self._tx_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def green(self):
@@ -113,7 +113,7 @@ class RGB(Tools, Space):
     def green(self, value):
         """Adjust green."""
 
-        self._cg = self.tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._cg = self._tx_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def blue(self):
@@ -125,10 +125,10 @@ class RGB(Tools, Space):
     def blue(self, value):
         """Adjust blue."""
 
-        self._cb = self.tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cb = self._tx_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Translate channel string."""
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)

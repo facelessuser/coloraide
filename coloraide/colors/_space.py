@@ -136,7 +136,7 @@ class Space:
     def alpha(self, value):
         """Adjust alpha."""
 
-        self._alpha = self.tx_channel(-1, value) if isinstance(value, str) else float(value)
+        self._alpha = self._tx_channel(-1, value) if isinstance(value, str) else float(value)
 
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
@@ -166,10 +166,10 @@ class Space:
     __str__ = __repr__
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Set a non-alpha color channel."""
 
-        raise NotImplementedError("Base _Color class does not implement 'tx_channel' directly.")
+        raise NotImplementedError("Base _Color class does not implement '_tx_channel' directly.")
 
     @classmethod
     def generic_match(cls, string, start=0, fullmatch=True):

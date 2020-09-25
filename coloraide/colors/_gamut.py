@@ -100,7 +100,7 @@ def clip(base, color):
 class Gamut:
     """Gamut handling."""
 
-    def fit(self, space=None, method="lch-chroma"):
+    def fit(self, space=None, *, method="lch-chroma"):
         """Fit the gamut using the provided method."""
 
         # Select appropriate mapping algorithm
@@ -132,7 +132,7 @@ class Gamut:
         self._on_convert()
         return self
 
-    def in_gamut(self, space=None, tolerance=util.DEF_FIT_TOLERANCE):
+    def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if current color is in gamut."""
 
         # Check gamut in the provided space

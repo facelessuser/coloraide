@@ -557,7 +557,7 @@ class ColorMod:
         else:
             min_hwb = max_hwb.clone()
 
-        self._color.update(max_hwb.mix(min_hwb, 1.0 - percent, space="hwb"))
+        self._color.update(max_hwb.mix(min_hwb, 1.0 - percent, alpha=False, space="hwb"))
 
     def process_min_contrast(self, m, string, hue):
         """Process blend."""
@@ -756,10 +756,10 @@ class ColorMod:
 class Color(ColorCSS):
     """Color modify class."""
 
-    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
+    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, variables=None):
         """Initialize."""
 
-        self._attach(self._parse(color, data, alpha, filters, variables))
+        self._attach(self._parse(color, data, alpha, filters=filters, variables=variables))
 
     @classmethod
     def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
@@ -833,29 +833,29 @@ class Color(ColorCSS):
             return obj
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=False, filters=None, variables=None):
+    def match(cls, string, start=0, fullmatch=False, *, filters=None, variables=None):
         """Match color."""
 
-        obj = cls._match(string, start, fullmatch, filters, variables)
+        obj = cls._match(string, start, fullmatch, filters=filters, variables=variables)
         if obj is not None:
             obj.color = cls(obj.color.space(), obj.color.coords(), obj.color.alpha)
         return obj
 
     @classmethod
-    def new(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
+    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, variables=None):
         """Create new color object."""
 
-        return cls(color, data, alpha, filters, variables)
+        return cls(color, data, alpha, filters=filters, variables=variables)
 
-    def update(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, variables=None):
         """Update the existing color space with the provided color."""
 
-        obj = self._parse(color, data, alpha, filters, variables)
+        obj = self._parse(color, data, alpha, filters=filters, variables=variables)
         self._color.update(obj)
         return self
 
-    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, variables=None):
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, variables=None):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, alpha, filters, variables))
+        self._attach(self._parse(color, data, alpha, filters=filters, variables=variables))
         return self

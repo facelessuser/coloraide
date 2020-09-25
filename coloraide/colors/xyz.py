@@ -88,7 +88,7 @@ class XYZ(Tools, Space):
 
         self._coords[2] = value
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0):
+    def _mix(self, channels1, channels2, factor, factor2=1.0, **kwargs):
         """Blend the color with the given color."""
 
         return (
@@ -134,7 +134,7 @@ class XYZ(Tools, Space):
         self._cz = float(value)
 
     @classmethod
-    def tx_channel(cls, channel, value):
+    def _tx_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel in (0, 2):

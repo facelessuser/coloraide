@@ -26,7 +26,7 @@ def calc_luminance(srgb):
 class Tools(Gamut):
     """Color utilities."""
 
-    def convert(self, space, fit=False):
+    def convert(self, space, *, fit=False):
         """Convert to color space."""
 
         space = space.lower()
@@ -47,7 +47,7 @@ class Tools(Gamut):
         result._on_convert()
         return result
 
-    def fit_coords(self, space=None, method=util.DEF_FIT):
+    def fit_coords(self, space=None, *, method=util.DEF_FIT):
         """Get coordinates within this space or fit to another space."""
 
         space = (self.space() if space is None else space).lower()
@@ -75,8 +75,8 @@ class Tools(Gamut):
 
         return abs(c2 * f1 + c1 * f2 * (1 - f1))
 
-    def _hue_mix_channel(self, c1, c2, f1, f2=1.0):
-        """Blend the hue style channel."""
+    def _hue_mix_channel(self, c1, c2, f1, f2=1.0, *, hue="shorter"):
+        """Blend the hue channel."""
 
         if math.isnan(c1) and math.isnan(c2):
             return 0.0
@@ -85,13 +85,40 @@ class Tools(Gamut):
         elif math.isnan(c2):
             return c1
 
-        if abs(c1 % 360 - c2) > 180.0:
+        hue = hue.lower()
+        if hue != "specified":
+            c1 = c1 % 360
+            c2 = c2 % 360
+
+        if hue == "shorter":
+            if c2 - c1 > 180:
+                c1 += 360
+            elif c2 - c1 < -180:
+                c2 += 360
+
+        elif hue == "longer":
+            if 0 < (c1 - c1) < 180:
+                c1 += 360
+            elif -180 < (c2 - c1) < 0:
+                c2 += 360
+
+        elif hue == "increasing":
+            if c2 < c1:
+                c2 += 360
+
+        elif hue == "decreasing":
             if c1 < c2:
-                c1 += 360.0
-            else:
-                c2 += 360.0
+                c1 += 360
+
+        elif hue == "specified":
+            pass
+
+        else:
+            raise ValueError("Unknown hue adjuster '{}'".format(hue))
 
         value = self._mix_channel(c1, c2, f1, f2)
+
+        # Normalize the result
         if not (0.0 <= value <= 360.0):
             value = value % 360.0
 
@@ -112,7 +139,7 @@ class Tools(Gamut):
 
         return calc_contrast_ratio(self.luminance(), color.luminance())
 
-    def alpha_composite(self, background, space=None):
+    def alpha_composite(self, background, *, space=None):
         """
         Apply the given transparency with the given background.
 
@@ -148,7 +175,7 @@ class Tools(Gamut):
             this = self
         return this.convert(current_space)
 
-    def mix(self, color, percent=util.DEF_MIX, alpha=False, space=None):
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue="shorter"):
         """Blend color."""
 
         current_space = self.space()
@@ -166,7 +193,7 @@ class Tools(Gamut):
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._coords = [c for c in this._mix(this.coords(), color.coords(), factor)]
+        this._coords = [c for c in this._mix(this.coords(), color.coords(), factor, hue=hue)]
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = this._mix_channel(this._alpha, color._alpha, factor)
