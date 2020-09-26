@@ -599,53 +599,46 @@ class ColorMod:
         This mimics Sublime Text's custom `min-contrast` for `color-mod` (now defunct - the CSS version).
         It ensure the color has at least the specified contrast ratio.
 
-        Algorithm is close but not exactly like Sublime. We are sometimes just a little off, but really close.
+        While there seems to be slight differences with ours and Sublime, maybe due to some rounding,
+        this essentially fullfills the intention of their min-contrast.
         """
 
         ratio = color1.contrast_ratio(color2)
 
-        # We already meet the minimum or the target is impossible
-        lum2 = color2.luminance()
-        if target < 1 or ratio >= target:
-            return self
+        # Can't give a ratio less than one, and if it is one, the colors are the same.
+        if target < 1:
+            color1.update(color2)
 
+        lum2 = color2.luminance()
         required_lum = ((lum2 + 0.05) / target) - 0.05
         if required_lum < 0:
             required_lum = target * (lum2 + 0.05) - 0.05
 
-        # Too much precision isn't helpful
-        required_lum = round(required_lum, 3)
-
         is_dark = lum2 < required_lum
-        mix = color1.new("srgb", WHITE if is_dark else BLACK)
-        if is_dark:
-            min_mix = 0.0
-            max_mix = 1.0
-            last_lum = 1.0
-        else:
-            max_mix = 0.0
-            min_mix = 1.0
-            last_lum = 0.0
-        last_mix = 1.0
-
-        orig = color1.clone().convert("srgb")
+        orig = color1.clone().convert("hwb")
+        min_mix = 0.0
+        max_mix = 200.0
+        last_ratio = 10000
+        last_mix = 0
 
         while abs(min_mix - max_mix) >= 0.002:
-            mid_mix = round((max_mix + min_mix) / 2, 3)
+            mid_mix = (max_mix + min_mix) / 2
 
-            lum2 = orig.mix(mix, mid_mix, space="srgb", alpha=True).luminance()
+            mix = orig.new("hwb", [orig.hue, mid_mix, 0.0] if is_dark else [orig.hue, 0.0, mid_mix])
+            ratio = orig.mix(mix, space="hwb").contrast_ratio(color2)
 
-            if lum2 > required_lum:
+            if ratio > target:
                 max_mix = mid_mix
             else:
                 min_mix = mid_mix
 
-            if ((lum2 >= required_lum and lum2 < last_lum) if is_dark else (lum2 <= required_lum and lum2 > last_lum)):
-                last_lum = lum2
+            if ratio > target and ratio < last_ratio:
+                last_ratio = ratio
                 last_mix = mid_mix
 
         # Use the best, last values
-        color1.update(orig.mix(mix, last_mix, space="srgb", alpha=True))
+        mix = orig.new("hwb", [orig.hue, last_mix, 0.0] if is_dark else [orig.hue, 0.0, last_mix])
+        color1.update(orig.mix(mix, space="hwb"))
 
     def blend(self, color, percent, alpha=False, space="srgb"):
         """Blend color."""
