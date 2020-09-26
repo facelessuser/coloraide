@@ -627,10 +627,10 @@ class ColorMod:
             mix = orig.new("hwb", [orig.hue, mid_mix, 0.0] if is_dark else [orig.hue, 0.0, mid_mix])
             ratio = orig.mix(mix, space="hwb").contrast_ratio(color2)
 
-            if ratio > target:
-                max_mix = mid_mix
-            else:
+            if ratio < target:
                 min_mix = mid_mix
+            else:
+                max_mix = mid_mix
 
             if ratio > target and ratio < last_ratio:
                 last_ratio = ratio
