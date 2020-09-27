@@ -605,20 +605,20 @@ class ColorMod:
 
         ratio = color1.contrast_ratio(color2)
 
-        # Can't give a ratio less than one, and if it is one, the colors are the same.
-        if target < 1:
-            color1.update(color2)
+        # Already meet the minimum contrast or the request is impossible
+        if ratio > target or target < 1:
+            return
 
         lum2 = color2.luminance()
         required_lum = ((lum2 + 0.05) / target) - 0.05
         if required_lum < 0:
             required_lum = target * (lum2 + 0.05) - 0.05
 
-        is_dark = lum2 < required_lum
+        is_dark = lum2 < 0.5
         orig = color1.clone().convert("hwb")
         min_mix = 0.0
         max_mix = 200.0
-        last_ratio = 10000
+        last_ratio = 0
         last_mix = 0
 
         while abs(min_mix - max_mix) >= 0.002:
@@ -632,13 +632,20 @@ class ColorMod:
             else:
                 max_mix = mid_mix
 
-            if ratio > target and ratio < last_ratio:
+            if (
+                (last_ratio < target and ratio > last_ratio) or
+                (ratio > target and ratio < last_ratio)
+            ):
                 last_ratio = ratio
                 last_mix = mid_mix
 
-        # Use the best, last values
-        mix = orig.new("hwb", [orig.hue, last_mix, 0.0] if is_dark else [orig.hue, 0.0, last_mix])
-        color1.update(orig.mix(mix, space="hwb"))
+        if last_ratio < target:
+            final = color1.new("white" if is_dark else "black")
+        else:
+            # Use the best, last values
+            mix = orig.new("hwb", [orig.hue, last_mix, 0.0] if is_dark else [orig.hue, 0.0, last_mix])
+            final = orig.mix(mix, space="hwb")
+        color1.update(final)
 
     def blend(self, color, percent, alpha=False, space="srgb"):
         """Blend color."""
