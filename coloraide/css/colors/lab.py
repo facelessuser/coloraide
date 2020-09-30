@@ -108,7 +108,7 @@ class LAB(generic.LAB):
         )
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel == 0:
@@ -128,9 +128,9 @@ class LAB(generic.LAB):
             alpha = None
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
                 if i == 0:
-                    channels.append(cls._tx_channel(i, c))
+                    channels.append(cls.translate_channel(i, c))
                 else:
-                    alpha = cls._tx_channel(-1, c)
+                    alpha = cls.translate_channel(-1, c)
             channels.extend([0.0, 0.0])
             channels.append(1.0 if alpha is None else alpha)
         else:
@@ -138,9 +138,9 @@ class LAB(generic.LAB):
             channels = []
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
                 if i <= 2:
-                    channels.append(cls._tx_channel(i, c))
+                    channels.append(cls.translate_channel(i, c))
                 else:
-                    channels.append(cls._tx_channel(-1, c))
+                    channels.append(cls.translate_channel(-1, c))
             if len(channels) == 3:
                 channels.append(1.0)
         return channels

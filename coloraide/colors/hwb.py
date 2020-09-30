@@ -117,7 +117,7 @@ class HWB(Tools, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self._tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._ch = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def whiteness(self):
@@ -129,7 +129,7 @@ class HWB(Tools, Space):
     def whiteness(self, value):
         """Set whiteness channel."""
 
-        self._cw = self._tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cw = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @property
     def blackness(self):
@@ -141,10 +141,10 @@ class HWB(Tools, Space):
     def blackness(self, value):
         """Set blackness channel."""
 
-        self._cb = self._tx_channel(3, value) if isinstance(value, str) else float(value)
+        self._cb = self.translate_channel(3, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel == 0:

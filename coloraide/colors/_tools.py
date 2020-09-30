@@ -35,7 +35,7 @@ class Tools(Gamut):
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space):
                 clone = self.clone()
-                clone.fit(space, method=method)
+                clone.fit(space, method=method, in_place=True)
                 result = clone.convert(space)
                 result._on_convert()
                 return result
@@ -54,7 +54,7 @@ class Tools(Gamut):
         method = self.space() if method is None else method
         if not self.in_gamut(space=space):
             clone = self.clone()
-            clone.fit(method=method)
+            clone.fit(method=method, in_place=True)
             return clone.coords()
         return self.coords()
 
@@ -139,7 +139,7 @@ class Tools(Gamut):
 
         return calc_contrast_ratio(self.luminance(), color.luminance())
 
-    def alpha_composite(self, background, *, space=None):
+    def alpha_composite(self, background, *, space=None, in_place=False):
         """
         Apply the given transparency with the given background.
 
@@ -173,9 +173,13 @@ class Tools(Gamut):
             this._alpha = this._alpha + background._alpha * (1.0 - this._alpha)
         else:
             this = self
+
+        if in_place:
+            return self.update(this.convert(current_space))
+
         return this.convert(current_space)
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ):
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Blend color."""
 
         current_space = self.space()
@@ -197,6 +201,10 @@ class Tools(Gamut):
         if alpha:
             # This is a simple channel blend and not alpha compositing.
             this._alpha = this._mix_channel(this._alpha, color._alpha, factor)
+
+        if in_place:
+            return self.update(this.convert(current_space))
+
         return this.convert(current_space)
 
     def to_generic_string(

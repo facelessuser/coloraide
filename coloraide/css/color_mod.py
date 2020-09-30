@@ -255,7 +255,7 @@ class ColorMod:
             if color is not None:
                 self._color = color
                 if not self._color.in_gamut():
-                    self._color.fit(method="clip")
+                    self._color.fit(method="clip", in_place=True)
 
                 while not done:
                     m = None
@@ -294,7 +294,7 @@ class ColorMod:
                         break
 
                     if not self._color.in_gamut():
-                        self._color.fit(method="clip")
+                        self._color.fit(method="clip", in_place=True)
             else:
                 raise ValueError('Could not calculate base color')
         except Exception:
@@ -600,7 +600,7 @@ class ColorMod:
         It ensure the color has at least the specified contrast ratio.
 
         While there seems to be slight differences with ours and Sublime, maybe due to some rounding,
-        this essentially fullfills the intention of their min-contrast.
+        this essentially fulfills the intention of their min-contrast.
         """
 
         ratio = color1.contrast_ratio(color2)
@@ -616,6 +616,7 @@ class ColorMod:
 
         is_dark = lum2 < 0.5
         orig = color1.clone().convert("hwb")
+        achromatic = orig.is_achromatic()
         min_mix = 0.0
         max_mix = 200.0
         last_ratio = 0
@@ -625,7 +626,13 @@ class ColorMod:
             mid_mix = (max_mix + min_mix) / 2
 
             mix = orig.new("hwb", [orig.hue, mid_mix, 0.0] if is_dark else [orig.hue, 0.0, mid_mix])
-            ratio = orig.mix(mix, space="hwb").contrast_ratio(color2)
+            temp = orig.mix(mix, space="hwb")
+            if achromatic:
+                if is_dark:
+                    temp.blackness = 100.0 - temp.whiteness
+                else:
+                    temp.whiteness = 100.0 - temp.blackness
+            ratio = temp.contrast_ratio(color2)
 
             if ratio < target:
                 min_mix = mid_mix
@@ -645,6 +652,11 @@ class ColorMod:
             # Use the best, last values
             mix = orig.new("hwb", [orig.hue, last_mix, 0.0] if is_dark else [orig.hue, 0.0, last_mix])
             final = orig.mix(mix, space="hwb")
+            if achromatic:
+                if is_dark:
+                    final.blackness = 100.0 - temp.whiteness
+                else:
+                    final.whiteness = 100.0 - temp.blackness
         color1.update(final)
 
     def blend(self, color, percent, alpha=False, space="srgb"):

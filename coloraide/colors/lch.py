@@ -134,7 +134,7 @@ class LCH(Tools, Space):
     def lightness(self, value):
         """Get true luminance."""
 
-        self._cl = self._tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._cl = self.translate_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def chroma(self):
@@ -146,7 +146,7 @@ class LCH(Tools, Space):
     def chroma(self, value):
         """chroma."""
 
-        self._cc = self._tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._cc = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def hue(self):
@@ -158,10 +158,10 @@ class LCH(Tools, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self._tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._ch = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel in (1, 0):

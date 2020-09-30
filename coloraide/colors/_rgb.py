@@ -101,7 +101,7 @@ class RGB(Tools, Space):
     def red(self, value):
         """Adjust red."""
 
-        self._cr = self._tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._cr = self.translate_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def green(self):
@@ -113,7 +113,7 @@ class RGB(Tools, Space):
     def green(self, value):
         """Adjust green."""
 
-        self._cg = self._tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._cg = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def blue(self):
@@ -125,10 +125,10 @@ class RGB(Tools, Space):
     def blue(self, value):
         """Adjust blue."""
 
-        self._cb = self._tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cb = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)

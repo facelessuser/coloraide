@@ -188,7 +188,7 @@ class Color:
 
         return self._color.contrast_ratio(color._color)
 
-    def alpha_composite(self, background=None, *, space=None):
+    def alpha_composite(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
         if isinstance(background, Color):
@@ -198,10 +198,13 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(background)))
 
-        obj = self._color.alpha_composite(background, space=space)
-        return type(self)(obj.space(), obj.coords(), obj.alpha)
+        obj = self._color.alpha_composite(background, space=space, in_place=in_place)
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ):
+        if not in_place:
+            return type(self)(obj.space(), obj.coords(), obj.alpha)
+        return self
+
+    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
 
         if isinstance(color, type(self)):
@@ -211,13 +214,17 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
 
-        obj = self._color.mix(color, percent, alpha=alpha, space=space, hue=hue)
-        return type(self)(obj.space(), obj.coords(), obj.alpha)
+        obj = self._color.mix(color, percent, alpha=alpha, space=space, hue=hue, in_place=in_place)
+        if not in_place:
+            return type(self)(obj.space(), obj.coords(), obj.alpha)
+        return self
 
-    def fit(self, space=None, *, method=util.DEF_FIT):
+    def fit(self, space=None, *, method=util.DEF_FIT, in_place=False):
         """Fit gamut."""
 
-        self._color.fit(space, method=method)
+        obj = self._color.fit(space, method=method, in_place=in_place)
+        if not in_place:
+            return type(self)(obj.space(), obj.coords(), obj.alpha)
         return self
 
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):

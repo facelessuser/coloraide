@@ -178,7 +178,7 @@ class SRGB(generic.SRGB):
         return value
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel in (0, 1, 2):
@@ -201,9 +201,9 @@ class SRGB(generic.SRGB):
             channels = []
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
                 if i <= 2:
-                    channels.append(cls._tx_channel(i, c))
+                    channels.append(cls.translate_channel(i, c))
                 else:
-                    channels.append(cls._tx_channel(-1, c))
+                    channels.append(cls.translate_channel(-1, c))
             if len(channels) == 3:
                 channels.append(1.0)
             return channels
@@ -212,17 +212,17 @@ class SRGB(generic.SRGB):
             assert(m is not None)
             if m.group(1):
                 return (
-                    cls._tx_channel(0, "#" + color[1:3]),
-                    cls._tx_channel(1, "#" + color[3:5]),
-                    cls._tx_channel(2, "#" + color[5:7]),
-                    cls._tx_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                    cls.translate_channel(0, "#" + color[1:3]),
+                    cls.translate_channel(1, "#" + color[3:5]),
+                    cls.translate_channel(2, "#" + color[5:7]),
+                    cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
                 )
             else:
                 return (
-                    cls._tx_channel(0, "#" + color[1] * 2),
-                    cls._tx_channel(1, "#" + color[2] * 2),
-                    cls._tx_channel(2, "#" + color[3] * 2),
-                    cls._tx_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                    cls.translate_channel(0, "#" + color[1] * 2),
+                    cls.translate_channel(1, "#" + color[2] * 2),
+                    cls.translate_channel(2, "#" + color[3] * 2),
+                    cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
                 )
 
     @classmethod

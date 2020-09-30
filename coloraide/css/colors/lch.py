@@ -70,7 +70,7 @@ class LCH(generic.LCH):
         )
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel == 0:
@@ -90,9 +90,9 @@ class LCH(generic.LCH):
         channels = []
         for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
             if i <= 2:
-                channels.append(cls._tx_channel(i, c))
+                channels.append(cls.translate_channel(i, c))
             else:
-                channels.append(cls._tx_channel(-1, c))
+                channels.append(cls.translate_channel(-1, c))
         if len(channels) == 3:
             channels.append(1.0)
         return channels

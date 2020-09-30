@@ -36,7 +36,7 @@ def lch_chroma(base, color):
     # judge how far we are off with the worst case fitting
     space = color.space()
     clipped = color.clone()
-    clipped.fit(space=space, method="clip")
+    clipped.fit(space=space, method="clip", in_place=True)
     base_error = base.delta(clipped)
 
     if base_error > 2.3:
@@ -52,7 +52,7 @@ def lch_chroma(base, color):
         # After each adjustment, see if clipping gets us close enough.
         while (high - low) > threshold and error < base_error:
             clipped = mapcolor.clone()
-            clipped.fit(space, method="clip")
+            clipped.fit(space, method="clip", in_place=True)
             delta = mapcolor.delta(clipped)
             error = color.delta(mapcolor)
             if delta - 2 < threshold:
@@ -64,7 +64,7 @@ def lch_chroma(base, color):
             mapcolor.chroma = (high + low) / 2
         # Trim off noise allowed by our tolerance
         color.update(mapcolor)
-        color.fit(space, method="clip")
+        color.fit(space, method="clip", in_place=True)
     else:
         # We are close enough that we should just clip.
         color.update(clipped)
@@ -100,8 +100,10 @@ def clip(base, color):
 class Gamut:
     """Gamut handling."""
 
-    def fit(self, space=None, *, method="lch-chroma"):
+    def fit(self, space=None, *, method="lch-chroma", in_place=False):
         """Fit the gamut using the provided method."""
+
+        this = self if in_place else self.clone()
 
         # Select appropriate mapping algorithm
         if method == "clip":
@@ -128,9 +130,9 @@ class Gamut:
             c._coords[i] = fit[i]
 
         # Adjust "this" color
-        self.update(c)
-        self._on_convert()
-        return self
+        this.update(c)
+        this._on_convert()
+        return this
 
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if current color is in gamut."""

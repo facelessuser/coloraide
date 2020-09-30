@@ -124,7 +124,7 @@ class LAB(Tools, Space):
     def l(self, value):
         """Get true luminance."""
 
-        self._cl = self._tx_channel(0, value) if isinstance(value, str) else float(value)
+        self._cl = self.translate_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def a(self):
@@ -136,7 +136,7 @@ class LAB(Tools, Space):
     def a(self, value):
         """A axis."""
 
-        self._ca = self._tx_channel(1, value) if isinstance(value, str) else float(value)
+        self._ca = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def b(self):
@@ -148,10 +148,10 @@ class LAB(Tools, Space):
     def b(self, value):
         """B axis."""
 
-        self._cb = self._tx_channel(2, value) if isinstance(value, str) else float(value)
+        self._cb = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         return float(value) if channel > 0 else parse.norm_alpha_channel(value)

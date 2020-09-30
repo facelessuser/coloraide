@@ -134,7 +134,7 @@ class XYZ(Tools, Space):
         self._cz = float(value)
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Translate channel string."""
 
         if channel in (0, 2):

@@ -62,11 +62,6 @@ class Space:
 
         return self._coords[:]
 
-    def raw(self):
-        """Get all the color data unaltered."""
-
-        return self.coords() + [self.alpha]
-
     def clone(self):
         """Clone."""
 
@@ -136,7 +131,7 @@ class Space:
     def alpha(self, value):
         """Adjust alpha."""
 
-        self._alpha = self._tx_channel(-1, value) if isinstance(value, str) else float(value)
+        self._alpha = self.translate_channel(-1, value) if isinstance(value, str) else float(value)
 
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
@@ -166,10 +161,10 @@ class Space:
     __str__ = __repr__
 
     @classmethod
-    def _tx_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):
         """Set a non-alpha color channel."""
 
-        raise NotImplementedError("Base _Color class does not implement '_tx_channel' directly.")
+        raise NotImplementedError("Base _Color class does not implement 'translate_channel' directly.")
 
     @classmethod
     def generic_match(cls, string, start=0, fullmatch=True):
