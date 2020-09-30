@@ -27,20 +27,20 @@ class HSL(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._ch, self._cs, self._cl = convert.convert(color.coords(), color.space(), self.space())
-            self._alpha = color._alpha
+            self.hue, self.saturation, self.lightness = convert.convert(color.coords(), color.space(), self.space())
+            self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
-            self._ch, self._cs, self._cl, self._alpha = values
+            self.hue, self.saturation, self.lightness, self.alpha = values
         elif isinstance(color, (list, tuple)):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
-            self._ch = color[0]
-            self._cs = color[1]
-            self._cl = color[2]
-            self._alpha = 1.0 if len(color) == 3 else color[3]
+            self.hue = color[0]
+            self.saturation = color[1]
+            self.lightness = color[2]
+            self.alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
@@ -57,44 +57,8 @@ class HSL(Space):
         Gives us an opportunity to normalize hues and things like that, if we desire.
         """
 
-        if not (0.0 <= self._ch <= 360.0):
-            self._ch = self._ch % 360.0
-
-    @property
-    def _ch(self):
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @_ch.setter
-    def _ch(self, value):
-        """Set hue channel."""
-
-        self._coords[0] = value
-
-    @property
-    def _cs(self):
-        """Saturation channel."""
-
-        return self._coords[1]
-
-    @_cs.setter
-    def _cs(self, value):
-        """Set saturation channel."""
-
-        self._coords[1] = value
-
-    @property
-    def _cl(self):
-        """Lightness channel."""
-
-        return self._coords[2]
-
-    @_cl.setter
-    def _cl(self, value):
-        """Set lightness channel."""
-
-        self._coords[2] = value
+        if not (0.0 <= self.hue <= 360.0):
+            self.hue = self.hue % 360.0
 
     def _mix(self, channels1, channels2, factor, factor2=1.0, hue=util.DEF_HUE_ADJ, **kwargs):
         """Blend the color with the given color."""
@@ -111,37 +75,37 @@ class HSL(Space):
     def hue(self):
         """Hue channel."""
 
-        return self._ch
+        return self._coords[0]
 
     @hue.setter
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def saturation(self):
         """Saturation channel."""
 
-        return self._cs
+        return self._coords[1]
 
     @saturation.setter
     def saturation(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
-        self._cs = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def lightness(self):
         """Lightness channel."""
 
-        return self._cl
+        return self._coords[2]
 
     @lightness.setter
     def lightness(self, value):
         """Set lightness channel."""
 
-        self._cl = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

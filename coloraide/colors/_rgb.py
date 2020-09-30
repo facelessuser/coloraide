@@ -23,20 +23,20 @@ class RGB(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._cr, self._cg, self._cb = convert.convert(color.coords(), color.space(), self.space())
-            self._alpha = color._alpha
+            self.red, self.green, self.blue = convert.convert(color.coords(), color.space(), self.space())
+            self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
-            self._cr, self._cg, self._cb, self._alpha = values
+            self.red, self.green, self.blue, self.alpha = values
         elif isinstance(color, (list, tuple)):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
-            self._cr = color[0]
-            self._cg = color[1]
-            self._cb = color[2]
-            self._alpha = 1.0 if len(color) == 3 else color[3]
+            self.red = color[0]
+            self.green = color[1]
+            self.blue = color[2]
+            self.alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
@@ -45,42 +45,6 @@ class RGB(Space):
 
         r, g, b = [util.round_half_up(c * 255.0) for c in coords]
         return min(r, min(g, b)) == max(r, max(g, b))
-
-    @property
-    def _cr(self):
-        """Red channel."""
-
-        return self._coords[0]
-
-    @_cr.setter
-    def _cr(self, value):
-        """Set red channel."""
-
-        self._coords[0] = value
-
-    @property
-    def _cg(self):
-        """Green channel."""
-
-        return self._coords[1]
-
-    @_cg.setter
-    def _cg(self, value):
-        """Set green channel."""
-
-        self._coords[1] = value
-
-    @property
-    def _cb(self):
-        """Blue channel."""
-
-        return self._coords[2]
-
-    @_cb.setter
-    def _cb(self, value):
-        """Set blue channel."""
-
-        self._coords[2] = value
 
     def _mix(self, channels1, channels2, factor, factor2=1.0, **kwargs):
         """Blend the color with the given color."""
@@ -95,37 +59,37 @@ class RGB(Space):
     def red(self):
         """Adjust red."""
 
-        return self._cr
+        return self._coords[0]
 
     @red.setter
     def red(self, value):
         """Adjust red."""
 
-        self._cr = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
 
     @property
     def green(self):
         """Adjust green."""
 
-        return self._cg
+        return self._coords[1]
 
     @green.setter
     def green(self, value):
         """Adjust green."""
 
-        self._cg = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def blue(self):
         """Adjust blue."""
 
-        return self._cb
+        return self._coords[2]
 
     @blue.setter
     def blue(self, value):
         """Adjust blue."""
 
-        self._cb = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

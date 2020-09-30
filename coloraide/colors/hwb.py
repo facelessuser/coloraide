@@ -27,20 +27,20 @@ class HWB(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self._ch, self._cw, self._cb = convert.convert(color.coords(), color.space(), self.space())
-            self._alpha = color._alpha
+            self.hue, self.whiteness, self.blackness = convert.convert(color.coords(), color.space(), self.space())
+            self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
-            self._ch, self._cw, self._cb, self._alpha = values
+            self.hue, self.whiteness, self.blackness, self.alpha = values
         elif isinstance(color, (list, tuple)):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
-            self._ch = color[0]
-            self._cw = color[1]
-            self._cb = color[2]
-            self._alpha = 1.0 if len(color) == 3 else color[3]
+            self.hue = color[0]
+            self.whiteness = color[1]
+            self.blackness = color[2]
+            self.alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
@@ -57,44 +57,8 @@ class HWB(Space):
         Gives us an opportunity to normalize hues and things like that, if we desire.
         """
 
-        if not (0.0 <= self._ch <= 360.0):
-            self._ch = self._ch % 360.0
-
-    @property
-    def _ch(self):
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @_ch.setter
-    def _ch(self, value):
-        """Set hue channel."""
-
-        self._coords[0] = value
-
-    @property
-    def _cw(self):
-        """Whiteness channel."""
-
-        return self._coords[1]
-
-    @_cw.setter
-    def _cw(self, value):
-        """Set whiteness channel."""
-
-        self._coords[1] = value
-
-    @property
-    def _cb(self):
-        """Blackness channel."""
-
-        return self._coords[2]
-
-    @_cb.setter
-    def _cb(self, value):
-        """Set blackness channel."""
-
-        self._coords[2] = value
+        if not (0.0 <= self.hue <= 360.0):
+            self.hue = self.hue % 360.0
 
     def _mix(self, channels1, channels2, factor, factor2=1.0, hue=util.DEF_HUE_ADJ, **kwargs):
         """Blend the color with the given color."""
@@ -111,37 +75,37 @@ class HWB(Space):
     def hue(self):
         """Hue channel."""
 
-        return self._ch
+        return self._coords[0]
 
     @hue.setter
     def hue(self, value):
         """Shift the hue."""
 
-        self._ch = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
 
     @property
     def whiteness(self):
         """Whiteness channel."""
 
-        return self._cw
+        return self._coords[1]
 
     @whiteness.setter
     def whiteness(self, value):
         """Set whiteness channel."""
 
-        self._cw = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
 
     @property
     def blackness(self):
         """Blackness channel."""
 
-        return self._cb
+        return self._coords[2]
 
     @blackness.setter
     def blackness(self, value):
         """Set blackness channel."""
 
-        self._cb = self.translate_channel(3, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self.translate_channel(3, value) if isinstance(value, str) else float(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

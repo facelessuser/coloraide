@@ -50,12 +50,12 @@ class LAB(generic.LAB):
 
         value = ''
         if options.get("gray") and self.is_achromatic():
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
+            if alpha is not False and (alpha is True or self.alpha < 1.0):
                 value = self._get_graya(options, precision=precision, fit=fit)
             else:
                 value = self._get_gray(options, precision=precision, fit=fit)
         else:
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
+            if alpha is not False and (alpha is True or self.alpha < 1.0):
                 value = self._get_laba(options, precision=precision, fit=fit)
             else:
                 value = self._get_lab(options, precision=precision, fit=fit)
@@ -83,7 +83,7 @@ class LAB(generic.LAB):
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision),
-            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
+            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
         )
 
     def _get_gray(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
@@ -104,7 +104,7 @@ class LAB(generic.LAB):
         coords = self.fit_coords(method=fit) if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
-            util.fmt_float(self._alpha, max(3, precision))
+            util.fmt_float(self.alpha, max(3, precision))
         )
 
     @classmethod

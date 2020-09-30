@@ -61,7 +61,7 @@ class SRGB(generic.SRGB):
 
         value = ''
         if options.get("hex") or options.get("names"):
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
+            if alpha is not False and (alpha is True or self.alpha < 1.0):
                 h = self._get_hexa(options, precision=precision, fit=fit)
             else:
                 h = self._get_hex(options, precision=precision, fit=fit)
@@ -77,7 +77,7 @@ class SRGB(generic.SRGB):
                     value = n
 
         if not value:
-            if alpha is not False and (alpha is True or self._alpha < 1.0):
+            if alpha is not False and (alpha is True or self.alpha < 1.0):
                 value = self._get_rgba(options, precision=precision, fit=fit)
             else:
                 value = self._get_rgb(options, precision=precision, fit=fit)
@@ -121,7 +121,7 @@ class SRGB(generic.SRGB):
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
             util.fmt_float(coords[2] * factor, precision),
-            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
+            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
         )
 
     def _get_hexa(self, options, *, precision=util.DEF_PREC, fit="clip"):
@@ -142,7 +142,7 @@ class SRGB(generic.SRGB):
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
             int(util.round_half_up(coords[2] * 255.0)),
-            int(util.round_half_up(self._alpha * 255.0))
+            int(util.round_half_up(self.alpha * 255.0))
         )
 
         if compress:

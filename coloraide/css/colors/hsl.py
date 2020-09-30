@@ -40,7 +40,7 @@ class HSL(generic.HSL):
             return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if alpha is not False and (alpha is True or self._alpha < 1.0):
+        if alpha is not False and (alpha is True or self.alpha < 1.0):
             value = self._get_hsla(options, precision=precision, fit=fit)
         else:
             value = self._get_hsl(options, precision=precision, fit=fit)
@@ -68,7 +68,7 @@ class HSL(generic.HSL):
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision),
-            util.fmt_float(self._alpha, max(util.DEF_PREC, precision))
+            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
         )
 
     @classmethod

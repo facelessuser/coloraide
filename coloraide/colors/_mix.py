@@ -76,7 +76,7 @@ class Mix:
         """
 
         current_space = self.space()
-        if self._alpha < 1.0:
+        if self.alpha < 1.0:
             if space is None:
                 space = current_space
             else:
@@ -97,8 +97,8 @@ class Mix:
             #    opposed to `color1`
             # Because of this, we need to feed our colors in reverse order.
             # We are mixing our color into the background at the percentage of our our alpha.
-            this._coords = [c for c in this._mix(background.coords(), this.coords(), this._alpha, background._alpha)]
-            this._alpha = this._alpha + background._alpha * (1.0 - this._alpha)
+            this._coords = [c for c in this._mix(background.coords(), this.coords(), this.alpha, background.alpha)]
+            this.alpha = this.alpha + background.alpha * (1.0 - this.alpha)
         else:
             this = self
 
@@ -123,10 +123,10 @@ class Mix:
         if this is None:
             raise ValueError('Invalid colorspace value: {}'.format(space))
 
-        this._coords = [c for c in this._mix(this.coords(), color.coords(), factor, hue=hue)]
+        this._coords = [c for c in this._mix(this.coords(), color.coords(), percent, hue=hue)]
         if alpha:
             # This is a simple channel blend and not alpha compositing.
-            this._alpha = this._mix_channel(this._alpha, color._alpha, factor)
+            this.alpha = this._mix_channel(this.alpha, color.alpha, percent)
 
         if in_place:
             return self.update(this.convert(current_space))

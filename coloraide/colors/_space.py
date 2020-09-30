@@ -70,7 +70,7 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
         """Initialize."""
 
         self.spaces = {}
-        self._channel_alpha = 0.0
+        self._alpha = 0.0
         self._coords = [0.0] * self.NUM_COLOR_CHANNELS
         if isinstance(color, Space):
             self.spaces = {k: v for k, v in color.spaces.items()}
@@ -141,18 +141,6 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
 
         return calc_contrast_ratio(self.luminance(), color.luminance())
 
-    @property
-    def _alpha(self):
-        """Alpha channel."""
-
-        return self._channel_alpha
-
-    @_alpha.setter
-    def _alpha(self, value):
-        """Set alpha channel."""
-
-        self._channel_alpha = util.clamp(value, 0.0, 1.0)
-
     @classmethod
     def space(cls):
         """Get the color space."""
@@ -171,7 +159,7 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
 
         for i, value in enumerate(obj.coords()):
             self._coords[i] = value
-        self._alpha = obj._alpha
+        self.alpha = obj.alpha
         self._on_convert()
         return self
 
@@ -185,7 +173,11 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
     def alpha(self, value):
         """Adjust alpha."""
 
-        self._alpha = self.translate_channel(-1, value) if isinstance(value, str) else float(value)
+        self._alpha = util.clamp(
+            self.translate_channel(-1, value) if isinstance(value, str) else float(value),
+            0.0,
+            1.0
+        )
 
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
@@ -209,7 +201,7 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
         return 'color({} {} / {})'.format(
             self.space(),
             ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
-            util.fmt_float(self._alpha, util.DEF_PREC)
+            util.fmt_float(self.alpha, util.DEF_PREC)
         )
 
     __str__ = __repr__
@@ -219,7 +211,7 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
     ):
         """Convert to CSS."""
 
-        alpha = alpha is not False and (alpha is True or self._alpha < 1.0)
+        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
 
         coords = self.fit_coords(method=fit) if fit else self.coords()
         template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
@@ -229,7 +221,7 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
             util.fmt_float(coords[2], precision)
         ]
         if alpha:
-            values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
+            values.append(util.fmt_float(self.alpha, max(precision, util.DEF_PREC)))
 
         return template.format(self.space(), *values)
 
