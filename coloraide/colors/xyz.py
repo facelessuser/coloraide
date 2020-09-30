@@ -1,13 +1,13 @@
 """XYZ class."""
 from ._space import Space, RE_GENERIC_MATCH
-from ._tools import Tools, GamutUnbound
+from ._gamut import GamutUnbound
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
 
 
-class XYZ(Tools, Space):
+class XYZ(Space):
     """XYZ class."""
 
     SPACE = "xyz"
@@ -137,10 +137,12 @@ class XYZ(Tools, Space):
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
-        if channel in (0, 2):
+        if channel in (0, 1, 2):
             return float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""

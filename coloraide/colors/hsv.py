@@ -1,13 +1,13 @@
 """HSV class."""
 from ._space import Space, RE_GENERIC_MATCH
-from ._tools import Tools, GamutBound, GamutAngle
+from ._gamut import GamutBound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
 
 
-class HSV(Tools, Space):
+class HSV(Space):
     """HSL class."""
 
     SPACE = "hsv"
@@ -153,6 +153,8 @@ class HSV(Tools, Space):
             return float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""

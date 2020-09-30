@@ -28,11 +28,23 @@ COLOR_PARTS = {
 }
 
 
+def norm_hex_channel(string):
+    """Normalize the hex string to a form we can handle."""
+
+    if string.startswith('#'):
+        return int(string[1:], 16) * RGB_CHANNEL_SCALE
+    else:
+        raise ValueError("Unexpected value '{}'".format(string))
+
+
 def norm_percent_channel(value, scale=False):
     """Normalize percent channel."""
 
-    value = float(value.strip('%'))
-    return value / 100.0 if scale else value
+    if value.endswith('%'):
+        value = float(value[:-1])
+        return value / 100.0 if scale else value
+    else:
+        raise ValueError("Unexpected value '{}'".format(value))
 
 
 def norm_rgb_channel(value):
@@ -57,13 +69,10 @@ def norm_alpha_channel(value):
 def norm_lab_lightness(value):
     """Normalize lab channel."""
 
-    return float(value.strip('%'))
-
-
-def norm_hex_channel(value):
-    """Normalize hex channel."""
-
-    return int(value, 16) * RGB_CHANNEL_SCALE
+    if value.endswith('%'):
+        return float(value.strip('%'))
+    else:
+        raise ValueError("Unexpected value '{}'".format(value))
 
 
 def norm_angle(angle):

@@ -1,13 +1,13 @@
 """LCH class."""
 from ._space import Space, RE_GENERIC_MATCH
-from ._tools import Tools, GamutUnbound, GamutAngle
+from ._gamut import GamutUnbound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
 
 
-class LCH(Tools, Space):
+class LCH(Space):
     """LCH class."""
 
     SPACE = "lch"
@@ -164,12 +164,14 @@ class LCH(Tools, Space):
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
-        if channel in (1, 0):
+        if channel in (0, 1):
             return float(value)
         elif channel == 2:
             return parse.norm_deg_channel(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""

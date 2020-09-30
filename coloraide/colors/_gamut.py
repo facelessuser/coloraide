@@ -100,6 +100,17 @@ def clip(base, color):
 class Gamut:
     """Gamut handling."""
 
+    def fit_coords(self, space=None, *, method=util.DEF_FIT):
+        """Get coordinates within this space or fit to another space."""
+
+        space = (self.space() if space is None else space).lower()
+        method = self.space() if method is None else method
+        if not self.in_gamut(space=space):
+            clone = self.clone()
+            clone.fit(method=method, in_place=True)
+            return clone.coords()
+        return self.coords()
+
     def fit(self, space=None, *, method="lch-chroma", in_place=False):
         """Fit the gamut using the provided method."""
 

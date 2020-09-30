@@ -1,13 +1,13 @@
 """HSL class."""
 from ._space import Space, RE_GENERIC_MATCH
-from ._tools import Tools, GamutBound, GamutAngle
+from ._gamut import GamutBound, GamutAngle
 from . import _parse as parse
 from . import _convert as convert
 from .. import util
 import re
 
 
-class HSL(Tools, Space):
+class HSL(Space):
     """HSL class."""
 
     SPACE = "hsl"
@@ -153,6 +153,8 @@ class HSL(Tools, Space):
             return float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     @classmethod
     def split_channels(cls, color):

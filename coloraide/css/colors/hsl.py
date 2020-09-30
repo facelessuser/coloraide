@@ -77,12 +77,12 @@ class HSL(generic.HSL):
 
         if channel == 0:
             return parse.norm_hue_channel(value)
-        elif channel == 1:
-            return parse.norm_percent_channel(value)
-        elif channel == 2:
+        elif channel in (1, 2):
             return parse.norm_percent_channel(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     @classmethod
     def split_channels(cls, color):

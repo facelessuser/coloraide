@@ -1,67 +1,10 @@
-"""Color tools."""
-from ._gamut import Gamut, GamutBound, GamutUnbound, GamutAngle  # noqa: F401
+"""Color mixing."""
 from .. import util
-from . import _convert as convert
 import math
-from . _delta import delta_e2000
-
-WHITE = [1.0] * 3
-BLACK = [0.0] * 3
 
 
-def calc_contrast_ratio(lum1, lum2):
-    """Get contrast ratio."""
-
-    return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
-
-
-def calc_luminance(srgb):
-    """Calculate luminance from `srgb` coordinates."""
-
-    lsrgb = convert.lin_srgb(srgb)
-    vector = [0.2126, 0.7152, 0.0722]
-    return sum([r * v for r, v in zip(lsrgb, vector)])
-
-
-class Tools(Gamut):
+class Mix:
     """Color utilities."""
-
-    def convert(self, space, *, fit=False):
-        """Convert to color space."""
-
-        space = space.lower()
-
-        if fit:
-            method = None if not isinstance(fit, str) else fit
-            if not self.in_gamut(space):
-                clone = self.clone()
-                clone.fit(space, method=method, in_place=True)
-                result = clone.convert(space)
-                result._on_convert()
-                return result
-
-        obj = self.spaces.get(space)
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        result = obj(self)
-        result._on_convert()
-        return result
-
-    def fit_coords(self, space=None, *, method=util.DEF_FIT):
-        """Get coordinates within this space or fit to another space."""
-
-        space = (self.space() if space is None else space).lower()
-        method = self.space() if method is None else method
-        if not self.in_gamut(space=space):
-            clone = self.clone()
-            clone.fit(method=method, in_place=True)
-            return clone.coords()
-        return self.coords()
-
-    def is_achromatic(self):
-        """Check if the color is achromatic."""
-
-        return self._is_achromatic(self.coords())
 
     def _mix_channel(self, c1, c2, f1, f2=1.0):
         """
@@ -124,21 +67,6 @@ class Tools(Gamut):
 
         return value
 
-    def delta(self, color2):
-        """Delta."""
-
-        return delta_e2000(self, color2)
-
-    def luminance(self):
-        """Get perceived luminance."""
-
-        return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
-
-    def contrast_ratio(self, color):
-        """Get contrast ratio."""
-
-        return calc_contrast_ratio(self.luminance(), color.luminance())
-
     def alpha_composite(self, background, *, space=None, in_place=False):
         """
         Apply the given transparency with the given background.
@@ -188,8 +116,6 @@ class Tools(Gamut):
         else:
             space = space.lower()
 
-        factor = util.clamp(float(percent), 0.0, 1.0)
-
         this = self.convert(space)
         if color.space() != space:
             color = color.convert(space)
@@ -206,22 +132,3 @@ class Tools(Gamut):
             return self.update(this.convert(current_space))
 
         return this.convert(current_space)
-
-    def to_generic_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
-    ):
-        """Convert to CSS."""
-
-        alpha = alpha is not False and (alpha is True or self._alpha < 1.0)
-
-        coords = self.fit_coords(method=fit) if fit else self.coords()
-        template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
-        values = [
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        ]
-        if alpha:
-            values.append(util.fmt_float(self._alpha, max(precision, util.DEF_PREC)))
-
-        return template.format(self.space(), *values)

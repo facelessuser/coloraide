@@ -1,12 +1,12 @@
 """SRGB color class."""
 from ._space import Space
-from ._tools import Tools, GamutBound
+from ._gamut import GamutBound
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
 
 
-class RGB(Tools, Space):
+class RGB(Space):
     """SRGB class."""
 
     _gamut = (
@@ -131,7 +131,12 @@ class RGB(Tools, Space):
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
-        return float(value) if channel > 0 else parse.norm_alpha_channel(value)
+        if 0 <= channel <= 2:
+            return float(value)
+        elif channel == -1:
+            return parse.norm_alpha_channel(value)
+        else:
+            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""

@@ -95,3 +95,12 @@ def delta_e2000(color, color2, kl=1, kc=1, kh=1):
         math.pow((dh / (kh * sh)), 2) +
         rt * (dc / (kc * sc)) * (dh / (kh * sh))
     )
+
+
+class Delta:
+    """Color distancing."""
+
+    def delta(self, color2):
+        """Delta."""
+
+        return delta_e2000(self, color2)
