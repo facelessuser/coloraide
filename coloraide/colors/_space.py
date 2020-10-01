@@ -206,10 +206,10 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
 
     __str__ = __repr__
 
-    def to_generic_string(
+    def to_string(
         self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
     ):
-        """Convert to CSS."""
+        """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
         alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
 

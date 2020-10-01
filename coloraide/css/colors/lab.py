@@ -46,7 +46,7 @@ class LAB(generic.LAB):
 
         options = kwargs
         if options.get("color"):
-            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
         if options.get("gray") and self.is_achromatic():

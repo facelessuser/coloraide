@@ -37,7 +37,7 @@ class HSL(generic.HSL):
         alpha = options.get("alpha")
 
         if options.get("color"):
-            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
         if alpha is not False and (alpha is True or self.alpha < 1.0):

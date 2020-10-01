@@ -105,4 +105,4 @@ class RGB(Space):
     def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
         """To string."""
 
-        return self.to_generic_string(alpha=alpha, precision=precision, fit=fit)
+        return super().to_string(alpha=alpha, precision=precision, fit=fit)

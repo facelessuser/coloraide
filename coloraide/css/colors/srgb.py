@@ -57,7 +57,7 @@ class SRGB(generic.SRGB):
 
         options = kwargs
         if options.get("color"):
-            return self.to_generic_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
         if options.get("hex") or options.get("names"):
