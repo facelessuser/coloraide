@@ -6,7 +6,6 @@ from ..colors import _convert as convert
 from ..colors import _parse as parse
 from .. import util
 import functools
-import traceback
 import math
 
 WHITE = [1.0] * 3
@@ -299,7 +298,6 @@ class ColorMod:
             else:
                 raise ValueError('Could not calculate base color')
         except Exception:
-            print(traceback.format_exc())
             pass
 
         if not done or (self.fullmatch and start != len(string)):
