@@ -1083,13 +1083,13 @@ def gam_prophoto(rgb):
 def lin_a98rgb(rgb):
     """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
-    return [math.pow(val, 563 / 256) for val in rgb]
+    return [math.copysign(math.pow(abs(val), 563 / 256), val) for val in rgb]
 
 
 def gam_a98rgb(rgb):
     """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
 
-    return [math.pow(val, 256 / 563) for val in rgb]
+    return [math.copysign(math.pow(abs(val), 256 / 563), val) for val in rgb]
 
 
 def lin_p3(rgb):
