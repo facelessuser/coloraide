@@ -9,7 +9,7 @@ from . import _mix as mix
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
 # colors with more channels, we can bump this.
-RE_GENERIC_MATCH = r"""(?xi)
+RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
 (?:({{color_space}})\s+)?
 ({float}(?:{space}{float}){{{{,6}}}}(?:{slash}(?:{percent}|{float}))?)
@@ -17,28 +17,6 @@ color\(\s*
 """.format(
     **parse.COLOR_PARTS
 )
-
-
-def split_channels(cls, color):
-    """Split channels."""
-
-    if color is None:
-        color = ""
-
-    channels = []
-    color = color.strip()
-    split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
-    alpha = None
-    if len(split) > 1:
-        alpha = parse.norm_alpha_channel(split[-1])
-    for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-        if c and i < cls.NUM_COLOR_CHANNELS:
-            channels.append(float(c))
-    if len(channels) < cls.NUM_COLOR_CHANNELS:
-        diff = cls.NUM_COLOR_CHANNELS - len(channels)
-        channels.extend([0.0] * diff)
-    channels.append(alpha if alpha is not None else 1.0)
-    return channels
 
 
 def calc_contrast_ratio(lum1, lum2):
@@ -63,7 +41,11 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
     NUM_COLOR_CHANNELS = 3
     IS_DEFAULT = False
     CHANNEL_NAMES = frozenset(["alpha"])
-    GENERIC_MATCH = ""
+    # For matching the default form of `color(space coords+ / alpha)`.
+    # Classes should define this if they want to use the default match.
+    DEFAULT_MATCH = ""
+    # Match pattern variable for classes to override so we can also
+    # maintain the default and other alternatives.
     MATCH = ""
 
     def __init__(self, color=None):
@@ -232,10 +214,32 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
         raise NotImplementedError("Base _Color class does not implement 'translate_channel' directly.")
 
     @classmethod
-    def generic_match(cls, string, start=0, fullmatch=True):
-        """Match a color by string using the default, generic format."""
+    def split_channels(cls, color):
+        """Split channels."""
 
-        m = cls.GENERIC_MATCH.match(string, start)
+        if color is None:
+            color = ""
+
+        channels = []
+        color = color.strip()
+        split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
+        alpha = None
+        if len(split) > 1:
+            alpha = parse.norm_alpha_channel(split[-1])
+        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
+            if c and i < cls.NUM_COLOR_CHANNELS:
+                channels.append(float(c))
+        if len(channels) < cls.NUM_COLOR_CHANNELS:
+            diff = cls.NUM_COLOR_CHANNELS - len(channels)
+            channels.extend([0.0] * diff)
+        channels.append(alpha if alpha is not None else 1.0)
+        return channels
+
+    @classmethod
+    def match(cls, string, start=0, fullmatch=True):
+        """Match a color by string."""
+
+        m = cls.DEFAULT_MATCH.match(string, start)
         if (
             m is not None and
             (
@@ -243,11 +247,5 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
                 (not m.group(1) and cls.IS_DEFAULT)
             ) and (not fullmatch or m.end(0) == len(string))
         ):
-            return split_channels(cls, m.group(2)), m.end(0)
+            return Space.split_channels(cls, m.group(2)), m.end(0)
         return None, None
-
-    @classmethod
-    def match(cls, string, start=0, fullmatch=True):
-        """Match a color by string."""
-
-        return cls.generic_match(string, start, fullmatch)

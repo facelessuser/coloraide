@@ -1,5 +1,5 @@
 """XYZ class."""
-from ._space import Space, RE_GENERIC_MATCH
+from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . import _convert as convert
 from . import _parse as parse
@@ -13,7 +13,7 @@ class XYZ(Space):
     SPACE = "xyz"
     DEF_BG = "color(xyz 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
-    GENERIC_MATCH = re.compile(RE_GENERIC_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
     _gamut = (
         (GamutUnbound(0.0), GamutUnbound(1.0)),
