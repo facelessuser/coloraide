@@ -133,10 +133,12 @@ class Color:
         clone = self._color.clone()
         return type(self)(clone.space(), clone.coords(), clone.alpha)
 
-    def convert(self, space, *, fit=False):
+    def convert(self, space, *, fit=False, in_place=False):
         """Convert."""
 
         obj = self._color.convert(space, fit=fit)
+        if in_place:
+            return self._attach(obj)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
