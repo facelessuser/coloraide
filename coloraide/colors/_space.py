@@ -33,6 +33,28 @@ def calc_luminance(srgb):
     return sum([r * v for r, v in zip(lsrgb, vector)])
 
 
+def split_channels(cls, color):
+    """Split channels."""
+
+    if color is None:
+        color = ""
+
+    channels = []
+    color = color.strip()
+    split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
+    alpha = None
+    if len(split) > 1:
+        alpha = parse.norm_alpha_channel(split[-1])
+    for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
+        if c and i < cls.NUM_COLOR_CHANNELS:
+            channels.append(float(c))
+    if len(channels) < cls.NUM_COLOR_CHANNELS:
+        diff = cls.NUM_COLOR_CHANNELS - len(channels)
+        channels.extend([0.0] * diff)
+    channels.append(alpha if alpha is not None else 1.0)
+    return channels
+
+
 class Space(delta.Delta, gamut.Gamut, mix.Mix):
     """Base color space object."""
 
@@ -211,29 +233,13 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
     def translate_channel(cls, channel, value):
         """Set a non-alpha color channel."""
 
-        raise NotImplementedError("Base _Color class does not implement 'translate_channel' directly.")
+        raise NotImplementedError("Base 'Space' does not implement 'translate_channel' directly.")
 
     @classmethod
     def split_channels(cls, color):
         """Split channels."""
 
-        if color is None:
-            color = ""
-
-        channels = []
-        color = color.strip()
-        split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
-        alpha = None
-        if len(split) > 1:
-            alpha = parse.norm_alpha_channel(split[-1])
-        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-            if c and i < cls.NUM_COLOR_CHANNELS:
-                channels.append(float(c))
-        if len(channels) < cls.NUM_COLOR_CHANNELS:
-            diff = cls.NUM_COLOR_CHANNELS - len(channels)
-            channels.extend([0.0] * diff)
-        channels.append(alpha if alpha is not None else 1.0)
-        return channels
+        raise NotImplementedError("Base 'Space' class does not implement 'translate_channel' directly.")
 
     @classmethod
     def match(cls, string, start=0, fullmatch=True):
@@ -247,5 +253,5 @@ class Space(delta.Delta, gamut.Gamut, mix.Mix):
                 (not m.group(1) and cls.IS_DEFAULT)
             ) and (not fullmatch or m.end(0) == len(string))
         ):
-            return Space.split_channels(cls, m.group(2)), m.end(0)
+            return split_channels(cls, m.group(2)), m.end(0)
         return None, None
