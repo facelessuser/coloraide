@@ -193,7 +193,7 @@ def display_p3_to_hsl(r, g, b):
 def display_p3_to_hwb(r, g, b):
     """Display P3 to HWB."""
 
-    return srgb_to_hwb(display_p3_to_srgb(r, g, b))
+    return srgb_to_hwb(*display_p3_to_srgb(r, g, b))
 
 
 def display_p3_to_xyz(r, g, b):
@@ -264,7 +264,7 @@ def a98_rgb_to_hsl(r, g, b):
 def a98_rgb_to_hwb(r, g, b):
     """A98 RGB to HWB."""
 
-    return srgb_to_hwb(a98_rgb_to_srgb(r, g, b))
+    return srgb_to_hwb(*a98_rgb_to_srgb(r, g, b))
 
 
 def a98_rgb_to_xyz(r, g, b):
@@ -335,7 +335,7 @@ def prophoto_rgb_to_hsl(r, g, b):
 def prophoto_rgb_to_hwb(r, g, b):
     """ProPhoto RGB to HWB."""
 
-    return srgb_to_hwb(prophoto_rgb_to_srgb(r, g, b))
+    return srgb_to_hwb(*prophoto_rgb_to_srgb(r, g, b))
 
 
 def prophoto_rgb_to_xyz(r, g, b):
@@ -406,7 +406,7 @@ def rec_2020_to_hsl(r, g, b):
 def rec_2020_to_hwb(r, g, b):
     """Rec 2020 to HWB."""
 
-    return srgb_to_hwb(rec_2020_to_srgb(r, g, b))
+    return srgb_to_hwb(*rec_2020_to_srgb(r, g, b))
 
 
 def rec_2020_to_xyz(r, g, b):
@@ -623,9 +623,7 @@ def lab_to_hsv(l, a, b):
 def lab_to_srgb(l, a, b):
     """LAB to RGB."""
 
-    xyz = d50_to_d65(lab_to_xyz(l, a, b))
-    srgb = xyz_to_lin_srgb(xyz)
-    return gam_srgb(srgb)
+    return xyz_to_srgb(*lab_to_xyz(l, a, b))
 
 
 def lab_to_hsl(l, a, b):

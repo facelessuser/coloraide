@@ -44,7 +44,7 @@ VER, DEVSTATUS = get_version()
 
 setup(
     name='coloraide',
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     version=VER,
     keywords='css color',
     description='A color library for CSS colors.',
