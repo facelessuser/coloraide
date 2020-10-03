@@ -17,10 +17,8 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9-dev]
+        python-version: [3.6, 3.7, 3.8, 3.9-dev]
         include:
-          - python-version: 3.5
-            tox-env: py35
           - python-version: 3.6
             tox-env: py36
           - python-version: 3.7
@@ -56,14 +54,14 @@ jobs:
     - name: Test
       run: |
         python -m tox
-    # - name: Upload Results
-    #   if: success()
-    #   uses: codecov/codecov-action@v1
-    #   with:
-    #     file: ./coverage.xml
-    #     flags: unittests
-    #     name: ${{ matrix.platform }}-${{ matrix.tox-env }}
-    #     fail_ci_if_error: false
+    - name: Upload Results
+      if: success()
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: ${{ matrix.platform }}-${{ matrix.tox-env }}
+        fail_ci_if_error: false
 
   lint:
     strategy:
