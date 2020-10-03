@@ -174,7 +174,7 @@ def display_p3_to_hsv(r, g, b):
     """Display P3 to HSV."""
 
     r, g, b = display_p3_to_srgb(r, g, b)
-    return rgb_to_hsv(r, g, b)
+    return srgb_to_hsv(r, g, b)
 
 
 def display_p3_to_srgb(r, g, b):
@@ -227,7 +227,7 @@ def display_p3_to_a98_rgb(r, g, b):
 def display_p3_to_prophoto_rgb(r, g, b):
     """Display P3 to ProPhoto RGB."""
 
-    xyz = d50_to_d65(lin_p3_to_xyz(lin_p3([r, g, b])))
+    xyz = d65_to_d50(lin_p3_to_xyz(lin_p3([r, g, b])))
     return gam_prophoto(xyz_to_lin_prophoto(xyz))
 
 
@@ -245,7 +245,7 @@ def a98_rgb_to_hsv(r, g, b):
     """A98 RGB to HSV."""
 
     r, g, b = a98_rgb_to_srgb(r, g, b)
-    return rgb_to_hsv(r, g, b)
+    return srgb_to_hsv(r, g, b)
 
 
 def a98_rgb_to_srgb(r, g, b):
@@ -316,7 +316,7 @@ def prophoto_rgb_to_hsv(r, g, b):
     """ProPhoto RGB to HSV."""
 
     r, g, b = prophoto_rgb_to_srgb(r, g, b)
-    return rgb_to_hsv(r, g, b)
+    return srgb_to_hsv(r, g, b)
 
 
 def prophoto_rgb_to_srgb(r, g, b):
@@ -387,7 +387,7 @@ def rec_2020_to_hsv(r, g, b):
     """Rec 2020 to HSV."""
 
     r, g, b = rec_2020_to_srgb(r, g, b)
-    return rgb_to_hsv(r, g, b)
+    return srgb_to_hsv(r, g, b)
 
 
 def rec_2020_to_srgb(r, g, b):
@@ -848,7 +848,13 @@ def xyz_to_a98_rgb(x, y, z):
 def xyz_to_prophoto_rgb(x, y, z):
     """XYZ to ProPhoto RGB."""
 
-    return gam_a98rgb(xyz_to_lin_prophoto([x, y, z]))
+    return gam_prophoto(xyz_to_lin_prophoto([x, y, z]))
+
+
+def xyz_to_rec_2020(x, y, z):
+    """XYZ to SRGB."""
+
+    return gam_2020(xyz_to_lin_2020(d50_to_d65([x, y, z])))
 
 
 ############
@@ -1065,7 +1071,8 @@ def lin_prophoto(rgb):
     Transfer curve is gamma 1.8 with a small linear portion.
     """
 
-    return [c / 16 if c < 0.031248 else math.pow(c, 1.8) for c in rgb]
+    et2 = 16 / 512
+    return [c / 16 if c <= et2 else math.pow(c, 1.8) for c in rgb]
 
 
 def gam_prophoto(rgb):
@@ -1075,7 +1082,8 @@ def gam_prophoto(rgb):
     Transfer curve is gamma 1.8 with a small linear portion.
     """
 
-    return [math.pow(c, 1 / 1.8) if c > 0.001953 else 16 * c for c in rgb]
+    et = 1 / 512
+    return [math.pow(c, 1 / 1.8) if c >= et else 16 * c for c in rgb]
 
 
 def lin_a98rgb(rgb):
