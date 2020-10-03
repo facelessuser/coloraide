@@ -67,7 +67,7 @@ class TestRoundTrip(unittest.TestCase):
     def test_rec_2020(self):
         """Test Rec 2020."""
 
-        self.assert_round_trip("color(rec-2020 0.9 0.2 0.4)")
+        self.assert_round_trip("color(rec2020 0.9 0.2 0.4)")
 
     def test_prophoto_rgb(self):
         """Test ProPhoto RGB."""

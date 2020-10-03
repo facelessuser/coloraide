@@ -8,13 +8,13 @@ from ...colors import HSV
 from ...colors import Display_P3
 from ...colors import A98_RGB
 from ...colors import ProPhoto_RGB
-from ...colors import Rec_2020
+from ...colors import Rec2020
 from ...colors import XYZ
 from ...colors import Color as GenericColor
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, HSV,
-    Display_P3, A98_RGB, ProPhoto_RGB, Rec_2020, XYZ
+    Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
 )
 
 
