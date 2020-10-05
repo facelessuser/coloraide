@@ -175,10 +175,10 @@ class Color:
 
         return self._color.is_achromatic()
 
-    def delta(self, color):
+    def distance(self, color, method="euclidean", **kwargs):
         """Get distance between this color and the provided color."""
 
-        return self._color.delta(color._color)
+        return self._color.distance(color._color, method=method, **kwargs)
 
     def luminance(self):
         """Get color's luminance."""

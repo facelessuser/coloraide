@@ -2,7 +2,7 @@
 from .. import util
 from . import _parse as parse
 from . import _convert as convert
-from . import _delta as delta
+from . import _distance as distance
 from . import _gamut as gamut
 from . import _mix as mix
 
@@ -55,7 +55,7 @@ def split_channels(cls, color):
     return channels
 
 
-class Space(delta.Delta, gamut.Gamut, mix.Mix):
+class Space(distance.Distance, gamut.Gamut, mix.Mix):
     """Base color space object."""
 
     DEF_BG = ""

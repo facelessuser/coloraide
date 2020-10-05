@@ -37,13 +37,13 @@ def lch_chroma(base, color):
     space = color.space()
     clipped = color.clone()
     clipped.fit(space=space, method="clip", in_place=True)
-    base_error = base.delta(clipped)
+    base_error = base.distance(clipped, "de-2000")
 
     if base_error > 2.3:
         threshold = .001
         # Compare mapped against desired space
         mapcolor = color.convert("lch")
-        error = color.delta(mapcolor)
+        error = color.distance(mapcolor, "de-2000")
         low = 0.0
         high = mapcolor.chroma
 
@@ -53,8 +53,8 @@ def lch_chroma(base, color):
         while (high - low) > threshold and error < base_error:
             clipped = mapcolor.clone()
             clipped.fit(space, method="clip", in_place=True)
-            delta = mapcolor.delta(clipped)
-            error = color.delta(mapcolor)
+            delta = mapcolor.distance(clipped, "de-2000")
+            error = color.distance(mapcolor, "de-2000")
             if delta - 2 < threshold:
                 low = mapcolor.chroma
             else:

@@ -5,9 +5,91 @@ RAD2DEG = 180 / math.pi
 DEG2RAD = math.pi / 180
 
 
-def delta_e2000(color, color2, kl=1, kc=1, kh=1):
+def distance_euclidean(color, color2, space="lab", **kwargs):
+    """Euclidean distance."""
+
+    lab1 = color.convert(space)
+    lab2 = color2.convert(space)
+
+    coords1 = lab1.coords()
+    coords2 = lab2.coords()
+
+    total = 0
+    for i, coord in enumerate(coords1):
+        total += math.pow(coords2[i] - coord, 2)
+    return math.sqrt(total)
+
+
+def distance_de_76(color, color2, **kwargs):
     """
-    Calculate distance doing a direct translation of the algorithm from the CIE delta2000 paper.
+    DeltaE1976 color distance forumula.
+
+    Basically this is Euclidean distance in the Lab space.
+    """
+
+    return distance_euclidean(color, color2, "lab")
+
+
+def distance_de_cmc(color, color2, l=2, c=1):
+    """
+    Delta E CMC.
+
+    http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
+    """
+
+    lab1 = color.convert("lab")
+    lab2 = color2.convert("lab")
+
+    l1, a1, b1 = lab1.coords()
+    c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
+    l2, a2, b2 = lab2.coords()
+    c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
+
+    dl = l1 - l2
+    dc = c1 - c2
+
+    da = a1 - a2
+    db = b1 - b2
+
+    # We never reference `dh` until the very end, and when we do, we square it
+    # before using it, so we don't need the square root as described in the
+    # algorithm. Instead we can just leave the result as is.
+    dh = math.pow(da, 2) + math.pow(db, 2) - math.pow(dc, 2)
+
+    if l1 < 16:
+        sl = 0.511
+    else:
+        sl = (0.040975 * l1) / (1 + 0.01765 * l1)
+
+    sc = ((0.0638 * c1) / (1 + 0.0131 * c1)) + 0.638
+
+    h = math.atan2(b1, a1) * RAD2DEG
+
+    if h >= 0:
+        h1 = h
+    else:
+        h1 = h + 360
+
+    if 164 <= h1 <= 345:
+        t = 0.56 + abs(0.2 * math.cos((h1 + 168) * DEG2RAD))
+    else:
+        t = 0.36 + abs(0.4 * math.cos((h1 + 35) * DEG2RAD))
+    c1_4 = math.pow(c1, 4)
+    f = math.sqrt(c1_4 / (c1_4 + 1900))
+
+    sh = sc * ((f * t) + 1 - f)
+
+    return math.sqrt(
+        math.pow(dl / (l * sl), 2) +
+        math.pow(dc / (c * sc), 2) +
+        # Square root just the demonitor as `dh` is already squared.
+        dh / math.pow(sh, 2)
+    )
+
+
+def distance_de_2000(color, color2, kl=1, kc=1, kh=1, **kwargs):
+    """
+    Calculate distance doing a direct translation of the algorithm from the CIE deltaE2000 paper.
 
     TODO: this is a lot of math, we need to go through and comment this up.
 
@@ -97,10 +179,10 @@ def delta_e2000(color, color2, kl=1, kc=1, kh=1):
     )
 
 
-class Delta:
+class Distance:
     """Color distancing."""
 
-    def delta(self, color2):
+    def distance(self, color2, method="euclidean", **kwargs):
         """Delta."""
 
-        return delta_e2000(self, color2)
+        return globals()['distance_{}'.format(method.lower().replace('-', '_'))](self, color2, **kwargs)
