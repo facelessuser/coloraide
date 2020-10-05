@@ -48,7 +48,7 @@ class HSV(Space):
         """Is achromatic."""
 
         h, s, v = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
-        return s < util.ACHROMATIC_THRESHOLD
+        return s < util.ACHROMATIC_THRESHOLD or v < util.ACHROMATIC_THRESHOLD
 
     def _on_convert(self):
         """
