@@ -114,7 +114,7 @@ class LAB(generic.LAB):
         if channel == 0:
             return parse.norm_lab_lightness(value)
         elif channel in (1, 2):
-            return float(value)
+            return parse.norm_float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
         else:

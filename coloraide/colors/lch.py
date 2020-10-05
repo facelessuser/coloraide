@@ -116,7 +116,7 @@ class LCH(Space):
         """Translate channel string."""
 
         if channel in (0, 1):
-            return float(value)
+            return parse.norm_float(value)
         elif channel == 2:
             return parse.norm_deg_channel(value)
         elif channel == -1:

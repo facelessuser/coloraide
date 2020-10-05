@@ -76,7 +76,7 @@ class LCH(generic.LCH):
         if channel == 0:
             return parse.norm_lab_lightness(value)
         elif channel == 1:
-            return float(value)
+            return parse.norm_float(value)
         elif channel == 2:
             return parse.norm_hue_channel(value)
         elif channel == -1:

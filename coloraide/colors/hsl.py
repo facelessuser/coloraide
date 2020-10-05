@@ -117,7 +117,7 @@ class HSL(Space):
         if channel == 0:
             return parse.norm_deg_channel(value)
         elif channel in (1, 2):
-            return float(value)
+            return parse.norm_float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
         else:

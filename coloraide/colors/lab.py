@@ -100,7 +100,7 @@ class LAB(Space):
         """Translate channel string."""
 
         if 0 <= channel <= 2:
-            return float(value)
+            return parse.norm_float(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
         else:
