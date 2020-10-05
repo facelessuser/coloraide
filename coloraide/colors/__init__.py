@@ -178,7 +178,14 @@ class Color:
     def distance(self, color, method="euclidean", **kwargs):
         """Get distance between this color and the provided color."""
 
-        return self._color.distance(color._color, method=method, **kwargs)
+        if isinstance(color, Color):
+            color = color._color
+        elif isinstance(color, str):
+            color = self.new(color)._color
+        else:
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+
+        return self._color.distance(color, method=method, **kwargs)
 
     def luminance(self):
         """Get color's luminance."""
