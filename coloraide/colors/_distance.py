@@ -4,6 +4,8 @@ G_CONST = math.pow(25, 7)
 RAD2DEG = 180 / math.pi
 DEG2RAD = math.pi / 180
 
+SUPPORTED = frozenset(["euclidean", "de-76", "de-2000", "de-cmc", "de-94"])
+
 
 def distance_euclidean(color, color2, space="lab", **kwargs):
     """Euclidean distance."""
@@ -27,7 +29,48 @@ def distance_de_76(color, color2, **kwargs):
     Basically this is Euclidean distance in the Lab space.
     """
 
-    return distance_euclidean(color, color2, "lab")
+    return distance_euclidean(color, color2, space="lab")
+
+
+def distance_de_94(color, color2, kl=1, k1=0.045, k2=0.015):
+    """
+    Delta E 1994 color distance formula.
+
+    http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
+    """
+
+    lab1 = color.convert("lab")
+    lab2 = color2.convert("lab")
+
+    l1, a1, b1 = lab1.coords()
+    c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
+    l2, a2, b2 = lab2.coords()
+    c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
+
+    dl = l1 - l2
+    dc = c1 - c2
+
+    da = a1 - a2
+    db = b1 - b2
+
+    # We never reference `dh` until the very end, and when we do, we square it
+    # before using it, so we don't need the square root as described in the
+    # algorithm. Instead we can just leave the result as is.
+    dh = math.pow(da, 2) + math.pow(db, 2) - math.pow(dc, 2)
+
+    sl = 1
+    sc = 1 + k1 * c1
+    sh = 1 + k2 * c1
+
+    kc = 1
+    kh = 1
+
+    return math.sqrt(
+        math.pow(dl / (kl * sl), 2) +
+        math.pow(dc / (kc * sc), 2) +
+        # Square root just the denominator as `dh` is already squared.
+        dh / math.pow(kh * sh, 2)
+    )
 
 
 def distance_de_cmc(color, color2, l=2, c=1):
@@ -185,4 +228,8 @@ class Distance:
     def distance(self, color2, method="euclidean", **kwargs):
         """Delta."""
 
-        return globals()['distance_{}'.format(method.lower().replace('-', '_'))](self, color2, **kwargs)
+        algorithm = method.lower()
+        if algorithm not in SUPPORTED:
+            raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
+
+        return globals()['distance_{}'.format(algorithm.replace('-', '_'))](self, color2, **kwargs)
