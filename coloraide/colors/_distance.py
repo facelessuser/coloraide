@@ -22,7 +22,7 @@ def distance_euclidean(color, color2, space="lab", **kwargs):
 
 def distance_de_76(color, color2, **kwargs):
     """
-    DeltaE1976 color distance forumula.
+    Delta E 1976 color distance formula.
 
     Basically this is Euclidean distance in the Lab space.
     """
@@ -82,14 +82,14 @@ def distance_de_cmc(color, color2, l=2, c=1):
     return math.sqrt(
         math.pow(dl / (l * sl), 2) +
         math.pow(dc / (c * sc), 2) +
-        # Square root just the demonitor as `dh` is already squared.
+        # Square root just the denominator as `dh` is already squared.
         dh / math.pow(sh, 2)
     )
 
 
 def distance_de_2000(color, color2, kl=1, kc=1, kh=1, **kwargs):
     """
-    Calculate distance doing a direct translation of the algorithm from the CIE deltaE2000 paper.
+    Calculate distance doing a direct translation of the algorithm from the CIE Delta E 2000 paper.
 
     TODO: this is a lot of math, we need to go through and comment this up.
 
