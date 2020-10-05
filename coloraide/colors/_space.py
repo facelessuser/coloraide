@@ -25,14 +25,6 @@ def calc_contrast_ratio(lum1, lum2):
     return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
 
 
-def calc_luminance(srgb):
-    """Calculate luminance from `srgb` coordinates."""
-
-    lsrgb = convert.lin_srgb(srgb)
-    vector = [0.2126, 0.7152, 0.0722]
-    return sum([r * v for r, v in zip(lsrgb, vector)])
-
-
 def split_channels(cls, color):
     """Split channels."""
 
@@ -138,7 +130,7 @@ class Space(distance.Distance, gamut.Gamut, mix.Mix):
     def luminance(self):
         """Get perceived luminance."""
 
-        return calc_luminance(convert.convert(self.coords(), self.space(), "srgb"))
+        return convert.convert(self.coords(), self.space(), 'xyz')[1]
 
     def contrast_ratio(self, color):
         """Get contrast ratio."""
