@@ -20,7 +20,7 @@ theme:
     text: Roboto
     code: Roboto Mono
   features:
-    - tabs
+    - navigation.tabs
 
 nav:
   - ColorAide: index.md
@@ -56,6 +56,10 @@ markdown_extensions:
           options:
             python3: true
   - pymdownx.inlinehilite:
+      custom_inline:
+        - name: color
+          class: color
+          format: !!python/name:tools.colors.color_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true
@@ -95,3 +99,6 @@ plugins:
   - mkdocs_pymdownx_material_extras
   - minify:
       minify_html: true
+
+extra_css:
+  - colorswatch.css
