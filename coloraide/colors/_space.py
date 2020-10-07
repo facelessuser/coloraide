@@ -4,7 +4,7 @@ from . import _parse as parse
 from . import _convert as convert
 from . import _distance as distance
 from . import _gamut as gamut
-from . import _mix as mix
+from . import _interpolate as interpolate
 
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
@@ -47,7 +47,7 @@ def split_channels(cls, color):
     return channels
 
 
-class Space(distance.Distance, gamut.Gamut, mix.Mix):
+class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
     """Base color space object."""
 
     DEF_BG = ""

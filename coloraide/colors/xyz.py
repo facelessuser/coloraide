@@ -52,15 +52,6 @@ class XYZ(Space):
         mx = max(max(points[0], points[1]), points[2])
         return mn == mx
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0, **kwargs):
-        """Blend the color with the given color."""
-
-        return (
-            self._mix_channel(channels1[0], channels2[0], factor, factor2),
-            self._mix_channel(channels1[1], channels2[1], factor, factor2),
-            self._mix_channel(channels1[2], channels2[2], factor, factor2)
-        )
-
     @property
     def x(self):
         """X channel."""

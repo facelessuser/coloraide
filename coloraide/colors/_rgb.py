@@ -46,15 +46,6 @@ class RGB(Space):
         r, g, b = [util.round_half_up(c * 255.0) for c in coords]
         return min(r, min(g, b)) == max(r, max(g, b))
 
-    def _mix(self, channels1, channels2, factor, factor2=1.0, **kwargs):
-        """Blend the color with the given color."""
-
-        return (
-            self._mix_channel(channels1[0], channels2[0], factor, factor2),
-            self._mix_channel(channels1[1], channels2[1], factor, factor2),
-            self._mix_channel(channels1[2], channels2[2], factor, factor2)
-        )
-
     @property
     def red(self):
         """Adjust red."""

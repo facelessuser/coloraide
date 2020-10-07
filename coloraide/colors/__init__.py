@@ -11,11 +11,19 @@ from .prophoto_rgb import ProPhoto_RGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .. import util
+import functools
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, HSV,
     Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
 )
+
+
+def interpolate(percent, color=None, interp=None):
+    """Wrapper for interpolate."""
+
+    obj = interp(percent)
+    return color.new(obj.space(), obj.coords(), obj.alpha)
 
 
 class ColorMatch:
@@ -131,7 +139,7 @@ class Color:
         """Clone."""
 
         clone = self._color.clone()
-        return type(self)(clone.space(), clone.coords(), clone.alpha)
+        return self.new(clone.space(), clone.coords(), clone.alpha)
 
     def convert(self, space, *, fit=False, in_place=False):
         """Convert."""
@@ -175,6 +183,19 @@ class Color:
 
         return self._color.is_achromatic()
 
+    def interpolate(self, color, space="lab", *, out_space=None, alpha=True, hue=util.DEF_HUE_ADJ):
+        """Interpolate."""
+
+        if isinstance(color, Color):
+            color = color._color
+        elif isinstance(color, str):
+            color = self.new(color)._color
+        else:
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+
+        interp = self._color.interpolate(color, space=space, alpha=alpha, hue=hue)
+        return functools.partial(interpolate, color=self.clone(), interp=interp)
+
     def distance(self, color, method="euclidean", **kwargs):
         """Get distance between this color and the provided color."""
 
@@ -197,7 +218,7 @@ class Color:
 
         return self._color.contrast_ratio(color._color)
 
-    def alpha_composite(self, background=None, *, space=None, in_place=False):
+    def overlay(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
         if isinstance(background, Color):
@@ -207,13 +228,13 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(background)))
 
-        obj = self._color.alpha_composite(background, space=space, in_place=in_place)
+        obj = self._color.overlay(background, space=space, in_place=in_place)
 
         if not in_place:
-            return type(self)(obj.space(), obj.coords(), obj.alpha)
+            return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
 
         if isinstance(color, type(self)):
@@ -223,9 +244,9 @@ class Color:
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
 
-        obj = self._color.mix(color, percent, alpha=alpha, space=space, hue=hue, in_place=in_place)
+        obj = self._color.mix(color, percent, space=space, hue=hue, in_place=in_place)
         if not in_place:
-            return type(self)(obj.space(), obj.coords(), obj.alpha)
+            return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
     def fit(self, space=None, *, method=util.DEF_FIT, in_place=False):
@@ -233,7 +254,7 @@ class Color:
 
         obj = self._color.fit(space, method=method, in_place=in_place)
         if not in_place:
-            return type(self)(obj.space(), obj.coords(), obj.alpha)
+            return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
