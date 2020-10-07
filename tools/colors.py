@@ -1,11 +1,10 @@
 """Color swatch."""
 from coloraide.css import Color
-import xml.etree.ElementTree as etree
-from markdown import util as md_util
+import xml.etree.ElementTree as Etree
 
 
 def _escape(txt):
-    """Basic html escaping."""
+    """Basic HTML escaping."""
 
     txt = txt.replace('&', '&amp;')
     txt = txt.replace('<', '&lt;')
@@ -19,20 +18,20 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
 
     src = src.strip()
     try:
-        color =  Color(src)
-        el = etree.Element('span')
+        color = Color(src)
+        el = Etree.Element('span')
         if not color.in_gamut("srgb"):
             if fit:
                 color.fit("srgb", in_place=True)
                 attributes = {'class': "swatch", "title": src}
-                sub_el = etree.SubElement(el, 'span', attributes)
+                sub_el = Etree.SubElement(el, 'span', attributes)
             else:
                 attributes = {'class': "swatch out-of-gamut", "title": "Out of Gamut&#10;{}".format(src)}
-                sub_el = etree.SubElement(el, 'span', attributes)
+                sub_el = Etree.SubElement(el, 'span', attributes)
         else:
             attributes = {'class': "swatch", "title": src}
-            sub_el = etree.SubElement(el, 'span', attributes)
-        etree.SubElement(
+            sub_el = Etree.SubElement(el, 'span', attributes)
+        Etree.SubElement(
             sub_el,
             'span',
             {
@@ -41,7 +40,7 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
             }
         )
         if color.alpha < 1.0:
-            etree.SubElement(
+            Etree.SubElement(
                 sub_el,
                 'span',
                 {
@@ -51,7 +50,7 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
             )
         if show_code:
             el.append(md.inlinePatterns['backtick'].handle_code('', src))
-    except Exception as e:
+    except Exception:
         el = md.inlinePatterns['backtick'].handle_code('', src)
     return el
 

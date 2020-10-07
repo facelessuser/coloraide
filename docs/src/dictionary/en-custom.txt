@@ -5,6 +5,7 @@ CSS
 Changelog
 Chroma
 ColorAide
+Formatter
 HDR
 HSL
 HSL

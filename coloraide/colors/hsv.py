@@ -109,7 +109,7 @@ class HSV(Space):
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)

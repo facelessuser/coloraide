@@ -29,7 +29,7 @@ class LCH(generic.LCH):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
     ):
         """Convert to CSS."""
 
@@ -44,30 +44,24 @@ class LCH(generic.LCH):
             value = self._get_lch(options, precision=precision, fit=fit)
         return value
 
-    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get LCH color."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get LCH color with alpha channel."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

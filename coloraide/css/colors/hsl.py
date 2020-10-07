@@ -29,7 +29,7 @@ class HSL(generic.HSL):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
     ):
         """Convert to CSS."""
 
@@ -46,30 +46,24 @@ class HSL(generic.HSL):
             value = self._get_hsl(options, precision=precision, fit=fit)
         return value
 
-    def _get_hsl(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_hsl(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get RGB color."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         template = "hsl({}, {}%, {}%)" if options.get("comma") else "hsl({} {}% {}%)"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_hsla(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_hsla(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get RGB color with alpha channel."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0], precision),
             util.fmt_float(coords[1], precision),

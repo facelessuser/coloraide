@@ -208,16 +208,13 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
     __str__ = __repr__
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
     ):
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
-        if fit is None:
-            fit = self.get_default("fit")
-
         alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
         values = [
             util.fmt_float(coords[0], precision),

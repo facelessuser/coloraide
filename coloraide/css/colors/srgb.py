@@ -51,7 +51,7 @@ class SRGB(generic.SRGB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
     ):
         """Convert to CSS."""
 
@@ -62,9 +62,9 @@ class SRGB(generic.SRGB):
         value = ''
         if options.get("hex") or options.get("names"):
             if alpha is not False and (alpha is True or self.alpha < 1.0):
-                h = self._get_hexa(options, precision=precision, fit=fit)
+                h = self._get_hexa(options, precision=precision)
             else:
-                h = self._get_hex(options, precision=precision, fit=fit)
+                h = self._get_hex(options, precision=precision)
             if options.get("hex"):
                 value = h
             if options.get("names"):
@@ -83,11 +83,8 @@ class SRGB(generic.SRGB):
                 value = self._get_rgb(options, precision=precision, fit=fit)
         return value
 
-    def _get_rgb(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_rgb(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get RGB color."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         percent = options.get("percent", False)
         comma = options.get("comma", False)
@@ -99,18 +96,15 @@ class SRGB(generic.SRGB):
         else:
             template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
             util.fmt_float(coords[2] * factor, precision)
         )
 
-    def _get_rgba(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_rgba(self, options, *, precision=util.DEF_PREC, fit=True):
         """Get RGB color with alpha channel."""
-
-        if fit is None:
-            fit = self.get_default("fit")
 
         percent = options.get("percent", False)
         comma = options.get("comma", False)
@@ -122,7 +116,7 @@ class SRGB(generic.SRGB):
         else:
             template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords() if fit else self.coords()
         return template.format(
             util.fmt_float(coords[0] * factor, precision),
             util.fmt_float(coords[1] * factor, precision),
@@ -130,20 +124,17 @@ class SRGB(generic.SRGB):
             util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_hexa(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_hexa(self, options, *, precision=util.DEF_PREC):
         """Get the RGB color with the alpha channel."""
 
         hex_upper = options.get("hex_upper", False)
         compress = options.get("compress", False)
 
-        if fit is None:
-            fit = self.get_default("fit")
-
         template = "#{:02x}{:02x}{:02x}{:02x}"
         if hex_upper:
             template = template.upper()
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords()
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
@@ -157,20 +148,17 @@ class SRGB(generic.SRGB):
                 value = m.expand(r"#\1\2\3\4")
         return value
 
-    def _get_hex(self, options, *, precision=util.DEF_PREC, fit=None):
+    def _get_hex(self, options, *, precision=util.DEF_PREC):
         """Get the `RGB` value."""
 
         hex_upper = options.get("hex_upper", False)
         compress = options.get("compress", False)
 
-        if fit is None:
-            fit = self.get_default("fit")
-
         template = "#{:02x}{:02x}{:02x}"
         if hex_upper:
             template = template.upper()
 
-        coords = self.fit_coords(method=fit) if fit else self.coords()
+        coords = self.fit_coords()
         value = template.format(
             int(util.round_half_up(coords[0] * 255.0)),
             int(util.round_half_up(coords[1] * 255.0)),
