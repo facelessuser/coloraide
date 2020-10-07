@@ -274,13 +274,53 @@ True
 [0.5019606396913003, 0.5019606681948446, 0.5019606550447144]
 ```
 
-We use the achromatic state to make certain decisions internally, like when hue can be mixed. If a color is achromatic,
+We use the achromatic state to make certain decisions internally, like when hue is null. If a color is achromatic,
 the hue, even if specified, doesn't really contribute to the color, so our [`mix`](#color-mixing) method will not mix
 the hue channel if achromatic.
 
+## Interpolating
+
+The `interpolation` method allows a user to create an interpolation function. This can be used to create a list of
+gradient colors, or whatever the desired needs are.
+
+Interpolation functions are returned and accept an input between 0 - 1. Values outside of this range will not be
+interpolated, but extrapolated. Extrapolated values may not be as expected.
+
+Here we create a an interpolation between `#!color lch(50% 50 0)` and `#!color lch(90% 50 20)`. We then step through
+values of `0.1`, `0.2`, and `0.3` which creates: `#!color lch(54% 49.728 1.9707 / 1)`,
+`#!color lch(58% 49.515 3.9608 / 1)`, `#!color lch(62% 49.363 5.9656 / 1)`.
+
+```pycon3
+>>> i` = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)")
+>>> i(0.1)
+color(lch 54 49.728 1.9707 / 1)
+>>> i(0.2)
+color(lch 58 49.515 3.9608 / 1)
+>>> i(0.3)
+color(lch 62 49.363 5.9656 / 1)
+```
+
+You can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
+the colors: `#!color lch(50.04% 49.997 0.0196 / 1)`, `#!color lch(50.32% 49.976 0.15685 / 1)`, and
+`#!color lch(51.08% 49.921 0.52995 / 1)`.
+
+```pycon3
+>>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
+>>> i(0.1)
+color(lch 50.04 49.997 0.0196 / 1)
+>>> i(0.2)
+color(lch 50.32 49.976 0.15685 / 1)
+>>> i(0.3)
+color(lch 51.08 49.921 0.52995 / 1)
+```
+
 ## Color Mixing
 
-Colors can be mixed together to create new colors. For instance, if we had the color `#!color red` and the color
+Colors can be mixed together to create new colors. Mixing is built on top of the [`interpolation`](#interpolating)
+function and will return a color between the current and specified colors. If a colors are requested to be interpolated
+within a color space smaller than the original, the colors will be gamut mapped into the desired color space.
+
+As an example, if we had the color `#!color red` and the color
 `#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get the color
 `#!color rgb(127.5 0 127.5)`.
 
@@ -323,20 +363,22 @@ second color afterwards.
 
 Mixing will always return a new color unless `in_place` is set `True`.
 
-## Alpha Compositing
+## Overlaying Colors
 
-Alpha compositing is built on mixing and basically returns the color that you'd get by overlaying a transparent color
-onto a specified background. In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)`
-and overlay it on the color `#!color black`. This yields the color: `#!color rgb(127.5 0 0)`.
+The `overlay` method allows a transparent color to be overlaid on top of another color creating the composite of the
+two. To perform an overlay, a background color must be provided to the color along with an optional color space. If a
+color is to be overlaid within a smaller color space, the colors will be mapped to the smaller space.
+
+In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)` and overlay it on the color `#!color black`. This
+yields the color: `#!color rgb(127.5 0 0)`.
 
 ```pycon3
 >>> color = Color("rgb(100% 0% 0% / 0.5)")
->>> background = Color("black")
->>> color.alpha_composite(background).to_string()
+>>> color.overlay("black").to_string()
 'rgb(127.5 0 0)'
 ```
 
-Alpha compositing will always return a new color unless `in_place` is set `True`.
+A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
 
 ## Color Distance
 
@@ -345,11 +387,11 @@ ColorAide implements a couple different distance algorithms.
 - `euclidean`: basic Euclidean distancing. By default it is performed in the Lab color space matching Delta E 1976,
   but can be configured to work directly in any color space via the `space` parameter.
 - `de-76`: the Delta E 1976 algorithm which is euclidean distance in the `lab` color space.
-- `de-94`: the Detla E 1994 algorithm which was created as a correction to Delta E 76 as the Lab color space was not as
+- `de-94`: the Delta E 1994 algorithm which was created as a correction to Delta E 76 as the Lab color space was not as
   uniform as originally thought. By default, it uses a weighting for "graphic arts" where `kl=1`, `k1=0.045`, and
   `k2=0.015`.
 - `de-cmc`: the Delta E CMC algorithm which is more accurate than the 1976 algorithm. It is performed in the Lab color
-   space. It's weighting can be tweaked with `l` and `c` paremeter. Current default is `2:1` where `l=2` and `c=1`.
+   space. It's weighting can be tweaked with `l` and `c` parameter. Current default is `2:1` where `l=2` and `c=1`.
 - `de-2000`: the Delta E 2000 algorithm is an even more "correct" algorithm performed in the Lab color space. weighting
   is controlled by `kl`, `kc`, and `kh` which is `1:1:1` by default where `kl=1`, `kc=1`, and `kh=1`.
 

@@ -40,6 +40,7 @@ prophoto
 rgb
 sRGB
 sRGB's
+subclassed
 sublicense
 un
 unsaturate
