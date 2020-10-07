@@ -194,11 +194,11 @@ class Color:
 
         return self._color.is_achromatic()
 
-    def interpolate(self, color, space="lab", *, out_space=None, alpha=True, hue=util.DEF_HUE_ADJ):
+    def interpolate(self, color, *, space="lab", progress=None, out_space=None, alpha=True, hue=util.DEF_HUE_ADJ):
         """Interpolate."""
 
         color = self._handle_color_input(color)
-        interp = self._color.interpolate(color, space=space, alpha=alpha, hue=hue)
+        interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, alpha=alpha, hue=hue)
         return functools.partial(interpolate, color=self.clone(), interp=interp)
 
     def distance(self, color, method="euclidean", **kwargs):
