@@ -47,7 +47,7 @@ def process_coords(color):
             hue_index = i
             if color.is_achromatic():
                 # Achromatic colors should not consider hue
-                coords[i] = float("NaN")
+                coords[i] = util.NAN
     return coords, hue_index
 
 
@@ -176,7 +176,7 @@ class Interpolate:
         # Include alpha
         coords1.append(color1.alpha)
         # If we don't want to mix alpha, use NaN for the second alpha
-        coords2.append(color2.alpha if alpha else float('NaN'))
+        coords2.append(color2.alpha if alpha else util.NAN)
 
         return functools.partial(
             interpolate,

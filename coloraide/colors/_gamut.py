@@ -100,8 +100,11 @@ def clip(base, color):
 class Gamut:
     """Gamut handling."""
 
-    def fit_coords(self, space=None, *, method=util.DEF_FIT):
+    def fit_coords(self, space=None, *, method=None):
         """Get coordinates within this space or fit to another space."""
+
+        if method is None:
+            method = self.get_default("fit")
 
         space = (self.space() if space is None else space).lower()
         method = self.space() if method is None else method
@@ -111,8 +114,11 @@ class Gamut:
             return clone.coords()
         return self.coords()
 
-    def fit(self, space=None, *, method="lch-chroma", in_place=False):
+    def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""
+
+        if method is None:
+            method = self.get_default("fit")
 
         this = self if in_place else self.clone()
 
@@ -123,7 +129,7 @@ class Gamut:
             func = lch_chroma
         else:
             # Unknown fit method
-            raise ValueError("'{}' gamut mapping is not currently supported")
+            raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
         if space is not None:

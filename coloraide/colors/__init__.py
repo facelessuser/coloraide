@@ -13,6 +13,8 @@ from .xyz import XYZ
 from .. import util
 import functools
 
+DEF_FIT = "lch-chroma"
+
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, HSV,
     Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
@@ -49,10 +51,18 @@ class Color:
 
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
-    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
+    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Initialize."""
 
-        self._attach(self._parse(color, data, alpha, filters=filters))
+        self.defaults = {
+            "fit": DEF_FIT
+        }
+        self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
+
+    def get_default(self, name):
+        """Get default."""
+
+        return self.defaults[name]
 
     def __repr__(self):
         """Representation."""
@@ -65,7 +75,7 @@ class Color:
         """Attach the this objects convert space to the color."""
 
         self._color = color
-        self._color.spaces = {k: v for k, v in self.CS_MAP.items()}
+        self._color.parent = self
 
     def _handle_color_input(self, color):
         """Handle color input."""
@@ -79,7 +89,7 @@ class Color:
         return color
 
     @classmethod
-    def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None):
+    def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, **kwargs):
         """Parse the color."""
 
         obj = None
@@ -141,10 +151,10 @@ class Color:
         return self._color.coords()
 
     @classmethod
-    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
+    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Create new color object."""
 
-        return cls(color, data, alpha, filters=filters)
+        return cls(color, data, alpha, filters=filters, **kwargs)
 
     def clone(self):
         """Clone."""
@@ -160,17 +170,17 @@ class Color:
             return self._attach(obj)
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
-    def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
 
-        obj = self._parse(color, data, alpha, filters=filters)
+        obj = self._parse(color, data, alpha, filters=filters, **kwargs)
         self._color.update(obj)
         return self
 
-    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None):
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, alpha, filters=filters))
+        self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
         return self
 
     def to_string(self, **kwargs):
@@ -237,7 +247,7 @@ class Color:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
-    def fit(self, space=None, *, method=util.DEF_FIT, in_place=False):
+    def fit(self, space=None, *, method=None, in_place=False):
         """Fit gamut."""
 
         obj = self._color.fit(space, method=method, in_place=in_place)

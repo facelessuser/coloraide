@@ -65,11 +65,16 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
     def __init__(self, color=None):
         """Initialize."""
 
-        self.spaces = {}
+        self.parent = None
         self._alpha = 0.0
         self._coords = [0.0] * self.NUM_COLOR_CHANNELS
         if isinstance(color, Space):
-            self.spaces = {k: v for k, v in color.spaces.items()}
+            self.parent = color.parent
+
+    def get_default(self, name):
+        """Get default."""
+
+        return self.parent.get_default(name)
 
     def coords(self):
         """Coordinates."""
@@ -87,11 +92,11 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
         if space is None:
             space = self.space()
 
-        obj = self.spaces.get(space.lower())
+        obj = self.parent.CS_MAP.get(space.lower())
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
         color = obj(value)
-        color.spaces = {k: v for k, v in self.spaces.items()}
+        color.parent = self.parent
         return color
 
     def convert(self, space, *, fit=False):
@@ -108,7 +113,7 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
                 result._on_convert()
                 return result
 
-        obj = self.spaces.get(space)
+        obj = self.parent.CS_MAP.get(space)
         if obj is None:
             raise ValueError("'{}' is not a valid color space".format(space))
         result = obj(self)
@@ -203,9 +208,12 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
     __str__ = __repr__
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
     ):
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
+
+        if fit is None:
+            fit = self.get_default("fit")
 
         alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
 

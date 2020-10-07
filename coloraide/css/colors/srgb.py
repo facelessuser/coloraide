@@ -51,7 +51,7 @@ class SRGB(generic.SRGB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
     ):
         """Convert to CSS."""
 
@@ -83,8 +83,11 @@ class SRGB(generic.SRGB):
                 value = self._get_rgb(options, precision=precision, fit=fit)
         return value
 
-    def _get_rgb(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_rgb(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get RGB color."""
+
+        if fit is None:
+            fit = self.get_default("fit")
 
         percent = options.get("percent", False)
         comma = options.get("comma", False)
@@ -103,8 +106,11 @@ class SRGB(generic.SRGB):
             util.fmt_float(coords[2] * factor, precision)
         )
 
-    def _get_rgba(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_rgba(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get RGB color with alpha channel."""
+
+        if fit is None:
+            fit = self.get_default("fit")
 
         percent = options.get("percent", False)
         comma = options.get("comma", False)
@@ -124,14 +130,14 @@ class SRGB(generic.SRGB):
             util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
         )
 
-    def _get_hexa(self, options, *, precision=util.DEF_PREC, fit="clip"):
+    def _get_hexa(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get the RGB color with the alpha channel."""
 
         hex_upper = options.get("hex_upper", False)
         compress = options.get("compress", False)
 
-        if not fit:
-            fit == "clip"
+        if fit is None:
+            fit = self.get_default("fit")
 
         template = "#{:02x}{:02x}{:02x}{:02x}"
         if hex_upper:
@@ -151,14 +157,14 @@ class SRGB(generic.SRGB):
                 value = m.expand(r"#\1\2\3\4")
         return value
 
-    def _get_hex(self, options, *, precision=util.DEF_PREC, fit="clip"):
+    def _get_hex(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get the `RGB` value."""
 
         hex_upper = options.get("hex_upper", False)
         compress = options.get("compress", False)
 
-        if not fit:
-            fit == "clip"
+        if fit is None:
+            fit = self.get_default("fit")
 
         template = "#{:02x}{:02x}{:02x}"
         if hex_upper:

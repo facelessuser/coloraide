@@ -9,7 +9,6 @@ NAN = float('nan')
 INF = float('inf')
 ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
-DEF_FIT = "lch-chroma"
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5

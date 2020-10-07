@@ -126,7 +126,7 @@ class HSL(Space):
             channels.append(1.0)
         return channels
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs):
+    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)

@@ -29,7 +29,7 @@ class LCH(generic.LCH):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=util.DEF_FIT, **kwargs
+        self, *, alpha=None, precision=util.DEF_PREC, fit=None, **kwargs
     ):
         """Convert to CSS."""
 
@@ -44,8 +44,11 @@ class LCH(generic.LCH):
             value = self._get_lch(options, precision=precision, fit=fit)
         return value
 
-    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get LCH color."""
+
+        if fit is None:
+            fit = self.get_default("fit")
 
         template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
 
@@ -56,8 +59,11 @@ class LCH(generic.LCH):
             util.fmt_float(coords[2], precision)
         )
 
-    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=util.DEF_FIT):
+    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=None):
         """Get LCH color with alpha channel."""
+
+        if fit is None:
+            fit = self.get_default("fit")
 
         template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
 
