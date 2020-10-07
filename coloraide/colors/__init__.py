@@ -67,6 +67,17 @@ class Color:
         self._color = color
         self._color.spaces = {k: v for k, v in self.CS_MAP.items()}
 
+    def _handle_color_input(self, color):
+        """Handle color input."""
+
+        if isinstance(color, Color):
+            color = color._color
+        elif isinstance(color, str):
+            color = self.new(color)._color
+        else:
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+        return color
+
     @classmethod
     def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None):
         """Parse the color."""
@@ -186,26 +197,14 @@ class Color:
     def interpolate(self, color, space="lab", *, out_space=None, alpha=True, hue=util.DEF_HUE_ADJ):
         """Interpolate."""
 
-        if isinstance(color, Color):
-            color = color._color
-        elif isinstance(color, str):
-            color = self.new(color)._color
-        else:
-            raise TypeError("Unexpected type '{}'".format(type(color)))
-
+        color = self._handle_color_input(color)
         interp = self._color.interpolate(color, space=space, alpha=alpha, hue=hue)
         return functools.partial(interpolate, color=self.clone(), interp=interp)
 
     def distance(self, color, method="euclidean", **kwargs):
         """Get distance between this color and the provided color."""
 
-        if isinstance(color, Color):
-            color = color._color
-        elif isinstance(color, str):
-            color = self.new(color)._color
-        else:
-            raise TypeError("Unexpected type '{}'".format(type(color)))
-
+        color = self._handle_color_input(color)
         return self._color.distance(color, method=method, **kwargs)
 
     def luminance(self):
@@ -216,18 +215,13 @@ class Color:
     def contrast_ratio(self, color):
         """Compare the contrast ration of this color and the provided color."""
 
-        return self._color.contrast_ratio(color._color)
+        color = self._handle_color_input(color)
+        return self._color.contrast_ratio(color)
 
     def overlay(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
-        if isinstance(background, Color):
-            background = background._color
-        elif isinstance(background, str):
-            background = self.new(background)._color
-        else:
-            raise TypeError("Unexpected type '{}'".format(type(background)))
-
+        background = self._handle_color_input(background)
         obj = self._color.overlay(background, space=space, in_place=in_place)
 
         if not in_place:
@@ -237,13 +231,7 @@ class Color:
     def mix(self, color, percent=util.DEF_MIX, *, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
 
-        if isinstance(color, type(self)):
-            color = color._color
-        elif isinstance(color, str):
-            color = self.new(color)._color
-        else:
-            raise TypeError("Unexpected type '{}'".format(type(color)))
-
+        color = self._handle_color_input(color)
         obj = self._color.mix(color, percent, space=space, hue=hue, in_place=in_place)
         if not in_place:
             return self.new(obj.space(), obj.coords(), obj.alpha)
