@@ -108,8 +108,8 @@ class Interpolate:
             else:
                 space = space.lower()
 
-            this = self.convert(space)
-            background = background.convert(space)
+            this = self.convert(space, fit=True)
+            background = background.convert(space, fit=True)
 
             if this is None:
                 raise ValueError('Invalid colorspace value: {}'.format(space))
