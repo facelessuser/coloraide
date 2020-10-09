@@ -11,6 +11,7 @@ from .prophoto_rgb import ProPhoto_RGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .. import util
+from ._cylindrical import Cylindrical
 import functools
 
 DEF_FIT = "lch-chroma"
@@ -60,6 +61,16 @@ class Color:
             "delta": DEF_DELTA_E
         }
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
+
+    def is_hue_null(self, space="lch"):
+        """Check if hue is treated as null."""
+
+        space = space.lower()
+        this = self if self.space() == space else self.convert(space)
+        if isinstance(this._color, Cylindrical):
+            return this._color.is_hue_null()
+        else:
+            return False
 
     def get_default(self, name):
         """Get default."""
