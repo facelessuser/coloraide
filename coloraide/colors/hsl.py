@@ -1,5 +1,6 @@
 """HSL class."""
 from ._space import Space, RE_DEFAULT_MATCH
+from ._cylindrical import Cylindrical
 from ._gamut import GamutBound, GamutAngle
 from . import _parse as parse
 from . import _convert as convert
@@ -7,7 +8,7 @@ from .. import util
 import re
 
 
-class HSL(Space):
+class HSL(Cylindrical, Space):
     """HSL class."""
 
     SPACE = "hsl"
@@ -44,10 +45,10 @@ class HSL(Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, coords):
-        """Is achromatic."""
+    def is_hue_null(self):
+        """Test if hue is null."""
 
-        h, s, l = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
+        h, s, l = self.coords()
         return (
             s < util.ACHROMATIC_THRESHOLD or
             ((0 + util.ACHROMATIC_THRESHOLD) > l or l > (100.0 - util.ACHROMATIC_THRESHOLD))
@@ -111,20 +112,6 @@ class HSL(Space):
             return parse.norm_alpha_channel(value)
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    @classmethod
-    def split_channels(cls, color):
-        """Split channels."""
-
-        channels = []
-        for i, c in enumerate(parse.RE_COMMA_SPLIT.split(color[1:-1].strip()), 0):
-            if i <= 2:
-                channels.append(cls.translate_channel(i, c))
-            else:
-                channels.append(cls.translate_channel(-1, c))
-        if len(channels) == 3:
-            channels.append(1.0)
-        return channels
 
     def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
         """To string."""

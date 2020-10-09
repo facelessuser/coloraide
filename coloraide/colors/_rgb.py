@@ -40,12 +40,6 @@ class RGB(Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, coords):
-        """Is achromatic."""
-
-        r, g, b = [util.round_half_up(c * 255.0) for c in coords]
-        return min(r, min(g, b)) == max(r, max(g, b))
-
     @property
     def red(self):
         """Adjust red."""

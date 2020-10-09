@@ -12,7 +12,7 @@ class LAB(Space):
 
     SPACE = "lab"
     DEF_BG = "color(lab 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["l", "a", "b", "alpha"])
+    CHANNEL_NAMES = frozenset(["lightness", "a", "b", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
     _gamut = (
@@ -27,37 +27,31 @@ class LAB(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.l, self.a, self.b = convert.convert(color.coords(), color.space(), self.space())
+            self.lightness, self.a, self.b = convert.convert(color.coords(), color.space(), self.space())
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
             if values is None:
                 raise ValueError("'{}' does not appear to be a valid color".format(color))
-            self.l, self.a, self.b, self.alpha = values
+            self.lightness, self.a, self.b, self.alpha = values
         elif isinstance(color, (list, tuple)):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")
-            self.l = color[0]
+            self.lightness = color[0]
             self.a = color[1]
             self.b = color[2]
             self.alpha = 1.0 if len(color) == 3 else color[3]
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, coords):
-        """Is achromatic."""
-
-        l, a, b = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
-        return abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD
-
     @property
-    def l(self):
+    def lightness(self):
         """L channel."""
 
         return self._coords[0]
 
-    @l.setter
-    def l(self, value):
+    @lightness.setter
+    def lightness(self, value):
         """Get true luminance."""
 
         self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)

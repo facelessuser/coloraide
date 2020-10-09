@@ -39,6 +39,12 @@ class LAB(generic.LAB):
 
         super().__init__(color)
 
+    def _is_achromatic(self, coords):
+        """Is achromatic."""
+
+        l, a, b = coords
+        return abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD
+
     def to_string(
         self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
     ):

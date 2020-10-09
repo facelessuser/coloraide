@@ -127,11 +127,6 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
         Gives us an opportunity to normalize hues and things like that, if we desire.
         """
 
-    def is_achromatic(self):
-        """Check if the color is achromatic."""
-
-        return self._is_achromatic(self.coords())
-
     def luminance(self):
         """Get perceived luminance."""
 

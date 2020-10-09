@@ -2,7 +2,7 @@
 import math
 import functools
 from .. import util
-from . _gamut import GamutAngle
+from . _cylindrical import Cylindrical
 
 
 def overlay(c1, c2, a1, a2):
@@ -11,56 +11,71 @@ def overlay(c1, c2, a1, a2):
     if math.isnan(c1) and math.isnan(c2):
         return 0.0
     elif math.isnan(c1):
-        return c1 * a1
-    elif math.isnan(c2):
         return c2 * a2
+    elif math.isnan(c2):
+        return c1 * c1
 
     return c1 * a1 + c2 * a2 * (1 - a1)
 
 
-def _interpolate(p, progress, c1, c2):
-    """Handle the actual interpolation."""
-
-    if math.isnan(c1) and math.isnan(c2):
-        return 0.0
-    elif math.isnan(c1):
-        return c2
-    elif math.isnan(c2):
-        return c1
-    else:
-        return c1 + (c2 - c1) * (p if progress is None else progress(p))
-
-
-def interpolate(p, coords1, coords2, create, progress, inspace, outspace):
+def interpolate(p, coords1, coords2, create, progress, outspace):
     """Run through the coordinates and run the interpolation on them."""
 
-    return create.new([_interpolate(p, progress, c1, coords2[i]) for i, c1 in enumerate(coords1)]).convert(outspace)
+    coords = []
+    for i, c1 in enumerate(coords1):
+        c2 = coords2[i]
+        if math.isnan(c1) and math.isnan(c2):
+            value = 0.0
+        elif math.isnan(c1):
+            value = c2
+        elif math.isnan(c2):
+            value = c1
+        else:
+            value = c1 + (c2 - c1) * (p if progress is None else progress(p))
+        coords.append(value)
+    return create.new(coords).convert(outspace)
 
 
-def process_coords(color):
-    """Format the coordinates."""
+def prepare_coords(color, adjust=None):
+    """
+    Prepare the coordinates for interpolation.
 
-    hue_index = None
-    coords = color.coords()
-    for i, gamut in enumerate(color._gamut):
-        if isinstance(gamut[0], GamutAngle):
-            hue_index = i
-            if color.is_achromatic():
-                # Achromatic colors should not consider hue
-                coords[i] = util.NAN
-    return coords, hue_index
+    If the hue is null, we need to set it to NaN.
+    If the user specified only specific channels to mix,
+    then we need to set all other channels to NaN.
+    """
+
+    if isinstance(color, Cylindrical):
+        if color.is_hue_null():
+            name = color.hue_name()
+            color.set(name, util.NAN)
+
+    if adjust:
+        to_adjust = adjust & color.CHANNEL_NAMES
+        to_avoid = color.CHANNEL_NAMES - adjust
+        if to_adjust:
+            for channel in to_avoid:
+                color.set(channel, util.NAN)
 
 
-def adjust_hues(c1, c2, hue):
+def adjust_hues(color1, color2, hue):
     """Adjust hues."""
 
     hue = hue.lower()
-    if hue != "specified":
-        c1 = c1 % 360
-        c2 = c2 % 360
+    if hue == "specified":
+        return
+
+    name = color1.hue_name()
+    c1 = color1.get(name)
+    c2 = color2.get(name)
+
+    c1 = c1 % 360
+    c2 = c2 % 360
 
     if math.isnan(c1) or math.isnan(c2):
-        return c1, c2
+        color1.set(name, c1)
+        color2.set(name, c2)
+        return
 
     if hue == "shorter":
         if c2 - c1 > 180:
@@ -82,12 +97,11 @@ def adjust_hues(c1, c2, hue):
         if c1 < c2:
             c1 += 360
 
-    elif hue == "specified":
-        pass
-
     else:
         raise ValueError("Unknown hue adjuster '{}'".format(hue))
-    return c1, c2
+
+    color1.set(name, c1)
+    color2.set(name, c2)
 
 
 class Interpolate:
@@ -115,19 +129,21 @@ class Interpolate:
                 raise ValueError('Invalid colorspace value: {}'.format(space))
 
             # Get the coordinates and indexes of valid hues
-            coords1, hue_index1 = process_coords(this)
-            coords2, hue_index2 = process_coords(background)
+            prepare_coords(this)
+            prepare_coords(background)
 
             # Adjust hues if we have two valid hues
-            if hue_index1 is not None and hue_index2 is not None:
-                hue1, hue2 = adjust_hues(coords1[hue_index1], coords2[hue_index2], util.DEF_HUE_ADJ)
-                coords1[hue_index1] = hue1
-                coords2[hue_index2] = hue2
+            if isinstance(this, Cylindrical):
+                adjust_hues(this, background, util.DEF_HUE_ADJ)
 
             # Blend the channels using the alpha channel values as the factors
             # Afterwards, blend the alpha channels. This is different than blend.
-            this._coords = [overlay(c1, coords2[i], this.alpha, background.alpha) for i, c1 in enumerate(coords1)]
-            this.alpha = this.alpha + background.alpha * (1.0 - this.alpha)
+            coords1 = this.coords()
+            coords2 = background.coords()
+            a1 = this.alpha
+            a2 = background.alpha
+            this._coords = [overlay(c1, coords2[i], a1, a2) for i, c1 in enumerate(coords1)]
+            this.alpha = a1 + a2 * (1.0 - a1)
         else:
             this = self
 
@@ -136,7 +152,7 @@ class Interpolate:
 
         return this.convert(current_space)
 
-    def mix(self, color, percent=util.DEF_MIX, *, alpha=True, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix colors using interpolation."""
 
         current_space = self.space()
@@ -145,16 +161,44 @@ class Interpolate:
         else:
             space = space.lower()
 
-        obj = self.interpolate(color, space=space, out_space=current_space, alpha=alpha, hue=hue)(percent)
+        obj = self.interpolate(color, space=space, out_space=current_space, adjust=adjust, hue=hue)(percent)
         if in_place:
             return self.update(obj)
         return obj
 
-    def interpolate(self, color, *, space="lab", out_space=None, progress=None, alpha=True, hue=util.DEF_HUE_ADJ):
-        """Return an interpolation function."""
+    def interpolate(self, color, *, space="lab", out_space=None, progress=None, adjust=None, hue=util.DEF_HUE_ADJ):
+        """
+        Return an interpolation function.
+
+        The general interpolation comes from the CSS specification which covers:
+
+        - the math involved to mix color coordinates.
+        - explaining that the colors should be gamut mapped
+        - how percentages are handled
+        - how the hue adjuster works
+
+        With that said the API is similar to https://colorjs.io. The idea of gamut mapping by
+        compressing chroma is not unique to color.js, but we did port their work for that to
+        be used here as well.
+
+        The function will return an interpolation function that accepts a value (which should
+        be in the range of [0..1] and we will return a color based on that value.
+
+        While we use NaNs to mask off channels when doing the interpolation, we do not allow
+        arbitrary specification of NaNs by the user, they must specify channels via `adjust`
+        if they which to target specific channels for mixing. Null hues become NaNs before
+        mixing occurs.
+
+        ---
+        Original Authors: Lea Verou, Chris Lilley
+        License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
+        """
 
         if progress is not None and not callable(progress):
             raise TypeError('Progress must be callable')
+
+        if adjust:
+            adjust = set([name.lower() for name in adjust])
 
         inspace = space.lower()
         outspace = self.space()
@@ -164,19 +208,19 @@ class Interpolate:
         color2 = color.convert(inspace, fit=True)
 
         # Get the coordinates and indexes of valid hues
-        coords1, hue_index1 = process_coords(color1)
-        coords2, hue_index2 = process_coords(color2)
+        prepare_coords(color1)
+        prepare_coords(color2, adjust)
 
         # Adjust hues if we have two valid hues
-        if hue_index1 is not None and hue_index2 is not None:
-            hue1, hue2 = adjust_hues(coords1[hue_index1], coords2[hue_index2], hue)
-            coords1[hue_index1] = hue1
-            coords2[hue_index2] = hue2
+        if isinstance(color1, Cylindrical):
+            adjust_hues(color1, color2, hue)
+
+        coords1 = color1.coords()
+        coords2 = color2.coords()
 
         # Include alpha
         coords1.append(color1.alpha)
-        # If we don't want to mix alpha, use NaN for the second alpha
-        coords2.append(color2.alpha if alpha else util.NAN)
+        coords2.append(color2.alpha)
 
         return functools.partial(
             interpolate,
@@ -184,6 +228,5 @@ class Interpolate:
             coords2=coords2,
             create=color1,
             progress=progress,
-            inspace=space,
             outspace=outspace
         )

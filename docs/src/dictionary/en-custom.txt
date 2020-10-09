@@ -5,6 +5,7 @@ CSS
 Changelog
 Chroma
 ColorAide
+ColorHelper
 Formatter
 HDR
 HSL
@@ -21,6 +22,7 @@ Matcher
 MkDocs
 NONINFRINGEMENT
 NaN
+NaNs
 ProPhoto
 RGB
 SRGB

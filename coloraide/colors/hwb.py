@@ -1,5 +1,6 @@
 """HWB class."""
 from ._space import Space, RE_DEFAULT_MATCH
+from ._cylindrical import Cylindrical
 from ._gamut import GamutBound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
@@ -7,7 +8,7 @@ from .. import util
 import re
 
 
-class HWB(Space):
+class HWB(Cylindrical, Space):
     """HWB class."""
 
     SPACE = "hwb"
@@ -44,10 +45,10 @@ class HWB(Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, coords):
-        """Is achromatic."""
+    def is_hue_null(self):
+        """Test if hue is null."""
 
-        h, w, b = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
+        h, w, b = self.coords()
         return (w + b) > (100.0 - util.ACHROMATIC_THRESHOLD)
 
     def _on_convert(self):

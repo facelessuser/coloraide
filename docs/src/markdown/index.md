@@ -225,9 +225,10 @@ chain these settings together.
 'rgb(0 127.5 255)'
 ```
 
-## Relative luminance
+## Contrast
 
-Relative luminance is acquired by translating the color to the XYZ color space and reading the Y channel.
+Coloraide gives access to the relative luminance of colors. Relative luminance is acquired by translating the color to
+the XYZ color space and reading the Y channel.
 
 Looking at the color `#!color orange` we see if we convert it to the XYZ color space, we get
 `#!color color(xyz 0.58096 0.49224 0.05047)`. It can be noted that the Y coordinate is `0.49224`, which matches the
@@ -238,45 +239,13 @@ return of `luminance`.
 0.49223879421047334
 ```
 
-## Achromatic
-
-We can test if a color is achromatic via the `achromatic` method. A color will return `True` if it meets the criteria
-set by it's color space.
-
-Often we will return `True` if the color is achromatic or very *near* achromatic. For instance, Lab is considered
-achromatic if `a == b == 0`. *We* will consider a lab color achromatic if `a` and `b` are very *near* `0`. We will consider
-HSL as achromatic if saturation is very near zero or if lightness is very near 100% or 0%.
-
-We test very near achromatic as we are always preserving the precision before and after conversion. Often you can have a
-scenario after conversion where it is essentially zero, but due to conversion, not exactly. Consider the sRGB color of
-`#!color grey`. When we convert it to Lch, in this example we get `#!color lch(53.585% 0.00002 0)`. And chroma is very
-nearly zero, but not quite.
+If given two colors, we can use the relative luminance and calculate the contrast ratio between the two colors. We
+can simply call the `contrast_ratio` method:
 
 ```pycon3
->>> grey = Color("grey").convert("lch")
->>> grey.to_string()
-'lch(53.585% 0.00002 0)'
->>> grey.is_achromatic()
-True
+>>> Color("red").contrast_ratio("blue")
+2.463497175178265
 ```
-
-Going the other way and specifying `#!color lch(53.585% 0 0)` and converting to sRGB, with rounding, it would appear we
-have `r == g == b` as when we print, we get `#!color rgb(128 128 128)`. If we inspect the coordinates, we can see they
-are not exactly equal. For this reason, we test very *near* achromatic.
-
-```pycon3
->>> grey = Color("lch(53.585% 0 0)").convert("srgb")
->>> grey.to_string()
-'rgb(128 128 128)'
->>> grey.is_achromatic()
-True
->>> grey.coords()
-[0.5019606396913003, 0.5019606681948446, 0.5019606550447144]
-```
-
-We use the achromatic state to make certain decisions internally, like when hue is null. If a color is achromatic,
-the hue, even if specified, doesn't really contribute to the color, so our [`mix`](#color-mixing) method will not mix
-the hue channel if achromatic.
 
 ## Interpolating
 
@@ -291,7 +260,7 @@ values of `0.1`, `0.2`, and `0.3` which creates: `#!color lch(54% 49.728 1.9707 
 `#!color lch(58% 49.515 3.9608 / 1)`, `#!color lch(62% 49.363 5.9656 / 1)`.
 
 ```pycon3
->>> i` = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)")
+>>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)")
 >>> i(0.1)
 color(lch 54 49.728 1.9707 / 1)
 >>> i(0.2)
@@ -299,6 +268,32 @@ color(lch 58 49.515 3.9608 / 1)
 >>> i(0.3)
 color(lch 62 49.363 5.9656 / 1)
 ```
+
+If desired, we can target specific channels for mixing which will keep all the other channels constant on the base
+color. In this example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
+`#!color lch(56% 49.1 257.1)`. We also specify the that we want to only mix the `hue` channel. The final color is
+`#!color lch(52% 58.1 351.59)`. Notice that only the `hue` has changed.
+
+```pycon3
+>>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+>>> i(0.2477).to_string()
+'lch(52% 58.1 351.59)'
+```
+
+Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
+accepts such values as `longer` or `shorter`, `shorter` being the default (see API for all options). In this example,
+we run the same command, but specify that the interpolation should use the longer angle between the two hues. This time,
+when we mix `#!color lch(52% 58.1 22.7)` and `#!color lch(56% 49.1 257.1)`, we get a different color
+(`#!color lch(52% 58.1 80.761)`) as we interpolated in between the larger angle between the two points.
+
+```pycon3
+>>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"], hue="longer")
+>>> i(0.2477).to_string()
+'lch(52% 58.1 80.761)'
+```
+
+It is important to note that the you must specify the channels of the space the interpolation is occurring in.
+Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
 You can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors: `#!color lch(50.04% 49.997 0.0196 / 1)`, `#!color lch(50.32% 49.976 0.15685 / 1)`, and

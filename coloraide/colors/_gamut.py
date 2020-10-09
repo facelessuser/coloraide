@@ -139,7 +139,9 @@ class Gamut:
 
         # If we are perfectly in gamut, don't waste time fitting
         if c.in_gamut(tolerance=0.0):
-            return
+            this.update(c)
+            this._on_convert()
+            return this
 
         # Apply mapping/clipping/etc.
         fit = func(self.clone(), c)

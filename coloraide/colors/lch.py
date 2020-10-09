@@ -1,5 +1,6 @@
 """LCH class."""
 from ._space import Space, RE_DEFAULT_MATCH
+from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound, GamutAngle
 from . import _convert as convert
 from . import _parse as parse
@@ -7,7 +8,7 @@ from .. import util
 import re
 
 
-class LCH(Space):
+class LCH(Cylindrical, Space):
     """LCH class."""
 
     SPACE = "lch"
@@ -48,11 +49,16 @@ class LCH(Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def _is_achromatic(self, coords):
-        """Is achromatic."""
+    def is_hue_null(self):
+        """Test if hue is null."""
 
-        l, c, h = [util.round_half_up(c, scale=util.DEF_PREC) for c in coords]
+        l, c, h = self.coords()
         return c < util.ACHROMATIC_THRESHOLD
+
+    def hue_index(self):
+        """Get hue index."""
+
+        return 2
 
     def _on_convert(self):
         """

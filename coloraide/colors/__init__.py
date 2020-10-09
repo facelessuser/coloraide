@@ -21,7 +21,7 @@ SUPPORTED = (
 )
 
 
-def interpolate(percent, color=None, interp=None):
+def _interpolate(percent, color=None, interp=None):
     """Wrapper for interpolate."""
 
     obj = interp(percent)
@@ -199,17 +199,12 @@ class Color:
         self._color.set(name, value)
         return self
 
-    def is_achromatic(self):
-        """Check if color is is_achromatic."""
-
-        return self._color.is_achromatic()
-
-    def interpolate(self, color, *, space="lab", progress=None, out_space=None, alpha=True, hue=util.DEF_HUE_ADJ):
+    def interpolate(self, color, *, space="lab", progress=None, out_space=None, adjust=None, hue=util.DEF_HUE_ADJ):
         """Interpolate."""
 
         color = self._handle_color_input(color)
-        interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, alpha=alpha, hue=hue)
-        return functools.partial(interpolate, color=self.clone(), interp=interp)
+        interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
+        return functools.partial(_interpolate, color=self.clone(), interp=interp)
 
     def distance(self, color, method="euclidean", **kwargs):
         """Get distance between this color and the provided color."""
@@ -238,11 +233,11 @@ class Color:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, hue=util.DEF_HUE_ADJ, in_place=False):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
 
         color = self._handle_color_input(color)
-        obj = self._color.mix(color, percent, space=space, hue=hue, in_place=in_place)
+        obj = self._color.mix(color, percent, space=space, adjust=adjust, hue=hue, in_place=in_place)
         if not in_place:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
