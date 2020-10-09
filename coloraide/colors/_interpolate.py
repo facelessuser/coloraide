@@ -1,4 +1,17 @@
-"""Interpolation methods."""
+"""
+Interpolation methods.
+
+A lot of code was ported and or adapted from the https://colorjs.io project. Particularly
+the `interpolate` method and the functions built on top of it, such as `mix` and `steps`.
+
+While we deviate in some ways, a lot of it, at the time of this comment, are a direct port.
+
+In general, the logic mimics in many ways the `color-mix` function as outlined in the Level 5
+color draft (Oct 2020), but the approach was modeled directly off of the work done in color.js.
+---
+Original Authors: Lea Verou, Chris Lilley
+License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
+"""
 import math
 import functools
 from .. import util
@@ -105,14 +118,17 @@ def adjust_hues(color1, color2, hue):
 
 
 class Interpolate:
-    """Interpolate."""
+    """Interpolate between colors."""
 
     def overlay(self, background, *, space=None, in_place=False):
         """
         Apply the given transparency with the given background.
 
-        This gives a color that represents what the eye sees with
-        the transparent color against the given background.
+        This attempts to give a color that represents what the eye
+        sees with the transparent color against the given background.
+
+        Best to use in linear color spaces, but there are no restrictions
+        for using it in cylindrical.
         """
 
         current_space = self.space()
@@ -152,8 +168,67 @@ class Interpolate:
 
         return this.convert(current_space)
 
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **kwargs):
+        """
+        Discrete steps.
+
+        This is built upon the interpolate function, and will return a list of
+        colors containing a minimum of colors equal to `steps` or steps as specified
+        derived from the `max_delta` parameter (whichever is greatest).
+
+        Number of colors can be capped with `max_steps`.
+
+        Default delta E method used is delta E 76.
+        """
+
+        interp = self.interpolate(color, **kwargs)
+        total_delta = self.distance(color)
+        actual_steps = steps if max_delta <= 0 else max(steps, math.ceil(total_delta / max_delta) + 1)
+        if max_steps is not None:
+            actual_steps = min(actual_steps, max_steps)
+
+        ret = []
+        if actual_steps == 1:
+            ret = [{"p": 0.5, "color": interp(0.5)}]
+        else:
+            step = 1 / (actual_steps - 1)
+            for i in range(actual_steps):
+                p = i * step
+                ret.append({'p': p, 'color': interp(p)})
+
+        # Iterate over all the stops inserting stops in between if all colors
+        # if we have any two colors with a max delta greater than what was requested.
+        # We inject between every stop to ensure the midpoint does not shift.
+        if max_delta > 0:
+            # Initial check to see if we need to insert more stops
+            m_delta = 0
+            for i, entry in enumerate(ret):
+                if i == 0:
+                    continue
+                m_delta = max(m_delta, entry['color'].distance(ret[i - 1]['color']))
+
+            while m_delta > max_delta:
+                # Inject stops while measuring again to see if it was sufficient
+                m_delta = 0
+                i = 1
+                while i < len(ret) and len(ret) < max_steps:
+                    prev = ret[i - 1]
+                    cur = ret[i]
+                    p = (cur['p'] + prev['p']) / 2
+                    color = interp(p)
+                    m_delta = max(m_delta, color.distance(prev['color']), color.distance(cur['color']))
+                    ret.insert(i, {'p': p, 'color': color})
+                    i += 2
+
+        return [i['color'] for i in ret]
+
     def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
-        """Mix colors using interpolation."""
+        """
+        Mix colors using interpolation.
+
+        This uses the interpolate method to find the center point between the two colors.
+        The basic mixing logic is outlined in the CSS level 5 draft.
+        """
 
         current_space = self.space()
         if space is None:
@@ -170,28 +245,13 @@ class Interpolate:
         """
         Return an interpolation function.
 
-        The general interpolation comes from the CSS specification which covers:
-
-        - the math involved to mix color coordinates.
-        - explaining that the colors should be gamut mapped
-        - how percentages are handled
-        - how the hue adjuster works
-
-        With that said the API is similar to https://colorjs.io. The idea of gamut mapping by
-        compressing chroma is not unique to color.js, but we did port their work for that to
-        be used here as well.
-
         The function will return an interpolation function that accepts a value (which should
-        be in the range of [0..1] and we will return a color based on that value.
+        be in the range of [0..1] and will return a color based on that value.
 
         While we use NaNs to mask off channels when doing the interpolation, we do not allow
         arbitrary specification of NaNs by the user, they must specify channels via `adjust`
         if they which to target specific channels for mixing. Null hues become NaNs before
         mixing occurs.
-
-        ---
-        Original Authors: Lea Verou, Chris Lilley
-        License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
         """
 
         if progress is not None and not callable(progress):
@@ -201,7 +261,7 @@ class Interpolate:
             adjust = set([name.lower() for name in adjust])
 
         inspace = space.lower()
-        outspace = self.space()
+        outspace = self.space() if out_space is None else out_space
 
         # Convert to the color space and ensure the color fits inside
         color1 = self.convert(inspace, fit=True)

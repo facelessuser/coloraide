@@ -222,6 +222,12 @@ class Color:
         interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
         return functools.partial(_interpolate, color=self.clone(), interp=interp)
 
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **kwargs):
+        """Interpolate discrete steps."""
+
+        color = self._handle_color_input(color)
+        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta=max_delta, **kwargs)
+
     def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
 

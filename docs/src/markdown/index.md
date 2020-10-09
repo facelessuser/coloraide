@@ -227,7 +227,7 @@ chain these settings together.
 
 ## Contrast
 
-Coloraide gives access to the relative luminance of colors. Relative luminance is acquired by translating the color to
+ColorAide gives access to the relative luminance of colors. Relative luminance is acquired by translating the color to
 the XYZ color space and reading the Y channel.
 
 Looking at the color `#!color orange` we see if we convert it to the XYZ color space, we get
