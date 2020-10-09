@@ -37,37 +37,24 @@ class HWB(generic.HWB):
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        value = ''
-        if alpha is not False and (alpha is True or self.alpha < 1.0):
-            value = self._get_hwba(options, precision=precision, fit=fit)
+        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
+        coords = self.fit_coords() if fit else self.coords()
+
+        if alpha:
+            template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision),
+                util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+            )
         else:
-            value = self._get_hwb(options, precision=precision, fit=fit)
-        return value
-
-    def _get_hwb(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get RGB color."""
-
-        template = "hwb({}, {}%, {}%)" if options.get("comma") else "hwb({} {}% {}%)"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        )
-
-    def _get_hwba(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get RGB color with alpha channel."""
-
-        template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision),
-            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
-        )
+            template = "hwb({}, {}%, {}%)" if options.get("comma") else "hwb({} {}% {}%)"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision)
+            )
 
     @classmethod
     def translate_channel(cls, channel, value):

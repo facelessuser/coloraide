@@ -54,66 +54,35 @@ class LAB(generic.LAB):
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        value = ''
-
+        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
         coords = self.fit_coords() if fit else self.coords()
+
         if options.get("gray") and self._is_achromatic(coords):
-            if alpha is not False and (alpha is True or self.alpha < 1.0):
-                value = self._get_graya(options, precision=precision, fit=fit)
+            if alpha:
+                template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
+                return template.format(
+                    util.fmt_float(coords[0], precision),
+                    util.fmt_float(coords[1], precision),
+                    util.fmt_float(coords[2], precision),
+                    util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+                )
             else:
-                value = self._get_gray(options, precision=precision, fit=fit)
+                template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
+                return template.format(
+                    util.fmt_float(coords[0], precision),
+                    util.fmt_float(coords[1], precision),
+                    util.fmt_float(coords[2], precision)
+                )
         else:
-            if alpha is not False and (alpha is True or self.alpha < 1.0):
-                value = self._get_laba(options, precision=precision, fit=fit)
+            if alpha:
+                template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
+                return template.format(
+                    util.fmt_float(coords[0], precision),
+                    util.fmt_float(self.alpha, max(3, precision))
+                )
             else:
-                value = self._get_lab(options, precision=precision, fit=fit)
-        return value
-
-    def _get_lab(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get LAB color."""
-
-        template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        )
-
-    def _get_laba(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get LAB color with alpha channel."""
-
-        template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision),
-            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
-        )
-
-    def _get_gray(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get gray color with alpha."""
-
-        template = "gray({})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision)
-        )
-
-    def _get_graya(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get gray color with alpha."""
-
-        template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(self.alpha, max(3, precision))
-        )
+                template = "gray({})"
+                return template.format(util.fmt_float(coords[0], precision))
 
     @classmethod
     def translate_channel(cls, channel, value):

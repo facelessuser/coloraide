@@ -39,37 +39,24 @@ class HSL(generic.HSL):
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        value = ''
-        if alpha is not False and (alpha is True or self.alpha < 1.0):
-            value = self._get_hsla(options, precision=precision, fit=fit)
+        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
+        coords = self.fit_coords() if fit else self.coords()
+
+        if alpha:
+            template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision),
+                util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+            )
         else:
-            value = self._get_hsl(options, precision=precision, fit=fit)
-        return value
-
-    def _get_hsl(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get RGB color."""
-
-        template = "hsl({}, {}%, {}%)" if options.get("comma") else "hsl({} {}% {}%)"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        )
-
-    def _get_hsla(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get RGB color with alpha channel."""
-
-        template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision),
-            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
-        )
+            template = "hsl({}, {}%, {}%)" if options.get("comma") else "hsl({} {}% {}%)"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision)
+            )
 
     @classmethod
     def translate_channel(cls, channel, value):

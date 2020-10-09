@@ -38,36 +38,24 @@ class LCH(generic.LCH):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         value = ''
-        if alpha is not False and (alpha is True or self.alpha < 1.0):
-            value = self._get_lcha(options, precision=precision, fit=fit)
+        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
+        coords = self.fit_coords() if fit else self.coords()
+
+        if alpha:
+            template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision),
+                util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+            )
         else:
-            value = self._get_lch(options, precision=precision, fit=fit)
-        return value
-
-    def _get_lch(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get LCH color."""
-
-        template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        )
-
-    def _get_lcha(self, options, *, precision=util.DEF_PREC, fit=True):
-        """Get LCH color with alpha channel."""
-
-        template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
-
-        coords = self.fit_coords() if fit else self.coords()
-        return template.format(
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision),
-            util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
-        )
+            template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision)
+            )
 
     @classmethod
     def translate_channel(cls, channel, value):
