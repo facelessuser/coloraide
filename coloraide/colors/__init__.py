@@ -247,12 +247,33 @@ class Color:
     def get(self, name):
         """Get channel."""
 
+        # Handle space.attribute
+        if '.' in name:
+            parts = name.split('.')
+            if len(parts) != 2:
+                raise ValueError("Could not resolve attribute '{}'".format(name))
+            obj = self.convert(parts[0])
+            return obj.get(parts[1])
+
         return self._color.get(name)
 
     def set(self, name, value):  # noqa: A003
         """Set channel."""
 
-        self._color.set(name, value)
+        # Handle space.attribute
+        if '.' in name:
+            parts = name.split('.')
+            if len(parts) != 2:
+                raise ValueError("Could not resolve attribute '{}'".format(name))
+            obj = self.convert(parts[0])
+            obj.set(parts[1], value)
+            return self.update(obj)
+
+        # Handle a function that modifies the value or a direct value
+        if callable(value):
+            self.set(name, value(self.get(name)))
+        else:
+            self._color.set(name, value)
         return self
 
     def __getattr__(self, name):
