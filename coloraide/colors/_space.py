@@ -5,6 +5,7 @@ from . import _convert as convert
 from . import _distance as distance
 from . import _gamut as gamut
 from . import _interpolate as interpolate
+from . import _contrast as contrast
 
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
@@ -17,12 +18,6 @@ color\(\s*
 """.format(
     **parse.COLOR_PARTS
 )
-
-
-def calc_contrast_ratio(lum1, lum2):
-    """Get contrast ratio."""
-
-    return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
 
 
 def split_channels(cls, color):
@@ -47,7 +42,7 @@ def split_channels(cls, color):
     return channels
 
 
-class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
+class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut.Gamut, convert.Convert):
     """Base color space object."""
 
     DEF_BG = ""
@@ -71,6 +66,17 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
         if isinstance(color, Space):
             self.parent = color.parent
 
+    def __repr__(self):
+        """Representation."""
+
+        return 'color({} {} / {})'.format(
+            self.space(),
+            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
+            util.fmt_float(self.alpha, util.DEF_PREC)
+        )
+
+    __str__ = __repr__
+
     def get_default(self, name):
         """Get default."""
 
@@ -86,78 +92,18 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
 
         return self.new(self)
 
-    def new(self, value, space=None):
+    def new(self, value):
         """Create new color in color space."""
 
-        if space is None:
-            space = self.space()
-
-        obj = self.parent.CS_MAP.get(space.lower())
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        color = obj(value)
+        color = type(self)(value)
         color.parent = self.parent
         return color
-
-    def convert(self, space, *, fit=False):
-        """Convert to color space."""
-
-        space = space.lower()
-
-        if fit:
-            method = None if not isinstance(fit, str) else fit
-            if not self.in_gamut(space):
-                clone = self.clone()
-                clone.fit(space, method=method, in_place=True)
-                result = clone.convert(space)
-                result._on_convert()
-                return result
-
-        obj = self.parent.CS_MAP.get(space)
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-        result = obj(self)
-        result._on_convert()
-        return result
-
-    def _on_convert(self):
-        """
-        Run after a convert operation.
-
-        Gives us an opportunity to normalize hues and things like that, if we desire.
-        """
-
-    def luminance(self):
-        """Get perceived luminance."""
-
-        return convert.convert(self.coords(), self.space(), 'xyz')[1]
-
-    def contrast_ratio(self, color):
-        """Get contrast ratio."""
-
-        return calc_contrast_ratio(self.luminance(), color.luminance())
 
     @classmethod
     def space(cls):
         """Get the color space."""
 
         return cls.SPACE
-
-    def update(self, obj):
-        """Update from color."""
-
-        if self is obj:
-            self._on_convert()
-            return
-
-        if not isinstance(obj, type(self)):
-            obj = type(self)(obj)
-
-        for i, value in enumerate(obj.coords()):
-            self._coords[i] = value
-        self.alpha = obj.alpha
-        self._on_convert()
-        return self
 
     @property
     def alpha(self):
@@ -190,17 +136,6 @@ class Space(interpolate.Interpolate, distance.Distance, gamut.Gamut):
         if name not in self.CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
         return getattr(self, name)
-
-    def __repr__(self):
-        """Representation."""
-
-        return 'color({} {} / {})'.format(
-            self.space(),
-            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
-            util.fmt_float(self.alpha, util.DEF_PREC)
-        )
-
-    __str__ = __repr__
 
     def to_string(
         self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs

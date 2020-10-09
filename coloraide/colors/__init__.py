@@ -64,13 +64,6 @@ class Color:
 
         return self.defaults[name]
 
-    def __repr__(self):
-        """Representation."""
-
-        return repr(self._color)
-
-    __str__ = __repr__
-
     def _attach(self, color):
         """Attach the this objects convert space to the color."""
 
@@ -188,29 +181,12 @@ class Color:
 
         return self._color.to_string(**kwargs)
 
-    def get(self, name):
-        """Get channel."""
+    def __repr__(self):
+        """Representation."""
 
-        return self._color.get(name)
+        return repr(self._color)
 
-    def set(self, name, value):  # noqa: A003
-        """Set channel."""
-
-        self._color.set(name, value)
-        return self
-
-    def interpolate(self, color, *, space="lab", progress=None, out_space=None, adjust=None, hue=util.DEF_HUE_ADJ):
-        """Interpolate."""
-
-        color = self._handle_color_input(color)
-        interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
-        return functools.partial(_interpolate, color=self.clone(), interp=interp)
-
-    def distance(self, color, method="euclidean", **kwargs):
-        """Get distance between this color and the provided color."""
-
-        color = self._handle_color_input(color)
-        return self._color.distance(color, method=method, **kwargs)
+    __str__ = __repr__
 
     def luminance(self):
         """Get color's luminance."""
@@ -223,6 +199,12 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.contrast_ratio(color)
 
+    def distance(self, color, method="euclidean", **kwargs):
+        """Get distance between this color and the provided color."""
+
+        color = self._handle_color_input(color)
+        return self._color.distance(color, method=method, **kwargs)
+
     def overlay(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
@@ -232,6 +214,13 @@ class Color:
         if not in_place:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
+
+    def interpolate(self, color, *, space="lab", progress=None, out_space=None, adjust=None, hue=util.DEF_HUE_ADJ):
+        """Interpolate."""
+
+        color = self._handle_color_input(color)
+        interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
+        return functools.partial(_interpolate, color=self.clone(), interp=interp)
 
     def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
         """Mix the two colors."""
@@ -254,6 +243,17 @@ class Color:
         """Check if in gamut."""
 
         return self._color.in_gamut(space, tolerance=tolerance)
+
+    def get(self, name):
+        """Get channel."""
+
+        return self._color.get(name)
+
+    def set(self, name, value):  # noqa: A003
+        """Set channel."""
+
+        self._color.set(name, value)
+        return self
 
     def __getattr__(self, name):
         """Get attribute."""

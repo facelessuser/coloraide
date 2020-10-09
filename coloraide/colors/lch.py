@@ -60,16 +60,6 @@ class LCH(Cylindrical, Space):
 
         return 2
 
-    def _on_convert(self):
-        """
-        Run after a convert operation.
-
-        Gives us an opportunity to normalize hues and things like that, if we desire.
-        """
-
-        if not (0.0 <= self.hue <= 360.0):
-            self.hue = self.hue % 360.0
-
     @property
     def lightness(self):
         """Lightness."""

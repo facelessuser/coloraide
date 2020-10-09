@@ -51,16 +51,6 @@ class HSV(Cylindrical, Space):
         h, s, v = self.coords()
         return s < util.ACHROMATIC_THRESHOLD or v < util.ACHROMATIC_THRESHOLD
 
-    def _on_convert(self):
-        """
-        Run after a convert operation.
-
-        Gives us an opportunity to normalize hues and things like that, if we desire.
-        """
-
-        if not (0.0 <= self.hue <= 360.0):
-            self.hue = self.hue % 360.0
-
     @property
     def hue(self):
         """Hue channel."""

@@ -1147,3 +1147,47 @@ def convert(coords, current, wanted):
         return coords
 
     return globals()['{}_to_{}'.format(current.replace('-', '_'), wanted.replace('-', '_'))](*coords)
+
+
+class Convert:
+    """Convert class."""
+
+    def _on_convert(self):
+        """Run after a convert operation to give an opportunity to do some post convert actions."""
+
+    def convert(self, space, *, fit=False):
+        """Convert to color space."""
+
+        space = space.lower()
+
+        if fit:
+            method = None if not isinstance(fit, str) else fit
+            if not self.in_gamut(space):
+                clone = self.clone()
+                clone.fit(space, method=method, in_place=True)
+                result = clone.convert(space)
+                result._on_convert()
+                return result
+
+        obj = self.parent.CS_MAP.get(space)
+        if obj is None:
+            raise ValueError("'{}' is not a valid color space".format(space))
+        result = obj(self)
+        result._on_convert()
+        return result
+
+    def update(self, obj):
+        """Update from color."""
+
+        if self is obj:
+            self._on_convert()
+            return
+
+        if not isinstance(obj, type(self)):
+            obj = type(self)(obj)
+
+        for i, value in enumerate(obj.coords()):
+            self._coords[i] = value
+        self.alpha = obj.alpha
+        self._on_convert()
+        return self

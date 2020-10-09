@@ -140,7 +140,6 @@ class Gamut:
         # If we are perfectly in gamut, don't waste time fitting
         if c.in_gamut(tolerance=0.0):
             this.update(c)
-            this._on_convert()
             return this
 
         # Apply mapping/clipping/etc.
@@ -150,7 +149,6 @@ class Gamut:
 
         # Adjust "this" color
         this.update(c)
-        this._on_convert()
         return this
 
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
