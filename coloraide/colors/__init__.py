@@ -14,6 +14,7 @@ from .. import util
 import functools
 
 DEF_FIT = "lch-chroma"
+DEF_DELTA_E = "76"
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, HSV,
@@ -55,7 +56,8 @@ class Color:
         """Initialize."""
 
         self.defaults = {
-            "fit": DEF_FIT
+            "fit": DEF_FIT,
+            "delta": DEF_DELTA_E
         }
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
@@ -199,11 +201,17 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.contrast_ratio(color)
 
-    def distance(self, color, method="euclidean", **kwargs):
+    def distance(self, color, *, space=util.DEF_DISTANCE_SPACE):
         """Get distance between this color and the provided color."""
 
         color = self._handle_color_input(color)
-        return self._color.distance(color, method=method, **kwargs)
+        return self._color.distance(color, space=space)
+
+    def delta(self, color, *, method=None, **kwargs):
+        """Delta E distance."""
+
+        color = self._handle_color_input(color)
+        return self._color.delta(color, method=method, **kwargs)
 
     def overlay(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""

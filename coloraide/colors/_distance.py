@@ -4,13 +4,13 @@ G_CONST = math.pow(25, 7)
 RAD2DEG = 180 / math.pi
 DEG2RAD = math.pi / 180
 
-SUPPORTED = frozenset(["euclidean", "de-76", "de-2000", "de-cmc", "de-94"])
+SUPPORTED = frozenset(["76", "2000", "cmc", "94"])
 
 
-def distance_euclidean(color, color2, space="lab", **kwargs):
+def distance_euclidean(color1, color2, space="lab", **kwargs):
     """Euclidean distance."""
 
-    lab1 = color.convert(space)
+    lab1 = color1.convert(space)
     lab2 = color2.convert(space)
 
     coords1 = lab1.coords()
@@ -22,24 +22,24 @@ def distance_euclidean(color, color2, space="lab", **kwargs):
     return math.sqrt(total)
 
 
-def distance_de_76(color, color2, **kwargs):
+def delta_76(color1, color2, **kwargs):
     """
     Delta E 1976 color distance formula.
 
     Basically this is Euclidean distance in the Lab space.
     """
 
-    return distance_euclidean(color, color2, space="lab")
+    return distance_euclidean(color1, color2, space="lab")
 
 
-def distance_de_94(color, color2, kl=1, k1=0.045, k2=0.015):
+def delta_94(color1, color2, kl=1, k1=0.045, k2=0.015):
     """
     Delta E 1994 color distance formula.
 
     http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
     """
 
-    lab1 = color.convert("lab")
+    lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
     l1, a1, b1 = lab1.coords()
@@ -73,14 +73,14 @@ def distance_de_94(color, color2, kl=1, k1=0.045, k2=0.015):
     )
 
 
-def distance_de_cmc(color, color2, l=2, c=1):
+def delta_cmc(color1, color2, l=2, c=1):
     """
     Delta E CMC.
 
     http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
     """
 
-    lab1 = color.convert("lab")
+    lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
     l1, a1, b1 = lab1.coords()
@@ -130,7 +130,7 @@ def distance_de_cmc(color, color2, l=2, c=1):
     )
 
 
-def distance_de_2000(color, color2, kl=1, kc=1, kh=1, **kwargs):
+def delta_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     """
     Calculate distance doing a direct translation of the algorithm from the CIE Delta E 2000 paper.
 
@@ -142,7 +142,7 @@ def distance_de_2000(color, color2, kl=1, kc=1, kh=1, **kwargs):
     http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
     """
 
-    lab1 = color.convert("lab")
+    lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
     l1, a1, b1 = lab1.coords()
@@ -225,11 +225,19 @@ def distance_de_2000(color, color2, kl=1, kc=1, kh=1, **kwargs):
 class Distance:
     """Color distancing."""
 
-    def distance(self, color2, method="euclidean", **kwargs):
-        """Delta."""
+    def delta(self, color, method=None, **kwargs):
+        """Delta E distance."""
+
+        if method is None:
+            method = self.get_default("delta")
 
         algorithm = method.lower()
         if algorithm not in SUPPORTED:
             raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
 
-        return globals()['distance_{}'.format(algorithm.replace('-', '_'))](self, color2, **kwargs)
+        return globals()['delta_{}'.format(algorithm.replace('-', '_'))](self, color, **kwargs)
+
+    def distance(self, color, space="lab"):
+        """Delta."""
+
+        return distance_euclidean(self, color, space=space)

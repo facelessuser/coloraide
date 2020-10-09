@@ -182,7 +182,7 @@ class Interpolate:
         """
 
         interp = self.interpolate(color, **kwargs)
-        total_delta = self.distance(color)
+        total_delta = self.delta(color)
         actual_steps = steps if max_delta <= 0 else max(steps, math.ceil(total_delta / max_delta) + 1)
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
@@ -205,7 +205,7 @@ class Interpolate:
             for i, entry in enumerate(ret):
                 if i == 0:
                     continue
-                m_delta = max(m_delta, entry['color'].distance(ret[i - 1]['color']))
+                m_delta = max(m_delta, entry['color'].delta(ret[i - 1]['color']))
 
             while m_delta > max_delta:
                 # Inject stops while measuring again to see if it was sufficient
@@ -216,7 +216,7 @@ class Interpolate:
                     cur = ret[i]
                     p = (cur['p'] + prev['p']) / 2
                     color = interp(p)
-                    m_delta = max(m_delta, color.distance(prev['color']), color.distance(cur['color']))
+                    m_delta = max(m_delta, color.delta(prev['color']), color.delta(cur['color']))
                     ret.insert(i, {'p': p, 'color': color})
                     i += 2
 

@@ -13,6 +13,7 @@ DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0
 DEF_MIX = 0.5
 DEF_HUE_ADJ = "shorter"
+DEF_DISTANCE_SPACE = "lab"
 
 
 def dot(a, b):

@@ -37,7 +37,6 @@ class LCH(generic.LCH):
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        value = ''
         alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
         coords = self.fit_coords() if fit else self.coords()
 
