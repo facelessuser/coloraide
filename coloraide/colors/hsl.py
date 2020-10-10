@@ -49,10 +49,7 @@ class HSL(Cylindrical, Space):
         """Test if hue is null."""
 
         h, s, l = self.coords()
-        return (
-            s < util.ACHROMATIC_THRESHOLD or
-            ((0 + util.ACHROMATIC_THRESHOLD) > l or l > (100.0 - util.ACHROMATIC_THRESHOLD))
-        )
+        return s < util.ACHROMATIC_THRESHOLD
 
     def _on_convert(self):
         """

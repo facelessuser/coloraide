@@ -62,10 +62,14 @@ class Color:
         }
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
-    def is_hue_null(self, space="lch"):
+    def is_hue_null(self, space=None):
         """Check if hue is treated as null."""
 
-        space = space.lower()
+        if space is None:
+            space = self.space()
+        else:
+            space = space.lower()
+
         this = self if self.space() == space else self.convert(space)
         if isinstance(this._color, Cylindrical):
             return this._color.is_hue_null()

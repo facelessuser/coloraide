@@ -49,7 +49,7 @@ class HSV(Cylindrical, Space):
         """Test if hue is null."""
 
         h, s, v = self.coords()
-        return s < util.ACHROMATIC_THRESHOLD or v < util.ACHROMATIC_THRESHOLD
+        return s < util.ACHROMATIC_THRESHOLD
 
     @property
     def hue(self):
