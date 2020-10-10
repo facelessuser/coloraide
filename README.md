@@ -43,7 +43,7 @@ different CSS formats, and various other things.
 
 # Documentation
 
-https://facelessuser.github.com/ExportHtml
+https://facelessuser.github.com/coloraide
 
 ## License
 
