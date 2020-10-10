@@ -59,6 +59,16 @@ class LAB(generic.LAB):
 
         if options.get("gray") and self._is_achromatic(coords):
             if alpha:
+                template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
+                return template.format(
+                    util.fmt_float(coords[0], precision),
+                    util.fmt_float(self.alpha, max(3, precision))
+                )
+            else:
+                template = "gray({})"
+                return template.format(util.fmt_float(coords[0], precision))
+        else:
+            if alpha:
                 template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
                 return template.format(
                     util.fmt_float(coords[0], precision),
@@ -73,16 +83,6 @@ class LAB(generic.LAB):
                     util.fmt_float(coords[1], precision),
                     util.fmt_float(coords[2], precision)
                 )
-        else:
-            if alpha:
-                template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
-                return template.format(
-                    util.fmt_float(coords[0], precision),
-                    util.fmt_float(self.alpha, max(3, precision))
-                )
-            else:
-                template = "gray({})"
-                return template.format(util.fmt_float(coords[0], precision))
 
     @classmethod
     def translate_channel(cls, channel, value):
