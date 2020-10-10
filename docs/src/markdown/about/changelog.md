@@ -1,7 +1,7 @@
 # Changelog
 
-## Release
+## Current
 
-- Initial release
+- Not yet released
 
 --8<-- "refs.txt"

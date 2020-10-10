@@ -36,6 +36,11 @@ matrix:
     output: build/dictionary/mkdocs.dic
   pipeline:
   - pyspelling.filters.markdown:
+      markdown_extensions:
+      - pymdownx.superfences:
+      - pymdownx.highlight:
+      - pymdownx.striphtml:
+      - pymdownx.magiclink:
   - pyspelling.filters.html:
       comments: false
       attributes:

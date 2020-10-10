@@ -1,5 +1,6 @@
 Accessors
 CIE
+CIEDE
 CMC
 CSS
 Changelog
@@ -24,6 +25,7 @@ NONINFRINGEMENT
 NaN
 NaNs
 ProPhoto
+PyPI
 RGB
 SRGB
 TODO
