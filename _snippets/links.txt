@@ -1,0 +1,4 @@
+[css-spec-convert]: https://drafts.csswg.org/css-color/#color-conversion-code
+[colorjs]: https://github.com/LeaVerou/color.js
+[issues]: https://github.com/facelessuser/coloraide/issues
+[lch-chroma]: https://colorjs.io/docs/gamut-mapping.html#so-how-does-colorjs-handle-all-this

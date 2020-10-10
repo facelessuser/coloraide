@@ -1,0 +1,69 @@
+:root {
+  --swatch-border-color: hsl(0, 0%, 90%);
+  --swatch-bg-color: white;
+  --swatch-bg-alt-color: hsl(0, 0%, 87%);
+  --swatch-gamut-border-color: hsl(340 82% 52%);
+}
+
+:root [data-md-color-scheme="slate"] {
+  --swatch-border-color: hsla(232, 15%, 25%, 1);
+}
+
+:root [data-md-color-scheme="dracula"] {
+  --swatch-border-color: hsl(233, 15%, 33%, 1);
+  --swatch-gamut-border-color: hsl(326, 100%, 74%);
+}
+
+.swatch {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.25em;
+  box-sizing: initial;
+  line-height: 0;
+  border-radius: 100px;
+  border: 2px solid var(--swatch-border-color);
+  transition: all 0.5s ease;
+  background-color: var(--swatch-bg-color);
+  background-image: linear-gradient(45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
+                    linear-gradient(-45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, var(--swatch-bg-alt-color) 75%),
+                    linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
+  background-size: 0.5em 0.5em;
+  background-position: 0 0, 0 0.25em, 0.25em -0.25em, -0.25em 0px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
+}
+
+.swatch.out-of-gamut {
+    border-color: var(--swatch-gamut-border-color);
+}
+
+.swatch-color {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+}
+
+.swatch.out-of-gamut .swatch-color {
+  opacity: 0;
+}
+
+.swatch-color:only-child {
+  width: 1em;
+}
+
+.swatch-color:first-child {
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
+}
+
+.swatch-color:last-child {
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+}
+
+.swatch:hover {
+  z-index: 2;
+  transform: scale(2);
+  translateY(10%);
+}
