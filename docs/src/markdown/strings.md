@@ -75,6 +75,16 @@ sRGB can output colors to a hex format which is unique compared to HSL and other
 '#8000ff4d'
 ```
 
+When converting to hex color format, a color can be compressed in certain cases, enabling `compress` will compress a
+hex color if possible.
+
+```pycon3
+>>> Color("#11223388").to_string(hex=True)
+'#11223388'
+>>> Color("#11223388").to_string(hex=True, compress=True)
+'#1238'
+```
+
 sRGB also can output color names. If a color evaluates to a hex code which also evaluates to a color name in the
 internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
 fallback to whatever the other options dictate. Simply enable `names`.
