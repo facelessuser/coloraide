@@ -8,18 +8,35 @@ gradient colors, or whatever is needed. This function drives most of the feature
 Interpolation functions accept an input between 0 - 1, if values are provided out of this range, the color will be
 extrapolated and the results may be surprising.
 
-Here we create a an interpolation between `#!color lch(50% 50 0)` and `#!color lch(90% 50 20)`. We then step through
-values of `0.1`, `0.2`, and `0.3` which creates: \[`#!color-swatch lch(54% 49.728 1.9707 / 1)`,
-`#!color-swatch lch(58% 49.515 3.9608 / 1)`, `#!color-swatch lch(62% 49.363 5.9656 / 1)`\].
+Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (previews are fit to
+the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` which creates: \[
+`#!color-swatch rgb(102 51 153)`,
+`#!color-swatch rgb(142.01 45.343 154.31)`,
+`#!color-swatch rgb(178.56 36.401 149.51)`,
+`#!color-swatch rgb(211.09 28.471 139.17)`,
+`#!color-swatch rgb(238.59 32.984 124.24)`,
+`#!color-swatch rgb(255 53.098 105.75)`,
+`#!color-swatch rgb(249.19 108.42 101.41)`,
+`#!color-swatch rgb(255 130.24 87.784)`,
+`#!color-swatch rgb(255 154.43 74.138)`,
+`#!color-swatch rgb(255 179.93 62.157)`
+\].
 
 ```pycon3
->>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)")
->>> i(0.1)
-color(lch 54 49.728 1.9707 / 1)
->>> i(0.2)
-color(lch 58 49.515 3.9608 / 1)
->>> i(0.3)
-color(lch 62 49.363 5.9656 / 1)
+>>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
+>>> for x in range(10):
+...     i(x/10).to_string()
+...
+'rgb(102 51 153)'
+'rgb(142.01 45.343 154.31)'
+'rgb(178.56 36.401 149.51)'
+'rgb(211.09 28.471 139.17)'
+'rgb(238.59 32.984 124.24)'
+'rgb(255 53.098 105.75)'
+'rgb(249.19 108.42 101.41)'
+'rgb(255 130.24 87.784)'
+'rgb(255 154.43 74.138)'
+'rgb(255 179.93 62.157)'
 ```
 
 If desired, we can target specific channels for mixing which will keep all the other channels constant on the base
@@ -50,17 +67,34 @@ when we mix `#!color lch(52% 58.1 22.7)` and `#!color lch(56% 49.1 257.1)`, we g
     Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
 You can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
-the colors: \[`#!color-swatch lch(50.04% 49.997 0.0196 / 1)`, `#!color-swatch lch(50.32% 49.976 0.15685 / 1)`,
-`#!color-swatch lch(51.08% 49.921 0.52995 / 1)`\].
+the colors (colors are fit to the sRGB gamut): \[
+`#!color-swatch-fit lch(50% 50 0)`,
+`#!color-swatch-fit lch(50.04% 49.997 0.0196)`,
+`#!color-swatch-fit lch(50.32% 49.976 0.15685)`,
+`#!color-swatch-fit lch(51.08% 49.921 0.52995)`,
+`#!color-swatch-fit lch(52.56% 49.819 1.2588)`,
+`#!color-swatch-fit lch(55% 49.669 2.4666)`,
+`#!color-swatch-fit lch(58.64% 49.487 4.2807)`,
+`#!color-swatch-fit lch(63.72% 49.316 6.831)`,
+`#!color-swatch-fit lch(70.48% 49.241 10.242)`,
+`#!color-swatch-fit lch(79.16% 49.401 14.617)`
+\].
 
 ```pycon3
 >>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
->>> i(0.1)
-color(lch 50.04 49.997 0.0196 / 1)
->>> i(0.2)
-color(lch 50.32 49.976 0.15685 / 1)
->>> i(0.3)
-color(lch 51.08 49.921 0.52995 / 1)
+>>> for x in range(10):
+...     i(x/10).to_string()
+...
+'lch(50% 50 0)'
+'lch(50.04% 49.997 0.0196)'
+'lch(50.32% 49.976 0.15685)'
+'lch(51.08% 49.921 0.52995)'
+'lch(52.56% 49.819 1.2588)'
+'lch(55% 49.669 2.4666)'
+'lch(58.64% 49.487 4.2807)'
+'lch(63.72% 49.316 6.831)'
+'lch(70.48% 49.241 10.242)'
+'lch(79.16% 49.401 14.617)'
 ```
 
 ## Color Mixing
