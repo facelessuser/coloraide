@@ -33,7 +33,9 @@ Twemoji
 Verou
 XYZ
 accessor
+boolean
 chroma
+fixup
 grayscale
 js
 luminance
@@ -45,6 +47,7 @@ rgb
 sRGB
 sRGB's
 subclassed
+subclassing
 sublicense
 un
 unsaturate
