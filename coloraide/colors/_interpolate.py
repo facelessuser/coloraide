@@ -168,7 +168,7 @@ class Interpolate:
 
         return this.convert(current_space)
 
-    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **kwargs):
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **interpolate_args):
         """
         Discrete steps.
 
@@ -181,7 +181,7 @@ class Interpolate:
         Default delta E method used is delta E 76.
         """
 
-        interp = self.interpolate(color, **kwargs)
+        interp = self.interpolate(color, **interpolate_args)
         total_delta = self.delta(color)
         actual_steps = steps if max_delta <= 0 else max(steps, math.ceil(total_delta / max_delta) + 1)
         if max_steps is not None:
@@ -222,7 +222,7 @@ class Interpolate:
 
         return [i['color'] for i in ret]
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
         """
         Mix colors using interpolation.
 
@@ -236,7 +236,7 @@ class Interpolate:
         else:
             space = space.lower()
 
-        obj = self.interpolate(color, space=space, out_space=current_space, adjust=adjust, hue=hue)(percent)
+        obj = self.interpolate(color, space=space, **interpolate_args)(percent)
         if in_place:
             return self.update(obj)
         return obj

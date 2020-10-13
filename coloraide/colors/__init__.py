@@ -49,7 +49,7 @@ class ColorMatch:
 
 
 class Color:
-    """Color wrapper class."""
+    """Color class object which provides access and manipulation of color spaces."""
 
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
@@ -211,7 +211,7 @@ class Color:
         return self._color.luminance()
 
     def contrast_ratio(self, color):
-        """Compare the contrast ration of this color and the provided color."""
+        """Compare the contrast ratio of this color and the provided color."""
 
         color = self._handle_color_input(color)
         return self._color.contrast_ratio(color)
@@ -245,23 +245,23 @@ class Color:
         interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
         return functools.partial(_interpolate, color=self.clone(), interp=interp)
 
-    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **kwargs):
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **interpolate_args):
         """Interpolate discrete steps."""
 
         color = self._handle_color_input(color)
-        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta=max_delta, **kwargs)
+        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta=max_delta, **interpolate_args)
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, adjust=None, hue=util.DEF_HUE_ADJ, in_place=False):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
         """Mix the two colors."""
 
         color = self._handle_color_input(color)
-        obj = self._color.mix(color, percent, space=space, adjust=adjust, hue=hue, in_place=in_place)
+        obj = self._color.mix(color, percent, space=space, in_place=in_place, **interpolate_args)
         if not in_place:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
 
     def fit(self, space=None, *, method=None, in_place=False):
-        """Fit gamut."""
+        """Fit to gamut."""
 
         obj = self._color.fit(space, method=method, in_place=in_place)
         if not in_place:
