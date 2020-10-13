@@ -8,8 +8,8 @@ gradient colors, or whatever is needed. This function drives most of the feature
 Interpolation functions accept an input between 0 - 1, if values are provided out of this range, the color will be
 extrapolated and the results may be surprising.
 
-Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (previews are fit to
-the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` which creates: \[
+Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
+fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` which creates: \[
 `#!color-swatch rgb(102 51 153)`,
 `#!color-swatch rgb(142.01 45.343 154.31)`,
 `#!color-swatch rgb(178.56 36.401 149.51)`,
@@ -67,7 +67,7 @@ when we mix `#!color lch(52% 58.1 22.7)` and `#!color lch(56% 49.1 257.1)`, we g
     Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
 You can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
-the colors (colors are fit to the sRGB gamut): \[
+the colors (color previews are fit to the sRGB gamut): \[
 `#!color-swatch-fit lch(50% 50 0)`,
 `#!color-swatch-fit lch(50.04% 49.997 0.0196)`,
 `#!color-swatch-fit lch(50.32% 49.976 0.15685)`,
@@ -156,8 +156,8 @@ steps. The steps to take between the two colors can be configured with the three
 steps), `max_steps`, and `max_delta` (max allowable delta E distance between steps). The default delta E method is
 delta E 76, which is a simple euclidean distancing in the Lab color space.
 
-In this example we we specify the color `#!color Color("display-p3", [0, 1, 0])` and interpolate steps between
-`#!color red`. The result gives us an array of colors: \[
+In this example we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
+`#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut): \[
 `#!color-swatch rgb(0% 98.694% 11.114%)`,
 `#!color-swatch rgb(25.043% 95.745% 0%)`,
 `#!color-swatch rgb(38.1% 92.729% 0%)`,
