@@ -230,7 +230,6 @@ class Interpolate:
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        current_space = self.space()
         if space is None:
             space = self.space()
         else:
