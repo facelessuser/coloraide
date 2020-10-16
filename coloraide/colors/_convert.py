@@ -551,8 +551,7 @@ def hwb_to_srgb(h, w, b):
     wb = w + b
 
     if wb > 1.0:
-        w /= wb
-        b /= wb
+        return [w / wb] * 3
 
     return [(c * (1.0 - w - b)) + w for c in hsl_to_srgb(h, 100.0, 50.0)]
 
