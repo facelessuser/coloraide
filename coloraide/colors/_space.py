@@ -77,6 +77,13 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
 
     __str__ = __repr__
 
+    def _handle_input(self, value):
+        """Handle numerical input."""
+
+        if not util.is_number(value):
+            raise TypeError("Value should be a number not type '{}'".format(type(value)))
+        return float(value)
+
     def get_default(self, name):
         """Get default."""
 
@@ -115,11 +122,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     def alpha(self, value):
         """Adjust alpha."""
 
-        self._alpha = util.clamp(
-            self.translate_channel(-1, value) if isinstance(value, str) else float(value),
-            0.0,
-            1.0
-        )
+        self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
 
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""

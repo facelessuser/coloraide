@@ -70,7 +70,7 @@ class LCH(Cylindrical, Space):
     def lightness(self, value):
         """Get true luminance."""
 
-        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self._handle_input(value)
 
     @property
     def chroma(self):
@@ -82,7 +82,7 @@ class LCH(Cylindrical, Space):
     def chroma(self, value):
         """chroma."""
 
-        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self._handle_input(value)
 
     @property
     def hue(self):
@@ -94,7 +94,7 @@ class LCH(Cylindrical, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self._handle_input(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

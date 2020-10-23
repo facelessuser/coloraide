@@ -54,7 +54,7 @@ class XYZ(Space):
     def x(self, value):
         """Shift the X."""
 
-        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self._handle_input(value)
 
     @property
     def y(self):
@@ -66,7 +66,7 @@ class XYZ(Space):
     def y(self, value):
         """Set Y."""
 
-        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self._handle_input(value)
 
     @property
     def z(self):
@@ -78,7 +78,7 @@ class XYZ(Space):
     def z(self, value):
         """Set Z channel."""
 
-        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self._handle_input(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

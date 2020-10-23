@@ -61,7 +61,7 @@ class HWB(Cylindrical, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._coords[0] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self._handle_input(value)
 
     @property
     def whiteness(self):
@@ -73,7 +73,7 @@ class HWB(Cylindrical, Space):
     def whiteness(self, value):
         """Set whiteness channel."""
 
-        self._coords[1] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self._handle_input(value)
 
     @property
     def blackness(self):
@@ -85,7 +85,7 @@ class HWB(Cylindrical, Space):
     def blackness(self, value):
         """Set blackness channel."""
 
-        self._coords[2] = self.translate_channel(3, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self._handle_input(value)
 
     @classmethod
     def translate_channel(cls, channel, value):
