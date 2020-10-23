@@ -1,16 +1,13 @@
 """Gamut handling."""
 from .. import util
+from . _range import Angle
 
 
-class GamutAngle(float):
-    """Gamut hue."""
-
-
-class GamutBound(float):
+class GamutBound(tuple):
     """Bounded gamut value."""
 
 
-class GamutUnbound(float):
+class GamutUnbound(tuple):
     """Unbounded gamut value."""
 
 
@@ -75,21 +72,21 @@ def clip(base, color):
     """Gamut clipping."""
 
     channels = color.coords()
-    gamut = color._gamut
+    gamut = color._range
     fit = []
 
     for i, value in enumerate(channels):
         a, b = gamut[i]
+        is_bound = isinstance(gamut[i], GamutBound)
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
-        if isinstance(a, GamutAngle) and isinstance(b, GamutAngle):
+        if isinstance(a, Angle) and isinstance(b, Angle):
             fit.append(value if 0.0 <= value <= 360.0 else value % 360.0)
             continue
 
         # These parameters are unbounded
-        if isinstance(a, GamutUnbound):
+        if not is_bound:
             a = None
-        if isinstance(b, GamutUnbound):
             b = None
 
         # Fit value in bounds.
@@ -162,16 +159,16 @@ class Gamut:
         # Verify the values are in bound
         channels = self.coords()
         for i, value in enumerate(channels):
-            a, b = self._gamut[i]
+            a, b = self._range[i]
+            is_bound = isinstance(self._range[i], GamutBound)
 
             # Angles will wrap, so no sense checking them
-            if isinstance(a, GamutAngle) and isinstance(b, GamutAngle):
+            if isinstance(a, Angle) and isinstance(b, Angle):
                 continue
 
             # These parameters are unbounded
-            if isinstance(a, GamutUnbound):
+            if not is_bound:
                 a = None
-            if isinstance(b, GamutUnbound):
                 b = None
 
             # Check if bounded values are in bounds

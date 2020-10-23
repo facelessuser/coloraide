@@ -9,10 +9,10 @@ from .. import util
 class RGB(Space):
     """SRGB class."""
 
-    _gamut = (
-        (GamutBound(0.0), GamutBound(1.0)),
-        (GamutBound(0.0), GamutBound(1.0)),
-        (GamutBound(0.0), GamutBound(1.0))
+    _range = (
+        GamutBound([0.0, 1.0]),
+        GamutBound([0.0, 1.0]),
+        GamutBound([0.0, 1.0])
     )
 
     CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])

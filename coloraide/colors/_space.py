@@ -6,6 +6,7 @@ from . import _distance as distance
 from . import _gamut as gamut
 from . import _interpolate as interpolate
 from . import _contrast as contrast
+from . _range import Percent
 
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
@@ -13,7 +14,7 @@ from . import _contrast as contrast
 RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
 (?:({{color_space}})\s+)?
-({float}(?:{space}{float}){{{{,6}}}}(?:{slash}(?:{percent}|{float}))?)
+((?:{percent}|{float})(?:{space}(?:{percent}|{float})){{{{,6}}}}(?:{slash}(?:{percent}|{float}))?)
 \s*\)
 """.format(
     **parse.COLOR_PARTS
@@ -34,7 +35,8 @@ def split_channels(cls, color):
         alpha = parse.norm_alpha_channel(split[-1])
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
         if c and i < cls.NUM_COLOR_CHANNELS:
-            channels.append(float(c))
+            is_percent = isinstance(cls._range[i][0], Percent)
+            channels.append(parse.norm_color_channel(c, not is_percent))
     if len(channels) < cls.NUM_COLOR_CHANNELS:
         diff = cls.NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)

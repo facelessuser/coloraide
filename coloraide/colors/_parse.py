@@ -55,6 +55,16 @@ def norm_percent_channel(value, scale=False):
         raise ValueError("Unexpected value '{}'".format(value))
 
 
+def norm_color_channel(value, scale=True):
+    """Normalize percent channel."""
+
+    if value.endswith('%'):
+        value = norm_float(value[:-1])
+        return value / 100.0 if scale else value
+    else:
+        return norm_float(value)
+
+
 def norm_rgb_channel(value):
     """Normalize RGB channel."""
 
