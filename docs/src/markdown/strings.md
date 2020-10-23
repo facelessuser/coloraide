@@ -55,7 +55,7 @@ All color spaces support the following parameters:
       'rgb(76.5 267.75 0)'
       ```
 
-- `color`: For some color spaces, this is the default output, but for others you can explicitly request this output via
+- `color`: For some color spaces, this is the default output, but for others this format can be explicitly requested by
   setting `color` to `True`. If set to `True`, this will usually take priority over other format options.
 
     ```pycon3

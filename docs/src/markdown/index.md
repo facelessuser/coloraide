@@ -13,8 +13,8 @@ gamut mapping and color interpolation.
 Currently this project is in an early stage, and while usable, some things may change as we get closer to a stable
 release.
 
-With ColorAide, you can specify a color, convert it to other color spaces, mix it with other colors, output it in
-different CSS formats, and various other things.
+With ColorAide, colors in various spaces can be created, converted to other spaces, mixed, output in different CSS
+formats, and various other things.
 
 ```pycon3
 >>> from coloraide import Color
@@ -31,7 +31,7 @@ different CSS formats, and various other things.
 
 ## Installation
 
-You can install ColorAide via Python's `pip`:
+ColorAide can be installed via Python's `pip`:
 
 `pip install coloraide`.
 

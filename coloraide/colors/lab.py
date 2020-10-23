@@ -54,7 +54,7 @@ class LAB(Space):
     def lightness(self, value):
         """Get true luminance."""
 
-        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self._handle_input(value)
 
     @property
     def a(self):
@@ -66,7 +66,7 @@ class LAB(Space):
     def a(self, value):
         """A axis."""
 
-        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self._handle_input(value)
 
     @property
     def b(self):
@@ -78,7 +78,7 @@ class LAB(Space):
     def b(self, value):
         """B axis."""
 
-        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self._handle_input(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

@@ -48,8 +48,8 @@ sRGB color space: `#!color lch(99.438% 5.2201 99.658)`.
 ```
 
 If desired, simple clipping can be used instead of the default gamut fitting. Generally this is not recommended, but
-there are times and places for everything. To do so, you can specify the fitting method via the `method` parameter. Here
-we take the same color in the previous example (`#!color lch(100% 50 75)`) and perform a simple clipping to get
+there are times and places for everything. To do so, the fitting method can be specified via the `method` parameter.
+Here we take the same color in the previous example (`#!color lch(100% 50 75)`) and perform a simple clipping to get
 `#!color lch(95.817% 42.313 96.905)`. Notice the difference when compared to the previous fitting result:
 `#!color lch(99.438% 5.2201 99.658)`.
 

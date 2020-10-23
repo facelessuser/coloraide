@@ -16,13 +16,19 @@ DEF_HUE_ADJ = "shorter"
 DEF_DISTANCE_SPACE = "lab"
 
 
+def is_number(value):
+    """Check if value is a number."""
+
+    return isinstance(value, numbers.Number)
+
+
 def dot(a, b):
     """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
 
-    is_a_num = isinstance(a, numbers.Number)
-    is_b_num = isinstance(b, numbers.Number)
-    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
-    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_num = is_number(a)
+    is_b_num = is_number(b)
+    is_a_vec = not is_a_num and is_number(a[0])
+    is_b_vec = not is_b_num and is_number(b[0])
     is_a_mat = not is_a_num and not is_a_vec
     is_b_mat = not is_b_num and not is_b_vec
 
@@ -48,10 +54,10 @@ def dot(a, b):
 def multiply(a, b):
     """Multiply simple numbers, vectors, and 2D matrices."""
 
-    is_a_num = isinstance(a, numbers.Number)
-    is_b_num = isinstance(b, numbers.Number)
-    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
-    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_num = is_number(a)
+    is_b_num = is_number(b)
+    is_a_vec = not is_a_num and is_number(a[0])
+    is_b_vec = not is_b_num and is_number(b[0])
     is_a_mat = not is_a_num and not is_a_vec
     is_b_mat = not is_b_num and not is_b_vec
 

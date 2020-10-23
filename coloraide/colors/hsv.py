@@ -61,7 +61,7 @@ class HSV(Cylindrical, Space):
     def hue(self, value):
         """Shift the hue."""
 
-        self._coords[0] = self.translate_channel(0, value) if isinstance(value, str) else float(value)
+        self._coords[0] = self._handle_input(value)
 
     @property
     def saturation(self):
@@ -73,7 +73,7 @@ class HSV(Cylindrical, Space):
     def saturation(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
-        self._coords[1] = self.translate_channel(1, value) if isinstance(value, str) else float(value)
+        self._coords[1] = self._handle_input(value)
 
     @property
     def value(self):
@@ -85,7 +85,7 @@ class HSV(Cylindrical, Space):
     def value(self, value):
         """Set value channel."""
 
-        self._coords[2] = self.translate_channel(2, value) if isinstance(value, str) else float(value)
+        self._coords[2] = self._handle_input(value)
 
     @classmethod
     def translate_channel(cls, channel, value):

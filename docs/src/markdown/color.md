@@ -8,7 +8,7 @@ The `Color` object can be imported from `coloraide`.
 from coloraide import Color
 ```
 
-Afterwards, you can begin working with colors. You can import CSS syntax:
+Afterwards, colors can be created using various, valid CSS syntax:
 
 ```pycon3
 >>> Color("red")
@@ -19,9 +19,9 @@ color(srgb 1 0 0 / 1)
 color(srgb 1 0 0 / 1)
 ```
 
-You can see, that we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
+As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
 
-You can also insert raw data points directly, but notice, when doing this, you are required to enter the data as it is
+We can also insert raw data points directly, but notice, when doing this, we are required to enter the data as it is
 used internally, and in the case for sRGB, the channels are in the range of \[0, 1\].
 
 ```pycon3
@@ -32,7 +32,7 @@ color(srgb 0.5 0 1 / 0.3)
 So in the example above, the raw data is parsed, and we get a transparent color in the sRGB space:
 `#!color color(srgb 0.5 0 1 / 0.3)`.
 
-You can also pass in other color objects, which is really only useful if you've subclassed the `Color` object and want
+We can also pass in other color objects, which is really only useful if we've subclassed the `Color` object and want
 to cast the object between the classes.
 
 The same color creation can be preformed from a color's `new` class method as well. New accepts the same inputs
@@ -63,7 +63,7 @@ Here we clone the `#!color green` object so we have two.
 A color can be "updated" using another color object. When an update occurs, the current color space is updated with the
 data from the second color, but the color space does not change. It is basically the equivalent of converting the second
 color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
-are identical to the `new` method, so you can use a color object, a color string, or even raw data points.
+are identical to the `new` method, so we can use a color object, a color string, or even raw data points.
 
 Here we update the color `#!color red` to the color `#!color blue`:
 
@@ -88,7 +88,7 @@ color(srgb 0.82374 1.0663 0.69484 / 1)
 ## Mutating
 
 "Mutating" is similar to [updating](#updating) except that it will update the color and the color space from another
-color. The input parameters are identical to the `new` method, so you can use a color object, a color string, or even
+color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
 Here the `#!color red` color object literally becomes `#!color lch(50% 50 130)`.
@@ -115,7 +115,7 @@ color(lab 97.607 -15.753 93.388 / 1)
 ## Color Matching
 
 Color objects can take in raw data points with a color space name or CSS style inputs. This CSS style input logic is
-exposed via the `match` method. By default, you can just give it a string, and it will return a `ColorMatch` object. The
+exposed via the `match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The
 `ColorMatch` object will have the matched color as a `Color` object, and the start and end points it was located at.
 
 ```pycon3
@@ -123,7 +123,7 @@ exposed via the `match` method. By default, you can just give it a string, and i
 ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
 ```
 
-By default it matches at the start of the buffer and returns a color if it finds one. If desired, you can do a
+By default it matches at the start of the buffer and returns a color if it finds one. If desired, we can do a
 `fullmatch` which requires the entire buffer match the color.
 
 ```pycon3
@@ -132,7 +132,7 @@ ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
 >>> Color.match("red and yellow", fullmatch=True)
 ```
 
-You can also target adjust the start position of the search. In this case, by adjusting the start position to 8
+We can also target adjust the start position of the search. In this case, by adjusting the start position to 8
 characters later, we will match `#!color yellow` instead of `#!color red`.
 
 ```pycon3
@@ -140,7 +140,7 @@ characters later, we will match `#!color yellow` instead of `#!color red`.
 ColorMatch(color=color(srgb 1 1 0 / 1), start=8, end=14)
 ```
 
-If desired, you can also filter out the CSS syntax of certain color spaces. Here we will only target HSL colors.
+If desired, we can also filter out the CSS syntax of certain color spaces. Here we will only target HSL colors.
 
 ```pycon3
 >>> Color.match("red and yellow", filters=["hsl"])

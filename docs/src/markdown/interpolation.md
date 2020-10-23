@@ -63,10 +63,10 @@ when we mix `#!color lch(52% 58.1 22.7)` and `#!color lch(56% 49.1 257.1)`, we g
 ```
 
 !!! tip
-    It is important to note that you must specify the channels of the space the interpolation is occurring in.
+    It is important to note that we must specify the channels of the space the interpolation is occurring in.
     Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
-You can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
+We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut): \[
 `#!color-swatch-fit lch(50% 50 0)`,
 `#!color-swatch-fit lch(50.04% 49.997 0.0196)`,
@@ -139,8 +139,8 @@ the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51
 'rgb(204 0 51)'
 ```
 
-Mix can also accept a string and will create the color for you which is great if you don't need to work with the
-second color afterwards.
+Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
+color afterwards.
 
 ```pycon3
 >>> Color("red").mix("blue", 0.2).to_string()
@@ -264,7 +264,7 @@ LCH          | `c<=0` or very near 0%[^1]
 
 To determine at any time if a hue is considered null, the `is_hue_null` method can be used. Any space that considers
 hue will return `True` or `False` if their hue is null or not null respectively. Any space that does not specifically
-calculate hue, will simply return `False`. The method will consider the current color space by default, but you can
+calculate hue, will simply return `False`. The method will consider the current color space by default, but we can
 query any color spaces by providing a different one.
 
 ```pycon3
