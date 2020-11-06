@@ -1,6 +1,7 @@
 """LAB class."""
 from ._space import Space, RE_DEFAULT_MATCH
-from ._gamut import GamutUnbound, GamutBound
+from ._gamut import GamutUnbound
+from . _range import Percent
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
@@ -15,10 +16,10 @@ class LAB(Space):
     CHANNEL_NAMES = frozenset(["lightness", "a", "b", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
-    _gamut = (
-        (GamutBound(0), GamutUnbound(100.0)),  # Technically we could/should clamp the zero side.
-        (GamutUnbound(-160), GamutUnbound(160)),  # No limit, but we could impose one +/-160?
-        (GamutUnbound(-160), GamutUnbound(160))  # No limit, but we could impose one +/-160?
+    _range = (
+        GamutUnbound([Percent(0), Percent(100.0)]),  # Technically we could/should clamp the zero side.
+        GamutUnbound([-160, 160]),  # No limit, but we could impose one +/-160?
+        GamutUnbound([-160, 160])  # No limit, but we could impose one +/-160?
     )
 
     def __init__(self, color=DEF_BG):

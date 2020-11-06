@@ -1,7 +1,8 @@
 """LCH class."""
 from ._space import Space, RE_DEFAULT_MATCH
 from ._cylindrical import Cylindrical
-from ._gamut import GamutUnbound, GamutAngle
+from ._gamut import GamutUnbound
+from . _range import Angle, Percent
 from . import _convert as convert
 from . import _parse as parse
 from .. import util
@@ -16,14 +17,14 @@ class LCH(Cylindrical, Space):
     CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
-    _gamut = (
-        # I think chroma, specifically should be clamped. Generally many
-        # some don't to prevent rounding issues. We should only get
+    _range = (
+        # I think chroma, specifically should be clamped.
+        # Some libraries don't to prevent rounding issues. We should only get
         # negative chroma via direct user input, but when translating to
         # Lab, this will be corrected.
-        (GamutUnbound(0.0), GamutUnbound(100.0)),
-        (GamutUnbound(0.0), GamutUnbound(100.0)),
-        (GamutAngle(0.0), GamutAngle(360.0)),
+        GamutUnbound([Percent(0.0), Percent(100.0)]),
+        GamutUnbound([0.0, 100.0]),
+        GamutUnbound([Angle(0.0), Angle(360.0)]),
     )
 
     def __init__(self, color=DEF_BG):

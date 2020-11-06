@@ -15,10 +15,10 @@ class XYZ(Space):
     CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
-    _gamut = (
-        (GamutUnbound(0.0), GamutUnbound(1.0)),
-        (GamutUnbound(0.0), GamutUnbound(1.0)),
-        (GamutUnbound(0.0), GamutUnbound(1.0))
+    _range = (
+        GamutUnbound([0.0, 1.0]),
+        GamutUnbound([0.0, 1.0]),
+        GamutUnbound([0.0, 1.0])
     )
 
     def __init__(self, color=DEF_BG):

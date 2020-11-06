@@ -1,7 +1,8 @@
 """HSL class."""
 from ._space import Space, RE_DEFAULT_MATCH
 from ._cylindrical import Cylindrical
-from ._gamut import GamutBound, GamutAngle
+from ._gamut import GamutBound
+from . _range import Angle, Percent
 from . import _parse as parse
 from . import _convert as convert
 from .. import util
@@ -16,10 +17,10 @@ class HSL(Cylindrical, Space):
     CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
 
-    _gamut = (
-        (GamutAngle(0.0), GamutAngle(360.0)),
-        (GamutBound(0.0), GamutBound(100.0)),
-        (GamutBound(0.0), GamutBound(100.0))
+    _range = (
+        GamutBound([Angle(0.0), Angle(360.0)]),
+        GamutBound([Percent(0.0), Percent(100.0)]),
+        GamutBound([Percent(0.0), Percent(100.0)])
     )
 
     def __init__(self, color=DEF_BG):
