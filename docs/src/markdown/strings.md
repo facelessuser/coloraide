@@ -96,18 +96,6 @@ fallback to whatever the other options dictate. Simply enable `names`.
 'rgb(100 30 75)'
 ```
 
-## Lab Specific
-
-If a Lab color's `a` and `b` coordinates are very close to zero, the color will be considered achromatic. When this is
-true, and `gray` is enabled, colors will be output into the CSS `gray()` format.
-
-```pycon3
->>> Color('lab(50% 0 0)').to_string(gray=True)
-'gray(50)'
->>> Color('lab(50% 1 0)').to_string(gray=True)
-'lab(50% 1 0)'
-```
-
 ## Comma Format
 
 Certain color spaces we allow a comma format. Those are `srgb`, `hsl`, `hwb`, `lch`, and `lab`. Basically, the only

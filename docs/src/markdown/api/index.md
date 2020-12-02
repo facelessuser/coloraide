@@ -184,12 +184,6 @@ Parameters
     `names`    | `#!py3 False`| Boolean indicating a preference for CSS color names. When translating a color to it's closest hex form, if that hex value matches a CSS color name, that color name will be returned as the output. `hex` does not have to be `#!py3 True` for this to apply.
     `compress` | `#!py3 False`| If `hex` is `#!py3 True` and `compress` is `#!py3 True`, hex values will be compressed if possible: `#RRGGBBAA` --> `#RGBA`.
 
-    Lab specific parameters:
-
-    Parameters | Defaults     | Description
-    ---------- | -------------| -----------
-    `gray`     | `#!py3 False`| If the Lab color is gray of very near gray, the CSS `gray()` output format will be used.
-
     Space dependent parameters:
 
     Parameters | Defaults     | Description
