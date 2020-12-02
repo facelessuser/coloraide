@@ -9,7 +9,7 @@ class LAB(generic.LAB):
     """LAB class."""
 
     DEF_BG = "lab(0% 0 0 / 1)"
-    START = re.compile(r'(?i)\b(?:lab|gray)\(')
+    START = re.compile(r'(?i)\blab\(')
     MATCH = re.compile(
         r"""(?xi)
         (?:
@@ -19,15 +19,6 @@ class LAB(generic.LAB):
                 {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |
                 # comma separated format
                 {percent}{comma}{float}{comma}{float}(?:{comma}(?:{percent}|{float}))?
-            )
-            \s*\) |
-            # Shorthand for desaturated colors
-            \bgray\(\s*
-            (?:
-               # Space separated format
-               {float}(?:{slash}(?:{percent}|{float}))? |
-               # comma separated format
-               {float}(?:{comma}(?:{percent}|{float}))?
             )
             \s*\)
         )
@@ -57,32 +48,21 @@ class LAB(generic.LAB):
         alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
         coords = self.fit_coords() if fit else self.coords()
 
-        if options.get("gray") and self._is_achromatic(coords):
-            if alpha:
-                template = "gray({}, {})" if options.get("comma") else "gray({} / {})"
-                return template.format(
-                    util.fmt_float(coords[0], precision),
-                    util.fmt_float(self.alpha, max(3, precision))
-                )
-            else:
-                template = "gray({})"
-                return template.format(util.fmt_float(coords[0], precision))
+        if alpha:
+            template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision),
+                util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+            )
         else:
-            if alpha:
-                template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
-                return template.format(
-                    util.fmt_float(coords[0], precision),
-                    util.fmt_float(coords[1], precision),
-                    util.fmt_float(coords[2], precision),
-                    util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
-                )
-            else:
-                template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
-                return template.format(
-                    util.fmt_float(coords[0], precision),
-                    util.fmt_float(coords[1], precision),
-                    util.fmt_float(coords[2], precision)
-                )
+            template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
+            return template.format(
+                util.fmt_float(coords[0], precision),
+                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[2], precision)
+            )
 
     @classmethod
     def translate_channel(cls, channel, value):
@@ -101,27 +81,15 @@ class LAB(generic.LAB):
     def split_channels(cls, color):
         """Split channels."""
 
-        if color[:4].lower().startswith('gray'):
-            start = 5
-            channels = []
-            alpha = None
-            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-                if i == 0:
-                    channels.append(cls.translate_channel(i, c))
-                else:
-                    alpha = cls.translate_channel(-1, c)
-            channels.extend([0.0, 0.0])
-            channels.append(1.0 if alpha is None else alpha)
-        else:
-            start = 4
-            channels = []
-            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
-                if i <= 2:
-                    channels.append(cls.translate_channel(i, c))
-                else:
-                    channels.append(cls.translate_channel(-1, c))
-            if len(channels) == 3:
-                channels.append(1.0)
+        start = 4
+        channels = []
+        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+            if i <= 2:
+                channels.append(cls.translate_channel(i, c))
+            else:
+                channels.append(cls.translate_channel(-1, c))
+        if len(channels) == 3:
+            channels.append(1.0)
         return channels
 
     @classmethod

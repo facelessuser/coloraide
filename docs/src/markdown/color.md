@@ -162,7 +162,7 @@ color variables (`#!css var(--color-red)`).
     import re
     from coloraide.css import Color
 
-    RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&])(?:color|hsla?|gray|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)")
+    RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)")
 
     text = """Red and yellow are colors. So are #ff0033 and lch(90% 50 50)."""
 
