@@ -12,3 +12,4 @@ include LICENSE.md
 include README.md
 include MANIFEST.in
 include mkdocs.yml
+include pyproject.toml
