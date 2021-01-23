@@ -50,7 +50,6 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     DEF_BG = ""
     SPACE = ""
     NUM_COLOR_CHANNELS = 3
-    IS_DEFAULT = False
     CHANNEL_NAMES = frozenset(["alpha"])
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
@@ -181,8 +180,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
         if (
             m is not None and
             (
-                (m.group(1) and m.group(1).lower() == cls.space()) or
-                (not m.group(1) and cls.IS_DEFAULT)
+                (m.group(1) and m.group(1).lower() == cls.space())
             ) and (not fullmatch or m.end(0) == len(string))
         ):
             return split_channels(cls, m.group(2)), m.end(0)

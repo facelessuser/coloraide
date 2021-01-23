@@ -23,14 +23,15 @@ theme:
     - navigation.tabs
 
 nav:
-  - ColorAide: index.md
-  - The Color Object: color.md
-  - Manipulating Colors: manipulation.md
-  - Color Interpolation: interpolation.md
-  - Color Distance and Delta E: distance.md
-  - Gamut Mapping: gamut.md
-  - Contrast: contrast.md
-  - String Output: strings.md
+  - ColorAide:
+      - Setup: index.md
+      - The Color Object: color.md
+      - Manipulating Colors: manipulation.md
+      - Color Interpolation: interpolation.md
+      - Color Distance and Delta E: distance.md
+      - Gamut Mapping: gamut.md
+      - Contrast: contrast.md
+      - String Output: strings.md
   - Color Spaces:
       - Supported Colors: colors/index.md
   - API:
