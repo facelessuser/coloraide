@@ -211,7 +211,7 @@
 [Learn about Display P3](https://en.wikipedia.org/wiki/DCI-P3#Display_P3)
 
 **White Point**
-:   D50
+:   D65
 
 **Coordinates**
 : 
