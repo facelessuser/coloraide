@@ -1,5 +1,4 @@
 """Convert utilities."""
-from colorsys import rgb_to_hsv, hsv_to_rgb  # noqa: F401
 import math
 from .. import util
 
@@ -16,13 +15,25 @@ CONVERT_SPACES = ("srgb", "hsl", "hwb", "lch", "lab", "hsv", "display-p3", "a98-
 def hsv_to_srgb(h, s, v):
     """HSV to RGB."""
 
-    return hsv_to_rgb(h / 360.0, s / 100.0, v / 100.0)
+    return hsl_to_srgb(*hsv_to_hsl(h, s, v))
 
 
 def hsv_to_hsl(h, s, v):
-    """HSV to HSL."""
+    """
+    HSV to HSL.
 
-    return srgb_to_hsl(*hsv_to_srgb(h, s, v))
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
+    """
+
+    s /= 100.0
+    v /= 100.0
+    l = v * (1.0 - s / 2.0)
+
+    return [
+        h,
+        0.0 if (l == 0.0 or l == 0.0) else ((v - l) / min(l, 1.0 - l)) * 100,
+        l * 100
+    ]
 
 
 def hsv_to_hwb(h, s, v):
@@ -84,8 +95,7 @@ def hsv_to_rec2020(h, s, v):
 def srgb_to_hsv(r, g, b):
     """SRGB to HSV."""
 
-    h, s, v = rgb_to_hsv(r, g, b)
-    return h * 360.0, s * 100.0, v * 100.0
+    return hsl_to_hsv(*srgb_to_hsl(r, g, b))
 
 
 def srgb_to_hsl(r, g, b):
@@ -455,9 +465,22 @@ def rec2020_to_prophoto_rgb(r, g, b):
 # HSL
 ############
 def hsl_to_hsv(h, s, l):
-    """HSL to HSV."""
+    """
+    HSL to HSV.
 
-    return srgb_to_hsv(*hsl_to_srgb(h, s, l))
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
+    """
+
+    s /= 100.0
+    l /= 100.0
+
+    v = l + s * min(l, 1.0 - l)
+
+    return [
+        h,
+        0.0 if (v == 0.0) else 200.0 * (1.0 - l / v),
+        100.0 * v
+    ]
 
 
 def hsl_to_srgb(h, s, l):
