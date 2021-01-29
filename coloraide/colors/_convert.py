@@ -1074,7 +1074,7 @@ def lin_2020(rgb):
     alpha = 1.09929682680944
     beta = 0.018053968510807
 
-    return [c / 4.5 if c < beta * 4.5 else math.pow((c + alpha - 1) / alpha, 2.4) for c in rgb]
+    return [c / 4.5 if c < beta * 4.5 else math.pow((c + alpha - 1) / alpha, 1 / 0.45) for c in rgb]
 
 
 def gam_2020(rgb):
@@ -1083,7 +1083,7 @@ def gam_2020(rgb):
     alpha = 1.09929682680944
     beta = 0.018053968510807
 
-    return [alpha * math.pow(c, 1 / 2.4) - (alpha - 1) if c > beta else 4.5 * c for c in rgb]
+    return [alpha * math.pow(c, 0.45) - (alpha - 1) if c >= beta else 4.5 * c for c in rgb]
 
 
 def lin_prophoto(rgb):
