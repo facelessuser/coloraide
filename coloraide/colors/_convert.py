@@ -1121,7 +1121,7 @@ def lin_srgb(rgb):
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
         if abs_i < 0.04045:
-            result.append(i/ 12.92)
+            result.append(i / 12.92)
         else:
             result.append(math.copysign(math.pow((abs_i + 0.055) / 1.055, 2.4), i))
     return result
