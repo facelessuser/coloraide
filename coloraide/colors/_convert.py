@@ -1116,7 +1116,15 @@ def lin_srgb(rgb):
     https://en.wikipedia.org/wiki/SRGB
     """
 
-    return [(i / 12.92) if i < 0.04045 else math.pow((i + 0.055) / 1.055, 2.4) for i in rgb]
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i < 0.04045:
+            result.append(i/ 12.92)
+        else:
+            result.append(math.copysign(math.pow((abs_i + 0.055) / 1.055, 2.4), i))
+    return result
 
 
 def gam_srgb(rgb):
@@ -1126,7 +1134,15 @@ def gam_srgb(rgb):
     https://en.wikipedia.org/wiki/SRGB
     """
 
-    return [(1.055 * math.pow(i, 1 / 2.4) - 0.055) if i > 0.0031308 else (12.92 * i) for i in rgb]
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i > 0.0031308:
+            result.append(math.copysign((1.055 * math.pow(abs_i, 1 / 2.4) - 0.055), i))
+        else:
+            result.append(12.92 * i)
+    return result
 
 
 ############
