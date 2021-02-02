@@ -1074,7 +1074,15 @@ def lin_2020(rgb):
     alpha = 1.09929682680944
     beta = 0.018053968510807
 
-    return [c / 4.5 if c < beta * 4.5 else math.pow((c + alpha - 1) / alpha, 1 / 0.45) for c in rgb]
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i < beta * 4.5:
+            result.append(i / 4.5)
+        else:
+            result.append(math.copysign(math.pow((abs_i + alpha - 1) / alpha, 1 / 0.45), i))
+    return result
 
 
 def gam_2020(rgb):
@@ -1083,7 +1091,15 @@ def gam_2020(rgb):
     alpha = 1.09929682680944
     beta = 0.018053968510807
 
-    return [alpha * math.pow(c, 0.45) - (alpha - 1) if c >= beta else 4.5 * c for c in rgb]
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i > beta:
+            result.append(math.copysign(alpha * math.pow(abs_i, 0.45) - (alpha - 1), i))
+        else:
+            result.append(4.5 * i)
+    return result
 
 
 def lin_prophoto(rgb):
