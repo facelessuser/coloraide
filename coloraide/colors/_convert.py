@@ -1110,7 +1110,16 @@ def lin_prophoto(rgb):
     """
 
     et2 = 16 / 512
-    return [c / 16 if c <= et2 else math.pow(c, 1.8) for c in rgb]
+
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i <= et2:
+            result.append(i / 16)
+        else:
+            result.append(math.copysign(math.pow(abs_i, 1.8), i))
+    return result
 
 
 def gam_prophoto(rgb):
@@ -1121,7 +1130,16 @@ def gam_prophoto(rgb):
     """
 
     et = 1 / 512
-    return [math.pow(c, 1 / 1.8) if c >= et else 16 * c for c in rgb]
+
+    result = []
+    for i in rgb:
+        # Mirror linear nature of algorithm on the negative axis
+        abs_i = abs(i)
+        if abs_i >= et:
+            result.append(math.copysign(math.pow(abs_i, 1 / 1.8), i))
+        else:
+            result.append(16 * i)
+    return result
 
 
 def lin_a98rgb(rgb):
