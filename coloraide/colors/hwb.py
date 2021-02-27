@@ -29,7 +29,7 @@ class HWB(Cylindrical, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.hue, self.whiteness, self.blackness = convert.convert(color.coords(), color.space(), self.space())
+            self.hue, self.whiteness, self.blackness = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -105,3 +105,51 @@ class HWB(Cylindrical, Space):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)
+
+    @classmethod
+    def _to_xyz(cls, rgb):
+        """SRGB to XYZ."""
+
+        return convert.srgb_to_xyz(cls._to_srgb(rgb))
+
+    @classmethod
+    def _from_xyz(cls, xyz):
+        """XYZ to SRGB."""
+
+        return cls._from_srgb(convert.xyz_to_srgb(xyz))
+
+    @classmethod
+    def _to_srgb(cls, hwb):
+        """To sRGB."""
+
+        return convert.hwb_to_srgb(hwb)
+
+    @classmethod
+    def _from_srgb(cls, srgb):
+        """From sRGB."""
+
+        return convert.srgb_to_hwb(srgb)
+
+    @classmethod
+    def _to_hsl(cls, hwb):
+        """To HSL."""
+
+        return convert.srgb_to_hsl(cls._to_srgb(hwb))
+
+    @classmethod
+    def _from_hsl(cls, hsl):
+        """From HSL."""
+
+        return cls._from_srgb(convert.hsl_to_srgb(hsl))
+
+    @classmethod
+    def _to_hsv(cls, hwb):
+        """To HSV."""
+
+        return convert.srgb_to_hsv(cls._to_srgb(hwb))
+
+    @classmethod
+    def _from_hsv(cls, hsv):
+        """From HSV."""
+
+        return cls._from_srgb(convert.hsl_to_srgb(convert.hsv_to_hsl(hsv)))

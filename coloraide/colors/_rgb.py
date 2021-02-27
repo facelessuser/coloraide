@@ -1,7 +1,6 @@
 """SRGB color class."""
 from ._space import Space
 from ._gamut import GamutBound
-from . import _convert as convert
 from . import _parse as parse
 from .. import util
 
@@ -23,7 +22,7 @@ class RGB(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.red, self.green, self.blue = convert.convert(color.coords(), color.space(), self.space())
+            self.red, self.green, self.blue = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
