@@ -1,7 +1,6 @@
 """XYZ class."""
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
-from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
@@ -27,7 +26,7 @@ class XYZ(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.x, self.y, self.z = convert.convert(color.coords(), color.space(), self.space())
+            self.x, self.y, self.z = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]

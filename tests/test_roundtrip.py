@@ -16,10 +16,12 @@ class TestRoundTrip(unittest.TestCase):
     def assert_round_trip(self, color):
         """Test sRGB to HSL."""
 
+        print('----- Color -----')
+        print(color)
         c1 = Color(color)
         for space in c1.CS_MAP.keys():
             # Print the color space to easily identify which color space broke.
-            print('Space: {}'.format(space))
+            print('>>> Convert to: {}'.format(space))
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
             self.assertEqual(c1.to_string(color=True), c2.to_string(color=True))

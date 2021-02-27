@@ -1,6 +1,7 @@
 """Display-p3 color class."""
 from ._rgb import RGB
 from ._space import RE_DEFAULT_MATCH
+from . import _convert as convert
 import re
 
 
@@ -15,3 +16,15 @@ class Display_P3(RGB):
         """Initialize."""
 
         super().__init__(color)
+
+    @classmethod
+    def _to_xyz(cls, rgb):
+        """To XYZ."""
+
+        return convert.display_p3_to_xyz(rgb)
+
+    @classmethod
+    def _from_xyz(cls, xyz):
+        """From XYZ."""
+
+        return convert.xyz_to_display_p3(xyz)

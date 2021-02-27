@@ -98,23 +98,22 @@ class Color:
             raise TypeError("Unexpected type '{}'".format(type(color)))
         return color
 
-    @classmethod
-    def _parse(cls, color, data=None, alpha=util.DEF_ALPHA, filters=None, **kwargs):
+    def _parse(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, **kwargs):
         """Parse the color."""
 
         obj = None
         if data is not None:
             filters = set(filters) if filters is not None else set()
-            for space, space_class in cls.CS_MAP.items():
+            for space, space_class in self.CS_MAP.items():
                 s = color.lower()
                 if space == s and (not filters or s in filters):
                     obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
-                obj = cls.CS_MAP[color.space()](color._color)
+                obj = self.CS_MAP[color.space()](color._color)
         else:
-            m = cls._match(color, fullmatch=True, filters=filters)
+            m = self._match(color, fullmatch=True, filters=filters)
             if m is None:
                 raise ValueError("'{}' is not a valid color".format(color))
             obj = m.color

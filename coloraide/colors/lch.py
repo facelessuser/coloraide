@@ -33,7 +33,7 @@ class LCH(Cylindrical, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.lightness, self.chroma, self.hue = convert.convert(color.coords(), color.space(), self.space())
+            self.lightness, self.chroma, self.hue = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -114,3 +114,27 @@ class LCH(Cylindrical, Space):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)
+
+    @classmethod
+    def _to_lab(cls, lch):
+        """To Lab."""
+
+        return convert.lch_to_lab(lch)
+
+    @classmethod
+    def _from_lab(cls, lab):
+        """To Lab."""
+
+        return convert.lab_to_lch(lab)
+
+    @classmethod
+    def _to_xyz(cls, lch):
+        """To XYZ."""
+
+        return convert.lab_to_xyz(cls._to_lab(lch))
+
+    @classmethod
+    def _from_xyz(cls, xyz):
+        """From XYZ."""
+
+        return cls._from_lab(convert.xyz_to_lab(xyz))

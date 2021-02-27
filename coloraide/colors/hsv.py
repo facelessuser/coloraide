@@ -29,7 +29,7 @@ class HSV(Cylindrical, Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.hue, self.saturation, self.value = convert.convert(color.coords(), color.space(), self.space())
+            self.hue, self.saturation, self.value = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -105,3 +105,39 @@ class HSV(Cylindrical, Space):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)
+
+    @classmethod
+    def _to_xyz(cls, hsv):
+        """To XYZ."""
+
+        return convert.srgb_to_xyz(cls._to_srgb(hsv))
+
+    @classmethod
+    def _from_xyz(cls, xyz):
+        """From XYZ."""
+
+        return cls._from_srgb(convert.xyz_to_srgb(xyz))
+
+    @classmethod
+    def _to_hsl(cls, hsv):
+        """To HSL."""
+
+        return convert.hsv_to_hsl(hsv)
+
+    @classmethod
+    def _from_hsl(cls, hsl):
+        """From HSL."""
+
+        return convert.hsl_to_hsv(hsl)
+
+    @classmethod
+    def _to_srgb(cls, hsv):
+        """To sRGB."""
+
+        return convert.hsl_to_srgb(cls._to_hsl(hsv))
+
+    @classmethod
+    def _from_srgb(cls, rgb):
+        """From sRGB."""
+
+        return cls._from_hsl(convert.srgb_to_hsl(rgb))

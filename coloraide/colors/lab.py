@@ -28,7 +28,7 @@ class LAB(Space):
         super().__init__(color)
 
         if isinstance(color, Space):
-            self.lightness, self.a, self.b = convert.convert(color.coords(), color.space(), self.space())
+            self.lightness, self.a, self.b = color.convert(self.space()).coords()
             self.alpha = color.alpha
         elif isinstance(color, str):
             values = self.match(color)[0]
@@ -96,3 +96,15 @@ class LAB(Space):
         """To string."""
 
         return super().to_string(alpha=alpha, precision=precision, fit=fit)
+
+    @classmethod
+    def _to_xyz(cls, lab):
+        """To XYZ."""
+
+        return convert.lab_to_xyz(lab)
+
+    @classmethod
+    def _from_xyz(cls, xyz):
+        """From XYZ."""
+
+        return convert.xyz_to_lab(xyz)
