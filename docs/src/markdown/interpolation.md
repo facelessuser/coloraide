@@ -11,15 +11,15 @@ extrapolated and the results may be surprising.
 Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
 fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` which creates: \[
 `#!color-swatch rgb(102 51 153)`,
-`#!color-swatch rgb(142.01 45.343 154.31)`,
-`#!color-swatch rgb(178.56 36.401 149.51)`,
-`#!color-swatch rgb(211.09 28.471 139.17)`,
-`#!color-swatch rgb(238.59 32.984 124.24)`,
-`#!color-swatch rgb(255 53.098 105.75)`,
-`#!color-swatch rgb(249.19 108.42 101.41)`,
-`#!color-swatch rgb(255 130.24 87.784)`,
-`#!color-swatch rgb(255 154.43 74.138)`,
-`#!color-swatch rgb(255 179.93 62.157)`
+`#!color-swatch rgb(142.02 45.34 154.31)`,
+`#!color-swatch rgb(178.58 36.391 149.5)`,
+`#!color-swatch rgb(211.11 28.452 139.16)`,
+`#!color-swatch rgb(238.61 32.963 124.24)`,
+`#!color-swatch rgb(255 53.083 105.75)`,
+`#!color-swatch rgb(249.21 108.41 101.4)`,
+`#!color-swatch rgb(255 130.24 87.774)`,
+`#!color-swatch rgb(255 154.42 74.129)`,
+`#!color-swatch rgb(255 179.93 62.148)`
 \].
 
 ```pycon3
@@ -28,15 +28,15 @@ fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` w
 ...     i(x/10).to_string()
 ...
 'rgb(102 51 153)'
-'rgb(142.01 45.343 154.31)'
-'rgb(178.56 36.401 149.51)'
-'rgb(211.09 28.471 139.17)'
-'rgb(238.59 32.984 124.24)'
-'rgb(255 53.098 105.75)'
-'rgb(249.19 108.42 101.41)'
-'rgb(255 130.24 87.784)'
-'rgb(255 154.43 74.138)'
-'rgb(255 179.93 62.157)'
+'rgb(142.02 45.34 154.31)'
+'rgb(178.58 36.391 149.5)'
+'rgb(211.11 28.452 139.16)'
+'rgb(238.61 32.963 124.24)'
+'rgb(255 53.083 105.75)'
+'rgb(249.21 108.41 101.4)'
+'rgb(255 130.24 87.774)'
+'rgb(255 154.42 74.129)'
+'rgb(255 179.93 62.148)'
 ```
 
 If desired, we can target specific channels for mixing which will keep all the other channels constant on the base
@@ -158,27 +158,27 @@ delta E 76, which is a simple euclidean distancing in the Lab color space.
 
 In this example we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut): \[
-`#!color-swatch rgb(0% 98.694% 11.114%)`,
-`#!color-swatch rgb(25.043% 95.745% 0%)`,
-`#!color-swatch rgb(38.1% 92.729% 0%)`,
-`#!color-swatch rgb(47.023% 89.644% 0%)`,
-`#!color-swatch rgb(54.067% 86.49% 0%)`,
-`#!color-swatch rgb(59.956% 83.266% 0%)`,
-`#!color-swatch rgb(65.025% 79.973% 0%)`,
-`#!color-swatch rgb(69.455% 76.61% 0%)`,
-`#!color-swatch rgb(73.353% 73.18% 0%)`,
-`#!color-swatch rgb(76.786% 69.684% 0%)`,
-`#!color-swatch rgb(79.796% 66.125% 0%)`,
-`#!color-swatch rgb(82.412% 62.507% 0%)`,
-`#!color-swatch rgb(84.651% 58.835% 0%)`,
-`#!color-swatch rgb(86.526% 55.112% 0%)`,
-`#!color-swatch rgb(88.045% 51.345% 0%)`,
-`#!color-swatch rgb(89.213% 47.54% 0%)`,
-`#!color-swatch rgb(90.034% 43.704% 0%)`,
-`#!color-swatch rgb(90.512% 39.844% 0%)`,
-`#!color-swatch rgb(90.648% 35.967% 6.5514%)`,
-`#!color-swatch rgb(90.448% 32.079% 12.235%)`,
-`#!color-swatch rgb(100% 0.00023% -0.00002%)`
+`#!color-swatch rgb(0% 98.693% 11.113%)`,
+`#!color-swatch rgb(25.045% 95.744% 0%)`,
+`#!color-swatch rgb(38.102% 92.728% 0%)`,
+`#!color-swatch rgb(47.027% 89.643% 0%)`,
+`#!color-swatch rgb(54.07% 86.488% 0%)`,
+`#!color-swatch rgb(59.96% 83.264% 0%)`,
+`#!color-swatch rgb(65.029% 79.971% 0%)`,
+`#!color-swatch rgb(69.459% 76.608% 0%)`,
+`#!color-swatch rgb(73.357% 73.177% 0%)`,
+`#!color-swatch rgb(76.79% 69.681% 0%)`,
+`#!color-swatch rgb(79.8% 66.123% 0%)`,
+`#!color-swatch rgb(82.415% 62.505% 0%)`,
+`#!color-swatch rgb(84.654% 58.832% 0%)`,
+`#!color-swatch rgb(86.529% 55.109% 0%)`,
+`#!color-swatch rgb(88.047% 51.342% 0%)`,
+`#!color-swatch rgb(89.215% 47.538% 0%)`,
+`#!color-swatch rgb(90.036% 43.702% 0%)`,
+`#!color-swatch rgb(90.513% 39.841% 0%)`,
+`#!color-swatch rgb(90.649% 35.964% 6.5496%)`,
+`#!color-swatch rgb(90.448% 32.076% 12.232%)`,
+`#!color-swatch rgb(100% 0.00006% 0.00001%)`
 \].
 
 ```pycon3
@@ -186,27 +186,27 @@ In this example we we specify the color `#!color-fit color(display-p3 0 1 0)` an
 >>> for x in color.steps("red", space="lch", out_space="srgb", max_delta=20, steps=10):
 ...     print(x.to_string(percent=True))
 ...
-rgb(0% 98.694% 11.114%)
-rgb(25.043% 95.745% 0%)
-rgb(38.1% 92.729% 0%)
-rgb(47.023% 89.644% 0%)
-rgb(54.067% 86.49% 0%)
-rgb(59.956% 83.266% 0%)
-rgb(65.025% 79.973% 0%)
-rgb(69.455% 76.61% 0%)
-rgb(73.353% 73.18% 0%)
-rgb(76.786% 69.684% 0%)
-rgb(79.796% 66.125% 0%)
-rgb(82.412% 62.507% 0%)
-rgb(84.651% 58.835% 0%)
-rgb(86.526% 55.112% 0%)
-rgb(88.045% 51.345% 0%)
-rgb(89.213% 47.54% 0%)
-rgb(90.034% 43.704% 0%)
-rgb(90.512% 39.844% 0%)
-rgb(90.648% 35.967% 6.5514%)
-rgb(90.448% 32.079% 12.235%)
-rgb(100% 0.00023% -0.00002%)
+rgb(0% 98.693% 11.113%)
+rgb(25.045% 95.744% 0%)
+rgb(38.102% 92.728% 0%)
+rgb(47.027% 89.643% 0%)
+rgb(54.07% 86.488% 0%)
+rgb(59.96% 83.264% 0%)
+rgb(65.029% 79.971% 0%)
+rgb(69.459% 76.608% 0%)
+rgb(73.357% 73.177% 0%)
+rgb(76.79% 69.681% 0%)
+rgb(79.8% 66.123% 0%)
+rgb(82.415% 62.505% 0%)
+rgb(84.654% 58.832% 0%)
+rgb(86.529% 55.109% 0%)
+rgb(88.047% 51.342% 0%)
+rgb(89.215% 47.538% 0%)
+rgb(90.036% 43.702% 0%)
+rgb(90.513% 39.841% 0%)
+rgb(90.649% 35.964% 6.5496%)
+rgb(90.448% 32.076% 12.232%)
+rgb(100% 0.00006% 0.00001%)
 ```
 
 ## Overlaying Colors
@@ -249,18 +249,15 @@ assigning values, but it will calculate when hues are null when doing interpolat
 when interpolating (mainly cylindrical color spaces) then ColorAide will flag the hue channel as null by assigning the
 coordinate a `NaN` prior to the actual interpolation.
 
-ColorAide will consider the following color spaces as having a null hue in the following cases:
+ColorAide will consider the following color spaces as having a null hue in the following cases. For "very near" cases,
+the threshold noted in the table is used.
 
-Color\ Space | Null\ Condition
------------- | ---------------
-HSV          | `s<=0` or very near 0%[^1]
-HSL          | `s<=0` or very near 0%[^1]
-HWB          | `(w + b)>=100`or very near 100%[^1]
-LCH          | `c<=0` or very near 0%[^1]
-
-[^1]: When determining whether a hue is null, we use a threshold of `0.0005` "nearness".
-
-///Footnotes Go Here///
+Color\ Space | Null\ Condition                 | Nearness\ Threshold
+------------ | ------------------------------- | -------------------
+HSV          | `s<=0` or very near 0%          | `0.0005`
+HSL          | `s<=0` or very near 0%          | `0.0005`
+HWB          | `(w + b)>=100`or very near 100% | `0.0005`
+LCH          | `c<=0` or very near 0%          | `0.02`
 
 To determine at any time if a hue is considered null, the `is_hue_null` method can be used. Any space that considers
 hue will return `True` or `False` if their hue is null or not null respectively. Any space that does not specifically
