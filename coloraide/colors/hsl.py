@@ -1,12 +1,56 @@
 """HSL class."""
 from ._space import Space, RE_DEFAULT_MATCH
+from .srgb import SRGB
 from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
 from . _range import Angle, Percent
 from . import _parse as parse
-from . import _convert as convert
 from .. import util
 import re
+
+
+def srgb_to_hsl(rgb):
+    """SRGB to HSL."""
+
+    r, g, b = rgb
+    mx = max(r, max(g, b))
+    mn = min(r, min(g, b))
+    h = 0.0
+    s = 0.0
+    l = (mn + mx) / 2
+    c = mx - mn
+
+    if c != 0.0:
+        s = c / (1.0 - abs(2.0 * l - 1))
+        if mx == r:
+            h = (g - b) / c
+        elif mx == g:
+            h = (b - r) / c + 2.0
+        else:
+            h = (r - g) / c + 4.0
+
+    return h * 60.0, s * 100.0, l * 100.0
+
+
+def hsl_to_srgb(hsl):
+    """
+    HSL to RGB.
+
+    https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
+    """
+
+    h, s, l = hsl
+    h = h % 360
+    s /= 100.0
+    l /= 100.0
+
+    def f(n):
+        """Calculate the channels."""
+        k = (n + h / 30) % 12
+        a = s * min(l, 1 - l)
+        return l - a * max(-1, min(k - 3, 9 - k, 1))
+
+    return f(0), f(8), f(4)
 
 
 class HSL(Cylindrical, Space):
@@ -120,22 +164,22 @@ class HSL(Cylindrical, Space):
     def _to_srgb(cls, hsl):
         """To sRGB."""
 
-        return convert.hsl_to_srgb(hsl)
+        return hsl_to_srgb(hsl)
 
     @classmethod
     def _from_srgb(cls, rgb):
         """From sRGB."""
 
-        return convert.srgb_to_hsl(rgb)
+        return srgb_to_hsl(rgb)
 
     @classmethod
     def _to_xyz(cls, hsl):
         """To XYZ."""
 
-        return convert.srgb_to_xyz(cls._to_srgb(hsl))
+        return SRGB._to_xyz(cls._to_srgb(hsl))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return cls._from_srgb(convert.xyz_to_srgb(xyz))
+        return cls._from_srgb(SRGB._from_xyz(xyz))

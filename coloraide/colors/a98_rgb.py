@@ -1,11 +1,56 @@
 """A98 RGB color class."""
-from ._rgb import RGB
 from ._space import RE_DEFAULT_MATCH
+from . import srgb
 from . import _convert as convert
+from .. import util
 import re
+import math
 
 
-class A98_RGB(RGB):
+def lin_a98rgb_to_xyz(rgb):
+    """
+    Convert an array of linear-light a98-rgb values to CIE XYZ using D50.D65.
+
+    (so no chromatic adaptation needed afterwards)
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    which has greater numerical precision than section 4.3.5.3 of
+    https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
+    """
+
+    m = [
+        [0.5766690429101305, 0.1855582379065463, 0.1882286462349947],
+        [0.29734497525053605, 0.6273635662554661, 0.07529145849399788],
+        [0.02703136138641234, 0.07068885253582723, 0.9913375368376388]
+    ]
+
+    return util.dot(m, rgb)
+
+
+def xyz_to_lin_a98rgb(xyz):
+    """Convert XYZ to linear-light a98-rgb."""
+
+    m = [
+        [2.0415879038107465, -0.5650069742788596, -0.34473135077832956],
+        [-0.9692436362808795, 1.8759675015077202, 0.04155505740717557],
+        [0.013444280632031142, -0.11836239223101838, 1.0151749943912054]
+    ]
+
+    return util.dot(m, xyz)
+
+
+def lin_a98rgb(rgb):
+    """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
+
+    return [math.copysign(math.pow(abs(val), 563 / 256), val) for val in rgb]
+
+
+def gam_a98rgb(rgb):
+    """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
+
+    return [math.copysign(math.pow(abs(val), 256 / 563), val) for val in rgb]
+
+
+class A98_RGB(srgb.SRGB):
     """A98 RGB class."""
 
     SPACE = "a98-rgb"
@@ -21,10 +66,10 @@ class A98_RGB(RGB):
     def _to_xyz(cls, rgb):
         """To XYZ."""
 
-        return convert.a98_rgb_to_xyz(rgb)
+        return convert.d65_to_d50(lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return convert.xyz_to_a98_rgb(xyz)
+        return gam_a98rgb(xyz_to_lin_a98rgb(convert.d50_to_d65(xyz)))

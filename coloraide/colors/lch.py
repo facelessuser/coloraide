@@ -1,12 +1,51 @@
 """LCH class."""
 from ._space import Space, RE_DEFAULT_MATCH
+from .lab import LAB
 from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound
 from . _range import Angle, Percent
-from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
+import math
+
+
+def lab_to_lch(lab):
+    """LAB to LCH."""
+
+    l, a, b = lab
+
+    # This hue correction is taken from https://github.com/LeaVerou/color.js/blob/master/src/spaces/lch.js
+    # This appears to be a little smoothing as we get really close to zero.
+    # I'm sure it is meant to correct some specific corner case, but not sure what.
+    # For now, we will do it as well.
+    if abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD:
+        hue = 0
+    else:
+        hue = math.atan2(b, a) * 180 / math.pi
+
+    return (
+        l,
+        math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
+        hue
+    )
+
+
+def lch_to_lab(lch):
+    """LCH to LAB."""
+
+    l, c, h = lch
+
+    # If, for whatever reason (mainly direct user input),
+    # if chroma is less than zero, clamp to zero.
+    if c < 0.0:
+        c = 0.0
+
+    return (
+        l,
+        c * math.cos(h * math.pi / 180.0),
+        c * math.sin(h * math.pi / 180.0)
+    )
 
 
 class LCH(Cylindrical, Space):
@@ -119,22 +158,22 @@ class LCH(Cylindrical, Space):
     def _to_lab(cls, lch):
         """To Lab."""
 
-        return convert.lch_to_lab(lch)
+        return lch_to_lab(lch)
 
     @classmethod
     def _from_lab(cls, lab):
         """To Lab."""
 
-        return convert.lab_to_lch(lab)
+        return lab_to_lch(lab)
 
     @classmethod
     def _to_xyz(cls, lch):
         """To XYZ."""
 
-        return convert.lab_to_xyz(cls._to_lab(lch))
+        return LAB._to_xyz(cls._to_lab(lch))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return cls._from_lab(convert.xyz_to_lab(xyz))
+        return cls._from_lab(LAB._from_xyz(xyz))

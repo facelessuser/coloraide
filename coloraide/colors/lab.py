@@ -2,10 +2,54 @@
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . _range import Percent
-from . import _convert as convert
 from . import _parse as parse
 from .. import util
 import re
+import math
+
+D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
+KAPPA = 24389 / 27  # `29^3 / 3^3`
+EPSILON = 216 / 24389  # `6^3 / 29^3`
+
+
+def lab_to_xyz(lab):
+    """
+    Convert Lab to D50-adapted XYZ.
+
+    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    """
+
+    l, a, b = lab
+
+    # compute `f`, starting with the luminance-related term
+    f1 = (l + 16) / 116
+    f0 = a / 500 + f1
+    f2 = f1 - b / 200
+
+    # compute `xyz`
+    xyz = [
+        math.pow(f0, 3) if math.pow(f0, 3) > EPSILON else (116 * f0 - 16) / KAPPA,
+        math.pow((l + 16) / 116, 3) if l > KAPPA * EPSILON else l / KAPPA,
+        math.pow(f2, 3) if math.pow(f2, 3) > EPSILON else (116 * f2 - 16) / KAPPA
+    ]
+
+    # Compute XYZ by scaling `xyz` by reference `white`
+    return util.multiply(xyz, D50_REF_WHITE)
+
+
+def xyz_to_lab(xyz):
+    """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
+
+    # compute `xyz`, which is XYZ scaled relative to reference white
+    xyz = util.divide(xyz, D50_REF_WHITE)
+    # Compute `f`
+    f = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16.0) / 116.0 for i in xyz]
+
+    return (
+        (116.0 * f[1]) - 16.0,
+        500.0 * (f[0] - f[1]),
+        200.0 * (f[1] - f[2])
+    )
 
 
 class LAB(Space):
@@ -101,10 +145,10 @@ class LAB(Space):
     def _to_xyz(cls, lab):
         """To XYZ."""
 
-        return convert.lab_to_xyz(lab)
+        return lab_to_xyz(lab)
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return convert.xyz_to_lab(xyz)
+        return xyz_to_lab(xyz)
