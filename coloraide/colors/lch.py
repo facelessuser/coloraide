@@ -9,25 +9,18 @@ from .. import util
 import re
 import math
 
+ACHROMATIC_THRESHOLD = 0.02
+
 
 def lab_to_lch(lab):
     """LAB to LCH."""
 
     l, a, b = lab
 
-    # This hue correction is taken from https://github.com/LeaVerou/color.js/blob/master/src/spaces/lch.js
-    # This appears to be a little smoothing as we get really close to zero.
-    # I'm sure it is meant to correct some specific corner case, but not sure what.
-    # For now, we will do it as well.
-    if abs(a) < util.ACHROMATIC_THRESHOLD and abs(b) < util.ACHROMATIC_THRESHOLD:
-        hue = 0
-    else:
-        hue = math.atan2(b, a) * 180 / math.pi
-
     return (
         l,
         math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        hue
+        math.atan2(b, a) * 180 / math.pi
     )
 
 
@@ -93,7 +86,7 @@ class LCH(Cylindrical, Space):
         """Test if hue is null."""
 
         l, c, h = self.coords()
-        return c < util.ACHROMATIC_THRESHOLD
+        return c < ACHROMATIC_THRESHOLD
 
     def hue_index(self):
         """Get hue index."""
