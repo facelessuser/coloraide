@@ -84,6 +84,9 @@ markdown_extensions:
         - name: color-gradient
           class: color
           format: !!python/name:tools.colors.color_gradient_formatter
+        - name: color-steps
+          class: color
+          format: !!python/name:tools.colors.color_steps_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true

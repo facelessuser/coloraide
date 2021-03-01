@@ -3,6 +3,14 @@ from coloraide.css import Color
 import xml.etree.ElementTree as Etree
 
 
+def execute(cmd):
+    """Execute color commands."""
+
+    g = {'Color': Color}
+    exec(cmd, g)
+    return g['result']
+
+
 def _color_formatter(src="", language="", class_name=None, md="", show_code=True, fit=False):
     """Formatter wrapper."""
 
@@ -55,14 +63,12 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
 def color_gradient_formatter(src="", language="", class_name=None, md=""):
     """Format gradient."""
 
-    src_color = [c.strip() for c in src.strip().split(';')]
-
+    colors = execute(src.strip())
     el = Etree.Element('span', {'class': "swatch swatch-gradient"})
     try:
         style = "--swatch-stops: "
         stops = []
-        for c in src_color:
-            color = Color(c)
+        for color in colors:
             color.fit("srgb", in_place=True)
             stops.append(color.convert("srgb").to_string(hex=True))
         if not stops:
@@ -71,6 +77,31 @@ def color_gradient_formatter(src="", language="", class_name=None, md=""):
             stops.append(stops[0])
         style += ','.join(stops)
         Etree.SubElement(el, 'span', {'class': 'swatch-color', 'style': style})
+    except Exception:
+        el = md.inlinePatterns['backtick'].handle_code('', src)
+    return el
+
+
+def color_steps_formatter(src="", language="", class_name=None, md=""):
+    """Format steps."""
+
+    colors = execute(src.strip())
+    el = Etree.Element('span')
+    el.text = "["
+
+    try:
+        last = None
+        for color in colors:
+            if last is not None:
+                last.tail = ','
+            cstring = color.to_string()
+            sub_el = color_formatter_color_only(cstring, '', class_name, md)
+            el.append(sub_el)
+            last = sub_el
+        if last is not None:
+            last.tail = ']'
+        else:
+            el.text += ']'
     except Exception:
         el = md.inlinePatterns['backtick'].handle_code('', src)
     return el

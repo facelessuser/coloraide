@@ -11,16 +11,10 @@ extrapolated and the results may be surprising.
 Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
 fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range colors that we
 can use in a gradient to get:
-`#!color-gradient rgb(102 51 153);
-rgb(142.02 45.34 154.31);
-rgb(178.58 36.391 149.5);
-rgb(211.11 28.452 139.16);
-rgb(238.61 32.963 124.24);
-rgb(255 53.083 105.75);
-rgb(249.21 108.41 101.4);
-rgb(255 130.24 87.774);
-rgb(255 154.42 74.129);
-rgb(255 179.93 62.148)`.
+`#!color-gradient
+i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
+result = list(map(lambda x: i(x/10), range(10)))
+`.
 
 ```pycon3
 >>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -46,16 +40,10 @@ the base color. Channels must be specified for the giving color space that inter
 the colors that only the hue is interpolated:
 
 And when applied to a range, we can see only the hue is adjusted:
-`#!color-gradient lch(52% 58.1 22.7);
-lch(52% 58.1 10.14);
-lch(52% 58.1 357.58);
-lch(52% 58.1 345.02);
-lch(52% 58.1 332.46);
-lch(52% 58.1 319.9);
-lch(52% 58.1 307.34);
-lch(52% 58.1 294.78);
-lch(52% 58.1 282.22);
-lch(52% 58.1 269.66)`.
+`#!color-gradient
+i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+result = list(map(lambda x: i(x/10), range(10)))
+`.
 
 ```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
@@ -93,11 +81,11 @@ to learn more about each one.
 
 Hue\ Logic   | Result
 ------------ | ------
-`shorter`    | `#!color-gradient rgb(102 51 153);rgb(122.07 49.312 153.57);rgb(140.94 47.145 152.78);rgb(158.77 44.809 150.7);rgb(175.55 42.8 147.4);rgb(191.24 41.813 143.01);rgb(205.76 42.647 137.62);rgb(219.03 45.921 131.38);rgb(230.97 51.804 124.41);rgb(241.5 60.017 116.84);rgb(250.57 70.08 108.78);rgb(255 81.52 100.32);rgb(255 93.955 91.526);rgb(255 107.09 82.426);rgb(249.89 136.06 97.573);rgb(252.63 147.22 93.303);rgb(254.11 158.75 89.576);rgb(254.34 170.55 86.644);rgb(253.35 182.53 84.812);rgb(255 191.26 16.33)`
-`longer`     | `#!color-gradient rgb(102 51 153);rgb(82.957 67.383 172.52);rgb(49.641 82.343 189.24);rgb(43.047 95.469 174.9);rgb(0 106.83 183.37);rgb(0 116.53 178.89);rgb(0 125.54 175.12);rgb(0 134.29 172.26);rgb(0 142.92 169.41);rgb(0 151.58 166.08);rgb(0 160.34 161.49);rgb(0 172.44 155.98);rgb(0 179.69 143.13);rgb(0 186.29 129.61);rgb(50.666 192.16 116.08);rgb(34.49 202.64 75.11);rgb(100.66 206.25 52.127);rgb(143.92 208.48 25.842);rgb(182.46 209.14 0);rgb(219.08 208.07 0)`
-`increasing` | `#!color-gradient rgb(102 51 153);rgb(122.07 49.312 153.57);rgb(140.94 47.145 152.78);rgb(158.77 44.809 150.7);rgb(175.55 42.8 147.4);rgb(191.24 41.813 143.01);rgb(205.76 42.647 137.62);rgb(219.03 45.921 131.38);rgb(230.97 51.804 124.41);rgb(241.5 60.017 116.84);rgb(250.57 70.08 108.78);rgb(255 81.52 100.32);rgb(255 93.955 91.526);rgb(255 107.09 82.426);rgb(249.89 136.06 97.573);rgb(252.63 147.22 93.303);rgb(254.11 158.75 89.576);rgb(254.34 170.55 86.644);rgb(253.35 182.53 84.812);rgb(255 191.26 16.33)`
-`decreasing` | `#!color-gradient rgb(102 51 153);rgb(82.957 67.383 172.52);rgb(49.641 82.343 189.24);rgb(43.047 95.469 174.9);rgb(0 106.83 183.37);rgb(0 116.53 178.89);rgb(0 125.54 175.12);rgb(0 134.29 172.26);rgb(0 142.92 169.41);rgb(0 151.58 166.08);rgb(0 160.34 161.49);rgb(0 172.44 155.98);rgb(0 179.69 143.13);rgb(0 186.29 129.61);rgb(50.666 192.16 116.08);rgb(34.49 202.64 75.11);rgb(100.66 206.25 52.127);rgb(143.92 208.48 25.842);rgb(182.46 209.14 0);rgb(219.08 208.07 0)`
-`specified`  | `#!color-gradient rgb(102 51 153);rgb(147 25.234 128.16);rgb(172.94 0 94.318);rgb(181.29 28.412 57.75);rgb(173.56 64.244 17.031);rgb(144.25 97.533 18.334);rgb(120.61 116.73 10.392);rgb(70.621 136.42 0);rgb(31.554 146.34 74.535);rgb(0 156.86 119.39);rgb(0 160.34 161.49);rgb(0 165.16 198.49);rgb(0 169.39 247.51);rgb(95.342 164.66 255);rgb(174.53 155.16 255);rgb(232.29 143.56 245.64);rgb(255 135.97 212.71);rgb(255 157.98 177.9);rgb(255 156.42 134.12);rgb(255 180.88 102.22)`
+`shorter`    | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter"); result = list(map(lambda x: i(x/20), range(20)))`
+`longer`     | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer"); result = list(map(lambda x: i(x/20), range(20)))`
+`increasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing"); result = list(map(lambda x: i(x/20), range(20)))`
+`decreasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing"); result = list(map(lambda x: i(x/20), range(20)))`
+`specified`  | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified"); result = list(map(lambda x: i(x/20), range(20)))`
 
 !!! tip
     It is important to note that we must specify the channels of the space the interpolation is occurring in.
@@ -105,16 +93,10 @@ Hue\ Logic   | Result
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut):
-`#!color-gradient lch(50% 50 0);
- lch(50.04% 49.997 0.0196);
- lch(50.32% 49.976 0.15685);
- lch(51.08% 49.921 0.52995);
- lch(52.56% 49.819 1.2588);
- lch(55% 49.669 2.4666);
- lch(58.64% 49.487 4.2807);
- lch(63.72% 49.316 6.831);
- lch(70.48% 49.241 10.242);
- lch(79.16% 49.401 14.617)`.
+`#!color-gradient
+i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
+result = list(map(lambda x: i(x/10), range(10)))
+`.
 
 ```pycon3
 >>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
@@ -193,29 +175,10 @@ steps), `max_steps`, and `max_delta` (max allowable delta E distance between ste
 delta E 76, which is a simple euclidean distancing in the Lab color space.
 
 In this example we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
-`#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut): \[
-`#!color-swatch rgb(0% 98.693% 11.113%)`,
-`#!color-swatch rgb(25.045% 95.744% 0%)`,
-`#!color-swatch rgb(38.102% 92.728% 0%)`,
-`#!color-swatch rgb(47.027% 89.643% 0%)`,
-`#!color-swatch rgb(54.07% 86.488% 0%)`,
-`#!color-swatch rgb(59.96% 83.264% 0%)`,
-`#!color-swatch rgb(65.029% 79.971% 0%)`,
-`#!color-swatch rgb(69.459% 76.608% 0%)`,
-`#!color-swatch rgb(73.357% 73.177% 0%)`,
-`#!color-swatch rgb(76.79% 69.681% 0%)`,
-`#!color-swatch rgb(79.8% 66.123% 0%)`,
-`#!color-swatch rgb(82.415% 62.505% 0%)`,
-`#!color-swatch rgb(84.654% 58.832% 0%)`,
-`#!color-swatch rgb(86.529% 55.109% 0%)`,
-`#!color-swatch rgb(88.047% 51.342% 0%)`,
-`#!color-swatch rgb(89.215% 47.538% 0%)`,
-`#!color-swatch rgb(90.036% 43.702% 0%)`,
-`#!color-swatch rgb(90.513% 39.841% 0%)`,
-`#!color-swatch rgb(90.649% 35.964% 6.5496%)`,
-`#!color-swatch rgb(90.448% 32.076% 12.232%)`,
-`#!color-swatch rgb(100% 0.00006% 0.00001%)`
-\].
+`#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
+`#!color-steps
+result = list(Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta=20, steps=10))
+`.
 
 ```pycon3
 >>> color = Color("display-p3", [0, 1, 0])
