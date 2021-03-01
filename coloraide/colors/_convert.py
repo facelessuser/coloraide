@@ -2,6 +2,12 @@
 from .. import util
 
 
+def constrain_hue(hue):
+    """Constrain hue to 0 - 360."""
+
+    return hue % 360
+
+
 def d50_to_d65(xyz):
     """Bradford chromatic adaptation from D50 to D65."""
 
@@ -37,9 +43,6 @@ def d65_to_d50(xyz):
 class Convert:
     """Convert class."""
 
-    def _on_convert(self):
-        """Run after a convert operation to give an opportunity to do some post convert actions."""
-
     def convert(self, space, *, fit=False):
         """Convert to color space."""
 
@@ -51,7 +54,6 @@ class Convert:
                 clone = self.clone()
                 clone.fit(space, method=method, in_place=True)
                 result = clone.convert(space)
-                result._on_convert()
                 return result
 
         convert_to = '_to_{}'.format(space)
@@ -83,14 +85,13 @@ class Convert:
         coords = list(coords) + [self.alpha]
         result = obj(coords)
         result.parent = self.parent
-        result._on_convert()
+
         return result
 
     def update(self, obj):
         """Update from color."""
 
         if self is obj:
-            self._on_convert()
             return
 
         if not isinstance(obj, type(self)):
@@ -99,5 +100,4 @@ class Convert:
         for i, value in enumerate(obj.coords()):
             self._coords[i] = value
         self.alpha = obj.alpha
-        self._on_convert()
         return self

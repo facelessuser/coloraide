@@ -5,6 +5,7 @@ from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
 from . _range import Angle, Percent
 from . import _parse as parse
+from . import _convert as convert
 from .. import util
 import re
 
@@ -29,7 +30,7 @@ def srgb_to_hsl(rgb):
         else:
             h = (r - g) / c + 4.0
 
-    return h * 60.0, s * 100.0, l * 100.0
+    return convert.constrain_hue(h * 60.0), s * 100.0, l * 100.0
 
 
 def hsl_to_srgb(hsl):
@@ -95,16 +96,6 @@ class HSL(Cylindrical, Space):
 
         h, s, l = self.coords()
         return s < util.ACHROMATIC_THRESHOLD
-
-    def _on_convert(self):
-        """
-        Run after a convert operation.
-
-        Gives us an opportunity to normalize hues and things like that, if we desire.
-        """
-
-        if not (0.0 <= self.hue <= 360.0):
-            self.hue = self.hue % 360.0
 
     @property
     def hue(self):

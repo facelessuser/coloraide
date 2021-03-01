@@ -7,6 +7,7 @@ from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
 from . _range import Angle, Percent
 from . import _parse as parse
+from . import _convert as convert
 from .. import util
 import re
 
@@ -17,7 +18,7 @@ def srgb_to_hwb(rgb):
     h, s, v = HSV._from_srgb(rgb)
     w = v * (100.0 - s) / 100.0
     b = 100.0 - v
-    return h, w, b
+    return convert.constrain_hue(h), w, b
 
 
 def hwb_to_srgb(hwb):
