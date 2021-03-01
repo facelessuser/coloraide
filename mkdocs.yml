@@ -81,6 +81,9 @@ markdown_extensions:
         - name: color-swatch-fit
           class: color
           format: !!python/name:tools.colors.color_formatter_color_only_fit
+        - name: color-gradient
+          class: color
+          format: !!python/name:tools.colors.color_gradient_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true

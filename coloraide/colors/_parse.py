@@ -114,15 +114,13 @@ def norm_angle(angle):
 def norm_hue_channel(value):
     """Normalize hex channel."""
 
-    angle = norm_angle(value)
-    return angle if not (0.0 <= angle <= 360) else angle % 360.0
+    return norm_angle(value)
 
 
 def norm_deg_channel(value):
     """Normalize degree channel."""
 
-    value = norm_float(value)
-    return value if not (0.0 <= value <= 360) else value % 360.0
+    return norm_float(value)
 
 
 def bracket_match(match, string, start, fullmatch):

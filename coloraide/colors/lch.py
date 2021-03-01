@@ -5,6 +5,7 @@ from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound
 from . _range import Angle, Percent
 from . import _parse as parse
+from . import _convert as convert
 from .. import util
 import re
 import math
@@ -20,7 +21,7 @@ def lab_to_lch(lab):
     return (
         l,
         math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        math.atan2(b, a) * 180 / math.pi
+        convert.constrain_hue(math.atan2(b, a) * 180 / math.pi)
     )
 
 

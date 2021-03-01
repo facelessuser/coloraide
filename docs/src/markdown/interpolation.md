@@ -9,18 +9,18 @@ Interpolation functions accept an input between 0 - 1, if values are provided ou
 extrapolated and the results may be surprising.
 
 Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
-fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` which creates: \[
-`#!color-swatch rgb(102 51 153)`,
-`#!color-swatch rgb(142.02 45.34 154.31)`,
-`#!color-swatch rgb(178.58 36.391 149.5)`,
-`#!color-swatch rgb(211.11 28.452 139.16)`,
-`#!color-swatch rgb(238.61 32.963 124.24)`,
-`#!color-swatch rgb(255 53.083 105.75)`,
-`#!color-swatch rgb(249.21 108.41 101.4)`,
-`#!color-swatch rgb(255 130.24 87.774)`,
-`#!color-swatch rgb(255 154.42 74.129)`,
-`#!color-swatch rgb(255 179.93 62.148)`
-\].
+fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range colors that we
+can use in a gradient to get:
+`#!color-gradient rgb(102 51 153);
+rgb(142.02 45.34 154.31);
+rgb(178.58 36.391 149.5);
+rgb(211.11 28.452 139.16);
+rgb(238.61 32.963 124.24);
+rgb(255 53.083 105.75);
+rgb(249.21 108.41 101.4);
+rgb(255 130.24 87.774);
+rgb(255 154.42 74.129);
+rgb(255 179.93 62.148)`.
 
 ```pycon3
 >>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -39,46 +39,82 @@ fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, and `0.3` w
 'rgb(255 179.93 62.148)'
 ```
 
-If desired, we can target specific channels for mixing which will keep all the other channels constant on the base
-color. In this example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
-`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. The final color is
-`#!color lch(52% 58.1 351.59)`. Notice that when comparing to the base color that only the `hue` has changed.
+If desired, we can target one or more specific channels for mixing which will keep all the other channels constant on
+the base color. Channels must be specified for the giving color space that interpolation is occurring in (including
+`alpha`). In this example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
+`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. We can see as we step through
+the colors that only the hue is interpolated:
+
+And when applied to a range, we can see only the hue is adjusted:
+`#!color-gradient lch(52% 58.1 22.7);
+lch(52% 58.1 10.14);
+lch(52% 58.1 357.58);
+lch(52% 58.1 345.02);
+lch(52% 58.1 332.46);
+lch(52% 58.1 319.9);
+lch(52% 58.1 307.34);
+lch(52% 58.1 294.78);
+lch(52% 58.1 282.22);
+lch(52% 58.1 269.66)`.
+
+```pycon3
+>>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+>>> for x in range(10):
+...     i(x/10).to_string()
+...
+'lch(52% 58.1 22.7)'
+'lch(52% 58.1 10.14)'
+'lch(52% 58.1 357.58)'
+'lch(52% 58.1 345.02)'
+'lch(52% 58.1 332.46)'
+'lch(52% 58.1 319.9)'
+'lch(52% 58.1 307.34)'
+'lch(52% 58.1 294.78)'
+'lch(52% 58.1 282.22)'
+'lch(52% 58.1 269.66)'
+```
+
+Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
+accepts such values as `shorter`, `longer`, `increasing`, `decreasing`, and `specified` (`shorter` being the default).
+Below, we can see how the interpolation varies using `shorter` vs `longer`.
 
 ```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
 >>> i(0.2477).to_string()
 'lch(52% 58.1 351.59)'
-```
-
-Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
-accepts such values as `longer` or `shorter`, `shorter` being the default (see API for all options). In this example,
-we run the same command, but specify that the interpolation should use the longer angle between the two hues. This time,
-when we mix `#!color lch(52% 58.1 22.7)` and `#!color lch(56% 49.1 257.1)`, we get a different color
-(`#!color lch(52% 58.1 80.761)`) as we interpolated between the larger angle instead of the shorter angle.
-
-```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"], hue="longer")
 >>> i(0.2477).to_string()
 'lch(52% 58.1 80.761)'
 ```
+
+To help visualize the different hue methods, consider the following evaluation between `#!color rebeccapurple` and
+`#!color lch(85% 85 805)` in the table below. Check out the [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation)
+to learn more about each one.
+
+Hue\ Logic   | Result
+------------ | ------
+`shorter`    | `#!color-gradient rgb(102 51 153);rgb(122.07 49.312 153.57);rgb(140.94 47.145 152.78);rgb(158.77 44.809 150.7);rgb(175.55 42.8 147.4);rgb(191.24 41.813 143.01);rgb(205.76 42.647 137.62);rgb(219.03 45.921 131.38);rgb(230.97 51.804 124.41);rgb(241.5 60.017 116.84);rgb(250.57 70.08 108.78);rgb(255 81.52 100.32);rgb(255 93.955 91.526);rgb(255 107.09 82.426);rgb(249.89 136.06 97.573);rgb(252.63 147.22 93.303);rgb(254.11 158.75 89.576);rgb(254.34 170.55 86.644);rgb(253.35 182.53 84.812);rgb(255 191.26 16.33)`
+`longer`     | `#!color-gradient rgb(102 51 153);rgb(82.957 67.383 172.52);rgb(49.641 82.343 189.24);rgb(43.047 95.469 174.9);rgb(0 106.83 183.37);rgb(0 116.53 178.89);rgb(0 125.54 175.12);rgb(0 134.29 172.26);rgb(0 142.92 169.41);rgb(0 151.58 166.08);rgb(0 160.34 161.49);rgb(0 172.44 155.98);rgb(0 179.69 143.13);rgb(0 186.29 129.61);rgb(50.666 192.16 116.08);rgb(34.49 202.64 75.11);rgb(100.66 206.25 52.127);rgb(143.92 208.48 25.842);rgb(182.46 209.14 0);rgb(219.08 208.07 0)`
+`increasing` | `#!color-gradient rgb(102 51 153);rgb(122.07 49.312 153.57);rgb(140.94 47.145 152.78);rgb(158.77 44.809 150.7);rgb(175.55 42.8 147.4);rgb(191.24 41.813 143.01);rgb(205.76 42.647 137.62);rgb(219.03 45.921 131.38);rgb(230.97 51.804 124.41);rgb(241.5 60.017 116.84);rgb(250.57 70.08 108.78);rgb(255 81.52 100.32);rgb(255 93.955 91.526);rgb(255 107.09 82.426);rgb(249.89 136.06 97.573);rgb(252.63 147.22 93.303);rgb(254.11 158.75 89.576);rgb(254.34 170.55 86.644);rgb(253.35 182.53 84.812);rgb(255 191.26 16.33)`
+`decreasing` | `#!color-gradient rgb(102 51 153);rgb(82.957 67.383 172.52);rgb(49.641 82.343 189.24);rgb(43.047 95.469 174.9);rgb(0 106.83 183.37);rgb(0 116.53 178.89);rgb(0 125.54 175.12);rgb(0 134.29 172.26);rgb(0 142.92 169.41);rgb(0 151.58 166.08);rgb(0 160.34 161.49);rgb(0 172.44 155.98);rgb(0 179.69 143.13);rgb(0 186.29 129.61);rgb(50.666 192.16 116.08);rgb(34.49 202.64 75.11);rgb(100.66 206.25 52.127);rgb(143.92 208.48 25.842);rgb(182.46 209.14 0);rgb(219.08 208.07 0)`
+`specified`  | `#!color-gradient rgb(102 51 153);rgb(147 25.234 128.16);rgb(172.94 0 94.318);rgb(181.29 28.412 57.75);rgb(173.56 64.244 17.031);rgb(144.25 97.533 18.334);rgb(120.61 116.73 10.392);rgb(70.621 136.42 0);rgb(31.554 146.34 74.535);rgb(0 156.86 119.39);rgb(0 160.34 161.49);rgb(0 165.16 198.49);rgb(0 169.39 247.51);rgb(95.342 164.66 255);rgb(174.53 155.16 255);rgb(232.29 143.56 245.64);rgb(255 135.97 212.71);rgb(255 157.98 177.9);rgb(255 156.42 134.12);rgb(255 180.88 102.22)`
 
 !!! tip
     It is important to note that we must specify the channels of the space the interpolation is occurring in.
     Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
-the colors (color previews are fit to the sRGB gamut): \[
-`#!color-swatch-fit lch(50% 50 0)`,
-`#!color-swatch-fit lch(50.04% 49.997 0.0196)`,
-`#!color-swatch-fit lch(50.32% 49.976 0.15685)`,
-`#!color-swatch-fit lch(51.08% 49.921 0.52995)`,
-`#!color-swatch-fit lch(52.56% 49.819 1.2588)`,
-`#!color-swatch-fit lch(55% 49.669 2.4666)`,
-`#!color-swatch-fit lch(58.64% 49.487 4.2807)`,
-`#!color-swatch-fit lch(63.72% 49.316 6.831)`,
-`#!color-swatch-fit lch(70.48% 49.241 10.242)`,
-`#!color-swatch-fit lch(79.16% 49.401 14.617)`
-\].
+the colors (color previews are fit to the sRGB gamut):
+`#!color-gradient lch(50% 50 0);
+ lch(50.04% 49.997 0.0196);
+ lch(50.32% 49.976 0.15685);
+ lch(51.08% 49.921 0.52995);
+ lch(52.56% 49.819 1.2588);
+ lch(55% 49.669 2.4666);
+ lch(58.64% 49.487 4.2807);
+ lch(63.72% 49.316 6.831);
+ lch(70.48% 49.241 10.242);
+ lch(79.16% 49.401 14.617)`.
 
 ```pycon3
 >>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)

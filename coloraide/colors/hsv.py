@@ -6,6 +6,7 @@ from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
 from . _range import Angle, Percent
 from . import _parse as parse
+from . import _convert as convert
 from .. import util
 import re
 
@@ -23,7 +24,7 @@ def hsv_to_hsl(hsv):
     l = v * (1.0 - s / 2.0)
 
     return [
-        h,
+        convert.constrain_hue(h),
         0.0 if (l == 0.0 or l == 0.0) else ((v - l) / min(l, 1.0 - l)) * 100,
         l * 100
     ]
@@ -43,7 +44,7 @@ def hsl_to_hsv(hsl):
     v = l + s * min(l, 1.0 - l)
 
     return [
-        h,
+        convert.constrain_hue(h),
         0.0 if (v == 0.0) else 200.0 * (1.0 - l / v),
         100.0 * v
     ]
