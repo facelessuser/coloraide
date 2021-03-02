@@ -57,6 +57,7 @@ class HSV(Cylindrical, Space):
     DEF_BG = "color(hsv 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["hue", "saturation", "value", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    GAMUT = "srgb"
 
     _range = (
         GamutBound([Angle(0.0), Angle(360.0)]),

@@ -57,6 +57,20 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     # Match pattern variable for classes to override so we can also
     # maintain the default and other alternatives.
     MATCH = ""
+    # Should this color be mapped in a different space? Only when set to a string (specifying a color space) will the
+    # default gamut mapping be overridden by the specified color space.
+    #
+    # Gamut checking:
+    #   The specified color space will be checked first followed by the original. Assuming the parent color space fits,
+    #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
+    #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
+    #   space, the values can be greatly out of specification (looking at you HSL).
+    #
+    # Gamut mapping:
+    #   Since gamut mapping forces "in gamut" checks without thresholds, if a color is forced into it's parent gamut,
+    #   the coordinates for the derived color space should be within spec. We only normalize angles outside of 0-360
+    #   after the parent color space is fit.
+    GAMUT = None
 
     def __init__(self, color=None):
         """Initialize."""
