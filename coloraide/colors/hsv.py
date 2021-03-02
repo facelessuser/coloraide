@@ -25,7 +25,7 @@ def hsv_to_hsl(hsv):
 
     return [
         convert.constrain_hue(h),
-        0.0 if (l == 0.0 or l == 0.0) else ((v - l) / min(l, 1.0 - l)) * 100,
+        0.0 if (l == 0.0 or l == 1.0) else ((v - l) / min(l, 1.0 - l)) * 100,
         l * 100
     ]
 

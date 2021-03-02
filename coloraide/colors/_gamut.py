@@ -105,7 +105,7 @@ class Gamut:
 
         space = (self.space() if space is None else space).lower()
         method = self.space() if method is None else method
-        if not self.in_gamut(space=space):
+        if not self.in_gamut(space=space, tolerance=0.0):
             clone = self.clone()
             clone.fit(method=method, in_place=True)
             return clone.coords()
@@ -154,7 +154,7 @@ class Gamut:
         # Check gamut in the provided space
         if space is not None:
             c = self.convert(space)
-            return c.in_gamut()
+            return c.in_gamut(tolerance=tolerance)
 
         # Verify the values are in bound
         channels = self.coords()
