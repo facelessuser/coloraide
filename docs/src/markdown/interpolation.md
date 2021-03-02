@@ -9,7 +9,7 @@ Interpolation functions accept an input between 0 - 1, if values are provided ou
 extrapolated and the results may be surprising.
 
 Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
-fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range colors that we
+fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range of colors that we
 can use in a gradient to get:
 `#!color-gradient
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -34,16 +34,18 @@ result = list(map(lambda x: i(x/10), range(10)))
 ```
 
 If desired, we can target one or more specific channels for mixing which will keep all the other channels constant on
-the base color. Channels must be specified for the giving color space that interpolation is occurring in (including
-`alpha`). In this example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
-`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. We can see as we step through
-the colors that only the hue is interpolated:
+the base color. Channels can be any channel associated with the color space in which the interpolation is taking place
+(including `alpha`).
 
-And when applied to a range, we can see only the hue is adjusted:
+In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
+`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. Applying this logic, we will
+end up with a range of colors that maintain the same lightness and chroma, but with different hues:
 `#!color-gradient
 i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
 result = list(map(lambda x: i(x/10), range(10)))
 `.
+
+We can see as we step through the colors that only the hue is interpolated:
 
 ```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
@@ -86,10 +88,6 @@ Hue\ Logic   | Result
 `increasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing"); result = list(map(lambda x: i(x/20), range(20)))`
 `decreasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing"); result = list(map(lambda x: i(x/20), range(20)))`
 `specified`  | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified"); result = list(map(lambda x: i(x/20), range(20)))`
-
-!!! tip
-    It is important to note that we must specify the channels of the space the interpolation is occurring in.
-    Specifying `hue` while interpolating in the sRGB color space would target no channels and would be ignored.
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut):
@@ -135,8 +133,8 @@ As an example, if we had the color `#!color red` and the color
 'rgb(127.5 0 127.5)'
 ```
 
-The `mix` method will mix the two colors in the color space of the color calling the method. If needed a different color
-space can be specified with the `space` parameter. Notice that this creates a different color:
+The `mix` method will mix the two colors in the color space of the color calling the method. If needed, a different
+color space can be specified with the `space` parameter. Notice that this creates a different color:
 `#!color rgb(180.38 44.003 76.616)`. The results of mixing in a different color space may be more desirable as color
 mixing may be more natural.
 
@@ -169,12 +167,12 @@ Mixing will always return a new color unless `in_place` is set `True`.
 
 ## Steps
 
-The `steps` method creates a list of discrete colors. Like mixing, it is also built on the [`interplate`](#interpolating).
-steps. The steps to take between the two colors can be configured with the three options, `steps` (minimum number of
-steps), `max_steps`, and `max_delta` (max allowable delta E distance between steps). The default delta E method is
-delta E 76, which is a simple euclidean distancing in the Lab color space.
+The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
+The steps to take between the two colors can be configured with the three options, `steps` (minimum number of steps),
+`max_steps`, and `max_delta` (max allowable delta E distance between steps). The default delta E method is delta E 76,
+which is a simple euclidean distancing in the Lab color space.
 
-In this example we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
+In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
 `#!color-steps
 result = list(Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta=20, steps=10))
@@ -233,14 +231,11 @@ HSL color space, if saturation is zero, the hue is considered null. This is beca
 therefore, it has no hue, or the hue is undefined.
 
 Many libraries, like [d3-color](https://github.com/d3/d3-color), [chroma.js](https://gka.github.io/chroma.js/), and
-[color.js](https://github.com/LeaVerou/color.js) all represent null hues with `NaN` (not a number). This is usually done
+[color.js](https://github.com/LeaVerou/color.js), represent null hues with `NaN` (not a number). This is usually done
 to make color interpolation easier. Some, like d3-color, are a bit more liberal with `NaN` and will target special cases
 that are above and beyond the normal rules to help ensure good interpolation. For instance, they not only mark hue null
 on HSL colors when saturation is zero, but also when lightness is zero or one hundred (essentially appearing black or
 white). In fact, they'll mark saturation as `NaN` when lightness indicates "black" or "white".
-
-Additionally, some libraries allow marking non-hue channels as `NaN`; color.js allows a user to manually specify
-channels with `NaN` so they can mask off channels for interpolation.
 
 ColorAide also uses `NaN` during interpolating, but we do not carry that baggage around outside of interpolating.
 Colors will not return `NaN` in their coordinates, so the user doesn't have to worry about checking for those cases when
@@ -249,32 +244,35 @@ when interpolating (mainly cylindrical color spaces) then ColorAide will flag th
 coordinate a `NaN` prior to the actual interpolation.
 
 ColorAide will consider the following color spaces as having a null hue in the following cases. For "very near" cases,
-the threshold noted in the table is used.
+the threshold noted in the table is used. LCH uses a much larger threshold as conversions are more unstable as zero is
+approached.
 
-Color\ Space | Null\ Condition                 | Nearness\ Threshold
------------- | ------------------------------- | -------------------
-HSV          | `s<=0` or very near 0%          | `0.0005`
-HSL          | `s<=0` or very near 0%          | `0.0005`
-HWB          | `(w + b)>=100`or very near 100% | `0.0005`
-LCH          | `c<=0` or very near 0%          | `0.02`
+Color\ Space | Null\ Condition                   | Nearness\ Threshold
+------------ | --------------------------------- | -------------------
+HSV          | `s<=0` or very near 0             | `0.0005`
+HSL          | `s<=0` or very near 0%            | `0.0005`
+HWB          | `(w + b) >= 100`or very near 100% | `0.0005`
+LCH          | `c<=0` or very near 0%            | `0.015`
 
 To determine at any time if a hue is considered null, the `is_hue_null` method can be used. Any space that considers
-hue will return `True` or `False` if their hue is null or not null respectively. Any space that does not specifically
-calculate hue, will simply return `False`. The method will consider the current color space by default, but we can
-query any color spaces by providing a different one.
+hue will return `True` or `False` if their hue is null or not. Any space that does not specifically calculate hue, will
+simply return `False`. The method will consider the current color space by default, but we can query any color spaces by
+providing a different one.
 
 ```pycon3
->>> Color("lab(53.389% 0 0)").is_hue_null()
+>>> Color("hsl(0 0% 50%)").is_hue_null()
+True
+>>> Color("grey").is_hue_null("lch")
+True
+>>> Color("grey").is_hue_null("hsl")
+True
+>>> Color("grey").is_hue_null("hsv")
+True
+>>> Color("grey").is_hue_null("hwb")
+True
+>>> Color("grey").is_hue_null("lab")
 False
->>> Color("lab(53.389% 0 0)").is_hue_null("lch")
-True
->>> Color("lab(53.389% 0 0)").is_hue_null("hsl")
-True
->>> Color("lab(53.389% 0 0)").is_hue_null("hsv")
-True
->>> Color("lab(53.389% 0 0)").is_hue_null("hwb")
-True
 ```
 
-Due to the way colors convert, all spaces may not yield the same value as in this example, so it is best to test in the
-space that is being targeted.
+Due to the way colors convert, all spaces may not yield the same value as they do in this example, so it is best to test
+in the space that is being targeted.

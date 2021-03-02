@@ -2,7 +2,7 @@
 
 ## Reading Coordinates
 
-To get the numerical value of coordinates, there are various ways.
+There are various ways to read the current values of color coordinates.
 
 1. Channel properties can be read directly:
 
@@ -12,7 +12,7 @@ To get the numerical value of coordinates, there are various ways.
     1.0
     ```
 
-2. Channel values can also be read by the `get` method by sending in the name of the channel.
+2. Channel values can also be read by using the `get` method and providing the name of desired channel.
 
     ```pycon3
     >>> color = Color("orange")
@@ -20,16 +20,19 @@ To get the numerical value of coordinates, there are various ways.
     0.6470588235294118
     ```
 
-3. All coordinates (minus alpha) can be read simultaneously.
+3. All non-alpha coordinates can be read simultaneously by using the `coords` function.
 
     ```pycon3
     >>> color = Color("orange")
     >>> color.coords()
     [1.0, 0.6470588235294118, 0.0]
+    >>> color.alpha
+    1.0
     ```
 
-If color coordinate is needed from another color space, it can be accessed by passing in the space and coordinate and
-the necessary conversions will happen behind the scenes.
+If a color coordinate is needed from another color space, it can be accessed by passing in the color space followed by
+the name of the desired coordinate. The necessary conversions will happen behind the scenes and the desired value will
+be returned.
 
 ```pycon3
 >>> Color("blue").get("lch.chroma")
@@ -50,7 +53,7 @@ Channel properties can be modified directly by using the named property. Here we
 'rgb(255 127.5 0)'
 ```
 
-When doing so, keep in mind, the internal coordinate are being adjusted, and so they must be modified within the range
+When doing so, keep in mind, the internal coordinates are being adjusted, and so they must be modified within the range
 in which the values are stored, and for sRGB, it is in the range of \[0, 1\].
 
 If desired, the values can be modified with the `set` method. As these methods return a reference to the class, multiple

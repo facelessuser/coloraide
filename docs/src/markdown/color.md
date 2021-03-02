@@ -22,7 +22,8 @@ color(srgb 1 0 0 / 1)
 As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
 
 We can also insert raw data points directly, but notice, when doing this, we are required to enter the data as it is
-used internally, and in the case for sRGB, the channels are in the range of \[0, 1\].
+used internally, and in the case for sRGB, the channels are in the range of \[0, 1\]. Additionally, alpha is always
+handled as a separate parameter.
 
 ```pycon3
 >>> Color("srgb", [0.5, 0, 1], 0.3)
@@ -91,7 +92,7 @@ color(srgb 0.82374 1.0663 0.69484 / 1)
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
-Here the `#!color red` color object literally becomes `#!color lch(50% 50 130)`.
+Here the `#!color red` color object literally becomes an LCH color object with the new color `#!color lch(50% 50 130)`.
 
 ```pycon3
 >>> Color("red").mutate("lch(50% 50 130)")
@@ -124,7 +125,7 @@ ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
 ```
 
 By default it matches at the start of the buffer and returns a color if it finds one. If desired, we can do a
-`fullmatch` which requires the entire buffer match the color.
+`fullmatch` which requires the entire buffer to match the color.
 
 ```pycon3
 >>> Color.match("red and yellow")
@@ -132,7 +133,7 @@ ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
 >>> Color.match("red and yellow", fullmatch=True)
 ```
 
-We can also target adjust the start position of the search. In this case, by adjusting the start position to 8
+We can also adjust the start position of the search. In this case, by adjusting the start position to 8
 characters later, we will match `#!color yellow` instead of `#!color red`.
 
 ```pycon3
@@ -140,7 +141,8 @@ characters later, we will match `#!color yellow` instead of `#!color red`.
 ColorMatch(color=color(srgb 1 1 0 / 1), start=8, end=14)
 ```
 
-If desired, we can also filter out the CSS syntax of certain color spaces. Here we will only target HSL colors.
+If desired, we can also filter out the CSS syntax of certain color spaces. In the following example, we will only target
+HSL colors.
 
 ```pycon3
 >>> Color.match("red and yellow", filters=["hsl"])
@@ -152,9 +154,9 @@ A method to find all colors in a buffer is not provided as looping through all t
 potential colors on every character is not really efficient.  What is recommended would be to apply this with some logic
 to find potential places in the buffer to test, and only test those places.
 
-In this example we construct a regex to find all valid formats, but we also try and filter out cases that are
-unfavorable, particularly in HTML or CSS. We don't want to match hex in HTML entities or color names that are part of
-color variables (`#!css var(--color-red)`).
+In this example, we construct a regex to find places within the buffer that potentially have a valid color, but we also
+try and filter out cases that are unfavorable, particularly in HTML or CSS. We don't want to match hex in HTML entities
+or color names that are part of color variables (`#!css var(--color-red)`).
 
 === "Code"
 
