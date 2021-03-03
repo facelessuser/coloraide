@@ -155,7 +155,8 @@ class Gamut:
 
         # If we are redirected to a different space to fit,
         # fit that color space and normalize any angles afterwards
-        if c.GAMUT is not None:
+        # TODO: Which fitting should we use?
+        if c.GAMUT is not None and False:  # pragma: no cover
             c2 = self.convert(c.GAMUT)
             c2.fit(method=method, in_place=True)
             c.update(c2)
@@ -184,7 +185,11 @@ class Gamut:
             c = self.convert(space)
             return c.in_gamut(tolerance=tolerance)
 
-        if self.GAMUT is not None:
+        # Check the color space specified for gamut checking.
+        # If it proves to be in gamut, we will then test if the current
+        # space is constrained properly.
+        # TODO: Do we really gain anything by doing this?
+        if self.GAMUT is not None and False:  # pragma: no cover
             c2 = self.convert(self.GAMUT)
             if not c2.in_gamut(tolerance=tolerance):
                 return False
