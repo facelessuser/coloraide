@@ -19,6 +19,6 @@ contrast ratio. To get the luminance, simply call the `luminance` method:
 To get the contrast ratio between two colors, simply pass in the second color:
 
 ```pycon3
->>> Color("blue").contrast_ratio("red")
+>>> Color("blue").contrast("red")
 2.463497175178265
 ```

@@ -206,11 +206,11 @@ Return
 
 Parameters
 : 
-    Parameters | Defaults     | Description
-    ---------- | -------------| -----------
-    `space`    |              | A string representing the desired final color space.
-    `fit`.     | `#!False`    | Boolean specifying whether the current color should be gamut mapped into the final, desired color space.
-    `in_place` | `#!py3 False`| Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
+    Parameters | Defaults      | Description
+    ---------- | ------------- | -----------
+    `space`    |               | A string representing the desired final color space.
+    `fit`      | `#!py3 False` | Boolean specifying whether the current color should be gamut mapped into the final, desired color space.
+    `in_place` | `#!py3 False` | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
 
 ### `luminance`
 
@@ -224,10 +224,10 @@ Return
 : 
     Returns an float indicating the relative luminance.
 
-### `contrast_ratio`
+### `contrast`
 
 ```py3
-def contrast_ratio(self, color):
+def contrast(self, color):
 ```
 
 Get the contrast ratio based on the relative luminance between two colors.
@@ -262,10 +262,10 @@ Parameters
     `color`    |              | A color string or [`Color`](#color) object representing a color.
     `space`    | `#!py3 "lab"`| Color space to perform distancing algorithm in.
 
-### `delta`
+### `delta_e`
 
 ```py3
-def delta(self, color, *, method=None, **kwargs):
+def delta_e(self, color, *, method=None, **kwargs):
 ```
 
 Performs a delta E distance algorithm on two colors. Default algorithm that is used is Delta E 1976 (`76`). Some methods
@@ -325,12 +325,12 @@ Parameters
 ### `steps`
 
 ```py3
-def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **interpolate_args):
+def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
 ```
 
 Creates an interpolate function and iterates through with user defined step parameters to produce discrete color steps.
-Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta` the distance between
-each stop will be cut in half until there are no colors with a distance greater than the specified `max_delta`.
+Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e` the distance between
+each stop will be cut in half until there are no colors with a distance greater than the specified `max_delta_e`.
 
 Return
 : 
@@ -339,12 +339,12 @@ Return
 
 Parameters
 : 
-    Parameters | Defaults           | Description
-    ---------- | ------------------ | -----------
-    `color`    |                    | A color string or [`Color`](#color) object representing a color.
-    `steps`    | `#!py3 2`          | Minimum number of steps.
-    `max_steps`| `#!py3 1000`       | Maximum number of steps.
-    `max_delta`| `#!py3 0`          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    Parameters   | Defaults           | Description
+    ------------ | ------------------ | -----------
+    `color`      |                    | A color string or [`Color`](#color) object representing a color.
+    `steps`      | `#!py3 2`          | Minimum number of steps.
+    `max_steps`  | `#!py3 1000`       | Maximum number of steps.
+    `max_delta_e`| `#!py3 0`          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
 
     !!! note
         All other keyword arguments defined in `**interpolate_args` will be passed to the `interpolate` method.
@@ -494,12 +494,12 @@ def get_default(self, name):
 ```
 
 While mainly used internally, `get_default` exposes access to the certain default settings. Currently only `fit` and
-`delta` are exposed here.
+`delta-e` are exposed here.
 
-Name    | Description
-------- | -----------
-`fit`   | The default gamut mapping method used by the [`Color`](#color) object.
-`delta` | The default delta E algorithm used for gamut distancing calls internally.
+Name      | Description
+--------- | -----------
+`fit`     | The default gamut mapping method used by the [`Color`](#color) object.
+`delta-e` | The default delta E algorithm used for gamut distancing calls internally.
 
 Return
 : 

@@ -22,7 +22,7 @@ def distance_euclidean(color1, color2, space="lab", **kwargs):
     return math.sqrt(total)
 
 
-def delta_76(color1, color2, **kwargs):
+def delta_e_76(color1, color2, **kwargs):
     """
     Delta E 1976 color distance formula.
 
@@ -32,7 +32,7 @@ def delta_76(color1, color2, **kwargs):
     return distance_euclidean(color1, color2, space="lab")
 
 
-def delta_94(color1, color2, kl=1, k1=0.045, k2=0.015):
+def delta_e_94(color1, color2, kl=1, k1=0.045, k2=0.015):
     """
     Delta E 1994 color distance formula.
 
@@ -73,7 +73,7 @@ def delta_94(color1, color2, kl=1, k1=0.045, k2=0.015):
     )
 
 
-def delta_cmc(color1, color2, l=2, c=1):
+def delta_e_cmc(color1, color2, l=2, c=1):
     """
     Delta E CMC.
 
@@ -130,7 +130,7 @@ def delta_cmc(color1, color2, l=2, c=1):
     )
 
 
-def delta_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
+def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     """
     Calculate distance doing a direct translation of the algorithm from the CIE Delta E 2000 paper.
 
@@ -225,17 +225,17 @@ def delta_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
 class Distance:
     """Color distancing."""
 
-    def delta(self, color, method=None, **kwargs):
+    def delta_e(self, color, method=None, **kwargs):
         """Delta E distance."""
 
         if method is None:
-            method = self.get_default("delta")
+            method = self.get_default("delta-e")
 
         algorithm = method.lower()
         if algorithm not in SUPPORTED:
             raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
 
-        return globals()['delta_{}'.format(algorithm.replace('-', '_'))](self, color, **kwargs)
+        return globals()['delta_e_{}'.format(algorithm.replace('-', '_'))](self, color, **kwargs)
 
     def distance(self, color, space="lab"):
         """Delta."""

@@ -58,7 +58,7 @@ class Color:
 
         self.defaults = {
             "fit": DEF_FIT,
-            "delta": DEF_DELTA_E
+            "delta-e": DEF_DELTA_E
         }
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
@@ -209,11 +209,11 @@ class Color:
 
         return self._color.luminance()
 
-    def contrast_ratio(self, color):
+    def contrast(self, color):
         """Compare the contrast ratio of this color and the provided color."""
 
         color = self._handle_color_input(color)
-        return self._color.contrast_ratio(color)
+        return self._color.contrast(color)
 
     def distance(self, color, *, space=util.DEF_DISTANCE_SPACE):
         """Get distance between this color and the provided color."""
@@ -221,11 +221,11 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.distance(color, space=space)
 
-    def delta(self, color, *, method=None, **kwargs):
+    def delta_e(self, color, *, method=None, **kwargs):
         """Delta E distance."""
 
         color = self._handle_color_input(color)
-        return self._color.delta(color, method=method, **kwargs)
+        return self._color.delta_e(color, method=method, **kwargs)
 
     def overlay(self, background=None, *, space=None, in_place=False):
         """Apply the given transparency with the given background."""
@@ -244,11 +244,11 @@ class Color:
         interp = self._color.interpolate(color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue)
         return functools.partial(_interpolate, color=self.clone(), interp=interp)
 
-    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **interpolate_args):
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """Interpolate discrete steps."""
 
         color = self._handle_color_input(color)
-        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta=max_delta, **interpolate_args)
+        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args)
 
     def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
         """Mix the two colors."""

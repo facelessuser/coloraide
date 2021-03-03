@@ -15,12 +15,12 @@ others:
 
 ## Delta E
 
-The `delta` function gives access to various delta E implementations.
+The `delta_e` function gives access to various delta E implementations.
 
 ```pycon3
->>> Color("red").delta("blue")
+>>> Color("red").delta_e("blue")
 184.01293277712057
->>> Color("red").delta("blue", method="2000")
+>>> Color("red").delta_e("blue", method="2000")
 55.79762200630985
 ```
 

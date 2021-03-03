@@ -169,18 +169,18 @@ Mixing will always return a new color unless `in_place` is set `True`.
 
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
 The steps to take between the two colors can be configured with the three options, `steps` (minimum number of steps),
-`max_steps`, and `max_delta` (max allowable delta E distance between steps). The default delta E method is delta E 76,
+`max_steps`, and `max_delta_e` (max allowable delta E distance between steps). The default delta E method is delta E 76,
 which is a simple euclidean distancing in the Lab color space.
 
 In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
 `#!color-steps
-result = list(Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta=20, steps=10))
+result = list(Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=10))
 `.
 
 ```pycon3
 >>> color = Color("display-p3", [0, 1, 0])
->>> for x in color.steps("red", space="lch", out_space="srgb", max_delta=20, steps=10):
+>>> for x in color.steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=10):
 ...     print(x.to_string(percent=True))
 ...
 rgb(0% 98.693% 11.113%)

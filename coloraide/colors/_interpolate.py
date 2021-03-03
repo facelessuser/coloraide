@@ -168,13 +168,13 @@ class Interpolate:
 
         return this.convert(current_space)
 
-    def steps(self, color, *, steps=2, max_steps=1000, max_delta=0, **interpolate_args):
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """
         Discrete steps.
 
         This is built upon the interpolate function, and will return a list of
         colors containing a minimum of colors equal to `steps` or steps as specified
-        derived from the `max_delta` parameter (whichever is greatest).
+        derived from the `max_delta_e` parameter (whichever is greatest).
 
         Number of colors can be capped with `max_steps`.
 
@@ -182,8 +182,8 @@ class Interpolate:
         """
 
         interp = self.interpolate(color, **interpolate_args)
-        total_delta = self.delta(color)
-        actual_steps = steps if max_delta <= 0 else max(steps, math.ceil(total_delta / max_delta) + 1)
+        total_delta = self.delta_e(color)
+        actual_steps = steps if max_delta_e <= 0 else max(steps, math.ceil(total_delta / max_delta_e) + 1)
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
 
@@ -199,15 +199,15 @@ class Interpolate:
         # Iterate over all the stops inserting stops in between if all colors
         # if we have any two colors with a max delta greater than what was requested.
         # We inject between every stop to ensure the midpoint does not shift.
-        if max_delta > 0:
+        if max_delta_e > 0:
             # Initial check to see if we need to insert more stops
             m_delta = 0
             for i, entry in enumerate(ret):
                 if i == 0:
                     continue
-                m_delta = max(m_delta, entry['color'].delta(ret[i - 1]['color']))
+                m_delta = max(m_delta, entry['color'].delta_e(ret[i - 1]['color']))
 
-            while m_delta > max_delta:
+            while m_delta > max_delta_e:
                 # Inject stops while measuring again to see if it was sufficient
                 m_delta = 0
                 i = 1
@@ -216,7 +216,7 @@ class Interpolate:
                     cur = ret[i]
                     p = (cur['p'] + prev['p']) / 2
                     color = interp(p)
-                    m_delta = max(m_delta, color.delta(prev['color']), color.delta(cur['color']))
+                    m_delta = max(m_delta, color.delta_e(prev['color']), color.delta_e(cur['color']))
                     ret.insert(i, {'p': p, 'color': color})
                     i += 2
 
