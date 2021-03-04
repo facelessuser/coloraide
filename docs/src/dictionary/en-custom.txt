@@ -25,6 +25,7 @@ MkDocs
 NONINFRINGEMENT
 NaN
 NaNs
+Premultiply
 ProPhoto
 PyPI
 RGB

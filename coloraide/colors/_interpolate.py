@@ -16,6 +16,7 @@ import math
 import functools
 from .. import util
 from . _cylindrical import Cylindrical
+from . _range import Angle
 
 
 def overlay(c1, c2, a1, a2):
@@ -31,7 +32,7 @@ def overlay(c1, c2, a1, a2):
     return c1 * a1 + c2 * a2 * (1 - a1)
 
 
-def interpolate(p, coords1, coords2, create, progress, outspace):
+def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
     """Run through the coordinates and run the interpolation on them."""
 
     coords = []
@@ -46,7 +47,10 @@ def interpolate(p, coords1, coords2, create, progress, outspace):
         else:
             value = c1 + (c2 - c1) * (p if progress is None else progress(p))
         coords.append(value)
-    return create.new(coords).convert(outspace)
+    color = create.new(coords).convert(outspace)
+    if premultiplied:
+        postdivide(color)
+    return color
 
 
 def prepare_coords(color, adjust=None):
@@ -69,6 +73,48 @@ def prepare_coords(color, adjust=None):
         if to_adjust:
             for channel in to_avoid:
                 color.set(channel, util.NAN)
+
+
+def postdivide(color):
+    """Premultiply the given transparent color."""
+
+    if color.alpha >= 1.0:
+        return
+
+    channels = color.coords()
+    gamut = color._range
+    alpha = color.alpha
+    coords = []
+    for i, value in enumerate(channels):
+        a = gamut[i]
+
+        # Wrap the angle
+        if isinstance(a, Angle):
+            coords.append(value)
+            continue
+        coords.append(value / alpha if alpha != 0 else value)
+    color._coords = coords
+
+
+def premultiply(color):
+    """Premultiply the given transparent color."""
+
+    if color.alpha >= 1.0:
+        return
+
+    channels = color.coords()
+    gamut = color._range
+    alpha = color.alpha
+    coords = []
+    for i, value in enumerate(channels):
+        a = gamut[i]
+
+        # Wrap the angle
+        if isinstance(a, Angle):
+            coords.append(value)
+            continue
+        coords.append(value * alpha)
+    color._coords = coords
 
 
 def adjust_hues(color1, color2, hue):
@@ -240,7 +286,10 @@ class Interpolate:
             return self.update(obj)
         return obj
 
-    def interpolate(self, color, *, space="lab", out_space=None, progress=None, adjust=None, hue=util.DEF_HUE_ADJ):
+    def interpolate(
+        self, color, *, space="lab", out_space=None, progress=None, adjust=None, hue=util.DEF_HUE_ADJ,
+        premultiplied=False
+    ):
         """
         Return an interpolation function.
 
@@ -274,6 +323,10 @@ class Interpolate:
         if isinstance(color1, Cylindrical):
             adjust_hues(color1, color2, hue)
 
+        if premultiplied:
+            premultiply(color1)
+            premultiply(color2)
+
         coords1 = color1.coords()
         coords2 = color2.coords()
 
@@ -287,5 +340,6 @@ class Interpolate:
             coords2=coords2,
             create=color1,
             progress=progress,
-            outspace=outspace
+            outspace=outspace,
+            premultiplied=premultiplied
         )
