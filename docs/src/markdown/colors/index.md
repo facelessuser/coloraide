@@ -22,6 +22,8 @@
     color(hsv 0 0 100 / 1)
     >>> Color('color(hsv 0 0 100)')
     color(hsv 0 0 100 / 1)
+    >>> Color('color(hsv 0 0% 100%)')
+    color(hsv 0 0 100 / 1)
     ```
 
 ### sRGB
@@ -58,6 +60,10 @@
     color(srgb 1 1 1 / 1)
     >>> Color("rgb(255, 255, 255)")
     color(srgb 1 1 1 / 1)
+    >>> Color('color(srgb 100% 100% 100%)')
+    color(srgb 1 1 1 / 1)
+    >>> Color('color(srgb 1 1 1 / 1)')
+    color(srgb 1 1 1 / 1)
     ```
 
 ### HSL
@@ -87,6 +93,10 @@
     >>> Color("hsl(0 0% 100% / 1)")
     color(hsl 0 0 100 / 1)
     >>> Color("hsla(0, 0%, 100%, 1)")
+    color(hsl 0 0 100 / 1)
+    >>> Color("color(hsl 0 0% 100%)")
+    color(hsl 0 0 100 / 1)
+    >>> Color("color(hsl 0 0 100 / 1)")
     color(hsl 0 0 100 / 1)
     ```
 
@@ -120,6 +130,10 @@
     color(hwb 0 100 0 / 1)
     >>> Color("hwb(0, 100%, 0%, 1)")
     color(hwb 0 100 0 / 1)
+    >>> Color("color(hwb 0 100% 0%)")
+    color(hwb 0 100 0 / 1)
+    >>> Color("color(hwb 0 100 0 / 1)")
+    color(hwb 0 100 0 / 1)
     ```
 
 ### Lab
@@ -149,6 +163,10 @@
     >>> Color("lab(100%,  0,  0, 1)")
     color(lab 100 0 0 / 1)
     >>> Color("lab(100%  0  0 / 1)")
+    color(lab 100 0 0 / 1)
+    >>> Color("color(lab 100%  0  0)")
+    color(lab 100 0 0 / 1)
+    >>> Color("color(lab 100 0 0 / 1)")
     color(lab 100 0 0 / 1)
     ```
 
@@ -180,6 +198,10 @@
     color(lch 100 0 0 / 1)
     >>> Color("lch(100%  0  0 / 1)")
     color(lch 100 0 0 / 1)
+    >>> Color("color(lch 100%  0  0)")
+    color(lch 100 0 0 / 1)
+    >>> Color("color(lch 100 0 0 / 1)")
+    color(lch 100 0 0 / 1)
     ```
 
 ### XYZ
@@ -202,7 +224,7 @@
     ```pycon3
     >>> Color("xyz", [0.96422, 1, 0.82521])
     color(xyz 0.96422 1 0.82521 / 1)
-    >>> Color("color(xyz 0.96422 1 0.82521 / 1)")
+    >>> Color("color(xyz 0.96422 1 0.82521)")
     color(xyz 0.96422 1 0.82521 / 1)
     ```
 
@@ -228,6 +250,8 @@
     color(display-p3 1 1 1 / 1)
     >>> Color("color(display-p3 1 1 1)")
     color(display-p3 1 1 1 / 1)
+    >>> Color("color(display-p3 100% 100% 100%)")
+    color(display-p3 1 1 1 / 1)
     ```
 
 ### Adobe(r) RGB Compatible
@@ -251,6 +275,8 @@
     >>> Color("a98-rgb", [1, 1, 1])
     color(a98-rgb 1 1 1 / 1)
     >>> Color("color(a98-rgb 1 1 1)")
+    color(a98-rgb 1 1 1 / 1)
+    >>> Color("color(a98-rgb 100% 100% 100%)")
     color(a98-rgb 1 1 1 / 1)
     ```
 
@@ -276,6 +302,8 @@
     color(rec2020 1 1 1 / 1)
     >>> Color("color(rec2020 1 1 1)")
     color(rec2020 1 1 1 / 1)
+    >>> Color("color(rec2020 100% 100% 100%)")
+    color(rec2020 1 1 1 / 1)
     ```
 
 ### ProPhoto
@@ -299,5 +327,7 @@
     >>> Color("prophoto-rgb", [1, 1, 1])
     color(prophoto-rgb 1 1 1 / 1)
     >>> Color("color(prophoto-rgb 1 1 1)")
+    color(prophoto-rgb 1 1 1 / 1)
+    >>> Color("color(prophoto-rgb 100% 100% 100%)")
     color(prophoto-rgb 1 1 1 / 1)
     ```

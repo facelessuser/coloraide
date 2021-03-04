@@ -33,10 +33,9 @@ formats, and various other things.
 
 ColorAide can be installed via Python's `pip`:
 
-`pip install coloraide`.
-
-!!! warning "Availability"
-    ColorAide is not yet available on PyPI.
+```console
+$ pip install coloraide
+```
 
 --8<--
 refs.txt
