@@ -107,7 +107,7 @@ class Color:
             for space, space_class in self.CS_MAP.items():
                 s = color.lower()
                 if space == s and (not filters or s in filters):
-                    obj = space_class(data[:space_class._NUM_COLOR_CHANNELS] + [alpha])
+                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -313,7 +313,7 @@ class Color:
             names = set()
             result = getattr(self, "_color")
             if result is not None:
-                names = result._CHANNEL_NAMES
+                names = result.CHANNEL_NAMES
             # If requested attribute is a channel name, return the attribute from the Space instance.
             if name in names:
                 return getattr(result, name)
@@ -323,7 +323,7 @@ class Color:
 
         try:
             # See if we need to set the space specific channel attributes.
-            if name in self._color._CHANNEL_NAMES:
+            if name in self._color.CHANNEL_NAMES:
                 setattr(self._color, name, value)
                 return
         except AttributeError:

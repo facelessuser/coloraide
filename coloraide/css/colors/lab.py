@@ -8,9 +8,9 @@ from ... import util
 class LAB(generic.LAB):
     """LAB class."""
 
-    _DEF_VALUE = "lab(0% 0 0 / 1)"
+    DEF_VALUE = "lab(0% 0 0 / 1)"
     START = re.compile(r'(?i)\blab\(')
-    _MATCH = re.compile(
+    MATCH = re.compile(
         r"""(?xi)
         (?:
             \blab\(\s*
@@ -25,7 +25,7 @@ class LAB(generic.LAB):
         """.format(**parse.COLOR_PARTS)
     )
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -93,7 +93,7 @@ class LAB(generic.LAB):
         channels, end = super().match(string, start, fullmatch)
         if channels is not None:
             return channels, end
-        m = cls._MATCH.match(string, start)
+        m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
         return None, None

@@ -56,11 +56,11 @@ def xyz_to_lab(xyz):
 class LAB(Space):
     """LAB class."""
 
-    _SPACE = "lab"
-    _DEF_VALUE = "color(lab 0 0 0 / 1)"
-    _CHANNEL_NAMES = frozenset(["lightness", "a", "b", "alpha"])
-    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
-    _WHITE = convert.WHITES["D50"]
+    SPACE = "lab"
+    DEF_VALUE = "color(lab 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["lightness", "a", "b", "alpha"])
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D50"]
 
     _range = (
         GamutUnbound([Percent(0), Percent(100.0)]),  # Technically we could/should clamp the zero side.
@@ -68,7 +68,7 @@ class LAB(Space):
         GamutUnbound([-160, 160])  # No limit, but we could impose one +/-160?
     )
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

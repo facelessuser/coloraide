@@ -75,12 +75,12 @@ def xyz_to_lin_2020(xyz):
 class Rec2020(SRGB):
     """Rec 2020 class."""
 
-    _SPACE = "rec2020"
-    _DEF_VALUE = "color(rec2020 0 0 0 / 1)"
-    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
-    _WHITE = convert.WHITES["D65"]
+    SPACE = "rec2020"
+    DEF_VALUE = "color(rec2020 0 0 0 / 1)"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D65"]
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

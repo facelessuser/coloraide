@@ -77,11 +77,11 @@ def gam_srgb(rgb):
 class SRGB(Space):
     """SRGB class."""
 
-    _SPACE = "srgb"
-    _DEF_VALUE = "color(srgb 0 0 0 / 1)"
-    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
-    _CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])
-    _WHITE = convert.WHITES["D65"]
+    SPACE = "srgb"
+    DEF_VALUE = "color(srgb 0 0 0 / 1)"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])
+    WHITE = convert.WHITES["D65"]
 
     _range = (
         GamutBound([0.0, 1.0]),
@@ -89,7 +89,7 @@ class SRGB(Space):
         GamutBound([0.0, 1.0])
     )
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

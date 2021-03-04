@@ -79,12 +79,12 @@ def gam_prophoto(rgb):
 class ProPhoto_RGB(SRGB):
     """Pro Photo RGB class."""
 
-    _SPACE = "prophoto-rgb"
-    _DEF_VALUE = "color(prophoto-rgb 0 0 0 / 1)"
-    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
-    _WHITE = convert.WHITES["D50"]
+    SPACE = "prophoto-rgb"
+    DEF_VALUE = "color(prophoto-rgb 0 0 0 / 1)"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D50"]
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

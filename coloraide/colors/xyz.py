@@ -10,11 +10,11 @@ import re
 class XYZ(Space):
     """XYZ class."""
 
-    _SPACE = "xyz"
-    _DEF_VALUE = "color(xyz 0 0 0 / 1)"
-    _CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
-    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
-    _WHITE = convert.WHITES["D50"]
+    SPACE = "xyz"
+    DEF_VALUE = "color(xyz 0 0 0 / 1)"
+    CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D50"]
 
     _range = (
         GamutUnbound([0.0, 1.0]),
@@ -22,7 +22,7 @@ class XYZ(Space):
         GamutUnbound([0.0, 1.0])
     )
 
-    def __init__(self, color=_DEF_VALUE):
+    def __init__(self, color=DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
