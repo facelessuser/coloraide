@@ -186,5 +186,5 @@ def parse_version(ver, pre=False):
     return Version(major, minor, micro, release, pre, post, dev)
 
 
-__version_info__ = Version(0, 1, 6, ".dev")
+__version_info__ = Version(0, 1, 7, ".dev")
 __version__ = __version_info__._get_canonical()
