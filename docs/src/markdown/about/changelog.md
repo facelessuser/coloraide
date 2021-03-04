@@ -1,7 +1,7 @@
 # Changelog
 
-## Current
+## 0.1.0a1
 
-- Not yet released
+- **NEW**: Initial alpha release. Library is experimental and API is unstable.
 
 --8<-- "refs.txt"
