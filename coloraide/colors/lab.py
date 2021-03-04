@@ -8,7 +8,6 @@ from .. import util
 import re
 import math
 
-D50_REF_WHITE = [0.96422, 1.00000, 0.82521]  # D50 reference white
 KAPPA = 24389 / 27  # `29^3 / 3^3`
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 
