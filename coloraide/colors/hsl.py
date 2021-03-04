@@ -30,7 +30,7 @@ def srgb_to_hsl(rgb):
         else:
             h = (r - g) / c + 4.0
 
-    return convert.constrain_hue(h * 60.0), s * 100.0, l * 100.0
+    return HSL._constrain_hue(h * 60.0), s * 100.0, l * 100.0
 
 
 def hsl_to_srgb(hsl):
@@ -57,11 +57,12 @@ def hsl_to_srgb(hsl):
 class HSL(Cylindrical, Space):
     """HSL class."""
 
-    SPACE = "hsl"
-    DEF_BG = "color(hsl 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    GAMUT = "srgb"
+    _SPACE = "hsl"
+    _DEF_VALUE = "color(hsl 0 0 0 / 1)"
+    _CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _GAMUT = "srgb"
+    _WHITE = convert.WHITES["D65"]
 
     _range = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -69,7 +70,7 @@ class HSL(Cylindrical, Space):
         GamutBound([Percent(0.0), Percent(100.0)])
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

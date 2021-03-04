@@ -21,7 +21,7 @@ def lab_to_lch(lab):
     return (
         l,
         math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        convert.constrain_hue(math.atan2(b, a) * 180 / math.pi)
+        LCH._constrain_hue(math.atan2(b, a) * 180 / math.pi)
     )
 
 
@@ -45,10 +45,11 @@ def lch_to_lab(lch):
 class LCH(Cylindrical, Space):
     """LCH class."""
 
-    SPACE = "lch"
-    DEF_BG = "color(lch 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "lch"
+    _DEF_VALUE = "color(lch 0 0 0 / 1)"
+    _CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _WHITE = convert.WHITES["D50"]
 
     _range = (
         # I think chroma, specifically should be clamped.
@@ -60,7 +61,7 @@ class LCH(Cylindrical, Space):
         GamutUnbound([Angle(0.0), Angle(360.0)]),
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

@@ -1,6 +1,7 @@
 """Display-p3 color class."""
 from ._space import RE_DEFAULT_MATCH
 from .srgb import SRGB, lin_srgb, gam_srgb
+from .xyz import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -50,11 +51,12 @@ def gam_p3(rgb):
 class Display_P3(SRGB):
     """Display-p3 class."""
 
-    SPACE = "display-p3"
-    DEF_BG = "color(display-p3 0 0 0 / 1)"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "display-p3"
+    _DEF_VALUE = "color(display-p3 0 0 0 / 1)"
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _WHITE = convert.WHITES["D65"]
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -63,10 +65,10 @@ class Display_P3(SRGB):
     def _to_xyz(cls, rgb):
         """To XYZ."""
 
-        return convert.d65_to_d50(lin_p3_to_xyz(lin_p3(rgb)))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lin_p3_to_xyz(lin_p3(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return gam_p3(xyz_to_lin_p3(convert.d50_to_d65(xyz)))
+        return gam_p3(xyz_to_lin_p3(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz)))

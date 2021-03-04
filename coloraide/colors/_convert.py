@@ -1,11 +1,10 @@
 """Convert utilities."""
 from .. import util
 
-
-def constrain_hue(hue):
-    """Constrain hue to 0 - 360."""
-
-    return hue % 360
+WHITES = {
+    "D50": [0.96422, 1.00000, 0.82521],
+    "D65": [0.95047, 1.00000, 1.08883]
+}
 
 
 def d50_to_d65(xyz):
@@ -42,6 +41,25 @@ def d65_to_d50(xyz):
 
 class Convert:
     """Convert class."""
+
+    @classmethod
+    def _constrain_hue(cls, hue):
+        """Constrain hue to 0 - 360."""
+
+        return hue % 360
+
+    @classmethod
+    def _chromatic_adaption(cls, w1, w2, xyz):
+        """Chromatic adaption."""
+
+        if w1 == w2:
+            return xyz
+        elif w1 == WHITES["D50"] and w2 == WHITES["D65"]:
+            return d50_to_d65(xyz)
+        elif w1 == WHITES["D65"] and w2 == WHITES["D50"]:
+            return d65_to_d50(xyz)
+        else:
+            raise ValueError('Unknown white point encountered: {} -> {}'.format(str(w1), str(w2)))
 
     def convert(self, space, *, fit=False):
         """Convert to color space."""

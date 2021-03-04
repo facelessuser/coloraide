@@ -64,8 +64,8 @@ def prepare_coords(color, adjust=None):
             color.set(name, util.NAN)
 
     if adjust:
-        to_adjust = adjust & color.CHANNEL_NAMES
-        to_avoid = color.CHANNEL_NAMES - adjust
+        to_adjust = adjust & color._CHANNEL_NAMES
+        to_avoid = color._CHANNEL_NAMES - adjust
         if to_adjust:
             for channel in to_avoid:
                 color.set(channel, util.NAN)

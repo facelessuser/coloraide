@@ -2,9 +2,10 @@
 from ._space import Space
 from ._space import RE_DEFAULT_MATCH
 from ._gamut import GamutBound
+from .xyz import XYZ
 from . import _parse as parse
-from .. import util
 from . import _convert as convert
+from .. import util
 import re
 import math
 
@@ -76,9 +77,11 @@ def gam_srgb(rgb):
 class SRGB(Space):
     """SRGB class."""
 
-    SPACE = "srgb"
-    DEF_BG = "color(srgb 0 0 0 / 1)"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "srgb"
+    _DEF_VALUE = "color(srgb 0 0 0 / 1)"
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])
+    _WHITE = convert.WHITES["D65"]
 
     _range = (
         GamutBound([0.0, 1.0]),
@@ -86,9 +89,7 @@ class SRGB(Space):
         GamutBound([0.0, 1.0])
     )
 
-    CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])
-
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -167,10 +168,10 @@ class SRGB(Space):
     def _to_xyz(cls, rgb):
         """SRGB to XYZ."""
 
-        return convert.d65_to_d50(lin_srgb_to_xyz(lin_srgb(rgb)))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lin_srgb_to_xyz(lin_srgb(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """XYZ to SRGB."""
 
-        return gam_srgb(xyz_to_lin_srgb(convert.d50_to_d65(xyz)))
+        return gam_srgb(xyz_to_lin_srgb(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz)))

@@ -8,9 +8,9 @@ from ... import util
 class HWB(generic.HWB):
     """HWB class."""
 
-    DEF_BG = "hwb(0 0% 0% / 1)"
+    _DEF_VALUE = "hwb(0 0% 0% / 1)"
     START = re.compile(r'(?i)\bhwb\(')
-    MATCH = re.compile(
+    _MATCH = re.compile(
         r"""(?xi)
         \bhwb\(\s*
         (?:
@@ -23,7 +23,7 @@ class HWB(generic.HWB):
         """.format(**parse.COLOR_PARTS)
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -91,7 +91,7 @@ class HWB(generic.HWB):
         channels, end = super().match(string, start, fullmatch)
         if channels is not None:
             return channels, end
-        m = cls.MATCH.match(string, start)
+        m = cls._MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
         return None, None

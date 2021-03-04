@@ -24,7 +24,7 @@ def hsv_to_hsl(hsv):
     l = v * (1.0 - s / 2.0)
 
     return [
-        convert.constrain_hue(h),
+        HSV._constrain_hue(h),
         0.0 if (l == 0.0 or l == 1.0) else ((v - l) / min(l, 1.0 - l)) * 100,
         l * 100
     ]
@@ -44,7 +44,7 @@ def hsl_to_hsv(hsl):
     v = l + s * min(l, 1.0 - l)
 
     return [
-        convert.constrain_hue(h),
+        HSV._constrain_hue(h),
         0.0 if (v == 0.0) else 200.0 * (1.0 - l / v),
         100.0 * v
     ]
@@ -53,11 +53,12 @@ def hsl_to_hsv(hsl):
 class HSV(Cylindrical, Space):
     """HSL class."""
 
-    SPACE = "hsv"
-    DEF_BG = "color(hsv 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["hue", "saturation", "value", "alpha"])
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    GAMUT = "srgb"
+    _SPACE = "hsv"
+    _DEF_VALUE = "color(hsv 0 0 0 / 1)"
+    _CHANNEL_NAMES = frozenset(["hue", "saturation", "value", "alpha"])
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _GAMUT = "srgb"
+    _WHITE = convert.WHITES["D65"]
 
     _range = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -65,7 +66,7 @@ class HSV(Cylindrical, Space):
         GamutBound([Percent(0.0), Percent(100.0)])
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

@@ -1,6 +1,7 @@
 """Rec 2020 color class."""
 from ._space import RE_DEFAULT_MATCH
 from .srgb import SRGB
+from .xyz import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -74,11 +75,12 @@ def xyz_to_lin_2020(xyz):
 class Rec2020(SRGB):
     """Rec 2020 class."""
 
-    SPACE = "rec2020"
-    DEF_BG = "color(rec2020 0 0 0 / 1)"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "rec2020"
+    _DEF_VALUE = "color(rec2020 0 0 0 / 1)"
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _WHITE = convert.WHITES["D65"]
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -87,10 +89,10 @@ class Rec2020(SRGB):
     def _to_xyz(cls, rgb):
         """To XYZ."""
 
-        return convert.d65_to_d50(lin_2020_to_xyz(lin_2020(rgb)))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lin_2020_to_xyz(lin_2020(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return gam_2020(xyz_to_lin_2020(convert.d50_to_d65(xyz)))
+        return gam_2020(xyz_to_lin_2020(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz)))

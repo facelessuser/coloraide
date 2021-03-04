@@ -1,6 +1,7 @@
 """A98 RGB color class."""
 from ._space import RE_DEFAULT_MATCH
-from . import srgb
+from .srgb import SRGB
+from .xyz import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -50,14 +51,15 @@ def gam_a98rgb(rgb):
     return [math.copysign(math.pow(abs(val), 256 / 563), val) for val in rgb]
 
 
-class A98_RGB(srgb.SRGB):
+class A98_RGB(SRGB):
     """A98 RGB class."""
 
-    SPACE = "a98-rgb"
-    DEF_BG = "color(a98-rgb 0 0 0 / 1)"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "a98-rgb"
+    _DEF_VALUE = "color(a98-rgb 0 0 0 / 1)"
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _WHITE = convert.WHITES["D65"]
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -66,10 +68,10 @@ class A98_RGB(srgb.SRGB):
     def _to_xyz(cls, rgb):
         """To XYZ."""
 
-        return convert.d65_to_d50(lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return gam_a98rgb(xyz_to_lin_a98rgb(convert.d50_to_d65(xyz)))
+        return gam_a98rgb(xyz_to_lin_a98rgb(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz)))

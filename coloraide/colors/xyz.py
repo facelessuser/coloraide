@@ -2,6 +2,7 @@
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . import _parse as parse
+from . import _convert as convert
 from .. import util
 import re
 
@@ -9,10 +10,11 @@ import re
 class XYZ(Space):
     """XYZ class."""
 
-    SPACE = "xyz"
-    DEF_BG = "color(xyz 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    _SPACE = "xyz"
+    _DEF_VALUE = "color(xyz 0 0 0 / 1)"
+    _CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _WHITE = convert.WHITES["D50"]
 
     _range = (
         GamutUnbound([0.0, 1.0]),
@@ -20,7 +22,7 @@ class XYZ(Space):
         GamutUnbound([0.0, 1.0])
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

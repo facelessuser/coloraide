@@ -11,9 +11,9 @@ RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.for
 class SRGB(generic.SRGB):
     """SRGB class."""
 
-    DEF_BG = "rgb(0 0 0 / 1)"
+    _DEF_VALUE = "rgb(0 0 0 / 1)"
     START = re.compile(r'(?i)\brgba?\(')
-    MATCH = re.compile(
+    _MATCH = re.compile(
         r"""(?xi)
         (?:
             # RGB syntax
@@ -45,7 +45,7 @@ class SRGB(generic.SRGB):
 
     HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)\b".format(**parse.COLOR_PARTS))
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)
@@ -193,7 +193,7 @@ class SRGB(generic.SRGB):
         channels, end = super().match(string, start, fullmatch)
         if channels is not None:
             return channels, end
-        m = cls.MATCH.match(string, start)
+        m = cls._MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
                 string = css_names.name2hex(string[m.start(0):m.end(0)])

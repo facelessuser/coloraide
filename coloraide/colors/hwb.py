@@ -18,7 +18,7 @@ def srgb_to_hwb(rgb):
     h, s, v = HSV._from_srgb(rgb)
     w = v * (100.0 - s) / 100.0
     b = 100.0 - v
-    return convert.constrain_hue(h), w, b
+    return HWB._constrain_hue(h), w, b
 
 
 def hwb_to_srgb(hwb):
@@ -38,11 +38,12 @@ def hwb_to_srgb(hwb):
 class HWB(Cylindrical, Space):
     """HWB class."""
 
-    SPACE = "hwb"
-    DEF_BG = "color(hwb 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["hue", "blackness", "whiteness", "alpha"])
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    GAMUT = "srgb"
+    _SPACE = "hwb"
+    _DEF_VALUE = "color(hwb 0 0 0 / 1)"
+    _CHANNEL_NAMES = frozenset(["hue", "blackness", "whiteness", "alpha"])
+    _DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=_SPACE))
+    _GAMUT = "srgb"
+    _WHITE = convert.WHITES["D65"]
 
     _range = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -50,7 +51,7 @@ class HWB(Cylindrical, Space):
         GamutBound([Percent(0.0), Percent(100.0)])
     )
 
-    def __init__(self, color=DEF_BG):
+    def __init__(self, color=_DEF_VALUE):
         """Initialize."""
 
         super().__init__(color)

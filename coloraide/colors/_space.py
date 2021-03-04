@@ -34,11 +34,11 @@ def split_channels(cls, color):
     if len(split) > 1:
         alpha = parse.norm_alpha_channel(split[-1])
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-        if c and i < cls.NUM_COLOR_CHANNELS:
+        if c and i < cls._NUM_COLOR_CHANNELS:
             is_percent = isinstance(cls._range[i][0], Percent)
             channels.append(parse.norm_color_channel(c, not is_percent))
-    if len(channels) < cls.NUM_COLOR_CHANNELS:
-        diff = cls.NUM_COLOR_CHANNELS - len(channels)
+    if len(channels) < cls._NUM_COLOR_CHANNELS:
+        diff = cls._NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)
     channels.append(alpha if alpha is not None else 1.0)
     return channels
@@ -47,16 +47,20 @@ def split_channels(cls, color):
 class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut.Gamut, convert.Convert):
     """Base color space object."""
 
-    DEF_BG = ""
-    SPACE = ""
-    NUM_COLOR_CHANNELS = 3
-    CHANNEL_NAMES = frozenset(["alpha"])
+    # Default color value (black)
+    _DEF_VALUE = ""
+    # Color space name
+    _SPACE = ""
+    # Number of channels
+    _NUM_COLOR_CHANNELS = 3
+    # Channel names
+    _CHANNEL_NAMES = frozenset(["alpha"])
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
-    DEFAULT_MATCH = ""
+    _DEFAULT_MATCH = ""
     # Match pattern variable for classes to override so we can also
     # maintain the default and other alternatives.
-    MATCH = ""
+    _MATCH = ""
     # Should this color be mapped in a different space? Only when set to a string (specifying a color space) will the
     # default gamut mapping be overridden by the specified color space.
     #
@@ -70,14 +74,16 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     #   Since gamut mapping forces "in gamut" checks without thresholds, if a color is forced into it's parent gamut,
     #   the coordinates for the derived color space should be within spec. We only normalize angles outside of 0-360
     #   after the parent color space is fit.
-    GAMUT = None
+    _GAMUT = None
+    # White point
+    _WHITE = convert.WHITES["D50"]
 
     def __init__(self, color=None):
         """Initialize."""
 
         self.parent = None
         self._alpha = 0.0
-        self._coords = [0.0] * self.NUM_COLOR_CHANNELS
+        self._coords = [0.0] * self._NUM_COLOR_CHANNELS
         if isinstance(color, Space):
             self.parent = color.parent
 
@@ -125,7 +131,13 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     def space(cls):
         """Get the color space."""
 
-        return cls.SPACE
+        return cls._SPACE
+
+    @classmethod
+    def white(cls):
+        """Get the white color for this color space."""
+
+        return cls._WHITE
 
     @property
     def alpha(self):
@@ -142,7 +154,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
 
-        if name not in self.CHANNEL_NAMES:
+        if name not in self._CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
 
         setattr(self, name, value)
@@ -151,7 +163,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     def get(self, name):
         """Get the given channel's value."""
 
-        if name not in self.CHANNEL_NAMES:
+        if name not in self._CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
         return getattr(self, name)
 
@@ -190,7 +202,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     def match(cls, string, start=0, fullmatch=True):
         """Match a color by string."""
 
-        m = cls.DEFAULT_MATCH.match(string, start)
+        m = cls._DEFAULT_MATCH.match(string, start)
         if (
             m is not None and
             (
