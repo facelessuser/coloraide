@@ -1,6 +1,7 @@
 """Colors."""
 from .hsv import HSV
 from .srgb import SRGB
+from .srgb_linear import SRGB_Linear
 from .hsl import HSL
 from .hwb import HWB
 from .lab import LAB
@@ -18,7 +19,7 @@ DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
 
 SUPPORTED = (
-    HSL, HWB, LAB, LCH, SRGB, HSV,
+    HSL, HWB, LAB, LCH, SRGB, SRGB_Linear, HSV,
     Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
 )
 

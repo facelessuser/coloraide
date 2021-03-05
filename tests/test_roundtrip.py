@@ -29,7 +29,12 @@ class TestRoundTrip(unittest.TestCase):
     def test_srgb(self):
         """Test sRGB."""
 
-        self.assert_round_trip("rgb(10% 200% 50%)")
+        self.assert_round_trip("rgb(10% 100% 50%)")
+
+    def test_srgb_linear(self):
+        """Test sRGB Linear."""
+
+        self.assert_round_trip("color(srgb-linear 10% 100% 50%)")
 
     def test_hsl(self):
         """Test HSL."""
