@@ -19,21 +19,18 @@ from . _cylindrical import Cylindrical
 from . _range import Angle
 
 
-def overlay(c1, c2, a1, a2, a0, angle=False):
+def overlay(c1, c2, a1, a2, a0):
     """Overlay one color channel over the other."""
 
     if math.isnan(c1) and math.isnan(c2):
         return 0.0
     elif math.isnan(c1):
-        return c2 if angle else c2 * a2
+        return c2 * a2
     elif math.isnan(c2):
-        return c1 if angle else c1 * a1
+        return c1 * a1
 
-    if angle:
-        return c1 + (c2 - c1) * (1 - a1)
-    else:
-        c0 = c1 * a1 + c2 * a2 * (1 - a1)
-        return c0 / a0 if a0 else c0
+    c0 = c1 * a1 + c2 * a2 * (1 - a1)
+    return c0 / a0 if a0 else c0
 
 
 def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
@@ -90,7 +87,7 @@ def postdivide(color):
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i]
+        a = gamut[i][0]
 
         # Wrap the angle
         if isinstance(a, Angle):
@@ -111,7 +108,7 @@ def premultiply(color):
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i]
+        a = gamut[i][0]
 
         # Wrap the angle
         if isinstance(a, Angle):
@@ -177,8 +174,10 @@ class Interpolate:
         This attempts to give a color that represents what the eye
         sees with the transparent color against the given background.
 
-        Best to use in linear color spaces, but there are no restrictions
-        for using it in cylindrical.
+        Some spaces will require the action to take place in a different
+        space. For instance, cylindrical representations of sRGB (HSL, HSV, HWB),
+        will request interpolation to be done under sRGB. This is because alpha
+        compositing does not work well in cylindrical spaces.
         """
 
         current_space = self.space()
@@ -194,26 +193,28 @@ class Interpolate:
             if this is None:
                 raise ValueError('Invalid colorspace value: {}'.format(space))
 
+            # Some spaces, like those that are cylindrical, will not work well,
+            # so a space can specify a rectangular space that is better suited.
+            if this.ALPHA_COMPOSITE is not None:
+                this = this.convert(this.ALPHA_COMPOSITE, fit=True)
+                background = background.convert(background.ALPHA_COMPOSITE, fit=True)
+                if this.space() != background.space():  # pragma: no cover
+                    # Catch the rare event that two spaces request incompatible spaces (maybe some weird
+                    # derived class instance).
+                    raise ValueError('Cannot overlay space {} onto space {}'.format(this.space(), background.space()))
+
             # Get the coordinates and indexes of valid hues
             prepare_coords(this)
             prepare_coords(background)
 
-            # Adjust hues if we have two valid hues
-            if isinstance(this, Cylindrical):
-                adjust_hues(this, background, util.DEF_HUE_ADJ)
-
             coords1 = this.coords()
             coords2 = background.coords()
-            gamut = this._range
             a1 = this.alpha
             a2 = background.alpha
             a0 = a1 + a2 * (1.0 - a1)
             coords = []
-            # Avoid multiplying angles and don't mix them the same as non-angles
             for i, value in enumerate(coords1):
-                g = gamut[i]
-                is_angle = isinstance(g, Angle)
-                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0, angle=is_angle))
+                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0))
             this._coords = coords
             this.alpha = a0
         else:

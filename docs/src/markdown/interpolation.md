@@ -210,8 +210,12 @@ rgb(100% 0.00006% 0.00001%)
 
 The `overlay` method allows a transparent color to be overlaid on top of another color creating the composite of the
 two. To perform an overlay, a background color must be provided to the color along with an optional color space. If a
-color is to be overlaid within a smaller color space, the colors will be mapped to the smaller space. It is probably,
-not recommended to overlay in cylindrical color spaces, but there is no restrictions prohibiting such actions.
+color is to be overlaid within a smaller color space, the colors will be mapped to the smaller space.
+
+!!! Note "Cylindrical Spaces"
+    Certain color spaces, like cylindrical spaces (HSV, HSL, HWB, and LCH), will not be overlaid in their own space.
+    This is because these spaces do not work well with the overlay algorithm. Instead, such spaces will be mapped to
+    more suitable spaces; such as, HSL, HSV, and HWB to sRGB and LCH to LAB.
 
 In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)` and overlay it on the color `#!color black`. This
 yields the color: `#!color rgb(127.5 0 0)`.

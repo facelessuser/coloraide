@@ -49,6 +49,7 @@ class LCH(Cylindrical, Space):
     DEF_VALUE = "color(lch 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    ALPHA_COMPOSITE = "lab"
     WHITE = convert.WHITES["D50"]
 
     _range = (
