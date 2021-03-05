@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a3
+
+- **FIX**: Color object API was missing the ability to receive the `premultiplied` argument.
+
 ## 0.1.0a2
 
 - **NEW**: Expose access to `srgb-linear` color space. This is mainly for development and testing and not listed in docs
