@@ -19,17 +19,21 @@ from . _cylindrical import Cylindrical
 from . _range import Angle
 
 
-def overlay(c1, c2, a1, a2):
+def overlay(c1, c2, a1, a2, a0, angle=False):
     """Overlay one color channel over the other."""
 
     if math.isnan(c1) and math.isnan(c2):
         return 0.0
     elif math.isnan(c1):
-        return c2 * a2
+        return c2 if angle else c2 * a2
     elif math.isnan(c2):
-        return c1 * c1
+        return c1 if angle else c1 * a1
 
-    return c1 * a1 + c2 * a2 * (1 - a1)
+    if angle:
+        return c1 + (c2 - c1) * (1 - a1)
+    else:
+        c0 = c1 * a1 + c2 * a2 * (1 - a1)
+        return c0 / a0 if a0 else c0
 
 
 def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
@@ -198,14 +202,20 @@ class Interpolate:
             if isinstance(this, Cylindrical):
                 adjust_hues(this, background, util.DEF_HUE_ADJ)
 
-            # Blend the channels using the alpha channel values as the factors
-            # Afterwards, blend the alpha channels. This is different than blend.
             coords1 = this.coords()
             coords2 = background.coords()
+            gamut = this._range
             a1 = this.alpha
             a2 = background.alpha
-            this._coords = [overlay(c1, coords2[i], a1, a2) for i, c1 in enumerate(coords1)]
-            this.alpha = a1 + a2 * (1.0 - a1)
+            a0 = a1 + a2 * (1.0 - a1)
+            coords = []
+            # Avoid multiplying angles and don't mix them the same as non-angles
+            for i, value in enumerate(coords1):
+                g = gamut[i]
+                is_angle = isinstance(g, Angle)
+                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0, angle=is_angle))
+            this._coords = coords
+            this.alpha = a0
         else:
             this = self
 
