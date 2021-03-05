@@ -3,6 +3,7 @@
 ## 0.1.0a2
 
 - **FIX**: Handle cylindrical spaces better in overlay (still not recommended to use cylindrical).
+- **FIX**: Better overlay logic when overlaying transparent color on transparent background.
 - **FIX**: Add support for premultiplied alpha when interpolating via `premultiplied` option.
 
 ## 0.1.0a1
