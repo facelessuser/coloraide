@@ -3,7 +3,6 @@ from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . import _parse as parse
 from . import _convert as convert
-from .. import util
 import re
 
 
@@ -91,8 +90,3 @@ class XYZ(Space):
             return parse.norm_alpha_channel(value)
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    def to_string(self, *, options=None, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
-        """To string."""
-
-        return super().to_string(alpha=alpha, precision=precision, fit=fit)

@@ -183,3 +183,27 @@ or color names that are part of color variables (`#!css var(--color-red)`).
     Found rgb(255 0 51) @ index 34
     Found lch(90% 50 50) @ index 46
     ```
+
+## Override Default Settings
+
+ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
+mode, etc. All of these options can be set on-demand when calling certain functions. When not explicitly set, some
+default is used. If needed, the defaults can be changed for an entire application or library. To do so, simply subclass
+the `Color` object and override the defaults. Then the new derived class can be used throughout an application or
+library.
+
+```pycon3
+>>> Color('red').convert('lch').to_string()
+'lch(54.288% 106.83 40.853)'
+>>> class Color2(Color):
+...     PRECISION = 3
+...
+>>> Color2('red').convert('lch').to_string()
+'lch(54.3% 107 40.9)'
+```
+
+Properties  | Description
+----------- | -----------
+`FIT`       | The default gamut mapping method used by the [`Color`](#color) object.
+`DELTA_E`   | The default delta E algorithm used for gamut distancing calls internally.
+`PRECISION` | The default precision for string outputs.

@@ -29,16 +29,20 @@ class HWB(generic.HWB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
+        self, *, alpha=None, precision=None, fit=True, **kwargs
     ):
         """Convert to CSS."""
+
+        if precision is None:
+            precision = self.parent.PRECISION
 
         options = kwargs
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
-        coords = self.fit_coords() if fit else self.coords()
+        a = util.no_nan(self.alpha)
+        alpha = alpha is not False and (alpha is True or a < 1.0)
+        coords = util.no_nan(self.fit_coords() if fit else self.coords())
 
         if alpha:
             template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"
@@ -93,5 +97,5 @@ class HWB(generic.HWB):
             return channels, end
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
+            return cls.null_adjust(cls.split_channels(string[m.start(0):m.end(0)])), m.end(0)
         return None, None

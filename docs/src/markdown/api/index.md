@@ -464,53 +464,25 @@ Parameters
     `name`     |                    | Channel name or color space and channel name to retrieve value from.
     `value`    |                    | A numerical value, a string value accepted by the specified color space, or a function.
 
-### `is_hue_null`
+### `is_nan`
 
 ```py3
-def is_hue_null(self, space=None):
+def is_nan(self, name):
 ```
 
-If the current color space is cylindrical, this will return whether the hue is considered null based on the color
-space's criteria for null hues. A different color space can be provided via `space` to check the hue in a different
-color space.
-
-If the color space being evaluated is not cylindrical, `#!py3 False` will be returned.
+Retrieves the coordinate value from the specified channel and checks whether the value is `NaN`. Channel must be a
+channel name in the current color space or a channel name in the specified color space using the syntax:
+`space.channel`.
 
 Return
 : 
-    Returns a boolean indicating whether the specified color space's hue is null. If the color space does not have a hue
-    channel, `#!py3 False` will be returned.
+    Returns a boolean indicating whether the specified color space's channel is `NaN`.
 
 Parameters
 : 
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
-    `space`    | `#!py3 None`       | A string indicating what color space the hue should be evaluated in. If `#!py3 None`, the current color space will be used.
-
-
-### `get_default`
-
-```py3
-def get_default(self, name):
-```
-
-While mainly used internally, `get_default` exposes access to the certain default settings. Currently only `fit` and
-`delta-e` are exposed here.
-
-Name      | Description
---------- | -----------
-`fit`     | The default gamut mapping method used by the [`Color`](#color) object.
-`delta-e` | The default delta E algorithm used for gamut distancing calls internally.
-
-Return
-: 
-    Returns the default value of the requested default option.
-
-Parameters
-: 
-    Parameters | Defaults           | Description
-    ---------- | ------------------ | -----------
-    `name`     |                    | Name of default option to access.
+    `name`     |                    | A string indicating what channel property to check.
 
 ### Dynamic Channel Properties
 

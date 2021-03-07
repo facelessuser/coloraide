@@ -66,12 +66,10 @@
 
 span.swatch:not(.swatch-gradient):hover {
   z-index: 2;
-  transform: scale(1.7);
-  translateY(10%);
+  transform: scale(1.7) translateY(5%);
 }
 
 span.swatch.swatch-gradient:hover {
   z-index: 2;
-  transform: scale(1.3);
-  translateY(10%);
+  transform: scale(1.3) translateY(5%);
 }

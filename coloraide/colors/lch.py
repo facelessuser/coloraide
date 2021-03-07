@@ -10,7 +10,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.015
+ACHROMATIC_THRESHOLD = 0.02
 
 
 def lab_to_lch(lab):
@@ -18,17 +18,24 @@ def lab_to_lch(lab):
 
     l, a, b = lab
 
-    return (
-        l,
-        math.sqrt(math.pow(a, 2) + math.pow(b, 2)),
-        LCH._constrain_hue(math.atan2(b, a) * 180 / math.pi)
-    )
+    c = math.sqrt(math.pow(a, 2) + math.pow(b, 2))
+    h = math.atan2(b, a) * 180 / math.pi
+
+    # Algorithm is dependent on the actual value, but at the same time,
+    # we want to treat it as null. Cast the actual value as null to avoid
+    # messing things up in interpolation.
+    if c < ACHROMATIC_THRESHOLD:
+        h = util.NaN
+
+    test = [l, c, LCH._constrain_hue(h)]
+    return test
 
 
 def lch_to_lab(lch):
     """LCH to LAB."""
 
     l, c, h = lch
+    h = util.no_nan(h)
 
     # If, for whatever reason (mainly direct user input),
     # if chroma is less than zero, clamp to zero.
@@ -85,12 +92,6 @@ class LCH(Cylindrical, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def is_hue_null(self):
-        """Test if hue is null."""
-
-        l, c, h = self.coords()
-        return c < ACHROMATIC_THRESHOLD
-
     def hue_index(self):
         """Get hue index."""
 
@@ -133,6 +134,14 @@ class LCH(Cylindrical, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
+    def null_adjust(cls, coords):
+        """On color update."""
+
+        if coords[1] < ACHROMATIC_THRESHOLD:
+            coords[2] = util.NaN
+        return coords
+
+    @classmethod
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
@@ -144,11 +153,6 @@ class LCH(Cylindrical, Space):
             return parse.norm_alpha_channel(value)
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
-        """To string."""
-
-        return super().to_string(alpha=alpha, precision=precision, fit=fit)
 
     @classmethod
     def _to_lab(cls, lch):

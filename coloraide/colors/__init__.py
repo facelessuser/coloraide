@@ -12,7 +12,6 @@ from .prophoto_rgb import ProPhoto_RGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .. import util
-from ._cylindrical import Cylindrical
 import functools
 
 DEF_FIT = "lch-chroma"
@@ -54,33 +53,19 @@ class Color:
 
     CS_MAP = {obj.space(): obj for obj in SUPPORTED}
 
+    PRECISION = util.DEF_PREC
+    FIT = util.DEF_FIT
+    DELTA_E = util.DEF_DELTA_E
+
     def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Initialize."""
 
-        self.defaults = {
-            "fit": DEF_FIT,
-            "delta-e": DEF_DELTA_E
-        }
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
-    def is_hue_null(self, space=None):
-        """Check if hue is treated as null."""
+    def is_nan(self, name):
+        """Check if channel is NaN."""
 
-        if space is None:
-            space = self.space()
-        else:
-            space = space.lower()
-
-        this = self if self.space() == space else self.convert(space)
-        if isinstance(this._color, Cylindrical):
-            return this._color.is_hue_null()
-        else:
-            return False
-
-    def get_default(self, name):
-        """Get default."""
-
-        return self.defaults[name]
+        return util.is_nan(self.get(name))
 
     def _attach(self, color):
         """Attach the this objects convert space to the color."""
