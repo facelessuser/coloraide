@@ -14,8 +14,8 @@ mapping the color to one that does fit. This "fitting" of the color from one gam
 A color can be checked to see if it fits in its own gamut or the gamut of another color space. Some color spaces may
 have suggested limits for usability purposes, but may not have actual limits.
 
-Let's assume we may have a color `#!color rgb(30% 105% 0%)` which is not in its own gamut as the blue channel exceeds
-the sRGB limit of `100%`. We can check this via the `in_gamut` method, and we can see that it is not in gamut.
+Let's assume we have a color `#!color rgb(30% 105% 0%)` which is not in its own gamut as the blue channel exceeds the
+sRGB limit of `100%`. We can check this via the `in_gamut` method, and we can see that it is not in gamut.
 
 ```pycon3
 >>> Color("rgb(30% 105% 0%)").in_gamut()
@@ -32,7 +32,7 @@ False
 
 ## Mapping Colors
 
-The recommended approach for fitting/mapping a color is to compress the chroma while in the Lch color space (overly
+The recommended approach for fitting/mapping a color is to compress the chroma while in the LCH color space (overly
 simplified). This is the approach that our reference ([`colorjs`](https://colorjs.io/)) chose, so we ported it over here
 as well.
 
