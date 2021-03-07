@@ -71,7 +71,7 @@ def lch_chroma(base, color):
 def clip(base, color):
     """Gamut clipping."""
 
-    channels = color.coords()
+    channels = util.no_nan(color.coords())
     gamut = color._range
     fit = []
 
@@ -97,7 +97,7 @@ def clip(base, color):
 def norm_angles(color):
     """Normalize angles."""
 
-    channels = color.coords()
+    channels = util.no_nan(color.coords())
     gamut = color._range
     fit = []
     for i, value in enumerate(channels):
@@ -120,7 +120,7 @@ class Gamut:
         """Get coordinates within this space or fit to another space."""
 
         if method is None:
-            method = self.get_default("fit")
+            method = self.parent.FIT
 
         space = (self.space() if space is None else space).lower()
         method = self.space() if method is None else method
@@ -134,7 +134,7 @@ class Gamut:
         """Fit the gamut using the provided method."""
 
         if method is None:
-            method = self.get_default("fit")
+            method = self.parent.FIT
 
         this = self if in_place else self.clone()
 

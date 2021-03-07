@@ -137,11 +137,6 @@ class LAB(Space):
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
 
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
-        """To string."""
-
-        return super().to_string(alpha=alpha, precision=precision, fit=fit)
-
     @classmethod
     def _to_xyz(cls, lab):
         """To XYZ."""

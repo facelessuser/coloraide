@@ -5,7 +5,7 @@ import numbers
 import re
 
 RE_FLOAT_TRIM = re.compile(r'^(?P<keep>-?\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
-NAN = float('nan')
+NaN = float('nan')
 INF = float('inf')
 ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
@@ -14,12 +14,29 @@ DEF_ALPHA = 1.0
 DEF_MIX = 0.5
 DEF_HUE_ADJ = "shorter"
 DEF_DISTANCE_SPACE = "lab"
+DEF_FIT = "lch-chroma"
+DEF_DELTA_E = "76"
 
 
 def is_number(value):
     """Check if value is a number."""
 
     return isinstance(value, numbers.Number)
+
+
+def is_nan(value):
+    """Print is "not a number"."""
+
+    return math.isnan(value)
+
+
+def no_nan(value):
+    """Convert list of numbers or single number to valid numbers."""
+
+    if is_number(value):
+        return 0.0 if is_nan(value) else value
+    else:
+        return [(0.0 if is_nan(x) else x) for x in value]
 
 
 def dot(a, b):

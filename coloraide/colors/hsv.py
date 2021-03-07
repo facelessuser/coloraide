@@ -90,12 +90,6 @@ class HSV(Cylindrical, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def is_hue_null(self):
-        """Test if hue is null."""
-
-        h, s, v = self.coords()
-        return s < util.ACHROMATIC_THRESHOLD
-
     @property
     def hue(self):
         """Hue channel."""
@@ -133,6 +127,14 @@ class HSV(Cylindrical, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
+    def null_adjust(cls, coords):
+        """On color update."""
+
+        if coords[1] == 0:
+            coords[0] = util.NaN
+        return coords
+
+    @classmethod
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
@@ -144,11 +146,6 @@ class HSV(Cylindrical, Space):
             return parse.norm_alpha_channel(value)
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
-        """To string."""
-
-        return super().to_string(alpha=alpha, precision=precision, fit=fit)
 
     @classmethod
     def _to_xyz(cls, hsv):

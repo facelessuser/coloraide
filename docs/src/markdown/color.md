@@ -36,7 +36,7 @@ So in the example above, the raw data is parsed, and we get a transparent color 
 We can also pass in other color objects, which is really only useful if we've subclassed the `Color` object and want
 to cast the object between the classes.
 
-The same color creation can be preformed from a color's `new` class method as well. New accepts the same inputs
+The same color creation can be preformed from a color's `new` class method as well. `new` accepts the same inputs
 as the class object itself.
 
 ```pycon3
@@ -102,7 +102,7 @@ color(lch 50 50 130 / 1)
 ## Converting
 
 Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
-set `True`.
+set `True`, in which case the current color will be mutated to the new converted color.
 
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, we
 could simply call the `convert` method. In the example below, we convert the color `#!color yellow`, which is in the
@@ -115,9 +115,9 @@ color(lab 97.607 -15.753 93.388 / 1)
 
 ## Color Matching
 
-Color objects can take in raw data points with a color space name or CSS style inputs. This CSS style input logic is
-exposed via the `match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The
-`ColorMatch` object will have the matched color as a `Color` object, and the start and end points it was located at.
+Color objects can take in raw data points or a CSS style string input. The string matching logic is exposed via the
+`match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The `ColorMatch`
+object will have the matched color as a `Color` object, and the `start` and `end` points it was located at.
 
 ```pycon3
 >>> Color.match("red")
@@ -183,3 +183,27 @@ or color names that are part of color variables (`#!css var(--color-red)`).
     Found rgb(255 0 51) @ index 34
     Found lch(90% 50 50) @ index 46
     ```
+
+## Override Default Settings
+
+ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
+mode, etc. All of these options can be set on-demand when calling certain functions. When not explicitly set, some
+default is used. If needed, the defaults can be changed for an entire application or library. To do so, simply subclass
+the `Color` object and override the defaults. Then the new derived class can be used throughout an application or
+library.
+
+```pycon3
+>>> Color('red').convert('lch').to_string()
+'lch(54.288% 106.83 40.853)'
+>>> class Color2(Color):
+...     PRECISION = 3
+...
+>>> Color2('red').convert('lch').to_string()
+'lch(54.3% 107 40.9)'
+```
+
+Properties  | Description
+----------- | -----------
+`FIT`       | The default gamut mapping method used by the [`Color`](#color) object.
+`DELTA_E`   | The default delta E algorithm used for gamut distancing calls internally.
+`PRECISION` | The default precision for string outputs.

@@ -80,3 +80,37 @@ transform the color `#!color pink` to `#!color rgb(255 249.6 203)`.
 >>> Color("pink").set('green', lambda g: g * 1.3).to_string()
 'rgb(255 249.6 203)'
 ```
+
+## Checking Null Hues
+
+Cylindrical colors that offer a `hue` property can sometimes return `NaN` for a hue. This is usually because the hue
+is undefined. For example, the color `#!color hsl(360, 0% 100%)`, while assigned a hue, does not actually exhibit any
+real hue since saturation is 0. Essentially, hue could be set to anything, and it would still have no affect on the
+actual color. So, ColorAide will actually set hue to `NaN` (or "not a number"). `NaN` is treated as a zero on output.
+
+```pycon3
+>>> color = Color('hsl(360 0% 100%)')
+>>> color
+color(hsl 0 0 100 / 1)
+>>> color.coords()
+[nan, 0.0, 100.0]
+```
+
+Because `NaN` are not numbers, these values will not be included in color interpolation, and these values cannot be
+added, multiplied, or take part in any real math operations. All math operations performed on `NaN` simply return `NaN`.
+
+For this reason, it is useful to check if a hue is `NaN`. This can be done with the `is_nan` function. You can simply
+give `is_nan` the property you wish to check, and it will return either `#!py3 True` or `#!py3 False`.
+
+```pycon3
+>>> Color('hsl(360 0% 100%)').is_nan('hue')
+True
+```
+
+This is equivalent to using the `math` library and comparing the value directly:
+
+```pycon3
+>>> import math
+>>> math.isnan(Color('hsl(360 0% 100%)').hue)
+True
+```

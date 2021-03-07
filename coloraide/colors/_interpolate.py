@@ -22,11 +22,11 @@ from . _range import Angle
 def overlay(c1, c2, a1, a2, a0):
     """Overlay one color channel over the other."""
 
-    if math.isnan(c1) and math.isnan(c2):
+    if util.is_nan(c1) and util.is_nan(c2):
         return 0.0
-    elif math.isnan(c1):
+    elif util.is_nan(c1):
         return c2 * a2
-    elif math.isnan(c2):
+    elif util.is_nan(c2):
         return c1 * a1
 
     c0 = c1 * a1 + c2 * a2 * (1 - a1)
@@ -39,11 +39,11 @@ def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
     coords = []
     for i, c1 in enumerate(coords1):
         c2 = coords2[i]
-        if math.isnan(c1) and math.isnan(c2):
+        if util.is_nan(c1) and util.is_nan(c2):
             value = 0.0
-        elif math.isnan(c1):
+        elif util.is_nan(c1):
             value = c2
-        elif math.isnan(c2):
+        elif util.is_nan(c2):
             value = c1
         else:
             value = c1 + (c2 - c1) * (p if progress is None else progress(p))
@@ -63,17 +63,12 @@ def prepare_coords(color, adjust=None):
     then we need to set all other channels to NaN.
     """
 
-    if isinstance(color, Cylindrical):
-        if color.is_hue_null():
-            name = color.hue_name()
-            color.set(name, util.NAN)
-
     if adjust:
         to_adjust = adjust & color.CHANNEL_NAMES
         to_avoid = color.CHANNEL_NAMES - adjust
         if to_adjust:
             for channel in to_avoid:
-                color.set(channel, util.NAN)
+                color.set(channel, util.NaN)
 
 
 def postdivide(color):
@@ -132,7 +127,7 @@ def adjust_hues(color1, color2, hue):
     c1 = c1 % 360
     c2 = c2 % 360
 
-    if math.isnan(c1) or math.isnan(c2):
+    if util.is_nan(c1) or util.is_nan(c2):
         color1.set(name, c1)
         color2.set(name, c2)
         return

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0a4
+
+- **NEW**: Use `NaN` to track undefined hues.
+- **NEW**: Remove `is_hue_null` and add new API function `is_nan` to test if any channel is currently set to `NaN`.
+- **NEW**: Remove `get_default` from the `Color` class and instead allow properties that can be overridden when
+  subclassing the `Color` object.
+
 ## 0.1.0a3
 
 - **FIX**: Color object API was missing the ability to receive the `premultiplied` argument.

@@ -75,12 +75,6 @@ class HWB(Cylindrical, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def is_hue_null(self):
-        """Test if hue is null."""
-
-        h, w, b = self.coords()
-        return (w + b) > (100.0 - util.ACHROMATIC_THRESHOLD)
-
     @property
     def hue(self):
         """Hue channel."""
@@ -118,6 +112,14 @@ class HWB(Cylindrical, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
+    def null_adjust(cls, coords):
+        """On color update."""
+
+        if coords[1] + coords[2] >= 100:
+            coords[0] = util.NaN
+        return coords
+
+    @classmethod
     def translate_channel(cls, channel, value):
         """Translate channel string."""
 
@@ -129,11 +131,6 @@ class HWB(Cylindrical, Space):
             return parse.norm_alpha_channel(value)
         else:
             raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    def to_string(self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs):
-        """To string."""
-
-        return super().to_string(alpha=alpha, precision=precision, fit=fit)
 
     @classmethod
     def _to_xyz(cls, hwb):

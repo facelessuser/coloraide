@@ -41,7 +41,7 @@ def split_channels(cls, color):
         diff = cls.NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)
     channels.append(alpha if alpha is not None else 1.0)
-    return channels
+    return cls.null_adjust(channels)
 
 
 class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut.Gamut, convert.Convert):
@@ -94,8 +94,8 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
 
         return 'color({} {} / {})'.format(
             self.space(),
-            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in self.coords()]),
-            util.fmt_float(self.alpha, util.DEF_PREC)
+            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in util.no_nan(self.coords())]),
+            util.fmt_float(util.no_nan(self.alpha), util.DEF_PREC)
         )
 
     __str__ = __repr__
@@ -105,12 +105,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
 
         if not util.is_number(value):
             raise TypeError("Value should be a number not type '{}'".format(type(value)))
-        return float(value)
-
-    def get_default(self, name):
-        """Get default."""
-
-        return self.parent.get_default(name)
+        return float(value) if not util.is_nan(value) else value
 
     def coords(self):
         """Coordinates."""
@@ -153,6 +148,11 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
 
         self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
 
+    def is_nan(self, name):
+        """Check if the channel is NaN."""
+
+        return util.is_nan(self.get(name))
+
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
 
@@ -170,13 +170,17 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
         return getattr(self, name)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
+        self, *, alpha=None, precision=None, fit=True, **kwargs
     ):
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
-        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
+        if precision is None:
+            precision = self.parent.PRECISION
 
-        coords = self.fit_coords() if fit else self.coords()
+        a = util.no_nan(self.alpha)
+        alpha = alpha is not False and (alpha is True or a < 1.0)
+
+        coords = util.no_nan(self.fit_coords() if fit else self.coords())
         template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
         values = [
             util.fmt_float(coords[0], precision),
@@ -184,9 +188,15 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
             util.fmt_float(coords[2], precision)
         ]
         if alpha:
-            values.append(util.fmt_float(self.alpha, max(precision, util.DEF_PREC)))
+            values.append(util.fmt_float(a, max(precision, util.DEF_PREC)))
 
         return template.format(self.space(), *values)
+
+    @classmethod
+    def null_adjust(cls, coords):
+        """Process coordinates and adjust any channels to null/NaN if required."""
+
+        return coords
 
     @classmethod
     def translate_channel(cls, channel, value):

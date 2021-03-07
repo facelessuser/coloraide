@@ -2,8 +2,7 @@
 
 ## Relative Luminance
 
-ColorAide provides a couple of contrast related tools out of the box. Relative luminance is used to calculate the
-contrast ratio. To get the luminance, simply call the `luminance` method:
+Relative luminance is used to calculate the contrast ratio. To get the luminance, simply call the `luminance` method:
 
 ```pycon3
 >>> Color("black").luminance()

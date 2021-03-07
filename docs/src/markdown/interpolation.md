@@ -228,7 +228,7 @@ yields the color: `#!color rgb(127.5 0 0)`.
 
 A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
 
-## Null Hues
+## Null Handling
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
 HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color";
@@ -241,42 +241,62 @@ that are above and beyond the normal rules to help ensure good interpolation. Fo
 on HSL colors when saturation is zero, but also when lightness is zero or one hundred (essentially appearing black or
 white). In fact, they'll mark saturation as `NaN` when lightness indicates "black" or "white".
 
-ColorAide also uses `NaN` during interpolating, but we do not carry that baggage around outside of interpolating.
-Colors will not return `NaN` in their coordinates, so the user doesn't have to worry about checking for those cases when
-assigning values, but it will calculate when hues are null when doing interpolation. If a space needs to account for hue
-when interpolating (mainly cylindrical color spaces) then ColorAide will flag the hue channel as null by assigning the
-coordinate a `NaN` prior to the actual interpolation.
+ColorAide also uses `NaN`, or in Python `#!py3 float('nan')`. In certain situations, when a hue is deemed undefined, the
+hue value will be set to `coloraide.NaN`, which is just a constant containing `#!py3 float('nan')`. When interpolating,
+if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
+for the same channel, then `0` will be returned.
 
-ColorAide will consider the following color spaces as having a null hue in the following cases. For "very near" cases,
-the threshold noted in the table is used. LCH uses a much larger threshold as conversions are more unstable as zero is
-approached.
-
-Color\ Space | Null\ Condition                   | Nearness\ Threshold
------------- | --------------------------------- | -------------------
-HSV          | `s<=0` or very near 0             | `0.0005`
-HSL          | `s<=0` or very near 0%            | `0.0005`
-HWB          | `(w + b) >= 100`or very near 100% | `0.0005`
-LCH          | `c<=0` or very near 0%            | `0.015`
-
-To determine at any time if a hue is considered null, the `is_hue_null` method can be used. Any space that considers
-hue will return `True` or `False` if their hue is null or not. Any space that does not specifically calculate hue, will
-simply return `False`. The method will consider the current color space by default, but we can query any color spaces by
-providing a different one.
+Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
+when the color is mixed with a second color (`#!color purple`), the hue of the second color is used.
 
 ```pycon3
->>> Color("hsl(0 0% 50%)").is_hue_null()
-True
->>> Color("grey").is_hue_null("lch")
-True
->>> Color("grey").is_hue_null("hsl")
-True
->>> Color("grey").is_hue_null("hsv")
-True
->>> Color("grey").is_hue_null("hwb")
-True
->>> Color("grey").is_hue_null("lab")
-False
+>>> color = Color('white').convert('hsl')
+>>> color.coords()
+[nan, 0.0, 100.0]
+>>> color2 = Color('purple').convert('hsl')
+>>> color2.coords()
+[300.0, 100.0, 25.098039215686274]
+>>> color.mix(color2, space="hsl")
+color(hsl 300 50 62.549 / 1)
 ```
 
-Due to the way colors convert, all spaces may not yield the same value as they do in this example, so it is best to test
-in the space that is being targeted.
+This is essentially haw the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
+[`mix`](#mix). `adjust` simply ensures that the secondary color has `NaN` set to specified channels.
+
+Technically, any channel can be set to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
+manually setting it via a channel property or accessor. CSS string inputs do not allow the `NaN` value.
+
+```pycon3
+>>> from coloraide import Color, NaN
+>>> Color("srgb", [1, NaN, 1]).coords()
+[1.0, nan, 1.0]
+>>> Color("red").set('green', NaN).coords()
+[1.0, nan, 0.0]
+```
+
+When printing to a string, `NaN`s are always converted to `0`:
+
+```pycon3
+>>> Color("srgb", [1, NaN, 1])
+color(srgb 1 0 1 / 1)
+```
+
+At any time, a channel can be checked for whether it is `NaN` by using the `is_nan` method:
+
+```pycon3
+>>> Color("white").convert('hsl').is_nan('hue')
+>>> True
+```
+
+It can be useful to check whether a channel is `NaN` as `NaN` values can't be added, subtracted, multiplied, etc. They
+will always return `NaN` unless you directly replace them.
+
+```pycon3
+>>> color = Color("white").convert('hsl')
+>>> color.hue = color.hue + 3
+>>> color.is_nan('hue')
+True
+>>> color.hue = 3
+>>> color.is_nan('hue')
+False
+```

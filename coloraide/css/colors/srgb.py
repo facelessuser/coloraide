@@ -51,9 +51,12 @@ class SRGB(generic.SRGB):
         super().__init__(color)
 
     def to_string(
-        self, *, alpha=None, precision=util.DEF_PREC, fit=True, **kwargs
+        self, *, alpha=None, precision=None, fit=True, **kwargs
     ):
         """Convert to CSS."""
+
+        if precision is None:
+            precision = self.parent.PRECISION
 
         options = kwargs
         if options.get("color"):
@@ -61,7 +64,8 @@ class SRGB(generic.SRGB):
 
         # Handle hes and color names
         value = ''
-        alpha = alpha is not False and (alpha is True or self.alpha < 1.0)
+        a = util.no_nan(self.alpha)
+        alpha = alpha is not False and (alpha is True or a < 1.0)
         if options.get("hex") or options.get("names"):
             h = self._get_hex(options, alpha=alpha, precision=precision)
             if options.get("hex"):
@@ -80,7 +84,7 @@ class SRGB(generic.SRGB):
             percent = options.get("percent", False)
             comma = options.get("comma", False)
             factor = 100.0 if percent else 255.0
-            coords = self.fit_coords() if fit else self.coords()
+            coords = util.no_nan(self.fit_coords() if fit else self.coords())
 
             if alpha:
                 if percent:
@@ -91,7 +95,7 @@ class SRGB(generic.SRGB):
                     util.fmt_float(coords[0] * factor, precision),
                     util.fmt_float(coords[1] * factor, precision),
                     util.fmt_float(coords[2] * factor, precision),
-                    util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+                    util.fmt_float(a, max(util.DEF_PREC, precision))
                 )
             else:
                 if percent:
@@ -105,12 +109,15 @@ class SRGB(generic.SRGB):
                 )
         return value
 
-    def _get_hex(self, options, *, alpha=False, precision=util.DEF_PREC):
+    def _get_hex(self, options, *, alpha=False, precision=None):
         """Get the hex `RGB` value."""
+
+        if precision is None:
+            precision = self.parent.PRECISION
 
         hex_upper = options.get("hex_upper", False)
         compress = options.get("compress", False)
-        coords = self.fit_coords()
+        coords = util.no_nan(self.fit_coords())
 
         template = "#{:02x}{:02x}{:02x}{:02x}" if alpha else "#{:02x}{:02x}{:02x}"
         if hex_upper:
@@ -121,7 +128,7 @@ class SRGB(generic.SRGB):
                 int(util.round_half_up(coords[0] * 255.0)),
                 int(util.round_half_up(coords[1] * 255.0)),
                 int(util.round_half_up(coords[2] * 255.0)),
-                int(util.round_half_up(self.alpha * 255.0))
+                int(util.round_half_up(util.no_nan(self.alpha) * 255.0))
             )
         else:
             value = template.format(
@@ -167,23 +174,27 @@ class SRGB(generic.SRGB):
                     channels.append(cls.translate_channel(-1, c))
             if len(channels) == 3:
                 channels.append(1.0)
-            return channels
+            return cls.null_adjust(channels)
         else:
             m = cls.HEX_MATCH.match(color)
             assert(m is not None)
             if m.group(1):
-                return (
-                    cls.translate_channel(0, "#" + color[1:3]),
-                    cls.translate_channel(1, "#" + color[3:5]),
-                    cls.translate_channel(2, "#" + color[5:7]),
-                    cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                return cls.null_adjust(
+                    (
+                        cls.translate_channel(0, "#" + color[1:3]),
+                        cls.translate_channel(1, "#" + color[3:5]),
+                        cls.translate_channel(2, "#" + color[5:7]),
+                        cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                    )
                 )
             else:
-                return (
-                    cls.translate_channel(0, "#" + color[1] * 2),
-                    cls.translate_channel(1, "#" + color[2] * 2),
-                    cls.translate_channel(2, "#" + color[3] * 2),
-                    cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                return cls.null_adjust(
+                    (
+                        cls.translate_channel(0, "#" + color[1] * 2),
+                        cls.translate_channel(1, "#" + color[2] * 2),
+                        cls.translate_channel(2, "#" + color[3] * 2),
+                        cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                    )
                 )
 
     @classmethod

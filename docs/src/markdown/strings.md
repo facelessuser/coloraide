@@ -1,7 +1,7 @@
 ## Convert to Strings
 
-Colors can be translated to strings by using the `to_string` method. The CSS color class will convert the current color
-into one of many of the color's CSS formats.
+Colors can be translated to strings by using the `to_string` method. The color class will convert the current color into
+one of many of the color's CSS formats.
 
 ```pycon3
 >>> color = Color("srgb", [0.5, 0, 1], 0.3)

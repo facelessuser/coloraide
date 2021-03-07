@@ -1,4 +1,5 @@
 import math
+from .. import util
 
 G_CONST = math.pow(25, 7)
 RAD2DEG = 180 / math.pi
@@ -13,8 +14,8 @@ def distance_euclidean(color1, color2, space="lab", **kwargs):
     lab1 = color1.convert(space)
     lab2 = color2.convert(space)
 
-    coords1 = lab1.coords()
-    coords2 = lab2.coords()
+    coords1 = util.no_nan(lab1.coords())
+    coords2 = util.no_nan(lab2.coords())
 
     total = 0
     for i, coord in enumerate(coords1):
@@ -42,9 +43,9 @@ def delta_e_94(color1, color2, kl=1, k1=0.045, k2=0.015):
     lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
-    l1, a1, b1 = lab1.coords()
+    l1, a1, b1 = util.no_nan(lab1.coords())
     c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
-    l2, a2, b2 = lab2.coords()
+    l2, a2, b2 = util.no_nan(lab2.coords())
     c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
 
     dl = l1 - l2
@@ -83,9 +84,9 @@ def delta_e_cmc(color1, color2, l=2, c=1):
     lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
-    l1, a1, b1 = lab1.coords()
+    l1, a1, b1 = util.no_nan(lab1.coords())
     c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
-    l2, a2, b2 = lab2.coords()
+    l2, a2, b2 = util.no_nan(lab2.coords())
     c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
 
     dl = l1 - l2
@@ -145,9 +146,9 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     lab1 = color1.convert("lab")
     lab2 = color2.convert("lab")
 
-    l1, a1, b1 = lab1.coords()
+    l1, a1, b1 = util.no_nan(lab1.coords())
     c1 = math.sqrt(math.pow(a1, 2) + math.pow(b1, 2))
-    l2, a2, b2 = lab2.coords()
+    l2, a2, b2 = util.no_nan(lab2.coords())
     c2 = math.sqrt(math.pow(a2, 2) + math.pow(b2, 2))
 
     cm = (c1 + c2) / 2
@@ -229,7 +230,7 @@ class Distance:
         """Delta E distance."""
 
         if method is None:
-            method = self.get_default("delta-e")
+            method = self.parent.DELTA_E
 
         algorithm = method.lower()
         if algorithm not in SUPPORTED:
