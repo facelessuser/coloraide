@@ -21,9 +21,12 @@ def lab_to_lch(lab):
     c = math.sqrt(math.pow(a, 2) + math.pow(b, 2))
     h = math.atan2(b, a) * 180 / math.pi
 
-    # Algorithm is dependent on the actual value, but at the same time,
-    # we want to treat it as null. Cast the actual value as null to avoid
-    # messing things up in interpolation.
+    # This is not actually part of the conversion, but is a fix-up
+    # for conversion getting a bit chaotic in regards to hue when
+    # chroma approaches zero. This fix-up is intended to make at
+    # least colors in the sRGB range a bit more stable with conversion
+    # and yield a hue of zero. This minimally affects the overall output.
+    # If a 100% accurate result is desired, then we'd want to avoid doing this.
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 
