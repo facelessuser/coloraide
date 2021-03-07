@@ -41,7 +41,7 @@ def split_channels(cls, color):
         diff = cls.NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)
     channels.append(alpha if alpha is not None else 1.0)
-    return channels
+    return cls.null_adjust(channels)
 
 
 class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut.Gamut, convert.Convert):
@@ -221,5 +221,5 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
                 (m.group(1) and m.group(1).lower() == cls.space())
             ) and (not fullmatch or m.end(0) == len(string))
         ):
-            return cls.null_adjust(split_channels(cls, m.group(2))), m.end(0)
+            return split_channels(cls, m.group(2)), m.end(0)
         return None, None

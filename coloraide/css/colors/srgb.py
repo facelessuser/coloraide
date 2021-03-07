@@ -174,23 +174,27 @@ class SRGB(generic.SRGB):
                     channels.append(cls.translate_channel(-1, c))
             if len(channels) == 3:
                 channels.append(1.0)
-            return channels
+            return cls.null_adjust(channels)
         else:
             m = cls.HEX_MATCH.match(color)
             assert(m is not None)
             if m.group(1):
-                return (
-                    cls.translate_channel(0, "#" + color[1:3]),
-                    cls.translate_channel(1, "#" + color[3:5]),
-                    cls.translate_channel(2, "#" + color[5:7]),
-                    cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                return cls.null_adjust(
+                    (
+                        cls.translate_channel(0, "#" + color[1:3]),
+                        cls.translate_channel(1, "#" + color[3:5]),
+                        cls.translate_channel(2, "#" + color[5:7]),
+                        cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                    )
                 )
             else:
-                return (
-                    cls.translate_channel(0, "#" + color[1] * 2),
-                    cls.translate_channel(1, "#" + color[2] * 2),
-                    cls.translate_channel(2, "#" + color[3] * 2),
-                    cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                return cls.null_adjust(
+                    (
+                        cls.translate_channel(0, "#" + color[1] * 2),
+                        cls.translate_channel(1, "#" + color[2] * 2),
+                        cls.translate_channel(2, "#" + color[3] * 2),
+                        cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                    )
                 )
 
     @classmethod
@@ -205,7 +209,7 @@ class SRGB(generic.SRGB):
             if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
                 string = css_names.name2hex(string[m.start(0):m.end(0)])
                 if string is not None:
-                    return cls.null_adjust(cls.split_channels(string)), m.end(0)
+                    return cls.split_channels(string), m.end(0)
             else:
-                return cls.null_adjust(cls.split_channels(string[m.start(0):m.end(0)])), m.end(0)
+                return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
         return None, None

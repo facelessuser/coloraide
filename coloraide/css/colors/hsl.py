@@ -87,7 +87,7 @@ class HSL(generic.HSL):
                 channels.append(cls.translate_channel(-1, c))
         if len(channels) == 3:
             channels.append(1.0)
-        return channels
+        return cls.null_adjust(channels)
 
     @classmethod
     def match(cls, string, start=0, fullmatch=True):
@@ -98,5 +98,5 @@ class HSL(generic.HSL):
             return channels, end
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return cls.null_adjust(cls.split_channels(string[m.start(0):m.end(0)])), m.end(0)
+            return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
         return None, None
