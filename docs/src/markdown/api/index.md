@@ -27,8 +27,11 @@ def match(cls, string, start=0, fullmatch=False, *, filters=None):
 ```
 
 The `match` class method provides access to the color matching interface and allows a user to provide a color string
-and get back a `ColorMatch` object which contains a `Color` object and the bounds within the string where the color
-was found.
+and get back a `ColorMatch` object. `ColorMatch` objects contain three properties:
+
+1. `color`: the `Color` object.
+2. `start`: the starting point within the string buffer where the color was found.
+3. `end`: the ending point within the string buffer where the color was found.
 
 Match does not search the entire buffer, but simply matches at the location specified by `start`.
 
@@ -89,7 +92,7 @@ def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwar
 
 The `update` method provides a way to update the underlying color spaces with coordinates from any color space. The
 methods signature looks just like [`new`](#new) and accepts color strings, `Color` objects, or raw data points specified
-with a color space string and coordinates. The object itself will be updated and remain in it's current color space.
+with a color space string and coordinates. The object itself will be updated and remain in its current color space.
 
 Return
 : 
@@ -111,8 +114,8 @@ Parameters
 def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
 ```
 
-The `mutate` method is just like [`update`](#update) except that it will provide an update, but mutate the color space
-to match the color space of the provided color input.
+The `mutate` method is just like [`update`](#update) except that it will not only update the color space, but mutate it
+to the provided color space.
 
 Return
 : 
@@ -145,7 +148,8 @@ Return
 def coords(self):
 ```
 
-Returns a list of the color's coordinates. This does **not** include the alpha channel.
+Returns a list of the color's coordinates. This does **not** include the alpha channel. Alpha can be accessed via the
+`alpha` property or `get` and `set` accessors.
 
 Return
 : 
@@ -300,8 +304,8 @@ def interpolate(self, color, *, space="lab", progress=None, out_space=None, adju
 The `interpolate` method creates a function that takes a value between 0 - 1 and interpolates a new color based on the
 input value.
 
-Interpolation can be customized by limiting to specific color channels, providing custom interpolation functions, and
-even adjusting the hue logic used.
+Interpolation can be customized by limiting the interpolation to specific color channels, providing custom interpolation
+functions, and even adjusting the hue logic used.
 
 Hue\ Evaluation | Description
 --------------- | -----------
@@ -329,9 +333,10 @@ Parameters
 def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
 ```
 
-Creates an interpolate function and iterates through with user defined step parameters to produce discrete color steps.
-Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e` the distance between
-each stop will be cut in half until there are no colors with a distance greater than the specified `max_delta_e`.
+Creates an `interpolate` function and iterates through it with user defined step parameters to produce discrete color
+steps. Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e` is provided,
+the distance between each stop will be cut in half until there are no colors with a distance greater than the specified
+`max_delta_e`.
 
 Return
 : 

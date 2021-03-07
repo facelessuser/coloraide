@@ -228,7 +228,7 @@ yields the color: `#!color rgb(127.5 0 0)`.
 
 A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
 
-## Null Hues
+## Null Handling
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
 HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color";
@@ -261,10 +261,10 @@ color(hsl 300 50 62.549 / 1)
 ```
 
 This is essentially haw the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
-[`mix`](#mix), except it will set the channel on both colors to `NaN`.
+[`mix`](#mix). `adjust` simply ensures that the secondary color has `NaN` set to specified channels.
 
-Technically, any channel can be set to `Nan`, but it must be done by instantiating a `Color` object with raw data or by
-manually setting it via a channel property or accessor.
+Technically, any channel can be set to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
+manually setting it via a channel property or accessor. CSS string inputs do not allow the `NaN` value.
 
 ```pycon3
 >>> from coloraide import Color, NaN

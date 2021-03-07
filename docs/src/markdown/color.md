@@ -36,7 +36,7 @@ So in the example above, the raw data is parsed, and we get a transparent color 
 We can also pass in other color objects, which is really only useful if we've subclassed the `Color` object and want
 to cast the object between the classes.
 
-The same color creation can be preformed from a color's `new` class method as well. New accepts the same inputs
+The same color creation can be preformed from a color's `new` class method as well. `new` accepts the same inputs
 as the class object itself.
 
 ```pycon3
@@ -102,7 +102,7 @@ color(lch 50 50 130 / 1)
 ## Converting
 
 Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
-set `True`.
+set `True`, in which case the current color will be mutated to the new converted color.
 
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, we
 could simply call the `convert` method. In the example below, we convert the color `#!color yellow`, which is in the
@@ -115,9 +115,9 @@ color(lab 97.607 -15.753 93.388 / 1)
 
 ## Color Matching
 
-Color objects can take in raw data points with a color space name or CSS style inputs. This CSS style input logic is
-exposed via the `match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The
-`ColorMatch` object will have the matched color as a `Color` object, and the start and end points it was located at.
+Color objects can take in raw data points or a CSS style string input. The string matching logic is exposed via the
+`match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The `ColorMatch`
+object will have the matched color as a `Color` object, and the `start` and `end` points it was located at.
 
 ```pycon3
 >>> Color.match("red")

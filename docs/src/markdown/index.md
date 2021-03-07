@@ -1,5 +1,9 @@
 # Setup
 
+!!! warning "Currently in Alpha"
+    While ColorAide is very usable, it is currently in an alpha stage. While that doesn't necessarily mean been buggy,
+    it does mean the API could be unstable.
+
 ## Overview
 
 ColorAide is a color library for Python. It was written to handle most modern CSS colors that are available and that
@@ -7,14 +11,10 @@ will be available. Most of the conversion algorithms come straight from the [CSS
 
 In the process of developing this library, we also stumbled upon [Color.js][colorjs] which is created/maintained by the
 co-authors of some of the recent CSS color specifications. This project became heavily influenced by Color.js. While our
-aim was not to port that library, it did leave a clear impression on our API. We also leveraged the work related to
-gamut mapping and color interpolation.
+aim was not to port that library, it did leave a clear impression on our API.
 
-Currently this project is in an early stage, and while usable, some things may change as we get closer to a stable
-release.
-
-With ColorAide, colors in various spaces can be created, converted to other spaces, mixed, output in different CSS
-formats, and various other things.
+With ColorAide, colors in various spaces can be created, converted to other spaces, mixed, manipulated, and output in
+different CSS formats.
 
 ```pycon3
 >>> from coloraide import Color

@@ -35,6 +35,7 @@ Twemoji
 Verou
 XYZ
 accessor
+accessors
 boolean
 chroma
 fixup
