@@ -79,9 +79,9 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
         )
 
         if show_code:
-            el.append(md.inlinePatterns['backtick'].handle_code('', src))
+            el.append(md.inlinePatterns['backtick'].handle_code('css-color', src))
     except Exception:
-        el = md.inlinePatterns['backtick'].handle_code('', src)
+        el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 
 
@@ -103,7 +103,7 @@ def color_gradient_formatter(src="", language="", class_name=None, md=""):
         style += ','.join(stops)
         Etree.SubElement(el, 'span', {'class': 'swatch-color', 'style': style})
     except Exception:
-        el = md.inlinePatterns['backtick'].handle_code('', src)
+        el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 
 
@@ -128,7 +128,7 @@ def color_steps_formatter(src="", language="", class_name=None, md=""):
         else:
             el.text += ']'
     except Exception:
-        el = md.inlinePatterns['backtick'].handle_code('', src)
+        el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 
 

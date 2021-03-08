@@ -1,4 +1,5 @@
 mkdocs_pymdownx_material_extras==1.2.1
+git+https://github.com/facelessuser/pymdown-lexers.git
 mkdocs-git-revision-date-localized-plugin
 mkdocs-minify-plugin
 pyspelling
