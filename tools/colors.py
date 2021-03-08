@@ -1,5 +1,6 @@
 """Color swatch."""
 from coloraide.css import Color
+from pymdownx import superfences
 import xml.etree.ElementTree as Etree
 
 
@@ -9,6 +10,30 @@ def execute(cmd):
     g = {'Color': Color}
     exec(cmd, g)
     return g['result']
+
+
+def _block_color_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
+    """Formatter wrapper."""
+
+    try:
+        colors = execute(src.strip())
+        el = '<div class="swatch swatch-gradient">{}</div>'
+        style = "--swatch-stops: "
+        stops = []
+        for color in colors:
+            color.fit("srgb", in_place=True)
+            stops.append(color.convert("srgb").to_string(hex=True))
+        if not stops:
+            stops.extend(['transparent'] * 2)
+        if len(stops) == 1:
+            stops.append(stops[0])
+        style += ','.join(stops)
+        sub_el = '<div class="swatch-color" style="{}"></div>'.format(style)
+        el = el.format(sub_el)
+    except Exception as e:
+        print(e)
+        return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
+    return el
 
 
 def _color_formatter(src="", language="", class_name=None, md="", show_code=True, fit=False):
@@ -63,9 +88,9 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
 def color_gradient_formatter(src="", language="", class_name=None, md=""):
     """Format gradient."""
 
-    colors = execute(src.strip())
-    el = Etree.Element('span', {'class': "swatch swatch-gradient"})
     try:
+        colors = execute(src.strip())
+        el = Etree.Element('span', {'class': "swatch swatch-gradient"})
         style = "--swatch-stops: "
         stops = []
         for color in colors:

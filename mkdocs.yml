@@ -57,6 +57,10 @@ markdown_extensions:
   - markdown.extensions.md_in_html:
   - pymdownx.superfences:
       preserve_tabs: true
+      custom_fences:
+        - name: color-gradient
+          class: color
+          format: !!python/name:tools.colors._block_color_formatter
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline

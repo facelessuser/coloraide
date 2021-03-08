@@ -11,10 +11,11 @@ extrapolated and the results may be surprising.
 Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
 fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range of colors that we
 can use in a gradient to get:
-`#!color-gradient
+
+```color-gradient
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
 result = list(map(lambda x: i(x/10), range(10)))
-`.
+```
 
 ```pycon3
 >>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -39,13 +40,14 @@ the base color. Channels can be any channel associated with the color space in w
 
 In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
 `#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. Applying this logic, we will
-end up with a range of colors that maintain the same lightness and chroma, but with different hues:
-`#!color-gradient
-i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
-result = list(map(lambda x: i(x/10), range(10)))
-`.
+end up with a range of colors that maintain the same lightness and chroma, but with different hues.
 
 We can see as we step through the colors that only the hue is interpolated:
+
+```color-gradient
+i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+result = list(map(lambda x: i(x/10), range(10)))
+```
 
 ```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
@@ -81,20 +83,48 @@ To help visualize the different hue methods, consider the following evaluation b
 `#!color lch(85% 85 805)` in the table below. Check out the [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation)
 to learn more about each one.
 
-Hue\ Logic   | Result
------------- | ------
-`shorter`    | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter"); result = list(map(lambda x: i(x/20), range(20)))`
-`longer`     | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer"); result = list(map(lambda x: i(x/20), range(20)))`
-`increasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing"); result = list(map(lambda x: i(x/20), range(20)))`
-`decreasing` | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing"); result = list(map(lambda x: i(x/20), range(20)))`
-`specified`  | `#!color-gradient i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified"); result = list(map(lambda x: i(x/20), range(20)))`
+`shorter`:
+: 
+    ```color-gradient
+    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter")
+    result = list(map(lambda x: i(x/20), range(20)))
+    ```
+
+`longer`:
+: 
+    ```color-gradient
+    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer");
+    result = list(map(lambda x: i(x/20), range(20)))
+    ```
+
+`increasing`:
+: 
+    ```color-gradient
+    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing");
+    result = list(map(lambda x: i(x/20), range(20)))
+    ```
+
+`decreasing`:
+: 
+    ```color-gradient
+    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing");
+    result = list(map(lambda x: i(x/20), range(20)))
+    ```
+
+`specified`:
+: 
+    ```color-gradient
+    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified")
+    result = list(map(lambda x: i(x/20), range(20)))
+    ```
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut):
-`#!color-gradient
+
+```color-gradient
 i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
 result = list(map(lambda x: i(x/10), range(10)))
-`.
+```
 
 ```pycon3
 >>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
