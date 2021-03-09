@@ -77,13 +77,10 @@ color(srgb 0 0 1 / 1)
 (color(srgb 0 0 1 / 1), color(srgb 0 0 1 / 1))
 ```
 
-Here we update the sRGB `#!color red` with the color `#!color lch(100% 50 130)`. Notice that the result is still in the
-sRGB color space, but the color is bigger than the sRGB color space making the color out of gamut:
-`#!color color(srgb 0.82374 1.0663 0.69484 / 1)`.
+Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
 
-```pycon3
->>> Color("red").update("lch(100% 50 130)")
-color(srgb 0.82374 1.0663 0.69484 / 1)
+```color
+Color("red").update("lch(80% 50 130)")
 ```
 
 ## Mutating
@@ -92,11 +89,11 @@ color(srgb 0.82374 1.0663 0.69484 / 1)
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
-Here the `#!color red` color object literally becomes an LCH color object with the new color `#!color lch(50% 50 130)`.
+Here the `#!color red` color object literally becomes an LCH color object with the new color
+`#!color lch(80% 50 130)`.
 
-```pycon3
->>> Color("red").mutate("lch(50% 50 130)")
-color(lch 50 50 130 / 1)
+```color
+Color("red").mutate("lch(80% 50 130)")
 ```
 
 ## Converting
@@ -104,13 +101,11 @@ color(lch 50 50 130 / 1)
 Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
 set `True`, in which case the current color will be mutated to the new converted color.
 
-For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, we
-could simply call the `convert` method. In the example below, we convert the color `#!color yellow`, which is in the
-sRGB color space, to the Lab color space which gives us `#!color color(lab 97.607 -15.753 93.388 / 1)`.
+For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as LAB, we
+could simply call the `convert` method with the desired color space.
 
-```pycon3
->>> Color('yellow').convert("Lab")
-color(lab 97.607 -15.753 93.388 / 1)
+```color
+Color('yellow').convert("Lab")
 ```
 
 ## Color Matching

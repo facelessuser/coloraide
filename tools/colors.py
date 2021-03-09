@@ -3,19 +3,19 @@ from coloraide.css import Color
 from pymdownx import superfences
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence, Callable
+import ast
 
 
 def execute(cmd):
     """Execute color commands."""
 
     g = {'Color': Color}
-    lines = [l for l in cmd.strip().split('\n')]
-    end = lines.pop(-1)
-    exec(compile('\n'.join(lines), '<string>', 'exec'), g)
-    result = eval(compile(end, '<string>', 'eval'), g)
-    if isinstance(result, (Color, str)):
-        cmd += '\n# {}'.format(str(result))
-    return result, cmd
+    tree = ast.parse(cmd)
+    _exec = ast.Module(tree.body[:-1], [])
+    _eval = ast.Expression(tree.body[-1].value)
+    exec(compile(_exec, '<string>', 'exec'), g)
+    result = eval(compile(_eval, '<string>', 'eval'), g)
+    return result
 
 
 def color_command_validator(language, inputs, options, attrs, md):
@@ -36,7 +36,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
 
     try:
         try:
-            result, processed = execute(src.strip())
+            result = execute(src.strip())
         except Exception:
             result = src.strip()
         fit = options.get('fit', False)
@@ -44,6 +44,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
         steps = False
         gradient = False
         lang = 'py3'
+        processed = src
         if isinstance(result, Color):
             colors = [result]
         elif isinstance(result, Callable):
@@ -81,10 +82,14 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             values = []
             for color in colors:
                 if not color.in_gamut('srgb') and not fit:
+                    if not steps:
+                        processed += '\n# {}'.format(color.to_string())
                     c = '<{tag} class="swatch-color"></{tag}>'.format(tag=tag)
                     classes = base_classes + " out-of-gamut"
                     title = "Out of Gamut&#10;{}".format(color.to_string())
                 else:
+                    if not steps:
+                        processed += '\n# {}'.format(color.to_string())
                     color.fit('srgb', in_place=True)
                     srgb = color.convert('srgb')
                     value1 = srgb.to_string(hex=True, alpha=False)
@@ -123,25 +128,37 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
 def _color_formatter(src="", language="", class_name=None, md="", show_code=True, fit=False):
     """Formatter wrapper."""
 
-    src = src.strip()
     try:
-        color = Color(src)
+        result = src.strip()
+        cmd = False
+        try:
+            result = execute(result)
+            cmd = True
+        except Exception as e:
+            print(e)
+            result = src.strip()
+        if isinstance(result, (str, Color)):
+            color = Color(result)
+            if cmd:
+                result = color.to_string()
+        else:
+            raise TypeError('Not a string or color')
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut("srgb"):
             if fit:
                 color.fit("srgb", in_place=True)
-                attributes = {'class': "swatch", "title": src}
+                attributes = {'class': "swatch", "title": result}
                 sub_el = Etree.SubElement(el, 'span', attributes)
                 stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
                 if color.alpha < 1.0:
                     stops[-1] += ' 50%'
                     stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
             else:
-                attributes = {'class': "swatch out-of-gamut", "title": "Out of Gamut&#10;{}".format(src)}
+                attributes = {'class': "swatch out-of-gamut", "title": "Out of Gamut&#10;{}".format(result)}
                 sub_el = Etree.SubElement(el, 'span', attributes)
         else:
-            attributes = {'class': "swatch", "title": src}
+            attributes = {'class': "swatch", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
             stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
             if color.alpha < 1.0:
@@ -163,8 +180,9 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
         )
 
         if show_code:
-            el.append(md.inlinePatterns['backtick'].handle_code('css-color', src))
-    except Exception:
+            el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
+    except Exception as e:
+        print(e)
         el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 

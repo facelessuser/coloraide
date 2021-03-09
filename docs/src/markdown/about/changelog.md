@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0a5
+
+- **FIX**: Fix an issue where `update` can fail due to a color space detached from a parent.
+- **FIX**: Adjust fit tolerance to be a little more forgiving, but make an adjustment for `in_gmaut` in relation to
+  `HSL` as `saturation` can be wildly out of range for an `sRGB` color that is only slightly out of gamut.
+- **FIX**: Ensure `in_gamut` handles `NaN` properly.
+
 ## 0.1.0a4
 
 - **NEW**: Use `NaN` to track undefined hues.

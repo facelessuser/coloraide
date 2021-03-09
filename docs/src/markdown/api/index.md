@@ -419,10 +419,10 @@ Checks if the current color is in the current or specified gamut.
 
 Parameters
 : 
-    Parameters | Defaults      | Description
-    ---------- | ------------- | -----------
-    `space`    | `#!py3 None`  | The color space that the color must be fit within. If space is `#!py3 None`, then the current color space will be used.
-    `tolerance`| `#!py3 0.0`   | Tolerance allowed when checking bounds of color.
+    Parameters | Defaults         | Description
+    ---------- | ---------------- | -----------
+    `space`    | `#!py3 None`     | The color space that the color must be fit within. If space is `#!py3 None`, then the current color space will be used.
+    `tolerance`| `#!py3 0.000075` | Tolerance allowed when checking bounds of color.
 
 ### `get`
 

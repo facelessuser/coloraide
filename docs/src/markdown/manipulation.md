@@ -62,7 +62,7 @@ Color("white").set("red", 0).set("green", 0.5)
 ```
 
 Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` in
-the LCH color space and get `#!color rgb(19.403 81.154 0)`.
+the LCH color space and get `#!color-fit Color("blue").set('lch.hue', 130)`.
 
 ```{.color fit}
 Color("blue").set('lch.hue', 130)
@@ -78,7 +78,7 @@ Color("pink").set('green', lambda g: g * 1.3)
 ## Checking Null Hues
 
 Cylindrical colors that offer a `hue` property can sometimes return `NaN` for a hue. This is usually because the hue
-is undefined. For example, the color `#!color hsl(360, 0% 100%)`, while assigned a hue, does not actually exhibit any
+is undefined. For example, the color `#!color hsl(360 0% 100%)`, while assigned a hue, does not actually exhibit any
 real hue since saturation is 0. Essentially, hue could be set to anything, and it would still have no affect on the
 actual color. So, ColorAide will actually set hue to `NaN` (or "not a number"). `NaN` is treated as a zero on output.
 
