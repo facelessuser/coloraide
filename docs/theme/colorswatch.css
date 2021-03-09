@@ -104,3 +104,13 @@ div.color-command .swatch-gradient + .highlight pre code {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+@media screen and (max-width: 44.9375em) {
+  .md-typeset > div.color-command {
+    margin: 0 -.8rem;
+  }
+
+  .md-typeset > div.color-command .highlight code {
+    border-radius: 0;
+  }
+}
