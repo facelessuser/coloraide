@@ -21,7 +21,7 @@ def execute(cmd):
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = {'fit', 'css'}
+    valid_inputs = {'fit'}
 
     for k, v in inputs.items():
         if k in valid_inputs:
@@ -35,13 +35,13 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
     """Formatter wrapper."""
 
     try:
+        css = False
+        fit = options.get('fit', False)
         try:
             result = execute(src.strip())
         except Exception:
+            css = True
             result = src.strip()
-        fit = options.get('fit', False)
-        css = options.get('css', False)
-        steps = False
         gradient = False
         lang = 'py3'
         processed = src
@@ -55,11 +55,12 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             if css:
                 lang = 'css-color'
         elif isinstance(result, Sequence):
-            colors = result
-            steps = True
+            colors = [Color(x) for x in result]
+        else:
+            raise TypeError('Not a string, color, or sequence')
 
         if gradient:
-            el = '<div class="swatch swatch-gradient">{}</div>'
+            el = '<div class="swatch-bar"><div class="swatch swatch-gradient">{}</div></div>'
             style = "--swatch-stops: "
             stops = []
             for color in colors:
@@ -73,23 +74,16 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             sub_el = '<div class="swatch-color" style="{}"></div>'.format(style)
             el = el.format(sub_el)
         else:
-            if steps:
-                tag = "span"
-                base_classes = "swatch"
-            else:
-                tag = "div"
-                base_classes = "swatch swatch-gradient"
             values = []
+            base_classes = "swatch"
             for color in colors:
+                if not css:
+                    processed += '\n# {}'.format(color.to_string())
                 if not color.in_gamut('srgb') and not fit:
-                    if not steps:
-                        processed += '\n# {}'.format(color.to_string())
-                    c = '<{tag} class="swatch-color"></{tag}>'.format(tag=tag)
+                    c = '<span class="swatch-color"></span>'
                     classes = base_classes + " out-of-gamut"
                     title = "Out of Gamut&#10;{}".format(color.to_string())
                 else:
-                    if not steps:
-                        processed += '\n# {}'.format(color.to_string())
                     color.fit('srgb', in_place=True)
                     srgb = color.convert('srgb')
                     value1 = srgb.to_string(hex=True, alpha=False)
@@ -97,18 +91,14 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
                     style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
                     title = color.to_string()
                     classes = base_classes
-                    c = '<{tag} class="swatch-color" style="{style}"></{tag}>'.format(tag=tag, style=style)
-                c = '<{tag} class="{classes}" title="{title}">{color}</{tag}>'.format(
-                    tag=tag,
+                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
                     classes=classes,
                     color=c,
                     title=title
                 )
                 values.append(c)
-            if steps:
-                el = '<div class="swatch-steps">{}</div>'.format(' '.join(values))
-            else:
-                el = values[0]
+            el = '<div class="swatch-bar">{}</div>'.format(' '.join(values))
 
         el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
             src=processed,
@@ -119,8 +109,8 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             **kwargs
         )
         el = '<div class="color-command">{}</div>'.format(el)
-    except Exception as e:
-        print(e)
+    except Exception:
+        # print(e)
         return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
     return el
 
@@ -134,8 +124,7 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
         try:
             result = execute(result)
             cmd = True
-        except Exception as e:
-            print(e)
+        except Exception:
             result = src.strip()
         if isinstance(result, (str, Color)):
             color = Color(result)
@@ -181,8 +170,8 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
 
         if show_code:
             el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
-    except Exception as e:
-        print(e)
+    except Exception:
+        # print(e)
         el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 

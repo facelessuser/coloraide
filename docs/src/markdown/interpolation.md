@@ -13,7 +13,14 @@ fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
 can use in a gradient to get:
 
 ```color
-Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
+Color("rebeccapurple").interpolate(
+    "lch(85% 100 85)",
+    space='lch'
+)
+```
+
+```color
+Color("lch(52% 58.1 22.7)").interpolate("#8be9fd", space="lch", adjust=["hue"])
 ```
 
 And these are the values:
@@ -88,38 +95,61 @@ to learn more about each one.
 `shorter`:
 : 
     ```color
-    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter")
+    Color("rebeccapurple").interpolate(
+        "lch(85% 100 805)",
+        space='lch',
+        hue="shorter"
+    )
     ```
 
 `longer`:
 : 
     ```color
-    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer")
+    Color("rebeccapurple").interpolate(
+        "lch(85% 100 805)",
+        space='lch',
+        hue="longer"
+    )
     ```
 
 `increasing`:
 : 
     ```color
-    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing")
+    Color("rebeccapurple").interpolate(
+        "lch(85% 100 805)",
+        space='lch',
+        hue="increasing"
+    )
     ```
 
 `decreasing`:
 : 
     ```color
-    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing")
+    Color("rebeccapurple").interpolate(
+        "lch(85% 100 805)",
+        space='lch',
+        hue="decreasing"
+    )
     ```
 
 `specified`:
 : 
     ```color
-    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified")
+    Color("rebeccapurple").interpolate(
+        "lch(85% 100 805)",
+        space='lch',
+        hue="specified"
+    )
     ```
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut):
 
 ```color
-Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
+Color("lch(50% 50 0)").interpolate(
+    "lch(90% 50 20)",
+    progress=lambda p: p ** 3
+)
 ```
 
 ## Color Mixing
@@ -173,7 +203,14 @@ In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` a
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
 
 ```{.color fit}
-Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=3, max_steps=15)
+Color("display-p3", [0, 1, 0]).steps(
+    "red",
+    space="lch",
+    out_space="srgb",
+    max_delta_e=20,
+    steps=3,
+    max_steps=15
+)
 ```
 
 ## Overlaying Colors

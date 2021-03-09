@@ -10,13 +10,8 @@ from coloraide import Color
 
 Afterwards, colors can be created using various, valid CSS syntax:
 
-```pycon3
->>> Color("red")
-color(srgb 1 0 0 / 1)
->>> Color("#ff0000")
-color(srgb 1 0 0 / 1)
->>> Color("rgb(255 0 0 / 1)")
-color(srgb 1 0 0 / 1)
+```color
+Color("red"), Color("#00ff00"), Color("rgb(0 0 255 / 1)")
 ```
 
 As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
@@ -25,13 +20,9 @@ We can also insert raw data points directly, but notice, when doing this, we are
 used internally, and in the case for sRGB, the channels are in the range of \[0, 1\]. Additionally, alpha is always
 handled as a separate parameter.
 
-```pycon3
->>> Color("srgb", [0.5, 0, 1], 0.3)
-color(srgb 0.5 0 1 / 0.3)
+```color
+Color("srgb", [0.5, 0, 1], 0.3)
 ```
-
-So in the example above, the raw data is parsed, and we get a transparent color in the sRGB space:
-`#!color color(srgb 0.5 0 1 / 0.3)`.
 
 We can also pass in other color objects, which is really only useful if we've subclassed the `Color` object and want
 to cast the object between the classes.
@@ -39,11 +30,10 @@ to cast the object between the classes.
 The same color creation can be preformed from a color's `new` class method as well. `new` accepts the same inputs
 as the class object itself.
 
-```pycon3
->>> color1 = Color("red")
->>> color2 = color1.new("blue")
->>> color1, color2
-(color(srgb 1 0 0 / 1), color(srgb 0 0 1 / 1))
+```color
+color1 = Color("red")
+color2 = color1.new("blue")
+color1, color2
 ```
 
 ## Cloning
@@ -52,11 +42,10 @@ The `clone` method is an easy way to duplicate the current color object.
 
 Here we clone the `#!color green` object so we have two.
 
-```pycon3
->>> c1 = Color("green")
->>> c2 = c1.clone()
->>> c1, c2
-(color(srgb 0 0.50196 0 / 1), color(srgb 0 0.50196 0 / 1))
+```color
+c1 = Color("green")
+c2 = c1.clone()
+c1, c2
 ```
 
 ## Updating
@@ -68,13 +57,11 @@ are identical to the `new` method, so we can use a color object, a color string,
 
 Here we update the color `#!color red` to the color `#!color blue`:
 
-```pycon3
->>> color1 = Color("red")
->>> color2 = Color("blue")
->>> color1.update(color2)
-color(srgb 0 0 1 / 1)
->>> color1, color2
-(color(srgb 0 0 1 / 1), color(srgb 0 0 1 / 1))
+```color
+color1 = Color("red")
+color2 = Color("blue")
+color1.update(color2)
+color1, color2
 ```
 
 Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
