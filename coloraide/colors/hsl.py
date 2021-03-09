@@ -14,21 +14,21 @@ def srgb_to_hsl(rgb):
     """SRGB to HSL."""
 
     r, g, b = rgb
-    mx = max(r, max(g, b))
-    mn = min(r, min(g, b))
+    mx = max(rgb)
+    mn = min(rgb)
     h = util.NaN
     s = 0.0
     l = (mn + mx) / 2
     c = mx - mn
 
     if c != 0.0:
-        s = c / (1.0 - abs(2.0 * l - 1))
         if mx == r:
             h = (g - b) / c
         elif mx == g:
             h = (b - r) / c + 2.0
         else:
             h = (r - g) / c + 4.0
+        s = c / (1.0 - abs(2.0 * l - 1))
         h *= 60.0
 
     return HSL._constrain_hue(h), s * 100.0, l * 100.0
@@ -63,7 +63,6 @@ class HSL(Cylindrical, Space):
     DEF_VALUE = "color(hsl 0 0 0 / 1)"
     CHANNEL_NAMES = frozenset(["hue", "saturation", "lightness", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    GAMUT = "srgb"
     ALPHA_COMPOSITE = "srgb"
     WHITE = convert.WHITES["D65"]
 
