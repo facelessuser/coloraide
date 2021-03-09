@@ -241,7 +241,12 @@ class Color:
         """Interpolate discrete steps."""
 
         color = self._handle_color_input(color)
-        return self._color.steps(color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args)
+        colors = []
+        for obj in self._color.steps(
+            color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args
+        ):
+            colors.append(self.new(obj.space(), obj.coords(), obj.alpha))
+        return colors
 
     def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
         """Mix the two colors."""

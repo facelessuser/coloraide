@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a6
+
+- **FIX**: Don't return detached color spaces from `steps`. Ensure they are wrapped with a `Color` object on return.
+
 ## 0.1.0a5
 
 - **FIX**: Fix an issue where `update` can fail due to a color space detached from a parent.
