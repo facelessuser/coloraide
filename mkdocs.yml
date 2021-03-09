@@ -58,9 +58,10 @@ markdown_extensions:
   - pymdownx.superfences:
       preserve_tabs: true
       custom_fences:
-        - name: color-gradient
+        - name: color
           class: color
-          format: !!python/name:tools.colors._block_color_formatter
+          format: !!python/name:tools.colors.color_command_formatter
+          validator: !!python/name:tools.colors.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline
@@ -76,21 +77,9 @@ markdown_extensions:
         - name: color
           class: color
           format: !!python/name:tools.colors.color_formatter
-        - name: color-swatch
-          class: color
-          format: !!python/name:tools.colors.color_formatter_color_only
         - name: color-fit
           class: color
           format: !!python/name:tools.colors.color_formatter_fit
-        - name: color-swatch-fit
-          class: color
-          format: !!python/name:tools.colors.color_formatter_color_only_fit
-        - name: color-gradient
-          class: color
-          format: !!python/name:tools.colors.color_gradient_formatter
-        - name: color-steps
-          class: color
-          format: !!python/name:tools.colors.color_steps_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true

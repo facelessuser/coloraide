@@ -12,10 +12,11 @@ Here we create a an interpolation between `#!color rebeccapurple` and `#!color-f
 fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range of colors that we
 can use in a gradient to get:
 
-```color-gradient
-i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
-result = list(map(lambda x: i(x/10), range(10)))
+```color
+Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
 ```
+
+And these are the values:
 
 ```pycon3
 >>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -44,10 +45,11 @@ end up with a range of colors that maintain the same lightness and chroma, but w
 
 We can see as we step through the colors that only the hue is interpolated:
 
-```color-gradient
-i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
-result = list(map(lambda x: i(x/10), range(10)))
+```color
+Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
 ```
+
+And you can see only the hue is adjusted:
 
 ```pycon3
 >>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
@@ -85,62 +87,39 @@ to learn more about each one.
 
 `shorter`:
 : 
-    ```color-gradient
-    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter")
-    result = list(map(lambda x: i(x/20), range(20)))
+    ```color
+    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="shorter")
     ```
 
 `longer`:
 : 
-    ```color-gradient
-    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer");
-    result = list(map(lambda x: i(x/20), range(20)))
+    ```color
+    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="longer")
     ```
 
 `increasing`:
 : 
-    ```color-gradient
-    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing");
-    result = list(map(lambda x: i(x/20), range(20)))
+    ```color
+    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="increasing")
     ```
 
 `decreasing`:
 : 
-    ```color-gradient
-    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing");
-    result = list(map(lambda x: i(x/20), range(20)))
+    ```color
+    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="decreasing")
     ```
 
 `specified`:
 : 
-    ```color-gradient
-    i = Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified")
-    result = list(map(lambda x: i(x/20), range(20)))
+    ```color
+    Color("rebeccapurple").interpolate("lch(85% 100 805)", space='lch', hue="specified")
     ```
 
 We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
 the colors (color previews are fit to the sRGB gamut):
 
-```color-gradient
-i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
-result = list(map(lambda x: i(x/10), range(10)))
-```
-
-```pycon3
->>> i = Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
->>> for x in range(10):
-...     i(x/10).to_string()
-...
-'lch(50% 50 0)'
-'lch(50.04% 49.997 0.0196)'
-'lch(50.32% 49.976 0.15685)'
-'lch(51.08% 49.921 0.52995)'
-'lch(52.56% 49.819 1.2588)'
-'lch(55% 49.669 2.4666)'
-'lch(58.64% 49.487 4.2807)'
-'lch(63.72% 49.316 6.831)'
-'lch(70.48% 49.241 10.242)'
-'lch(79.16% 49.401 14.617)'
+```color
+Color("lch(50% 50 0)").interpolate("lch(90% 50 20)", progress=lambda p: p ** 3)
 ```
 
 ## Color Mixing
@@ -153,44 +132,32 @@ within a color space smaller than the original, the colors will be gamut mapped 
     Mix, just like interpolation, also accepts the `accept` and `hue` parameters.
 
 As an example, if we had the color `#!color red` and the color
-`#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get the color
-`#!color rgb(127.5 0 127.5)`.
+`#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get:
 
-```pycon3
->>> red = Color("red")
->>> blue = Color("blue")
->>> red.mix(blue).to_string()
-'rgb(127.5 0 127.5)'
+```color
+Color("red").mix(Color("blue"))
 ```
 
 The `mix` method will mix the two colors in the color space of the color calling the method. If needed, a different
-color space can be specified with the `space` parameter. Notice that this creates a different color:
-`#!color rgb(180.38 44.003 76.616)`. The results of mixing in a different color space may be more desirable as color
-mixing may be more natural.
+color space can be specified with the `space` parameter. Notice below that this creates a different color.
+The results of mixing in a different color space may be more desirable as color mixing may be more natural.
 
-```pycon3
->>> red = Color("red")
->>> blue = Color("blue")
->>> red.mix(blue, space="lab").to_string()
-'rgb(180.38 44.003 76.616)'
+```{.color fit}
+Color("red").mix(Color("blue"), space="lch")
 ```
 
 By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
 the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51)`.
 
-```pycon3
->>> red = Color("red")
->>> blue = Color("blue")
->>> red.mix(blue, 0.2).to_string()
-'rgb(204 0 51)'
+```color
+Color("red").mix(Color("blue"), 0.2)
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
 color afterwards.
 
-```pycon3
->>> Color("red").mix("blue", 0.2).to_string()
-'rgb(204 0 51)'
+```color
+Color("red").mix("blue", 0.2)
 ```
 
 Mixing will always return a new color unless `in_place` is set `True`.
@@ -204,36 +171,9 @@ which is a simple euclidean distancing in the Lab color space.
 
 In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
-`#!color-steps
-result = list(Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=10))
-`.
 
-```pycon3
->>> color = Color("display-p3", [0, 1, 0])
->>> for x in color.steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=10):
-...     print(x.to_string(percent=True))
-...
-rgb(0% 98.693% 11.113%)
-rgb(25.045% 95.744% 0%)
-rgb(38.102% 92.728% 0%)
-rgb(47.027% 89.643% 0%)
-rgb(54.07% 86.488% 0%)
-rgb(59.96% 83.264% 0%)
-rgb(65.029% 79.971% 0%)
-rgb(69.459% 76.608% 0%)
-rgb(73.357% 73.177% 0%)
-rgb(76.79% 69.681% 0%)
-rgb(79.8% 66.123% 0%)
-rgb(82.415% 62.505% 0%)
-rgb(84.654% 58.832% 0%)
-rgb(86.529% 55.109% 0%)
-rgb(88.047% 51.342% 0%)
-rgb(89.215% 47.538% 0%)
-rgb(90.036% 43.702% 0%)
-rgb(90.513% 39.841% 0%)
-rgb(90.649% 35.964% 6.5496%)
-rgb(90.448% 32.076% 12.232%)
-rgb(100% 0.00006% 0.00001%)
+```{.color fit}
+Color("display-p3", [0, 1, 0]).steps("red", space="lch", out_space="srgb", max_delta_e=20, steps=3, max_steps=15)
 ```
 
 ## Overlaying Colors
@@ -250,10 +190,8 @@ color is to be overlaid within a smaller color space, the colors will be mapped 
 In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)` and overlay it on the color `#!color black`. This
 yields the color: `#!color rgb(127.5 0 0)`.
 
-```pycon3
->>> color = Color("rgb(100% 0% 0% / 0.5)")
->>> color.overlay("black").to_string()
-'rgb(127.5 0 0)'
+```color
+Color("rgb(100% 0% 0% / 0.5)").overlay("black")
 ```
 
 A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
@@ -315,7 +253,7 @@ At any time, a channel can be checked for whether it is `NaN` by using the `is_n
 
 ```pycon3
 >>> Color("white").convert('hsl').is_nan('hue')
->>> True
+True
 ```
 
 It can be useful to check whether a channel is `NaN` as `NaN` values can't be added, subtracted, multiplied, etc. They

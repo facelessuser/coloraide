@@ -38,23 +38,21 @@ as well.
 
 In this example, we will take the color `#!color lch(100% 50 75)`. LCH's gamut is technically unbounded, but if we try
 to fit it in the sRGB gamut, as noted earlier, it is outside the narrow gamut of sRGB. So, using the `fit` method, and
-specifying `srgb` as the target color space, the color will changed to `#!color lch(99.437% 5.219 99.729)` which now
+specifying `srgb` as the target color space, the color will changed to `#!color-fit lch(99.437% 5.219 99.729)` which now
 fits into the sRGB color gamut.
 
-```pycon3
->>> Color("lch(100% 50 75)").fit("srgb").to_string()
-'lch(99.437% 5.219 99.729)'
+```color
+Color("lch(100% 50 75)").fit("srgb")
 ```
 
 If desired, simple clipping can be used instead of the default gamut fitting. Generally this is not recommended, but
 there are times and places for everything. To do so, the fitting method can be specified via the `method` parameter.
 Here, we take the same color in the previous example (`#!color lch(100 50 75)`) and perform a simple clipping to get
 `#!color lch(95.815% 42.312 96.915)`. Notice the difference when compared to the previous fitting result:
-`#!color lch(99.437% 5.219 99.729)`.
+`#!color-fit lch(99.437% 5.219 99.729)`.
 
-```pycon3
->>> Color("lch(100% 50 75)").fit("srgb", method="clip").to_string()
-'lch(95.815% 42.312 96.915)'
+```color
+Color("lch(100% 50 75)").fit("srgb", method="clip")
 ```
 
 Gamut fitting will always return a new color unless `in_place` is set `True`.
