@@ -20,9 +20,10 @@
   display: inline-block;
   width: 1.25em;
   height: 1.25em;
-  margin: 0 0.25em;
-  line-height: 0;
+  margin-left: 0.25em;
+  margin-right: 0.2em;
   border-radius: 100px;
+  line-height: 0;
   transition: all 0.5s ease;
   background-color: var(--swatch-bg-color);
   background-image: linear-gradient(45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
@@ -31,12 +32,11 @@
                     linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
   background-size: 0.5em 0.5em;
   background-position: 0 0, 0 0.25em, 0.25em -0.25em, -0.25em 0px;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
+  box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, .3);
 }
 
 .swatch-gradient {
   display: inline-block;
-  border-radius: 0.25em;
   width: 10em;
   background-size: 1em 1em;
   background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
@@ -47,10 +47,10 @@
   vertical-align: text-bottom;
   display: inline-block;
   box-sizing: border-box;
+  border-radius: 100px;
   margin: 0;
   padding: 0;
   border: 2px solid var(--swatch-border-color);
-  border-radius: 100px;
   height: 1.25em;
   width: 1.25em;
   background: linear-gradient(to right, var(--swatch-stops));
@@ -58,33 +58,49 @@
 
 .swatch-gradient .swatch-color {
   width: 10em;
-  border-radius: 0.15em;
 }
 
 div.swatch-gradient,
 div.swatch-gradient .swatch-color {
+  border-radius: 0;
   width: 100%;
   height: 3em;
   margin: 0;
 }
 
-div.swatch-steps {
-  font-size: 120%;
-  line-height: 2em;
+div.swatch-bar .swatch:not(.swatch-gradient),
+div.swatch-bar .swatch:not(.swatch-gradient) .swatch-color {
+  border-radius: 0;
+  height: 3em;
+  width: 3em;
+  margin: 0;
+}
+
+div.swatch-bar {
+  box-sizing: border-box;
+  border: 2px solid var(--md-code-bg-color);
+  background-color: var(--md-default-bg-color);
+  background-image: linear-gradient(45deg, var(--md-code-bg-color) 25%, transparent 25%),
+                    linear-gradient(-45deg, var(--md-code-bg-color) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, var(--md-code-bg-color) 75%),
+                    linear-gradient(-45deg, transparent 75%, var(--md-code-bg-color) 75%);
+  background-size: 1em 1em;
+  background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
 }
 
 .swatch.out-of-gamut .swatch-color {
   border-color: var(--swatch-gamut-border-color);
 }
 
-span.swatch:not(.swatch-gradient):hover {
+span.swatch:hover {
   z-index: 2;
   transform: scale(2);
 }
 
-.swatch-steps > span.swatch:hover {
+.swatch-bar span.swatch:hover,
+.swatch-bar span.swatch-gradient:hover {
   z-index: 2;
-  transform: scale(1.5);
+  transform: scale(1.2) translateY(-0.2em);
 }
 
 div.color-command {
@@ -95,12 +111,7 @@ div.color-command .highlight pre {
   margin-top: 0;
 }
 
-div.color-command .swatch-gradient .swatch-color {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-div.color-command .swatch-gradient + .highlight pre code {
+div.color-command .highlight pre code {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
