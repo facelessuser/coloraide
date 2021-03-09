@@ -19,10 +19,6 @@ Color("rebeccapurple").interpolate(
 )
 ```
 
-```color
-Color("lch(52% 58.1 22.7)").interpolate("#8be9fd", space="lch", adjust=["hue"])
-```
-
 And these are the values:
 
 ```pycon3
