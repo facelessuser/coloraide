@@ -189,13 +189,13 @@ class Gamut:
         # If it proves to be in gamut, we will then test if the current
         # space is constrained properly.
         # TODO: Do we really gain anything by doing this?
-        if self.GAMUT is not None and False:  # pragma: no cover
+        if self.GAMUT is not None:  # pragma: no cover
             c2 = self.convert(self.GAMUT)
             if not c2.in_gamut(tolerance=tolerance):
                 return False
 
         # Verify the values are in bound
-        channels = self.coords()
+        channels = util.no_nan(self.coords())
         for i, value in enumerate(channels):
             a, b = self._range[i]
             is_bound = isinstance(self._range[i], GamutBound)
