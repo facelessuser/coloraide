@@ -168,7 +168,9 @@ class Color:
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
 
+        clone = self.clone()
         obj = self._parse(color, data, alpha, filters=filters, **kwargs)
+        clone._attach(obj)
         self._color.update(obj)
         return self
 
