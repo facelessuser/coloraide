@@ -62,6 +62,15 @@ class Color:
 
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
+    def __eq__(self, other):
+        """Compare equal."""
+
+        return (
+            other.space() == self.space() and
+            other.coords() == self.coords() and
+            other.alpha == self.alpha
+        )
+
     def is_nan(self, name):
         """Check if channel is NaN."""
 
