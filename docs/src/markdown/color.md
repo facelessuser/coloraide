@@ -11,7 +11,11 @@ from coloraide import Color
 Afterwards, colors can be created using various, valid CSS syntax:
 
 ```color
-Color("red"), Color("#00ff00"), Color("rgb(0 0 255 / 1)")
+(
+    Color("red"),
+    Color("#00ff00"),
+    Color("rgb(0 0 255 / 1)")
+)
 ```
 
 As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
@@ -140,31 +144,22 @@ In this example, we construct a regex to find places within the buffer that pote
 try and filter out cases that are unfavorable, particularly in HTML or CSS. We don't want to match hex in HTML entities
 or color names that are part of color variables (`#!css var(--color-red)`).
 
-=== "Code"
+```color
+import re
+from coloraide import Color
 
-    ```py3
-    import re
-    from coloraide.css import Color
+RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)")
 
-    RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)")
+text = """Red and yellow are colors. So are #000088 and lch(75% 50 50)."""
 
-    text = """Red and yellow are colors. So are #ff0033 and lch(90% 50 50)."""
-
-    for m in RE_COLOR_START.finditer(text):
-        start = m.start()
-        mcolor = Color.match(text, start=start)
-        if mcolor is not None:
-            print('Found {} @ index {}'.format(mcolor.color.to_string(), start))
-    ```
-
-=== "Output"
-
-    ```
-    Found rgb(255 0 0) @ index 0
-    Found rgb(255 255 0) @ index 8
-    Found rgb(255 0 51) @ index 34
-    Found lch(90% 50 50) @ index 46
-    ```
+colors = []
+for m in RE_COLOR_START.finditer(text):
+    start = m.start()
+    mcolor = Color.match(text, start=start)
+    if mcolor is not None:
+        colors.append(mcolor.color)
+[x.to_string() for x in colors]
+```
 
 ## Override Default Settings
 
@@ -174,14 +169,14 @@ default is used. If needed, the defaults can be changed for an entire applicatio
 the `Color` object and override the defaults. Then the new derived class can be used throughout an application or
 library.
 
-```pycon3
->>> Color('red').convert('lch').to_string()
-'lch(54.288% 106.83 40.853)'
->>> class Color2(Color):
-...     PRECISION = 3
-...
->>> Color2('red').convert('lch').to_string()
-'lch(54.3% 107 40.9)'
+```color
+class Color2(Color):
+    PRECISION = 3
+
+(
+    Color('purple').convert('lch').to_string(),
+    Color2('purple').convert('lch').to_string()
+)
 ```
 
 Properties  | Description

@@ -41,21 +41,29 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             result = execute(src.strip())
         except Exception:
             css = True
+            lang = 'css-color'
             result = src.strip()
         gradient = False
         lang = 'py3'
-        processed = src
+        output = ''
         if isinstance(result, Color):
             colors = [result]
+            output = '\n'.join([x.to_string() for x in colors])
         elif isinstance(result, Callable):
             colors = list(map(lambda x: result(x / 20), range(20)))
+            output = '\n'.join([x.to_string() for x in colors])
             gradient = True
         elif isinstance(result, str):
             colors = [Color(result)]
-            if css:
-                lang = 'css-color'
+            if not css:
+                output = '{}'.format(result)
         elif isinstance(result, Sequence):
-            colors = [Color(x) for x in result]
+            colors = []
+            text = []
+            for x in result:
+                colors.append(Color(x))
+                text.append(x if isinstance(x, str) else colors[-1].to_string())
+            output = '\n'.join(text)
         else:
             raise TypeError('Not a string, color, or sequence')
 
@@ -77,8 +85,6 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             values = []
             base_classes = "swatch"
             for color in colors:
-                if not css:
-                    processed += '\n# {}'.format(color.to_string())
                 if not color.in_gamut('srgb') and not fit:
                     c = '<span class="swatch-color"></span>'
                     classes = base_classes + " out-of-gamut"
@@ -100,17 +106,31 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
                 values.append(c)
             el = '<div class="swatch-bar">{}</div>'.format(' '.join(values))
 
+        if not css:
+            options['linenums'] = '1'
+
         el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=processed,
+            src=src,
             class_name="highlight",
             language=lang,
             md=md,
             options=options,
             **kwargs
         )
+
+        if not css and output:
+            el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+                src=output,
+                class_name="highlight",
+                language='css-color',
+                md=md,
+                options=[],
+                **kwargs
+            )
         el = '<div class="color-command">{}</div>'.format(el)
     except Exception:
-        # print(e)
+        import traceback
+        print(traceback.format_exc())
         return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
     return el
 

@@ -1,5 +1,7 @@
 # Changelog
 
+- **FIX**: Fix issue with translation of an input that is compressed hex with a specified alpha.
+
 ## 0.1.0a6
 
 - **FIX**: Don't return detached color spaces from `steps`. Ensure they are wrapped with a `Color` object on return.

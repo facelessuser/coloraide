@@ -13,21 +13,36 @@ In the process of developing this library, we also stumbled upon [Color.js][colo
 co-authors of some of the recent CSS color specifications. This project became heavily influenced by Color.js. While our
 aim was not to port that library, it did leave a clear impression on our API.
 
-With ColorAide, colors in various spaces can be created, converted to other spaces, mixed, manipulated, and output in
-different CSS formats.
+With ColorAide, you can create colors:
 
-```pycon3
->>> from coloraide import Color
->>> c = Color("red")
->>> c.to_string()
-'rgb(255 0 0)'
->>> c.convert('hsl').to_string()
-'hsl(0 100% 50%)'
->>> c.set("lch.chroma", 30).to_string()
-'rgb(173.81 114.29 97.218)'
->>> Color("blue").mix("yellow", space="lch").to_string()
-'rgb(255 65.751 107.47)'
+```color
+from coloraide import Color
+c = Color('red')
+c.to_string()
 ```
+
+Convert colors:
+
+```color
+from coloraide import Color
+Color('red').convert('hsl').to_string()
+```
+
+Modify colors:
+
+```color
+from coloraide import Color
+Color('red').set("lch.chroma", 30).to_string()
+```
+
+Mix colors:
+
+```color
+from coloraide import Color
+Color("blue").mix("yellow", space="lch").to_string()
+```
+
+And more!
 
 ## Installation
 

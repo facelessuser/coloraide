@@ -3,39 +3,27 @@
 ## Interpolating
 
 The `interpolate` method allows a user to create an interpolation function. This can be used to create a list of
-gradient colors, or whatever is needed. This function drives most of the features handled by interpolation.
+gradient colors, or whatever is needed. This function drives most of the features under the interpolation umbrella.
+The [`steps`](#steps) and [`mix`](#color-mixing) functions are both built on top of `interpolate`.
 
-Interpolation functions accept an input between 0 - 1, if values are provided out of this range, the color will be
-extrapolated and the results may be surprising.
+A returned interpolation functions accept an input between 0 - 1, if values are provided out of this range, the color
+will be extrapolated and the results may be surprising.
 
-Here we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color previews are
-fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc. which creates a range of colors that we
-can use in a gradient to get:
+In this example, we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color
+previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
+
+```color
+i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
+[i(x/20).to_string() for x in range(20)]
+```
+
+This allows us to create a range of colors that we can use in a gradient.
 
 ```color
 Color("rebeccapurple").interpolate(
     "lch(85% 100 85)",
     space='lch'
 )
-```
-
-And these are the values:
-
-```pycon3
->>> i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
->>> for x in range(10):
-...     i(x/10).to_string()
-...
-'rgb(102 51 153)'
-'rgb(142.02 45.34 154.31)'
-'rgb(178.58 36.391 149.5)'
-'rgb(211.11 28.452 139.16)'
-'rgb(238.61 32.963 124.24)'
-'rgb(255 53.083 105.75)'
-'rgb(249.21 108.41 101.4)'
-'rgb(255 130.24 87.774)'
-'rgb(255 154.42 74.129)'
-'rgb(255 179.93 62.148)'
 ```
 
 If desired, we can target one or more specific channels for mixing which will keep all the other channels constant on
@@ -46,29 +34,10 @@ In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` w
 `#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. Applying this logic, we will
 end up with a range of colors that maintain the same lightness and chroma, but with different hues.
 
-We can see as we step through the colors that only the hue is interpolated:
+We can see as we step through the colors that only the hue is interpolated.
 
 ```color
 Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
-```
-
-And you can see only the hue is adjusted:
-
-```pycon3
->>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
->>> for x in range(10):
-...     i(x/10).to_string()
-...
-'lch(52% 58.1 22.7)'
-'lch(52% 58.1 10.14)'
-'lch(52% 58.1 357.58)'
-'lch(52% 58.1 345.02)'
-'lch(52% 58.1 332.46)'
-'lch(52% 58.1 319.9)'
-'lch(52% 58.1 307.34)'
-'lch(52% 58.1 294.78)'
-'lch(52% 58.1 282.22)'
-'lch(52% 58.1 269.66)'
 ```
 
 Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
@@ -225,6 +194,13 @@ yields the color: `#!color rgb(127.5 0 0)`.
 
 ```color
 Color("rgb(100% 0% 0% / 0.5)").overlay("black")
+```
+
+If desired, you can specify a different space to overlay in via the `space` parameter. Color space can affect the
+results.
+
+```color
+Color("rgb(100% 0% 0% / 0.5)").overlay("black", space="display-p3")
 ```
 
 A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
