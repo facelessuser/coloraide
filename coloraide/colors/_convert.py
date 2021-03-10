@@ -70,8 +70,8 @@ class Convert:
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
                 clone = self.clone()
-                clone.fit(space, method=method, in_place=True)
                 result = clone.convert(space)
+                result.fit(space, method=method, in_place=True)
                 return result
 
         convert_to = '_to_{}'.format(space)
