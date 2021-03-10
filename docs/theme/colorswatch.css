@@ -92,15 +92,19 @@ div.swatch-bar {
   border-color: var(--swatch-gamut-border-color);
 }
 
-span.swatch:hover {
+.swatch:hover {
   z-index: 2;
   transform: scale(2);
 }
 
-.swatch-bar span.swatch:hover,
-.swatch-bar span.swatch-gradient:hover {
+div.swatch-bar > span.swatch:hover {
   z-index: 2;
   transform: scale(1.2) translateY(-0.2em);
+}
+
+div.swatch-bar > div.swatch:hover {
+  z-index: 2;
+  transform: scale(1.02, 1.2) translateY(-0.2em);
 }
 
 div.color-command {

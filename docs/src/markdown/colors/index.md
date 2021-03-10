@@ -254,9 +254,9 @@
     color(display-p3 1 1 1 / 1)
     ```
 
-### Adobe(r) RGB Compatible
+### A98 RGB
 
-[Learn about Adobe(r) RGB Compatible](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)
+[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)
 
 **White Point**
 :   D65
