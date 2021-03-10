@@ -193,7 +193,7 @@ class SRGB(generic.SRGB):
                         cls.translate_channel(0, "#" + color[1] * 2),
                         cls.translate_channel(1, "#" + color[2] * 2),
                         cls.translate_channel(2, "#" + color[3] * 2),
-                        cls.translate_channel(-1, "#" + m.group(4)) if m.group(4) else 1.0
+                        cls.translate_channel(-1, "#" + m.group(4) * 2) if m.group(4) else 1.0
                     )
                 )
 

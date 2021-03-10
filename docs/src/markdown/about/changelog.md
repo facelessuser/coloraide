@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.1.0a7
+
 - **FIX**: Fix issue with translation of an input that is compressed hex with a specified alpha.
 
 ## 0.1.0a6
