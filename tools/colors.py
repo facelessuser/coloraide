@@ -220,22 +220,15 @@ def _inline_color_formatter(src="", language="", class_name=None, md="", show_co
 
     try:
         result = src.strip()
-        cmd = False
         try:
             console, colors = execute_color_cmd(result)
-            if len(colors) != 1:
+            if len(colors) != 1 or len(colors[0]) != 1:
                 raise ValueError('Need one color only')
-            color = colors[0].color
-            result = colors[0].string
-            cmd = True
+            color = colors[0][0].color
+            result = colors[0][0].string
         except Exception:
-            result = src.strip()
-        if isinstance(result, (str, Color)):
-            color = Color(result)
-            if cmd:
-                result = color.to_string()
-        else:
-            raise TypeError('Not a string or color')
+            color = Color(result.strip())
+            result = color.to_string()
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut("srgb"):
