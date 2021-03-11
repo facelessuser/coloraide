@@ -6,22 +6,18 @@ ColorAide provides a simple euclidean color distance function. By default, it ev
 space, but it can be configured to evaluate in any color space. It may be less useful in some color spaces compared to
 others:
 
-```pycon3
->>> Color("red").distance("blue", space="srgb")
-1.4142135623730951
->>> Color("red").distance("blue", space="lab")
-184.01293277712057
-``` 
+```color
+Color("red").distance("blue", space="srgb")
+Color("red").distance("blue", space="lab")
+```
 
 ## Delta E
 
 The `delta_e` function gives access to various delta E implementations.
 
-```pycon3
->>> Color("red").delta_e("blue")
-184.01293277712057
->>> Color("red").delta_e("blue", method="2000")
-55.79762200630985
+```color
+Color("red").delta_e("blue")
+Color("red").delta_e("blue", method="2000")
 ```
 
 The default implementation is Delta E 1976. Originally, when the Lab color space was created, it was thought that it was

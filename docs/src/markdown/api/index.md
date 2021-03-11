@@ -334,9 +334,9 @@ def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_
 ```
 
 Creates an `interpolate` function and iterates through it with user defined step parameters to produce discrete color
-steps. Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e` is provided,
-the distance between each stop will be cut in half until there are no colors with a distance greater than the specified
-`max_delta_e`.
+steps. Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e` is
+provided, the distance between each stop will be cut in half until there are no colors with a distance greater than the
+specified `max_delta_e`.
 
 Return
 : 
@@ -367,7 +367,8 @@ result.
 
 Return
 : 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if `in_place` is `#!py3 True`.
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
 
 Parameters
 : 
@@ -400,7 +401,8 @@ Clipping   | `clip`
 
 Return
 : 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if `in_place` is `#!py3 True`.
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
 
 Parameters
 : 

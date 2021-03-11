@@ -44,13 +44,11 @@ Additionally, hues are special, and we can control the way the interpolation is 
 accepts such values as `shorter`, `longer`, `increasing`, `decreasing`, and `specified` (`shorter` being the default).
 Below, we can see how the interpolation varies using `shorter` vs `longer`.
 
-```pycon3
->>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
->>> i(0.2477).to_string()
-'lch(52% 58.1 351.59)'
->>> i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"], hue="longer")
->>> i(0.2477).to_string()
-'lch(52% 58.1 80.761)'
+```color
+i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+i(0.2477).to_string()
+i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"], hue="longer")
+i(0.2477).to_string()
 ```
 
 To help visualize the different hue methods, consider the following evaluation between `#!color rebeccapurple` and
@@ -155,7 +153,7 @@ color afterwards.
 Color("red").mix("blue", 0.2)
 ```
 
-Mixing will always return a new color unless `in_place` is set `True`.
+Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
 ## Steps
 
@@ -203,7 +201,7 @@ results.
 Color("rgb(100% 0% 0% / 0.5)").overlay("black", space="display-p3")
 ```
 
-A new color will be returned instead of modifying the current color unless `in_place` is set `True`.
+A new color will be returned instead of modifying the current color unless `in_place` is set `#!py3 True`.
 
 ## Null Handling
 
@@ -226,15 +224,12 @@ for the same channel, then `0` will be returned.
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color purple`), the hue of the second color is used.
 
-```pycon3
->>> color = Color('white').convert('hsl')
->>> color.coords()
-[nan, 0.0, 100.0]
->>> color2 = Color('purple').convert('hsl')
->>> color2.coords()
-[300.0, 100.0, 25.098039215686274]
->>> color.mix(color2, space="hsl")
-color(hsl 300 50 62.549 / 1)
+```color
+color = Color('white').convert('hsl')
+color.coords()
+color2 = Color('purple').convert('hsl')
+color2.coords()
+color.mix(color2, space="hsl")
 ```
 
 This is essentially haw the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
@@ -243,37 +238,32 @@ This is essentially haw the `adjust` parameter works with [`interploate`](#inter
 Technically, any channel can be set to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
 manually setting it via a channel property or accessor. CSS string inputs do not allow the `NaN` value.
 
-```pycon3
->>> from coloraide import Color, NaN
->>> Color("srgb", [1, NaN, 1]).coords()
-[1.0, nan, 1.0]
->>> Color("red").set('green', NaN).coords()
-[1.0, nan, 0.0]
+```color
+from coloraide import NaN
+Color("srgb", [1, NaN, 1]).coords()
+Color("red").set('green', NaN).coords()
 ```
 
 When printing to a string, `NaN`s are always converted to `0`:
 
-```pycon3
->>> Color("srgb", [1, NaN, 1])
-color(srgb 1 0 1 / 1)
+```color
+from coloraide import NaN
+Color("srgb", [1, NaN, 1])
 ```
 
 At any time, a channel can be checked for whether it is `NaN` by using the `is_nan` method:
 
-```pycon3
->>> Color("white").convert('hsl').is_nan('hue')
-True
+```color
+Color("white").convert('hsl').is_nan('hue')
 ```
 
 It can be useful to check whether a channel is `NaN` as `NaN` values can't be added, subtracted, multiplied, etc. They
 will always return `NaN` unless you directly replace them.
 
-```pycon3
->>> color = Color("white").convert('hsl')
->>> color.hue = color.hue + 3
->>> color.is_nan('hue')
-True
->>> color.hue = 3
->>> color.is_nan('hue')
-False
+```color
+color = Color("white").convert('hsl')
+color.hue = color.hue + 3
+color.is_nan('hue')
+color.hue = 3
+color.is_nan('hue')
 ```

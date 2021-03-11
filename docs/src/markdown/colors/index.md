@@ -17,13 +17,10 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color('hsv', [0, 0, 100])
-    color(hsv 0 0 100 / 1)
-    >>> Color('color(hsv 0 0 100)')
-    color(hsv 0 0 100 / 1)
-    >>> Color('color(hsv 0 0% 100%)')
-    color(hsv 0 0 100 / 1)
+    ```{.color no-color}
+    Color('hsv', [0, 0, 100])
+    Color('color(hsv 0 0 100)')
+    Color('color(hsv 0 0% 100%)')
     ```
 
 ### sRGB
@@ -43,27 +40,17 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("srgb", [1, 1, 1])
-    color(srgb 1 1 1 / 1)
-    >>> Color("white")
-    color(srgb 1 1 1 / 1)
-    >>> Color("#ffffff")
-    color(srgb 1 1 1 / 1)
-    >>> Color("rgb(100% 100% 100%)")
-    color(srgb 1 1 1 / 1)
-    >>> Color("rgb(255 255 255)")
-    color(srgb 1 1 1 / 1)
-    >>> Color("rgb(255 255 255 / 1)")
-    color(srgb 1 1 1 / 1)
-    >>> Color("rgba(255, 255, 255, 1)")
-    color(srgb 1 1 1 / 1)
-    >>> Color("rgb(255, 255, 255)")
-    color(srgb 1 1 1 / 1)
-    >>> Color('color(srgb 100% 100% 100%)')
-    color(srgb 1 1 1 / 1)
-    >>> Color('color(srgb 1 1 1 / 1)')
-    color(srgb 1 1 1 / 1)
+    ```{.color no-color}
+    Color("srgb", [1, 1, 1])
+    Color("white")
+    Color("#ffffff")
+    Color("rgb(100% 100% 100%)")
+    Color("rgb(255 255 255)")
+    Color("rgb(255 255 255 / 1)")
+    Color("rgba(255, 255, 255, 1)")
+    Color("rgb(255, 255, 255)")
+    Color('color(srgb 100% 100% 100%)')
+    Color('color(srgb 1 1 1 / 1)')
     ```
 
 ### HSL
@@ -83,21 +70,14 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("hsl", [0, 0, 100])
-    color(hsl 0 0 100 / 1)
-    >>> Color("hsl(0 0% 100%)")
-    color(hsl 0 0 100 / 1)
-    >>> Color("hsl(0, 0%, 100%)")
-    color(hsl 0 0 100 / 1)
-    >>> Color("hsl(0 0% 100% / 1)")
-    color(hsl 0 0 100 / 1)
-    >>> Color("hsla(0, 0%, 100%, 1)")
-    color(hsl 0 0 100 / 1)
-    >>> Color("color(hsl 0 0% 100%)")
-    color(hsl 0 0 100 / 1)
-    >>> Color("color(hsl 0 0 100 / 1)")
-    color(hsl 0 0 100 / 1)
+    ```{.color no-color}
+    Color("hsl", [0, 0, 100])
+    Color("hsl(0 0% 100%)")
+    Color("hsl(0, 0%, 100%)")
+    Color("hsl(0 0% 100% / 1)")
+    Color("hsla(0, 0%, 100%, 1)")
+    Color("color(hsl 0 0% 100%)")
+    Color("color(hsl 0 0 100 / 1)")
     ```
 
 ### HWB
@@ -117,23 +97,15 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("hwb", [0, 100, 0])
-    color(hwb 0 100 0 / 1)
-    >>> Color("color(hwb 0 100 0)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("hwb(0 100% 0%)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("hwb(0, 100%, 0%)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("hwb(0 100% 0% / 1)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("hwb(0, 100%, 0%, 1)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("color(hwb 0 100% 0%)")
-    color(hwb 0 100 0 / 1)
-    >>> Color("color(hwb 0 100 0 / 1)")
-    color(hwb 0 100 0 / 1)
+    ```{.color no-color}
+    Color("hwb", [0, 100, 0])
+    Color("color(hwb 0 100 0)")
+    Color("hwb(0 100% 0%)")
+    Color("hwb(0, 100%, 0%)")
+    Color("hwb(0 100% 0% / 1)")
+    Color("hwb(0, 100%, 0%, 1)")
+    Color("color(hwb 0 100% 0%)")
+    Color("color(hwb 0 100 0 / 1)")
     ```
 
 ### Lab
@@ -153,21 +125,14 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("lab", [100, 0, 0])
-    color(lab 100 0 0 / 1)
-    >>> Color("color(lab 100  0  0)")
-    color(lab 100 0 0 / 1)
-    >>> Color("lab(100%  0  0)")
-    color(lab 100 0 0 / 1)
-    >>> Color("lab(100%,  0,  0, 1)")
-    color(lab 100 0 0 / 1)
-    >>> Color("lab(100%  0  0 / 1)")
-    color(lab 100 0 0 / 1)
-    >>> Color("color(lab 100%  0  0)")
-    color(lab 100 0 0 / 1)
-    >>> Color("color(lab 100 0 0 / 1)")
-    color(lab 100 0 0 / 1)
+    ```{.color no-color}
+    Color("lab", [100, 0, 0])
+    Color("color(lab 100  0  0)")
+    Color("lab(100%  0  0)")
+    Color("lab(100%,  0,  0, 1)")
+    Color("lab(100%  0  0 / 1)")
+    Color("color(lab 100%  0  0)")
+    Color("color(lab 100 0 0 / 1)")
     ```
 
 ### LCH
@@ -187,21 +152,14 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("lch", [100, 0, 0])
-    color(lch 100 0 0 / 1)
-    >>> Color("color(lch 100  0  0)")
-    color(lch 100 0 0 / 1)
-    >>> Color("lch(100%  0  0)")
-    color(lch 100 0 0 / 1)
-    >>> Color("lch(100%,  0,  0, 1)")
-    color(lch 100 0 0 / 1)
-    >>> Color("lch(100%  0  0 / 1)")
-    color(lch 100 0 0 / 1)
-    >>> Color("color(lch 100%  0  0)")
-    color(lch 100 0 0 / 1)
-    >>> Color("color(lch 100 0 0 / 1)")
-    color(lch 100 0 0 / 1)
+    ```{.color no-color}
+    Color("lch", [100, 0, 0])
+    Color("color(lch 100  0  0)")
+    Color("lch(100%  0  0)")
+    Color("lch(100%,  0,  0, 1)")
+    Color("lch(100%  0  0 / 1)")
+    Color("color(lch 100%  0  0)")
+    Color("color(lch 100 0 0 / 1)")
     ```
 
 ### XYZ
@@ -221,11 +179,9 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("xyz", [0.96422, 1, 0.82521])
-    color(xyz 0.96422 1 0.82521 / 1)
-    >>> Color("color(xyz 0.96422 1 0.82521)")
-    color(xyz 0.96422 1 0.82521 / 1)
+    ```{.color no-color}
+    Color("xyz", [0.96422, 1, 0.82521])
+    Color("color(xyz 0.96422 1 0.82521)")
     ```
 
 ### Display P3
@@ -245,13 +201,10 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("display-p3", [1, 1, 1])
-    color(display-p3 1 1 1 / 1)
-    >>> Color("color(display-p3 1 1 1)")
-    color(display-p3 1 1 1 / 1)
-    >>> Color("color(display-p3 100% 100% 100%)")
-    color(display-p3 1 1 1 / 1)
+    ```{.color no-color}
+    Color("display-p3", [1, 1, 1])
+    Color("color(display-p3 1 1 1)")
+    Color("color(display-p3 100% 100% 100%)")
     ```
 
 ### A98 RGB
@@ -271,13 +224,10 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("a98-rgb", [1, 1, 1])
-    color(a98-rgb 1 1 1 / 1)
-    >>> Color("color(a98-rgb 1 1 1)")
-    color(a98-rgb 1 1 1 / 1)
-    >>> Color("color(a98-rgb 100% 100% 100%)")
-    color(a98-rgb 1 1 1 / 1)
+    ```{.color no-color}
+    Color("a98-rgb", [1, 1, 1])
+    Color("color(a98-rgb 1 1 1)")
+    Color("color(a98-rgb 100% 100% 100%)")
     ```
 
 ### REC.2020
@@ -297,13 +247,10 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("rec2020", [1, 1, 1])
-    color(rec2020 1 1 1 / 1)
-    >>> Color("color(rec2020 1 1 1)")
-    color(rec2020 1 1 1 / 1)
-    >>> Color("color(rec2020 100% 100% 100%)")
-    color(rec2020 1 1 1 / 1)
+    ```{.color no-color}
+    Color("rec2020", [1, 1, 1])
+    Color("color(rec2020 1 1 1)")
+    Color("color(rec2020 100% 100% 100%)")
     ```
 
 ### ProPhoto
@@ -323,11 +270,8 @@
 
 **Supported Inputs**
 : 
-    ```pycon3
-    >>> Color("prophoto-rgb", [1, 1, 1])
-    color(prophoto-rgb 1 1 1 / 1)
-    >>> Color("color(prophoto-rgb 1 1 1)")
-    color(prophoto-rgb 1 1 1 / 1)
-    >>> Color("color(prophoto-rgb 100% 100% 100%)")
-    color(prophoto-rgb 1 1 1 / 1)
+    ```{.color no-color}
+    Color("prophoto-rgb", [1, 1, 1])
+    Color("color(prophoto-rgb 1 1 1)")
+    Color("color(prophoto-rgb 100% 100% 100%)")
     ```

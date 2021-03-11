@@ -17,17 +17,15 @@ have suggested limits for usability purposes, but may not have actual limits.
 Let's assume we have a color `#!color rgb(30% 105% 0%)` which is not in its own gamut as the blue channel exceeds the
 sRGB limit of `100%`. We can check this via the `in_gamut` method, and we can see that it is not in gamut.
 
-```pycon3
->>> Color("rgb(30% 105% 0%)").in_gamut()
-False
+```color
+Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
 We can also test if a color from one color space fits in a completely different color space. In the example below, we
 can see that the LCH color of `#!color lch(100% 50 75)` is outside the narrow gamut of sRGB.
 
-```pycon3
->>> Color("lch(100% 50 75)").in_gamut("srgb")
-False
+```color
+Color("lch(100% 50 75)").in_gamut("srgb")
 ```
 
 ## Mapping Colors
@@ -49,10 +47,8 @@ there are times and places for everything. In this example, we can change the fi
 Notice the difference when compared to the previous fitting result:
 
 ```color
-(
-    Color("lch(100% 50 75)").fit("srgb", method="clip"),
-    Color("lch(100% 50 75)").fit("srgb")
-)
+Color("lch(100% 50 75)").fit("srgb", method="clip")
+Color("lch(100% 50 75)").fit("srgb")
 ```
 
-Gamut fitting will always return a new color unless `in_place` is set `True`.
+Gamut fitting will always return a new color unless `in_place` is set `#!py3 True`.

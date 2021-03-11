@@ -6,37 +6,32 @@ There are various ways to read the current values of color coordinates.
 
 1. Channel properties can be read directly:
 
-    ```pycon3
-    >>> color = Color("orange")
-    >>> color.red
-    1.0
+    ```color
+    color = Color("orange")
+    color.red
     ```
 
 2. Channel values can also be read by using the `get` method and providing the name of desired channel.
 
-    ```pycon3
-    >>> color = Color("orange")
-    >>> color.get("green")
-    0.6470588235294118
+    ```color
+    color = Color("orange")
+    color.get("green")
     ```
 
 3. All non-alpha coordinates can be read simultaneously by using the `coords` function.
 
-    ```pycon3
-    >>> color = Color("orange")
-    >>> color.coords()
-    [1.0, 0.6470588235294118, 0.0]
-    >>> color.alpha
-    1.0
+    ```color
+    color = Color("orange")
+    color.coords()
+    color.alpha
     ```
 
 If a color coordinate is needed from another color space, it can be accessed by passing in the color space followed by
 the name of the desired coordinate. The necessary conversions will happen behind the scenes and the desired value will
 be returned.
 
-```pycon3
->>> Color("blue").get("lch.chroma")
-131.20704008299427
+```color
+Color("blue").get("lch.chroma")
 ```
 
 ## Modifying Coordinates
@@ -82,12 +77,10 @@ is undefined. For example, the color `#!color hsl(360 0% 100%)`, while assigned 
 real hue since saturation is 0. Essentially, hue could be set to anything, and it would still have no affect on the
 actual color. So, ColorAide will actually set hue to `NaN` (or "not a number"). `NaN` is treated as a zero on output.
 
-```pycon3
->>> color = Color('hsl(360 0% 100%)')
->>> color
-color(hsl 0 0 100 / 1)
->>> color.coords()
-[nan, 0.0, 100.0]
+```color
+color = Color('hsl(360 0% 100%)')
+color
+color.coords()
 ```
 
 Because `NaN` are not numbers, these values will not be included in color interpolation, and these values cannot be
@@ -96,15 +89,13 @@ added, multiplied, or take part in any real math operations. All math operations
 For this reason, it is useful to check if a hue is `NaN`. This can be done with the `is_nan` function. You can simply
 give `is_nan` the property you wish to check, and it will return either `#!py3 True` or `#!py3 False`.
 
-```pycon3
->>> Color('hsl(360 0% 100%)').is_nan('hue')
-True
+```color
+Color('hsl(360 0% 100%)').is_nan('hue')
 ```
 
 This is equivalent to using the `math` library and comparing the value directly:
 
-```pycon3
->>> import math
->>> math.isnan(Color('hsl(360 0% 100%)').hue)
-True
+```color
+import math
+math.isnan(Color('hsl(360 0% 100%)').hue)
 ```

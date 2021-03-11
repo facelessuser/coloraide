@@ -11,11 +11,9 @@ from coloraide import Color
 Afterwards, colors can be created using various, valid CSS syntax:
 
 ```color
-(
-    Color("red"),
-    Color("#00ff00"),
-    Color("rgb(0 0 255 / 1)")
-)
+Color("red"),
+Color("#00ff00"),
+Color("rgb(0 0 255 / 1)")
 ```
 
 As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
@@ -36,8 +34,8 @@ as the class object itself.
 
 ```color
 color1 = Color("red")
-color2 = color1.new("blue")
-color1, color2
+color1
+color1.new("blue")
 ```
 
 ## Cloning
@@ -48,8 +46,8 @@ Here we clone the `#!color green` object so we have two.
 
 ```color
 c1 = Color("green")
-c2 = c1.clone()
-c1, c2
+c1
+c1.clone()
 ```
 
 ## Updating
@@ -62,10 +60,8 @@ are identical to the `new` method, so we can use a color object, a color string,
 Here we update the color `#!color red` to the color `#!color blue`:
 
 ```color
-color1 = Color("red")
-color2 = Color("blue")
-color1.update(color2)
-color1, color2
+Color("red")
+Color("red").update(Color("blue"))
 ```
 
 Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
@@ -90,7 +86,7 @@ Color("red").mutate("lch(80% 50 130)")
 ## Converting
 
 Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
-set `True`, in which case the current color will be mutated to the new converted color.
+set `#!py3 True`, in which case the current color will be mutated to the new converted color.
 
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as LAB, we
 could simply call the `convert` method with the desired color space.
@@ -105,35 +101,31 @@ Color objects can take in raw data points or a CSS style string input. The strin
 `match` method. By default, we can just give it a string, and it will return a `ColorMatch` object. The `ColorMatch`
 object will have the matched color as a `Color` object, and the `start` and `end` points it was located at.
 
-```pycon3
->>> Color.match("red")
-ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
+```color
+Color.match("red")
 ```
 
 By default it matches at the start of the buffer and returns a color if it finds one. If desired, we can do a
 `fullmatch` which requires the entire buffer to match the color.
 
-```pycon3
->>> Color.match("red and yellow")
-ColorMatch(color=color(srgb 1 0 0 / 1), start=0, end=3)
->>> Color.match("red and yellow", fullmatch=True)
+```color
+Color.match("red and yellow")
+Color.match("red and yellow", fullmatch=True)
 ```
 
 We can also adjust the start position of the search. In this case, by adjusting the start position to 8
 characters later, we will match `#!color yellow` instead of `#!color red`.
 
-```pycon3
->>> Color.match("red and yellow", start=8)
-ColorMatch(color=color(srgb 1 1 0 / 1), start=8, end=14)
+```color
+Color.match("red and yellow", start=8)
 ```
 
 If desired, we can also filter out the CSS syntax of certain color spaces. In the following example, we will only target
 HSL colors.
 
-```pycon3
->>> Color.match("red and yellow", filters=["hsl"])
->>> Color.match("hsl(130 30% 75%)", filters=["hsl"])
-ColorMatch(color=color(hsl 130 30 75 / 1), start=0, end=16)
+```color
+Color.match("red and yellow", filters=["hsl"])
+Color.match("hsl(130 30% 75%)", filters=["hsl"])
 ```
 
 A method to find all colors in a buffer is not provided as looping through all the color spaces and matching all
@@ -173,10 +165,8 @@ library.
 class Color2(Color):
     PRECISION = 3
 
-(
-    Color('purple').convert('lch').to_string(),
-    Color2('purple').convert('lch').to_string()
-)
+Color('purple').convert('lch').to_string()
+Color2('purple').convert('lch').to_string()
 ```
 
 Properties  | Description

@@ -1,27 +1,137 @@
 """Color swatch."""
-from coloraide.css import Color
+from coloraide import Color
 from pymdownx import superfences
 import xml.etree.ElementTree as Etree
-from collections.abc import Sequence, Callable
+from collections.abc import Sequence
+from collections import namedtuple
 import ast
+from io import StringIO
+import contextlib
+import sys
+import re
+import functools
+
+AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
+
+RE_COLOR_START = re.compile(
+    r"(?i)(?:\b(?<![-#&])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)"
+)
 
 
-def execute(cmd):
+class ColorInterpolate(list):
+    """Color interpolate."""
+
+
+class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
+    """Color tuple."""
+
+
+@contextlib.contextmanager
+def std_output(stdout=None):
+    """Capture standard out."""
+    old = sys.stdout
+    if stdout is None:
+        stdout = StringIO()
+    sys.stdout = stdout
+    yield stdout
+    sys.stdout = old
+
+
+def get_colors(result):
+    """Get color from results."""
+
+    colors = []
+    if isinstance(result, Color):
+        colors.append(ColorTuple(result.to_string(), result))
+    elif isinstance(result, functools.partial) and result.func.__name__ == '_interpolate':
+        colors = ColorInterpolate()
+        for x in range(20):
+            c = result(x / 20)
+            colors.append(ColorTuple(c.to_string(), c))
+    elif isinstance(result, str):
+        try:
+            colors.append(ColorTuple(result, Color(result)))
+        except Exception:
+            pass
+    elif isinstance(result, Sequence):
+        for x in result:
+            if isinstance(x, Color):
+                colors.append(ColorTuple(x.to_string(), x))
+            elif isinstance(x, str):
+                try:
+                    colors.append(ColorTuple(x, Color(x)))
+                except Exception:
+                    pass
+    return colors
+
+
+def find_colors(text):
+    """Find colors in text buffer."""
+
+    colors = []
+    for m in RE_COLOR_START.finditer(text):
+        start = m.start()
+        mcolor = Color.match(text, start=start)
+        if mcolor is not None:
+            colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
+    return colors
+
+
+def execute_color_cmd(cmd):
     """Execute color commands."""
 
     g = {'Color': Color}
-    tree = ast.parse(cmd)
-    _exec = ast.Module(tree.body[:-1], [])
-    _eval = ast.Expression(tree.body[-1].value)
-    exec(compile(_exec, '<string>', 'exec'), g)
-    result = eval(compile(_eval, '<string>', 'eval'), g)
-    return result
+    colors = []
+    src = cmd.strip()
+    lines = src.split('\n')
+    tree = ast.parse(src)
+    console = ''
+    result = None
+    for node in tree.body:
+        start = node.lineno
+        end = node.end_lineno
+        stmt = lines[start - 1: end]
+        for i, line in enumerate(stmt, 0):
+            if i == 0:
+                stmt[i] = '>>> ' + line
+            else:
+                stmt[i] = '... ' + line
+        if isinstance(node, ast.Expr):
+            _eval = ast.Expression(node.value)
+            result = eval(compile(_eval, '<string>', 'eval'), g)
+            console += '\n'.join(stmt)
+            if result is not None:
+                clist = get_colors(result)
+                if clist:
+                    colors.append(clist)
+                console += '\n{}'.format(str(result))
+            console += '\n'
+        else:
+            with std_output() as s:
+                _exec = ast.Module([node], [])
+                exec(compile(_exec, '<string>', 'exec'), g)
+                console += '\n'.join(stmt)
+                text = s.getvalue()
+                if text:
+                    clist = find_colors(text)
+                    if clist:
+                        colors.extend(clist)
+                    if isinstance(node, AST_BLOCKS):
+                        console += '\n... '
+                    console += '\n{}'.format(text)
+                else:
+                    if isinstance(node, AST_BLOCKS):
+                        console += '\n... '
+                    console += '\n'
+                text = s.flush()
+
+    return console, colors
 
 
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = {'fit'}
+    valid_inputs = {'fit', 'no-color'}
 
     for k, v in inputs.items():
         if k in valid_inputs:
@@ -31,148 +141,92 @@ def color_command_validator(language, inputs, options, attrs, md):
     return True
 
 
-def command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
-    """Commands."""
-
-    try:
-        result = execute(src.strip())
-        options['linenums'] = '1'
-        el = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=str(result),
-            class_name="highlight",
-            language='pycon3',
-            md=md,
-            options=[],
-            **kwargs
-        )
-        el = '<div class="color-command">{}</div>'.format(el)
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
-    return el
-
-
 def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
     """Formatter wrapper."""
 
     try:
-        css = False
         fit = options.get('fit', False)
-        try:
-            result = execute(src.strip())
-        except Exception:
-            css = True
-            lang = 'css-color'
-            result = src.strip()
-        gradient = False
-        lang = 'py3'
-        output = ''
-        if isinstance(result, Color):
-            colors = [result]
-            output = '\n'.join([x.to_string() for x in colors])
-        elif isinstance(result, Callable):
-            colors = list(map(lambda x: result(x / 20), range(20)))
-            output = '\n'.join([x.to_string() for x in colors])
-            gradient = True
-        elif isinstance(result, str):
-            colors = [Color(result)]
-            if not css:
-                output = '{}'.format(result)
-        elif isinstance(result, Sequence):
+        no_color = options.get('no-color', False)
+        console, colors = execute_color_cmd(src.strip())
+        el = ''
+        bar = False
+        values = []
+        if no_color:
             colors = []
-            text = []
-            for x in result:
-                colors.append(Color(x))
-                text.append(x if isinstance(x, str) else colors[-1].to_string())
-            output = '\n'.join(text)
-        else:
-            raise TypeError('Not a string, color, or sequence')
-
-        if gradient:
-            el = '<div class="swatch-bar"><div class="swatch swatch-gradient">{}</div></div>'
-            style = "--swatch-stops: "
-            stops = []
-            for color in colors:
-                color.fit("srgb", in_place=True)
-                stops.append(color.convert("srgb").to_string(hex=True))
-            if not stops:
-                stops.extend(['transparent'] * 2)
-            if len(stops) == 1:
-                stops.append(stops[0])
-            style += ','.join(stops)
-            sub_el = '<div class="swatch-color" style="{}"></div>'.format(style)
-            el = el.format(sub_el)
-        else:
+        for item in colors:
+            if isinstance(item, ColorInterpolate):
+                if bar:
+                    el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                    values = []
+                sub_el1 = '<div class="swatch-bar"><div class="swatch swatch-gradient">{}</div></div>'
+                style = "--swatch-stops: "
+                stops = []
+                for color in item:
+                    color.color.fit("srgb", in_place=True)
+                    stops.append(color.color.convert("srgb").to_string(hex=True))
+                if not stops:
+                    stops.extend(['transparent'] * 2)
+                if len(stops) == 1:
+                    stops.append(stops[0])
+                style += ','.join(stops)
+                sub_el2 = '<div class="swatch-color" style="{}"></div>'.format(style)
+                el += sub_el1.format(sub_el2)
+                bar = False
+            else:
+                bar = True
+                base_classes = "swatch"
+                for color in item:
+                    if not color.color.in_gamut('srgb') and not fit:
+                        c = '<span class="swatch-color"></span>'
+                        classes = base_classes + " out-of-gamut"
+                        title = "Out of Gamut&#10;{}".format(color.string)
+                    else:
+                        color.color.fit('srgb', in_place=True)
+                        srgb = color.color.convert('srgb')
+                        value1 = srgb.to_string(hex=True, alpha=False)
+                        value2 = srgb.to_string(hex=True)
+                        style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                        title = color.string
+                        classes = base_classes
+                        c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                    c = '<span class="{classes}" title="{title}">{color}</span>'.format(
+                        classes=classes,
+                        color=c,
+                        title=title
+                    )
+                    values.append(c)
+        if bar:
+            el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
             values = []
-            base_classes = "swatch"
-            for color in colors:
-                if not color.in_gamut('srgb') and not fit:
-                    c = '<span class="swatch-color"></span>'
-                    classes = base_classes + " out-of-gamut"
-                    title = "Out of Gamut&#10;{}".format(color.to_string())
-                else:
-                    color.fit('srgb', in_place=True)
-                    srgb = color.convert('srgb')
-                    value1 = srgb.to_string(hex=True, alpha=False)
-                    value2 = srgb.to_string(hex=True)
-                    style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                    title = color.to_string()
-                    classes = base_classes
-                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                    classes=classes,
-                    color=c,
-                    title=title
-                )
-                values.append(c)
-            el = '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-
-        if not css:
-            options['linenums'] = '1'
 
         el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
+            src=console,
             class_name="highlight",
-            language=lang,
+            language='pycon3',
             md=md,
             options=options,
             **kwargs
         )
-
-        if not css and output:
-            el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-                src=output,
-                class_name="highlight",
-                language='css-color',
-                md=md,
-                options=[],
-                **kwargs
-            )
         el = '<div class="color-command">{}</div>'.format(el)
     except Exception:
         import traceback
         print(traceback.format_exc())
-        return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
+        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
     return el
 
 
-def _color_formatter(src="", language="", class_name=None, md="", show_code=True, fit=False):
+def _inline_color_formatter(src="", language="", class_name=None, md="", show_code=True, fit=False):
     """Formatter wrapper."""
 
     try:
         result = src.strip()
         cmd = False
         try:
-            result = execute(result)
+            console, colors = execute_color_cmd(result)
+            if len(colors) != 1:
+                raise ValueError('Need one color only')
+            color = colors[0].color
+            result = colors[0].string
             cmd = True
         except Exception:
             result = src.strip()
@@ -221,7 +275,8 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
         if show_code:
             el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
     except Exception:
-        # print(e)
+        import traceback
+        print(traceback.format_exc())
         el = md.inlinePatterns['backtick'].handle_code('text', src)
     return el
 
@@ -229,10 +284,10 @@ def _color_formatter(src="", language="", class_name=None, md="", show_code=True
 def color_formatter(src="", language="", class_name=None, md=""):
     """Format color."""
 
-    return _color_formatter(src, language, class_name, md, True)
+    return _inline_color_formatter(src, language, class_name, md, True)
 
 
 def color_formatter_fit(src="", language="", class_name=None, md=""):
     """Format color."""
 
-    return _color_formatter(src, language, class_name, md, True, True)
+    return _inline_color_formatter(src, language, class_name, md, True, True)
