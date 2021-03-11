@@ -31,6 +31,36 @@ def color_command_validator(language, inputs, options, attrs, md):
     return True
 
 
+def command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
+    """Commands."""
+
+    try:
+        result = execute(src.strip())
+        options['linenums'] = '1'
+        el = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=src,
+            class_name="highlight",
+            language='py3',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=str(result),
+            class_name="highlight",
+            language='pycon3',
+            md=md,
+            options=[],
+            **kwargs
+        )
+        el = '<div class="color-command">{}</div>'.format(el)
+    except Exception:
+        import traceback
+        print(traceback.format_exc())
+        return superfences.fence_code_format(src, language, class_name, options, md, **kwargs)
+    return el
+
+
 def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
     """Formatter wrapper."""
 

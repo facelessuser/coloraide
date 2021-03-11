@@ -120,7 +120,8 @@ div.color-command .highlighttable:not(:last-child) {
   margin-bottom: 0;
 }
 
-div.color-command .highlight pre code {
+div.color-command .highlighttable:not(:first-child),
+div.color-command > .highlight:last-child pre code {
   border-top: 1px solid var(--md-default-fg-color--lightest);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
