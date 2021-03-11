@@ -111,24 +111,14 @@ div.color-command {
   line-height: 0;
 }
 
-div.color-command .highlight pre,
-div.color-command .highlighttable {
+div.color-command .highlight:not(:first-child) pre {
   margin-top: 0;
 }
 
-div.color-command .highlighttable:not(:last-child) {
-  margin-bottom: 0;
-}
-
-div.color-command .highlight pre code {
+div.color-command .highlight:not(:first-child) {
   border-top: 1px solid var(--md-default-fg-color--lightest);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-}
-
-div.color-command .highlighttable:not(:last-child) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 }
 
 @media screen and (max-width: 44.9375em) {
