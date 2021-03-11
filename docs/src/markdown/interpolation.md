@@ -37,7 +37,11 @@ end up with a range of colors that maintain the same lightness and chroma, but w
 We can see as we step through the colors that only the hue is interpolated.
 
 ```color
-Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+Color("lch(52% 58.1 22.7)").interpolate(
+    "lch(56% 49.1 257.1)",
+    space="lch",
+    adjust=["hue"]
+)
 ```
 
 Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
@@ -45,9 +49,18 @@ accepts such values as `shorter`, `longer`, `increasing`, `decreasing`, and `spe
 Below, we can see how the interpolation varies using `shorter` vs `longer`.
 
 ```color
-i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"])
+i = Color("lch(52% 58.1 22.7)").interpolate(
+    "lch(56% 49.1 257.1)",
+    space="lch",
+    adjust=["hue"]
+)
 i(0.2477).to_string()
-i = Color("lch(52% 58.1 22.7)").interpolate("lch(56% 49.1 257.1)", space="lch", adjust=["hue"], hue="longer")
+i = Color("lch(52% 58.1 22.7)").interpolate(
+    "lch(56% 49.1 257.1)",
+    space="lch",
+    adjust=["hue"],
+    hue="longer"
+)
 i(0.2477).to_string()
 ```
 
