@@ -140,7 +140,7 @@ or color names that are part of color variables (`#!css var(--color-red)`).
 import re
 from coloraide import Color
 
-RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&])[\w]{3,}(?!\()\b|(?<![&])#)")
+RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)")
 
 text = """Red and yellow are colors. So are #000088 and lch(75% 50 50)."""
 
