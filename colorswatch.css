@@ -36,8 +36,6 @@
 }
 
 div.swatch-bar .swatch {
-  display: inline-block;
-  width: 10em;
   background-size: 1em 1em;
   background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
   box-shadow: none;
@@ -56,12 +54,13 @@ div.swatch-bar .swatch {
   background: linear-gradient(to right, var(--swatch-stops));
 }
 
+.swatch-gradient,
 .swatch-gradient .swatch-color {
   width: 10em;
 }
 
-div.swatch-gradient,
-div.swatch-gradient .swatch-color {
+.swatch-gradient,
+.swatch-gradient .swatch-color {
   border-radius: 0;
   width: 100%;
   height: 3em;
@@ -97,12 +96,12 @@ div.swatch-bar {
   transform: scale(2);
 }
 
-div.swatch-bar > span.swatch:hover {
+div.swatch-bar > .swatch:hover {
   z-index: 2;
   transform: scale(1.2) translateY(-0.2em);
 }
 
-div.swatch-bar > div.swatch:hover {
+div.swatch-bar > .swatch-gradient:hover {
   z-index: 2;
   transform: scale(1.02, 1.2) translateY(-0.2em);
 }
