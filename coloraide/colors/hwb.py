@@ -43,7 +43,6 @@ class HWB(Cylindrical, Space):
     CHANNEL_NAMES = frozenset(["hue", "blackness", "whiteness", "alpha"])
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     GAMUT = "hsl"
-    ALPHA_COMPOSITE = "srgb"
     WHITE = convert.WHITES["D65"]
 
     _range = (

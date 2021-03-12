@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0a8
+
+- **NEW**: Remove workaround to force cylindrical colors to overlay in non-cylindrical spaces. Allow colors to be
+  overlaid in any color space. Original issues related to allowing cylindrical spaces as been fixed. Overlaying in
+  cylindrical spaces may not make sense, but it is no longer prohibited.
+- **FIX**: Ensure color comparison will yield true if two channels have `NaN`.
+
 ## 0.1.0a7
 
 - **FIX**: Fix issue with translation of an input that is compressed hex with a specified alpha.

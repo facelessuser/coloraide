@@ -39,6 +39,15 @@ def no_nan(value):
         return [(0.0 if is_nan(x) else x) for x in value]
 
 
+def cmp_coords(c1, c2):
+    """Compare coordinates."""
+
+    if is_number(c1):
+        return (math.isnan(c1) and math.isnan(c2)) or c1 == c2
+    else:
+        return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
+
+
 def dot(a, b):
     """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
 
