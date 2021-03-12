@@ -35,7 +35,7 @@
   box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, .3);
 }
 
-.swatch-gradient {
+div.swatch-bar .swatch {
   display: inline-block;
   width: 10em;
   background-size: 1em 1em;
