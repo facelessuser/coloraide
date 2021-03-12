@@ -158,7 +158,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
                 if bar:
                     el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
                     values = []
-                sub_el1 = '<div class="swatch-bar"><div class="swatch swatch-gradient">{}</div></div>'
+                sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
                 style = "--swatch-stops: "
                 stops = []
                 for color in item:
@@ -169,7 +169,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
                 if len(stops) == 1:
                     stops.append(stops[0])
                 style += ','.join(stops)
-                sub_el2 = '<div class="swatch-color" style="{}"></div>'.format(style)
+                sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
                 el += sub_el1.format(sub_el2)
                 bar = False
             else:
