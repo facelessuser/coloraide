@@ -228,7 +228,6 @@ def _inline_color_formatter(src="", language="", class_name=None, md="", show_co
             result = colors[0][0].string
         except Exception:
             color = Color(result.strip())
-            result = color.to_string()
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut("srgb"):
