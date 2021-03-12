@@ -67,8 +67,8 @@ class Color:
 
         return (
             other.space() == self.space() and
-            other.coords() == self.coords() and
-            other.alpha == self.alpha
+            util.cmp_coords(other.coords(), self.coords()) and
+            util.cmp_coords(other.alpha, self.alpha)
         )
 
     def is_nan(self, name):

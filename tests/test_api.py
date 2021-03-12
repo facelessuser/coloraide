@@ -93,3 +93,17 @@ class TestAPI(unittest.TestCase):
         c1 = Color('orange')
         c1.set("red", lambda x: x * 0.3)
         self.assertEqual(c1.get("red"), 0.3)
+
+    def test_overlay(self):
+        """Test overlay logic."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.overlay(c2), Color('color(srgb 0.5 0.5 0.5)'))
+
+    def test_overlay_cyl(self):
+        """Test overlay logic."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.overlay(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))

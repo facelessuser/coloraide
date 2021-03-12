@@ -19,18 +19,21 @@ from . _cylindrical import Cylindrical
 from . _range import Angle
 
 
-def overlay(c1, c2, a1, a2, a0):
+def overlay(c1, c2, a1, a2, a0, angle=False):
     """Overlay one color channel over the other."""
 
     if util.is_nan(c1) and util.is_nan(c2):
         return 0.0
     elif util.is_nan(c1):
-        return c2 * a2
+        return c2 if angle else c2 * a2
     elif util.is_nan(c2):
-        return c1 * a1
+        return c1 if angle else c1 * a1
 
-    c0 = c1 * a1 + c2 * a2 * (1 - a1)
-    return c0 / a0 if a0 else c0
+    if angle:
+        return c1 + (c2 - c1) * (1 - a1)
+    else:
+        c0 = c1 * a1 + c2 * a2 * (1 - a1)
+        return c0 / a0 if a0 else c0
 
 
 def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
@@ -188,28 +191,26 @@ class Interpolate:
             if this is None:
                 raise ValueError('Invalid colorspace value: {}'.format(space))
 
-            # Some spaces, like those that are cylindrical, will not work well,
-            # so a space can specify a rectangular space that is better suited.
-            if this.ALPHA_COMPOSITE is not None:
-                this = this.convert(this.ALPHA_COMPOSITE, fit=True)
-                background = background.convert(background.ALPHA_COMPOSITE, fit=True)
-                if this.space() != background.space():  # pragma: no cover
-                    # Catch the rare event that two spaces request incompatible spaces (maybe some weird
-                    # derived class instance).
-                    raise ValueError('Cannot overlay space {} onto space {}'.format(this.space(), background.space()))
-
             # Get the coordinates and indexes of valid hues
             prepare_coords(this)
             prepare_coords(background)
+
+            # Adjust hues if we have two valid hues
+            if isinstance(this, Cylindrical):
+                adjust_hues(this, background, util.DEF_HUE_ADJ)
 
             coords1 = this.coords()
             coords2 = background.coords()
             a1 = this.alpha
             a2 = background.alpha
             a0 = a1 + a2 * (1.0 - a1)
+            gamut = this._range
             coords = []
+            # Avoid multiplying angles and don't mix them the same as non-angles
             for i, value in enumerate(coords1):
-                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0))
+                g = gamut[i][0]
+                is_angle = isinstance(g, Angle)
+                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0, angle=is_angle))
             this._coords = coords
             this.alpha = a0
         else:

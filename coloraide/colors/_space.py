@@ -77,8 +77,6 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
     GAMUT = None
     # White point
     WHITE = convert.WHITES["D50"]
-    # When doing alpha composition, select an alternative space to perform the compositing in.
-    ALPHA_COMPOSITE = None
 
     def __init__(self, color=None):
         """Initialize."""
