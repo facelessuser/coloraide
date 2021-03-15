@@ -77,17 +77,22 @@ def find_colors(text):
     return colors
 
 
-def execute_color_cmd(cmd):
+def execute(cmd):
     """Execute color commands."""
 
     g = {'Color': Color}
+    console = ''
     colors = []
+
+    # Build AST tree
     src = cmd.strip()
     lines = src.split('\n')
     tree = ast.parse(src)
-    console = ''
-    result = None
+
     for node in tree.body:
+        result = None
+
+        # Format source as Python console statements
         start = node.lineno
         end = node.end_lineno
         stmt = lines[start - 1: end]
@@ -96,34 +101,37 @@ def execute_color_cmd(cmd):
                 stmt[i] = '>>> ' + line
             else:
                 stmt[i] = '... ' + line
-        if isinstance(node, ast.Expr):
-            _eval = ast.Expression(node.value)
-            result = eval(compile(_eval, '<string>', 'eval'), g)
-            console += '\n'.join(stmt)
-            if result is not None:
-                clist = get_colors(result)
-                if clist:
-                    colors.append(clist)
-                console += '\n{}'.format(str(result))
-            console += '\n'
-        else:
-            with std_output() as s:
+        console += '\n'.join(stmt)
+        if isinstance(node, AST_BLOCKS):
+            console += '\n... '
+
+        # Capture anything sent to standard out
+        text = ''
+        with std_output() as s:
+            # Execute code
+            if isinstance(node, ast.Expr):
+                _eval = ast.Expression(node.value)
+                result = eval(compile(_eval, '<string>', 'eval'), g)
+            else:
                 _exec = ast.Module([node], [])
                 exec(compile(_exec, '<string>', 'exec'), g)
-                console += '\n'.join(stmt)
-                text = s.getvalue()
-                if text:
-                    clist = find_colors(text)
-                    if clist:
-                        colors.extend(clist)
-                    if isinstance(node, AST_BLOCKS):
-                        console += '\n... '
-                    console += '\n{}'.format(text)
-                else:
-                    if isinstance(node, AST_BLOCKS):
-                        console += '\n... '
-                    console += '\n'
-                text = s.flush()
+
+            # Output captured standard out after statements
+            text = s.getvalue()
+            if text:
+                clist = find_colors(text)
+                if clist:
+                    colors.extend(clist)
+                console += '\n{}'.format(text)
+            s.flush()
+
+        # If we got a result, output it as well
+        if result is not None:
+            clist = get_colors(result)
+            if clist:
+                colors.append(clist)
+            console += '{}{}'.format('\n' if not text else '', str(result))
+        console += '\n'
 
     return console, colors
 
@@ -147,7 +155,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
     try:
         fit = options.get('fit', False)
         no_color = options.get('no-color', False)
-        console, colors = execute_color_cmd(src.strip())
+        console, colors = execute(src.strip())
         el = ''
         bar = False
         values = []
@@ -221,7 +229,7 @@ def _inline_color_formatter(src="", language="", class_name=None, md="", show_co
     try:
         result = src.strip()
         try:
-            console, colors = execute_color_cmd(result)
+            console, colors = execute(result)
             if len(colors) != 1 or len(colors[0]) != 1:
                 raise ValueError('Need one color only')
             color = colors[0][0].color
