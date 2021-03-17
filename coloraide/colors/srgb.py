@@ -78,9 +78,10 @@ class SRGB(Space):
     """SRGB class."""
 
     SPACE = "srgb"
-    # HSL is much more sensitive to small gamut changes, so sync up our check with HSL.
-    # This is mainly for a better user experience.
-    GAMUT = "hsl"
+    # In addition to the current gamut, check HSL as it is much more sensitive to small
+    # gamut changes. This is mainly for a better user experience. Colors will still be
+    # mapped/clipped in the current space, unless specified otherwise.
+    GAMUT_CHECK = "hsl"
     DEF_VALUE = "color(srgb 0 0 0 / 1)"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     CHANNEL_NAMES = frozenset(["red", "green", "blue", "alpha"])

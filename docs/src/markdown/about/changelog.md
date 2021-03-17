@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a9
+
+- **FIX**: Ensure all cases of hue handling, in regards to gamut mapping, are done the same.
+
 ## 0.1.0a8
 
 - **NEW**: Remove workaround to force cylindrical colors to overlay in non-cylindrical spaces. Allow colors to be
