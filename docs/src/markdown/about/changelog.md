@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10a10
+
+- **FIX**: Address two divide by zero cases in HSL algorithm. Was missing some special cases when luminance equals `1`
+  or `0`.
+
 ## 0.1.0a9
 
 - **FIX**: Ensure all cases of hue handling, in regards to gamut mapping, are done the same.
