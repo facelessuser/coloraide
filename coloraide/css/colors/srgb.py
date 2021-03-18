@@ -62,14 +62,19 @@ class SRGB(generic.SRGB):
         if options.get("color"):
             return super().to_string(alpha=alpha, precision=precision, fit=fit, **kwargs)
 
-        # Handle hes and color names
+        # Handle hex and color names
         value = ''
         a = util.no_nan(self.alpha)
         alpha = alpha is not False and (alpha is True or a < 1.0)
+        compress = options.get("compress", False)
         if options.get("hex") or options.get("names"):
             h = self._get_hex(options, alpha=alpha, precision=precision)
             if options.get("hex"):
                 value = h
+                if compress:
+                    m = RE_COMPRESS.match(value)
+                    if m:
+                        value = m.expand(r"#\1\2\3\4") if alpha else m.expand(r"#\1\2\3")
             if options.get("names"):
                 length = len(h) - 1
                 index = int(length / 4)
@@ -112,11 +117,7 @@ class SRGB(generic.SRGB):
     def _get_hex(self, options, *, alpha=False, precision=None):
         """Get the hex `RGB` value."""
 
-        if precision is None:
-            precision = self.parent.PRECISION
-
         hex_upper = options.get("hex_upper", False)
-        compress = options.get("compress", False)
         coords = util.no_nan(self.fit_coords())
 
         template = "#{:02x}{:02x}{:02x}{:02x}" if alpha else "#{:02x}{:02x}{:02x}"
@@ -136,11 +137,6 @@ class SRGB(generic.SRGB):
                 int(util.round_half_up(coords[1] * 255.0)),
                 int(util.round_half_up(coords[2] * 255.0))
             )
-
-        if compress:
-            m = RE_COMPRESS.match(value)
-            if m:
-                value = m.expand(r"#\1\2\3\4") if alpha else m.expand(r"#\1\2\3")
         return value
 
     @classmethod

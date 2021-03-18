@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.10a10
+## 0.1.0a11
+
+- **FIX**: Ensure that when `hex`, `compress`, and `names` is enabled in `to_string` for `srgb` that colors will still
+  match the color name if the color can be compressed.
+
+## 0.1.0a10
 
 - **FIX**: Address two divide by zero cases in HSL algorithm. Was missing some special cases when luminance equals `1`
   or `0`.
