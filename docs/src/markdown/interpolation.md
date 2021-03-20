@@ -243,7 +243,7 @@ color2.coords()
 color.mix(color2, space="hsl")
 ```
 
-This is essentially haw the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
+This is essentially how the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
 [`mix`](#mix). `adjust` simply ensures that the secondary color has `NaN` set to specified channels.
 
 Technically, any channel can be set to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
