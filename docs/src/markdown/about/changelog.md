@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0a12
+
+- **FIX**: More stable saturation calculation for HSL to ensure divide by zero doesn't occur.
+  `2(V - L) / (1 - abs(2 * L - 1))` is likely to yield zero in the denominator when `L` is very small, while the
+  equivalent `(V - L) / min(L, 1 - L)` is not.
+
 ## 0.1.0a11
 
 - **FIX**: Ensure that when `hex`, `compress`, and `names` is enabled in `to_string` for `srgb` that colors will still
