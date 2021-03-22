@@ -22,10 +22,14 @@ def hsv_to_hsl(hsv):
     s /= 100.0
     v /= 100.0
     l = v * (1.0 - s / 2.0)
+    s = 0.0 if (l == 0.0 or l == 1.0) else ((v - l) / min(l, 1.0 - l)) * 100
+
+    if s == 0:
+        h = util.NaN
 
     return [
         HSV._constrain_hue(h),
-        0.0 if (l == 0.0 or l == 1.0) else ((v - l) / min(l, 1.0 - l)) * 100,
+        s,
         l * 100
     ]
 
@@ -42,12 +46,12 @@ def hsl_to_hsv(hsl):
     l /= 100.0
 
     v = l + s * min(l, 1.0 - l)
+    s = 0.0 if (v == 0.0) else 2 * (1.0 - l / v)
 
-    return [
-        HSV._constrain_hue(h),
-        0.0 if (v == 0.0) else 200.0 * (1.0 - l / v),
-        100.0 * v
-    ]
+    if s == 0:
+        h = util.NaN
+
+    return [HSV._constrain_hue(h), s * 100.0, v * 100.0]
 
 
 class HSV(Cylindrical, Space):

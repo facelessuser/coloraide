@@ -12,27 +12,34 @@ from .. import util
 import re
 
 
-def srgb_to_hwb(rgb):
-    """SRGB to HWB."""
-
-    h, s, v = HSV._from_srgb(rgb)
-    w = v * (100.0 - s) / 100.0
-    b = 100.0 - v
-    return HWB._constrain_hue(h), w, b
-
-
-def hwb_to_srgb(hwb):
-    """HWB to RGB."""
+def hwb_to_hsv(hwb):
+    """HWB to HSV."""
 
     h, w, b = hwb
     w /= 100.0
     b /= 100.0
-    wb = w + b
 
-    if wb > 1.0:
-        return [w / wb] * 3
+    wb = w + b;
+    if (wb >= 1):
+         gray = w / wb
+         return [util.NaN, 0.0, gray * 100.0]
 
-    return [(c * (1.0 - w - b)) + w for c in HSL._to_srgb([h, 100.0, 50.0])]
+    v = 1 - b
+    s = 0 if v == 0 else 1 - w / v
+    return [h, s * 100, v * 100]
+
+
+def hsv_to_hwb(hsv):
+    """HSV to HWB."""
+
+    h, s, v = hsv
+    s /= 100
+    v /= 100
+    w = v * (1 - s)
+    b = 1 - v
+    if w + b >= 1:
+        h = util.NaN
+    return [h, w * 100, b * 100]
 
 
 class HWB(Cylindrical, Space):
@@ -147,34 +154,34 @@ class HWB(Cylindrical, Space):
     def _to_srgb(cls, hwb):
         """To sRGB."""
 
-        return hwb_to_srgb(hwb)
+        return HSV._to_srgb(cls._to_hsv(hwb))
 
     @classmethod
     def _from_srgb(cls, srgb):
         """From sRGB."""
 
-        return srgb_to_hwb(srgb)
+        return cls._from_hsv(HSV._from_srgb(srgb))
 
     @classmethod
     def _to_hsl(cls, hwb):
         """To HSL."""
 
-        return HSL._from_srgb(cls._to_srgb(hwb))
+        return HSV._to_hsl(hwb_to_hsv(hwb))
 
     @classmethod
     def _from_hsl(cls, hsl):
         """From HSL."""
 
-        return cls._from_srgb(HSL._to_srgb(hsl))
+        return hsv_to_hwb(HSV._from_hsl(hsl))
 
     @classmethod
     def _to_hsv(cls, hwb):
         """To HSV."""
 
-        return HSV._from_srgb(cls._to_srgb(hwb))
+        return hwb_to_hsv(hwb)
 
     @classmethod
     def _from_hsv(cls, hsv):
         """From HSV."""
 
-        return cls._from_srgb(HSV._to_srgb(hsv))
+        return hsv_to_hwb(hsv)
