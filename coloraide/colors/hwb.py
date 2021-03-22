@@ -1,7 +1,6 @@
 """HWB class."""
 from ._space import Space, RE_DEFAULT_MATCH
 from .srgb import SRGB
-from .hsl import HSL
 from .hsv import HSV
 from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
@@ -19,10 +18,10 @@ def hwb_to_hsv(hwb):
     w /= 100.0
     b /= 100.0
 
-    wb = w + b;
+    wb = w + b
     if (wb >= 1):
-         gray = w / wb
-         return [util.NaN, 0.0, gray * 100.0]
+        gray = w / wb
+        return [util.NaN, 0.0, gray * 100.0]
 
     v = 1 - b
     s = 0 if v == 0 else 1 - w / v
