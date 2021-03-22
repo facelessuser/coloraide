@@ -6,8 +6,9 @@ Many color spaces have limits the colors they can accurately represent. This is 
 the limits in which a color space can represent a color. Some color spaces are theoretically unbounded, but past a
 point, the eye can't see them.
 
-When moving from a large color space like Lab to a small color space like sRGB, many Lab colors will not fit without
-mapping the color to one that does fit. This "fitting" of the color from one gamut into another is called gamut mapping.
+When moving from a large color space like CIELCH to a small color space like sRGB, many CIELAB colors will not fit
+without mapping the color to one that does fit. This "fitting" of the color from one gamut into another is called gamut
+mapping.
 
 ## Checking Gamut
 
@@ -30,13 +31,13 @@ Color("lch(100% 50 75)").in_gamut("srgb")
 
 ## Mapping Colors
 
-The recommended approach for fitting/mapping a color is to compress the chroma while in the LCH color space (overly
+The recommended approach for fitting/mapping a color is to compress the chroma while in the CIELCH color space (overly
 simplified). This is the approach that our reference ([`colorjs`](https://colorjs.io/)) chose, so we ported it over here
 as well.
 
-In this example, we will take the color `#!color lch(100% 50 75)`. LCH's gamut is technically unbounded, but if we try
-to fit it in the sRGB gamut, as noted earlier, it is outside the narrow gamut of sRGB. So, using the `fit` method, and
-specifying `srgb` as the target color space, we can fit it in the sRGB gamut.
+In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but if we
+try to fit it in the sRGB gamut, as noted earlier, it is outside the narrow gamut of sRGB. So, using the `fit` method,
+and specifying `srgb` as the target color space, we can fit it in the sRGB gamut.
 
 ```color
 Color("lch(100% 50 75)").fit("srgb")

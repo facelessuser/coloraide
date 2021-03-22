@@ -389,8 +389,8 @@ def fit(self, space=None, *, method=None, in_place=False):
 Fits color to the current or specified color gamut.
 
 By default, `lch-chroma` gamut mapping is used. This is essentially an approach that holds lightness and hue constant
-in the LCH color space while reducing chroma until the color is in gamut. Clipping is done at each step of the way and
-the color distance measured to see how close our color is to the intended color.
+in the CIELCH color space while reducing chroma until the color is in gamut. Clipping is done at each step of the way
+and the color distance measured to see how close our color is to the intended color.
 
 The supported gamut mapping methods are:
 

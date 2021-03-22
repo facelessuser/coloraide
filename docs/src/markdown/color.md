@@ -76,7 +76,7 @@ Color("red").update("lch(80% 50 130)")
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
-Here the `#!color red` color object literally becomes an LCH color object with the new color
+Here the `#!color red` color object literally becomes an CIELCH color object with the new color
 `#!color lch(80% 50 130)`.
 
 ```color
@@ -88,11 +88,11 @@ Color("red").mutate("lch(80% 50 130)")
 Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
 set `#!py3 True`, in which case the current color will be mutated to the new converted color.
 
-For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as LAB, we
-could simply call the `convert` method with the desired color space.
+For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELAB,
+we could simply call the `convert` method with the desired color space.
 
 ```color
-Color('yellow').convert("Lab")
+Color('yellow').convert("lab")
 ```
 
 ## Color Matching

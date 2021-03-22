@@ -2,7 +2,7 @@
 
 ## Color Distance
 
-ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the Lab color
+ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELAB color
 space, but it can be configured to evaluate in any color space. It may be less useful in some color spaces compared to
 others:
 
@@ -20,10 +20,10 @@ Color("red").delta_e("blue")
 Color("red").delta_e("blue", method="2000")
 ```
 
-The default implementation is Delta E 1976. Originally, when the Lab color space was created, it was thought that it was
-more perceptually uniform than it actually was. At first, the distance algorithm was a simple euclidean implementation
-(Delta E 1976), but over time it has been tweaked to make corrections to account for the fact that it is not perfectly
-uniform.
+The default implementation is Delta E 1976. Originally, when the CIELAB color space was created, it was thought that it
+was more perceptually uniform than it actually was. At first, the distance algorithm was a simple euclidean
+implementation (Delta E 1976), but over time it has been tweaked to make corrections to account for the fact that it is
+not perfectly uniform.
 
 There are areas and industries that still use many of these for different reasons.
 

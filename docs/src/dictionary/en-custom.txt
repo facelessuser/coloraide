@@ -2,6 +2,9 @@ AST
 Accessors
 CIE
 CIEDE
+CIELAB
+CIELCH
+CIELCH's
 CMC
 CSS
 Changelog

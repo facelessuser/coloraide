@@ -173,7 +173,7 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
 The steps to take between the two colors can be configured with the three options, `steps` (minimum number of steps),
 `max_steps`, and `max_delta_e` (max allowable delta E distance between steps). The default delta E method is delta E 76,
-which is a simple euclidean distancing in the Lab color space.
+which is a simple euclidean distancing in the CIELAB color space.
 
 In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
 `#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):

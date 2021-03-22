@@ -108,9 +108,9 @@
     Color("color(hwb 0 100 0 / 1)")
     ```
 
-### Lab
+### CIELAB
 
-[Learn about Lab](https://en.wikipedia.org/wiki/CIELAB_color_space)
+[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)
 
 **White Point**
 :   D50
@@ -135,9 +135,9 @@
     Color("color(lab 100 0 0 / 1)")
     ```
 
-### LCH
+### CIELCH
 
-[Learn about LCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)
+[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)
 
 **White Point**
 :   D50
