@@ -2,6 +2,8 @@
 
 ## 0.1.0a13
 
+- **FIX**: More efficient calculation of CIELAB, following CIE 15.3:2004. Results are still the same, but it makes the
+  math a little simpler.
 - **FIX**: HSV did not always set hue to `NaN` when saturation was `0`.
 - **FIX**: Give better conversion results by having HWB colors pass through HSV instead of sRGB.
 

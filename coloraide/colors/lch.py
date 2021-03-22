@@ -19,7 +19,7 @@ def lab_to_lch(lab):
     l, a, b = lab
 
     c = math.sqrt(math.pow(a, 2) + math.pow(b, 2))
-    h = math.atan2(b, a) * 180 / math.pi
+    h = math.atan2(b, a) * util.RAD2DEG
 
     # This is not actually part of the conversion, but is a fix-up
     # for conversion getting a bit chaotic in regards to hue when
@@ -47,8 +47,8 @@ def lch_to_lab(lch):
 
     return (
         l,
-        c * math.cos(h * math.pi / 180.0),
-        c * math.sin(h * math.pi / 180.0)
+        c * math.cos(h * util.DEG2RAD),
+        c * math.sin(h * util.DEG2RAD)
     )
 
 
