@@ -7,38 +7,44 @@ from .. import util
 import re
 import math
 
+ALPHA = 1.09929682680944
+BETA = 0.018053968510807
+BETA45 = 0.018053968510807 * 4.5
+
 
 def lin_2020(rgb):
-    """Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
+    """
+    Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
-    alpha = 1.09929682680944
-    beta = 0.018053968510807
+    https://en.wikipedia.org/wiki/Rec._2020#Transfer_characteristics
+    """
 
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
-        if abs_i < beta * 4.5:
+        if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(math.pow((abs_i + alpha - 1) / alpha, 1 / 0.45), i))
+            result.append(math.copysign(math.pow((abs_i + ALPHA - 1) / ALPHA, 1 / 0.45), i))
     return result
 
 
 def gam_2020(rgb):
-    """Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form."""
+    """
+    Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form.
 
-    alpha = 1.09929682680944
-    beta = 0.018053968510807
+    https://en.wikipedia.org/wiki/Rec._2020#Transfer_characteristics
+    """
 
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
-        if abs_i > beta:
-            result.append(math.copysign(alpha * math.pow(abs_i, 0.45) - (alpha - 1), i))
-        else:
+        if abs_i < BETA:
             result.append(4.5 * i)
+        else:
+            result.append(math.copysign(ALPHA * math.pow(abs_i, 0.45) - (ALPHA - 1), i))
     return result
 
 

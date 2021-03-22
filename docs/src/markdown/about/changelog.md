@@ -6,6 +6,8 @@
   math a little simpler.
 - **FIX**: HSV did not always set hue to `NaN` when saturation was `0`.
 - **FIX**: Give better conversion results by having HWB colors pass through HSV instead of sRGB.
+- **FIX**: Fix slight issue with REC.2020 and ProPhoto color space conversion. Small issue when using `<=` when `<` was
+  desired.
 
 ## 0.1.0a12
 

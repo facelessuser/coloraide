@@ -6,6 +6,9 @@ from .. import util
 import re
 import math
 
+ET = 1 / 512
+ET2 = 16 / 512
+
 
 def lin_prophoto_to_xyz(rgb):
     """
@@ -41,15 +44,15 @@ def lin_prophoto(rgb):
     Convert an array of prophoto-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
     Transfer curve is gamma 1.8 with a small linear portion.
-    """
 
-    et2 = 16 / 512
+    https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space
+    """
 
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
-        if abs_i <= et2:
+        if abs_i < ET2:
             result.append(i / 16)
         else:
             result.append(math.copysign(math.pow(abs_i, 1.8), i))
@@ -61,18 +64,18 @@ def gam_prophoto(rgb):
     Convert an array of linear-light prophoto-rgb  in the range 0.0-1.0 to gamma corrected form.
 
     Transfer curve is gamma 1.8 with a small linear portion.
-    """
 
-    et = 1 / 512
+    https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space
+    """
 
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
-        if abs_i >= et:
-            result.append(math.copysign(math.pow(abs_i, 1 / 1.8), i))
-        else:
+        if abs_i < ET:
             result.append(16 * i)
+        else:
+            result.append(math.copysign(math.pow(abs_i, 1 / 1.8), i))
     return result
 
 
