@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a13
+
+- **FIX**: HSV did not always set hue to `NaN` when saturation was `0`.
+- **FIX**: Give better conversion results by having HWB colors pass through HSV instead of sRGB.
+
 ## 0.1.0a12
 
 - **FIX**: More stable saturation calculation for HSL to ensure divide by zero doesn't occur.
