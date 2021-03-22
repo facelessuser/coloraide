@@ -8,8 +8,11 @@ from .. import util
 import re
 import math
 
-KAPPA = 24389 / 27  # `29^3 / 3^3`
-EPSILON = 216 / 24389  # `6^3 / 29^3`
+EPSILON3 = 216 / 24389  # `6^3 / 29^3`
+EPSILON = 24 / 116
+RATIO1 = 16 / 116
+RATIO2 = 108 / 841
+RATIO3 = 841 / 108
 
 
 def lab_to_xyz(lab):
@@ -22,15 +25,15 @@ def lab_to_xyz(lab):
     l, a, b = lab
 
     # compute `f`, starting with the luminance-related term
-    f1 = (l + 16) / 116
-    f0 = a / 500 + f1
-    f2 = f1 - b / 200
+    fy = (l + 16) / 116
+    fx = a / 500 + fy
+    fz = fy - b / 200
 
     # compute `xyz`
     xyz = [
-        math.pow(f0, 3) if math.pow(f0, 3) > EPSILON else (116 * f0 - 16) / KAPPA,
-        math.pow((l + 16) / 116, 3) if l > KAPPA * EPSILON else l / KAPPA,
-        math.pow(f2, 3) if math.pow(f2, 3) > EPSILON else (116 * f2 - 16) / KAPPA
+        math.pow(fx, 3) if fx > EPSILON else (fx - RATIO1) * RATIO2,
+        math.pow(fy, 3) if fy > EPSILON or l > 8 else (fy - RATIO1) * RATIO2,
+        math.pow(fz, 3) if fz > EPSILON else (fz - RATIO1) * RATIO2
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
@@ -42,13 +45,13 @@ def xyz_to_lab(xyz):
 
     # compute `xyz`, which is XYZ scaled relative to reference white
     xyz = util.divide(xyz, LAB.white())
-    # Compute `f`
-    f = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16.0) / 116.0 for i in xyz]
+    # Compute `fx`, `fy`, and `fz`
+    fx, fy, fz = [util.cbrt(i) if i > EPSILON3 else (RATIO3 * i) + RATIO1 for i in xyz]
 
     return (
-        (116.0 * f[1]) - 16.0,
-        500.0 * (f[0] - f[1]),
-        200.0 * (f[1] - f[2])
+        (116.0 * fy) - 16.0,
+        500.0 * (fx - fy),
+        200.0 * (fy - fz)
     )
 
 
