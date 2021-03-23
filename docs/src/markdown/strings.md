@@ -1,3 +1,5 @@
+# String Output
+
 ## Convert to Strings
 
 Colors can be translated to strings by using the `to_string` method. The color class will convert the current color into
@@ -69,6 +71,13 @@ sRGB can output colors to a hex format which is unique compared to HSL and other
 
 ```color
 Color("rebeccapurple").to_string(hex=True)
+```
+
+You can force hex to output in uppercase.
+
+```color
+Color("red").to_string(hex=True)
+Color("red").to_string(hex=True, upper=True)
 ```
 
 When converting to the hex color format, a color can be compressed in certain cases. Enabling `compress` will compress a

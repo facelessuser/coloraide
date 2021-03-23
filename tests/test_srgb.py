@@ -40,10 +40,10 @@ class TestSRGBParse(unittest.TestCase):
         rgb = Color(color)
         self.assertEqual(color, rgb.to_string(**args))
 
-    def test_hex_hex(self):
+    def test_hex(self):
         """Test hex input."""
 
-        args = {"hex": True, "precision": 0}
+        args = {"hex": True}
 
         color = "#AA33DD"
         rgb = Color(color)
@@ -56,6 +56,23 @@ class TestSRGBParse(unittest.TestCase):
         color = "#AA33DD22"
         rgb = Color(color)
         self.assertEqual("#aa33dd22", rgb.to_string(**args))
+
+    def test_hex_upper(self):
+        """Test hex input."""
+
+        args = {"hex": True, "upper": True}
+
+        color = "#AA33DD"
+        rgb = Color(color)
+        self.assertEqual(color, rgb.to_string(**args))
+
+        color = "#AA33DDFF"
+        rgb = Color(color)
+        self.assertEqual("#AA33DD", rgb.to_string(**args))
+
+        color = "#AA33DD22"
+        rgb = Color(color)
+        self.assertEqual("#AA33DD22", rgb.to_string(**args))
 
     def test_hex_compressed(self):
         """Test hex input."""

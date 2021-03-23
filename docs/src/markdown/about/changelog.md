@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a14
+
+- **NEW**: sRGB string output parameter `hex_upper` has been renamed to just `upper`. Expose it in documentation as
+  well.
+
 ## 0.1.0a13
 
 - **FIX**: More efficient calculation of CIELAB, following CIE 15.3:2004. Results are still the same, but it makes the

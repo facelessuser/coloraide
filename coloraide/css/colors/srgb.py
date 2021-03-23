@@ -117,7 +117,7 @@ class SRGB(generic.SRGB):
     def _get_hex(self, options, *, alpha=False, precision=None):
         """Get the hex `RGB` value."""
 
-        hex_upper = options.get("hex_upper", False)
+        hex_upper = options.get("upper", False)
         coords = util.no_nan(self.fit_coords())
 
         template = "#{:02x}{:02x}{:02x}{:02x}" if alpha else "#{:02x}{:02x}{:02x}"
