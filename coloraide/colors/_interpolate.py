@@ -179,7 +179,8 @@ class Interpolate:
         """
 
         current_space = self.space()
-        if self.alpha < 1.0:
+        alpha = util.no_nan(self.alpha)
+        if alpha < 1.0:
             if space is None:
                 space = current_space
             else:
@@ -201,8 +202,8 @@ class Interpolate:
 
             coords1 = this.coords()
             coords2 = background.coords()
-            a1 = this.alpha
-            a2 = background.alpha
+            a1 = util.no_nan(this.alpha)
+            a2 = util.no_nan(background.alpha)
             a0 = a1 + a2 * (1.0 - a1)
             gamut = this._range
             coords = []

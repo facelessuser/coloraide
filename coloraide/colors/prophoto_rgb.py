@@ -53,9 +53,9 @@ def lin_prophoto(rgb):
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
         if abs_i < ET2:
-            result.append(i / 16)
+            result.append(i / 16.0)
         else:
-            result.append(math.copysign(math.pow(abs_i, 1.8), i))
+            result.append(math.copysign(abs_i ** 1.8, i))
     return result
 
 
@@ -73,9 +73,9 @@ def gam_prophoto(rgb):
         # Mirror linear nature of algorithm on the negative axis
         abs_i = abs(i)
         if abs_i < ET:
-            result.append(16 * i)
+            result.append(16.0 * i)
         else:
-            result.append(math.copysign(math.pow(abs_i, 1 / 1.8), i))
+            result.append(math.copysign(abs_i ** (1.0 / 1.8), i))
     return result
 
 

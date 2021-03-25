@@ -26,7 +26,7 @@ def lin_2020(rgb):
         if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(math.pow((abs_i + ALPHA - 1) / ALPHA, 1 / 0.45), i))
+            result.append(math.copysign(((abs_i + ALPHA - 1) / ALPHA) ** (1 / 0.45), i))
     return result
 
 
@@ -44,7 +44,7 @@ def gam_2020(rgb):
         if abs_i < BETA:
             result.append(4.5 * i)
         else:
-            result.append(math.copysign(ALPHA * math.pow(abs_i, 0.45) - (ALPHA - 1), i))
+            result.append(math.copysign(ALPHA * abs_i ** 0.45 - (ALPHA - 1), i))
     return result
 
 

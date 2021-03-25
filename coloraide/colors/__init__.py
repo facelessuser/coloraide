@@ -102,6 +102,8 @@ class Color:
             for space, space_class in self.CS_MAP.items():
                 s = color.lower()
                 if space == s and (not filters or s in filters):
+                    if len(data) < space_class.NUM_COLOR_CHANNELS:
+                        data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
                     obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
                     return obj
         elif isinstance(color, Color):

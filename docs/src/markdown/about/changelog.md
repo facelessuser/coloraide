@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a15
+
+- **FIX**: Ensure that when `alpha` is `NaN` that it is handled in `overlay`.
+- **FIX**: When using raw data in the `color()` function, and there is too little data, fill data with `NaN`.
+
 ## 0.1.0a14
 
 - **NEW**: sRGB string output parameter `hex_upper` has been renamed to just `upper`. Expose it in documentation as

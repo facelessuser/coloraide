@@ -18,7 +18,7 @@ def lab_to_lch(lab):
 
     l, a, b = lab
 
-    c = math.sqrt(math.pow(a, 2) + math.pow(b, 2))
+    c = math.sqrt(a ** 2 + b ** 2)
     h = math.atan2(b, a) * util.RAD2DEG
 
     # This is not actually part of the conversion, but is a fix-up

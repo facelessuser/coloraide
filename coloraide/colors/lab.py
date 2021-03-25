@@ -6,7 +6,6 @@ from . import _parse as parse
 from . import _convert as convert
 from .. import util
 import re
-import math
 
 EPSILON3 = 216 / 24389  # `6^3 / 29^3`
 EPSILON = 24 / 116
@@ -31,9 +30,9 @@ def lab_to_xyz(lab):
 
     # compute `xyz`
     xyz = [
-        math.pow(fx, 3) if fx > EPSILON else (fx - RATIO1) * RATIO2,
-        math.pow(fy, 3) if fy > EPSILON or l > 8 else (fy - RATIO1) * RATIO2,
-        math.pow(fz, 3) if fz > EPSILON else (fz - RATIO1) * RATIO2
+        fx ** 3 if fx > EPSILON else (fx - RATIO1) * RATIO2,
+        fy ** 3 if fy > EPSILON or l > 8 else (fy - RATIO1) * RATIO2,
+        fz ** 3 if fz > EPSILON else (fz - RATIO1) * RATIO2
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`

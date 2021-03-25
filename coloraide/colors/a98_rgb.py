@@ -42,13 +42,13 @@ def xyz_to_lin_a98rgb(xyz):
 def lin_a98rgb(rgb):
     """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
-    return [math.copysign(math.pow(abs(val), 563 / 256), val) for val in rgb]
+    return [math.copysign(abs(val) ** (563 / 256), val) for val in rgb]
 
 
 def gam_a98rgb(rgb):
     """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
 
-    return [math.copysign(math.pow(abs(val), 256 / 563), val) for val in rgb]
+    return [math.copysign(abs(val) ** (256 / 563), val) for val in rgb]
 
 
 class A98_RGB(SRGB):

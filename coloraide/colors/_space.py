@@ -77,8 +77,8 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
         """Initialize."""
 
         self.parent = None
-        self._alpha = 0.0
-        self._coords = [0.0] * self.NUM_COLOR_CHANNELS
+        self._alpha = util.NaN
+        self._coords = [util.NaN] * self.NUM_COLOR_CHANNELS
         if isinstance(color, Space):
             self.parent = color.parent
 
