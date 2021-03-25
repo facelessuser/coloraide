@@ -10,7 +10,6 @@ SCALE_PERCENT = 1 / 100.0
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
 
-RE_BRACKETS = re.compile(r'(?:(\()|(\))|[^()]+)')
 RE_CHAN_SPLIT = re.compile(r'(?:\s*[,/]\s*|\s+)')
 RE_COMMA_SPlIT = re.compile(r'(?:\s*,\s*)')
 RE_SLASH_SPLIT = re.compile(r'(?:\s*/\s*)')
@@ -121,25 +120,3 @@ def norm_deg_channel(value):
     """Normalize degree channel."""
 
     return norm_float(value)
-
-
-def bracket_match(match, string, start, fullmatch):
-    """
-    Make sure we can acquire a complete `func()` before we replace variables.
-
-    We mainly do this so we can judge the real size before we alter the string with variables.
-    """
-
-    end = None
-    if match.match(string, start):
-        brackets = 1
-        for m in RE_BRACKETS.finditer(string, start + 6):
-            if m.group(2):
-                brackets -= 1
-            elif m.group(1):
-                brackets += 1
-
-            if brackets == 0:
-                end = m.end(2)
-                break
-    return end if (not fullmatch or end == len(string)) else None

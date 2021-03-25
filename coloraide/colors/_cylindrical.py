@@ -8,8 +8,3 @@ class Cylindrical:
         """Hue channel name."""
 
         return "hue"
-
-    def hue_index(self):
-        """Get hue index."""
-
-        return 0

@@ -40,7 +40,7 @@ class ColorMatch:
         self.start = start
         self.end = end
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """String."""
 
         return "ColorMatch(color={!r}, start={}, end={})".format(self.color, self.start, self.end)
@@ -244,7 +244,8 @@ class Color:
 
         color = self._handle_color_input(color)
         interp = self._color.interpolate(
-            color, space=space, progress=progress, out_space=None, adjust=adjust, hue=hue, premultiplied=premultiplied
+            color, space=space, progress=progress, out_space=out_space, adjust=adjust, hue=hue,
+            premultiplied=premultiplied
         )
         return functools.partial(_interpolate, color=self.clone(), interp=interp)
 

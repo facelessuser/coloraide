@@ -178,7 +178,7 @@ class Gamut:
         # Check the color space specified for gamut checking.
         # If it proves to be in gamut, we will then test if the current
         # space is constrained properly.
-        if self.GAMUT_CHECK is not None:  # pragma: no cover
+        if self.GAMUT_CHECK is not None:
             c2 = self.convert(self.GAMUT_CHECK)
             if not c2.in_gamut(tolerance=tolerance):
                 return False

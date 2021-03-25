@@ -4,6 +4,7 @@
 
 - **FIX**: Ensure that when `alpha` is `NaN` that it is handled in `overlay`.
 - **FIX**: When using raw data in the `color()` function, and there is too little data, fill data with `NaN`.
+- **FIX**: Fix issue where API `interpolate` method does not pass `out_space` parameter down.
 
 ## 0.1.0a14
 

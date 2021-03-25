@@ -51,10 +51,10 @@ def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
         else:
             value = c1 + (c2 - c1) * (p if progress is None else progress(p))
         coords.append(value)
-    color = create.new(coords).convert(outspace)
+    color = create.new(coords)
     if premultiplied:
         postdivide(color)
-    return color
+    return color.convert(outspace) if outspace != color.space() else color
 
 
 def prepare_coords(color, adjust=None):
@@ -189,9 +189,6 @@ class Interpolate:
             this = self.convert(space, fit=True)
             background = background.convert(space, fit=True)
 
-            if this is None:
-                raise ValueError('Invalid colorspace value: {}'.format(space))
-
             # Get the coordinates and indexes of valid hues
             prepare_coords(this)
             prepare_coords(background)
@@ -317,7 +314,7 @@ class Interpolate:
             adjust = set([name.lower() for name in adjust])
 
         inspace = space.lower()
-        outspace = self.space() if out_space is None else out_space
+        outspace = self.space() if out_space is None else out_space.lower()
 
         # Convert to the color space and ensure the color fits inside
         color1 = self.convert(inspace, fit=True)

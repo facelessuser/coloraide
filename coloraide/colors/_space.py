@@ -141,7 +141,7 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
 
         self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
 
-    def is_nan(self, name):
+    def is_nan(self, name):  # pragma: no cover
         """Check if the channel is NaN."""
 
         return util.is_nan(self.get(name))
@@ -192,13 +192,13 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
         return coords
 
     @classmethod
-    def translate_channel(cls, channel, value):
+    def translate_channel(cls, channel, value):  # pragma: no cover
         """Set a non-alpha color channel."""
 
         raise NotImplementedError("Base 'Space' does not implement 'translate_channel' directly.")
 
     @classmethod
-    def split_channels(cls, color):
+    def split_channels(cls, color):  # pragma: no cover
         """Split channels."""
 
         raise NotImplementedError("Base 'Space' class does not implement 'translate_channel' directly.")

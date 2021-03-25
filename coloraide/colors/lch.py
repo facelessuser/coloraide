@@ -94,11 +94,6 @@ class LCH(Cylindrical, Space):
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def hue_index(self):
-        """Get hue index."""
-
-        return 2
-
     @property
     def lightness(self):
         """Lightness."""
