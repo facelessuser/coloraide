@@ -1,5 +1,6 @@
 """Test HWB library."""
 import unittest
+import math
 from . import util
 from coloraide.css import Color
 
@@ -147,3 +148,22 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(hwb 20 0 -55)').to_string(fit=False),
             'hwb(20 0% -55%)'
         )
+
+    def test_hue_inputs(self):
+        """Test hue inputs."""
+
+        color = "hwb(90deg, 50%, 20%)"
+        hwb = Color(color)
+        self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
+
+        color = "hwb({:f}rad, 50%, 20%)".format(math.radians(90))
+        hwb = Color(color)
+        self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
+
+        color = "hwb(100grad, 50%, 20%)"
+        hwb = Color(color)
+        self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
+
+        color = "hwb(0.25turn, 50%, 20%)"
+        hwb = Color(color)
+        self.assertEqual("hwb(90 50% 20%)", hwb.to_string())

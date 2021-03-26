@@ -1,5 +1,6 @@
 """Test LCH library."""
 import unittest
+import math
 from . import util
 from coloraide.css import Color
 
@@ -147,3 +148,22 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(lch -20% 20 120)').to_string(fit=False),
             'lch(-20% 20 120)'
         )
+
+    def test_hue_inputs(self):
+        """Test hue inputs."""
+
+        color = "lch(90%, 50, 90deg)"
+        lch = Color(color)
+        self.assertEqual("lch(90% 50 90)", lch.to_string())
+
+        color = "lch(90%, 50, {:f}rad)".format(math.radians(90))
+        lch = Color(color)
+        self.assertEqual("lch(90% 50 90)", lch.to_string())
+
+        color = "lch(90%, 50, 100grad)"
+        lch = Color(color)
+        self.assertEqual("lch(90% 50 90)", lch.to_string())
+
+        color = "lch(90%, 50, 0.25turn)"
+        lch = Color(color)
+        self.assertEqual("lch(90% 50 90)", lch.to_string())

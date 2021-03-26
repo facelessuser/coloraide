@@ -1,5 +1,6 @@
 """Test HSL library."""
 import unittest
+import math
 from . import util
 from coloraide.css import Color
 
@@ -178,3 +179,22 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(hsl 20 150 75)').to_string(fit=False),
             'hsl(20 150% 75%)'
         )
+
+    def test_hue_inputs(self):
+        """Test hue inputs."""
+
+        color = "hsl(90deg, 100%, 75%)"
+        hsl = Color(color)
+        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
+
+        color = "hsl({:f}rad, 100%, 75%)".format(math.radians(90))
+        hsl = Color(color)
+        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
+
+        color = "hsl(100grad, 100%, 75%)"
+        hsl = Color(color)
+        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
+
+        color = "hsl(0.25turn, 100%, 75%)"
+        hsl = Color(color)
+        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
