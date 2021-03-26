@@ -5,7 +5,7 @@ from coloraide.css import Color
 
 
 class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test SRGB."""
+    """Test HWB."""
 
     def test_input_raw(self):
         """Test raw input."""
