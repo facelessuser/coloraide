@@ -111,11 +111,11 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args["comma"] = False
 
-        color = "hsla(20, 100%, 75%, 100%)"
+        color = "hsl(20 100% 75% / 100%)"
         hsl = Color(color)
         self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
 
-        color = "hsla(20, 100%, 75%, 20%)"
+        color = "hsl(20 100% 75% / 20%)"
         hsl = Color(color)
         self.assertEqual("hsl(20 100% 75% / 0.2)", hsl.to_string(**args))
 
