@@ -27,6 +27,60 @@ class Asserts:
 class TestAPI(Asserts, unittest.TestCase):
     """Test API."""
 
+    def test_override_precision(self):
+        """Test precision override."""
+
+        class Color2(Color):
+            """Color."""
+
+            PRECISION = 3
+
+        self.assertEqual(
+            Color('color(srgb 0.1234567 0.1234567 0.1234567)').to_string(color=True),
+            'color(srgb 0.12346 0.12346 0.12346)'
+        )
+
+        self.assertEqual(
+            Color2('color(srgb 0.1234567 0.1234567 0.1234567)').to_string(color=True),
+            'color(srgb 0.123 0.123 0.123)'
+        )
+
+    def test_override_fit(self):
+        """Test fit override."""
+
+        class Color2(Color):
+            """Color."""
+
+            FIT = "clip"
+
+        self.assertEqual(
+            Color('color(srgb 2 -1 0)').fit().to_string(),
+            'rgb(227.16 144.18 130.02)'
+        )
+
+        self.assertEqual(
+            Color2('color(srgb 2 -1 0)').fit().to_string(),
+            'rgb(255 0 0)'
+        )
+
+    def test_override_delta_e(self):
+        """Test delta e override."""
+
+        class Color2(Color):
+            """Color."""
+
+            DELTA_E = "2000"
+
+        self.assertEqual(
+            Color('red').delta_e("blue"),
+            184.01647404809094
+        )
+
+        self.assertEqual(
+            Color2('red').delta_e("blue"),
+            55.79505955791144
+        )
+
     def test_bad_input(self):
         """Test bad input."""
 
