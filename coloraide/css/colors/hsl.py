@@ -34,7 +34,6 @@ class HSL(generic.HSL):
         """Convert to CSS."""
 
         options = kwargs
-        alpha = options.get("alpha")
         if precision is None:
             precision = self.parent.PRECISION
 
@@ -43,7 +42,8 @@ class HSL(generic.HSL):
 
         a = util.no_nan(self.alpha)
         alpha = alpha is not False and (alpha is True or a < 1.0)
-        coords = util.no_nan(self.fit_coords() if fit else self.coords())
+        method = None if not isinstance(fit, str) else fit
+        coords = util.no_nan(self.fit_coords(method=method) if fit else self.coords())
 
         if alpha:
             template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"

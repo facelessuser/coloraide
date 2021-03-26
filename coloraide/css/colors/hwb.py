@@ -42,7 +42,8 @@ class HWB(generic.HWB):
 
         a = util.no_nan(self.alpha)
         alpha = alpha is not False and (alpha is True or a < 1.0)
-        coords = util.no_nan(self.fit_coords() if fit else self.coords())
+        method = None if not isinstance(fit, str) else fit
+        coords = util.no_nan(self.fit_coords(method=method) if fit else self.coords())
 
         if alpha:
             template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"

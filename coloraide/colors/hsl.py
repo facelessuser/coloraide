@@ -79,11 +79,6 @@ class HSL(Cylindrical, Space):
         if isinstance(color, Space):
             self.hue, self.saturation, self.lightness = color.convert(self.space()).coords()
             self.alpha = color.alpha
-        elif isinstance(color, str):
-            values = self.match(color)[0]
-            if values is None:
-                raise ValueError("'{}' does not appear to be a valid color".format(color))
-            self.hue, self.saturation, self.lightness, self.alpha = values
         elif isinstance(color, (list, tuple)):
             if not (3 <= len(color) <= 4):
                 raise ValueError("A list of channel values should be of length 3 or 4.")

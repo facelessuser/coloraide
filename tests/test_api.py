@@ -1,30 +1,11 @@
 """Test API."""
 import unittest
 from coloraide import Color, NaN
+from . import util
 import math
 
 
-class Asserts:
-    """Asserts."""
-
-    def assertColorEqual(self, color1, color2, fit=False, precision=5):
-        """Compare two colors."""
-
-        self.assertEqual(
-            color1.to_string(fit=fit, precision=precision),
-            color2.to_string(fit=fit, precision=precision)
-        )
-
-    def assertColorNotEqual(self, color1, color2, fit=False, precision=5):
-        """Compare two colors."""
-
-        self.assertNotEqual(
-            color1.to_string(fit=fit, precision=precision),
-            color2.to_string(fit=fit, precision=precision)
-        )
-
-
-class TestAPI(Asserts, unittest.TestCase):
+class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
     def test_override_precision(self):

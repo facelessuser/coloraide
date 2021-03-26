@@ -68,7 +68,7 @@ class SRGB(generic.SRGB):
         alpha = alpha is not False and (alpha is True or a < 1.0)
         compress = options.get("compress", False)
         if options.get("hex") or options.get("names"):
-            h = self._get_hex(options, alpha=alpha, precision=precision)
+            h = self._get_hex(options, alpha=alpha, precision=precision, fit=fit)
             if options.get("hex"):
                 value = h
                 if compress:
@@ -89,7 +89,8 @@ class SRGB(generic.SRGB):
             percent = options.get("percent", False)
             comma = options.get("comma", False)
             factor = 100.0 if percent else 255.0
-            coords = util.no_nan(self.fit_coords() if fit else self.coords())
+            method = None if not isinstance(fit, str) else fit
+            coords = util.no_nan(self.fit_coords(method=method) if fit else self.coords())
 
             if alpha:
                 if percent:
@@ -114,11 +115,12 @@ class SRGB(generic.SRGB):
                 )
         return value
 
-    def _get_hex(self, options, *, alpha=False, precision=None):
+    def _get_hex(self, options, *, alpha=False, precision=None, fit=None):
         """Get the hex `RGB` value."""
 
         hex_upper = options.get("upper", False)
-        coords = util.no_nan(self.fit_coords())
+        method = None if not isinstance(fit, str) else fit
+        coords = util.no_nan(self.fit_coords(method=method))
 
         template = "#{:02x}{:02x}{:02x}{:02x}" if alpha else "#{:02x}{:02x}{:02x}"
         if hex_upper:

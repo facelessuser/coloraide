@@ -11,6 +11,10 @@ class TestRoundTrip(unittest.TestCase):
     It may be possible that some color spaces degrade through conversion,
     but the currently supported spaces have enough integrity when performing
     a round trip to meet the required value at the default precision.
+
+    There are certain values they may not round trip exactly. Hues may become
+    null, etc. But we are picking general colors that should round trip well
+    enough.
     """
 
     def assert_round_trip(self, color):
