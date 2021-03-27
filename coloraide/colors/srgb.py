@@ -3,7 +3,6 @@ from ._space import Space
 from ._space import RE_DEFAULT_MATCH
 from ._gamut import GamutBound
 from .xyz import XYZ
-from . import _parse as parse
 from . import _convert as convert
 from .. import util
 import re

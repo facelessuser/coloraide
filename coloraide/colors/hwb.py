@@ -5,7 +5,6 @@ from .hsv import HSV
 from ._cylindrical import Cylindrical
 from ._gamut import GamutBound
 from . _range import Angle, Percent
-from . import _parse as parse
 from . import _convert as convert
 from .. import util
 import re

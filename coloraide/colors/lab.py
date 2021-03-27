@@ -2,7 +2,6 @@
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . _range import Percent
-from . import _parse as parse
 from . import _convert as convert
 from .. import util
 import re
