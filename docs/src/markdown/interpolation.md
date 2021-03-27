@@ -31,16 +31,17 @@ the base color. Channels can be any channel associated with the color space in w
 (including `alpha`).
 
 In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
-`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel. Applying this logic, we will
-end up with a range of colors that maintain the same lightness and chroma, but with different hues.
+`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel by applying a mask to all the
+other channels except `hue`. Applying this logic, we will end up with a range of colors that maintain the same lightness
+and chroma, but with different hues. To learn more about masking and null hues, check out
+[Null Handling](#null-handling).
 
 We can see as we step through the colors that only the hue is interpolated.
 
 ```color
 Color("lch(52% 58.1 22.7)").interpolate(
-    "lch(56% 49.1 257.1)",
-    space="lch",
-    adjust=["hue"]
+    Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
+    space="lch"
 )
 ```
 
@@ -50,15 +51,13 @@ Below, we can see how the interpolation varies using `shorter` vs `longer`.
 
 ```color
 i = Color("lch(52% 58.1 22.7)").interpolate(
-    "lch(56% 49.1 257.1)",
-    space="lch",
-    adjust=["hue"]
+    Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
+    space="lch"
 )
 i(0.2477).to_string()
 i = Color("lch(52% 58.1 22.7)").interpolate(
-    "lch(56% 49.1 257.1)",
+    Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
     space="lch",
-    adjust=["hue"],
     hue="longer"
 )
 i(0.2477).to_string()
@@ -217,8 +216,8 @@ A new color will be returned instead of modifying the current color unless `in_p
 ## Null Handling
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
-HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color";
-therefore, it has no hue, or the hue is undefined.
+HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color" or
+achromatic; therefore, it has no hue, or the hue is undefined.
 
 Many libraries, like [d3-color](https://github.com/d3/d3-color), [chroma.js](https://gka.github.io/chroma.js/), and
 [color.js](https://github.com/LeaVerou/color.js), represent null hues with `NaN` (not a number). This is usually done
@@ -243,11 +242,15 @@ color2.coords()
 color.mix(color2, space="hsl")
 ```
 
-This is essentially how the `adjust` parameter works with [`interploate`](#interpolate), [`step`](#step), and
-[`mix`](#mix). `adjust` simply ensures that the secondary color has `NaN` set to specified channels.
+Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used for. It
+can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
 
-Technically, any channel can be set to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
-manually setting it via a channel property or accessor. CSS string inputs do not allow the `NaN` value.
+```color
+Color('white').mask('red', 'green').coords()
+```
+
+Channels can also be set directly to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
+manually setting it via a channel property or accessor. CSS input string do not allow the `NaN` values at this time.
 
 ```color
 from coloraide import NaN

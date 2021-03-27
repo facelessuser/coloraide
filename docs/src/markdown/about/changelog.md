@@ -2,6 +2,9 @@
 
 ## 0.1.0a15
 
+- **NEW**: The adjust parameter on `interpolate`, `steps`, and `mix` has been dropped. Instead, a general purpose method
+  has been added to the `Color` object to mask one or more channels at a time. This can be used to create a temporary
+  color with masked channels for the purpose of interpolation.
 - **FIX**: Ensure that when `alpha` is `NaN` that it is handled in `overlay`.
 - **FIX**: When using raw data in the `color()` function, and there is too little data, fill data with `NaN`.
 - **FIX**: Fix issue where API `interpolate` method does not pass `out_space` parameter down.

@@ -295,10 +295,27 @@ Parameters
     `color`    |              | A color string or [`Color`](#color) object representing a color.
     `method`   | `#!py3 None` | String that specifies the method to use. If `#!py3 None`, the default will be used.
 
+### `mask`
+
+```py3
+def mask(self, *channels, invert=False, in_place=False):
+```
+
+The `mask` method will set any and all specified channels to `NaN`. If `invert` is set to `#!py3 True`, `mask` will set
+any and all channels not specified to `NaN`.
+
+Parameters
+: 
+    Parameters  | Defaults      | Description
+    ----------- | ------------- | -----------
+    `*channels` |               | One or more channels to mask (or not mask if `invert` is `#!py3 True`).
+    `invert`    | `#!py3 False` | Use inverse masking logic and mask all channels that are not specified.
+    `in_place`  | `#!py3 False` | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+
 ### `interpolate`
 
 ```py3
-def interpolate(self, color, *, space="lab", progress=None, out_space=None, adjust=None, hue=util.DEF_HUE_ADJ, premultiplied=False):
+def interpolate(self, color, *, space="lab", progress=None, out_space=None, hue=util.DEF_HUE_ADJ, premultiplied=False):
 ```
 
 The `interpolate` method creates a function that takes a value between 0 - 1 and interpolates a new color based on the
@@ -323,7 +340,6 @@ Parameters
     `space`         | `#!py3 "lab"`     | Color space to interpolate in.
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
     `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
-    `adjust`        | `#!py3 None`      | A list of channel names that should be interpolated. If `#!py3 None`, all channels will be interpolated.
     `hue`           | `#!py3 "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
     `premultiplied` | `#!py3 False`     | Use premultiplied alpha when interpolating.
 

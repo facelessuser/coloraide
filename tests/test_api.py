@@ -622,12 +622,46 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color("srgb", [NaN, 0, 0])
         self.assertColorEqual(c1.mix(c2), Color("srgb", [0, 0.5, 0.5]))
 
-    def test_mix_adjust(self):
+    def test_mix_mask(self):
         """Test mix adjust method."""
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2, adjust=["green", "blue"]), Color("srgb", [0.25, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2.mask("red")), Color("srgb", [0.25, 0.5, 0.5]))
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mask("red").mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mask("red").mix(c2.mask("red")), Color("srgb", [0.0, 0.5, 0.5]))
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mix(c2.mask("red", "green")), Color("srgb", [0.25, 1, 0.5]))
+
+    def test_mix_mask_invert(self):
+        """Test mix adjust method."""
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mix(c2.mask("green", "blue", invert=True)), Color("srgb", [0.25, 0.5, 0.5]))
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mask("green", "blue", invert=True).mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(
+            c1.mask("green", "blue", "alpha", invert=True).mix(c2.mask("green", "blue", "alpha", invert=True)),
+            Color("srgb", [0.0, 0.5, 0.5])
+        )
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(c1.mix(c2.mask("blue", invert=True)), Color("srgb", [0.25, 1, 0.5]))
 
     def test_mix_hue_adjust(self):
         """Test hue adjusting."""
@@ -635,23 +669,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('rebeccapurple')
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
-            c1.mix(c2, 0.25, adjust=["hue"], hue="shorter", space="lch"),
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch"),
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            c1.mix(c2, 0.25, adjust=["hue"], hue="longer", space="lch"),
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch"),
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            c1.mix(c2, 0.25, adjust=["hue"], hue="increasing", space="lch"),
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch"),
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            c1.mix(c2, 0.25, adjust=["hue"], hue="decreasing", space="lch"),
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch"),
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            c1.mix(c2, 0.25, adjust=["hue"], hue="specified", space="lch"),
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch"),
             Color("rgb(112.84 63.966 -28.832)")
         )
 
@@ -661,7 +695,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('rebeccapurple')
         c2 = Color('lch(85% 100 805)')
         with self.assertRaises(ValueError):
-            c1.mix(c2, 0.25, adjust=["hue"], hue="bad", space="lch")
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="bad", space="lch")
 
     def test_mix_progress(self):
         """Test custom progress."""
@@ -775,7 +809,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["green", "blue"], space="srgb")(0.5),
+            c1.interpolate(c2.mask("red"), space="srgb")(0.5),
             Color("srgb", [0.25, 0.5, 0.5])
         )
 
@@ -785,23 +819,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('rebeccapurple')
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["hue"], hue="shorter", space="lch")(0.25),
+            c1.interpolate(c2.mask("hue", invert=True), hue="shorter", space="lch")(0.25),
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["hue"], hue="longer", space="lch")(0.25),
+            c1.interpolate(c2.mask("hue", invert=True), hue="longer", space="lch")(0.25),
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["hue"], hue="increasing", space="lch")(0.25),
+            c1.interpolate(c2.mask("hue", invert=True), hue="increasing", space="lch")(0.25),
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["hue"], hue="decreasing", space="lch")(0.25),
+            c1.interpolate(c2.mask("hue", invert=True), hue="decreasing", space="lch")(0.25),
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            c1.interpolate(c2, adjust=["hue"], hue="specified", space="lch")(0.25),
+            c1.interpolate(c2.mask("hue", invert=True), hue="specified", space="lch")(0.25),
             Color("rgb(112.84 63.966 -28.832)")
         )
 
@@ -920,7 +954,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
         self.assertColorEqual(
-            c1.steps(c2, adjust=["green", "blue"], space="srgb", steps=1)[0],
+            c1.steps(c2.mask("red"), space="srgb", steps=1)[0],
             Color("srgb", [0.25, 0.5, 0.5])
         )
 
@@ -928,23 +962,33 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test steps with hue adjusting."""
 
         self.assertColorEqual(
-            Color('rebeccapurple').steps('lch(85% 100 805)', space="lch", steps=5, adjust=["hue"], hue="shorter")[1],
+            Color('rebeccapurple').steps(
+                Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="shorter"
+            )[1],
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            Color('rebeccapurple').steps('lch(85% 100 805)', space="lch", steps=5, adjust=["hue"], hue="longer")[1],
+            Color('rebeccapurple').steps(
+                Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="longer"
+            )[1],
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            Color('rebeccapurple').steps('lch(85% 100 805)', space="lch", steps=5, adjust=["hue"], hue="increasing")[1],
+            Color('rebeccapurple').steps(
+                Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="increasing"
+            )[1],
             Color("rgb(146.74 -3.9476 106.4)")
         )
         self.assertColorEqual(
-            Color('rebeccapurple').steps('lch(85% 100 805)', space="lch", steps=5, adjust=["hue"], hue="decreasing")[1],
+            Color('rebeccapurple').steps(
+                Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="decreasing"
+            )[1],
             Color("rgb(-86.84 87.632 170)")
         )
         self.assertColorEqual(
-            Color('rebeccapurple').steps('lch(85% 100 805)', space="lch", steps=5, adjust=["hue"], hue="specified")[1],
+            Color('rebeccapurple').steps(
+                Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="specified"
+            )[1],
             Color("rgb(112.84 63.966 -28.832)")
         )
 

@@ -191,6 +191,19 @@ class Color:
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
         return self
 
+    def mask(self, *channels, invert=False, in_place=False):
+        """Mask color channels."""
+
+        clone = self.clone()
+        masks = set(channels)
+        for channel in self._color.CHANNEL_NAMES:
+            if (not invert and channel in masks) or (invert and channel not in masks):
+                clone.set(channel, util.NaN)
+        if in_place:
+            self.update(clone)
+            return self
+        return clone
+
     def to_string(self, **kwargs):
         """To string."""
 
@@ -237,14 +250,14 @@ class Color:
         return self
 
     def interpolate(
-        self, color, *, space="lab", out_space=None, progress=None, adjust=None, hue=util.DEF_HUE_ADJ,
+        self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
         premultiplied=False
     ):
         """Interpolate."""
 
         color = self._handle_color_input(color)
         interp = self._color.interpolate(
-            color, space=space, progress=progress, out_space=out_space, adjust=adjust, hue=hue,
+            color, space=space, progress=progress, out_space=out_space, hue=hue,
             premultiplied=premultiplied
         )
         return functools.partial(_interpolate, color=self.clone(), interp=interp)
