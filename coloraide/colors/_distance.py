@@ -101,7 +101,7 @@ def delta_e_cmc(color1, color2, l=2, c=1):
 
     sc = ((0.0638 * c1) / (1 + 0.0131 * c1)) + 0.638
 
-    h = math.atan2(b1, a1) * util.RAD2DEG
+    h = math.degrees(math.atan2(b1, a1))
 
     if h >= 0:
         h1 = h
@@ -109,9 +109,9 @@ def delta_e_cmc(color1, color2, l=2, c=1):
         h1 = h + 360
 
     if 164 <= h1 <= 345:
-        t = 0.56 + abs(0.2 * math.cos((h1 + 168) * util.DEG2RAD))
+        t = 0.56 + abs(0.2 * math.cos(math.radians(h1 + 168)))
     else:
-        t = 0.36 + abs(0.4 * math.cos((h1 + 35) * util.DEG2RAD))
+        t = 0.36 + abs(0.4 * math.cos(math.radians(h1 + 35)))
     c1_4 = c1 ** 4
     f = math.sqrt(c1_4 / (c1_4 + 1900))
 
@@ -159,8 +159,8 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     hp1 = 0 if (ap1 == 0 and b1 == 0) else math.atan2(b1, ap1)
     hp2 = 0 if (ap2 == 0 and b2 == 0) else math.atan2(b2, ap2)
 
-    hp1 = (hp1 + 2 * math.pi if hp1 < 0.0 else hp1) * util.RAD2DEG
-    hp2 = (hp2 + 2 * math.pi if hp2 < 0.0 else hp2) * util.RAD2DEG
+    hp1 = math.degrees(hp1 + 2 * math.pi if hp1 < 0.0 else hp1)
+    hp2 = math.degrees(hp2 + 2 * math.pi if hp2 < 0.0 else hp2)
 
     dl = l2 - l1
     dc = cp2 - cp1
@@ -176,7 +176,7 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     elif hdiff < -180:
         dh = hdiff + 360
 
-    dh = 2 * math.sqrt(cp2 * cp1) * math.sin(dh * util.DEG2RAD / 2)
+    dh = 2 * math.sqrt(cp2 * cp1) * math.sin(math.radians(dh / 2))
 
     cpm = (cp1 + cp2) / 2
     lpm = (l1 + l2) / 2
@@ -193,10 +193,10 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
 
     t = (
         1 -
-        (0.17 * math.cos((hpm - 30) * util.DEG2RAD)) +
-        (0.24 * math.cos(2 * hpm * util.DEG2RAD)) +
-        (0.32 * math.cos(((3 * hpm) + 6) * util.DEG2RAD)) -
-        (0.20 * math.cos(((4 * hpm) - 63) * util.DEG2RAD))
+        (0.17 * math.cos(math.radians(hpm - 30))) +
+        (0.24 * math.cos(math.radians(2 * hpm))) +
+        (0.32 * math.cos(math.radians((3 * hpm) + 6))) -
+        (0.20 * math.cos(math.radians((4 * hpm) - 63)))
     )
 
     dt = 30 * math.exp(-1 * ((hpm - 275) / 25) ** 2)
@@ -207,7 +207,7 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     sl = 1 + ((0.015 * l_temp) / math.sqrt(20 + l_temp))
     sc = 1 + 0.045 * cpm
     sh = 1 + 0.015 * cpm * t
-    rt = -1 * math.sin(2 * dt * util.DEG2RAD) * rc
+    rt = -1 * math.sin(math.radians(2 * dt)) * rc
 
     return math.sqrt(
         (dl / (kl * sl)) ** 2 +

@@ -16,8 +16,6 @@ DEF_HUE_ADJ = "shorter"
 DEF_DISTANCE_SPACE = "lab"
 DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
-RAD2DEG = 180 / math.pi
-DEG2RAD = math.pi / 180
 
 
 def is_number(value):
