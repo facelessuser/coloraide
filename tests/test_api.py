@@ -663,6 +663,17 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color("color(srgb 0.75 0 0)")
         self.assertColorEqual(c1.mix(c2.mask("blue", invert=True)), Color("srgb", [0.25, 1, 0.5]))
 
+    def test_mask_in_place(self):
+        """Test masking "in place"."""
+
+        c1 = Color('white')
+        c2 = c1.mask('red')
+        self.assertNotEqual(c1, c2)
+        self.assertIsNot(c1, c2)
+        c3 = c1.mask('red', in_place=True)
+        self.assertEqual(c1, c3)
+        self.assertIs(c1, c3)
+
     def test_mix_hue_adjust(self):
         """Test hue adjusting."""
 
