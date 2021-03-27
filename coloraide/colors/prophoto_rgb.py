@@ -79,7 +79,7 @@ def gam_prophoto(rgb):
     return result
 
 
-class ProPhoto_RGB(SRGB):
+class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
     SPACE = "prophoto-rgb"

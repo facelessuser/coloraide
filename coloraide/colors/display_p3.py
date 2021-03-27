@@ -48,7 +48,7 @@ def gam_p3(rgb):
     return gam_srgb(rgb)  # same as sRGB
 
 
-class Display_P3(SRGB):
+class DisplayP3(SRGB):
     """Display-p3 class."""
 
     SPACE = "display-p3"

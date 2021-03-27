@@ -1,14 +1,14 @@
 """Colors."""
 from .hsv import HSV
 from .srgb import SRGB
-from .srgb_linear import SRGB_Linear
+from .srgb_linear import SRGBLinear
 from .hsl import HSL
 from .hwb import HWB
 from .lab import LAB
 from .lch import LCH
-from .display_p3 import Display_P3
-from .a98_rgb import A98_RGB
-from .prophoto_rgb import ProPhoto_RGB
+from .display_p3 import DisplayP3
+from .a98_rgb import A98RGB
+from .prophoto_rgb import ProPhotoRGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .. import util
@@ -18,8 +18,8 @@ DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
 
 SUPPORTED = (
-    HSL, HWB, LAB, LCH, SRGB, SRGB_Linear, HSV,
-    Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
+    HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ
 )
 
 

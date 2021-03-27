@@ -4,18 +4,18 @@ from .hsl import HSL
 from .hwb import HWB
 from .lab import LAB
 from .lch import LCH
-from ...colors import SRGB_Linear
+from ...colors import SRGBLinear
 from ...colors import HSV
-from ...colors import Display_P3
-from ...colors import A98_RGB
-from ...colors import ProPhoto_RGB
+from ...colors import DisplayP3
+from ...colors import A98RGB
+from ...colors import ProPhotoRGB
 from ...colors import Rec2020
 from ...colors import XYZ
 from ...colors import Color as GenericColor
 
 SUPPORTED = (
-    HSL, HWB, LAB, LCH, SRGB, SRGB_Linear, HSV,
-    Display_P3, A98_RGB, ProPhoto_RGB, Rec2020, XYZ
+    HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ
 )
 
 

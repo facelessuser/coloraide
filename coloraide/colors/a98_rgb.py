@@ -51,7 +51,7 @@ def gam_a98rgb(rgb):
     return [math.copysign(abs(val) ** (256 / 563), val) for val in rgb]
 
 
-class A98_RGB(SRGB):
+class A98RGB(SRGB):
     """A98 RGB class."""
 
     SPACE = "a98-rgb"

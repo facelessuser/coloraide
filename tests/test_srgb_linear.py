@@ -46,8 +46,8 @@ class TestSRGBLinearInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"alpha": True}
 
         color = "color(srgb-linear 0.3 1 0.5 / 100%)"
-        rgb = Color(color)
-        self.assertEqual("color(srgb-linear 0.3 1 0.5 / 1)", rgb.to_string(**args))
+        srgbl = Color(color)
+        self.assertEqual("color(srgb-linear 0.3 1 0.5 / 1)", srgbl.to_string(**args))
 
     def test_precision(self):
         """Test precision."""

@@ -6,7 +6,7 @@ from . import _convert as convert
 import re
 
 
-class SRGB_Linear(SRGB):
+class SRGBLinear(SRGB):
     """SRGB linear."""
 
     SPACE = "srgb-linear"
