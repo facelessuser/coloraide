@@ -148,17 +148,6 @@ class SRGB(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def translate_channel(cls, channel, value):
-        """Translate channel string."""
-
-        if 0 <= channel <= 2:
-            return parse.norm_float(value)
-        elif channel == -1:
-            return parse.norm_alpha_channel(value)
-        else:
-            raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    @classmethod
     def _to_xyz(cls, rgb):
         """SRGB to XYZ."""
 

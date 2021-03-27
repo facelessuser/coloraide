@@ -134,19 +134,6 @@ class LCH(Cylindrical, Space):
         return coords
 
     @classmethod
-    def translate_channel(cls, channel, value):
-        """Translate channel string."""
-
-        if channel in (0, 1):
-            return parse.norm_float(value)
-        elif channel == 2:
-            return parse.norm_deg_channel(value)
-        elif channel == -1:
-            return parse.norm_alpha_channel(value)
-        else:
-            raise ValueError("Unexpected channel index of '{}'".format(channel))
-
-    @classmethod
     def _to_lab(cls, lch):
         """To Lab."""
 

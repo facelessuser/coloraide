@@ -1,4 +1,5 @@
 """Color base."""
+from abc import ABCMeta
 from .. import util
 from . import _parse as parse
 from . import _convert as convert
@@ -44,7 +45,14 @@ def split_channels(cls, color):
     return cls.null_adjust(channels)
 
 
-class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut.Gamut, convert.Convert):
+class Space(
+    contrast.Contrast,
+    interpolate.Interpolate,
+    distance.Distance,
+    gamut.Gamut,
+    convert.Convert,
+    metaclass=ABCMeta
+):
     """Base color space object."""
 
     # Default color value (black)
@@ -191,18 +199,6 @@ class Space(contrast.Contrast, interpolate.Interpolate, distance.Distance, gamut
         """Process coordinates and adjust any channels to null/NaN if required."""
 
         return coords
-
-    @classmethod
-    def translate_channel(cls, channel, value):  # pragma: no cover
-        """Set a non-alpha color channel."""
-
-        raise NotImplementedError("Base 'Space' does not implement 'translate_channel' directly.")
-
-    @classmethod
-    def split_channels(cls, color):  # pragma: no cover
-        """Split channels."""
-
-        raise NotImplementedError("Base 'Space' class does not implement 'translate_channel' directly.")
 
     @classmethod
     def match(cls, string, start=0, fullmatch=True):

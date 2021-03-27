@@ -74,14 +74,3 @@ class XYZ(Space):
         """Set Z channel."""
 
         self._coords[2] = self._handle_input(value)
-
-    @classmethod
-    def translate_channel(cls, channel, value):
-        """Translate channel string."""
-
-        if channel in (0, 1, 2):
-            return parse.norm_float(value)
-        elif channel == -1:
-            return parse.norm_alpha_channel(value)
-        else:
-            raise ValueError("Unexpected channel index of '{}'".format(channel))
