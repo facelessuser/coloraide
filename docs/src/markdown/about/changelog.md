@@ -9,8 +9,8 @@
 - **FIX**: When using raw data in the `color()` function, and there is too little data, fill data with `NaN`.
 - **FIX**: Fix issue where API `interpolate` method does not pass `out_space` parameter down.
 - **FIX**: Disabling or forcing alpha did not work properly for HSL colors via `to_string`.
-- **FIX**: `contrast` and `luminance` should use XYZ in with a D65 white point, not the default XYZ with a D50 white
-  point.
+- **FIX**: `contrast` and `luminance` should use XYZ with a D65 white point, not the default XYZ space which uses a D50
+  white point.
 
 ## 0.1.0a14
 

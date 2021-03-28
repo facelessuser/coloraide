@@ -222,7 +222,8 @@ Parameters
 def luminance(self):
 ```
 
-Get the relative luminance. Relative luminance is obtained from the Y coordinate in the XYZ color space.
+Get the relative luminance. Relative luminance is obtained from the Y coordinate in the XYZ color space. XYZ, in this
+case, has a D65 white point.
 
 Return
 : 
