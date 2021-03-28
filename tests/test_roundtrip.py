@@ -70,6 +70,11 @@ class TestRoundTrip(unittest.TestCase):
 
         self.assert_round_trip("color(xyz 0.3 0.7 0.7)")
 
+    def test_xyzd65(self):
+        """Test XYZ D65."""
+
+        self.assert_round_trip("color(xyzd65 0.3 0.7 0.7)")
+
     def test_display_p3(self):
         """Test Display P3."""
 

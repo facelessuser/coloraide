@@ -13,7 +13,7 @@ class Contrast:
     def luminance(self):
         """Get color's luminance."""
 
-        return self.convert("xyz").y
+        return self.convert("xyzd65").y
 
     def contrast(self, color):
         """Compare the contrast ration of this color and the provided color."""

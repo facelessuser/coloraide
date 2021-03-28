@@ -201,7 +201,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test luminance."""
 
         c1 = Color('orange')
-        c2 = c1.convert('xyz')
+        c2 = c1.convert('xyzd65')
         self.assertEqual(c1.luminance(), c2.y)
 
     def test_property(self):
@@ -344,7 +344,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_contrast_bigger(self):
         """Test greater contrast."""
 
-        self.assertEqual(Color('white').contrast('blue'), 9.490930554456146)
+        self.assertEqual(Color('white').contrast('blue'), 8.593009849617642)
 
     def test_repr(self):
         """Test string representation."""

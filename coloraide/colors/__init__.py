@@ -11,6 +11,7 @@ from .a98_rgb import A98RGB
 from .prophoto_rgb import ProPhotoRGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
+from .xyzd65 import XYZD65
 from .. import util
 import functools
 
@@ -19,7 +20,7 @@ DEF_DELTA_E = "76"
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65
 )
 
 
