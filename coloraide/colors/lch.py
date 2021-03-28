@@ -107,12 +107,12 @@ class LCH(Cylindrical, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords):
+    def null_adjust(cls, coords, alpha):
         """On color update."""
 
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
-        return coords
+        return coords, alpha
 
     @classmethod
     def _to_lab(cls, lch):

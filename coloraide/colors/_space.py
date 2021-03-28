@@ -31,7 +31,7 @@ def split_channels(cls, color):
     channels = []
     color = color.strip()
     split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
-    alpha = None
+    alpha = 1.0
     if len(split) > 1:
         alpha = parse.norm_alpha_channel(split[-1])
     for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
@@ -41,8 +41,7 @@ def split_channels(cls, color):
     if len(channels) < cls.NUM_COLOR_CHANNELS:
         diff = cls.NUM_COLOR_CHANNELS - len(channels)
         channels.extend([0.0] * diff)
-    channels.append(alpha if alpha is not None else 1.0)
-    return cls.null_adjust(channels)
+    return cls.null_adjust(channels, alpha)
 
 
 class Space(
@@ -81,7 +80,7 @@ class Space(
     # White point
     WHITE = convert.WHITES["D50"]
 
-    def __init__(self, color=None):
+    def __init__(self, color=None, alpha=None):
         """Initialize."""
 
         if color is None:
@@ -98,16 +97,13 @@ class Space(
                 self.set(self.CHANNEL_NAMES[index], channel)
             self.alpha = color.alpha
         elif isinstance(color, (list, tuple)):
-            if len(color) not in (self.NUM_COLOR_CHANNELS, self.NUM_COLOR_CHANNELS + 1):
+            if len(color) != self.NUM_COLOR_CHANNELS:
                 raise ValueError(
-                    "A list of channel values should be at a minimum of {} or {} with alpha.".format(
-                        self.NUM_COLOR_CHANNELS,
-                        self.NUM_COLOR_CHANNELS + 1
-                    )
+                    "A list of channel values should be at a minimum of {}.".format(self.NUM_COLOR_CHANNELS)
                 )
             for index in range(self.NUM_COLOR_CHANNELS):
                 self.set(self.CHANNEL_NAMES[index], color[index])
-            self.alpha = 1.0 if len(color) == self.NUM_COLOR_CHANNELS else color[self.NUM_COLOR_CHANNELS]
+            self.alpha = 1.0 if alpha is None else alpha
         else:
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
@@ -139,10 +135,10 @@ class Space(
 
         return self.new(self)
 
-    def new(self, value):
+    def new(self, value=None, alpha=None):
         """Create new color in color space."""
 
-        color = type(self)(value)
+        color = type(self)(value, alpha)
         color.parent = self.parent
         return color
 
@@ -216,10 +212,10 @@ class Space(
         return template.format(self.space(), *values)
 
     @classmethod
-    def null_adjust(cls, coords):
+    def null_adjust(cls, coords, alpha):
         """Process coordinates and adjust any channels to null/NaN if required."""
 
-        return coords
+        return coords, alpha
 
     @classmethod
     def match(cls, string, start=0, fullmatch=True):

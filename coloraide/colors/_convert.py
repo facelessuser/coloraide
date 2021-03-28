@@ -100,8 +100,7 @@ class Convert:
                 func = getattr(obj, '_from_xyz')
                 coords = func(coords)
 
-        coords = list(coords) + [self.alpha]
-        result = obj(coords)
+        result = obj(coords, self.alpha)
         result.parent = self.parent
 
         return result
@@ -110,14 +109,11 @@ class Convert:
         """Update from color."""
 
         if self is obj:
-            obj._coords = obj.null_adjust(obj._coords)
+            obj._coords, obj.alpha = obj.null_adjust(obj.coords(), obj.alpha)
             return
 
         if not isinstance(obj, type(self)):
             obj = type(self)(obj)
 
-        for i, value in enumerate(obj.coords()):
-            self._coords[i] = value
-        self.alpha = obj.alpha
-        self._coords = self.null_adjust(self._coords)
+        self._coords, self.alpha = self.null_adjust(obj.coords(), obj.alpha)
         return self

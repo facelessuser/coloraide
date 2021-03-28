@@ -104,7 +104,7 @@ class Color:
                 if space == s and (not filters or s in filters):
                     if len(data) < space_class.NUM_COLOR_CHANNELS:
                         data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
-                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS] + [alpha])
+                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS], alpha)
                     return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
@@ -133,7 +133,7 @@ class Color:
                 continue
             value, match_end = space_class.match(string, start, fullmatch)
             if value is not None:
-                color = space_class(value)
+                color = space_class(*value)
                 return ColorMatch(color, start, match_end)
         return None
 

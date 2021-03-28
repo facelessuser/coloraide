@@ -23,11 +23,6 @@ class LCH(generic.LCH):
         """.format(**parse.COLOR_PARTS)
     )
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     def to_string(
         self, *, alpha=None, precision=None, fit=True, **kwargs
     ):
@@ -82,14 +77,13 @@ class LCH(generic.LCH):
 
         start = 4
         channels = []
+        alpha = 1.0
         for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
             if i <= 2:
                 channels.append(cls.translate_channel(i, c))
-            else:
-                channels.append(cls.translate_channel(-1, c))
-        if len(channels) == 3:
-            channels.append(1.0)
-        return cls.null_adjust(channels)
+            elif i == 3:
+                alpha = cls.translate_channel(-1, c)
+        return cls.null_adjust(channels, alpha)
 
     @classmethod
     def match(cls, string, start=0, fullmatch=True):

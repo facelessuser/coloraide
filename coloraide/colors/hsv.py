@@ -106,12 +106,12 @@ class HSV(Cylindrical, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords):
+    def null_adjust(cls, coords, alpha):
         """On color update."""
 
         if coords[1] == 0:
             coords[0] = util.NaN
-        return coords
+        return coords, alpha
 
     @classmethod
     def _to_xyz(cls, hsv):
