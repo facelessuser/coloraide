@@ -62,7 +62,7 @@ class Space(
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
-    CHANNEL_NAMES = frozenset(["alpha"])
+    CHANNEL_NAMES = ("alpha",)
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
     DEFAULT_MATCH = ""
@@ -89,6 +89,24 @@ class Space(
         self._coords = [util.NaN] * self.NUM_COLOR_CHANNELS
         if isinstance(color, Space):
             self.parent = color.parent
+
+        if isinstance(color, Space):
+            for index, channel in enumerate(color.convert(self.space()).coords()):
+                self.set(self.CHANNEL_NAMES[index], channel)
+            self.alpha = color.alpha
+        elif isinstance(color, (list, tuple)):
+            if len(color) not in (self.NUM_COLOR_CHANNELS, self.NUM_COLOR_CHANNELS + 1):
+                raise ValueError(
+                    "A list of channel values should be at a minimum of {} or {} with alpha.".format(
+                        self.NUM_COLOR_CHANNELS,
+                        self.NUM_COLOR_CHANNELS + 1
+                    )
+                )
+            for index in range(self.NUM_COLOR_CHANNELS):
+                self.set(self.CHANNEL_NAMES[index], color[index])
+            self.alpha = 1.0 if len(color) == self.NUM_COLOR_CHANNELS else color[self.NUM_COLOR_CHANNELS]
+        else:
+            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     def __repr__(self):
         """Representation."""

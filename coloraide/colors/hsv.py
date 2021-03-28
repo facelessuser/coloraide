@@ -58,7 +58,7 @@ class HSV(Cylindrical, Space):
 
     SPACE = "hsv"
     DEF_VALUE = "color(hsv 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["hue", "saturation", "value", "alpha"])
+    CHANNEL_NAMES = ("hue", "saturation", "value", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     GAMUT_CHECK = "hsl"
     WHITE = convert.WHITES["D65"]
@@ -73,19 +73,6 @@ class HSV(Cylindrical, Space):
         """Initialize."""
 
         super().__init__(color)
-
-        if isinstance(color, Space):
-            self.hue, self.saturation, self.value = color.convert(self.space()).coords()
-            self.alpha = color.alpha
-        elif isinstance(color, (list, tuple)):
-            if not (3 <= len(color) <= 4):
-                raise ValueError("A list of channel values should be of length 3 or 4.")
-            self.hue = color[0]
-            self.saturation = color[1]
-            self.value = color[2]
-            self.alpha = 1.0 if len(color) == 3 else color[3]
-        else:
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     @property
     def hue(self):

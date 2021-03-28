@@ -56,7 +56,7 @@ class LCH(Cylindrical, Space):
 
     SPACE = "lch"
     DEF_VALUE = "color(lch 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["lightness", "chroma", "hue", "alpha"])
+    CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]
 
@@ -74,19 +74,6 @@ class LCH(Cylindrical, Space):
         """Initialize."""
 
         super().__init__(color)
-
-        if isinstance(color, Space):
-            self.lightness, self.chroma, self.hue = color.convert(self.space()).coords()
-            self.alpha = color.alpha
-        elif isinstance(color, (list, tuple)):
-            if not (3 <= len(color) <= 4):
-                raise ValueError("A list of channel values should be of length 3 or 4.")
-            self.lightness = color[0]
-            self.chroma = color[1]
-            self.hue = color[2]
-            self.alpha = 1.0 if len(color) == 3 else color[3]
-        else:
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     @property
     def lightness(self):

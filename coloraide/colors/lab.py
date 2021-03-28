@@ -58,7 +58,7 @@ class LAB(Space):
 
     SPACE = "lab"
     DEF_VALUE = "color(lab 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["lightness", "a", "b", "alpha"])
+    CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]
 
@@ -72,19 +72,6 @@ class LAB(Space):
         """Initialize."""
 
         super().__init__(color)
-
-        if isinstance(color, Space):
-            self.lightness, self.a, self.b = color.convert(self.space()).coords()
-            self.alpha = color.alpha
-        elif isinstance(color, (list, tuple)):
-            if not (3 <= len(color) <= 4):
-                raise ValueError("A list of channel values should be of length 3 or 4.")
-            self.lightness = color[0]
-            self.a = color[1]
-            self.b = color[2]
-            self.alpha = 1.0 if len(color) == 3 else color[3]
-        else:
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     @property
     def lightness(self):

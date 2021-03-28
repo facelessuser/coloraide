@@ -10,7 +10,7 @@ class XYZ(Space):
 
     SPACE = "xyz"
     DEF_VALUE = "color(xyz 0 0 0 / 1)"
-    CHANNEL_NAMES = frozenset(["x", "y", "z", "alpha"])
+    CHANNEL_NAMES = ("x", "y", "z", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]
 
@@ -24,19 +24,6 @@ class XYZ(Space):
         """Initialize."""
 
         super().__init__(color)
-
-        if isinstance(color, Space):
-            self.x, self.y, self.z = color.convert(self.space()).coords()
-            self.alpha = color.alpha
-        elif isinstance(color, (list, tuple)):
-            if not (3 <= len(color) <= 4):
-                raise ValueError("A list of channel values should be of length 3 or 4.")
-            self.x = color[0]
-            self.y = color[1]
-            self.z = color[2]
-            self.alpha = 1.0 if len(color) == 3 else color[3]
-        else:
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     @property
     def x(self):
