@@ -140,15 +140,15 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {"comma": True, "alpha": True}
 
-        color = "hsla(20, 100%, 75%, 0.2)"
+        color = "hsla(20, 100%, 75%, 1)"
         hsl = Color(color)
-        self.assertEqual("hsla(20, 100%, 75%, 0.2)", hsl.to_string(**args))
+        self.assertEqual("hsla(20, 100%, 75%, 1)", hsl.to_string(**args))
 
         args["comma"] = False
 
-        color = "hsl(20 100% 75% / 0.2)"
+        color = "hsl(20 100% 75% / 1)"
         hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75% / 0.2)", hsl.to_string(**args))
+        self.assertEqual("hsl(20 100% 75% / 1)", hsl.to_string(**args))
 
     def test_precision(self):
         """Test precision."""

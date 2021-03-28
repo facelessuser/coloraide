@@ -109,15 +109,15 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {"comma": True, "alpha": True}
 
-        color = "lch(20%, 10, 130, 0.2)"
+        color = "lch(20%, 10, 130, 1)"
         lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130, 0.2)", lch.to_string(**args))
+        self.assertEqual("lch(20%, 10, 130, 1)", lch.to_string(**args))
 
         args["comma"] = False
 
-        color = "lch(20% 10 130 / 0.2)"
+        color = "lch(20% 10 130 / 1)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130 / 0.2)", lch.to_string(**args))
+        self.assertEqual("lch(20% 10 130 / 1)", lch.to_string(**args))
 
     def test_precision(self):
         """Test precision."""

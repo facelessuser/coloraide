@@ -108,15 +108,15 @@ class TestLabInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {"comma": True, "alpha": True}
 
-        color = "lab(20%, 10, -30, 0.2)"
+        color = "lab(20%, 10, -30, 1)"
         lab = Color(color)
-        self.assertEqual("lab(20%, 10, -30, 0.2)", lab.to_string(**args))
+        self.assertEqual("lab(20%, 10, -30, 1)", lab.to_string(**args))
 
         args["comma"] = False
 
-        color = "lab(20% 10 -30 / 0.2)"
+        color = "lab(20% 10 -30 / 1)"
         lab = Color(color)
-        self.assertEqual("lab(20% 10 -30 / 0.2)", lab.to_string(**args))
+        self.assertEqual("lab(20% 10 -30 / 1)", lab.to_string(**args))
 
     def test_precision(self):
         """Test precision."""

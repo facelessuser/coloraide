@@ -109,15 +109,15 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {"comma": True, "alpha": True}
 
-        color = "hwb(20, 10%, 75%, 0.2)"
+        color = "hwb(20, 10%, 75%, 1)"
         hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%, 0.2)", hwb.to_string(**args))
+        self.assertEqual("hwb(20, 10%, 75%, 1)", hwb.to_string(**args))
 
         args["comma"] = False
 
-        color = "hwb(20 10% 75% / 0.2)"
+        color = "hwb(20 10% 75% / 1)"
         hwb = Color(color)
-        self.assertEqual("hwb(20 10% 75% / 0.2)", hwb.to_string(**args))
+        self.assertEqual("hwb(20 10% 75% / 1)", hwb.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
