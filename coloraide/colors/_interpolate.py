@@ -57,23 +57,6 @@ def interpolate(p, coords1, coords2, create, progress, outspace, premultiplied):
     return color.convert(outspace) if outspace != color.space() else color
 
 
-def prepare_coords(color, adjust=None):
-    """
-    Prepare the coordinates for interpolation.
-
-    If the hue is null, we need to set it to NaN.
-    If the user specified only specific channels to mix,
-    then we need to set all other channels to NaN.
-    """
-
-    if adjust:
-        to_adjust = adjust & color.CHANNEL_NAMES
-        to_avoid = color.CHANNEL_NAMES - adjust
-        if to_adjust:
-            for channel in to_avoid:
-                color.set(channel, util.NaN)
-
-
 def postdivide(color):
     """Premultiply the given transparent color."""
 
@@ -188,10 +171,6 @@ class Interpolate:
 
             this = self.convert(space, fit=True)
             background = background.convert(space, fit=True)
-
-            # Get the coordinates and indexes of valid hues
-            prepare_coords(this)
-            prepare_coords(background)
 
             # Adjust hues if we have two valid hues
             if isinstance(this, Cylindrical):
@@ -319,10 +298,6 @@ class Interpolate:
         # Convert to the color space and ensure the color fits inside
         color1 = self.convert(inspace, fit=True)
         color2 = color.convert(inspace, fit=True)
-
-        # Get the coordinates and indexes of valid hues
-        prepare_coords(color1)
-        prepare_coords(color2, adjust)
 
         # Adjust hues if we have two valid hues
         if isinstance(color1, Cylindrical):

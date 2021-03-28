@@ -70,6 +70,34 @@ transform the color `#!color pink` to `#!color rgb(255 249.6 203)`.
 Color("pink").set('green', lambda g: g * 1.3)
 ```
 
+## Masking Channels
+
+Colors in general can use `NaN` to represent undefined color channels. This currently only happens by default for `hue`
+channels when the color is achromatic and has no defined hue. When interpolating, undefined channels will not be
+interpolated.
+
+Users may want to mask channels on their own to control which channels get interpolated, using the `mask` function can
+allow for a user to quickly and easily mask one or more channels:
+
+```color
+Color('white').coords()
+Color('white').mask('red', 'green').coords()
+```
+
+The `alpha` channel can also be masked:
+
+```color
+Color('white').mask('alpha').alpha
+```
+
+Additionally, you can do inverse masks, or masks to that apply to every channel not specified.
+
+```color
+c = Color('white').mask('blue', invert=True)
+c.coords()
+c.alpha
+```
+
 ## Checking Null Hues
 
 Cylindrical colors that offer a `hue` property can sometimes return `NaN` for a hue. This is usually because the hue

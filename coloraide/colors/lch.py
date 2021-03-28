@@ -18,7 +18,7 @@ def lab_to_lch(lab):
     l, a, b = lab
 
     c = math.sqrt(a ** 2 + b ** 2)
-    h = math.atan2(b, a) * util.RAD2DEG
+    h = math.degrees(math.atan2(b, a))
 
     # This is not actually part of the conversion, but is a fix-up
     # for conversion getting a bit chaotic in regards to hue when
@@ -46,8 +46,8 @@ def lch_to_lab(lch):
 
     return (
         l,
-        c * math.cos(h * util.DEG2RAD),
-        c * math.sin(h * util.DEG2RAD)
+        c * math.cos(math.radians(h)),
+        c * math.sin(math.radians(h))
     )
 
 
