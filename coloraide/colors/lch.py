@@ -70,11 +70,6 @@ class LCH(Cylindrical, Space):
         GamutUnbound([Angle(0.0), Angle(360.0)]),
     )
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     @property
     def lightness(self):
         """Lightness."""

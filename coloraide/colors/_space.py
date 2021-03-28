@@ -84,6 +84,9 @@ class Space(
     def __init__(self, color=None):
         """Initialize."""
 
+        if color is None:
+            color = self.DEF_VALUE
+
         self.parent = None
         self._alpha = util.NaN
         self._coords = [util.NaN] * self.NUM_COLOR_CHANNELS

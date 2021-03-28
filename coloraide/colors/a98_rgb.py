@@ -59,11 +59,6 @@ class A98RGB(SRGB):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D65"]
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     @classmethod
     def _to_xyz(cls, rgb):
         """To XYZ."""

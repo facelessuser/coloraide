@@ -20,11 +20,6 @@ class XYZ(Space):
         GamutUnbound([0.0, 1.0])
     )
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     @property
     def x(self):
         """X channel."""

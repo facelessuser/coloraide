@@ -68,11 +68,6 @@ class LAB(Space):
         GamutUnbound([-160, 160])  # No limit, but we could impose one +/-160?
     )
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     @property
     def lightness(self):
         """L channel."""

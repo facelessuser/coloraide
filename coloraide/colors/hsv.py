@@ -69,11 +69,6 @@ class HSV(Cylindrical, Space):
         GamutBound([Percent(0.0), Percent(100.0)])
     )
 
-    def __init__(self, color=DEF_VALUE):
-        """Initialize."""
-
-        super().__init__(color)
-
     @property
     def hue(self):
         """Hue channel."""
