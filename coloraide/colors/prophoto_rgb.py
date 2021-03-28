@@ -1,6 +1,7 @@
 """Pro Photo RGB color class."""
 from ._space import RE_DEFAULT_MATCH
 from .srgb import SRGB
+from .xyz import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -91,10 +92,10 @@ class ProPhotoRGB(SRGB):
     def _to_xyz(cls, rgb):
         """To XYZ."""
 
-        return lin_prophoto_to_xyz(lin_prophoto(rgb))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lin_prophoto_to_xyz(lin_prophoto(rgb)))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return gam_prophoto(xyz_to_lin_prophoto(xyz))
+        return gam_prophoto(xyz_to_lin_prophoto(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz)))

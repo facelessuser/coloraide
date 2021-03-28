@@ -2,6 +2,7 @@
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . _range import Percent
+from .xyz import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -108,10 +109,10 @@ class LAB(Space):
     def _to_xyz(cls, lab):
         """To XYZ."""
 
-        return lab_to_xyz(lab)
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), lab_to_xyz(lab))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return xyz_to_lab(xyz)
+        return xyz_to_lab(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz))
