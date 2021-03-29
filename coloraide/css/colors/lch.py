@@ -61,11 +61,11 @@ class LCH(generic.LCH):
         """Translate channel string."""
 
         if channel == 0:
-            return parse.norm_lab_lightness(value)
+            return parse.norm_percent_channel(value)
         elif channel == 1:
             return parse.norm_float(value)
         elif channel == 2:
-            return parse.norm_hue_channel(value)
+            return parse.norm_angle_channel(value)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
 

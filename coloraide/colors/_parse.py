@@ -83,16 +83,7 @@ def norm_alpha_channel(value):
     return util.clamp(value, 0.0, 1.0)
 
 
-def norm_lab_lightness(value):
-    """Normalize lab channel."""
-
-    if value.endswith('%'):
-        return norm_float(value[:-1])
-    else:
-        raise ValueError("Unexpected value '{}'".format(value))
-
-
-def norm_angle(angle):
+def norm_angle_channel(angle):
     """Normalize angle units."""
 
     if angle.endswith('turn'):
@@ -101,22 +92,8 @@ def norm_angle(angle):
         value = norm_float(angle[:-4]) * CONVERT_GRAD
     elif angle.endswith('rad'):
         value = math.degrees(norm_float(angle[:-3]))
-    elif angle.endswith('grad'):
-        value = norm_float(angle[:-3]) * CONVERT_GRAD
     elif angle.endswith('deg'):
         value = norm_float(angle[:-3])
     else:
         value = norm_float(angle)
     return value
-
-
-def norm_hue_channel(value):
-    """Normalize hex channel."""
-
-    return norm_angle(value)
-
-
-def norm_deg_channel(value):
-    """Normalize degree channel."""
-
-    return norm_float(value)

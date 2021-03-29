@@ -104,16 +104,3 @@ class Convert:
         result.parent = self.parent
 
         return result
-
-    def update(self, obj):
-        """Update from color."""
-
-        if self is obj:
-            obj._coords, obj.alpha = obj.null_adjust(obj.coords(), obj.alpha)
-            return
-
-        if not isinstance(obj, type(self)):
-            obj = type(self)(obj)
-
-        self._coords, self.alpha = self.null_adjust(obj.coords(), obj.alpha)
-        return self

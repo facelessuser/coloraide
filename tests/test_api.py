@@ -16,7 +16,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_less_raw_input(self):
         """Test when not enough color channels are provided via raw input."""
 
-        self.assertColorEqual(Color("srgb", [1]), Color("srgb", [1, NaN, NaN]))
+        self.assertEqual(Color("srgb", [1]), Color("srgb", [1, NaN, NaN]))
 
     def test_too_many_input(self):
         """Test when too many color channels are provided."""

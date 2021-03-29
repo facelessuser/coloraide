@@ -61,7 +61,7 @@ class HSL(generic.HSL):
         """Translate channel."""
 
         if channel == 0:
-            return parse.norm_hue_channel(value)
+            return parse.norm_angle_channel(value)
         elif channel in (1, 2):
             return parse.norm_percent_channel(value)
         elif channel == -1:

@@ -136,6 +136,15 @@ class Space(
         color.parent = self.parent
         return color
 
+    def update(self, obj):
+        """Update from color."""
+
+        if type(obj) != type(self):
+            obj = type(self)(obj)
+
+        self._coords, self.alpha = self.null_adjust(obj.coords(), obj.alpha)
+        return self
+
     @classmethod
     def space(cls):
         """Get the color space."""
