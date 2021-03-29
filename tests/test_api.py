@@ -1077,3 +1077,10 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(len(colors) > 5)
         colors = Color('red').steps('blue', space="srgb", max_delta_e=10, max_steps=5)
         self.assertTrue(len(colors) == 5)
+
+    def test_parse_float(self):
+        """Test one that we generally handle floats with scientific notation."""
+
+        self.assertColorEqual(Color("color(srgb 3.2e-2 0.1e+1 0.1e1 / 0.5e-)"), Color("color(srgb 0.032 1 1 / 0.5)"))
+        self.assertColorEqual(Color("color(srgb +3.2e-2 +0.1e+1 +0.1e1 / 0.5e+)"), Color("color(srgb 0.032 1 1 / 0.5)"))
+        self.assertColorEqual(Color("color(srgb 0.032e 1e 1e / 0.5e)"), Color("color(srgb 0.032 1 1 / 0.5)"))
