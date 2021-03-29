@@ -1,8 +1,9 @@
 """Test HSL library."""
+from coloraide.util import NaN
 import unittest
 import math
 from . import util
-from coloraide.css import Color
+from coloraide import Color
 
 
 class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
@@ -198,3 +199,55 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "hsl(0.25turn, 100%, 75%)"
         hsl = Color(color)
         self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
+
+
+class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
+    """Test HSL."""
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(hsl 120 50 100 / 1)')
+        self.assertEqual(c.hue, 120)
+        c.hue = 110
+        self.assertEqual(c.hue, 110)
+
+    def test_saturation(self):
+        """Test `saturation`."""
+
+        c = Color('color(hsl 120 50 100 / 1)')
+        self.assertEqual(c.saturation, 50)
+        c.saturation = 60
+        self.assertEqual(c.saturation, 60)
+
+    def test_lightness(self):
+        """Test `lightness`."""
+
+        c = Color('color(hsl 120 50 100 / 1)')
+        self.assertEqual(c.lightness, 100)
+        c.lightness = 90
+        self.assertEqual(c.lightness, 90)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(hsl 120 50 100 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)
+
+
+class TestNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('hsl', [NaN, 50, 100], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_auto_null(self):
+        """Test auto null."""
+
+        c = Color('hsl(120 0% 75% / 1)')
+        self.assertTrue(c.is_nan('hue'))

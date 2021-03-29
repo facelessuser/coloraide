@@ -25,9 +25,6 @@ color\(\s*
 def split_channels(cls, color):
     """Split channels."""
 
-    if color is None:
-        color = ""
-
     channels = []
     color = color.strip()
     split = parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
@@ -54,8 +51,6 @@ class Space(
 ):
     """Base color space object."""
 
-    # Default color value (black)
-    DEF_VALUE = ""
     # Color space name
     SPACE = ""
     # Number of channels
@@ -80,11 +75,8 @@ class Space(
     # White point
     WHITE = convert.WHITES["D50"]
 
-    def __init__(self, color=None, alpha=None):
+    def __init__(self, color, alpha=None):
         """Initialize."""
-
-        if color is None:
-            color = self.DEF_VALUE
 
         self.parent = None
         self._alpha = util.NaN
@@ -97,14 +89,16 @@ class Space(
                 self.set(self.CHANNEL_NAMES[index], channel)
             self.alpha = color.alpha
         elif isinstance(color, (list, tuple)):
-            if len(color) != self.NUM_COLOR_CHANNELS:
+            if len(color) != self.NUM_COLOR_CHANNELS:  # pragma: no cover
+                # Only likely to happen with direct usage internally.
                 raise ValueError(
                     "A list of channel values should be at a minimum of {}.".format(self.NUM_COLOR_CHANNELS)
                 )
             for index in range(self.NUM_COLOR_CHANNELS):
                 self.set(self.CHANNEL_NAMES[index], color[index])
             self.alpha = 1.0 if alpha is None else alpha
-        else:
+        else:  # pragma: no cover
+            # Only likely to happen with direct usage internally.
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
     def __repr__(self):

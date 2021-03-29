@@ -2,7 +2,7 @@
 import unittest
 import math
 from . import util
-from coloraide.css import Color
+from coloraide import Color, NaN
 
 
 class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
@@ -167,3 +167,83 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "lch(90%, 50, 0.25turn)"
         lch = Color(color)
         self.assertEqual("lch(90% 50 90)", lch.to_string())
+
+
+class TestLCHProperties(util.ColorAsserts, unittest.TestCase):
+    """Test LCH."""
+
+    def test_lightness(self):
+        """Test `lightness`."""
+
+        c = Color('color(lch 90 50 120 / 1)')
+        self.assertEqual(c.lightness, 90)
+        c.lightness = 80
+        self.assertEqual(c.lightness, 80)
+
+    def test_chroma(self):
+        """Test `chroma`."""
+
+        c = Color('color(lch 90 50 120 / 1)')
+        self.assertEqual(c.chroma, 50)
+        c.chroma = 40
+        self.assertEqual(c.chroma, 40)
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(lch 90 50 120 / 1)')
+        self.assertEqual(c.hue, 120)
+        c.hue = 110
+        self.assertEqual(c.hue, 110)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(lch 90 50 120 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)
+
+
+class TestNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('lch', [90, 50, NaN], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_auto_null(self):
+        """Test auto null."""
+
+        c = Color('lch(90% 0 120 / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_near_zero_null(self):
+        """
+        Test very near zero null.
+
+        This is a fix up to help give more sane hues
+        when chroma is very close to zero.
+        """
+
+        c = Color('lch(90% 0.001 120 / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_from_lab(self):
+        """Test null from Lab conversion."""
+
+        c1 = Color('lab(90% 0 0)')
+        c2 = c1.convert('lch')
+        self.assertColorEqual(c2, Color('lch(90% 0 0)'))
+        self.assertTrue(c2.is_nan('hue'))
+
+
+class TestQuirks(util.ColorAsserts, unittest.TestCase):
+    """Test quirks."""
+
+    def test_chorma_less_than_zero_convert(self):
+        """Test handling of negative chroma when converting to lab."""
+
+        self.assertColorEqual(Color('lch(90% -10 120 / 1)').convert('lab'), Color('lab(90% 0 0)'))

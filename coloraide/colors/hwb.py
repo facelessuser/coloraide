@@ -44,7 +44,6 @@ class HWB(Cylindrical, Space):
     """HWB class."""
 
     SPACE = "hwb"
-    DEF_VALUE = "color(hwb 0 0 0 / 1)"
     CHANNEL_NAMES = ("hue", "whiteness", "blackness", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     GAMUT_CHECK = "hsl"

@@ -58,7 +58,6 @@ class LAB(Space):
     """LAB class."""
 
     SPACE = "lab"
-    DEF_VALUE = "color(lab 0 0 0 / 1)"
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]

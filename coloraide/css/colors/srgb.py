@@ -150,8 +150,6 @@ class SRGB(generic.SRGB):
                 return parse.norm_hex_channel(value)
             else:
                 return parse.norm_alpha_channel(value)
-        else:
-            raise ValueError("Unexpected channel index of '{}'".format(channel))
 
     @classmethod
     def split_channels(cls, color):

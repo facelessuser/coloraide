@@ -59,7 +59,6 @@ class HSL(Cylindrical, Space):
     """HSL class."""
 
     SPACE = "hsl"
-    DEF_VALUE = "color(hsl 0 0 0 / 1)"
     CHANNEL_NAMES = ("hue", "saturation", "lightness", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D65"]

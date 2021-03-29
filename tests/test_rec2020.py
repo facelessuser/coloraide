@@ -1,7 +1,7 @@
 """Test Rec.2020 library."""
 import unittest
 from . import util
-from coloraide.css import Color
+from coloraide import Color
 
 
 class TestRec2020InputOutput(util.ColorAsserts, unittest.TestCase):
@@ -78,3 +78,39 @@ class TestRec2020InputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(rec2020 2 -1 0)').to_string(fit=False),
             'color(rec2020 2 -1 0)'
         )
+
+
+class TestRec2020Properties(util.ColorAsserts, unittest.TestCase):
+    """Test Rec2020."""
+
+    def test_red(self):
+        """Test `red`."""
+
+        c = Color('color(rec2020 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.red, 0.1)
+        c.red = 0.2
+        self.assertEqual(c.red, 0.2)
+
+    def test_green(self):
+        """Test `green`."""
+
+        c = Color('color(rec2020 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.green, 0.2)
+        c.green = 0.1
+        self.assertEqual(c.green, 0.1)
+
+    def test_blue(self):
+        """Test `blue`."""
+
+        c = Color('color(rec2020 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.blue, 0.3)
+        c.blue = 0.1
+        self.assertEqual(c.blue, 0.1)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(rec2020 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)

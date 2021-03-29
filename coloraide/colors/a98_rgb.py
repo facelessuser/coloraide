@@ -55,7 +55,6 @@ class A98RGB(SRGB):
     """A98 RGB class."""
 
     SPACE = "a98-rgb"
-    DEF_VALUE = "color(a98-rgb 0 0 0 / 1)"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D65"]
 

@@ -1,7 +1,7 @@
 """Test HSV library."""
 import unittest
 from . import util
-from coloraide.css import Color
+from coloraide import Color, NaN
 
 
 class TestHSVInputOutput(util.ColorAsserts, unittest.TestCase):
@@ -78,3 +78,71 @@ class TestHSVInputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(hsv 20 150 75)').to_string(fit=False),
             'color(hsv 20 150 75)'
         )
+
+
+class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
+    """Test HSV."""
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(hsv 120 50 50 / 1)')
+        self.assertEqual(c.hue, 120)
+        c.hue = 110
+        self.assertEqual(c.hue, 110)
+
+    def test_saturation(self):
+        """Test `saturation`."""
+
+        c = Color('color(hsv 120 50 50 / 1)')
+        self.assertEqual(c.saturation, 50)
+        c.saturation = 60
+        self.assertEqual(c.saturation, 60)
+
+    def test_value(self):
+        """Test `value`."""
+
+        c = Color('color(hsv 120 50 50 / 1)')
+        self.assertEqual(c.value, 50)
+        c.value = 40
+        self.assertEqual(c.value, 40)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(hsv 120 50 50 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)
+
+
+class TestNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('hsv', [NaN, 50, 75], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_auto_null(self):
+        """Test auto null."""
+
+        c = Color('color(hsv 120 0 75 / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_to_hsl(self):
+        """Test null from Lab conversion."""
+
+        c1 = Color('color(hsv 0 0 50%)')
+        c2 = c1.convert('hsl')
+        self.assertColorEqual(c2, Color('hsl(0 0% 50%)'))
+        self.assertTrue(c2.is_nan('hue'))
+
+    def test_from_hsl(self):
+        """Test null from Lab conversion."""
+
+        c1 = Color('hsl(0 0% 50%)')
+        c2 = c1.convert('hsv')
+        self.assertColorEqual(c2, Color('color(hsv 0 0 50%)'))
+        self.assertTrue(c2.is_nan('hue'))

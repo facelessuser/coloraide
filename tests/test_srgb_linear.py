@@ -1,7 +1,7 @@
 """Test SRGB Linear library."""
 import unittest
 from . import util
-from coloraide.css import Color
+from coloraide import Color
 
 
 class TestSRGBLinearInputOutput(util.ColorAsserts, unittest.TestCase):
@@ -78,3 +78,39 @@ class TestSRGBLinearInputOutput(util.ColorAsserts, unittest.TestCase):
             Color('color(srgb-linear 2 0 0)').to_string(fit=False),
             'color(srgb-linear 2 0 0)'
         )
+
+
+class TestSRGBLinearProperties(util.ColorAsserts, unittest.TestCase):
+    """Test sRGB Linear."""
+
+    def test_red(self):
+        """Test `red`."""
+
+        c = Color('color(srgb-linear 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.red, 0.1)
+        c.red = 0.2
+        self.assertEqual(c.red, 0.2)
+
+    def test_green(self):
+        """Test `green`."""
+
+        c = Color('color(srgb-linear 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.green, 0.2)
+        c.green = 0.1
+        self.assertEqual(c.green, 0.1)
+
+    def test_blue(self):
+        """Test `blue`."""
+
+        c = Color('color(srgb-linear 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.blue, 0.3)
+        c.blue = 0.1
+        self.assertEqual(c.blue, 0.1)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(srgb-linear 0.1 0.2 0.3 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)

@@ -55,7 +55,6 @@ class LCH(Cylindrical, Space):
     """LCH class."""
 
     SPACE = "lch"
-    DEF_VALUE = "color(lch 0 0 0 / 1)"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]

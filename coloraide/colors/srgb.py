@@ -81,7 +81,6 @@ class SRGB(Space):
     # gamut changes. This is mainly for a better user experience. Colors will still be
     # mapped/clipped in the current space, unless specified otherwise.
     GAMUT_CHECK = "hsl"
-    DEF_VALUE = "color(srgb 0 0 0 / 1)"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     CHANNEL_NAMES = ("red", "green", "blue", "alpha")
     WHITE = convert.WHITES["D65"]

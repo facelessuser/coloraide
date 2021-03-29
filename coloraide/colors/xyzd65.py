@@ -10,7 +10,6 @@ class XYZD65(XYZ):
     """XYZ D65 class."""
 
     SPACE = "xyzd65"
-    DEF_VALUE = "color(xyzd65 0 0 0 / 1)"
     CHANNEL_NAMES = ("x", "y", "z", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D65"]

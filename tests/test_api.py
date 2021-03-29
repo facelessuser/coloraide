@@ -8,6 +8,26 @@ import math
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_less_input(self):
+        """Test when not enough color channels are provided."""
+
+        self.assertColorEqual(Color('color(srgb 1)'), Color('color(srgb 1 0 0)'))
+
+    def test_less_raw_input(self):
+        """Test when not enough color channels are provided via raw input."""
+
+        self.assertColorEqual(Color("srgb", [1]), Color("srgb", [1, NaN, NaN]))
+
+    def test_too_many_input(self):
+        """Test when too many color channels are provided."""
+
+        self.assertColorEqual(Color("color(srgb 1 0 0 0 / 1)"), Color("color(srgb 1 0 0 / 1)"))
+
+    def test_too_many_raw_input(self):
+        """Test when too many color channels are provided via raw input."""
+
+        self.assertColorEqual(Color("srgb", [1, 0, 0, 0]), Color("srgb", [1, 0, 0]))
+
     def test_override_precision(self):
         """Test precision override."""
 
@@ -85,6 +105,12 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color("srgb")
+
+    def test_missing_values(self):
+        """Test missing values."""
+
+        with self.assertRaises(ValueError):
+            Color('color(srgb)')
 
     def test_filtered_input(self):
         """Test filtered input."""

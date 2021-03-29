@@ -84,7 +84,6 @@ class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
     SPACE = "prophoto-rgb"
-    DEF_VALUE = "color(prophoto-rgb 0 0 0 / 1)"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D50"]
 

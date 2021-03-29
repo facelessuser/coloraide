@@ -10,7 +10,6 @@ class SRGBLinear(SRGB):
     """SRGB linear."""
 
     SPACE = "srgb-linear"
-    DEF_VALUE = "color(srgb-linear 0 0 0 / 1)"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = convert.WHITES["D65"]
 

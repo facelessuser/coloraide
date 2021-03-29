@@ -1,6 +1,6 @@
 """Sanity check that ensures all colors round trip back."""
 import unittest
-from coloraide.css import Color
+from coloraide import Color
 
 
 class TestRoundTrip(unittest.TestCase):

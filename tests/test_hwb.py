@@ -2,7 +2,7 @@
 import unittest
 import math
 from . import util
-from coloraide.css import Color
+from coloraide import Color, NaN
 
 
 class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
@@ -167,3 +167,71 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "hwb(0.25turn, 50%, 20%)"
         hwb = Color(color)
         self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
+
+
+class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
+    """Test HWB."""
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(hwb 120 50 20 / 1)')
+        self.assertEqual(c.hue, 120)
+        c.hue = 110
+        self.assertEqual(c.hue, 110)
+
+    def test_whiteness(self):
+        """Test `whiteness`."""
+
+        c = Color('color(hwb 120 50 20 / 1)')
+        self.assertEqual(c.whiteness, 50)
+        c.whiteness = 60
+        self.assertEqual(c.whiteness, 60)
+
+    def test_blackness(self):
+        """Test `blackness`."""
+
+        c = Color('color(hwb 120 50 20 / 1)')
+        self.assertEqual(c.blackness, 20)
+        c.blackness = 10
+        self.assertEqual(c.blackness, 10)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(hwb 120 50 20 / 1)')
+        self.assertEqual(c.alpha, 1)
+        c.alpha = 0.5
+        self.assertEqual(c.alpha, 0.5)
+
+
+class TestNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('hwb', [NaN, 10, 20], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_auto_null(self):
+        """Test auto null."""
+
+        c = Color('hwb(120 100% 0% / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_to_hsv(self):
+        """Test null from Lab conversion."""
+
+        c1 = Color('color(hsv 0 0 50%)')
+        c2 = c1.convert('hwb')
+        self.assertColorEqual(c2, Color('hwb(0 50% 50%)'))
+        self.assertTrue(c2.is_nan('hue'))
+
+    def test_from_hsv(self):
+        """Test null from Lab conversion."""
+
+        c1 = Color('hwb(0 50% 50%)')
+        c2 = c1.convert('hsv')
+        self.assertColorEqual(c2, Color('color(hsv 0 0 50%)'))
+        self.assertTrue(c2.is_nan('hue'))
