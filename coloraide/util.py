@@ -44,6 +44,8 @@ def cmp_coords(c1, c2):
 
     if is_number(c1):
         return (math.isnan(c1) and math.isnan(c2)) or c1 == c2
+    elif len(c1) != len(c2):
+        return False
     else:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
