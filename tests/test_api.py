@@ -320,6 +320,22 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c1 is not c3)
         self.assertEqual(c1.overlay(c2), Color('color(srgb 0.5 0.5 0.5)'))
 
+    def test_overlay_nan(self):
+        """Test overlay with `NaN` values."""
+
+        self.assertColorEqual(
+            Color('srgb', [NaN, 0.75, 0.75], 0.5).overlay(Color('srgb', [1, 0.25, 0.25])),
+            Color('rgb(255 127.5 127.5)')
+        )
+        self.assertColorEqual(
+            Color('srgb', [NaN, 0.75, 0.75], 0.5).overlay(Color('srgb', [NaN, 0.25, 0.25])),
+            Color('rgb(0 127.5 127.5)')
+        )
+        self.assertColorEqual(
+            Color('srgb', [0.2, 0.75, 0.75], 0.5).overlay(Color('srgb', [NaN, 0.25, 0.25])),
+            Color('rgb(25.5 127.5 127.5)')
+        )
+
     def test_overlay_bad_space(self):
         """Test overlay logic."""
 

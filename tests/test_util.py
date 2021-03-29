@@ -158,6 +158,13 @@ class TestUtil(unittest.TestCase):
         )
         self.assertEqual(
             util.divide(
+                [1, 2, 3],
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]]
+            ),
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        )
+        self.assertEqual(
+            util.divide(
                 [[1, 4, 9], [4, 10, 18], [7, 16, 27]],
                 [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
             ),
