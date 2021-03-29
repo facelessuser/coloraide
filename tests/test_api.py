@@ -501,6 +501,12 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(Color('red').delta_e('blue', method="2000"), 55.79505955791144)
 
+    def test_bad_delta_e(self):
+        """Test bad delta e input."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('blue', method='bad')
+
     def test_is_nan_false(self):
         """Test when `is_nan` is false."""
 
@@ -621,6 +627,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(
             Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)', premultiplied=True),
             Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)')
+        )
+
+    def test_mix_premultiplied_cylindrical(self):
+        """Test premultiplication in a cylindrical space."""
+
+        self.assertColorEqual(
+            Color('color(hsl 20 30 75 / 0.5)').mix('color(hsl 20 60 10 / 0.75)', premultiplied=True),
+            Color('hsl(20 48% 36% / 0.625)')
         )
 
     def test_mix_in_place(self):
@@ -758,6 +772,12 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color('red').mix('blue', 0, out_space="lab", space="lab", progress=progress),
             Color("lab(54.288% 80.808 69.881)")
         )
+
+    def test_bad_progress(self):
+        """Test bad progress."""
+
+        with self.assertRaises(TypeError):
+            Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress="bad")
 
     def test_interpolate(self):
         """Test interpolation."""

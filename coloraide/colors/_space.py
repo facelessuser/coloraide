@@ -129,20 +129,20 @@ class Space(
 
         return self.new(self)
 
-    def new(self, value=None, alpha=None):
+    def new(self, value, alpha=None):
         """Create new color in color space."""
 
         color = type(self)(value, alpha)
         color.parent = self.parent
         return color
 
-    def update(self, obj):
+    def update(self, value, alpha=None):
         """Update from color."""
 
-        if type(obj) != type(self):
-            obj = type(self)(obj)
+        if not isinstance(self, Space) or value.space() != self.space():
+            value = type(self)(value, alpha)
 
-        self._coords, self.alpha = self.null_adjust(obj.coords(), obj.alpha)
+        self._coords, self.alpha = self.null_adjust(value.coords(), value.alpha)
         return self
 
     @classmethod

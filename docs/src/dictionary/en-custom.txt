@@ -47,6 +47,7 @@ grayscale
 js
 luminance
 pre
+premultiplication
 premultiplied
 prerelease
 prereleases

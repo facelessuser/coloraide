@@ -187,7 +187,7 @@ class Interpolate:
             for i, value in enumerate(coords1):
                 g = gamut[i][0]
                 is_angle = isinstance(g, Angle)
-                coords.append(overlay(coords1[i], coords2[i], a1, a2, a0, angle=is_angle))
+                coords.append(overlay(value, coords2[i], a1, a2, a0, angle=is_angle))
             this._coords = coords
             this.alpha = a0
         else:
@@ -271,7 +271,7 @@ class Interpolate:
         return obj
 
     def interpolate(
-        self, color, *, space="lab", out_space=None, progress=None, adjust=None, hue=util.DEF_HUE_ADJ,
+        self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
         premultiplied=False
     ):
         """
@@ -288,9 +288,6 @@ class Interpolate:
 
         if progress is not None and not callable(progress):
             raise TypeError('Progress must be callable')
-
-        if adjust:
-            adjust = set([name.lower() for name in adjust])
 
         inspace = space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
