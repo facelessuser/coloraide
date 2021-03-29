@@ -55,7 +55,8 @@ def lch_chroma(base, color):
             if delta - 2 < threshold:
                 low = mapcolor.chroma
             else:
-                if abs(delta - 2) < threshold:
+                if abs(delta - 2) < threshold:  # pragma: no cover
+                    # Can this occur?
                     break
                 high = mapcolor.chroma
             mapcolor.chroma = (high + low) / 2
@@ -85,7 +86,9 @@ def clip(base, color):
             continue
 
         # These parameters are unbounded
-        if not is_bound:
+        if not is_bound:  # pragma: no cover
+            # Will not execute unless we have a space that defines some coordinates
+            # as bound and others as not. We do not currently have such spaces.
             a = None
             b = None
 

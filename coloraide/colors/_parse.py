@@ -40,7 +40,8 @@ def norm_hex_channel(string):
 
     if string.startswith('#'):
         return int(string[1:], 16) * RGB_CHANNEL_SCALE
-    else:
+    else:  # pragma: no cover
+        # Should only occur internally if we are doing something wrong.
         raise ValueError("Unexpected value '{}'".format(string))
 
 
@@ -50,7 +51,8 @@ def norm_percent_channel(value, scale=False):
     if value.endswith('%'):
         value = norm_float(value[:-1])
         return value / 100.0 if scale else value
-    else:
+    else:  # pragma: no cover
+        # Should only occur internally if we are doing something wrong.
         raise ValueError("Unexpected value '{}'".format(value))
 
 
