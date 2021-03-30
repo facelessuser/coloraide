@@ -756,6 +756,66 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color("rgb(112.84 63.966 -28.832)")
         )
 
+    def test_hue_shorter_cases(self):
+        """Cover shorter hue cases."""
+
+        # c2 - c1 > 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 350)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter"),
+            Color("lch(75% 50 375)")
+        )
+
+        # c2 - c1 < -180
+        c1 = Color('lch(30% 30 350)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter"),
+            Color("lch(30% 30 375)")
+        )
+
+    def test_hue_longer_cases(self):
+        """Cover longer hue cases."""
+
+        # 0 < (c2 - c1) < 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer"),
+            Color("lch(75% 50 230)")
+        )
+
+        # -180 < (c2 - c1) < 0
+        c1 = Color('lch(30% 30 60)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer"),
+            Color("lch(30% 30 230)")
+        )
+
+    def test_hue_increasing_cases(self):
+        """Cover increasing hue cases."""
+
+        # c2 < c1
+        c1 = Color('lch(75% 50 60)')
+        c2 = Color('lch(30% 30 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing"),
+            Color("lch(75% 50 230)")
+        )
+
+    def test_hue_decreasing_cases(self):
+        """Cover decreasing hue cases."""
+
+        # c1 < c2
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing"),
+            Color("lch(75% 50 230)")
+        )
+
     def test_mix_hue_adjust_bad(self):
         """Test hue adjusting."""
 
@@ -763,6 +823,24 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(85% 100 805)')
         with self.assertRaises(ValueError):
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="bad", space="lch")
+
+    def test_mix_hue_nan(self):
+        """Test mix hue with `NaN`."""
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50),
+            Color("hsl(0, 0%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [120, 50, 90]), 0.50),
+            Color("hsl(120, 25%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [120, 50, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50),
+            Color("hsl(120, 25%, 57.5%)")
+        )
 
     def test_mix_progress(self):
         """Test custom progress."""
