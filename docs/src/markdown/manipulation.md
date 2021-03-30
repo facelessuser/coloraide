@@ -81,7 +81,7 @@ allow for a user to quickly and easily mask one or more channels:
 
 ```color
 Color('white').coords()
-Color('white').mask('red', 'green').coords()
+Color('white').mask(['red', 'green']).coords()
 ```
 
 The `alpha` channel can also be masked:

@@ -758,23 +758,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask("red", "green")), Color("srgb", [0.25, 1, 0.5]))
+        self.assertColorEqual(c1.mix(c2.mask(["red", "green"])), Color("srgb", [0.25, 1, 0.5]))
 
     def test_mix_mask_invert(self):
         """Test mix adjust method."""
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask("green", "blue", invert=True)), Color("srgb", [0.25, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2.mask(["green", "blue"], invert=True)), Color("srgb", [0.25, 0.5, 0.5]))
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mask("green", "blue", invert=True).mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+        self.assertColorEqual(c1.mask(["green", "blue"], invert=True).mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
         self.assertColorEqual(
-            c1.mask("green", "blue", "alpha", invert=True).mix(c2.mask("green", "blue", "alpha", invert=True)),
+            c1.mask(["green", "blue", "alpha"], invert=True).mix(c2.mask(["green", "blue", "alpha"], invert=True)),
             Color("srgb", [0.0, 0.5, 0.5])
         )
 

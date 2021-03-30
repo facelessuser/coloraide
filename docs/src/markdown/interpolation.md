@@ -242,11 +242,11 @@ color2.coords()
 color.mix(color2, space="hsl")
 ```
 
-Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used for. It
-can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
+Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used
+for. It can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
 
 ```color
-Color('white').mask('red', 'green').coords()
+Color('white').mask(['red', 'green']).coords()
 ```
 
 Channels can also be set directly to `NaN`, but it must be done by instantiating a `Color` object with raw data or by

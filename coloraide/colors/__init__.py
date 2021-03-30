@@ -192,14 +192,14 @@ class Color:
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
         return self
 
-    def mask(self, *channels, invert=False, in_place=False):
+    def mask(self, channel, *, invert=False, in_place=False):
         """Mask color channels."""
 
         clone = self.clone()
-        masks = set(channels)
-        for channel in self._color.CHANNEL_NAMES:
-            if (not invert and channel in masks) or (invert and channel not in masks):
-                clone.set(channel, util.NaN)
+        masks = set([channel] if isinstance(channel, str) else channel)
+        for name in self._color.CHANNEL_NAMES:
+            if (not invert and name in masks) or (invert and name not in masks):
+                clone.set(name, util.NaN)
         if in_place:
             self.update(clone)
             return self
