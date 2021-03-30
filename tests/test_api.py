@@ -477,45 +477,108 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(Color('red').distance('blue', space='srgb'), 1.4142135623730951)
 
-    def test_delta_e_76_equal(self):
+    def test_delta_e_76(self):
         """Test delta e 76 equal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="76"), 0)
+        self.assertEqual(Color('red').delta_e('red', method="76"), 0.0)
+        self.assertEqual(Color('red').delta_e('orange', method="76"), 58.133743592821986)
+        self.assertEqual(Color('red').delta_e('yellow', method="76"), 108.41888899370375)
+        self.assertEqual(Color('red').delta_e('green', method="76"), 130.37164364349357)
+        self.assertEqual(Color('red').delta_e('blue', method="76"), 184.01647404809094)
+        self.assertEqual(Color('red').delta_e('indigo', method="76"), 133.24078949665446)
+        self.assertEqual(Color('red').delta_e('violet', method="76"), 110.99461706832393)
+        self.assertEqual(Color('red').delta_e('black', method="76"), 119.83552773216171)
+        self.assertEqual(Color('red').delta_e('white', method="76"), 116.21329577884164)
+        self.assertEqual(Color('red').delta_e('gray', method="76"), 106.84294877723339)
 
-    def test_delta_e_94_equal(self):
+        # Symmetrical
+        self.assertEqual(Color('red').delta_e('red', method="76"), 0.0)
+        self.assertEqual(Color('orange').delta_e('red', method="76"), 58.133743592821986)
+        self.assertEqual(Color('yellow').delta_e('red', method="76"), 108.41888899370375)
+        self.assertEqual(Color('green').delta_e('red', method="76"), 130.37164364349357)
+        self.assertEqual(Color('blue').delta_e('red', method="76"), 184.01647404809094)
+        self.assertEqual(Color('indigo').delta_e('red', method="76"), 133.24078949665446)
+        self.assertEqual(Color('violet').delta_e('red', method="76"), 110.99461706832393)
+        self.assertEqual(Color('black').delta_e('red', method="76"), 119.83552773216171)
+        self.assertEqual(Color('white').delta_e('red', method="76"), 116.21329577884164)
+        self.assertEqual(Color('gray').delta_e('red', method="76"), 106.84294877723339)
+
+    def test_delta_e_94(self):
         """Test delta e 94 equal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="94"), 0)
-
-    def test_delta_e_cmc_equal(self):
-        """Test delta e CMC equal."""
-
-        self.assertEqual(Color('red').delta_e('red', method="cmc"), 0)
-
-    def test_delta_e_2000_equal(self):
-        """Test delta e 2000 equal."""
-
-        self.assertEqual(Color('red').delta_e('red', method="2000"), 0)
-
-    def test_delta_e_76_unequal(self):
-        """Test delta e 76 unequal."""
-
-        self.assertEqual(Color('red').delta_e('blue', method="76"), 184.01647404809094)
-
-    def test_delta_e_94_unequal(self):
-        """Test delta e 94 unequal."""
-
+        self.assertEqual(Color('red').delta_e('red', method="94"), 0.0)
+        self.assertEqual(Color('red').delta_e('orange', method="94"), 28.685926312787693)
+        self.assertEqual(Color('red').delta_e('yellow', method="94"), 57.5985584296311)
+        self.assertEqual(Color('red').delta_e('green', method="94"), 48.84812205268764)
         self.assertEqual(Color('red').delta_e('blue', method="94"), 73.82493940241469)
+        self.assertEqual(Color('red').delta_e('indigo', method="94"), 59.121510470100084)
+        self.assertEqual(Color('red').delta_e('violet', method="94"), 42.533236799542514)
+        self.assertEqual(Color('red').delta_e('black', method="94"), 57.32007370348429)
+        self.assertEqual(Color('red').delta_e('white', method="94"), 49.282116424795596)
+        self.assertEqual(Color('red').delta_e('gray', method="94"), 18.421427148510606)
+
+        # Not symmetrical
+        self.assertEqual(Color('red').delta_e('red', method="94"), 0.0)
+        self.assertEqual(Color('orange').delta_e('red', method="94"), 30.776952249114693)
+        self.assertEqual(Color('yellow').delta_e('red', method="94"), 59.51948238617314)
+        self.assertEqual(Color('green').delta_e('red', method="94"), 62.739628273169274)
+        self.assertEqual(Color('blue').delta_e('red', method="94"), 65.8020068021909)
+        self.assertEqual(Color('indigo').delta_e('red', method="94"), 69.40017622046382)
+        self.assertEqual(Color('violet').delta_e('red', method="94"), 54.84599056408)
+        self.assertEqual(Color('black').delta_e('red', method="94"), 119.83552773216171)
+        self.assertEqual(Color('white').delta_e('red', method="94"), 116.14866295971912)
+        self.assertEqual(Color('gray').delta_e('red', method="94"), 106.80076204618584)
 
     def test_delta_e_cmc_unequal(self):
         """Test delta e CMC unequal."""
 
+        self.assertEqual(Color('red').delta_e('red', method="cmc"), 0.0)
+        self.assertEqual(Color('red').delta_e('orange', method="cmc"), 32.799534919773755)
+        self.assertEqual(Color('red').delta_e('yellow', method="cmc"), 64.91048043106619)
+        self.assertEqual(Color('red').delta_e('green', method="cmc"), 78.86582454221592)
         self.assertEqual(Color('red').delta_e('blue', method="cmc"), 114.22041264760853)
+        self.assertEqual(Color('red').delta_e('indigo', method="cmc"), 79.87195564006542)
+        self.assertEqual(Color('red').delta_e('violet', method="cmc"), 65.23933125347011)
+        self.assertEqual(Color('red').delta_e('black', method="cmc"), 38.91257758217711)
+        self.assertEqual(Color('red').delta_e('white', method="cmc"), 36.74286663612292)
+        self.assertEqual(Color('red').delta_e('gray', method="cmc"), 30.73301782103844)
 
-    def test_delta_e_2000_unequal(self):
+        # Not symmetrical
+        self.assertEqual(Color('orange').delta_e('red', method="cmc"), 34.47315286207188)
+        self.assertEqual(Color('yellow').delta_e('red', method="cmc"), 48.60065817824298)
+        self.assertEqual(Color('green').delta_e('red', method="cmc"), 57.899662795384245)
+        self.assertEqual(Color('blue').delta_e('red', method="cmc"), 79.43084463375477)
+        self.assertEqual(Color('indigo').delta_e('red', method="cmc"), 70.15122215058344)
+        self.assertEqual(Color('violet').delta_e('red', method="cmc"), 53.095618419035766)
+        self.assertEqual(Color('black').delta_e('red', method="cmc"), 175.67386400037506)
+        self.assertEqual(Color('white').delta_e('red', method="cmc"), 167.93444684129557)
+        self.assertEqual(Color('gray').delta_e('red', method="cmc"), 167.31521529247988)
+
+    def test_delta_e_2000(self):
         """Test delta e 2000 unequal."""
 
+        self.assertEqual(Color('red').delta_e('red', method="2000"), 0.0)
+        self.assertEqual(Color('red').delta_e('orange', method="2000"), 31.471258671383733)
+        self.assertEqual(Color('red').delta_e('yellow', method="2000"), 60.99291415345663)
+        self.assertEqual(Color('red').delta_e('green', method="2000"), 70.24408257087782)
         self.assertEqual(Color('red').delta_e('blue', method="2000"), 55.79505955791144)
+        self.assertEqual(Color('red').delta_e('indigo', method="2000"), 52.84391419406163)
+        self.assertEqual(Color('red').delta_e('violet', method="2000"), 41.692949469152545)
+        self.assertEqual(Color('red').delta_e('black', method="2000"), 51.33801701522897)
+        self.assertEqual(Color('red').delta_e('white', method="2000"), 45.26697100909689)
+        self.assertEqual(Color('red').delta_e('gray', method="2000"), 31.3990658648536)
+
+        # Symmetrical
+        self.assertEqual(Color('red').delta_e('red', method="2000"), 0.0)
+        self.assertEqual(Color('orange').delta_e('red', method="2000"), 31.471258671383733)
+        self.assertEqual(Color('yellow').delta_e('red', method="2000"), 60.99291415345663)
+        self.assertEqual(Color('green').delta_e('red', method="2000"), 70.24408257087782)
+        self.assertEqual(Color('blue').delta_e('red', method="2000"), 55.79505955791144)
+        self.assertEqual(Color('indigo').delta_e('red', method="2000"), 52.84391419406163)
+        self.assertEqual(Color('violet').delta_e('red', method="2000"), 41.692949469152545)
+        self.assertEqual(Color('black').delta_e('red', method="2000"), 51.33801701522897)
+        self.assertEqual(Color('white').delta_e('red', method="2000"), 45.26697100909689)
+        self.assertEqual(Color('gray').delta_e('red', method="2000"), 31.3990658648536)
 
     def test_bad_delta_e(self):
         """Test bad delta e input."""

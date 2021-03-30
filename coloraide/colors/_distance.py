@@ -139,7 +139,10 @@ def delta_e_cmc(color1, color2, l=2, c=1):
     dh = da ** 2 + db ** 2 - dc ** 2
 
     # Equation (9)
-    sl = 0.511 if l1 < 16 else (0.040975 * l1) / (1 + 0.01765 * l1)
+    if l1 < 16:
+        sl = 0.511
+    else:
+        sl = (0.040975 * l1) / (1 + 0.01765 * l1)
 
     # Equation (10)
     sc = ((0.0638 * c1) / (1 + 0.0131 * c1)) + 0.638
@@ -148,7 +151,10 @@ def delta_e_cmc(color1, color2, l=2, c=1):
     h = math.degrees(math.atan2(b1, a1))
 
     # Equation (15)
-    h1 = h if h >= 0 else h + 360
+    if h >= 0:
+        h1 = h
+    else:
+        h1 = h + 360
 
     # Equation (12)
     if 164 <= h1 <= 345:
@@ -161,7 +167,7 @@ def delta_e_cmc(color1, color2, l=2, c=1):
     f = math.sqrt(c1_4 / (c1_4 + 1900))
 
     # Equation (11)
-    sh = sc * ((f * t) + 1 - f)
+    sh = sc * (f * t + 1 - f)
 
     # Equation (1)
     return math.sqrt(
@@ -225,10 +231,11 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
         dh = 0.0
     elif abs(hdiff) <= 180.0:
         dh = hdiff
-    elif hdiff > 180.0:
-        dh = hdiff - 360
-    else:  # `hdiff < -180`
-        dh = hdiff + 360
+    else:
+        # If not `hdiff > 180.0` and not `abs(hdiff) <= 180.0`
+        # then it must be `hdiff < -180`
+        offset = -360 if hdiff > 180.0 else 360
+        dh = hdiff + offset
 
     # Equation (11)
     dh = 2 * math.sqrt(cp2 * cp1) * math.sin(math.radians(dh / 2))
@@ -244,6 +251,8 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     if cp1 * cp2 == 0:
         hpm = hsum
     elif abs(hp1 - hp2) > 180:
+        # if not `hsum < 360`
+        # then it must be `hsum >= 360`
         offset = 360 if hsum < 360 else -360
         hpm = (hsum + offset) / 2
     else:  # `abs(hp1 - hp2) <= 180`
