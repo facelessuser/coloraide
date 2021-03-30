@@ -11,6 +11,7 @@
 - **FIX**: Disabling or forcing alpha did not work properly for HSL colors via `to_string`.
 - **FIX**: `contrast` and `luminance` should use XYZ with a D65 white point, not the default XYZ space which uses a D50
   white point.
+- **FIX**: Fix bug in Delta E 2000 algorithm.
 
 ## 0.1.0a14
 

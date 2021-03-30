@@ -166,14 +166,13 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     dc = cp2 - cp1
 
     hdiff = hp2 - hp1
-    habs = abs(hdiff)
-    if cp1 == 0.0 and cp2 == 0.0:
+    if cp1 * cp2 == 0.0:
         dh = 0.0
-    elif habs <= 180.0:
+    elif abs(hdiff) <= 180.0:
         dh = hdiff
     elif hdiff > 180.0:
         dh = hdiff - 360
-    elif hdiff < -180:
+    else:  # `hdiff < -180`
         dh = hdiff + 360
 
     dh = 2 * math.sqrt(cp2 * cp1) * math.sin(math.radians(dh / 2))
@@ -182,14 +181,15 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     lpm = (l1 + l2) / 2
 
     hsum = hp1 + hp2
-    if cp1 == 0 and cp2 == 0:
+    if cp1 * cp2 == 0:
         hpm = hsum
-    elif habs <= 180:
+    elif abs(hp1 - hp2) > 180:
+        if hsum < 360:
+            hpm = (hsum + 360) / 2
+        else:
+            hpm = (hsum - 360) / 2
+    else:  # `abs(hp1 - hp2) <= 180`
         hpm = hsum / 2
-    elif hsum < 360:
-        hpm = (hsum + 360) / 2
-    else:
-        hpm = (hsum - 360) / 2
 
     t = (
         1 -
