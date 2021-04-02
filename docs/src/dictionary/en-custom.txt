@@ -34,6 +34,7 @@ ProPhoto
 PyPI
 RGB
 SRGB
+Sharma
 TODO
 Twemoji
 Verou

@@ -460,125 +460,690 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_euclidean_distance_equal(self):
         """Test Euclidean distance that that is equal."""
 
-        self.assertEqual(Color('red').distance('red'), 0)
+        self.assertCompare(Color('red').distance('red'), 0, rounding=4)
+        self.assertCompare(Color('red').distance('blue'), 184.0165, rounding=4)
 
-    def test_euclidean_distance_unequal(self):
-        """Test Euclidean distance that is unequal."""
-
-        self.assertEqual(Color('red').distance('blue'), 184.01647404809094)
-
-    def test_euclidean_distance_equal_different_space(self):
+    def test_euclidean_distance_different_space(self):
         """Test Euclidean distance in sRGB that is equal."""
 
-        self.assertEqual(Color('red').distance('red', space='srgb'), 0)
-
-    def test_euclidean_distance_unequal_different_space(self):
-        """Test Euclidean distance in sRGB that is unequal."""
-
-        self.assertEqual(Color('red').distance('blue', space='srgb'), 1.4142135623730951)
+        self.assertCompare(Color('red').distance('red', space='srgb'), 0, rounding=4)
+        self.assertCompare(Color('red').distance('blue', space='srgb'), 1.4142, rounding=4)
 
     def test_delta_e_76(self):
         """Test delta e 76 equal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="76"), 0.0)
-        self.assertEqual(Color('red').delta_e('orange', method="76"), 58.133743592821986)
-        self.assertEqual(Color('red').delta_e('yellow', method="76"), 108.41888899370375)
-        self.assertEqual(Color('red').delta_e('green', method="76"), 130.37164364349357)
-        self.assertEqual(Color('red').delta_e('blue', method="76"), 184.01647404809094)
-        self.assertEqual(Color('red').delta_e('indigo', method="76"), 133.24078949665446)
-        self.assertEqual(Color('red').delta_e('violet', method="76"), 110.99461706832393)
-        self.assertEqual(Color('red').delta_e('black', method="76"), 119.83552773216171)
-        self.assertEqual(Color('red').delta_e('white', method="76"), 116.21329577884164)
-        self.assertEqual(Color('red').delta_e('gray', method="76"), 106.84294877723339)
+        self.assertCompare(
+            Color('red').delta_e('red', method="76"),
+            0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('orange', method="76"),
+            58.1337,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('yellow', method="76"),
+            108.4189,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('green', method="76"),
+            130.3716,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('blue', method="76"),
+            184.0165,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('indigo', method="76"),
+            133.2408,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('violet', method="76"),
+            110.9946,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('black', method="76"),
+            119.8355,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('white', method="76"),
+            116.2133,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('gray', method="76"),
+            106.8429,
+            rounding=4
+        )
 
         # Symmetrical
-        self.assertEqual(Color('red').delta_e('red', method="76"), 0.0)
-        self.assertEqual(Color('orange').delta_e('red', method="76"), 58.133743592821986)
-        self.assertEqual(Color('yellow').delta_e('red', method="76"), 108.41888899370375)
-        self.assertEqual(Color('green').delta_e('red', method="76"), 130.37164364349357)
-        self.assertEqual(Color('blue').delta_e('red', method="76"), 184.01647404809094)
-        self.assertEqual(Color('indigo').delta_e('red', method="76"), 133.24078949665446)
-        self.assertEqual(Color('violet').delta_e('red', method="76"), 110.99461706832393)
-        self.assertEqual(Color('black').delta_e('red', method="76"), 119.83552773216171)
-        self.assertEqual(Color('white').delta_e('red', method="76"), 116.21329577884164)
-        self.assertEqual(Color('gray').delta_e('red', method="76"), 106.84294877723339)
+        self.assertCompare(
+            Color('red').delta_e('red', method="76"),
+            0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('orange').delta_e('red', method="76"),
+            58.1337,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('yellow').delta_e('red', method="76"),
+            108.4189,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('green').delta_e('red', method="76"),
+            130.3716,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('blue').delta_e('red', method="76"),
+            184.0165,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('indigo').delta_e('red', method="76"),
+            133.2408,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('violet').delta_e('red', method="76"),
+            110.9946,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('black').delta_e('red', method="76"),
+            119.8355,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('white').delta_e('red', method="76"),
+            116.2133,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('gray').delta_e('red', method="76"),
+            106.8429,
+            rounding=4
+        )
+
+    def test_delta_e_76_pythagorean(self):
+        """Pythagorean 3, 4, 5 triangle."""
+
+        self.assertCompare(
+            Color('lab(50% 30 40)').delta_e('lab(50% 0 0)', method='76'),
+            50,
+            rounding=4
+        )
 
     def test_delta_e_94(self):
         """Test delta e 94 equal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="94"), 0.0)
-        self.assertEqual(Color('red').delta_e('orange', method="94"), 28.685926312787693)
-        self.assertEqual(Color('red').delta_e('yellow', method="94"), 57.5985584296311)
-        self.assertEqual(Color('red').delta_e('green', method="94"), 48.84812205268764)
-        self.assertEqual(Color('red').delta_e('blue', method="94"), 73.82493940241469)
-        self.assertEqual(Color('red').delta_e('indigo', method="94"), 59.121510470100084)
-        self.assertEqual(Color('red').delta_e('violet', method="94"), 42.533236799542514)
-        self.assertEqual(Color('red').delta_e('black', method="94"), 57.32007370348429)
-        self.assertEqual(Color('red').delta_e('white', method="94"), 49.282116424795596)
-        self.assertEqual(Color('red').delta_e('gray', method="94"), 18.421427148510606)
+        self.assertCompare(
+            Color('red').delta_e('red', method="94"),
+            0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('orange', method="94"),
+            28.6859,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('yellow', method="94"),
+            57.5986,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('green', method="94"),
+            48.8481,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('blue', method="94"),
+            73.8249,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('indigo', method="94"),
+            59.1215,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('violet', method="94"),
+            42.5332,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('black', method="94"),
+            57.3201,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('white', method="94"),
+            49.2821,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('gray', method="94"),
+            18.4214,
+            rounding=4
+        )
 
         # Not symmetrical
-        self.assertEqual(Color('red').delta_e('red', method="94"), 0.0)
-        self.assertEqual(Color('orange').delta_e('red', method="94"), 30.776952249114693)
-        self.assertEqual(Color('yellow').delta_e('red', method="94"), 59.51948238617314)
-        self.assertEqual(Color('green').delta_e('red', method="94"), 62.739628273169274)
-        self.assertEqual(Color('blue').delta_e('red', method="94"), 65.8020068021909)
-        self.assertEqual(Color('indigo').delta_e('red', method="94"), 69.40017622046382)
-        self.assertEqual(Color('violet').delta_e('red', method="94"), 54.84599056408)
-        self.assertEqual(Color('black').delta_e('red', method="94"), 119.83552773216171)
-        self.assertEqual(Color('white').delta_e('red', method="94"), 116.14866295971912)
-        self.assertEqual(Color('gray').delta_e('red', method="94"), 106.80076204618584)
+        self.assertCompare(
+            Color('red').delta_e('red', method="94"),
+            0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('orange').delta_e('red', method="94"),
+            30.777,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('yellow').delta_e('red', method="94"),
+            59.5195,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('green').delta_e('red', method="94"),
+            62.7396,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('blue').delta_e('red', method="94"),
+            65.802,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('indigo').delta_e('red', method="94"),
+            69.4002,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('violet').delta_e('red', method="94"),
+            54.846,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('black').delta_e('red', method="94"),
+            119.8355,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('white').delta_e('red', method="94"),
+            116.1487,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('gray').delta_e('red', method="94"),
+            106.8008,
+            rounding=4
+        )
 
-    def test_delta_e_cmc_unequal(self):
+    def test_delta_e_94_pythagorean(self):
+        """Pythagorean 3, 4, 5 triangle."""
+
+        self.assertCompare(
+            Color('lab(50% 30 40)').delta_e('lab(50% 0 0)', method='94'),
+            15.3846,
+            rounding=4
+        )
+
+    def test_delta_e_cmc(self):
         """Test delta e CMC unequal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="cmc"), 0.0)
-        self.assertEqual(Color('red').delta_e('orange', method="cmc"), 32.799534919773755)
-        self.assertEqual(Color('red').delta_e('yellow', method="cmc"), 64.91048043106619)
-        self.assertEqual(Color('red').delta_e('green', method="cmc"), 78.86582454221592)
-        self.assertEqual(Color('red').delta_e('blue', method="cmc"), 114.22041264760853)
-        self.assertEqual(Color('red').delta_e('indigo', method="cmc"), 79.87195564006542)
-        self.assertEqual(Color('red').delta_e('violet', method="cmc"), 65.23933125347011)
-        self.assertEqual(Color('red').delta_e('black', method="cmc"), 38.91257758217711)
-        self.assertEqual(Color('red').delta_e('white', method="cmc"), 36.74286663612292)
-        self.assertEqual(Color('red').delta_e('gray', method="cmc"), 30.73301782103844)
+        self.assertCompare(
+            Color('red').delta_e('red', method="cmc"),
+            0.0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('orange', method="cmc"),
+            32.7995,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('yellow', method="cmc"),
+            64.9105,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('green', method="cmc"),
+            78.8658,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('blue', method="cmc"),
+            114.2204,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('indigo', method="cmc"),
+            79.872,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('violet', method="cmc"),
+            65.2393,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('black', method="cmc"),
+            38.9126,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('white', method="cmc"),
+            36.7429,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('gray', method="cmc"),
+            30.733,
+            rounding=4
+        )
 
         # Not symmetrical
-        self.assertEqual(Color('orange').delta_e('red', method="cmc"), 34.47315286207188)
-        self.assertEqual(Color('yellow').delta_e('red', method="cmc"), 48.60065817824298)
-        self.assertEqual(Color('green').delta_e('red', method="cmc"), 57.899662795384245)
-        self.assertEqual(Color('blue').delta_e('red', method="cmc"), 79.43084463375477)
-        self.assertEqual(Color('indigo').delta_e('red', method="cmc"), 70.15122215058344)
-        self.assertEqual(Color('violet').delta_e('red', method="cmc"), 53.095618419035766)
-        self.assertEqual(Color('black').delta_e('red', method="cmc"), 175.67386400037506)
-        self.assertEqual(Color('white').delta_e('red', method="cmc"), 167.93444684129557)
-        self.assertEqual(Color('gray').delta_e('red', method="cmc"), 167.31521529247988)
+        self.assertCompare(
+            Color('orange').delta_e('red', method="cmc"),
+            34.4732,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('yellow').delta_e('red', method="cmc"),
+            48.6007,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('green').delta_e('red', method="cmc"),
+            57.8997,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('blue').delta_e('red', method="cmc"),
+            79.4308,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('indigo').delta_e('red', method="cmc"),
+            70.1512,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('violet').delta_e('red', method="cmc"),
+            53.0956,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('black').delta_e('red', method="cmc"),
+            175.6739,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('white').delta_e('red', method="cmc"),
+            167.9344,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('gray').delta_e('red', method="cmc"),
+            167.3152,
+            rounding=4
+        )
+
+    def test_delta_e_cmc_pythagorean(self):
+        """Pythagorean 3, 4, 5 triangle."""
+
+        self.assertCompare(
+            Color('lab(50% 30 40)').delta_e('lab(50% 0 0)', method='cmc'),
+            19.4894,
+            rounding=4
+        )
+
+    def test_delta_e_cmc_brilliant_yellow(self):
+        """
+        Brilliant yellow tests.
+
+        https://cdn.ymaws.com/www.powdercoating.org/resource/collection/F9D5A46E-051B-4B03-B156-6EE410F10328/3_-_CC_Forum_PPT_-__BYK_Gardner_-_Camp.pdf
+        Slide 43.
+        """
+
+        self.assertCompare(
+            Color('lab(84.25% 5.74 96.00)').delta_e('lab(84.46% 8.88 96.49)', method='cmc'),
+            1.6364,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(84.25% 5.74 96.00)').delta_e('lab(84.52% 5.75 93.09)', method='cmc'),
+            0.8770,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(84.25% 5.74 96.00)').delta_e('lab(84.37% 5.86 99.42)', method='cmc'),
+            1.0221,
+            rounding=4
+        )
+
+    def test_delta_e_cmc_brilliant_red(self):
+        """
+        Brilliant red tests.
+
+        https://cdn.ymaws.com/www.powdercoating.org/resource/collection/F9D5A46E-051B-4B03-B156-6EE410F10328/3_-_CC_Forum_PPT_-__BYK_Gardner_-_Camp.pdf
+        Slide 44.
+        """
+
+        self.assertCompare(
+            Color('lab(38.64% 64.26 52.16)').delta_e('lab(38.59% 62.06 51.11)', method='cmc'),
+            0.8423,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(38.83% 33.35 26.67)').delta_e('lab(38.69% 31.14 25.21)', method='cmc'),
+            1.1297,
+            rounding=4
+        )
 
     def test_delta_e_2000(self):
         """Test delta e 2000 unequal."""
 
-        self.assertEqual(Color('red').delta_e('red', method="2000"), 0.0)
-        self.assertEqual(Color('red').delta_e('orange', method="2000"), 31.471258671383733)
-        self.assertEqual(Color('red').delta_e('yellow', method="2000"), 60.99291415345663)
-        self.assertEqual(Color('red').delta_e('green', method="2000"), 70.24408257087782)
-        self.assertEqual(Color('red').delta_e('blue', method="2000"), 55.79505955791144)
-        self.assertEqual(Color('red').delta_e('indigo', method="2000"), 52.84391419406163)
-        self.assertEqual(Color('red').delta_e('violet', method="2000"), 41.692949469152545)
-        self.assertEqual(Color('red').delta_e('black', method="2000"), 51.33801701522897)
-        self.assertEqual(Color('red').delta_e('white', method="2000"), 45.26697100909689)
-        self.assertEqual(Color('red').delta_e('gray', method="2000"), 31.3990658648536)
+        self.assertCompare(
+            Color('red').delta_e('red', method="2000"),
+            0.0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('orange', method="2000"),
+            31.4713,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('yellow', method="2000"),
+            60.9929,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('green', method="2000"),
+            70.2441,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('blue', method="2000"),
+            55.7951,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('indigo', method="2000"),
+            52.8439,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('violet', method="2000"),
+            41.6929,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('black', method="2000"),
+            51.338,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('white', method="2000"),
+            45.267,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('red').delta_e('gray', method="2000"),
+            31.3991,
+            rounding=4
+        )
 
         # Symmetrical
-        self.assertEqual(Color('red').delta_e('red', method="2000"), 0.0)
-        self.assertEqual(Color('orange').delta_e('red', method="2000"), 31.471258671383733)
-        self.assertEqual(Color('yellow').delta_e('red', method="2000"), 60.99291415345663)
-        self.assertEqual(Color('green').delta_e('red', method="2000"), 70.24408257087782)
-        self.assertEqual(Color('blue').delta_e('red', method="2000"), 55.79505955791144)
-        self.assertEqual(Color('indigo').delta_e('red', method="2000"), 52.84391419406163)
-        self.assertEqual(Color('violet').delta_e('red', method="2000"), 41.692949469152545)
-        self.assertEqual(Color('black').delta_e('red', method="2000"), 51.33801701522897)
-        self.assertEqual(Color('white').delta_e('red', method="2000"), 45.26697100909689)
-        self.assertEqual(Color('gray').delta_e('red', method="2000"), 31.3990658648536)
+        self.assertCompare(
+            Color('red').delta_e('red', method="2000"),
+            0.0,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('orange').delta_e('red', method="2000"),
+            31.4713,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('yellow').delta_e('red', method="2000"),
+            60.9929,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('green').delta_e('red', method="2000"),
+            70.2441,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('blue').delta_e('red', method="2000"),
+            55.7951,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('indigo').delta_e('red', method="2000"),
+            52.8439,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('violet').delta_e('red', method="2000"),
+            41.6929,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('black').delta_e('red', method="2000"),
+            51.338,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('white').delta_e('red', method="2000"),
+            45.267,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('gray').delta_e('red', method="2000"),
+            31.3991,
+            rounding=4
+        )
+
+    def test_delta_e_2000_pythagorean(self):
+        """Pythagorean 3, 4, 5 triangle."""
+
+        self.assertCompare(
+            Color('lab(50% 30 40)').delta_e('lab(50% 0 0)', method='2000'),
+            24.1219,
+            rounding=4
+        )
+
+    def test_delta_e_2000_sharma(self):
+        """
+        Sharma tests.
+
+        http://www2.ece.rochester.edu/~gsharma/ciede2000/
+        """
+
+        self.assertCompare(
+            Color('lab(50% 2.6772 -79.7751)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            2.0425,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 3.1571 -77.2803)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            2.8615,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.8361 -74.0200)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            3.4412,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -1.3802 -84.2814)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -1.1848 -84.8006)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -0.9009 -85.5211)').delta_e('lab(50% 0 -82.7485)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 0 0)').delta_e('lab(50% -1 2)', method='2000'),
+            2.3669,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -1 2)').delta_e('lab(50% 0 0)', method='2000'),
+            2.3669,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.4900 -0.0010)').delta_e('lab(50% -2.4900 0.0009)', method='2000'),
+            7.1792,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.4900 -0.0010)').delta_e('lab(50% -2.4900 0.0010)', method='2000'),
+            7.1792,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.4900 -0.0010)').delta_e('lab(50% -2.4900 0.0011)', method='2000'),
+            7.2195,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.4900 -0.0010)').delta_e('lab(50% -2.4900 0.0012)', method='2000'),
+            7.2195,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -0.0010 2.4900)').delta_e('lab(50% 0.0009 -2.4900)', method='2000'),
+            4.8045,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -0.0010 2.4900)').delta_e('lab(50% 0.00010 -2.4900)', method='2000'),
+            4.8045,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% -0.0010 2.4900)').delta_e('lab(50% 0.0011 -2.4900)', method='2000'),
+            4.7461,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(50% 0 -2.5)', method='2000'),
+            4.3065,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(73% 25 -18)', method='2000'),
+            27.1492,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(61% -5 29)', method='2000'),
+            22.8977,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(56% -27 -3)', method='2000'),
+            31.9030,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(58% 24 15)', method='2000'),
+            19.4535,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(50% 3.1736 0.5854)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(50% 3.2972 0)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(50% 1.8634 0.5757)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(50% 2.5 0)').delta_e('lab(50% 3.2592 0.3350)', method='2000'),
+            1.0000,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(60.2574% -34.0099 36.2677)').delta_e('lab(60.4626% -34.1751 39.4387)', method='2000'),
+            1.2644,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(63.0109% -31.0961 -5.8663)').delta_e('lab(62.8187% -29.7946 -4.0864)', method='2000'),
+            1.2630,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(61.2901% 3.7196 -5.3901)').delta_e('lab(61.4292% 2.2480 -4.9620)', method='2000'),
+            1.8731,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(35.0831% -44.1164 3.7933)').delta_e('lab(35.0232% -40.0716 1.5901)', method='2000'),
+            1.8645,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(22.7233% 20.0904 -46.6940)').delta_e('lab(23.0331% 14.9730 -42.5619)', method='2000'),
+            2.0373,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(36.4612% 47.8580 18.3852)').delta_e('lab(36.2715% 50.5065 21.2231)', method='2000'),
+            1.4146,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(90.8027% -2.0831 1.4410)').delta_e('lab(91.1528% -1.6435 0.0447)', method='2000'),
+            1.4441,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(90.9257% -0.5406 -0.9208)').delta_e('lab(88.6381% -0.8985 -0.7239)', method='2000'),
+            1.5381,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(6.7747% -0.2908 -2.4247)').delta_e('lab(5.8714% -0.0985 -2.2286)', method='2000'),
+            0.6377,
+            rounding=4
+        )
+        self.assertCompare(
+            Color('lab(2.0776% 0.0795 -1.1350)').delta_e('lab(0.9033% -0.0636 -0.5514)', method='2000'),
+            0.9082,
+            rounding=4
+        )
 
     def test_bad_delta_e(self):
         """Test bad delta e input."""
