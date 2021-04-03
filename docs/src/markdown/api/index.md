@@ -395,6 +395,28 @@ Parameters
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
+### `overlay`
+
+```py3
+def overlay(self, background, *, space=None, in_place=False):
+```
+
+Overlays a color on top of a given background color. Colors are mixed in the color space of the base color by default.
+
+If the desire is to match web browser logic, current browsers usually overlay in the sRGB space.
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `background`               |                                    | A background color represented with either a string or [`Color`](#color) object.
+    `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 ### `fit`
 
