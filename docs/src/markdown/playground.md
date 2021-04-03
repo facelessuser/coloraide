@@ -34,11 +34,56 @@ Color('red')</textarea>
 }
 </style>
 
+<script type="text/js-worker" id="pyworker">
+self.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/';
+importScripts('https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/pyodide.js');
+
+const pycode = `
+--8<-- "pycode.txt"
+`
+
+function analyze(str) {
+    code = `
+import micropip
+
+${pycode}
+
+text = """
+${str.replace('"', '\\"')}
+"""
+
+def parse_colors(*args):
+    """Get colors."""
+
+    globals()['results'] = color_command_formatter(text)
+    print(globals()['results'])
+
+micropip.install('coloraide').add_done_callback(parse_colors)
+
+`
+    languagePluginLoader.then(() => {
+      return pyodide.loadPackage(['micropip', 'Pygments']);
+    }).then(() => {
+      console.log(pyodide.runPython(code));
+      setTimeout(post, 500);
+    });
+}
+
+function post() {
+   self.postMessage(pyodide.globals.get("results"));
+}
+
+
+self.addEventListener("message", (event) => {
+    analyze(event.data);
+});
+</script>
+
 <script type="text/javascript">
 const text = document.getElementById("text");
 const results = document.getElementById("results");
 
-const textAnalyzer = new Worker("../playground.js");
+const worker = new Worker(window.URL.createObjectURL(new Blob([pyworker.textContent], {type: 'text/javascript'})));
 let busy = false;
 let requests = 0;
 
@@ -47,22 +92,24 @@ text.addEventListener("input", (e) => {
     requests++;
     return;
   }
+  requests = 0;
   busy = true;
-  textAnalyzer.postMessage(e.target.value);
+  worker.postMessage(e.target.value);
 });
 
-textAnalyzer.addEventListener("message", (event) => {
-  results.innerHTML = event.data;
+worker.addEventListener("message", (e) => {
+  results.innerHTML = e.data;
   let scrollingElement = results.querySelector('code');
   scrollingElement.scrollTop = scrollingElement.scrollHeight;
   busy = false;
   if (requests) {
     requests = 0;
-    textAnalyzer.postMessage(text.value);
     busy = true;
+    worker.postMessage(text.value);
   }
 });
 
 text.focus();
-textAnalyzer.postMessage(text.value);
+busy = true;
+worker.postMessage(text.value);
 </script>

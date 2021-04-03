@@ -1,8 +1,3 @@
-self.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/';
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/pyodide.js');
-let pythonLoading;
-
-const pycode = `
 from collections.abc import Sequence
 from collections import namedtuple
 import ast
@@ -214,40 +209,3 @@ def color_command_formatter(src):
     except Exception as e:
         return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
     return el
-`
-
-function analyze(str) {
-    code = `
-import micropip
-
-${pycode}
-
-text = """
-${str.replace('"', '\\"')}
-"""
-
-def parse_colors(*args):
-    """Get colors."""
-
-    globals()['results'] = color_command_formatter(text)
-    print(globals()['results'])
-
-micropip.install('coloraide').add_done_callback(parse_colors)
-
-`
-    languagePluginLoader.then(() => {
-      return pyodide.loadPackage(['micropip', 'Pygments']);
-    }).then(() => {
-      console.log(pyodide.runPython(code));
-      setTimeout(post, 500);
-    });
-}
-
-function post() {
-   self.postMessage(pyodide.globals.get("results"));
-}
-
-
-self.addEventListener("message", (event) => {
-    analyze(event.data);
-});
