@@ -10,7 +10,7 @@ This sandbox is powered by [Pyodide](https://github.com/pyodide/pyodide). Previe
 <div class="highlight"><pre><code>Loading...</code></pre></div>
 </div>
 </div>
-<textarea id="playground-inputs"># Insert your code here!
+<textarea id="playground-inputs" spellcheck="false"># Insert your code here!
 # Color objects, interpolation functions, and strings that look like colors
 # will all be detected and previewed.
 

@@ -35,15 +35,11 @@ const results = document.getElementById("playground-results");
 let busy = false;
 let requests = 0;
 
-const pycode = `
---8<-- "pycode.txt"
-`
-
 function pyexecute(str) {
     code = `
 import micropip
 
-${pycode}
+--8<-- "pycode.txt"
 
 text = """
 ${str.replace('"', '\\"')}

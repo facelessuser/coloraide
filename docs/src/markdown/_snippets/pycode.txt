@@ -1,3 +1,9 @@
+"""
+Special Python color code blocks.
+
+Transform Python code by executing it, transforming to a Python console output,
+and finding and outputting color previews.
+"""
 from collections.abc import Sequence
 from collections import namedtuple
 import ast
