@@ -32,6 +32,7 @@ NaNs
 Premultiply
 ProPhoto
 PyPI
+Pyodide
 RGB
 SRGB
 Sharma

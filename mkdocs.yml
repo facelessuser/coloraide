@@ -37,6 +37,8 @@ nav:
       - Supported Colors: colors/index.md
   - API:
       - Color API: api/index.md
+  - Playground:
+      - Interactive Sandbox: playground.md
   - About:
       - Contributing &amp; Support: about/contributing.md
       - Changelog: about/changelog.md

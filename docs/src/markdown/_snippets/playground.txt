@@ -1,0 +1,96 @@
+<style>
+#playground-inputs {
+  display: block;
+  width: 100%;
+  min-height: 10em;
+  margin-top: 2px;
+  padding: .7720588235em 1.1764705882em;
+  outline: none;
+  color: var(--md-code-fg-color);
+  background-color: var(--md-code-bg-color);
+}
+
+#playground-results code {
+  height: 15em;
+}
+
+#playground-results pre {
+  margin-bottom: 0;
+}
+
+#playground-results .swatch-bar {
+  min-height: calc(3em + 4px);
+}
+</style>
+
+<script type="text/javascript">
+// set the Pyodide files URL (packages.json, pyodide.asm.data etc)
+window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/';
+</script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.17.0a2/full/pyodide.js"></script>
+
+<script type="text/javascript">
+const inputs = document.getElementById("playground-inputs");
+const results = document.getElementById("playground-results");
+let busy = false;
+let requests = 0;
+
+function pyexecute(str) {
+    code = `
+import micropip
+
+--8<-- "pycode.txt"
+
+text = """
+${str.replace('"', '\\"')}
+"""
+
+def parse_colors(*args):
+    """Get colors."""
+
+    # Store results in global "results"
+    globals()['results'] = color_command_formatter(text)
+
+micropip.install('coloraide').add_done_callback(parse_colors)
+`
+
+    languagePluginLoader.then(() => {
+      return pyodide.loadPackage(['micropip', 'Pygments']);
+    }).then(() => {
+      console.log(pyodide.runPython(code));
+      // Need to wait a bit to make sure we can retrieve the output.
+      setTimeout(post, 500);
+    });
+}
+
+inputs.addEventListener("input", (e) => {
+  // Throttle requests
+  if (busy) {
+    requests++;
+    return;
+  }
+  requests = 0;
+  busy = true;
+  pyexecute(e.target.value);
+});
+
+function post (str) {
+  // Ensure we scroll to the most recent results.
+  results.innerHTML = pyodide.globals.get("results");
+  let scrollingElement = results.querySelector('code');
+  scrollingElement.scrollTop = scrollingElement.scrollHeight;
+
+  // We still have more in the queue, run again.
+  busy = false;
+  if (requests) {
+    requests = 0;
+    busy = true;
+    pyexecute(inputs.value);
+  }
+};
+
+// Initial first run after load.
+inputs.focus();
+busy = true;
+pyexecute(inputs.value);
+</script>
