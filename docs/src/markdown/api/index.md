@@ -355,27 +355,26 @@ steps. Will attempt to provide the minimum number of `steps` without exceeding `
 provided, the distance between each stop will be cut in half until there are no colors with a distance greater than the
 specified `max_delta_e`.
 
+Like [`interpolate`](#interpolate), the default interpolation space is `lab`.
+
 Return
 : 
     List of [`Color`](#color) objects.
 
-
 Parameters
 : 
-    Parameters   | Defaults           | Description
-    ------------ | ------------------ | -----------
-    `color`      |                    | A color string or [`Color`](#color) object representing a color.
-    `steps`      | `#!py3 2`          | Minimum number of steps.
-    `max_steps`  | `#!py3 1000`       | Maximum number of steps.
-    `max_delta_e`| `#!py3 0`          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
-
-    !!! note
-        All other keyword arguments defined in `**interpolate_args` will be passed to the `interpolate` method.
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `color`                    |                                    | A color string or [`Color`](#color) object representing a color.
+    `steps`                    | `#!py3 2`                          | Minimum number of steps.
+    `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
+    `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 ### `mix`
 
 ```py3
-def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
+def mix(self, color, percent=util.DEF_MIX, *, in_place=False, **interpolate_args):
 ```
 
 Interpolates between two colors returning a color that represents the mixing of the base color and the provided `color`
@@ -389,12 +388,12 @@ Return
 
 Parameters
 : 
-    Parameters | Defaults           | Description
-    ---------- | ------------------ | -----------
-    `color`    |                    | A color string or [`Color`](#color) object representing a color.
-    `percent`  | `#!py3 0.5`        | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
-    `space`    | `#!py3 None`       | A string specifying the color space in which the "mixing"/interpolation is done. If `#!py3 None`, the base color's color space will be used.
-    `in_place` | `#!py3 False`      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `color`                    |                                    | A color string or [`Color`](#color) object representing a color.
+    `percent`                  | `#!py3 0.5`                        | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 
 ### `fit`

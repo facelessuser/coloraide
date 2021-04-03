@@ -6,10 +6,10 @@ The `interpolate` method allows a user to create an interpolation function. This
 gradient colors, or whatever is needed. This function drives most of the features under the interpolation umbrella.
 The [`steps`](#steps) and [`mix`](#color-mixing) functions are both built on top of `interpolate`.
 
-A returned interpolation functions accept an input between 0 - 1, if values are provided out of this range, the color
+A returned interpolation function accepts an input between 0 - 1, if values are provided out of this range, the color
 will be extrapolated and the results may be surprising.
 
-In this example, we create a an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color
+In this example, we create an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color
 previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
 
 ```color
@@ -143,9 +143,9 @@ As an example, if we had the color `#!color red` and the color
 Color("red").mix(Color("blue"))
 ```
 
-The `mix` method will mix the two colors in the color space of the color calling the method. If needed, a different
-color space can be specified with the `space` parameter. Notice below that this creates a different color.
-The results of mixing in a different color space may be more desirable as color mixing may be more natural.
+The `mix` method will mix the two colors in the CIELAB color space by default. If needed, a different color space can be
+specified with the `space` parameter. Notice below that this creates a different color. The results of mixing in a
+different color space may be more desirable as color mixing may be more natural.
 
 ```{.color fit}
 Color("red").mix(Color("blue"), space="lch")
@@ -191,14 +191,17 @@ Color("display-p3", [0, 1, 0]).steps(
 ## Overlaying Colors
 
 The `overlay` method allows a transparent color to be overlaid on top of another color creating the composite of the
-two. To perform an overlay, a background color must be provided to the color along with an optional color space. If a
-color is to be overlaid within a smaller color space, the colors will be mapped to the smaller space.
+two. To perform an overlay, a background color must be provided along with an optional color space.
 
-!!! tip "Cylindrical Spaces"
-    It is generally recommended to overlay in non-cylindrical spaces, but there is no limitation to do so.
+This function differs from [`interpolate`](#interpolate) and friends and does not use the same interpolation technique,
+but follows overlaying logic as performed in browsers.
+
+When `space` is not provided, the color space of the base color is used. Browsers usually, overlay in the sRGB color
+space, so if the intention is mimic browsers, it is suggested to overlay in `srgb`.
 
 In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)` and overlay it on the color `#!color black`. This
-yields the color: `#!color rgb(127.5 0 0)`.
+yields the color: `#!color rgb(127.5 0 0)`. Since the base color is in the `srgb` space, the colors are overlaid in that
+space.
 
 ```color
 Color("rgb(100% 0% 0% / 0.5)").overlay("black")

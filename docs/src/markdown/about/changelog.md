@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a16
+
+- **NEW**: Make `mix` use the same space logic as `interpolate` and `step`. Colors are mixed in CIELAB unless `space` is
+  set to a different color space.
+
 ## 0.1.0a15
 
 - **NEW**: The adjust parameter on `interpolate`, `steps`, and `mix` has been dropped. Instead, a general purpose method

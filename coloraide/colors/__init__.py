@@ -274,11 +274,11 @@ class Color:
             colors.append(self.new(obj.space(), obj.coords(), obj.alpha))
         return colors
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
+    def mix(self, color, percent=util.DEF_MIX, *, in_place=False, **interpolate_args):
         """Mix the two colors."""
 
         color = self._handle_color_input(color)
-        obj = self._color.mix(color, percent, space=space, in_place=in_place, **interpolate_args)
+        obj = self._color.mix(color, percent, in_place=in_place, **interpolate_args)
         if not in_place:
             return self.new(obj.space(), obj.coords(), obj.alpha)
         return self
