@@ -79,9 +79,10 @@ def find_colors(text):
 def execute(cmd):
     """Execute color commands."""
 
-    from coloraide import Color, NaN, __version__
+    import coloraide
+    from coloraide import Color, NaN
 
-    g = {'Color': Color, 'NaN': NaN, '__version__': __version__, '__builtins__': {'print': print}}
+    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN}
     console = ''
     colors = []
 
