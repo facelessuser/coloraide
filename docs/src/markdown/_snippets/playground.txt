@@ -2,12 +2,16 @@
 #playground-inputs {
   display: block;
   width: 100%;
-  min-height: 10em;
+  min-height: 15em;
   margin-top: 2px;
   padding: .7720588235em 1.1764705882em;
   outline: none;
   color: var(--md-code-fg-color);
   background-color: var(--md-code-bg-color);
+  font-feature-settings: "kern";
+  font-family: var(--md-code-font-family,_),SFMono-Regular,Consolas,Menlo,monospace;
+  line-height: 1.4;
+  font-size: .85em;
 }
 
 #playground-results code {
@@ -51,7 +55,7 @@ def parse_colors(*args):
     # Store results in global "results"
     globals()['results'] = color_command_formatter(text)
 
-micropip.install('coloraide').add_done_callback(parse_colors)
+micropip.install('http://localhost:8000/coloraide-0.1.0a16-py3-none-any.whl').add_done_callback(parse_colors)
 `
 
     languagePluginLoader.then(() => {
