@@ -19,23 +19,6 @@ from . _cylindrical import Cylindrical
 from . _range import Angle
 
 
-def overlay(c1, c2, a1, a2, a0, angle=False):
-    """Overlay one color channel over the other."""
-
-    if util.is_nan(c1) and util.is_nan(c2):
-        return 0.0
-    elif util.is_nan(c1):
-        return c2 if angle else c2 * a2
-    elif util.is_nan(c2):
-        return c1 if angle else c1 * a1
-
-    if angle:
-        return c1 + (c2 - c1) * (1 - a1)
-    else:
-        c0 = c1 * a1 + c2 * a2 * (1 - a1)
-        return c0 / a0 if a0 else c0
-
-
 def interpolate(p, channels1, channels2, create, progress, outspace, premultiplied):
     """Run through the coordinates and run the interpolation on them."""
 
@@ -148,56 +131,6 @@ def adjust_hues(color1, color2, hue):
 class Interpolate:
     """Interpolate between colors."""
 
-    def overlay(self, background, *, space=None, in_place=False):
-        """
-        Apply the given transparency with the given background.
-
-        This attempts to give a color that represents what the eye
-        sees with the transparent color against the given background.
-
-        Some spaces will require the action to take place in a different
-        space. For instance, cylindrical representations of sRGB (HSL, HSV, HWB),
-        will request interpolation to be done under sRGB. This is because alpha
-        compositing does not work well in cylindrical spaces.
-        """
-
-        current_space = self.space()
-        alpha = util.no_nan(self.alpha)
-        if alpha < 1.0:
-            if space is None:
-                space = current_space
-            else:
-                space = space.lower()
-
-            this = self.convert(space, fit=True)
-            background = background.convert(space, fit=True)
-
-            # Adjust hues if we have two valid hues
-            if isinstance(this, Cylindrical):
-                adjust_hues(this, background, util.DEF_HUE_ADJ)
-
-            coords1 = this.coords()
-            coords2 = background.coords()
-            a1 = util.no_nan(this.alpha)
-            a2 = util.no_nan(background.alpha)
-            a0 = a1 + a2 * (1.0 - a1)
-            gamut = this._range
-            coords = []
-            # Avoid multiplying angles and don't mix them the same as non-angles
-            for i, value in enumerate(coords1):
-                g = gamut[i][0]
-                is_angle = isinstance(g, Angle)
-                coords.append(overlay(value, coords2[i], a1, a2, a0, angle=is_angle))
-            this._coords = coords
-            this.alpha = a0
-        else:
-            this = self
-
-        if in_place:
-            return self.update(this.convert(current_space))
-
-        return this.convert(current_space)
-
     def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """
         Discrete steps.
@@ -252,7 +185,7 @@ class Interpolate:
 
         return [i['color'] for i in ret]
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, in_place=False, **interpolate_args):
+    def mix(self, color, percent=util.DEF_MIX, *, space=None, **interpolate_args):
         """
         Mix colors using interpolation.
 
@@ -265,10 +198,7 @@ class Interpolate:
         else:
             space = space.lower()
 
-        obj = self.interpolate(color, space=space, **interpolate_args)(percent)
-        if in_place:
-            return self.update(obj)
-        return obj
+        return self.interpolate(color, space=space, **interpolate_args)(percent)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,

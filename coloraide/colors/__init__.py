@@ -174,7 +174,8 @@ class Color:
 
         obj = self._color.convert(space, fit=fit)
         if in_place:
-            return self._attach(obj)
+            self._attach(obj)
+            return self
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
@@ -244,11 +245,11 @@ class Color:
         """Apply the given transparency with the given background."""
 
         background = self._handle_color_input(background)
-        obj = self._color.overlay(background, space=space, in_place=in_place)
-
-        if not in_place:
-            return self.new(obj.space(), obj.coords(), obj.alpha)
-        return self
+        obj = self._color.overlay(background, space=space)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -278,10 +279,21 @@ class Color:
         """Mix the two colors."""
 
         color = self._handle_color_input(color)
-        obj = self._color.mix(color, percent, in_place=in_place, **interpolate_args)
-        if not in_place:
-            return self.new(obj.space(), obj.coords(), obj.alpha)
-        return self
+        obj = self._color.mix(color, percent, **interpolate_args)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
+
+    def blend(self, color, mode, *, out_space=None, in_place=False):
+        """Blend."""
+
+        color = self._handle_color_input(color)
+        obj = self._color.blend(color, mode, out_space=out_space)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit to gamut."""

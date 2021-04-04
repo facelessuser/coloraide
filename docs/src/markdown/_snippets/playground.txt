@@ -55,7 +55,7 @@ def parse_colors(*args):
     # Store results in global "results"
     globals()['results'] = color_command_formatter(text)
 
-micropip.install('http://localhost:8000/coloraide-0.1.0a16-py3-none-any.whl').add_done_callback(parse_colors)
+micropip.install('coloraide').add_done_callback(parse_colors)
 `
 
     languagePluginLoader.then(() => {

@@ -3,6 +3,8 @@ import decimal
 import math
 import numbers
 import re
+import warnings
+from functools import wraps
 
 RE_FLOAT_TRIM = re.compile(r'^(?P<keep>-?\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
 NaN = float('nan')
@@ -225,3 +227,23 @@ def round_half_up(n, scale=0):
 
     mult = 10 ** scale
     return math.floor(n * mult + 0.5) / mult
+
+
+def deprecated(message, stacklevel=2):  # pragma: no cover
+    """
+    Raise a `DeprecationWarning` when wrapped function/method is called.
+
+    Borrowed from https://stackoverflow.com/a/48632082/866026
+    """
+
+    def _decorator(func):
+        @wraps(func)
+        def _func(*args, **kwargs):
+            warnings.warn(
+                "'{}' is deprecated. {}".format(func.__name__, message),
+                category=DeprecationWarning,
+                stacklevel=stacklevel
+            )
+            return func(*args, **kwargs)
+        return _func
+    return _decorator
