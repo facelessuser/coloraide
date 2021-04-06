@@ -395,15 +395,20 @@ Parameters
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
-### `overlay`
+### `composite`
 
 ```py3
-def overlay(self, background, *, space=None, in_place=False):
+def composite(self, backdrop, *, space=None, out_space=None, in_place=False):
 ```
 
-Overlays a color on top of a given background color. Colors are mixed in the color space of the base color by default.
+Apply alpha compositing using [Porter Duff Composition][porter-duff], specifically [Source Over][source-over]. The
+current color is treated as the source (top layer) and the provided color as the backdrop (bottom layer). Colors will be
+mixed in the `srgb` color space unless otherwise specified.
 
-If the desire is to match web browser logic, current browsers usually overlay in the sRGB space.
+Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Some non-RGB-ish colors may work okay, but
+the algorithm is really designed for RGB-ish colors. Cylindrical colors will likely give nonsense results.
+
+This is essentially a convenience function for `#!py3 color1.blend(color2, 'normal')`.
 
 Return
 : 
@@ -414,8 +419,57 @@ Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `background`               |                                    | A background color represented with either a string or [`Color`](#color) object.
+    `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
     `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
+    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to. 
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+
+### `blend`
+
+```py3
+def blend(self, backdrop, mode, *, space=None, out_space=None, in_place=False):
+```
+
+Apply the specified blend `mode` using the current color as the source and the provided color as the `backdrop`.
+
+Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Other color spaces will likely give
+nonsense results.
+
+Supported blend modes are:
+
+- `normal`
+- `multiply`
+- `darken`
+- `lighten`
+- `burn`
+- `dodge`
+- `screen`
+- `overlay`
+- `hard-light`
+- `exclusion`
+- `difference`
+- `soft-light`
+- `hue`
+- `saturation`
+- `luminosity`
+- `color`
+- `color`
+- `hue`
+- `saturation`
+- `luminosity`
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
+    `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
+    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to. 
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 ### `fit`

@@ -241,15 +241,21 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.delta_e(color, method=method, **kwargs)
 
-    def overlay(self, background=None, *, space=None, in_place=False):
+    def composite(self, background, *, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
         background = self._handle_color_input(background)
-        obj = self._color.overlay(background, space=space)
+        obj = self._color.composite(background, space=space, out_space=None)
         if in_place:
             self._attach(obj)
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
+
+    @util.deprecated("'overlay' is deprecated, 'composite should be used instead'.")
+    def overlay(self, background, *, space=None, out_space=None, in_place=False):
+        """Redirect to composite."""
+
+        return self.composite(background, space=space, out_space=None, in_place=in_place)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -285,11 +291,11 @@ class Color:
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    def blend(self, color, mode, *, out_space=None, in_place=False):
+    def blend(self, color, mode, *, alpha=True, space=None, out_space=None, in_place=False):
         """Blend."""
 
         color = self._handle_color_input(color)
-        obj = self._color.blend(color, mode, out_space=out_space)
+        obj = self._color.blend(color, mode, alpha=alpha, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self

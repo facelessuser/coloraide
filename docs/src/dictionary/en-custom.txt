@@ -46,6 +46,7 @@ boolean
 chroma
 fixup
 grayscale
+ish
 js
 luminance
 pre

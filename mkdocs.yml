@@ -29,6 +29,7 @@ nav:
       - The Color Object: color.md
       - Manipulating Colors: manipulation.md
       - Color Interpolation: interpolation.md
+      - Compositing and Blending: compositing.md
       - Color Distance and Delta E: distance.md
       - Gamut Mapping: gamut.md
       - Contrast: contrast.md

@@ -3,8 +3,9 @@ Compositing and RGB blend modes.
 
 https://www.w3.org/TR/compositing/
 """
-from .. import util
+from abc import ABCMeta, abstractmethod
 import math
+from .. import util
 from . _range import Angle
 from ._gamut import GamutBound
 from operator import itemgetter
@@ -20,6 +21,58 @@ SUPPORTED = frozenset(
 NON_SEPARABLE = frozenset(['color', 'hue', 'saturation', 'luminosity'])
 
 
+# -----------------------------------------
+# Compositing classes
+# -----------------------------------------
+class PorterDuff(metaclass=ABCMeta):
+    """Porter Duff compositing."""
+
+    def __init__(self, cba, csa):
+        """Initialize."""
+
+        self.cba = cba
+        self.csa = csa
+
+    @abstractmethod
+    def _fa(self):
+        """Calculate `Fa`."""
+
+        raise NotImplementedError('fa is not implemented')
+
+    @abstractmethod
+    def _fb(self):
+        """Calculate `Fb`."""
+
+        raise NotImplementedError('fb is not implemented')
+
+    def co(self, cb, cs):
+        """Calculate premultiplied coordinate."""
+
+        return self.csa * self._fa() * cs + self.cba * self._fb() * cb
+
+    def ao(self):
+        """Calculate output alpha."""
+
+        return self.csa * self._fa() + self.cba * self._fb()
+
+
+class SourceOver(PorterDuff):
+    """Source over."""
+
+    def _fa(self):
+        """Calculate `Fa`."""
+
+        return 1
+
+    def _fb(self):
+        """Calculate `Fb`."""
+
+        return 1 - self.csa
+
+
+# -----------------------------------------
+# Non-separable blending helper functions
+# -----------------------------------------
 def clip_channel(coord, gamut):
     """Clipping channel."""
 
@@ -44,7 +97,7 @@ def clip_channel(coord, gamut):
 def alpha_composite(cb, cs, cba, csa, cra):
     """Overlay one color channel over the other."""
 
-    cr = cs + (cb - cs) * (1 - csa)
+    cr = cs * csa + cb * cba * (1 - csa)
     return cr / cra if cra else cr
 
 
@@ -98,25 +151,9 @@ def set_sat(rgb, s):
     return final
 
 
-def handle_nan(cb, cs, cba, csa, cra):
-    """Handle `NaN`."""
-
-    cr = None
-    if util.is_nan(cs) and util.is_nan(cb):
-        cr = 0.0
-    elif util.is_nan(cs):
-        cr = cb * cba
-    elif util.is_nan(cb):
-        cr = cs * csa
-
-    if cr is None:
-        return cr
-
-    if cra:
-        cr /= cra
-    return cr
-
-
+# -----------------------------------------
+# Blend modes
+# -----------------------------------------
 def blend_normal(cb, cs):
     """Blend mode 'normal'."""
 
@@ -232,7 +269,7 @@ def blend_color(cb, cs):
 class Compositing:
     """Compositing and blend modes."""
 
-    def blend(self, color, mode, *, space=None, out_space=None):
+    def blend(self, backdrop, mode, *, space=None, out_space=None):
         """Blend colors using the specified blend mode."""
 
         # Setup mode.
@@ -244,17 +281,18 @@ class Compositing:
 
         # If we are doing non-separable, we are converting to a special space that
         # can only be done from sRGB, so we have to force sRGB anyway.
-        space = self.space() if space is None else space.lower()
+        space = 'srgb' if space is None else space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
         # Convert and fit to the color space.
         color1 = self.convert(space, fit=True)
-        color2 = color.convert(space, fit=True)
+        color2 = backdrop.convert(space, fit=True)
 
         # Calculate the result alpha
         cba = util.no_nan(color2.alpha)
         csa = util.no_nan(color1.alpha)
-        cra = csa + cba * (1.0 - csa)
+        compositor = SourceOver(cba, csa)
+        cra = compositor.ao()
 
         gamut = color1._range
         coords = []
@@ -262,41 +300,25 @@ class Compositing:
         if mode not in NON_SEPARABLE:
             # Blend each channel. Afterward, clip and apply alpha compositing.
             i = 0
-            for cb, cs in zip(color2.coords(), color1.coords()):
-                cr = handle_nan(cb, cs, cba, csa, cra)
-                if cr is not None:
-                    coords.append(clip_channel(cr, gamut[i]))
-                else:
-                    cr = clip_channel(blender(cb, cs), gamut[i])
-                    coords.append(alpha_composite(cb, cr, cba, csa, cra))
+            for cb, cs in zip(util.no_nan(color2.coords()), util.no_nan(color1.coords())):
+                cr = (1 - cba) * cs + cba * blender(cb, cs)
+                cr = clip_channel(cr, gamut[i])
+                coords.append(compositor.co(cb, cr))
                 i += 1
         else:
             # Convert to a hue, saturation, luminosity space and apply the requested blending.
             # Afterwards, clip and apply alpha compositing.
             i = 0
             for cb, cr in zip(color2.coords(), blender(util.no_nan(color2.coords()), util.no_nan(color1.coords()))):
+                cr = (1 - cba) * cr + cba * cr
                 cr = clip_channel(cr, gamut[i])
-                coords.append(alpha_composite(cb, cr, cba, csa, cra))
+                coords.append(compositor.co(cb, cr))
                 i += 1
 
         color1.update(coords, cra)
         return color1.convert(outspace)
 
-    def composite(self, background, *, space=None, out_space=None):
-        """
-        Apply the given transparency with the given background.
+    def composite(self, backdrop, *, space=None, out_space=None):
+        """Apply alpha compositing with the current color as the source and the provided color as the backdrop."""
 
-        This attempts to give a color that represents what the eye
-        sees with the transparent color against the given background.
-
-        If using a Cylindrical space, hue will not be overlaid, instead it
-        will just be interpolated.
-        """
-
-        return self.blend(background, "normal", space=space, out_space=out_space)
-
-    @util.deprecated("'overlay' is deprecated, 'composite should be used instead'.")
-    def overlay(self, *args, **kwargs):
-        """Alpha compositing."""
-
-        return self.composite(*args, **kwargs)
+        return self.blend(backdrop, "normal", space=space, out_space=out_space)

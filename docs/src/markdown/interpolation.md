@@ -188,34 +188,6 @@ Color("display-p3", [0, 1, 0]).steps(
 )
 ```
 
-## Overlaying Colors
-
-The `overlay` method allows a transparent color to be overlaid on top of another color creating the composite of the
-two. To perform an overlay, a background color must be provided along with an optional color space.
-
-This function differs from [`interpolate`](#interpolate) and friends and does not use the same interpolation technique,
-but follows overlaying logic as performed in browsers.
-
-When `space` is not provided, the color space of the base color is used. Browsers usually, overlay in the sRGB color
-space, so if the intention is mimic browsers, it is suggested to overlay in `srgb`.
-
-In the example below, we take the `#!color rgb(100% 0% 0% / 0.5)` and overlay it on the color `#!color black`. This
-yields the color: `#!color rgb(127.5 0 0)`. Since the base color is in the `srgb` space, the colors are overlaid in that
-space.
-
-```color
-Color("rgb(100% 0% 0% / 0.5)").overlay("black")
-```
-
-If desired, you can specify a different space to overlay in via the `space` parameter. Color space can affect the
-results.
-
-```color
-Color("rgb(100% 0% 0% / 0.5)").overlay("black", space="display-p3")
-```
-
-A new color will be returned instead of modifying the current color unless `in_place` is set `#!py3 True`.
-
 ## Null Handling
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
