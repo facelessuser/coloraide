@@ -174,7 +174,7 @@ The blending formula simply selects the source color.
 
 ### Multiply
 
-The source color is multiplied by the destination color and replaces the destination.. The resultant color is always at
+The source color is multiplied by the destination color and replaces the destination. The resultant color is always at
 least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying
 any color with white preserves the original color.
 </div>

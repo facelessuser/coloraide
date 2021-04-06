@@ -12,7 +12,7 @@ from operator import itemgetter
 
 SUPPORTED = frozenset(
     [
-        'normal', 'multiply', 'darken', 'lighten', 'burn', 'dodge', 'screen',
+        'normal', 'multiply', 'darken', 'lighten', 'color-burn', 'color-dodge', 'screen',
         'overlay', 'hard-light', 'exclusion', 'difference', 'soft-light',
         'hue', 'saturation', 'luminosity', 'color'
     ]
@@ -34,13 +34,13 @@ class PorterDuff(metaclass=ABCMeta):
         self.csa = csa
 
     @abstractmethod
-    def _fa(self):
+    def _fa(self):  # pragma: no cover
         """Calculate `Fa`."""
 
         raise NotImplementedError('fa is not implemented')
 
     @abstractmethod
-    def _fb(self):
+    def _fb(self):  # pragma: no cover
         """Calculate `Fb`."""
 
         raise NotImplementedError('fb is not implemented')
@@ -84,7 +84,7 @@ def clip_channel(coord, gamut):
         return coord % 360.0
 
     # These parameters are unbounded
-    if not is_bound:
+    if not is_bound:  # pragma: no cover
         # Will not execute unless we have a space that defines some coordinates
         # as bound and others as not. We do not currently have such spaces.
         a = None
@@ -94,17 +94,10 @@ def clip_channel(coord, gamut):
     return util.clamp(coord, a, b)
 
 
-def alpha_composite(cb, cs, cba, csa, cra):
-    """Overlay one color channel over the other."""
-
-    cr = cs * csa + cb * cba * (1 - csa)
-    return cr / cra if cra else cr
-
-
 def lum(rgb):
     """Get luminosity."""
 
-    return 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]
+    return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
 
 
 def clip_color(rgb):
@@ -184,7 +177,7 @@ def blend_lighten(cb, cs):
     return max(cb, cs)
 
 
-def blend_dodge(cb, cs):
+def blend_color_dodge(cb, cs):
     """Blend mode 'dodge'."""
 
     if cb == 0:
@@ -195,7 +188,7 @@ def blend_dodge(cb, cs):
         return min(1, cb / (1 - cs))
 
 
-def blend_burn(cb, cs):
+def blend_color_burn(cb, cs):
     """Blend mode 'burn'."""
 
     if cb == 1:
@@ -209,7 +202,10 @@ def blend_burn(cb, cs):
 def blend_overlay(cb, cs):
     """Blend mode 'overlay'."""
 
-    return blend_screen(cb, 2 * cs - 1) if cb >= 0.5 else blend_multiply(cb, cs * 2)
+    if cb >= 0.5:
+        return blend_screen(cb, 2 * cs - 1)
+    else:
+        return blend_multiply(cb, cs * 2)
 
 
 def blend_difference(cb, cs):
@@ -227,7 +223,10 @@ def blend_exclusion(cb, cs):
 def blend_hard_light(cb, cs):
     """Blend mode 'hard-light'."""
 
-    return blend_multiply(cb, cs * 2) if cs <= 0.5 else blend_screen(cb, 2 * cs - 1)
+    if cs <= 0.5:
+        return blend_multiply(cb, cs * 2)
+    else:
+        return blend_screen(cb, 2 * cs - 1)
 
 
 def blend_soft_light(cb, cs):

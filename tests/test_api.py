@@ -3,6 +3,7 @@ import unittest
 from coloraide import Color, NaN
 from . import util
 import math
+import warnings
 
 
 class TestAPI(util.ColorAsserts, unittest.TestCase):
@@ -311,6 +312,57 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             c1.set("red", "bad")
 
+    def test_blend(self):
+        """Test blend logic."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.blend(c2, 'normal'), Color('color(srgb 0.5 0.5 0.5)'))
+
+    def test_blend_different_space(self):
+        """Test blend logic in different space."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertColorEqual(
+            c1.blend(c2, 'normal', space="display-p3"),
+            Color('rgb(127.5 127.5 167.63)')
+        )
+
+    def test_blend_different_space_and_output(self):
+        """Test blend logic in different space and different output."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertColorEqual(
+            c1.blend(c2, 'normal', space="display-p3", out_space="display-p3"),
+            Color('color(display-p3 0.5 0.5 0.64524 / 1)')
+        )
+
+    def test_blend_bad_mode(self):
+        """Test blend bad mode."""
+
+        with self.assertRaises(ValueError):
+            Color('blue').blend('red', 'bad')
+
+    def test_blend_in_place(self):
+        """Test blend in place modifies original."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.blend(c2, 'normal', in_place=True)
+        self.assertTrue(c1 is c3)
+        self.assertEqual(c1, Color('color(srgb 0.5 0.5 0.5)'))
+
+    def test_composite_is_blend(self):
+        """Test composite is the same as blend normal."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.composite(c2)
+        c4 = c1.blend(c2, 'normal')
+        self.assertEqual(c3, c4)
+
     def test_composite(self):
         """Test composite logic."""
 
@@ -377,6 +429,17 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
         self.assertEqual(c1.composite(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+
+    def test_deprecated_overlay(self):
+        """Test overlay deprecation."""
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            Color('color(srgb 1 0 0 / 1)').overlay('black')
+
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
     def test_contrast_one(self):
         """Test contrast of one."""

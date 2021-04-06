@@ -238,21 +238,21 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.delta_e(color, method=method, **kwargs)
 
-    def composite(self, background, *, space=None, out_space=None, in_place=False):
+    def composite(self, backdrop, *, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
-        background = self._handle_color_input(background)
-        obj = self._color.composite(background, space=space, out_space=None)
+        backdrop = self._handle_color_input(backdrop)
+        obj = self._color.composite(backdrop, space=space, out_space=None)
         if in_place:
             self._attach(obj)
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
     @util.deprecated("'overlay' is deprecated, 'composite should be used instead'.")
-    def overlay(self, background, *, space=None, out_space=None, in_place=False):
+    def overlay(self, backdrop, *, space=None, out_space=None, in_place=False):
         """Redirect to composite."""
 
-        return self.composite(background, space=space, out_space=None, in_place=in_place)
+        return self.composite(backdrop, space=space, out_space=None, in_place=in_place)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -288,11 +288,11 @@ class Color:
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    def blend(self, color, mode, *, space=None, out_space=None, in_place=False):
+    def blend(self, backdrop, mode, *, space=None, out_space=None, in_place=False):
         """Blend."""
 
-        color = self._handle_color_input(color)
-        obj = self._color.blend(color, mode, space=space, out_space=out_space)
+        backdrop = self._handle_color_input(backdrop)
+        obj = self._color.blend(backdrop, mode, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self
