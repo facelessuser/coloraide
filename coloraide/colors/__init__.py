@@ -288,11 +288,11 @@ class Color:
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    def blend(self, backdrop, mode, *, space=None, out_space=None, in_place=False):
+    def blend(self, backdrop, mode=None, *, space=None, out_space=None, in_place=False):
         """Blend."""
 
         backdrop = self._handle_color_input(backdrop)
-        obj = self._color.blend(backdrop, mode, space=space, out_space=out_space)
+        obj = self._color.blend(backdrop, mode=mode, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self

@@ -319,6 +319,13 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('yellow')
         self.assertEqual(c1.blend(c2, 'normal'), Color('color(srgb 0.5 0.5 0.5)'))
 
+    def test_blend_no_mode(self):
+        """Test blend with no mode."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.blend(c2, 'normal'), c1.blend(c2))
+
     def test_blend_different_space(self):
         """Test blend logic in different space."""
 

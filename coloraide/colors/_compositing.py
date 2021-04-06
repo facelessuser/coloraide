@@ -268,10 +268,12 @@ def blend_color(cb, cs):
 class Compositing:
     """Compositing and blend modes."""
 
-    def blend(self, backdrop, mode, *, space=None, out_space=None):
+    def blend(self, backdrop, mode=None, *, space=None, out_space=None):
         """Blend colors using the specified blend mode."""
 
         # Setup mode.
+        if mode is None:
+            mode = 'normal'
         mode = mode.lower()
         if mode not in SUPPORTED:
             raise ValueError("'{}' is not a recognized blend mode".format(mode))
@@ -320,4 +322,4 @@ class Compositing:
     def composite(self, backdrop, *, space=None, out_space=None):
         """Apply alpha compositing with the current color as the source and the provided color as the backdrop."""
 
-        return self.blend(backdrop, "normal", space=space, out_space=out_space)
+        return self.blend(backdrop, mode="normal", space=space, out_space=out_space)

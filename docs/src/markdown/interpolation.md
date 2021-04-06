@@ -3,8 +3,7 @@
 ## Interpolating
 
 The `interpolate` method allows a user to create an interpolation function. This can be used to create a list of
-gradient colors, or whatever is needed. This function drives most of the features under the interpolation umbrella.
-The [`steps`](#steps) and [`mix`](#color-mixing) functions are both built on top of `interpolate`.
+gradient colors, or whatever is needed. This function drives all of the features under the interpolation umbrella.
 
 A returned interpolation function accepts an input between 0 - 1, if values are provided out of this range, the color
 will be extrapolated and the results may be surprising.
