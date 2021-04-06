@@ -15,9 +15,6 @@ from .xyzd65 import XYZD65
 from .. import util
 import functools
 
-DEF_FIT = "lch-chroma"
-DEF_DELTA_E = "76"
-
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65
@@ -291,11 +288,11 @@ class Color:
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    def blend(self, color, mode, *, alpha=True, space=None, out_space=None, in_place=False):
+    def blend(self, color, mode, *, space=None, out_space=None, in_place=False):
         """Blend."""
 
         color = self._handle_color_input(color)
-        obj = self._color.blend(color, mode, alpha=alpha, space=space, out_space=out_space)
+        obj = self._color.blend(color, mode, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self
