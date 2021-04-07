@@ -15,9 +15,6 @@ from .xyzd65 import XYZD65
 from .. import util
 import functools
 
-DEF_FIT = "lch-chroma"
-DEF_DELTA_E = "76"
-
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65
@@ -174,7 +171,8 @@ class Color:
 
         obj = self._color.convert(space, fit=fit)
         if in_place:
-            return self._attach(obj)
+            self._attach(obj)
+            return self
         return type(self)(obj.space(), obj.coords(), obj.alpha)
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
@@ -240,15 +238,23 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.delta_e(color, method=method, **kwargs)
 
-    def overlay(self, background=None, *, space=None, in_place=False):
+    def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
-        background = self._handle_color_input(background)
-        obj = self._color.overlay(background, space=space, in_place=in_place)
+        backdrop = self._handle_color_input(backdrop)
+        obj = self._color.compose(backdrop, blend=blend, operator=operator, space=space, out_space=out_space)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
-        if not in_place:
-            return self.new(obj.space(), obj.coords(), obj.alpha)
-        return self
+    @util.deprecated("'overlay' is deprecated, 'compose' should be used instead.")
+    def overlay(self, backdrop, *, space=None, out_space=None, in_place=False):
+        """Redirect to compose."""
+
+        if space is None:
+            space = self.space()
+        return self.compose(backdrop, space=space, out_space=None, in_place=in_place)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -278,10 +284,11 @@ class Color:
         """Mix the two colors."""
 
         color = self._handle_color_input(color)
-        obj = self._color.mix(color, percent, in_place=in_place, **interpolate_args)
-        if not in_place:
-            return self.new(obj.space(), obj.coords(), obj.alpha)
-        return self
+        obj = self._color.mix(color, percent, **interpolate_args)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit to gamut."""

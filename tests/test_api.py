@@ -3,6 +3,7 @@ import unittest
 from coloraide import Color, NaN
 from . import util
 import math
+import warnings
 
 
 class TestAPI(util.ColorAsserts, unittest.TestCase):
@@ -311,72 +312,169 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             c1.set("red", "bad")
 
-    def test_overlay(self):
-        """Test overlay logic."""
+    def test_blend(self):
+        """Test blend logic."""
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
-        c3 = c1.overlay(c2)
-        self.assertTrue(c1 is not c3)
-        self.assertEqual(c1.overlay(c2), Color('color(srgb 0.5 0.5 0.5)'))
+        self.assertEqual(c1.compose(c2, blend='normal'), Color('color(srgb 0.5 0.5 0.5)'))
 
-    def test_overlay_nan(self):
-        """Test overlay with `NaN` values."""
+    def test_blend_no_mode(self):
+        """Test blend with no mode."""
 
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.compose(c2, blend='normal'), c1.compose(c2))
+
+    def test_blend_different_space(self):
+        """Test blend logic in different space."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
         self.assertColorEqual(
-            Color('srgb', [NaN, 0.75, 0.75], 0.5).overlay(Color('srgb', [1, 0.25, 0.25])),
-            Color('rgb(255 127.5 127.5)')
+            c1.compose(c2, blend='normal', space="display-p3"),
+            Color('rgb(127.5 127.5 167.63)')
+        )
+
+    def test_blend_different_space_and_output(self):
+        """Test blend logic in different space and different output."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertColorEqual(
+            c1.compose(c2, blend='normal', space="display-p3", out_space="display-p3"),
+            Color('color(display-p3 0.5 0.5 0.64524 / 1)')
+        )
+
+    def test_blend_bad_mode(self):
+        """Test blend bad mode."""
+
+        with self.assertRaises(ValueError):
+            Color('blue').compose('red', blend='bad')
+
+    def test_blend_in_place(self):
+        """Test blend in place modifies original."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.compose(c2, blend='normal', in_place=True)
+        self.assertTrue(c1 is c3)
+        self.assertEqual(c1, Color('color(srgb 0.5 0.5 0.5)'))
+
+    def test_disable_compose(self):
+        """Test that we can disable either blend or alpha compositing."""
+
+        c1 = Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', blend='multiply', operator=False, space="srgb")
+        c2 = c1.compose('#fc3d99', blend=False, space="srgb")
+        self.assertColorEqual(
+            Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', blend='multiply', space="srgb"),
+            c2
         )
         self.assertColorEqual(
-            Color('srgb', [NaN, 0.75, 0.75], 0.5).overlay(Color('srgb', [NaN, 0.25, 0.25])),
+            Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', blend=False, operator=False, space="srgb"),
+            Color('#07c7ed').set('alpha', 0.5)
+        )
+
+    def test_compose_is_blend(self):
+        """Test compose is the same as blend normal."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.compose(c2)
+        c4 = c1.compose(c2, blend='normal')
+        self.assertEqual(c3, c4)
+
+    def test_compose(self):
+        """Test compose logic."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.compose(c2)
+        self.assertTrue(c1 is not c3)
+        self.assertEqual(c1.compose(c2), Color('color(srgb 0.5 0.5 0.5)'))
+
+    def test_compose_bad_operator(self):
+        """Test compose bad operator."""
+
+        with self.assertRaises(ValueError):
+            Color('red').compose('blue', operator='bad')
+
+    def test_compose_nan(self):
+        """Test compose with `NaN` values."""
+
+        self.assertColorEqual(
+            Color('srgb', [NaN, 0.75, 0.75], 0.5).compose(Color('srgb', [1, 0.25, 0.25])),
+            Color('rgb(127.5 127.5 127.5)')
+        )
+        self.assertColorEqual(
+            Color('srgb', [NaN, 0.75, 0.75], 0.5).compose(Color('srgb', [NaN, 0.25, 0.25])),
             Color('rgb(0 127.5 127.5)')
         )
         self.assertColorEqual(
-            Color('srgb', [0.2, 0.75, 0.75], 0.5).overlay(Color('srgb', [NaN, 0.25, 0.25])),
+            Color('srgb', [0.2, 0.75, 0.75], 0.5).compose(Color('srgb', [NaN, 0.25, 0.25])),
             Color('rgb(25.5 127.5 127.5)')
         )
 
-    def test_overlay_bad_space(self):
-        """Test overlay logic."""
+    def test_compose_bad_space(self):
+        """Test compose logic."""
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
         with self.assertRaises(ValueError):
-            c1.overlay(c2, space="bad")
+            c1.compose(c2, space="bad")
 
-    def test_overlay_no_alpha(self):
-        """Test overlay logic when color has no alpha."""
+    def test_compose_no_alpha(self):
+        """Test compose logic when color has no alpha."""
 
         c1 = Color('blue')
         c2 = Color('yellow')
-        c3 = c1.overlay(c2)
+        c3 = c1.compose(c2)
         self.assertTrue(c1 is not c3)
-        self.assertEqual(c1.overlay(c2), c1)
+        self.assertEqual(c1.compose(c2), c1)
 
-    def test_overlay_nan_alpha(self):
-        """Test overlay logic with alpha as `NaN`."""
+    def test_compose_nan_alpha(self):
+        """Test compose logic with alpha as `NaN`."""
 
         c1 = Color('blue').set('alpha', NaN)
         c2 = Color('yellow')
-        c3 = c1.overlay(c2)
+        c3 = c1.compose(c2)
         self.assertTrue(c1 is not c3)
         self.assertEqual(c3, Color('color(srgb 1 1 0 / 1)'))
 
-    def test_overlay_in_place(self):
-        """Test overlay logic."""
+    def test_compose_in_place(self):
+        """Test compose logic."""
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
-        c3 = c1.overlay(c2, in_place=True)
+        c3 = c1.compose(c2, in_place=True)
         self.assertTrue(c1 is c3)
         self.assertEqual(c1, Color('color(srgb 0.5 0.5 0.5)'))
 
-    def test_overlay_cyl(self):
-        """Test overlay logic."""
+    def test_compose_cyl(self):
+        """Test compose logic."""
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
-        self.assertEqual(c1.overlay(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+        self.assertEqual(c1.compose(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+
+    def test_overlay_no_space(self):
+        """Test overlay handling of no space."""
+
+        self.assertColorEqual(
+            Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red'),
+            Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red', space='display-p3')
+        )
+
+    def test_deprecated_overlay(self):
+        """Test overlay deprecation."""
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            Color('color(srgb 1 0 0 / 1)').overlay('black')
+
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
     def test_contrast_one(self):
         """Test contrast of one."""

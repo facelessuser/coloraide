@@ -7,6 +7,7 @@ from . import _distance as distance
 from . import _gamut as gamut
 from . import _interpolate as interpolate
 from . import _contrast as contrast
+from . import _compositing as compositing
 from . _range import Percent
 
 # Technically this form can handle any number of channels as long as any
@@ -47,6 +48,7 @@ class Space(
     distance.Distance,
     gamut.Gamut,
     convert.Convert,
+    compositing.Compositing,
     metaclass=ABCMeta
 ):
     """Base color space object."""
@@ -139,7 +141,7 @@ class Space(
     def update(self, value, alpha=None):
         """Update from color."""
 
-        if not isinstance(self, Space) or value.space() != self.space():
+        if not isinstance(value, Space) or value.space() != self.space():
             value = type(self)(value, alpha)
 
         self._coords, self.alpha = self.null_adjust(value.coords(), value.alpha)

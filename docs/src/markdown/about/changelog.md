@@ -4,6 +4,12 @@
 
 - **NEW**: Make `mix` use the same space logic as `interpolate` and `step`. Colors are mixed in CIELAB unless `space` is
   set to a different color space.
+- **NEW**: Add support for blend modes as specified in [Compositing and Blending Level 1][compositing-level-1].
+- **NEW**: Rename `overlay` to `compose` as all compositing (including blend modes) is done through `compose` now.
+  `overlay` is still present and is deprecated and will be removed at some future point before a stable release.
+  `compose` will assume `sRGB` space unless a different space is specified, but `overlay` will function as it always
+  did.
+- **FIX**: Fix some small internal issues with `in_place` logic.
 
 ## 0.1.0a15
 
