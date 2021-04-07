@@ -49,6 +49,7 @@ grayscale
 ish
 js
 luminance
+macOS
 pre
 premultiplication
 premultiplied

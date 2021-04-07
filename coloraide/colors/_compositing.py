@@ -3,12 +3,11 @@ Compositing and RGB blend modes.
 
 https://www.w3.org/TR/compositing/
 """
-from abc import ABCMeta, abstractmethod
 import math
 from .. import util
-from . _range import Angle
 from ._gamut import GamutBound
 from operator import itemgetter
+from . import _porter_duff as pd
 
 SUPPORTED = frozenset(
     [
@@ -22,55 +21,6 @@ NON_SEPARABLE = frozenset(['color', 'hue', 'saturation', 'luminosity'])
 
 
 # -----------------------------------------
-# Compositing classes
-# -----------------------------------------
-class PorterDuff(metaclass=ABCMeta):
-    """Porter Duff compositing."""
-
-    def __init__(self, cba, csa):
-        """Initialize."""
-
-        self.cba = cba
-        self.csa = csa
-
-    @abstractmethod
-    def _fa(self):  # pragma: no cover
-        """Calculate `Fa`."""
-
-        raise NotImplementedError('fa is not implemented')
-
-    @abstractmethod
-    def _fb(self):  # pragma: no cover
-        """Calculate `Fb`."""
-
-        raise NotImplementedError('fb is not implemented')
-
-    def co(self, cb, cs):
-        """Calculate premultiplied coordinate."""
-
-        return self.csa * self._fa() * cs + self.cba * self._fb() * cb
-
-    def ao(self):
-        """Calculate output alpha."""
-
-        return self.csa * self._fa() + self.cba * self._fb()
-
-
-class SourceOver(PorterDuff):
-    """Source over."""
-
-    def _fa(self):
-        """Calculate `Fa`."""
-
-        return 1
-
-    def _fb(self):
-        """Calculate `Fb`."""
-
-        return 1 - self.csa
-
-
-# -----------------------------------------
 # Non-separable blending helper functions
 # -----------------------------------------
 def clip_channel(coord, gamut):
@@ -78,10 +28,6 @@ def clip_channel(coord, gamut):
 
     a, b = gamut
     is_bound = isinstance(gamut, GamutBound)
-
-    # Wrap the angle. Not technically out of gamut, but we will clean it up.
-    if isinstance(a, Angle) and isinstance(b, Angle):
-        return coord % 360.0
 
     # These parameters are unbounded
     if not is_bound:  # pragma: no cover
@@ -268,20 +214,14 @@ def blend_color(cb, cs):
 class Compositing:
     """Compositing and blend modes."""
 
-    def blend(self, backdrop, mode=None, *, space=None, out_space=None):
+    def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None):
         """Blend colors using the specified blend mode."""
-
-        # Setup mode.
-        if mode is None:
-            mode = 'normal'
-        mode = mode.lower()
-        if mode not in SUPPORTED:
-            raise ValueError("'{}' is not a recognized blend mode".format(mode))
-        if mode in NON_SEPARABLE:
-            space = 'srgb'
 
         # If we are doing non-separable, we are converting to a special space that
         # can only be done from sRGB, so we have to force sRGB anyway.
+        non_seperable = blend in NON_SEPARABLE
+        if non_seperable:
+            space = 'srgb'
         space = 'srgb' if space is None else space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
@@ -289,37 +229,54 @@ class Compositing:
         color1 = self.convert(space, fit=True)
         color2 = backdrop.convert(space, fit=True)
 
-        # Calculate the result alpha
+        # Get the color coordinates
         cba = util.no_nan(color2.alpha)
         csa = util.no_nan(color1.alpha)
-        compositor = SourceOver(cba, csa)
-        cra = compositor.ao()
+        coords1 = util.no_nan(color1.coords())
+        coords2 = util.no_nan(color2.coords())
 
+        # Setup blend mode.
+        if blend is None:
+            blend = 'normal'
+        if blend is not False:
+            blend = blend.lower()
+            if blend not in SUPPORTED:
+                raise ValueError("'{}' is not a recognized blend mode".format(blend))
+            blender = globals()['blend_{}'.format(blend.replace('-', '_'))]
+        else:
+            blender = None
+
+        # Setup compositing
+        if operator is None:
+            operator = 'source-over'
+        if operator is not False:
+            compositor = pd.compositor(operator)(cba, csa)
+            cra = compositor.ao()
+        else:
+            cra = csa
+            compositor = None
+
+        # Perform compositing
         gamut = color1._range
         coords = []
-        blender = globals()['blend_{}'.format(mode.replace('-', '_'))]
-        if mode not in NON_SEPARABLE:
+        if not non_seperable:
             # Blend each channel. Afterward, clip and apply alpha compositing.
             i = 0
-            for cb, cs in zip(util.no_nan(color2.coords()), util.no_nan(color1.coords())):
-                cr = (1 - cba) * cs + cba * blender(cb, cs)
+            for cb, cs in zip(coords2, coords1):
+                cr = (1 - cba) * cs + cba * blender(cb, cs) if blender is not None else cs
                 cr = clip_channel(cr, gamut[i])
-                coords.append(compositor.co(cb, cr))
+                coords.append(compositor.co(cb, cr) if compositor is not None else cr)
                 i += 1
         else:
             # Convert to a hue, saturation, luminosity space and apply the requested blending.
             # Afterwards, clip and apply alpha compositing.
             i = 0
-            for cb, cr in zip(color2.coords(), blender(util.no_nan(color2.coords()), util.no_nan(color1.coords()))):
-                cr = (1 - cba) * cr + cba * cr
+            blended = blender(coords2, coords1) if blender is not None else coords1
+            for cb, cr in zip(coords2, blended):
+                cr = (1 - cba) * cr + cba * cr if blender is not None else cr
                 cr = clip_channel(cr, gamut[i])
-                coords.append(compositor.co(cb, cr))
+                coords.append(compositor.co(cb, cr) if compositor is not None else cr)
                 i += 1
 
         color1.update(coords, cra)
         return color1.convert(outspace)
-
-    def composite(self, backdrop, *, space=None, out_space=None):
-        """Apply alpha compositing with the current color as the source and the provided color as the backdrop."""
-
-        return self.blend(backdrop, mode="normal", space=space, out_space=out_space)

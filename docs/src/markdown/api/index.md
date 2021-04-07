@@ -395,44 +395,17 @@ Parameters
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
-### `composite`
+### `compose`
 
 ```py3
-def composite(self, backdrop, *, space=None, out_space=None, in_place=False):
+def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
 ```
 
-Apply alpha compositing using [Porter Duff Composition][porter-duff], specifically [Source Over][source-over]. The
-current color is treated as the source (top layer) and the provided color as the backdrop (bottom layer). Colors will be
-mixed in the `srgb` color space unless otherwise specified.
+Apply compositing which consists of a [blend mode](../compositing.md#blend-modes) and a [Porter Duff operator](../compositing.md#compositing-operators) for alpha compositing. The current color is treated as the source (top layer) and the provided color as the backdrop
+(bottom layer). Colors will be composited in the `srgb` color space unless otherwise specified.
 
-Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Some non-RGB-ish colors may work okay, but
-the algorithm is really designed for RGB-ish colors. Cylindrical colors will likely give nonsense results.
-
-This is essentially a convenience function for `#!py3 color1.blend(color2, 'normal')`.
-
-Return
-: 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
-    `in_place` is `#!py3 True`.
-
-Parameters
-: 
-    Parameters                 | Defaults                           | Description
-    -------------------------- | ---------------------------------- | -----------
-    `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
-    `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
-    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to. 
-    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
-
-### `blend`
-
-```py3
-def blend(self, backdrop, mode, *, space=None, out_space=None, in_place=False):
-```
-
-Apply the specified blend `mode` using the current color as the source and the provided color as the `backdrop`.
-
-Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Other color spaces will likely give
+Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Some non-RGB-ish colors may work okay, with
+the defaults, but many the algorithm is really designed for RGB-ish colors. Non-RGB-ish colors are likely to provide
 nonsense results.
 
 Supported blend modes are:
@@ -458,6 +431,22 @@ Supported blend modes are:
 - `saturation`
 - `luminosity`
 
+Supported Port Duff operators are:
+
+- `clear`
+- `copy`
+- `destination`
+- `source-over`
+- `destination-over`
+- `source-in`
+- `destination-in`
+- `source-out`
+- `destination-out`
+- `source-atop`
+- `destination-atop`
+- `xor`
+- `lighter`
+
 Return
 : 
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
@@ -468,8 +457,10 @@ Parameters
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
     `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
+    `blend`                    | `#!py3 None`                       | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py3 None`, [`normal`](#normal) will be used. If `#!py3 False`, blending will be skipped.
+    `operator`                 | `#!py3 None`                       | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py3 None`, [`source-over`](#source-over) will be used. If `#!py3 False`, alpha compositing will be skipped.
     `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
-    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to. 
+    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to.
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 ### `fit`
@@ -595,3 +586,5 @@ When written, they can accept a numerical value or a string value using CSS synt
 color space.
 
 For more complex setting operations, or to chain multiple set operations, please use [`get`](#get).
+
+--8<-- "refs.txt"

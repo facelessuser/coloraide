@@ -238,21 +238,23 @@ class Color:
         color = self._handle_color_input(color)
         return self._color.delta_e(color, method=method, **kwargs)
 
-    def composite(self, backdrop, *, space=None, out_space=None, in_place=False):
+    def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
         backdrop = self._handle_color_input(backdrop)
-        obj = self._color.composite(backdrop, space=space, out_space=None)
+        obj = self._color.compose(backdrop, blend=blend, operator=operator, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    @util.deprecated("'overlay' is deprecated, 'composite should be used instead'.")
+    @util.deprecated("'overlay' is deprecated, 'compose' should be used instead.")
     def overlay(self, backdrop, *, space=None, out_space=None, in_place=False):
-        """Redirect to composite."""
+        """Redirect to compose."""
 
-        return self.composite(backdrop, space=space, out_space=None, in_place=in_place)
+        if space is None:
+            space = self.space()
+        return self.compose(backdrop, space=space, out_space=None, in_place=in_place)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -283,16 +285,6 @@ class Color:
 
         color = self._handle_color_input(color)
         obj = self._color.mix(color, percent, **interpolate_args)
-        if in_place:
-            self._attach(obj)
-            return self
-        return self.new(obj.space(), obj.coords(), obj.alpha)
-
-    def blend(self, backdrop, mode=None, *, space=None, out_space=None, in_place=False):
-        """Blend."""
-
-        backdrop = self._handle_color_input(backdrop)
-        obj = self._color.blend(backdrop, mode=mode, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
             return self
