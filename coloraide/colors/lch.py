@@ -9,7 +9,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.02
+ACHROMATIC_THRESHOLD = 0.00002
 
 
 def lab_to_lch(lab):
@@ -29,8 +29,7 @@ def lab_to_lch(lab):
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 
-    test = [l, c, LCH._constrain_hue(h)]
-    return test
+    return [l, c, LCH._constrain_hue(h)]
 
 
 def lch_to_lab(lch):

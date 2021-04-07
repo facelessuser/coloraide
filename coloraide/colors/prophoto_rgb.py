@@ -13,16 +13,16 @@ ET2 = 16 / 512
 
 def lin_prophoto_to_xyz(rgb):
     """
-    Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.D50.
+    Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.
 
     (so no chromatic adaptation needed afterwards)
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
     m = [
-        [0.7977604896723027, 0.13518583717574031, 0.0313493495815248],
-        [0.2880711282292934, 0.7118432178101014, 0.00008565396060525902],
-        [0.0, 0.0, 0.8251046025104601]
+        [0.7976749444306045, 0.13519170147409817, 0.031353354095297416],
+        [0.28804023786231026, 0.7118740972357902, 8.566490189971971e-05],
+        [0.0, 0.0, 0.82521]
     ]
 
     return util.dot(m, rgb)
@@ -32,9 +32,9 @@ def xyz_to_lin_prophoto(xyz):
     """Convert XYZ to linear-light prophoto-rgb."""
 
     m = [
-        [1.3457989731028281, -0.25558010007997534, -0.05110628506753401],
-        [-0.5446224939028347, 1.5082327413132781, 0.02053603239147973],
-        [0.0, 0.0, 1.2119675456389454]
+        [1.3459433009386652, -0.25560750931676696, -0.05111176587088495],
+        [-0.544598869458717, 1.508167317720767, 0.020535141586646915],
+        [0.0, 0.0, 1.2118127506937628]
     ]
 
     return util.dot(m, xyz)
