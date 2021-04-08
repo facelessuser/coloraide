@@ -165,8 +165,8 @@ library.
 class Color2(Color):
     PRECISION = 3
 
-Color('purple').convert('lch').to_string()
-Color2('purple').convert('lch').to_string()
+Color('rgb(128.12345 0 128.12345)').to_string()
+Color2('rgb(128.12345 0 128.12345)').to_string()
 ```
 
 Properties  | Description
