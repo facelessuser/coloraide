@@ -228,7 +228,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('lch(90% 0.001 120 / 1)')
+        c = Color('lch(90% 0.000000009 120 / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_lab(self):
@@ -238,6 +238,15 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c2 = c1.convert('lch')
         self.assertColorEqual(c2, Color('lch(90% 0 0)'))
         self.assertTrue(c2.is_nan('hue'))
+
+    def test_achromatic_hue(self):
+        """Test that all RGB-ish colors convert to LCH with a null hue."""
+
+        for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
+            for x in range(0, 256):
+                color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
+                color2 = color.convert('lch')
+                self.assertTrue(color2.is_nan('hue'))
 
 
 class TestQuirks(util.ColorAsserts, unittest.TestCase):
