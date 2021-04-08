@@ -1,9 +1,19 @@
 """Convert utilities."""
 from .. import util
 
+x = 0.3127
+y = 0.3290
+z = 0.3583
+white_calc_d65 = [x / y, y / y, z / y]
+
+x = 0.3457
+y = 0.3585
+z = 0.2958
+white_calc_d50 = [x / y, y / y, z / y]
+
 WHITES = {
-    "D50": [0.96422, 1.00000, 0.82521],
-    "D65": [0.95047, 1.00000, 1.08883]
+    "D50": white_calc_d50,
+    "D65": white_calc_d65
 }
 
 
@@ -11,29 +21,21 @@ def d50_to_d65(xyz):
     """Bradford chromatic adaptation from D50 to D65."""
 
     m = [
-        [0.9555766, -0.0230393, 0.0631636],
-        [-0.0282895, 1.0099416, 0.0210077],
-        [0.0122982, -0.0204830, 1.3299098]
+        [0.955473421, -0.023098455, 0.063259243],
+        [-0.028369710, 1.009995398, 0.021041441],
+        [0.012314015, -0.020507649, 1.330365927]
     ]
 
     return util.dot(m, xyz)
 
 
 def d65_to_d50(xyz):
-    """
-    Bradford chromatic adaptation from D65 to D50.
-
-    The matrix below is the result of three operations:
-    - convert from XYZ to retinal cone domain
-    - scale components from one reference white to another
-    - convert back to XYZ
-    http://www.brucelindbloom.com/index.html?Eqn_ChromAdapt.html
-    """
+    """Bradford chromatic adaptation from D65 to D50."""
 
     m = [
-        [1.0478112, 0.0228866, -0.0501270],
-        [0.0295424, 0.9904844, -0.0170491],
-        [-0.0092345, 0.0150436, 0.7521316]
+        [1.047929793, 0.022946871, -0.050192266],
+        [0.029627809, 0.990434427, -0.017073799],
+        [-0.009243041, 0.015055191, 0.751874281]
     ]
 
     return util.dot(m, xyz)
