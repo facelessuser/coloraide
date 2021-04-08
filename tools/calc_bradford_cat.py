@@ -25,7 +25,7 @@ wd65 = np.array(white_d65).reshape(3, 1)
 
 
 def calculate_bradford_cat(src_white, dest_white):
-    """Calcualte Bradford CAT."""
+    """Calculate Bradford CAT."""
 
     src = np.dot(m, src_white)
     dest = np.dot(m, dest_white)
