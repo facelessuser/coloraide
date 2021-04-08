@@ -1,7 +1,7 @@
 """Calculate Bradford CAT."""
 import numpy as np
 
-np.set_printoptions(precision=16, suppress=True, sign='-', floatmode='maxprec_equal')
+np.set_printoptions(precision=16, sign='-')
 
 x = 0.3127
 y = 0.3290

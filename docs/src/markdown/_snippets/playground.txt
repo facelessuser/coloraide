@@ -42,6 +42,9 @@ let requests = 0;
 function pyexecute(str) {
     code = `
 import micropip
+from js import document
+
+results = document.getElementById("playground-results")
 
 --8<-- "pycode.txt"
 
@@ -53,7 +56,10 @@ def parse_colors(*args):
     """Get colors."""
 
     # Store results in global "results"
-    globals()['results'] = color_command_formatter(text)
+    html = color_command_formatter(text)
+    results.innerHTML = color_command_formatter(text)
+    scrollingElement = results.querySelector('code')
+    scrollingElement.scrollTop = scrollingElement.scrollHeight
 
 micropip.install('coloraide').add_done_callback(parse_colors)
 `
@@ -61,31 +67,27 @@ micropip.install('coloraide').add_done_callback(parse_colors)
     languagePluginLoader.then(() => {
       return pyodide.loadPackage(['micropip', 'Pygments']);
     }).then(() => {
-      console.log(pyodide.runPython(code));
-      // Need to wait a bit to make sure we can retrieve the output.
-      setTimeout(post, 500);
+      pyodide.runPython(code);
+      busy = false;
+      if (requests) {
+        setTimeout(payload, 100);
+      }
     });
 }
 
 inputs.addEventListener("input", (e) => {
-  // Throttle requests
-  if (busy) {
-    requests++;
-    return;
-  }
-  requests = 0;
-  busy = true;
-  pyexecute(e.target.value);
+  requests++;
+  payload();
 });
 
-function post (str) {
-  // Ensure we scroll to the most recent results.
-  results.innerHTML = pyodide.globals.get("results");
-  let scrollingElement = results.querySelector('code');
-  scrollingElement.scrollTop = scrollingElement.scrollHeight;
+function payload () {
+  // Throttle requests
 
-  // We still have more in the queue, run again.
-  busy = false;
+  if (busy) {
+    return;
+  }
+
+  // Execute
   if (requests) {
     requests = 0;
     busy = true;
