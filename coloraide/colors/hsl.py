@@ -29,8 +29,10 @@ def srgb_to_hsl(rgb):
             h = (r - g) / c + 4.0
         s = 0 if l == 0 or l == 1 else (mx - l) / min(l, 1 - l)
         h *= 60.0
+        if s == 0:
+            h = util.NaN
 
-    return HSL._constrain_hue(h), s * 100.0, l * 100.0
+    return HSL._constrain_hue(h), s * 100, l * 100
 
 
 def hsl_to_srgb(hsl):
