@@ -543,11 +543,10 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertIs(color, color2)
         self.assertTrue(color2.in_gamut())
 
-    @unittest.skipUnless(False, "Skip, no worky")
     def test_fit_other_space(self):
         """Test fit in other space."""
 
-        color = Color('lab(100% 0 0)')
+        color = Color('hsl(330 110% 50%)')
         self.assertFalse(color.in_gamut('srgb'))
         self.assertTrue(color.fit('srgb').in_gamut('srgb'))
 
