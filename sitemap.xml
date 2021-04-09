@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
      <loc>https://facelessuser.github.io/coloraide/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/color/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/manipulation/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/interpolation/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/compositing/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/distance/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/gamut/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/contrast/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/strings/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/colors/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/api/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/playground/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/about/contributing/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/about/changelog/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://facelessuser.github.io/coloraide/about/license/</loc>
-     <lastmod>2021-04-07</lastmod>
+     <lastmod>2021-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
