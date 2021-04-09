@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a17
+
+- **FIX**: Ensure that both the Bradford CAT and the XYZ transformation matrix all use ASTM E308-01 white points. This
+  fixes a number of conversion issues when going to and from D65 to D50 color spaces.
+
 ## 0.1.0a16
 
 - **NEW**: Make `mix` use the same space logic as `interpolate` and `step`. Colors are mixed in CIELAB unless `space` is

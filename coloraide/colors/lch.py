@@ -9,7 +9,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.00000001
+ACHROMATIC_THRESHOLD = 0.00000000001
 
 
 def lab_to_lch(lab):
@@ -20,12 +20,8 @@ def lab_to_lch(lab):
     c = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
 
-    # This is not actually part of the conversion, but is a fix-up
-    # for conversion getting a bit chaotic in regards to hue when
-    # chroma approaches zero. This fix-up is intended to make at
-    # least colors in the sRGB range a bit more stable with conversion
-    # and yield a hue of zero. This minimally affects the overall output.
-    # If a 100% accurate result is desired, then we'd want to avoid doing this.
+    # Achromatic colors will often get extremely close, but not quite hit zero.
+    # Essentially, we want to discard noise through rounding and such.
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 

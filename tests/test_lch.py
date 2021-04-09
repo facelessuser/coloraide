@@ -228,7 +228,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('lch(90% 0.000000009 120 / 1)')
+        c = Color('lch(90% 0.000000000009 120 / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_lab(self):

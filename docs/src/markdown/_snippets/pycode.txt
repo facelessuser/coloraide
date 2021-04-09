@@ -217,7 +217,7 @@ def color_command_formatter(src):
         if not colors:
             el += '<div class="swatch-bar"></div>'
 
-        el += colorize(console, 'pycon', **{'python3': True})
+        el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
         el = '<div class="color-command">{}</div>'.format(el)
     except Exception:
         return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
@@ -231,7 +231,7 @@ def process_code(*args):
         # Highlight current input code
         div = pgcode.querySelector(".highlight")
         template = document.createElement('template')
-        html = colorize(payload, 'py3', **{'python3': True})
+        html = colorize(payload, 'py3', **{'python3': True, 'stripnl': False})
         template.innerHTML = html;
         pgcode.replaceChild(template.content.firstChild, div)
         code = pgcode.querySelector('code')
@@ -245,5 +245,4 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-# micropip.install('http://localhost:8000/coloraide-0.1.0a16-py3-none-any.whl').add_done_callback(process_code)
-micropip.install('coloraide').add_done_callback(process_code)
+micropip.install('./coloraide-0.1.0a16-py3-none-any.whl').add_done_callback(process_code)
