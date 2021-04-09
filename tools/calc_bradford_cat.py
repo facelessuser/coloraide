@@ -3,15 +3,8 @@ import numpy as np
 
 np.set_printoptions(precision=16, sign='-')
 
-x = 0.3127
-y = 0.3290
-z = 0.3583
-white_d65 = [x / y, y / y, z / y]
-
-x = 0.3457
-y = 0.3585
-z = 0.2958
-white_d50 = [x / y, y / y, z / y]
+white_d65 = [0.95047, 1.00000, 1.08883]
+white_d50 = [0.96422, 1.00000, 0.82521]
 
 m = [
     [0.8951, 0.2664, -0.1614],
