@@ -1,8 +1,8 @@
 # Setup
 
 !!! warning "Currently in Alpha"
-    While ColorAide is very usable, it is currently in an alpha stage. While that doesn't necessarily mean been buggy,
-    it does mean the API could be unstable.
+    While ColorAide is very usable, it is currently in an alpha stage. While that doesn't necessarily mean buggy, it
+    does mean the API could be unstable.
 
 ## Overview
 

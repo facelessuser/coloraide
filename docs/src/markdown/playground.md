@@ -1,4 +1,4 @@
-This sandbox is powered by [Pyodide](https://github.com/pyodide/pyodide). Preview, convert, interpolate, and explore!
+!!! new "This sandbox is powered by [Pyodide](https://github.com/pyodide/pyodide). Preview, convert, interpolate, and explore!"
 
 <div id="playground-results">
 <div class="color-command">
