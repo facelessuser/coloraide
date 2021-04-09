@@ -299,7 +299,7 @@ class TestSRGBInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').to_string(),
-            'rgb(227.18 144.2 130.05)'
+            'rgb(227.19 144.22 130.07)'
         )
 
         self.assertEqual(

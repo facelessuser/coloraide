@@ -57,7 +57,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').fit().to_string(),
-            'rgb(227.18 144.2 130.05)'
+            'rgb(227.19 144.22 130.07)'
         )
 
         self.assertEqual(
@@ -75,12 +75,12 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(
             Color('red').delta_e("blue"),
-            184.01905
+            184.01292
         )
 
         self.assertCompare(
             Color2('red').delta_e("blue"),
-            55.79977
+            55.79761
         )
 
     def test_bad_input(self):
@@ -343,7 +343,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('yellow')
         self.assertColorEqual(
             c1.compose(c2, blend='normal', space="display-p3", out_space="display-p3"),
-            Color('color(display-p3 0.5 0.5 0.64524 / 1)')
+            Color('color(display-p3 0.5 0.5 0.64526)')
         )
 
     def test_blend_bad_mode(self):
@@ -484,7 +484,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_contrast_bigger(self):
         """Test greater contrast."""
 
-        self.assertCompare(Color('white').contrast('blue'), 8.59301)
+        self.assertCompare(Color('white').contrast('blue'), 8.59423)
 
     def test_repr(self):
         """Test string representation."""
@@ -559,7 +559,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test Euclidean distance that that is equal."""
 
         self.assertCompare(Color('red').distance('red'), 0, rounding=4)
-        self.assertCompare(Color('red').distance('blue'), 184.019, rounding=4)
+        self.assertCompare(Color('red').distance('blue'), 184.0129, rounding=4)
 
     def test_euclidean_distance_different_space(self):
         """Test Euclidean distance in sRGB that is equal."""
@@ -577,47 +577,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('red').delta_e('orange', method="76"),
-            58.1253,
+            58.1292,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('yellow', method="76"),
-            108.4044,
+            108.4136,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('green', method="76"),
-            130.3599,
+            130.3764,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('blue', method="76"),
-            184.019,
+            184.0129,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('indigo', method="76"),
-            133.2445,
+            133.2387,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('violet', method="76"),
-            110.9902,
+            110.9833,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('black', method="76"),
-            119.8401,
+            119.8423,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('white', method="76"),
-            116.2047,
+            116.206,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('gray', method="76"),
-            106.8395,
+            106.8414,
             rounding=4
         )
 
@@ -629,47 +629,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('orange').delta_e('red', method="76"),
-            58.1253,
+            58.1292,
             rounding=4
         )
         self.assertCompare(
             Color('yellow').delta_e('red', method="76"),
-            108.4044,
+            108.4136,
             rounding=4
         )
         self.assertCompare(
             Color('green').delta_e('red', method="76"),
-            130.3599,
+            130.3764,
             rounding=4
         )
         self.assertCompare(
             Color('blue').delta_e('red', method="76"),
-            184.019,
+            184.0129,
             rounding=4
         )
         self.assertCompare(
             Color('indigo').delta_e('red', method="76"),
-            133.2445,
+            133.2387,
             rounding=4
         )
         self.assertCompare(
             Color('violet').delta_e('red', method="76"),
-            110.9902,
+            110.9833,
             rounding=4
         )
         self.assertCompare(
             Color('black').delta_e('red', method="76"),
-            119.8401,
+            119.8423,
             rounding=4
         )
         self.assertCompare(
             Color('white').delta_e('red', method="76"),
-            116.2047,
+            116.206,
             rounding=4
         )
         self.assertCompare(
             Color('gray').delta_e('red', method="76"),
-            106.8395,
+            106.8414,
             rounding=4
         )
 
@@ -692,47 +692,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('red').delta_e('orange', method="94"),
-            28.6827,
+            28.6829,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('yellow', method="94"),
-            57.5928,
+            57.5942,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('green', method="94"),
-            48.8419,
+            48.8485,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('blue', method="94"),
-            73.8268,
+            73.8242,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('indigo', method="94"),
-            59.1223,
+            59.1206,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('violet', method="94"),
-            42.5283,
+            42.5254,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('black', method="94"),
-            57.3225,
+            57.3237,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('white', method="94"),
-            49.2723,
+            49.2712,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('gray', method="94"),
-            18.4094,
+            18.4095,
             rounding=4
         )
 
@@ -744,47 +744,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('orange').delta_e('red', method="94"),
-            30.7727,
+            30.7736,
             rounding=4
         )
         self.assertCompare(
             Color('yellow').delta_e('red', method="94"),
-            59.5131,
+            59.5159,
             rounding=4
         )
         self.assertCompare(
             Color('green').delta_e('red', method="94"),
-            62.7354,
+            62.742,
             rounding=4
         )
         self.assertCompare(
             Color('blue').delta_e('red', method="94"),
-            65.8099,
+            65.8069,
             rounding=4
         )
         self.assertCompare(
             Color('indigo').delta_e('red', method="94"),
-            69.4058,
+            69.4025,
             rounding=4
         )
         self.assertCompare(
             Color('violet').delta_e('red', method="94"),
-            54.8456,
+            54.8404,
             rounding=4
         )
         self.assertCompare(
             Color('black').delta_e('red', method="94"),
-            119.8401,
+            119.8423,
             rounding=4
         )
         self.assertCompare(
             Color('white').delta_e('red', method="94"),
-            116.2047,
+            116.206,
             rounding=4
         )
         self.assertCompare(
             Color('gray').delta_e('red', method="94"),
-            106.8395,
+            106.8414,
             rounding=4
         )
 
@@ -807,94 +807,94 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('red').delta_e('orange', method="cmc"),
-            32.7965,
+            32.7958,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('yellow', method="cmc"),
-            64.9048,
+            64.9058,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('green', method="cmc"),
-            78.8614,
+            78.8665,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('blue', method="cmc"),
-            114.2301,
+            114.2168,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('indigo', method="cmc"),
-            79.8767,
+            79.8669,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('violet', method="cmc"),
-            65.2371,
+            65.2282,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('black', method="cmc"),
-            38.9135,
+            38.9139,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('white', method="cmc"),
-            36.7155,
+            36.7153,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('gray', method="cmc"),
-            30.7143,
+            30.7146,
             rounding=4
         )
 
         # Not symmetrical
         self.assertCompare(
             Color('orange').delta_e('red', method="cmc"),
-            34.4675,
+            34.4713,
             rounding=4
         )
         self.assertCompare(
             Color('yellow').delta_e('red', method="cmc"),
-            48.5955,
+            48.5999,
             rounding=4
         )
         self.assertCompare(
             Color('green').delta_e('red', method="cmc"),
-            57.8963,
+            57.9017,
             rounding=4
         )
         self.assertCompare(
             Color('blue').delta_e('red', method="cmc"),
-            79.4377,
+            79.4325,
             rounding=4
         )
         self.assertCompare(
             Color('indigo').delta_e('red', method="cmc"),
-            70.1565,
+            70.1518,
             rounding=4
         )
         self.assertCompare(
             Color('violet').delta_e('red', method="cmc"),
-            53.0944,
+            53.0886,
             rounding=4
         )
         self.assertCompare(
             Color('black').delta_e('red', method="cmc"),
-            175.6803,
+            175.6834,
             rounding=4
         )
         self.assertCompare(
             Color('white').delta_e('red', method="cmc"),
-            168.1651,
+            168.1679,
             rounding=4
         )
         self.assertCompare(
             Color('gray').delta_e('red', method="cmc"),
-            167.4567,
+            167.4596,
             rounding=4
         )
 
@@ -960,47 +960,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('red').delta_e('orange', method="2000"),
-            31.4666,
+            31.4672,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('yellow', method="2000"),
-            60.9841,
+            60.9883,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('green', method="2000"),
-            70.2367,
+            70.2453,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('blue', method="2000"),
-            55.7998,
+            55.7976,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('indigo', method="2000"),
-            52.847,
+            52.8451,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('violet', method="2000"),
-            41.6922,
+            41.6887,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('black', method="2000"),
-            51.3402,
+            51.3412,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('white', method="2000"),
-            45.2646,
+            45.264,
             rounding=4
         )
         self.assertCompare(
             Color('red').delta_e('gray', method="2000"),
-            31.4011,
+            31.4013,
             rounding=4
         )
 
@@ -1012,47 +1012,47 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         )
         self.assertCompare(
             Color('orange').delta_e('red', method="2000"),
-            31.4666,
+            31.4672,
             rounding=4
         )
         self.assertCompare(
             Color('yellow').delta_e('red', method="2000"),
-            60.9841,
+            60.9883,
             rounding=4
         )
         self.assertCompare(
             Color('green').delta_e('red', method="2000"),
-            70.2367,
+            70.2453,
             rounding=4
         )
         self.assertCompare(
             Color('blue').delta_e('red', method="2000"),
-            55.7998,
+            55.7976,
             rounding=4
         )
         self.assertCompare(
             Color('indigo').delta_e('red', method="2000"),
-            52.847,
+            52.8451,
             rounding=4
         )
         self.assertCompare(
             Color('violet').delta_e('red', method="2000"),
-            41.6922,
+            41.6887,
             rounding=4
         )
         self.assertCompare(
             Color('black').delta_e('red', method="2000"),
-            51.3402,
+            51.3412,
             rounding=4
         )
         self.assertCompare(
             Color('white').delta_e('red', method="2000"),
-            45.2646,
+            45.264,
             rounding=4
         )
         self.assertCompare(
             Color('gray').delta_e('red', method="2000"),
-            31.4011,
+            31.4013,
             rounding=4
         )
 
@@ -1318,9 +1318,9 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test color mix in different space."""
 
         self.assertColorEqual(Color('red').mix('blue', 1, space='lab'), Color("rgb(0 0 255)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.75, space='lab'), Color("rgb(144.85 -24.864 194.36)"))
-        self.assertColorEqual(Color('red').mix('blue', space='lab'), Color("rgb(192.99 -29.503 136.17)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.25, space='lab'), Color("rgb(226.89 -24.304 79.188)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.75, space='lab'), Color("rgb(144.85 -24.871 194.36)"))
+        self.assertColorEqual(Color('red').mix('blue', space='lab'), Color("rgb(192.99 -29.51 136.17)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.25, space='lab'), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').mix('blue', 0.0, space='lab'), Color("rgb(255 0 0)"))
 
     def test_mix_out_space(self):
@@ -1328,23 +1328,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('red').mix('blue', 1, space="lab", out_space="lab"),
-            Color("lab(29.568% 68.287 -112.03)")
+            Color("lab(29.568% 68.299 -112.03)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.75, space="lab", out_space="lab"),
-            Color("lab(35.749% 71.417 -66.55)")
+            Color("lab(35.749% 71.427 -66.551)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', space="lab", out_space="lab"),
-            Color("lab(41.929% 74.546 -21.069)")
+            Color("lab(41.93% 74.556 -21.072)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.25, space="lab", out_space="lab"),
-            Color("lab(48.11% 77.676 24.411)")
+            Color("lab(48.111% 77.684 24.406)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.0, space="lab", out_space="lab"),
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_mix_alpha(self):
@@ -1463,23 +1463,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch"),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch"),
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch"),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch"),
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch"),
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("rgb(112.82 63.972 -28.829)")
         )
 
     def test_hue_shorter_cases(self):
@@ -1574,23 +1574,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         progress = lambda x: x * 3  # noqa: E731
         self.assertColorEqual(
             Color('red').mix('blue', 1, out_space="lab", space="lab", progress=progress),
-            Color("lab(-19.876% 43.252 -475.87)")
+            Color("lab(-19.881% 43.271 -475.86)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.75, out_space="lab", space="lab", progress=progress),
-            Color("lab(-1.3345% 52.64 -339.43)")
+            Color("lab(-1.3376% 52.656 -339.42)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress=progress),
-            Color("lab(17.207% 62.029 -202.99)")
+            Color("lab(17.206% 62.042 -202.99)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0.25, out_space="lab", space="lab", progress=progress),
-            Color("lab(35.749% 71.417 -66.55)")
+            Color("lab(35.749% 71.427 -66.551)")
         )
         self.assertColorEqual(
             Color('red').mix('blue', 0, out_space="lab", space="lab", progress=progress),
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_bad_progress(self):
@@ -1612,9 +1612,9 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test color mix in different space."""
 
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(1), Color("rgb(0 0 255)"))
-        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.75), Color("rgb(144.85 -24.864 194.36)"))
-        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.5), Color("rgb(192.99 -29.503 136.17)"))
-        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.304 79.188)"))
+        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.75), Color("rgb(144.85 -24.871 194.36)"))
+        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.5), Color("rgb(192.99 -29.51 136.17)"))
+        self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0), Color("rgb(255 0 0)"))
 
     def test_interpolate_out_space(self):
@@ -1622,23 +1622,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab")(1),
-            Color("lab(29.568% 68.287 -112.03)")
+            Color("lab(29.568% 68.299 -112.03)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab")(0.75),
-            Color("lab(35.749% 71.417 -66.55)")
+            Color("lab(35.749% 71.427 -66.551)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab")(0.5),
-            Color("lab(41.929% 74.546 -21.069)")
+            Color("lab(41.93% 74.556 -21.072)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab")(0.25),
-            Color("lab(48.11% 77.676 24.411)")
+            Color("lab(48.111% 77.684 24.406)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab")(0),
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_interpolate_alpha(self):
@@ -1697,23 +1697,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
             c1.interpolate(c2.mask("hue", invert=True), hue="shorter", space="lch")(0.25),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             c1.interpolate(c2.mask("hue", invert=True), hue="longer", space="lch")(0.25),
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             c1.interpolate(c2.mask("hue", invert=True), hue="increasing", space="lch")(0.25),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             c1.interpolate(c2.mask("hue", invert=True), hue="decreasing", space="lch")(0.25),
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             c1.interpolate(c2.mask("hue", invert=True), hue="specified", space="lch")(0.25),
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("rgb(112.82 63.972 -28.829)")
         )
 
     def test_interpolate_progress(self):
@@ -1722,23 +1722,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         progress = lambda x: x * 3  # noqa: E731
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab", progress=progress)(1),
-            Color("lab(-19.876% 43.252 -475.87)")
+            Color("lab(-19.881% 43.271 -475.86)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab", progress=progress)(0.75),
-            Color("lab(-1.3345% 52.64 -339.43)")
+            Color("lab(-1.3376% 52.656 -339.42)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab", progress=progress)(0.5),
-            Color("lab(17.207% 62.029 -202.99)")
+            Color("lab(17.206% 62.042 -202.99)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab", progress=progress)(0.25),
-            Color("lab(35.749% 71.417 -66.55)")
+            Color("lab(35.749% 71.427 -66.551)")
         )
         self.assertColorEqual(
             Color('red').interpolate('blue', out_space="lab", space="lab", progress=progress)(0),
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_steps(self):
@@ -1756,9 +1756,9 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         colors = Color('red').steps('blue', space="lab", steps=5)
         self.assertColorEqual(colors[4], Color("rgb(0 0 255)"))
-        self.assertColorEqual(colors[3], Color("rgb(144.85 -24.864 194.36)"))
-        self.assertColorEqual(colors[2], Color("rgb(192.99 -29.503 136.17)"))
-        self.assertColorEqual(colors[1], Color("rgb(226.89 -24.304 79.188)"))
+        self.assertColorEqual(colors[3], Color("rgb(144.85 -24.871 194.36)"))
+        self.assertColorEqual(colors[2], Color("rgb(192.99 -29.51 136.17)"))
+        self.assertColorEqual(colors[1], Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(colors[0], Color("rgb(255 0 0)"))
 
     def test_steps_out_space(self):
@@ -1767,23 +1767,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         colors = Color('red').steps('blue', space="srgb", steps=5, out_space="lab")
         self.assertColorEqual(
             colors[4],
-            Color("lab(29.568% 68.287 -112.03)")
+            Color("lab(29.568% 68.299 -112.03)")
         )
         self.assertColorEqual(
             colors[3],
-            Color("lab(24.638% 57.331 -83.546)")
+            Color("lab(24.637% 57.339 -83.545)")
         )
         self.assertColorEqual(
             colors[2],
-            Color("lab(29.563% 55.954 -36.19)")
+            Color("lab(29.563% 55.96 -36.189)")
         )
         self.assertColorEqual(
             colors[1],
-            Color("lab(41.111% 66.202 23.413)")
+            Color("lab(41.112% 66.208 23.413)")
         )
         self.assertColorEqual(
             colors[0],
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_steps_alpha(self):
@@ -1842,31 +1842,31 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color('rebeccapurple').steps(
                 Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="shorter"
             )[1],
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             Color('rebeccapurple').steps(
                 Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="longer"
             )[1],
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             Color('rebeccapurple').steps(
                 Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="increasing"
             )[1],
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("rgb(146.72 -3.9144 106.4)")
         )
         self.assertColorEqual(
             Color('rebeccapurple').steps(
                 Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="decreasing"
             )[1],
-            Color("rgb(-86.817 87.629 170)")
+            Color("rgb(-86.816 87.629 170.01)")
         )
         self.assertColorEqual(
             Color('rebeccapurple').steps(
                 Color('lch(85% 100 805)').mask("hue", invert=True), space="lch", steps=5, hue="specified"
             )[1],
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("rgb(112.82 63.972 -28.829)")
         )
 
     def test_steps_progress(self):
@@ -1876,23 +1876,23 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         colors = Color('red').steps('blue', steps=5, out_space="lab", space="lab", progress=progress)
         self.assertColorEqual(
             colors[4],
-            Color("lab(-19.876% 43.252 -475.87)")
+            Color("lab(-19.881% 43.271 -475.86)")
         )
         self.assertColorEqual(
             colors[3],
-            Color("lab(-1.3345% 52.64 -339.43)")
+            Color("lab(-1.3376% 52.656 -339.42)")
         )
         self.assertColorEqual(
             colors[2],
-            Color("lab(17.207% 62.029 -202.99)")
+            Color("lab(17.206% 62.042 -202.99)")
         )
         self.assertColorEqual(
             colors[1],
-            Color("lab(35.749% 71.417 -66.55)")
+            Color("lab(35.749% 71.427 -66.551)")
         )
         self.assertColorEqual(
             colors[0],
-            Color("lab(54.291% 80.805 69.891)")
+            Color("lab(54.292% 80.812 69.885)")
         )
 
     def test_steps_max_delta_e(self):
