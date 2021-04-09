@@ -245,4 +245,6 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-micropip.install('./coloraide-0.1.0a16-py3-none-any.whl').add_done_callback(process_code)
+--8<-- "package.txt"
+
+micropip.install(wheel).add_done_callback(process_code)
