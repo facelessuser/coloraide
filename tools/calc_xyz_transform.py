@@ -55,12 +55,7 @@ def get_matrix(wp, space):
     ]
     mi = np.linalg.inv(m)
 
-    r, g, b = np.dot(wp, mi)
-    rgb = [
-        [r],
-        [g],
-        [b]
-    ]
+    rgb = np.dot(wp, mi).reshape(3, 1)
     rgb2xyz = np.multiply(rgb, m).transpose()
     xyz2rgb = np.linalg.inv(rgb2xyz)
 
