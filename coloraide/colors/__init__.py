@@ -155,11 +155,14 @@ class Color:
 
         return self._color.coords()
 
-    @classmethod
-    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
-        """Create new color object."""
+    def new(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+        """
+        Create new color object.
 
-        return cls(color, data, alpha, filters=filters, **kwargs)
+        TODO: maybe allow `currentcolor` here? It would basically clone the current object.
+        """
+
+        return type(self)(color, data, alpha, filters=filters, **kwargs)
 
     def clone(self):
         """Clone."""
@@ -174,7 +177,7 @@ class Color:
         if in_place:
             self._attach(obj)
             return self
-        return type(self)(obj.space(), obj.coords(), obj.alpha)
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
