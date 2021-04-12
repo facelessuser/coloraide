@@ -12,13 +12,16 @@ from .prophoto_rgb import ProPhotoRGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .xyzd65 import XYZD65
+from .oklab import OKLAB
+from .oklch import OKLCH
 from .. import util
 import functools
 from collections.abc import Sequence
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
+    OKLAB, OKLCH
 )
 
 
