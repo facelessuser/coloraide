@@ -113,6 +113,7 @@ const results = document.getElementById("playground-results");
 const pgcode = document.getElementById("playground-code");
 let busy = false;
 let requests = 0;
+inputs.value = "# Insert your code here!\ncoloraide.__version__\nColor('red')\n"
 
 function pyexecute(str) {
 

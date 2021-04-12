@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10a18
+
+- **NEW**: `interpolate` can now accept multiple colors and will return an interpolation function that spans all
+  specified colors via the range of `[0..1]`.
+- **NEW**: `step` can now accept multiple colors and will return colors from the entire range.
+- **NEW**: Added new `average` function that is built on top of interpolation and will average multiple colors together
+  to allow for a mixing of two or more colors.
+- **FIX**: Actually make `mix` default to `lab` like `interpolate` and friends do.
+
 ## 0.1.0a17
 
 - **FIX**: Ensure that both the Bradford CAT and the XYZ transformation matrix all use ASTM E308-01 white points. This

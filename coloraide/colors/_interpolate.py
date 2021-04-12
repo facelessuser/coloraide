@@ -13,31 +13,77 @@ Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
 """
 import math
-import functools
 from .. import util
 from . _cylindrical import Cylindrical
 from . _range import Angle
+from collections.abc import Sequence
 
 
-def interpolate(p, channels1, channels2, create, progress, outspace, premultiplied):
-    """Run through the coordinates and run the interpolation on them."""
+class InterpolateSingle:
+    """Interpolate a single range of two colors."""
 
-    channels = []
-    for i, c1 in enumerate(channels1):
-        c2 = channels2[i]
-        if util.is_nan(c1) and util.is_nan(c2):
-            value = 0.0
-        elif util.is_nan(c1):
-            value = c2
-        elif util.is_nan(c2):
-            value = c1
+    def __init__(self, channels1, channels2, create, progress, outspace, premultiplied):
+        """Initialize."""
+
+        self.channels1 = channels1
+        self.channels2 = channels2
+        self.create = create
+        self.progress = progress
+        self.outspace = outspace
+        self.premultiplied = premultiplied
+
+    def interpolate(self, p):
+        """Run through the coordinates and run the interpolation on them."""
+
+        channels = []
+        for i, c1 in enumerate(self.channels1):
+            c2 = self.channels2[i]
+            if util.is_nan(c1) and util.is_nan(c2):
+                value = 0.0
+            elif util.is_nan(c1):
+                value = c2
+            elif util.is_nan(c2):
+                value = c1
+            else:
+                value = c1 + (c2 - c1) * (p if self.progress is None else self.progress(p))
+            channels.append(value)
+        color = self.create.new(channels[:-1], channels[-1])
+        if self.premultiplied:
+            postdivide(color)
+        return color.convert(self.outspace) if self.outspace != color.space() else color
+
+
+class InterpolateMulti:
+    """Interpolate multiple ranges of colors."""
+
+    def __init__(self, interpolators, progress):
+        """Initialize."""
+
+        self.interpolators = interpolators
+        self.progress = progress
+
+    def interpolate(self, p):
+        """Interpolate."""
+
+        p = (p if self.progress is None else self.progress(p))
+        percent = p * 100
+
+        if percent > 100:
+            # Beyond range, just interpolate the last colors
+            return self.interpolators[-1][1].interpolate(1 + p / len(self.interpolators))
+
+        elif percent < 0:
+            # Beyond range, just interpolate the last colors
+            return self.interpolators[0][1].interpolate(0 + p / len(self.interpolators))
+
         else:
-            value = c1 + (c2 - c1) * (p if progress is None else progress(p))
-        channels.append(value)
-    color = create.new(channels[:-1], channels[-1])
-    if premultiplied:
-        postdivide(color)
-    return color.convert(outspace) if outspace != color.space() else color
+            last = 0
+            for stop, interpolator in self.interpolators:
+                if percent <= stop:
+                    r = stop - last
+                    p2 = (percent - last) / r if r else 1
+                    return interpolator.interpolate(p2)
+                last = stop
 
 
 def postdivide(color):
@@ -144,20 +190,33 @@ class Interpolate:
         Default delta E method used is delta E 76.
         """
 
-        interp = self.interpolate(color, **interpolate_args)
-        total_delta = self.delta_e(color)
-        actual_steps = steps if max_delta_e <= 0 else max(steps, math.ceil(total_delta / max_delta_e) + 1)
+        if not isinstance(color, Sequence) and max_delta_e > 0:
+            color = [color]
+
+        interpolator = self.interpolate(color, **interpolate_args)
+
+        if max_delta_e <= 0:
+            actual_steps = steps
+        else:
+            actual_steps = 0
+            current = self
+            for c in color:
+                total_delta = current.delta_e(c)
+                actual_steps += total_delta / max_delta_e
+                current = c
+            actual_steps = max(steps, math.ceil(actual_steps) + 1)
+
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
 
         ret = []
         if actual_steps == 1:
-            ret = [{"p": 0.5, "color": interp(0.5)}]
+            ret = [{"p": 0.5, "color": interpolator.interpolate(0.5)}]
         else:
             step = 1 / (actual_steps - 1)
             for i in range(actual_steps):
                 p = i * step
-                ret.append({'p': p, 'color': interp(p)})
+                ret.append({'p': p, 'color': interpolator.interpolate(p)})
 
         # Iterate over all the stops inserting stops in between if all colors
         # if we have any two colors with a max delta greater than what was requested.
@@ -178,14 +237,14 @@ class Interpolate:
                     prev = ret[i - 1]
                     cur = ret[i]
                     p = (cur['p'] + prev['p']) / 2
-                    color = interp(p)
+                    color = interpolator.interpolate(p)
                     m_delta = max(m_delta, color.delta_e(prev['color']), color.delta_e(cur['color']))
                     ret.insert(i, {'p': p, 'color': color})
                     i += 2
 
         return [i['color'] for i in ret]
 
-    def mix(self, color, percent=util.DEF_MIX, *, space=None, **interpolate_args):
+    def mix(self, color, percent=util.DEF_MIX, **interpolate_args):
         """
         Mix colors using interpolation.
 
@@ -193,12 +252,65 @@ class Interpolate:
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        if space is None:
-            space = self.space()
-        else:
-            space = space.lower()
+        return self.interpolate(color, **interpolate_args).interpolate(percent)
 
-        return self.interpolate(color, space=space, **interpolate_args)(percent)
+    def average(self, colors, weights=None, *, space='lab', out_space=True, hue=util.DEF_HUE_ADJ, sort_hue=False):
+        """Mix multiple colors returning an average of all the colors."""
+
+        space = space.lower()
+        outspace = self.space() if out_space is None else out_space.lower()
+
+        if weights is None:
+            weights = [1] * (len(colors) + 1)
+        elif len(weights) != len(colors) + 1:
+            raise ValueError(
+                '{:d} weights were given, but there are {:d} colors to average'.format(len(weights), len(colors) + 1)
+            )
+
+        # Normalize weights
+        avg = len(weights) / sum(weights)
+        weights = [w * avg for w in weights]
+        colors = [c.convert(space, fit=True) for c in [self] + colors]
+
+        # Sort cylindrical colors by hue
+        if sort_hue and isinstance(colors[0], Cylindrical):
+            indicies, colors = zip(
+                *sorted(
+                    enumerate(colors),
+                    key=lambda value: value[1].hue if not value[1].is_nan('hue') else -1
+                )
+            )
+            weights = [weights[x] for x in indicies]
+
+        # Get the average alpha
+        alpha = 0
+        opaque = True
+        for i, color in enumerate(colors, 0):
+            a = util.no_nan(color.alpha)
+            if a != 1:
+                opaque = False
+            alpha += a * weights[i]
+        alpha = alpha / len(weights) if not opaque else 1
+
+        # Interpolate between the color channels, ignore alpha as we calculate it separately.
+        # Don't modify `NaN`.
+        percent = 1
+        current = colors[0]
+        for i, color in enumerate(colors, 0):
+            k = weights[i]
+            color.update([x * k for x in color.coords()], 1)
+            if i == 0:
+                continue
+            percent *= (i / (i + 1))
+            current = current.mix(
+                color,
+                percent,
+                space=space,
+                hue=hue
+            )
+
+        current.alpha = alpha
+        return current.convert(outspace)
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
@@ -222,31 +334,50 @@ class Interpolate:
         inspace = space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
-        # Convert to the color space and ensure the color fits inside
-        color1 = self.convert(inspace, fit=True)
-        color2 = color.convert(inspace, fit=True)
+        # Handle multiple colors
+        if isinstance(color, Sequence):
+            count = len(color)
+            stops = 100 / count
+            color_map = []
+            start = 0
+            current = self
+            for c in color:
+                stop = start + stops
+                color_map.append(
+                    [
+                        stop,
+                        current.interpolate(c, space=inspace, out_space=outspace, hue=hue, premultiplied=premultiplied)
+                    ]
+                )
+                current = c
+                start = stop
 
-        # Adjust hues if we have two valid hues
-        if isinstance(color1, Cylindrical):
-            adjust_hues(color1, color2, hue)
+            return InterpolateMulti(color_map, progress)
+        else:
+            # Convert to the color space and ensure the color fits inside
+            color1 = self.convert(inspace, fit=True)
+            color2 = color.convert(inspace, fit=True)
 
-        if premultiplied:
-            premultiply(color1)
-            premultiply(color2)
+            # Adjust hues if we have two valid hues
+            if isinstance(color1, Cylindrical):
+                adjust_hues(color1, color2, hue)
 
-        channels1 = color1.coords()
-        channels2 = color2.coords()
+            if premultiplied:
+                premultiply(color1)
+                premultiply(color2)
 
-        # Include alpha
-        channels1.append(color1.alpha)
-        channels2.append(color2.alpha)
+            channels1 = color1.coords()
+            channels2 = color2.coords()
 
-        return functools.partial(
-            interpolate,
-            channels1=channels1,
-            channels2=channels2,
-            create=color1,
-            progress=progress,
-            outspace=outspace,
-            premultiplied=premultiplied
-        )
+            # Include alpha
+            channels1.append(color1.alpha)
+            channels2.append(color2.alpha)
+
+            return InterpolateSingle(
+                channels1=channels1,
+                channels2=channels2,
+                create=color1,
+                progress=progress,
+                outspace=outspace,
+                premultiplied=premultiplied
+            )

@@ -14,6 +14,7 @@ from .xyz import XYZ
 from .xyzd65 import XYZD65
 from .. import util
 import functools
+from collections.abc import Sequence
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
@@ -21,10 +22,10 @@ SUPPORTED = (
 )
 
 
-def _interpolate(percent, color=None, interp=None):
+def _interpolate(percent, color, interpolator):
     """Wrapper for interpolate."""
 
-    obj = interp(percent)
+    obj = interpolator.interpolate(percent)
     return color.new(obj.space(), obj.coords(), obj.alpha)
 
 
@@ -262,17 +263,31 @@ class Color:
     ):
         """Interpolate."""
 
-        color = self._handle_color_input(color)
-        interp = self._color.interpolate(
+        try:
+            color = self._handle_color_input(color)
+        except TypeError:
+            # See if we got a list of colors
+            if isinstance(color, Sequence):
+                color = [self._handle_color_input(c) for c in color]
+            else:
+                raise
+        interpolator = self._color.interpolate(
             color, space=space, progress=progress, out_space=out_space, hue=hue,
             premultiplied=premultiplied
         )
-        return functools.partial(_interpolate, color=self.clone(), interp=interp)
+        return functools.partial(_interpolate, color=self.clone(), interpolator=interpolator)
 
     def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """Interpolate discrete steps."""
 
-        color = self._handle_color_input(color)
+        try:
+            color = self._handle_color_input(color)
+        except TypeError:
+            # See if we got a list of colors
+            if isinstance(color, Sequence):
+                color = [self._handle_color_input(c) for c in color]
+            else:
+                raise
         colors = []
         for obj in self._color.steps(
             color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args
@@ -285,6 +300,19 @@ class Color:
 
         color = self._handle_color_input(color)
         obj = self._color.mix(color, percent, **interpolate_args)
+        if in_place:
+            self._attach(obj)
+            return self
+        return self.new(obj.space(), obj.coords(), obj.alpha)
+
+    def average(
+        self, colors, weights=None, *, space='lab', out_space=None, in_place=False, hue=util.DEF_HUE_ADJ,
+        sort_hue=False
+    ):
+        """Mix multiple colors by averaging their color channels."""
+
+        colors = [self._handle_color_input(c) for c in colors]
+        obj = self._color.average(colors, weights=weights, space=space, out_space=out_space, hue=hue, sort_hue=sort_hue)
         if in_place:
             self._attach(obj)
             return self
