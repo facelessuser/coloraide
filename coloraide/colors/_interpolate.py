@@ -190,10 +190,10 @@ class Interpolate:
         Default delta E method used is delta E 76.
         """
 
-        if not isinstance(color, Sequence) and max_delta_e > 0:
-            color = [color]
-
         interpolator = self.interpolate(color, **interpolate_args)
+
+        if not isinstance(color, Sequence) and max_delta_e > 0:
+            color = [self, color]
 
         if max_delta_e <= 0:
             actual_steps = steps
