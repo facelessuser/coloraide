@@ -260,6 +260,9 @@ class Interpolate:
         space = space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
+        if not isinstance(colors, Sequence):
+            colors = [colors]
+
         if weights is None:
             weights = [1] * (len(colors) + 1)
         elif len(weights) != len(colors) + 1:
