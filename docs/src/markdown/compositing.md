@@ -54,6 +54,26 @@ and replicate it in ColorAide.
     Color('#07c7ed').compose('#fc3d99', blend='multiply', space="srgb")
     ```
 
+You can even blend multiple colors. Simply send in a list, and the colors will be blended from right to left with the
+right most color being on the bottom of the stack, and the base color being the on the very top.
+
+
+<span class="isolate blend-multiply">
+  <span class="circle circle-1"></span>
+  <span class="circle circle-2"></span>
+  <span class="circle circle-3"></span>
+</span>
+
+=== "Display P3"
+    ```color
+    Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="display-p3")
+    ```
+
+=== "sRGB"
+    ```color
+    Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="srgb")
+    ```
+
 Lastly, if for any reason, it is desired to compose with blending disabled (e.g. just run alpha compositing), then you
 can simply set `operator` to `#!py3 False`.
 
@@ -123,6 +143,39 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', operator='destination-over', space="srgb")
     ```
 
+You can also apply alpha compositing to multiple layers at once. Simply send in a list, and the colors will be composed
+from right to left with the right most color being on the bottom of the stack and the base color being the on the very
+top.
+
+Here we are using the normal blend mode and 50% transparency on all the circles with an opaque white background. We will
+calculate the center color where all three layers overlap.
+
+<div style="background: white; display: inline-block; padding: 10px;">
+<span class="isolate blend-normal">
+  <span class="circle circle-1" style="opacity: 0.5"></span>
+  <span class="circle circle-2" style="opacity: 0.5"></span>
+  <span class="circle circle-3" style="opacity: 0.5"></span>
+</span>
+</div>
+
+=== "Display P3"
+    ```color
+    Color('#07c7ed').set('alpha', 0.5).compose(
+        [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
+        blend='normal',
+        space="display-p3"
+    )
+    ```
+
+=== "sRGB"
+    ```color
+    Color('#07c7ed').set('alpha', 0.5).compose(
+        [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
+        blend='normal',
+        space="srgb"
+    )
+    ```
+
 Lastly, if for any reason, it is desired to run compose with alpha compositing disabled (e.g. just run blending),
 then you can simply set `operator` to `#!py3 False`.
 
@@ -130,10 +183,10 @@ Check out [Compositing Operators](#compositing-operators) to learn about the man
 
 ### Complex Compositing
 
-We've covered alpha compositing and blending and have demonstrated their use with simple two color examples, but what if
-we have complex scenarios with multiple color layers?
+We've covered alpha compositing and blending and have demonstrated their use with simple two color examples and 
+multi-layered examples layers, but what about different blend modes mixed with alpha compositing?
 
-In this example, we will consider circles, each with a unique color: `#!color #07c7ed`, `#!color #fc3d99`, and
+In this example, we will consider three circles, each with a unique color: `#!color #07c7ed`, `#!color #fc3d99`, and
 `#!color #f5d311`. We apply 50% transparency to all the circles and place them on a `#!color white` background. We then
 perform a `multiply` blend on all the circles but isolate them so the `multiply` blend does not apply to the background.
 The circles are all represented with CSS. We will now try and replicate the colors with ColorAide.
@@ -166,7 +219,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 
     r1, r2, r3
 
-    c1.compose(r1, blend='multiply', space='display-p3')
+    c1.compose([c2, cw3], blend='multiply', space='display-p3')
     ```
 
 === "sRGB"
@@ -184,7 +237,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 
     r1, r2, r3
 
-    c1.compose(r1, blend='multiply', space='srgb')
+    c1.compose([c2, cw3], blend='multiply', space='srgb')
     ```
 
 Results may vary depending on the browser, but we can see (ignoring rounding differences) that the colors match up. This

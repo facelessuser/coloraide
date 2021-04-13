@@ -247,7 +247,7 @@ class Color:
     def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
-        backdrop = self._handle_color_input(backdrop)
+        backdrop = self._handle_color_input(backdrop, sequence=True)
         obj = self._color.compose(backdrop, blend=blend, operator=operator, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)

@@ -7,6 +7,7 @@ import math
 from .. import util
 from ._gamut import GamutBound
 from operator import itemgetter
+from collections.abc import Sequence
 from . import _porter_duff as pd
 
 SUPPORTED = frozenset(
@@ -211,6 +212,61 @@ def blend_color(cb, cs):
     return set_lum(cs, lum(cb))
 
 
+def compose(color1, color2, blend, operator, non_seperable):
+    """Blend colors using the specified blend mode."""
+
+    # Get the color coordinates
+    csa = util.no_nan(color1.alpha)
+    cba = util.no_nan(color2.alpha)
+    coords1 = util.no_nan(color1.coords())
+    coords2 = util.no_nan(color2.coords())
+
+    # Setup blend mode.
+    if blend is None:
+        blend = 'normal'
+    if blend is not False:
+        blend = blend.lower()
+        if blend not in SUPPORTED:
+            raise ValueError("'{}' is not a recognized blend mode".format(blend))
+        blender = globals()['blend_{}'.format(blend.replace('-', '_'))]
+    else:
+        blender = None
+
+    # Setup compositing
+    if operator is None:
+        operator = 'source-over'
+    if operator is not False:
+        compositor = pd.compositor(operator)(cba, csa)
+        cra = compositor.ao()
+    else:
+        cra = csa
+        compositor = None
+
+    # Perform compositing
+    gamut = color1._range
+    coords = []
+    if not non_seperable:
+        # Blend each channel. Afterward, clip and apply alpha compositing.
+        i = 0
+        for cb, cs in zip(coords2, coords1):
+            cr = (1 - cba) * cs + cba * blender(cb, cs) if blender is not None else cs
+            cr = clip_channel(cr, gamut[i])
+            coords.append(compositor.co(cb, cr) if compositor is not None else cr)
+            i += 1
+    else:
+        # Convert to a hue, saturation, luminosity space and apply the requested blending.
+        # Afterwards, clip and apply alpha compositing.
+        i = 0
+        blended = blender(coords2, coords1) if blender is not None else coords1
+        for cb, cr in zip(coords2, blended):
+            cr = (1 - cba) * cr + cba * cr if blender is not None else cr
+            cr = clip_channel(cr, gamut[i])
+            coords.append(compositor.co(cb, cr) if compositor is not None else cr)
+            i += 1
+
+    return color1.update(coords, cra)
+
+
 class Compositing:
     """Compositing and blend modes."""
 
@@ -225,58 +281,18 @@ class Compositing:
         space = 'srgb' if space is None else space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
-        # Convert and fit to the color space.
-        color1 = self.convert(space, fit=True)
-        color2 = backdrop.convert(space, fit=True)
+        if not isinstance(backdrop, Sequence):
+            backdrop = [backdrop]
 
-        # Get the color coordinates
-        cba = util.no_nan(color2.alpha)
-        csa = util.no_nan(color1.alpha)
-        coords1 = util.no_nan(color1.coords())
-        coords2 = util.no_nan(color2.coords())
-
-        # Setup blend mode.
-        if blend is None:
-            blend = 'normal'
-        if blend is not False:
-            blend = blend.lower()
-            if blend not in SUPPORTED:
-                raise ValueError("'{}' is not a recognized blend mode".format(blend))
-            blender = globals()['blend_{}'.format(blend.replace('-', '_'))]
+        if len(backdrop) > 1:
+            dest = backdrop[-1].convert(space, fit=True)
+            for x in range(len(backdrop) - 2, -1, -1):
+                src = backdrop[x].convert(space, fit=True)
+                dest = compose(src, dest, blend, operator, non_seperable)
         else:
-            blender = None
+            dest = backdrop[0].convert(space, fit=True)
 
-        # Setup compositing
-        if operator is None:
-            operator = 'source-over'
-        if operator is not False:
-            compositor = pd.compositor(operator)(cba, csa)
-            cra = compositor.ao()
-        else:
-            cra = csa
-            compositor = None
+        src = self.convert(space, fit=True)
+        dest = compose(src, dest, blend, operator, non_seperable)
 
-        # Perform compositing
-        gamut = color1._range
-        coords = []
-        if not non_seperable:
-            # Blend each channel. Afterward, clip and apply alpha compositing.
-            i = 0
-            for cb, cs in zip(coords2, coords1):
-                cr = (1 - cba) * cs + cba * blender(cb, cs) if blender is not None else cs
-                cr = clip_channel(cr, gamut[i])
-                coords.append(compositor.co(cb, cr) if compositor is not None else cr)
-                i += 1
-        else:
-            # Convert to a hue, saturation, luminosity space and apply the requested blending.
-            # Afterwards, clip and apply alpha compositing.
-            i = 0
-            blended = blender(coords2, coords1) if blender is not None else coords1
-            for cb, cr in zip(coords2, blended):
-                cr = (1 - cba) * cr + cba * cr if blender is not None else cr
-                cr = clip_channel(cr, gamut[i])
-                coords.append(compositor.co(cb, cr) if compositor is not None else cr)
-                i += 1
-
-        color1.update(coords, cra)
-        return color1.convert(outspace)
+        return dest.convert(outspace)

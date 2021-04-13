@@ -393,6 +393,31 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c1 is not c3)
         self.assertEqual(c1.compose(c2), Color('color(srgb 0.5 0.5 0.5)'))
 
+    def test_compose_blend_multi(self):
+        """Test compose blend with multiple colors."""
+
+        self.assertColorEqual(
+            Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="srgb"),
+            Color('rgb(6.6464 39.39 9.48)')
+        )
+
+    def test_compose_alpha_multi(self):
+        """Test compose alpha compositing with multiple colors."""
+
+        self.assertColorEqual(
+            Color('#07c7ed').set('alpha', 0.5).compose(
+                [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
+                blend='normal',
+                space="srgb"
+            ),
+            Color('rgb(129 173 190.75)')
+        )
+
+    def test_compose_empty_list(self):
+        """Test compose with empty list."""
+
+        self.assertColorEqual(Color('green').compose([]), Color('green'))
+
     def test_compose_bad_operator(self):
         """Test compose bad operator."""
 
