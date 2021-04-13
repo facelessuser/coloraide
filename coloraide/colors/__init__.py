@@ -81,13 +81,15 @@ class Color:
         self._color = color
         self._color.parent = self
 
-    def _handle_color_input(self, color):
+    def _handle_color_input(self, color, sequence=False):
         """Handle color input."""
 
         if isinstance(color, Color):
             color = color._color
         elif isinstance(color, str):
             color = self.new(color)._color
+        elif sequence and isinstance(color, Sequence):
+            color = [self._handle_color_input(c) for c in color]
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
         return color
@@ -266,14 +268,7 @@ class Color:
     ):
         """Interpolate."""
 
-        try:
-            color = self._handle_color_input(color)
-        except TypeError:
-            # See if we got a list of colors
-            if isinstance(color, Sequence):
-                color = [self._handle_color_input(c) for c in color]
-            else:
-                raise
+        color = self._handle_color_input(color, sequence=True)
         interpolator = self._color.interpolate(
             color, space=space, progress=progress, out_space=out_space, hue=hue,
             premultiplied=premultiplied
@@ -283,14 +278,7 @@ class Color:
     def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """Interpolate discrete steps."""
 
-        try:
-            color = self._handle_color_input(color)
-        except TypeError:
-            # See if we got a list of colors
-            if isinstance(color, Sequence):
-                color = [self._handle_color_input(c) for c in color]
-            else:
-                raise
+        color = self._handle_color_input(color, sequence=True)
         colors = []
         for obj in self._color.steps(
             color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args
@@ -309,13 +297,13 @@ class Color:
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def average(
-        self, colors, weights=None, *, space='lab', out_space=None, in_place=False, hue=util.DEF_HUE_ADJ,
+        self, color, weights=None, *, space='lab', out_space=None, in_place=False, hue=util.DEF_HUE_ADJ,
         sort_hue=False
     ):
-        """Mix multiple colors by averaging their color channels."""
+        """Mix one or more colors by averaging their color channels."""
 
-        colors = [self._handle_color_input(c) for c in colors]
-        obj = self._color.average(colors, weights=weights, space=space, out_space=out_space, hue=hue, sort_hue=sort_hue)
+        color = self._handle_color_input(color, sequence=True)
+        obj = self._color.average(color, weights=weights, space=space, out_space=out_space, hue=hue, sort_hue=sort_hue)
         if in_place:
             self._attach(obj)
             return self
