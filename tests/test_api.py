@@ -1611,6 +1611,74 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress="bad")
 
+    def test_average(self):
+        """Test average."""
+
+        self.assertColorEqual(Color('green').average('blue'), Color('rgb(82.51 85.119 140.91)'))
+
+    def test_average_multi(self):
+        """Test average multiple."""
+
+        self.assertColorEqual(Color('green').average(['blue', 'red']), Color('rgb(153.42 78.28 100.49)'))
+
+    def test_average_alpha(self):
+        """Test average alpha."""
+
+        self.assertColorEqual(
+            Color('color(srgb 1 0 0 / 0.5)').average(['green', 'color(srgb 0 0 1 / 0.25)']),
+            Color('rgb(153.42 78.28 100.49 / 0.58333)')
+        )
+
+    def test_average_cylindrical(self):
+        """Test average alpha."""
+
+        self.assertColorEqual(
+            Color('purple').average(['yellow', 'teal', 'white'], space='lch', out_space='lch'),
+            Color('lch(68.821% 48.307 87.712)')
+        )
+
+    def test_average_cylindrical_hue(self):
+        """Test average alpha."""
+
+        self.assertColorEqual(
+            Color('white').average(['purple', 'yellow', 'teal'], space='lch', out_space='lch', hue='decreasing'),
+            Color('lch(68.821% 48.307 237.56)')
+        )
+
+    def test_average_cylindrical_sort(self):
+        """Test average alpha."""
+
+        self.assertColorNotEqual(
+            Color('white').average(['purple', 'yellow', 'teal'], space='lch'),
+            Color('purple').average(['yellow', 'teal', 'white'], space='lch')
+        )
+
+        self.assertColorEqual(
+            Color('white').average(['purple', 'yellow', 'teal'], space='lch', sort_hue=True),
+            Color('purple').average(['yellow', 'teal', 'white'], space='lch', sort_hue=True)
+        )
+
+    def test_average_weighted(self):
+        """Test average weighted."""
+
+        self.assertColorEqual(Color('green').average(['blue', 'red'], [2, 1.5, 1]), Color('rgb(130.56 88.078 101.46)'))
+
+    def test_average_bad_weights(self):
+        """Test bad weights."""
+
+        with self.assertRaises(ValueError):
+            # Not enough weights
+            Color('green').average(['blue', 'red'], [1])
+
+    def test_average_in_place(self):
+        """Test average in place."""
+
+        c1 = Color('blue')
+        c2 = c1.average(['red', 'green'])
+        self.assertTrue(c1 is not c2)
+        c2 = c1.average(['red', 'green'], in_place=True)
+        self.assertTrue(c1 is c2)
+
     def test_interpolate(self):
         """Test interpolation."""
 
@@ -1628,6 +1696,16 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.5), Color("rgb(192.99 -29.51 136.17)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0), Color("rgb(255 0 0)"))
+
+    def test_interpolate_multi(self):
+        """Test multiple inputs for interpolation."""
+
+        func = Color('white').interpolate(['red', 'black'])
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.5), Color('red'))
+        self.assertColorEqual(func(1), Color('black'))
+        self.assertColorEqual(func(-0.1), Color('rgb(250.72 264.35 268.3)'))
+        self.assertColorEqual(func(1.1), Color('rgb(-78.68 -40.405 -16.116)'))
 
     def test_interpolate_out_space(self):
         """Test interpolation."""
@@ -1762,6 +1840,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(colors[2], Color("srgb", [0.5, 0, 0.5]))
         self.assertColorEqual(colors[1], Color("srgb", [0.75, 0, 0.25]))
         self.assertColorEqual(colors[0], Color("srgb", [1, 0, 0]))
+
+    def test_steps_multi(self):
+        """Test steps with multiple color ranges."""
+
+        colors = Color('white').steps(['red', 'black'], steps=3)
+        self.assertColorEqual(colors[0], Color('white'))
+        self.assertColorEqual(colors[1], Color('red'))
+        self.assertColorEqual(colors[2], Color('black'))
 
     def test_steps_space(self):
         """Test steps different space."""
