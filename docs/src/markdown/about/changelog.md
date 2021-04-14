@@ -7,8 +7,6 @@
 - **NEW**: `step` can now accept multiple colors and will return colors from the entire range.
 - **NEW**: `compose` can now accept multiple colors and will return a result where all colors are layered on top of each
   other.
-- **NEW**: Added new `average` function that is built on top of interpolation and will average multiple colors together
-  to allow for a mixing of two or more colors.
 - **NEW**: `new` method does not need to be a `classmethod`. Make it a normal method on the instance.
 - **FIX**: Actually make `mix` default to `lab` like `interpolate` and friends do.
 

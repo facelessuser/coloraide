@@ -296,19 +296,6 @@ class Color:
             return self
         return self.new(obj.space(), obj.coords(), obj.alpha)
 
-    def average(
-        self, color, weights=None, *, space='lab', out_space=None, in_place=False, hue=util.DEF_HUE_ADJ,
-        sort_hue=False
-    ):
-        """Mix one or more colors by averaging their color channels."""
-
-        color = self._handle_color_input(color, sequence=True)
-        obj = self._color.average(color, weights=weights, space=space, out_space=out_space, hue=hue, sort_hue=sort_hue)
-        if in_place:
-            self._attach(obj)
-            return self
-        return self.new(obj.space(), obj.coords(), obj.alpha)
-
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit to gamut."""
 

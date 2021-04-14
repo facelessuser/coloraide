@@ -174,63 +174,6 @@ Color("red").mix("blue", 0.2)
 
 Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
-## Averaging
-
-The [`mix`](#mix) method can only mix one one color at a time. The `average` method can mix any number of colors.
-Ultimately, both [`mix`](#mix) and `average` are built upon [`interpolate`](#interpolating), but the approach is a little
-different for `average`.
-
-`average` applies a weight to each color and interpolates between all the colors applying that weight. The alpha
-channel is initially ignored during this interpolation and is simply averaged at the end if one or more of the colors
-are semi-transparent to transparent.
-
-At first blush, it may look as if [`mix`](#mix) and `average` are identical.
-
-```{.color fit}
-Color('#00880033').mix('#88000088')
-Color('#00880033').average('#88000088')
-```
-
-But while [`mix`](#mix)'s algorithm employs a mix percentage approach, averaging applies a weighted mixing.
-
-```{.color fit}
-Color('#00880033').mix('#88000088', 0.5)
-Color('#00880033').average('#88000088', [1, 1])
-Color('#00880033').mix('#88000088', 0.25)
-Color('#00880033').average('#88000088', [1.5, 0.5])
-```
-
-This allows us to mix multiple colors and define how much each color contributes to the final color.
-
-```{.color fit}
-Color('red').average(['green', 'white'])
-Color('red').average(['green', 'white'], [1, 0.25, 1.50])
-```
-
-This will work in any color color space, but cylindrical color spaces can yield different results depending on the order
-of the colors. This is due to how hue interpolation works.
-
-```{.color fit}
-Color('white').average(['purple', 'yellow', 'teal'], space='lch')
-Color('purple').average(['yellow', 'teal', 'white'], space='lch')
-```
-
-Results can become more predictable though if we sort colors by their hue.
-
-```{.color fit}
-Color('white').average(['purple', 'yellow', 'teal'], space='lch', sort_hue=True)
-Color('purple').average(['yellow', 'teal', 'white'], space='lch', sort_hue=True)
-```
-
-As with other interpolating methods, you can control how hue is evaluated as well:
-
-```{.color fit}
-Color('white').average(['purple', 'yellow', 'teal'], space='lch', hue="increasing")
-Color('white').average(['purple', 'yellow', 'teal'], space='lch', hue="decreasing")
-```
-
-Averaging will always return a new color unless `in_place` is set `#!py3 True`.
-
 ## Steps
 
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
