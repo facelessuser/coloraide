@@ -139,7 +139,7 @@ def execute(cmd):
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = {'fit', 'no-color'}
+    valid_inputs = {'no-fit'}
 
     for k, v in inputs.items():
         if k in valid_inputs:
@@ -153,14 +153,11 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
     """Formatter wrapper."""
 
     try:
-        fit = options.get('fit', False)
-        no_color = options.get('no-color', False)
+        fit = not options.get('no-fit', False)
         console, colors = execute(src.strip())
         el = ''
         bar = False
         values = []
-        if no_color:
-            colors = []
         for item in colors:
             if isinstance(item, ColorInterpolate):
                 if bar:
@@ -281,13 +278,13 @@ def _inline_color_formatter(src="", language="", class_name=None, md="", show_co
     return el
 
 
-def color_formatter(src="", language="", class_name=None, md=""):
+def color_formatter_no_fit(src="", language="", class_name=None, md=""):
     """Format color."""
 
     return _inline_color_formatter(src, language, class_name, md, True)
 
 
-def color_formatter_fit(src="", language="", class_name=None, md=""):
+def color_formatter(src="", language="", class_name=None, md=""):
     """Format color."""
 
     return _inline_color_formatter(src, language, class_name, md, True, True)

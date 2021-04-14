@@ -8,10 +8,7 @@
 </div>
 <div id="playground-code">
 <div class="highlight"><pre><code></code></pre></div>
-<textarea id="playground-inputs" spellcheck="false"># Insert your code here!
-coloraide.__version__
-
-Color('red')</textarea>
+<textarea id="playground-inputs" spellcheck="false"></textarea>
 </div>
 
 --8<-- "playground.txt"

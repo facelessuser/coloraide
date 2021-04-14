@@ -3,7 +3,8 @@
 ## Interpolating
 
 The `interpolate` method allows a user to create an interpolation function. This can be used to create a list of
-gradient colors, or whatever is needed. This function drives all of the features under the interpolation umbrella.
+gradient colors, or whatever is needed. This function is used to drive all the features under the interpolation
+umbrella.
 
 A returned interpolation function accepts an input between 0 - 1, if values are provided out of this range, the color
 will be extrapolated and the results may be surprising.
@@ -23,6 +24,13 @@ Color("rebeccapurple").interpolate(
     "lch(85% 100 85)",
     space='lch'
 )
+```
+
+Interpolation can also be done across multiple colors. When doing this, the function will still take a range of 0 - 1,
+it will just span all interpolation regions:
+
+```color
+Color('black').interpolate(['red', 'white'])
 ```
 
 If desired, we can target one or more specific channels for mixing which will keep all the other channels constant on
@@ -126,7 +134,7 @@ Color("lch(50% 50 0)").interpolate(
 )
 ```
 
-## Color Mixing
+## Mixing
 
 Colors can be mixed together to create new colors. Mixing is built on top of the [`interpolate`](#interpolating)
 function and will return a color between the current and specified color. If colors are requested to be interpolated
@@ -138,7 +146,7 @@ within a color space smaller than the original, the colors will be gamut mapped 
 As an example, if we had the color `#!color red` and the color
 `#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get:
 
-```color
+```{.color fit}
 Color("red").mix(Color("blue"))
 ```
 
@@ -151,16 +159,16 @@ Color("red").mix(Color("blue"), space="lch")
 ```
 
 By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
-the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51)`.
+the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51)` (after fitting).
 
-```color
+```{.color fit}
 Color("red").mix(Color("blue"), 0.2)
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
 color afterwards.
 
-```color
+```{.color fit}
 Color("red").mix("blue", 0.2)
 ```
 
@@ -169,23 +177,62 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 ## Steps
 
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
-The steps to take between the two colors can be configured with the three options, `steps` (minimum number of steps),
-`max_steps`, and `max_delta_e` (max allowable delta E distance between steps). The default delta E method is delta E 76,
-which is a simple euclidean distancing in the CIELAB color space.
+Just provide two colors, and specify how many `steps` are wanted. The `steps` parameter essentially acts as a minimum
+steps requirement.
 
-In this example, we we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between
-`#!color red`. The result gives us an array of colors (color previews are fit to the sRGB gamut):
+```{.color fit}
+Color("red").steps("blue", steps=10)
+```
+
+If desired, multiple colors can be provided, and steps will be returned for all the interpolation regions.
+
+```{.color fit}
+Color("red").steps(["orange", "yellow", "green"], steps=10)
+```
+
+Steps can also be configured to return colors based on a maximum Delta E distance. This means you can ensure the
+distance between all colors is no greater than a certain value.
+
+In this example, we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between `#!color red`.
+The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
+result of 10.
 
 ```{.color fit}
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
     out_space="srgb",
-    max_delta_e=20,
-    steps=3,
-    max_steps=15
+    max_delta_e=10
 )
 ```
+
+`max_steps` can be used to limit the results of `max_delta_e`. Obviously, this affects the Delta E between the colors
+inversely.
+
+```{.color fit}
+Color("display-p3", [0, 1, 0]).steps(
+    "red",
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    max_steps=10
+)
+```
+
+While `steps` (which functions as a minimum required steps) will push the delta even smaller if the required steps is
+greater than the calculated maximum Delta E.
+
+```{.color fit}
+Color("display-p3", [0, 1, 0]).steps(
+    "red",
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    steps=50
+)
+```
+
+The default delta E method is delta E 76, which is a simple euclidean distancing in the CIELAB color space.
 
 ## Null Handling
 

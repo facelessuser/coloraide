@@ -2,7 +2,7 @@ site_name: ColorAide Documentation
 site_url: https://facelessuser.github.io/coloraide
 repo_url: https://github.com/facelessuser/coloraide
 edit_uri: tree/master/docs/src/markdown
-site_description: A wildcard file name matching library
+site_description: A library to aid in using colors
 copyright: |
   Copyright &copy; 2014 - 2021 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
 
@@ -78,12 +78,12 @@ markdown_extensions:
             python3: true
   - pymdownx.inlinehilite:
       custom_inline:
+        - name: color-no-fit
+          class: color
+          format: !!python/name:tools.colors.color_formatter_no_fit
         - name: color
           class: color
           format: !!python/name:tools.colors.color_formatter
-        - name: color-fit
-          class: color
-          format: !!python/name:tools.colors.color_formatter_fit
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true

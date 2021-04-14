@@ -393,6 +393,31 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c1 is not c3)
         self.assertEqual(c1.compose(c2), Color('color(srgb 0.5 0.5 0.5)'))
 
+    def test_compose_blend_multi(self):
+        """Test compose blend with multiple colors."""
+
+        self.assertColorEqual(
+            Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="srgb"),
+            Color('rgb(6.6464 39.39 9.48)')
+        )
+
+    def test_compose_alpha_multi(self):
+        """Test compose alpha compositing with multiple colors."""
+
+        self.assertColorEqual(
+            Color('#07c7ed').set('alpha', 0.5).compose(
+                [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
+                blend='normal',
+                space="srgb"
+            ),
+            Color('rgb(129 173 190.75)')
+        )
+
+    def test_compose_empty_list(self):
+        """Test compose with empty list."""
+
+        self.assertColorEqual(Color('green').compose([]), Color('green'))
+
     def test_compose_bad_operator(self):
         """Test compose bad operator."""
 
@@ -1306,22 +1331,22 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertIsNone(Color.match('lab(100% 0 0)', filters=['srgb']))
 
     def test_mix(self):
-        """Test interpolation."""
+        """Test interpolation via mixing."""
 
-        self.assertColorEqual(Color('red').mix('blue', 1), Color("srgb", [0, 0, 1]))
-        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("srgb", [0.25, 0, 0.75]))
-        self.assertColorEqual(Color('red').mix('blue'), Color("srgb", [0.5, 0, 0.5]))
-        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("srgb", [0.75, 0, 0.25]))
-        self.assertColorEqual(Color('red').mix('blue', 0.0), Color("srgb", [1, 0, 0]))
+        self.assertColorEqual(Color('red').mix('blue', 1), Color("rgb(0 0 255)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("rgb(144.85 -24.871 194.36)"))
+        self.assertColorEqual(Color('red').mix('blue'), Color("rgb(192.99 -29.51 136.17)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(226.89 -24.311 79.195)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.0), Color("rgb(255 0 0)"))
 
     def test_mix_space(self):
         """Test color mix in different space."""
 
-        self.assertColorEqual(Color('red').mix('blue', 1, space='lab'), Color("rgb(0 0 255)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.75, space='lab'), Color("rgb(144.85 -24.871 194.36)"))
-        self.assertColorEqual(Color('red').mix('blue', space='lab'), Color("rgb(192.99 -29.51 136.17)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.25, space='lab'), Color("rgb(226.89 -24.311 79.195)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.0, space='lab'), Color("rgb(255 0 0)"))
+        self.assertColorEqual(Color('red').mix('blue', 1, space="srgb"), Color("srgb", [0, 0, 1]))
+        self.assertColorEqual(Color('red').mix('blue', 0.75, space="srgb"), Color("srgb", [0.25, 0, 0.75]))
+        self.assertColorEqual(Color('red').mix('blue', space="srgb"), Color("srgb", [0.5, 0, 0.5]))
+        self.assertColorEqual(Color('red').mix('blue', 0.25, space="srgb"), Color("srgb", [0.75, 0, 0.25]))
+        self.assertColorEqual(Color('red').mix('blue', 0.0, space="srgb"), Color("srgb", [1, 0, 0]))
 
     def test_mix_out_space(self):
         """Test interpolation."""
@@ -1351,7 +1376,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test mixing alpha."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)'),
+            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', space="srgb"),
             Color('rgb(127.5 0 127.5 / 0.5)')
         )
 
@@ -1359,7 +1384,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test premultiplied alpha."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', premultiplied=True),
+            Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', premultiplied=True, space="srgb"),
             Color('rgb(191.25 0 63.75 / 0.5)')
         )
 
@@ -1367,15 +1392,15 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test premultiplied alpha."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)', premultiplied=True),
-            Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)')
+            Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)', premultiplied=True, space="srgb"),
+            Color('color(srgb 1 0 0)').mix('color(srgb 0 0 1)', space="srgb")
         )
 
     def test_mix_premultiplied_cylindrical(self):
         """Test premultiplication in a cylindrical space."""
 
         self.assertColorEqual(
-            Color('color(hsl 20 30 75 / 0.5)').mix('color(hsl 20 60 10 / 0.75)', premultiplied=True),
+            Color('color(hsl 20 30 75 / 0.5)').mix('color(hsl 20 60 10 / 0.75)', premultiplied=True, space="hsl"),
             Color('hsl(20 48% 36% / 0.625)')
         )
 
@@ -1383,11 +1408,11 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test mix in place."""
 
         color = Color('red')
-        color2 = color.mix('blue')
+        color2 = color.mix('blue', space="srgb")
         self.assertIsNot(color, color2)
         self.assertColorEqual(color2, Color("srgb", [0.5, 0, 0.5]))
         color = Color('red')
-        color2 = color.mix('blue', in_place=True)
+        color2 = color.mix('blue', space="srgb", in_place=True)
         self.assertIs(color, color2)
         self.assertColorEqual(color, Color("srgb", [0.5, 0, 0.5]))
 
@@ -1396,54 +1421,66 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color("srgb", [NaN, 1, 1])
         c2 = Color("srgb", [0.75, 0, 0])
-        self.assertColorEqual(c1.mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2, space="srgb"), Color("srgb", [0.75, 0.5, 0.5]))
         c1 = Color("srgb", [0.25, 1, 1])
         c2 = Color("srgb", [NaN, 0, 0])
-        self.assertColorEqual(c1.mix(c2), Color("srgb", [0.25, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2, space="srgb"), Color("srgb", [0.25, 0.5, 0.5]))
         c1 = Color("srgb", [NaN, 1, 1])
         c2 = Color("srgb", [NaN, 0, 0])
-        self.assertColorEqual(c1.mix(c2), Color("srgb", [0, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2, space="srgb"), Color("srgb", [0, 0.5, 0.5]))
 
     def test_mix_mask(self):
         """Test mix adjust method."""
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask("red")), Color("srgb", [0.25, 0.5, 0.5]))
+        self.assertColorEqual(c1.mix(c2.mask("red"), space="srgb"), Color("srgb", [0.25, 0.5, 0.5]))
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mask("red").mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+        self.assertColorEqual(c1.mask("red").mix(c2, space="srgb"), Color("srgb", [0.75, 0.5, 0.5]))
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mask("red").mix(c2.mask("red")), Color("srgb", [0.0, 0.5, 0.5]))
+        self.assertColorEqual(c1.mask("red").mix(c2.mask("red"), space="srgb"), Color("srgb", [0.0, 0.5, 0.5]))
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask(["red", "green"])), Color("srgb", [0.25, 1, 0.5]))
+        self.assertColorEqual(c1.mix(c2.mask(["red", "green"]), space="srgb"), Color("srgb", [0.25, 1, 0.5]))
 
     def test_mix_mask_invert(self):
         """Test mix adjust method."""
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask(["green", "blue"], invert=True)), Color("srgb", [0.25, 0.5, 0.5]))
-
-        c1 = Color("color(srgb 0.25 1 1)")
-        c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mask(["green", "blue"], invert=True).mix(c2), Color("srgb", [0.75, 0.5, 0.5]))
+        self.assertColorEqual(
+            c1.mix(c2.mask(["green", "blue"], invert=True), space="srgb"),
+            Color("srgb", [0.25, 0.5, 0.5])
+        )
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
         self.assertColorEqual(
-            c1.mask(["green", "blue", "alpha"], invert=True).mix(c2.mask(["green", "blue", "alpha"], invert=True)),
+            c1.mask(["green", "blue"], invert=True).mix(c2, space="srgb"),
+            Color("srgb", [0.75, 0.5, 0.5])
+        )
+
+        c1 = Color("color(srgb 0.25 1 1)")
+        c2 = Color("color(srgb 0.75 0 0)")
+        self.assertColorEqual(
+            c1.mask(["green", "blue", "alpha"], invert=True).mix(
+                c2.mask(["green", "blue", "alpha"], invert=True),
+                space="srgb"
+            ),
             Color("srgb", [0.0, 0.5, 0.5])
         )
 
         c1 = Color("color(srgb 0.25 1 1)")
         c2 = Color("color(srgb 0.75 0 0)")
-        self.assertColorEqual(c1.mix(c2.mask("blue", invert=True)), Color("srgb", [0.25, 1, 0.5]))
+        self.assertColorEqual(
+            c1.mix(c2.mask("blue", invert=True), space="srgb"),
+            Color("srgb", [0.25, 1, 0.5])
+        )
 
     def test_mask_in_place(self):
         """Test masking "in place"."""
@@ -1489,7 +1526,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(75% 50 40)')
         c2 = Color('lch(30% 30 350)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch"),
             Color("lch(75% 50 375)")
         )
 
@@ -1497,7 +1534,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(30% 30 350)')
         c2 = Color('lch(75% 50 40)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch"),
             Color("lch(30% 30 375)")
         )
 
@@ -1508,7 +1545,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(75% 50 40)')
         c2 = Color('lch(30% 30 60)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch"),
             Color("lch(75% 50 230)")
         )
 
@@ -1516,7 +1553,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(30% 30 60)')
         c2 = Color('lch(75% 50 40)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch"),
             Color("lch(30% 30 230)")
         )
 
@@ -1527,7 +1564,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(75% 50 60)')
         c2 = Color('lch(30% 30 40)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing", space="lch"),
             Color("lch(75% 50 230)")
         )
 
@@ -1538,7 +1575,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('lch(75% 50 40)')
         c2 = Color('lch(30% 30 60)')
         self.assertColorEqual(
-            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing"),
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing", space="lch"),
             Color("lch(75% 50 230)")
         )
 
@@ -1554,17 +1591,17 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test mix hue with `NaN`."""
 
         self.assertColorEqual(
-            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50),
+            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50, space="hsl"),
             Color("hsl(0, 0%, 57.5%)")
         )
 
         self.assertColorEqual(
-            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [120, 50, 90]), 0.50),
+            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [120, 50, 90]), 0.50, space="hsl"),
             Color("hsl(120, 25%, 57.5%)")
         )
 
         self.assertColorEqual(
-            Color('hsl', [120, 50, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50),
+            Color('hsl', [120, 50, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50, space="hsl"),
             Color("hsl(120, 25%, 57.5%)")
         )
 
@@ -1616,6 +1653,21 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.5), Color("rgb(192.99 -29.51 136.17)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0), Color("rgb(255 0 0)"))
+
+    def test_interpolate_empty_list(self):
+        """Test interpolate with empty list."""
+
+        self.assertColorEqual(Color('green').interpolate([])(0.5), Color('green'))
+
+    def test_interpolate_multi(self):
+        """Test multiple inputs for interpolation."""
+
+        func = Color('white').interpolate(['red', 'black'])
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.5), Color('red'))
+        self.assertColorEqual(func(1), Color('black'))
+        self.assertColorEqual(func(-0.1), Color('rgb(250.72 264.35 268.3)'))
+        self.assertColorEqual(func(1.1), Color('rgb(-78.68 -40.405 -16.116)'))
 
     def test_interpolate_out_space(self):
         """Test interpolation."""
@@ -1750,6 +1802,19 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(colors[2], Color("srgb", [0.5, 0, 0.5]))
         self.assertColorEqual(colors[1], Color("srgb", [0.75, 0, 0.25]))
         self.assertColorEqual(colors[0], Color("srgb", [1, 0, 0]))
+
+    def test_steps_multi(self):
+        """Test steps with multiple color ranges."""
+
+        colors = Color('white').steps(['red', 'black'], steps=3)
+        self.assertColorEqual(colors[0], Color('white'))
+        self.assertColorEqual(colors[1], Color('red'))
+        self.assertColorEqual(colors[2], Color('black'))
+
+    def test_steps_empty_list(self):
+        """Test steps with empty list."""
+
+        self.assertColorEqual(Color('green').steps([], steps=3)[1], Color('green'))
 
     def test_steps_space(self):
         """Test steps different space."""

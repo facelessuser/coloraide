@@ -14,6 +14,7 @@ from .xyz import XYZ
 from .xyzd65 import XYZD65
 from .. import util
 import functools
+from collections.abc import Sequence
 
 SUPPORTED = (
     HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
@@ -21,10 +22,10 @@ SUPPORTED = (
 )
 
 
-def _interpolate(percent, color=None, interp=None):
+def _interpolate(percent, color, interpolator):
     """Wrapper for interpolate."""
 
-    obj = interp(percent)
+    obj = interpolator.interpolate(percent)
     return color.new(obj.space(), obj.coords(), obj.alpha)
 
 
@@ -80,13 +81,15 @@ class Color:
         self._color = color
         self._color.parent = self
 
-    def _handle_color_input(self, color):
+    def _handle_color_input(self, color, sequence=False):
         """Handle color input."""
 
         if isinstance(color, Color):
             color = color._color
         elif isinstance(color, str):
             color = self.new(color)._color
+        elif sequence and isinstance(color, Sequence):
+            color = [self._handle_color_input(c) for c in color]
         else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
         return color
@@ -154,11 +157,14 @@ class Color:
 
         return self._color.coords()
 
-    @classmethod
-    def new(cls, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
-        """Create new color object."""
+    def new(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+        """
+        Create new color object.
 
-        return cls(color, data, alpha, filters=filters, **kwargs)
+        TODO: maybe allow `currentcolor` here? It would basically clone the current object.
+        """
+
+        return type(self)(color, data, alpha, filters=filters, **kwargs)
 
     def clone(self):
         """Clone."""
@@ -173,7 +179,7 @@ class Color:
         if in_place:
             self._attach(obj)
             return self
-        return type(self)(obj.space(), obj.coords(), obj.alpha)
+        return self.new(obj.space(), obj.coords(), obj.alpha)
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
@@ -241,7 +247,7 @@ class Color:
     def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
         """Apply the given transparency with the given background."""
 
-        backdrop = self._handle_color_input(backdrop)
+        backdrop = self._handle_color_input(backdrop, sequence=True)
         obj = self._color.compose(backdrop, blend=blend, operator=operator, space=space, out_space=out_space)
         if in_place:
             self._attach(obj)
@@ -262,17 +268,17 @@ class Color:
     ):
         """Interpolate."""
 
-        color = self._handle_color_input(color)
-        interp = self._color.interpolate(
+        color = self._handle_color_input(color, sequence=True)
+        interpolator = self._color.interpolate(
             color, space=space, progress=progress, out_space=out_space, hue=hue,
             premultiplied=premultiplied
         )
-        return functools.partial(_interpolate, color=self.clone(), interp=interp)
+        return functools.partial(_interpolate, color=self.clone(), interpolator=interpolator)
 
     def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """Interpolate discrete steps."""
 
-        color = self._handle_color_input(color)
+        color = self._handle_color_input(color, sequence=True)
         colors = []
         for obj in self._color.steps(
             color, steps=steps, max_steps=max_steps, max_delta_e=max_delta_e, **interpolate_args
