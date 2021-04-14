@@ -78,12 +78,12 @@ markdown_extensions:
             python3: true
   - pymdownx.inlinehilite:
       custom_inline:
+        - name: color-no-fit
+          class: color
+          format: !!python/name:tools.colors.color_formatter_no_fit
         - name: color
           class: color
           format: !!python/name:tools.colors.color_formatter
-        - name: color-fit
-          class: color
-          format: !!python/name:tools.colors.color_formatter_fit
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true
