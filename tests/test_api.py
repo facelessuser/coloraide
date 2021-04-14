@@ -1646,6 +1646,11 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(Color('green').average(['blue', 'red']), Color('rgb(153.42 78.28 100.49)'))
 
+    def test_average_empty_list(self):
+        """Test average with empty list."""
+
+        self.assertColorEqual(Color('green').average([]), Color('green'))
+
     def test_average_alpha(self):
         """Test average alpha."""
 
@@ -1721,6 +1726,11 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.5), Color("rgb(192.99 -29.51 136.17)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0), Color("rgb(255 0 0)"))
+
+    def test_interpolate_empty_list(self):
+        """Test interpolate with empty list."""
+
+        self.assertColorEqual(Color('green').interpolate([])(0.5), Color('green'))
 
     def test_interpolate_multi(self):
         """Test multiple inputs for interpolation."""
@@ -1873,6 +1883,11 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(colors[0], Color('white'))
         self.assertColorEqual(colors[1], Color('red'))
         self.assertColorEqual(colors[2], Color('black'))
+
+    def test_steps_empty_list(self):
+        """Test steps with empty list."""
+
+        self.assertColorEqual(Color('green').steps([], steps=3)[1], Color('green'))
 
     def test_steps_space(self):
         """Test steps different space."""

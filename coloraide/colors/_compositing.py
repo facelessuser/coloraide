@@ -284,6 +284,9 @@ class Compositing:
         if not isinstance(backdrop, Sequence):
             backdrop = [backdrop]
 
+        if len(backdrop) == 0:
+            return self.convert(outspace)
+
         if len(backdrop) > 1:
             dest = backdrop[-1].convert(space, fit=True)
             for x in range(len(backdrop) - 2, -1, -1):

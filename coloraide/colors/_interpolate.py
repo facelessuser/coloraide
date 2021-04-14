@@ -263,6 +263,9 @@ class Interpolate:
         if not isinstance(colors, Sequence):
             colors = [colors]
 
+        if len(colors) == 0:
+            return self.convert(outspace)
+
         if weights is None:
             weights = [1] * (len(colors) + 1)
         elif len(weights) != len(colors) + 1:
@@ -339,6 +342,8 @@ class Interpolate:
 
         # Handle multiple colors
         if isinstance(color, Sequence):
+            if len(color) == 0:
+                color = [self]
             count = len(color)
             stops = 100 / count
             color_map = []
