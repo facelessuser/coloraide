@@ -2,11 +2,11 @@
 from .srgb import SRGB
 from .hsl import HSL
 from .hwb import HWB
-from .lab import LAB
-from .lch import LCH
+from .lab import Lab
+from .lch import Lch
 from ...colors import Color as GenericColor
 
-CSS_OVERRIDES = (HSL, HWB, LAB, LCH, SRGB)
+CSS_OVERRIDES = (HSL, HWB, Lab, Lch, SRGB)
 
 
 class Color(GenericColor):

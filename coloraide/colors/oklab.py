@@ -1,4 +1,8 @@
-"""OKLAB class."""
+"""
+Oklab class.
+
+https://bottosson.github.io/posts/oklab/
+"""
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from .xyz import XYZ
@@ -32,7 +36,7 @@ m2i = [
 
 
 def xyzd65_to_oklab(xyzd65):
-    """XYZ D65 to OKLAB."""
+    """XYZ D65 to Oklab."""
 
     return util.dot([util.cbrt(x) for x in util.dot(xyzd65, m1)], m2)
 
@@ -43,12 +47,8 @@ def oklab_to_xyzd65(oklab):
     return util.dot([x ** 3 for x in util.dot(oklab, m2i)], m1i)
 
 
-class OKLAB(Space):
-    """
-    OKLAB class.
-
-    https://bottosson.github.io/posts/oklab/
-    """
+class Oklab(Space):
+    """Oklab class."""
 
     SPACE = "oklab"
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")

@@ -1,6 +1,6 @@
 """LCH class."""
 from ._space import Space, RE_DEFAULT_MATCH
-from .oklab import OKLAB
+from .oklab import Oklab
 from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound
 from . _range import Angle
@@ -13,7 +13,7 @@ ACHROMATIC_THRESHOLD = 0.00000000001
 
 
 def oklab_to_oklch(oklab):
-    """OKLAB to OKLCH."""
+    """Oklab to Oklch."""
 
     l, a, b = oklab
 
@@ -25,11 +25,11 @@ def oklab_to_oklch(oklab):
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 
-    return [l, c, OKLCH._constrain_hue(h)]
+    return [l, c, Oklch._constrain_hue(h)]
 
 
 def oklch_to_oklab(oklch):
-    """OKLCH to OKLAB."""
+    """Oklch to Oklab."""
 
     l, c, h = oklch
     h = util.no_nan(h)
@@ -46,8 +46,8 @@ def oklch_to_oklab(oklch):
     )
 
 
-class OKLCH(Cylindrical, Space):
-    """OKLCH class."""
+class Oklch(Cylindrical, Space):
+    """Oklch class."""
 
     SPACE = "oklch"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
@@ -120,10 +120,10 @@ class OKLCH(Cylindrical, Space):
     def _to_xyz(cls, oklch):
         """To XYZ."""
 
-        return OKLAB._to_xyz(cls._to_oklab(oklch))
+        return Oklab._to_xyz(cls._to_oklab(oklch))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return cls._from_oklab(OKLAB._from_xyz(xyz))
+        return cls._from_oklab(Oklab._from_xyz(xyz))

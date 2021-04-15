@@ -1,6 +1,6 @@
-"""LCH class."""
+"""Lch class."""
 from ._space import Space, RE_DEFAULT_MATCH
-from .lab import LAB
+from .lab import Lab
 from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound
 from . _range import Angle, Percent
@@ -13,7 +13,7 @@ ACHROMATIC_THRESHOLD = 0.00000000001
 
 
 def lab_to_lch(lab):
-    """LAB to LCH."""
+    """Lab to Lch."""
 
     l, a, b = lab
 
@@ -25,12 +25,12 @@ def lab_to_lch(lab):
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 
-    test = [l, c, LCH._constrain_hue(h)]
+    test = [l, c, Lch._constrain_hue(h)]
     return test
 
 
 def lch_to_lab(lch):
-    """LCH to LAB."""
+    """Lch to Lab."""
 
     l, c, h = lch
     h = util.no_nan(h)
@@ -47,8 +47,8 @@ def lch_to_lab(lch):
     )
 
 
-class LCH(Cylindrical, Space):
-    """LCH class."""
+class Lch(Cylindrical, Space):
+    """Lch class."""
 
     SPACE = "lch"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
@@ -125,10 +125,10 @@ class LCH(Cylindrical, Space):
     def _to_xyz(cls, lch):
         """To XYZ."""
 
-        return LAB._to_xyz(cls._to_lab(lch))
+        return Lab._to_xyz(cls._to_lab(lch))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return cls._from_lab(LAB._from_xyz(xyz))
+        return cls._from_lab(Lab._from_xyz(xyz))

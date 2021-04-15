@@ -1,12 +1,12 @@
-"""LCH class."""
+"""Lch class."""
 import re
 from ...colors import lch as generic
 from ...colors import _parse as parse
 from ... import util
 
 
-class LCH(generic.LCH):
-    """LCH class."""
+class Lch(generic.Lch):
+    """Lch class."""
 
     DEF_VALUE = "lch(0% 0 0 / 1)"
     START = re.compile(r'(?i)\blch\(')

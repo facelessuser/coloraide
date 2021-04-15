@@ -26,9 +26,8 @@ HSV
 HWB
 HWB
 ITU
-LAB
-LCH
-LCH's
+LMS
+Lab
 Lch
 Lilley
 MERCHANTABILITY
@@ -37,6 +36,8 @@ MkDocs
 NONINFRINGEMENT
 NaN
 NaNs
+Oklab
+Oklch
 Premultiply
 ProPhoto
 PyPI
