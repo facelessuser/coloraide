@@ -4,21 +4,24 @@ from .srgb import SRGB
 from .srgb_linear import SRGBLinear
 from .hsl import HSL
 from .hwb import HWB
-from .lab import LAB
-from .lch import LCH
+from .lab import Lab
+from .lch import Lch
 from .display_p3 import DisplayP3
 from .a98_rgb import A98RGB
 from .prophoto_rgb import ProPhotoRGB
 from .rec2020 import Rec2020
 from .xyz import XYZ
 from .xyzd65 import XYZD65
+from .oklab import Oklab
+from .oklch import Oklch
 from .. import util
 import functools
 from collections.abc import Sequence
 
 SUPPORTED = (
-    HSL, HWB, LAB, LCH, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65
+    HSL, HWB, Lab, Lch, SRGB, SRGBLinear, HSV,
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
+    Oklab, Oklch
 )
 
 

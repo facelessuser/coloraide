@@ -1,4 +1,4 @@
-"""LAB class."""
+"""Lab class."""
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
 from . _range import Percent
@@ -36,14 +36,14 @@ def lab_to_xyz(lab):
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return util.multiply(xyz, LAB.white())
+    return util.multiply(xyz, Lab.white())
 
 
 def xyz_to_lab(xyz):
     """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = util.divide(xyz, LAB.white())
+    xyz = util.divide(xyz, Lab.white())
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = [util.cbrt(i) if i > EPSILON3 else (RATIO3 * i) + RATIO1 for i in xyz]
 
@@ -54,8 +54,8 @@ def xyz_to_lab(xyz):
     )
 
 
-class LAB(Space):
-    """LAB class."""
+class Lab(Space):
+    """Lab class."""
 
     SPACE = "lab"
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")

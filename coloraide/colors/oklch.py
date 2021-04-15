@@ -1,21 +1,21 @@
-"""Lch class."""
+"""LCH class."""
 from ._space import Space, RE_DEFAULT_MATCH
-from .lab import Lab
+from .oklab import Oklab
 from ._cylindrical import Cylindrical
 from ._gamut import GamutUnbound
-from . _range import Angle, Percent
+from . _range import Angle
 from . import _convert as convert
 from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.00000000001
+ACHROMATIC_THRESHOLD = 0.0002
 
 
-def lab_to_lch(lab):
-    """Lab to Lch."""
+def oklab_to_oklch(oklab):
+    """Oklab to Oklch."""
 
-    l, a, b = lab
+    l, a, b = oklab
 
     c = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
@@ -25,14 +25,13 @@ def lab_to_lch(lab):
     if c < ACHROMATIC_THRESHOLD:
         h = util.NaN
 
-    test = [l, c, Lch._constrain_hue(h)]
-    return test
+    return [l, c, Oklch._constrain_hue(h)]
 
 
-def lch_to_lab(lch):
-    """Lch to Lab."""
+def oklch_to_oklab(oklch):
+    """Oklch to Oklab."""
 
-    l, c, h = lch
+    l, c, h = oklch
     h = util.no_nan(h)
 
     # If, for whatever reason (mainly direct user input),
@@ -47,21 +46,17 @@ def lch_to_lab(lch):
     )
 
 
-class Lch(Cylindrical, Space):
-    """Lch class."""
+class Oklch(Cylindrical, Space):
+    """Oklch class."""
 
-    SPACE = "lch"
+    SPACE = "oklch"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = convert.WHITES["D50"]
+    WHITE = convert.WHITES["D65"]
 
     _range = (
-        # I think chroma, specifically should be clamped.
-        # Some libraries don't to prevent rounding issues. We should only get
-        # negative chroma via direct user input, but when translating to
-        # Lab, this will be corrected.
-        GamutUnbound([Percent(0.0), Percent(100.0)]),
-        GamutUnbound([0.0, 100.0]),
+        GamutUnbound([0.0, 1.0]),
+        GamutUnbound([0.0, 1.0]),
         GamutUnbound([Angle(0.0), Angle(360.0)]),
     )
 
@@ -110,25 +105,25 @@ class Lch(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_lab(cls, lch):
+    def _to_oklab(cls, oklch):
         """To Lab."""
 
-        return lch_to_lab(lch)
+        return oklch_to_oklab(oklch)
 
     @classmethod
-    def _from_lab(cls, lab):
+    def _from_oklab(cls, oklab):
         """To Lab."""
 
-        return lab_to_lch(lab)
+        return oklab_to_oklch(oklab)
 
     @classmethod
-    def _to_xyz(cls, lch):
+    def _to_xyz(cls, oklch):
         """To XYZ."""
 
-        return Lab._to_xyz(cls._to_lab(lch))
+        return Oklab._to_xyz(cls._to_oklab(oklch))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return cls._from_lab(Lab._from_xyz(xyz))
+        return cls._from_oklab(Oklab._from_xyz(xyz))

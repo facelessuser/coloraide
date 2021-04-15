@@ -1,12 +1,12 @@
-"""LAB class."""
+"""Lab class."""
 import re
 from ...colors import lab as generic
 from ...colors import _parse as parse
 from ... import util
 
 
-class LAB(generic.LAB):
-    """LAB class."""
+class Lab(generic.Lab):
+    """Lab class."""
 
     DEF_VALUE = "lab(0% 0 0 / 1)"
     START = re.compile(r'(?i)\blab\(')
