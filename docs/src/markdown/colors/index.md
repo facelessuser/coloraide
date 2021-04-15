@@ -205,6 +205,49 @@ and 100% of likely occurring real-world surface colors documented by Pointer in 
 _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
 </div>
 
+## XYZ
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `xyz`
+
+    **White Point:** D50
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    x          | 0 - 1
+    y          | 0 - 1
+    z          | 0 - 1
+
+The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
+(CIE) in 1931. They resulted from a series of experiments done in the late 1920s by William David Wright using ten
+observers and John Guild using seven observers. The experimental results were combined into the specification of the
+CIE RGB color space, from which the CIE XYZ color space was derived. The CIE 1931 color spaces are the first defined
+quantitative links between distributions of wavelengths in the electromagnetic visible spectrum, and physiologically
+perceived colors in human color vision.
+
+_[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
+</div>
+
+!!! tip "XYZ White Point"
+    CSS defines XYZ with a D50 white point, so XYZ is currently exposed with D50. Commonly, XYZ is used with a D65 white
+    point. If needed, you can use `xyzd65` instead of `xyz` to get an XYZ color with a D65 white point.
+
+    ```color
+    Color('red').convert('xyz')
+    Color('red').convert('xyzd65')
+    ```
+
+<style>
+.info-container { overflow: hidden; }
+.info-container .admonition.inline.end {
+    margin-right: 0.5rem;
+}
+</style>
+
 ## CIELAB
 
 <div class="info-container" markdown="1">
@@ -255,45 +298,47 @@ coordinates a\* and b\*. The CIELAB lightness L\* remains unchanged.
 _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
 </div>
 
-## XYZ
+## Oklab
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Identifier:** `xyz`
+    **Identifier:** `oklab`
 
-    **White Point:** D50
+    **White Point:** D65
 
     **Coordinates:**
 
     Name       | Range
     ---------- | -----
-    x          | 0 - 1
-    y          | 0 - 1
-    z          | 0 - 1
+    lightness  | 0 - 1
+    a          | -0.5 - 0.5
+    b          | -0.5 - 0.5
 
-The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
-(CIE) in 1931. They resulted from a series of experiments done in the late 1920s by William David Wright using ten
-observers and John Guild using seven observers. The experimental results were combined into the specification of the
-CIE RGB color space, from which the CIE XYZ color space was derived. The CIE 1931 color spaces are the first defined
-quantitative links between distributions of wavelengths in the electromagnetic visible spectrum, and physiologically
-perceived colors in human color vision.
+A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
+chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
 
-_[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
+_[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 </div>
 
-!!! tip "XYZ White Point"
-    CSS defines XYZ with a D50 white point, so XYZ is currently exposed with D50. Commonly, XYZ is used with a D65 white
-    point. If needed, you can use `xyzd65` instead of `xyz` to get an XYZ color with a D65 white point.
+## Oklch
 
-    ```color
-    Color('red').convert('xyz')
-    Color('red').convert('xyzd65')
-    ```
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
 
-<style>
-.info-container { overflow: hidden; }
-.info-container .admonition.inline.end {
-    margin-right: 0.5rem;
-}
-</style>
+    **Identifier:** `oklch`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    lightness  | 0 - 1
+    chroma     | 0 - 1
+    hue        | 0 - 360
+
+Oklch is the cylindrical form of [Oklab](#oklab).
+
+_[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
+</div>
