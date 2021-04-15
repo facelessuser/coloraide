@@ -2,7 +2,7 @@ import math
 from .. import util
 
 G_CONST = 25 ** 7
-SUPPORTED = frozenset(["76", "2000", "cmc", "94", 'jz'])
+SUPPORTED = frozenset(["76", "2000", "cmc", "94", "jz"])
 
 
 def distance_euclidean(color1, color2, space="lab", **kwargs):
