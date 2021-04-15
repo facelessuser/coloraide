@@ -9,7 +9,7 @@ umbrella.
 A returned interpolation function accepts an input between 0 - 1, if values are provided out of this range, the color
 will be extrapolated and the results may be surprising.
 
-In this example, we create an interpolation between `#!color rebeccapurple` and `#!color-fit lch(85% 100 85)` (color
+In this example, we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)` (color
 previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
 
 ```color
@@ -146,7 +146,7 @@ within a color space smaller than the original, the colors will be gamut mapped 
 As an example, if we had the color `#!color red` and the color
 `#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get:
 
-```{.color fit}
+```color
 Color("red").mix(Color("blue"))
 ```
 
@@ -154,21 +154,21 @@ The `mix` method will mix the two colors in the CIELAB color space by default. I
 specified with the `space` parameter. Notice below that this creates a different color. The results of mixing in a
 different color space may be more desirable as color mixing may be more natural.
 
-```{.color fit}
+```color
 Color("red").mix(Color("blue"), space="lch")
 ```
 
 By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
 the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51)` (after fitting).
 
-```{.color fit}
+```color
 Color("red").mix(Color("blue"), 0.2)
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
 color afterwards.
 
-```{.color fit}
+```color
 Color("red").mix("blue", 0.2)
 ```
 
@@ -180,24 +180,24 @@ The `steps` method creates a list of discrete colors. Like mixing, it is also bu
 Just provide two colors, and specify how many `steps` are wanted. The `steps` parameter essentially acts as a minimum
 steps requirement.
 
-```{.color fit}
+```color
 Color("red").steps("blue", steps=10)
 ```
 
 If desired, multiple colors can be provided, and steps will be returned for all the interpolation regions.
 
-```{.color fit}
+```color
 Color("red").steps(["orange", "yellow", "green"], steps=10)
 ```
 
 Steps can also be configured to return colors based on a maximum Delta E distance. This means you can ensure the
 distance between all colors is no greater than a certain value.
 
-In this example, we specify the color `#!color-fit color(display-p3 0 1 0)` and interpolate steps between `#!color red`.
+In this example, we specify the color `#!color color(display-p3 0 1 0)` and interpolate steps between `#!color red`.
 The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
 result of 10.
 
-```{.color fit}
+```color
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
@@ -209,7 +209,7 @@ Color("display-p3", [0, 1, 0]).steps(
 `max_steps` can be used to limit the results of `max_delta_e`. Obviously, this affects the Delta E between the colors
 inversely.
 
-```{.color fit}
+```color
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
@@ -222,7 +222,7 @@ Color("display-p3", [0, 1, 0]).steps(
 While `steps` (which functions as a minimum required steps) will push the delta even smaller if the required steps is
 greater than the calculated maximum Delta E.
 
-```{.color fit}
+```color
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",

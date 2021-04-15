@@ -55,7 +55,7 @@ and replicate it in ColorAide.
     ```
 
 You can even blend multiple colors. Simply send in a list, and the colors will be blended from right to left with the
-right most color being on the bottom of the stack, and the base color being the on the very top.
+right most color being on the bottom of the stack, and the base color being on the very top.
 
 
 <span class="isolate blend-multiply">
@@ -144,8 +144,7 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
     ```
 
 You can also apply alpha compositing to multiple layers at once. Simply send in a list, and the colors will be composed
-from right to left with the right most color being on the bottom of the stack and the base color being the on the very
-top.
+from right to left with the right most color being on the bottom of the stack and the base color being on the very top.
 
 Here we are using the normal blend mode and 50% transparency on all the circles with an opaque white background. We will
 calculate the center color where all three layers overlap.

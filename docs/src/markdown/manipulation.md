@@ -57,7 +57,7 @@ Color("white").set("red", 0).set("green", 0.5)
 ```
 
 Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` in
-the CIELCH color space and get `#!color-fit Color("blue").set('lch.hue', 130)`.
+the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`.
 
 ```{.color fit}
 Color("blue").set('lch.hue', 130)
