@@ -2,7 +2,7 @@ import math
 from .. import util
 
 G_CONST = 25 ** 7
-SUPPORTED = frozenset(["76", "2000", "cmc", "94"])
+SUPPORTED = frozenset(["76", "2000", "cmc", "94", "jz"])
 
 
 def distance_euclidean(color1, color2, space="lab", **kwargs):
@@ -12,11 +12,8 @@ def distance_euclidean(color1, color2, space="lab", **kwargs):
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    lab1 = color1.convert(space)
-    lab2 = color2.convert(space)
-
-    coords1 = util.no_nan(lab1.coords())
-    coords2 = util.no_nan(lab2.coords())
+    coords1 = util.no_nan(color1.convert(space).coords())
+    coords2 = util.no_nan(color2.convert(space).coords())
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords2, coords1)))
 
@@ -41,11 +38,8 @@ def delta_e_94(color1, color2, kl=1, k1=0.045, k2=0.015):
     http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
     """
 
-    lab1 = color1.convert("lab")
-    lab2 = color2.convert("lab")
-
-    l1, a1, b1 = util.no_nan(lab1.coords())
-    l2, a2, b2 = util.no_nan(lab2.coords())
+    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
 
     # Equation (5)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)
@@ -108,11 +102,8 @@ def delta_e_cmc(color1, color2, l=2, c=1):
     http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
     """
 
-    lab1 = color1.convert("lab")
-    lab2 = color2.convert("lab")
-
-    l1, a1, b1 = util.no_nan(lab1.coords())
-    l2, a2, b2 = util.no_nan(lab2.coords())
+    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
 
     # Equation (3)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)
@@ -188,11 +179,8 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
     """
 
-    lab1 = color1.convert("lab")
-    lab2 = color2.convert("lab")
-
-    l1, a1, b1 = util.no_nan(lab1.coords())
-    l2, a2, b2 = util.no_nan(lab2.coords())
+    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
 
     # Equation (2)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)
@@ -294,6 +282,29 @@ def delta_e_2000(color1, color2, kl=1, kc=1, kh=1, **kwargs):
         (dh / (kh * sh)) ** 2 +
         rt * (dc / (kc * sc)) * (dh / (kh * sh))
     )
+
+
+def delta_e_jz(color1, color2, **kwargs):
+    """
+    Delta E Jz.
+
+    https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
+    """
+
+    jz1, az1, bz1 = util.no_nan(color1.convert('jzazbz').coords())
+    jz2, az2, bz2 = util.no_nan(color2.convert('jzazbz').coords())
+
+    cz1 = math.sqrt(az1 ** 2 + bz1 ** 2)
+    cz2 = math.sqrt(az2 ** 2 + bz2 ** 2)
+
+    hz1 = math.degrees(math.atan2(bz1, az1))
+    hz2 = math.degrees(math.atan2(bz2, az2))
+
+    djz = jz2 - jz1
+    dcz = cz2 - cz1
+    dhz = 2 * math.sqrt(cz1 * cz2) * math.sin(math.radians((hz1 - hz2) / 2))
+
+    return math.sqrt(djz ** 2 + dcz ** 2 + dhz ** 2)
 
 
 class Distance:

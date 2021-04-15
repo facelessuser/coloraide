@@ -14,6 +14,8 @@ from .xyz import XYZ
 from .xyzd65 import XYZD65
 from .oklab import Oklab
 from .oklch import Oklch
+from .jzazbz import Jzazbz
+from .jzczhz import JzCzhz
 from .. import util
 import functools
 from collections.abc import Sequence
@@ -21,7 +23,7 @@ from collections.abc import Sequence
 SUPPORTED = (
     HSL, HWB, Lab, Lch, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
-    Oklab, Oklch
+    Oklab, Oklch, Jzazbz, JzCzhz
 )
 
 

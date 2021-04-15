@@ -342,3 +342,53 @@ Oklch is the cylindrical form of [Oklab](#oklab).
 
 _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 </div>
+
+## Jzazbz
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `jzazbz`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    lightness  | 0 - 1
+    a          | -0.5 - 0.5
+    b          | -0.5 - 0.5
+
+Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
+applications. Conceptually it is similar to [CIELAB](#cielab), but claims the following improvements:
+
+- Perceptual color difference is predicted by Euclidean distance.
+- Perceptually uniform: MacAdam ellipses of just-noticeable-difference (JND) are more circular, and closer to the same
+  sizes.
+- Hue linearity: changing saturation or lightness has less shift in hue.
+
+_[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
+</div>
+
+## JzCzhz
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `jzczhz`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    lightness  | 0 - 1
+    chroma     | 0 - 1
+    hue        | 0 - 360
+
+JzCzhz is the cylindrical form of [Jzazbz](#jzazbz).
+
+_[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
+</div>

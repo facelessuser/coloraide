@@ -8,6 +8,7 @@
 - **NEW**: `compose` can now accept multiple colors and will return a result where all colors are layered on top of each
   other.
 - **NEW**: `new` method does not need to be a `classmethod`. Make it a normal method on the instance.
+- **NEW**: And Jzazbz and JzCzhz color spaces. Additionally, and the Delta E Jz distance function.
 - **FIX**: Actually make `mix` default to `lab` like `interpolate` and friends do.
 
 ## 0.1.0a17
