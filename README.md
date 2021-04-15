@@ -44,7 +44,7 @@ different CSS formats, and various other things.
 
 # Documentation
 
-https://facelessuser.github.com/coloraide
+https://facelessuser.github.io/coloraide
 
 ## License
 
