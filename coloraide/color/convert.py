@@ -13,10 +13,9 @@ class Convert:
         if fit:
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
-                clone = self.clone()
-                result = clone.convert(space)
-                result.fit(space, method=method, in_place=True)
-                return result
+                converted = self.convert(space, in_place=in_place)
+                converted.fit(space, method=method, in_place=True)
+                return converted
 
         convert_to = '_to_{}'.format(space)
         convert_from = '_from_{}'.format(self.space())
@@ -45,6 +44,7 @@ class Convert:
                 coords = func(coords)
 
         converted = self.new(space, coords, self.alpha)
+
         return self.mutate(converted) if in_place else converted
 
     def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
@@ -64,5 +64,4 @@ class Convert:
             clone.convert(self.space(), in_place=True)
 
         self._attach(clone._space)
-        clone._space = False
         return self

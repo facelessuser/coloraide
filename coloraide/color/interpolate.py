@@ -57,7 +57,7 @@ class InterpolateSingle:
         color = self.create(self.space, channels[:-1], channels[-1])
         if self.premultiplied:
             postdivide(color)
-        return color.convert(self.outspace) if self.outspace != color.space() else color
+        return color.convert(self.outspace, in_place=True) if self.outspace != color.space() else color
 
 
 class InterpolateMulti:
@@ -187,12 +187,12 @@ class Interpolate:
     def mask(self, channel, *, invert=False, in_place=False):
         """Mask color channels."""
 
-        clone = self.clone()
+        this = self if in_place else self.clone()
         masks = set([channel] if isinstance(channel, str) else channel)
         for name in self._space.CHANNEL_NAMES:
             if (not invert and name in masks) or (invert and name not in masks):
-                clone.set(name, util.NaN)
-        return self.update(clone) if in_place else clone
+                this.set(name, util.NaN)
+        return this
 
     def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
         """
@@ -273,7 +273,6 @@ class Interpolate:
         color = self._handle_color_input(color)
         color = self.interpolate(color, **interpolate_args)(percent)
         return self.mutate(color) if in_place else color
-
 
     def interpolate(
         self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,

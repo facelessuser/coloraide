@@ -60,8 +60,7 @@ class Gamut:
         c._space._coords = func(self.clone(), c)
 
         # Adjust "this" color
-        this.update(c)
-        return this
+        return this.update(c)
 
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if current color is in gamut."""

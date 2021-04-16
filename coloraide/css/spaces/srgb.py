@@ -1,6 +1,6 @@
 """SRGB color class."""
 import re
-from .. import _names
+from .. import _color_names
 from ...spaces import srgb as generic
 from ...spaces import _parse
 from ... import util
@@ -75,7 +75,7 @@ class SRGB(generic.SRGB):
                 index = int(length / 4)
                 if length in (8, 4) and h[-index:].lower() == ("f" * index):
                     h = h[:-index]
-                n = _names.hex2name(h)
+                n = _color_names.hex2name(h)
                 if n is not None:
                     value = n
 
@@ -197,7 +197,7 @@ class SRGB(generic.SRGB):
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
-                string = _names.name2hex(string[m.start(0):m.end(0)])
+                string = _color_names.name2hex(string[m.start(0):m.end(0)])
                 if string is not None:
                     return cls.split_channels(string), m.end(0)
             else:
