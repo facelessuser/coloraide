@@ -54,13 +54,10 @@ def xyz_to_lab(xyz):
     )
 
 
-class Lab(Space):
+class LabBase(Space):
     """Lab class."""
 
-    SPACE = "lab"
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = convert.WHITES["D50"]
 
     _range = (
         GamutUnbound([Percent(0), Percent(100.0)]),  # Technically we could/should clamp the zero side.
@@ -103,6 +100,14 @@ class Lab(Space):
         """B axis."""
 
         self._coords[2] = self._handle_input(value)
+
+
+class Lab(LabBase):
+    """Lab class."""
+
+    SPACE = "lab"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D50"]
 
     @classmethod
     def _to_xyz(cls, lab):

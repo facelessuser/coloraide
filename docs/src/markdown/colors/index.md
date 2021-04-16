@@ -232,14 +232,27 @@ perceived colors in human color vision.
 _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 </div>
 
-!!! tip "XYZ White Point"
-    CSS defines XYZ with a D50 white point, so XYZ is currently exposed with D50. Commonly, XYZ is used with a D65 white
-    point. If needed, you can use `xyzd65` instead of `xyz` to get an XYZ color with a D65 white point.
+## XYZ D65
 
-    ```color
-    Color('red').convert('xyz')
-    Color('red').convert('xyzd65')
-    ```
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `xyz-d65`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    x          | 0 - 1
+    y          | 0 - 1
+    z          | 0 - 1
+
+XYZ D65 is the same as [XYZ](#xyz) except it uses a D65 white point.
+
+_[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
+</div>
 
 <style>
 .info-container { overflow: hidden; }
@@ -262,8 +275,8 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
     Name       | Range
     ---------- | -----
     lightness  | 0 - 100
-    a          | +/-160 - +/-160
-    b          | +/-160 - +/-160
+    a          | -160 - 160
+    b          | -160 - 160
 
 The CIELAB color space also referred to as L\*a\*b\* is a color space defined by the International Commission on
 Illumination (abbreviated CIE) in 1976. It expresses color as three values: L\* for perceptual lightness, and a\* and
@@ -294,6 +307,50 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
 (chroma, relative saturation) and h° (hue angle, angle of the hue in the CIELAB color wheel) instead of the Cartesian
 coordinates a\* and b\*. The CIELAB lightness L\* remains unchanged.
+
+_[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
+</div>
+
+## CIELAB D65
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `lab-d65`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    lightness  | 0 - 100
+    a          | -160 - 160
+    b          | -160 - 160
+
+CIELAB D65 is the same as [CIELAB](#cielab) except it uses a D65 white point.
+
+_[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
+</div>
+
+## CIELCH D65
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `lch-d65`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    lightness  | 0 - 100
+    chroma     | 0 - 100
+    hue        | 0 - 360
+
+CIELCH D65 is the same as [CIELCH](#cielch) except it uses a D65 white point.
 
 _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
 </div>

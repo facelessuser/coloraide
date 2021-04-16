@@ -228,7 +228,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test luminance."""
 
         c1 = Color('orange')
-        c2 = c1.convert('xyzd65')
+        c2 = c1.convert('xyz-d65')
         self.assertEqual(c1.luminance(), c2.y)
 
     def test_property(self):
