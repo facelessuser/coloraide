@@ -5,7 +5,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ._space import Space, RE_DEFAULT_MATCH
 from ._gamut import GamutUnbound
-from .xyzd65 import XYZ
+from .xyz_d65 import XYZ
 from . import _convert as convert
 from .. import util
 import re
@@ -36,19 +36,19 @@ D = -0.56
 D0 = 1.6295499532821566E-11
 
 # XYZ cone matrices
-xyz_to_lms_p_m = [
+xyz_to_lms_m = [
     [0.41478972, 0.579999, 0.0146480],
     [-0.2015100, 1.120649, 0.0531008],
     [-0.0166008, 0.264800, 0.6684799]
 ]
 
-lms_p_to_xyz_mi = [
-    [1.9242264357876067, -1.0047923125953657, 0.037651404030618],
-    [0.35031676209499907, 0.7264811939316552, -0.06538442294808501],
-    [-0.09098281098284752, -0.3127282905230739, 1.5227665613052603]
+lms_to_xyz_mi = [
+    [1.9242264357876069, -1.0047923125953657, 0.037651404030618],
+    [0.3503167620949991, 0.7264811939316552, -0.065384422948085],
+    [-0.0909828109828475, -0.3127282905230739, 1.5227665613052603]
 ]
 
-# LMS prime to Izazbz matrices
+# LMS to Izazbz matrices
 lms_p_to_izazbz_m = [
     [0.5, 0.5, 0],
     [3.524000, -4.066708, 0.542708],
@@ -56,19 +56,19 @@ lms_p_to_izazbz_m = [
 ]
 
 izazbz_to_lms_p_mi = [
-    [1, 0.1386050432715393, 0.05804731615611886],
-    [0.9999999999999999, -0.1386050432715393, -0.05804731615611886],
-    [0.9999999999999998, -0.09601924202631895, -0.8118918960560388]
+    [1.0, 0.1386050432715393, 0.05804731615611882],
+    [1.0, -0.13860504327153927, -0.05804731615611891],
+    [1.0, -0.09601924202631895, -0.811891896056039]
 ]
 
 
-def xyzd65_to_absxyzd65(xyzd65):
+def xyz_d65_to_absxyzd65(xyzd65):
     """XYZ D65 to Absolute XYZ D65."""
 
     return [max(c * YW, 0) for c in xyzd65]
 
 
-def absxyzd65_to_xyzd65(absxyzd65):
+def absxyzd65_to_xyz_d65(absxyzd65):
     """Absolute XYZ D65 XYZ D65."""
 
     return [max(c / YW, 0) for c in absxyzd65]
@@ -102,7 +102,7 @@ def pq_decode(pqlms):
     ]
 
 
-def jzazbz_to_xyzd65(jzazbz):
+def jzazbz_to_xyz_d65(jzazbz):
     """From Jzazbz to XYZ."""
 
     jz, az, bz = jzazbz
@@ -117,24 +117,24 @@ def jzazbz_to_xyzd65(jzazbz):
     lms = pq_decode(pqlms)
 
     # Convert back to absolute XYZ D65
-    xm, ym, za = util.dot(lms_p_to_xyz_mi, lms)
+    xm, ym, za = util.dot(lms_to_xyz_mi, lms)
     xa = (xm + ((B - 1) * za)) / B
     ya = (ym + ((G - 1) * xa)) / G
 
     # Convert back to normal XYZ D65
-    return absxyzd65_to_xyzd65([xa, ya, za])
+    return absxyzd65_to_xyz_d65([xa, ya, za])
 
 
-def xyzd65_to_jzazbz(xyzd65):
+def xyz_d65_to_jzazbz(xyzd65):
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
-    xa, ya, za = xyzd65_to_absxyzd65(xyzd65)
+    xa, ya, za = xyz_d65_to_absxyzd65(xyzd65)
     xm = (B * xa) - ((B - 1) * za)
     ym = (G * ya) - ((G - 1) * xa)
 
     # Convert to LMS
-    lms = util.dot(xyz_to_lms_p_m, [xm, ym, za])
+    lms = util.dot(xyz_to_lms_m, [xm, ym, za])
 
     # PQ encode the LMS
     pqlms = pq_encode(lms)
@@ -201,10 +201,10 @@ class Jzazbz(Space):
     def _to_xyz(cls, jzazbz):
         """To XYZ."""
 
-        return cls._chromatic_adaption(cls.white(), XYZ.white(), jzazbz_to_xyzd65(jzazbz))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), jzazbz_to_xyz_d65(jzazbz))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return xyzd65_to_jzazbz(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_d65_to_jzazbz(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz))

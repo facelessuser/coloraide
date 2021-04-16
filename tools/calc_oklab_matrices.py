@@ -1,8 +1,6 @@
 """Calculate `oklab` matrices."""
 import numpy as np
 
-np.set_printoptions(precision=16, sign='-')
-
 
 m1 = np.asarray(
     [
@@ -25,8 +23,8 @@ if __name__ == "__main__":
     print('===== m1 =====')
     print(m1)
     print('===== m1^-1 =====')
-    print(np.linalg.inv(m1))
+    print(np.linalg.inv(m1).tolist())
     print('===== m2 =====')
     print(m2)
     print('===== m2^-1 =====')
-    print(np.linalg.inv(m2))
+    print(np.linalg.inv(m2).tolist())

@@ -47,13 +47,10 @@ def lch_to_lab(lch):
     )
 
 
-class Lch(Cylindrical, Space):
+class LchBase(Cylindrical, Space):
     """Lch class."""
 
-    SPACE = "lch"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = convert.WHITES["D50"]
 
     _range = (
         # I think chroma, specifically should be clamped.
@@ -108,6 +105,14 @@ class Lch(Cylindrical, Space):
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
         return coords, alpha
+
+
+class Lch(LchBase):
+    """Lch class."""
+
+    SPACE = "lch"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    WHITE = convert.WHITES["D50"]
 
     @classmethod
     def _to_lab(cls, lch):

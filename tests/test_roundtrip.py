@@ -1,9 +1,9 @@
 """Sanity check that ensures all colors round trip back."""
-import unittest
 from coloraide import Color
+import pytest
 
 
-class TestRoundTrip(unittest.TestCase):
+class TestRoundTrip:
     """
     Test round trip conversions of all color spaces.
 
@@ -17,94 +17,38 @@ class TestRoundTrip(unittest.TestCase):
     enough.
     """
 
-    def assert_round_trip(self, color, ignore=None):
-        """Test sRGB to HSL."""
+    # Skip colors with null hues or hues that can wrap.
+    COLORS = [
+        # Color('red'),
+        Color('orange'),
+        Color('yellow'),
+        Color('green'),
+        Color('blue'),
+        Color('indigo'),
+        Color('violet'),
+        # Color('white'),
+        # Color('black')
+    ]
 
-        if ignore is None:
-            ignore = set()
+    def assert_round_trip(self, color, space):
+        """Cycle through all the other colors and convert to them and back and check the results."""
 
-        print('----- Color -----')
-        print(color)
-        c1 = Color(color)
+        c1 = Color(color).convert(space)
         for space in c1.CS_MAP.keys():
             # Print the color space to easily identify which color space broke.
-            print('>>> Convert to: {}'.format(space))
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
-            cmp_key = '{}:{}'.format(c1.space(), space)
-            if cmp_key not in ignore:
-                self.assertEqual(c1.to_string(color=True), c2.to_string(color=True))
+            str1 = c1.to_string(color=True)
+            str2 = c2.to_string(color=True)
+            if str1 != str2:
+                print('----- Color Space {} -----'.format(color.space()))
+                print(color)
+                print('>>> Convert to: {}'.format(space))
+                self.assertEqual(str1, str2)
 
-    def test_srgb(self):
-        """Test sRGB."""
+    @pytest.mark.parametrize('space', list(Color.CS_MAP.keys()))
+    def test_round_trip(self, space):
+        """Test round trip."""
 
-        self.assert_round_trip("rgb(10% 100% 50%)")
-
-    def test_srgb_linear(self):
-        """Test sRGB Linear."""
-
-        self.assert_round_trip("color(srgb-linear 10% 100% 50%)")
-
-    def test_hsl(self):
-        """Test HSL."""
-
-        self.assert_round_trip("hsl(128 50% 75%)")
-
-    def test_hsv(self):
-        """Test HSV."""
-
-        self.assert_round_trip("color(hsv 300 70 50)")
-
-    def test_hwb(self):
-        """Test HWB."""
-
-        self.assert_round_trip("hwb(90 25% 10%)")
-
-    def test_lab(self):
-        """Test Lab."""
-
-        self.assert_round_trip("lab(50% -40 10)")
-
-    def test_lch(self):
-        """Test LCH."""
-
-        self.assert_round_trip("lch(80% 50 270)")
-
-    def test_xyz(self):
-        """Test XYZ."""
-
-        self.assert_round_trip("color(xyz 0.3 0.7 0.7)")
-
-    def test_xyzd65(self):
-        """Test XYZ D65."""
-
-        self.assert_round_trip("color(xyzd65 0.3 0.7 0.7)")
-
-    def test_display_p3(self):
-        """Test Display P3."""
-
-        self.assert_round_trip("color(display-p3 0.3 0.4 0.9)")
-
-    def test_rec_2020(self):
-        """Test Rec 2020."""
-
-        self.assert_round_trip("color(rec2020 0.9 0.2 0.4)")
-
-    def test_prophoto_rgb(self):
-        """Test ProPhoto RGB."""
-
-        # The conversion for Jzazbz and JzCzhz is just ever so slightly off,
-        #
-        # ```
-        # AssertionError: 'color(prophoto-rgb 0.2 0.8 0)' != 'color(prophoto-rgb 0.19827 0.8001 0.06688)'
-        # ```
-        #
-        # but round tripping everywhere else is fine. I imagine this is just one
-        # of the edge cases where the conversion for these specific values isn't perfect.
-        # If we saw this in all the round trip tests, we'd be more concerned.
-        self.assert_round_trip("color(prophoto-rgb 0.2 0.8 0.0)", ignore={'prophoto-rgb:jzazbz', 'prophoto-rgb:jzczhz'})
-
-    def test_a98_rgb(self):
-        """Test A98 RGB."""
-
-        self.assert_round_trip("color(a98-rgb 0.6 0.4 0.2)")
+        for c in self.COLORS:
+            self.assert_round_trip(c, space)

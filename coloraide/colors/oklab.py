@@ -35,13 +35,13 @@ m2i = [
 ]
 
 
-def xyzd65_to_oklab(xyzd65):
+def xyz_d65_to_oklab(xyzd65):
     """XYZ D65 to Oklab."""
 
     return util.dot([util.cbrt(x) for x in util.dot(xyzd65, m1)], m2)
 
 
-def oklab_to_xyzd65(oklab):
+def oklab_to_xyz_d65(oklab):
     """From XYZ to LMS."""
 
     return util.dot([x ** 3 for x in util.dot(oklab, m2i)], m1i)
@@ -101,10 +101,10 @@ class Oklab(Space):
     def _to_xyz(cls, oklab):
         """To XYZ."""
 
-        return cls._chromatic_adaption(cls.white(), XYZ.white(), oklab_to_xyzd65(oklab))
+        return cls._chromatic_adaption(cls.white(), XYZ.white(), oklab_to_xyz_d65(oklab))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return xyzd65_to_oklab(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_d65_to_oklab(cls._chromatic_adaption(XYZ.white(), cls.white(), xyz))
