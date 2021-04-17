@@ -1,4 +1,4 @@
-"""Fit by compessing chroma in Lch."""
+"""Fit by compressing chroma in Lch."""
 
 
 def fit(base, color):

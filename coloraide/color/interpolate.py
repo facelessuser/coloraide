@@ -13,19 +13,16 @@ Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
 """
 import math
-import functools
 from collections.abc import Sequence
 from .. import util
 from ..spaces import Cylindrical, Angle
 
 
-def _interpolate(percent, interpolator):
-    """Wrapper for interpolate."""
-
-    return interpolator.interpolate(percent)
+class Interpolator:
+    """Interpolator."""
 
 
-class InterpolateSingle:
+class InterpolateSingle(Interpolator):
     """Interpolate a single range of two colors."""
 
     def __init__(self, channels1, channels2, create, progress, space, outspace, premultiplied):
@@ -39,7 +36,7 @@ class InterpolateSingle:
         self.outspace = outspace
         self.premultiplied = premultiplied
 
-    def interpolate(self, p):
+    def __call__(self, p):
         """Run through the coordinates and run the interpolation on them."""
 
         channels = []
@@ -60,7 +57,7 @@ class InterpolateSingle:
         return color.convert(self.outspace, in_place=True) if self.outspace != color.space() else color
 
 
-class InterpolateMulti:
+class InterpolateMulti(Interpolator):
     """Interpolate multiple ranges of colors."""
 
     def __init__(self, interpolators, progress):
@@ -69,7 +66,7 @@ class InterpolateMulti:
         self.interpolators = interpolators
         self.progress = progress
 
-    def interpolate(self, p):
+    def __call__(self, p):
         """Interpolate."""
 
         p = (p if self.progress is None else self.progress(p))
@@ -317,7 +314,7 @@ class Interpolate:
                 current = c
                 start = stop
 
-            return functools.partial(_interpolate, interpolator=InterpolateMulti(color_map, progress))
+            return InterpolateMulti(color_map, progress)
         else:
             # Convert to the color space and ensure the color fits inside
             color1 = self.convert(inspace, fit=True)
@@ -338,15 +335,12 @@ class Interpolate:
             channels1.append(color1.alpha)
             channels2.append(color2.alpha)
 
-            return functools.partial(
-                _interpolate,
-                interpolator=InterpolateSingle(
-                    channels1=channels1,
-                    channels2=channels2,
-                    create=type(self),
-                    progress=progress,
-                    space=inspace,
-                    outspace=outspace,
-                    premultiplied=premultiplied
-                )
+            return InterpolateSingle(
+                channels1=channels1,
+                channels2=channels2,
+                create=type(self),
+                progress=progress,
+                space=inspace,
+                outspace=outspace,
+                premultiplied=premultiplied
             )

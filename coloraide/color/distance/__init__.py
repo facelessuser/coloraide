@@ -1,9 +1,9 @@
-"""Distance"""
+"""Distance and Delta E."""
 from . import distance_euclidean
-from . import delta_e_76
-from . import delta_e_94
-from . import delta_e_cmc
-from . import delta_e_2000
+from . import delta_e_76  # noqa: F401
+from . import delta_e_94  # noqa: F401
+from . import delta_e_cmc  # noqa: F401
+from . import delta_e_2000  # noqa: F401
 
 
 class Distance:
@@ -24,7 +24,6 @@ class Distance:
             raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
 
         return de.distance(self, color, **kwargs)
-
 
     def distance(self, color, *, space="lab"):
         """Delta."""

@@ -1,6 +1,6 @@
 """SRGB color class."""
 import re
-from .. import _color_names
+from . import _color_names
 from ...spaces import srgb as generic
 from ...spaces import _parse
 from ... import util

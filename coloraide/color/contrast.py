@@ -1,5 +1,6 @@
 """Color contrast."""
 
+
 class Contrast:
     """Contrast."""
 
