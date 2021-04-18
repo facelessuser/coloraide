@@ -1,5 +1,5 @@
 """Color swatch."""
-from coloraide import Color
+from coloraide import Color, NaN, Piecewise
 from coloraide.color.interpolate import Interpolator
 from pymdownx import superfences
 import xml.etree.ElementTree as Etree
@@ -80,7 +80,7 @@ def find_colors(text):
 def execute(cmd):
     """Execute color commands."""
 
-    g = {'Color': Color}
+    g = {'Color': Color, 'Nan': NaN, 'Piecewise': Piecewise}
     console = ''
     colors = []
 

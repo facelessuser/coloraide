@@ -13,6 +13,42 @@ Import path
     from coloraide import NaN
     ```
 
+## `coloraide.Piecewise` {#piecewise}
+
+```py3
+class Piecewise(
+    namedtuple('Piecewise',
+        [
+            'color',
+            'stop',
+            'progress',
+            'hue',
+            'premultiplied'
+        ]
+    )
+):
+```
+
+Description
+: 
+    `Piecewise` objects are used in [`interpolate`](#interpolate) methods. They allow a user to control interpolation
+    `stops`, `progress`, `hue`, or `premultiplied` options for a specific interpolation piece when doing piecewise
+    interpolation.
+
+Import Path
+: 
+    `Piecewise` is imported from `coloraide` library:
+
+    ```py3
+    from coloraide import Piecewise
+    ```
+
+Parameters
+: 
+   Input parameters match [`interpolate`](#interpolate) parameters of the same name. Only `color` is required and all
+   other parameters default to `#!py3 None`. If a parameter is `#!py3 None`, it will be ignored by
+   [`interpolate`](#interpolate).
+
 ## `coloraide.Color` {#color}
 
 ```py3
@@ -450,6 +486,7 @@ def interpolate(
     self,
     color,
     *,
+    stop=0,
     space="lab",
     progress=None,
     out_space=None,
@@ -469,6 +506,9 @@ Description
     Interpolation can be customized by limiting the interpolation to specific color channels, providing custom
     interpolation functions, and even adjusting the hue logic used.
 
+    [`Piecewise`](#piecewise) objects can be used to specify stops or adjust the interpolation for itself and the
+    preceding color.
+
     Hue\ Evaluation | Description
     --------------- | -----------
     `shorter`       | Angles are adjusted so that θ₂ - θ₁ ∈ [-180, 180].
@@ -481,7 +521,7 @@ Parameters
 : 
     Parameters      | Defaults          | Description
     --------------- | ----------------- | -----------
-    `color`         |                   | A color string or [`Color`](#color) object representing a color. Also, multiple can be provided via a list.
+    `color`         |                   | A color string, [`Color`](#color) object, or [`Piecewise`](#piecewise) object representing a color. Also, multiple can be provided via a list.
     `space`         | `#!py3 "lab"`     | Color space to interpolate in.
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
     `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.

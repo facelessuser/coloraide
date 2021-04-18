@@ -13,21 +13,57 @@ Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
 """
 import math
-from collections.abc import Sequence
+from abc import ABCMeta, abstractmethod
+from collections.abc import Sequence, Mapping, Callable
+from collections import namedtuple
 from .. import util
 from ..spaces import Cylindrical, Angle
 
 
-class Interpolator:
+class Lerp:
+    """Linear interpolation."""
+
+    def __init__(self, progress):
+        """Initialize."""
+
+        self.progress = progress
+
+    def __call__(self, a, b, t):
+        """Interpolate with period."""
+
+        return a + (b - a) * (t if not isinstance(self.progress, Callable) else self.progress(t))
+
+
+class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'premultiplied'])):
+    """Piecewise interpolation input."""
+
+    __slots__ = ()
+
+    def __new__(cls, color, stop=None, progress=None, hue=util.DEF_HUE_ADJ, premultiplied=False):
+        """Initialize."""
+
+        return super().__new__(cls, color, stop, progress, hue, premultiplied)
+
+
+class Interpolator(metaclass=ABCMeta):
     """Interpolator."""
+
+    @abstractmethod
+    def __init__(self):
+        """Initialize."""
+
+    @abstractmethod
+    def __call__(self, p):
+        """Call the interpolator."""
 
 
 class InterpolateSingle(Interpolator):
     """Interpolate a single range of two colors."""
 
-    def __init__(self, channels1, channels2, create, progress, space, outspace, premultiplied):
+    def __init__(self, channels1, channels2, names, create, progress, space, outspace, premultiplied):
         """Initialize."""
 
+        self.names = names
         self.channels1 = channels1
         self.channels2 = channels2
         self.create = create
@@ -41,6 +77,7 @@ class InterpolateSingle(Interpolator):
 
         channels = []
         for i, c1 in enumerate(self.channels1):
+            name = self.names[i]
             c2 = self.channels2[i]
             if util.is_nan(c1) and util.is_nan(c2):
                 value = 0.0
@@ -49,7 +86,13 @@ class InterpolateSingle(Interpolator):
             elif util.is_nan(c2):
                 value = c1
             else:
-                value = c1 + (c2 - c1) * (p if self.progress is None else self.progress(p))
+                progress = None
+                if isinstance(self.progress, Mapping):
+                    progress = self.progress.get(name, self.progress.get('all'))
+                else:
+                    progress = self.progress
+                lerp = progress if isinstance(progress, Lerp) else Lerp(progress)
+                value = lerp(c1, c2, p)
             channels.append(value)
         color = self.create(self.space, channels[:-1], channels[-1])
         if self.premultiplied:
@@ -57,37 +100,103 @@ class InterpolateSingle(Interpolator):
         return color.convert(self.outspace, in_place=True) if self.outspace != color.space() else color
 
 
-class InterpolateMulti(Interpolator):
+class InterpolatePiecewise(Interpolator):
     """Interpolate multiple ranges of colors."""
 
-    def __init__(self, interpolators, progress):
+    def __init__(self, stops, interpolators):
         """Initialize."""
 
+        self.start = stops[0]
+        self.end = stops[len(stops) - 1]
+        self.stops = stops
         self.interpolators = interpolators
-        self.progress = progress
 
     def __call__(self, p):
         """Interpolate."""
 
-        p = (p if self.progress is None else self.progress(p))
-        percent = p * 100
-
-        if percent > 100:
+        percent = p
+        if percent > self.end:
             # Beyond range, just interpolate the last colors
-            return self.interpolators[-1][1](1 + p / len(self.interpolators))
+            return self.interpolators[-1](1 + abs(p - self.end) if p > 1 else 1)
 
-        elif percent < 0:
+        elif percent < self.start:
             # Beyond range, just interpolate the last colors
-            return self.interpolators[0][1](0 + p / len(self.interpolators))
+            return self.interpolators[0](0 - abs(self.start - p) if p < 0 else 0)
 
         else:
-            last = 0
-            for stop, interpolator in self.interpolators:
+            last = self.start
+            for i, interpolator in enumerate(self.interpolators, 1):
+                stop = self.stops[i]
                 if percent <= stop:
                     r = stop - last
                     p2 = (percent - last) / r if r else 1
                     return interpolator(p2)
                 last = stop
+
+
+def calc_stops(stops, count):
+    """Calculate stops."""
+
+    # Ensure the first stop is set to zero if not explicitly set
+    if 0 not in stops:
+        stops[0] = 0
+
+    last = stops[0] * 100
+    highest = last
+    empty = None
+    final = {}
+
+    # Build up normalized stops
+    for i in range(count):
+        value = stops.get(i)
+        if value is not None:
+            value *= 100
+
+        # Found an empty hole, track the start
+        if value is None and empty is None:
+            empty = i - 1
+            continue
+        elif value is None:
+            continue
+
+        # We can't have a stop decrease in progression
+        if value < last:
+            value = last
+
+        # Track the largest explicit value set
+        if value > highest:
+            highest = value
+
+        # Fill in hole if one exists.
+        # Holes will be evenly space between the
+        # current and last stop.
+        if empty is not None:
+            r = i - empty
+            increment = (value - last) / r
+            for j in range(empty + 1, i):
+                last += increment
+                final[j] = last / 100
+            empty = None
+
+        # Set the stop and track it as the last
+        last = value
+        final[i] = last / 100
+
+    # If there is a hole at the end, fill in the hole,
+    # equally spacing the stops from the last to 100%.
+    # If the last is greater than 100%, then all will
+    # be equal to the last.
+    if empty is not None:
+        r = (count - 1) - empty
+        if highest > 100:
+            increment = 0
+        else:
+            increment = (100 - last) / r
+        for j in range(empty + 1, count):
+            last += increment
+            final[j] = last / 100
+
+    return final
 
 
 def postdivide(color):
@@ -178,6 +287,80 @@ def adjust_hues(color1, color2, hue):
     color2.set(name, c2)
 
 
+def color_piecewise_lerp(pw, space, out_space, progress, hue, premultiplied):
+    """Piecewise Interpolation."""
+
+    # Ensure we have something we can interpolate with
+    count = len(pw)
+    if count == 1:
+        pw = [pw[0], pw[0]]
+        count += 1
+
+    # Calculate stops
+    stops = {}
+    for i, x in enumerate(pw, 0):
+        if not isinstance(x, Piecewise):
+            pw[i] = Piecewise(x)
+        elif x.stop is not None:
+            stops[i] = x.stop
+    stops = calc_stops(stops, count)
+
+    # Construct piecewise interpolation object
+    color_map = []
+    current = pw[0].color
+    for i in range(1, count):
+        p = pw[i]
+        color = current._handle_color_input(p.color)
+
+        color_map.append(
+            current.interpolate(
+                color,
+                space=space,
+                out_space=out_space,
+                progress=p.progress if p.progress is not None else progress,
+                hue=p.hue if p.hue is not None else hue,
+                premultiplied=p.premultiplied if p.premultiplied is not None else premultiplied
+            )
+        )
+        current = color
+
+    return InterpolatePiecewise(stops, color_map)
+
+
+def color_lerp(color1, color2, space, out_space, progress, hue, premultiplied):
+    """Color interpolation."""
+
+    # Convert to the color space and ensure the color fits inside
+    color1 = color1.convert(space, fit=True)
+    color2 = color1._handle_color_input(color2).convert(space, fit=True)
+
+    # Adjust hues if we have two valid hues
+    if isinstance(color1._space, Cylindrical):
+        adjust_hues(color1, color2, hue)
+
+    if premultiplied:
+        premultiply(color1)
+        premultiply(color2)
+
+    channels1 = color1.coords()
+    channels2 = color2.coords()
+
+    # Include alpha
+    channels1.append(color1.alpha)
+    channels2.append(color2.alpha)
+
+    return InterpolateSingle(
+        names=color1._space.CHANNEL_NAMES,
+        channels1=channels1,
+        channels2=channels2,
+        create=type(color1),
+        progress=progress,
+        space=space,
+        outspace=out_space,
+        premultiplied=premultiplied
+    )
+
+
 class Interpolate:
     """Interpolate between colors."""
 
@@ -204,8 +387,14 @@ class Interpolate:
         Default delta E method used is delta E 76.
         """
 
-        color = self._handle_color_input(color, sequence=True)
         interpolator = self.interpolate(color, **interpolate_args)
+
+        if isinstance(color, Piecewise):
+            color = self._handle_color_input(color.color)
+        elif not isinstance(color, str) and isinstance(color, Sequence):
+            color = [self._handle_color_input(c.color if isinstance(c, Piecewise) else c) for c in color]
+
+        color = self._handle_color_input(color, sequence=True)
 
         if not isinstance(color, Sequence) and max_delta_e > 0:
             color = [self, color]
@@ -267,13 +456,13 @@ class Interpolate:
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        color = self._handle_color_input(color)
+        if not self._is_color(color) and not isinstance(color, (str, Piecewise)):
+            raise TypeError("Unexpected type '{}'".format(type(color)))
         color = self.interpolate(color, **interpolate_args)(percent)
         return self.mutate(color) if in_place else color
 
     def interpolate(
-        self, color, *, space="lab", out_space=None, progress=None, hue=util.DEF_HUE_ADJ,
-        premultiplied=False
+        self, color, *, space="lab", out_space=None, stop=0, progress=None, hue=util.DEF_HUE_ADJ, premultiplied=False
     ):
         """
         Return an interpolation function.
@@ -287,60 +476,35 @@ class Interpolate:
         mixing occurs.
         """
 
-        color = self._handle_color_input(color, sequence=True)
-        if progress is not None and not callable(progress):
-            raise TypeError('Progress must be callable')
+        space = space.lower()
+        out_space = self.space() if out_space is None else out_space.lower()
 
-        inspace = space.lower()
-        outspace = self.space() if out_space is None else out_space.lower()
+        # A piecewise object was provided, so treat it as such,
+        # or we've changed the stop of the base color, so run it through piecewise.
+        if (
+            isinstance(color, Piecewise) or
+            (stop != 0 and (isinstance(color, str) or self._is_color(color)))
+        ):
+            color = [color]
 
-        # Handle multiple colors
-        if isinstance(color, Sequence):
-            if len(color) == 0:
-                color = [self]
-            count = len(color)
-            stops = 100 / count
-            color_map = []
-            start = 0
-            current = self
-            for c in color:
-                stop = start + stops
-                color_map.append(
-                    [
-                        stop,
-                        current.interpolate(c, space=inspace, out_space=outspace, hue=hue, premultiplied=premultiplied)
-                    ]
-                )
-                current = c
-                start = stop
-
-            return InterpolateMulti(color_map, progress)
+        if not isinstance(color, str) and isinstance(color, Sequence):
+            # We have a sequence, so use piecewise interpolation
+            return color_piecewise_lerp(
+                [Piecewise(self, stop=stop)] + list(color),
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
+            )
         else:
-            # Convert to the color space and ensure the color fits inside
-            color1 = self.convert(inspace, fit=True)
-            color2 = color.convert(inspace, fit=True)
-
-            # Adjust hues if we have two valid hues
-            if isinstance(color1._space, Cylindrical):
-                adjust_hues(color1, color2, hue)
-
-            if premultiplied:
-                premultiply(color1)
-                premultiply(color2)
-
-            channels1 = color1.coords()
-            channels2 = color2.coords()
-
-            # Include alpha
-            channels1.append(color1.alpha)
-            channels2.append(color2.alpha)
-
-            return InterpolateSingle(
-                channels1=channels1,
-                channels2=channels2,
-                create=type(self),
-                progress=progress,
-                space=inspace,
-                outspace=outspace,
-                premultiplied=premultiplied
+            # We have a sequence, so use piecewise interpolation
+            return color_lerp(
+                self,
+                color,
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
             )
