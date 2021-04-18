@@ -26,8 +26,9 @@ Color("rebeccapurple").interpolate(
 )
 ```
 
-Interpolation can also be done across multiple colors. When doing this, the function will still take a range of 0 - 1,
-it will just span all interpolation regions:
+Interpolation can also be done across multiple colors. The function, just like when interpolating between two colors,
+takes a range of 0 - 1. When interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation)
+is used (which is covered in more detail later).
 
 ```color
 Color('black').interpolate(['red', 'white'])
@@ -124,13 +125,37 @@ to learn more about each one.
     )
     ```
 
-We can also do non-linear interpolation by providing a function. Here we use a function that returns `p ** 3` creating
-the colors (color previews are fit to the sRGB gamut):
+We can also apply easing functions by providing a function via `progress`. Here we use a function that returns
+`#!py3 t ** 3` for the period when interpolating each channel:
 
 ```color
 Color("lch(50% 50 0)").interpolate(
     "lch(90% 50 20)",
-    progress=lambda p: p ** 3
+    progress=lambda t: t ** 3
+)
+```
+
+We can even apply a specific easing functions to a specific channels. You can specify one or more channels, all with
+different functions.
+
+```color
+Color("lch(50% 50 0)").interpolate(
+    "lch(90% 50 20 / 0)",
+    progress={
+        'alpha': lambda t: t ** 3
+    }
+)
+```
+
+You can also set all the channels to a function via `all` and then override specific channels.
+
+```color
+Color("lch(50% 50 0)").interpolate(
+    "lch(90% 50 20 / 0)",
+    progress={
+        'all': lambda t: 1 - t,
+        'alpha': lambda t: t ** 3
+    }
 )
 ```
 
@@ -184,7 +209,9 @@ steps requirement.
 Color("red").steps("blue", steps=10)
 ```
 
-If desired, multiple colors can be provided, and steps will be returned for all the interpolation regions.
+If desired, multiple colors can be provided, and steps will be returned for all the interpolation regions. When
+interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
+detail later).
 
 ```color
 Color("red").steps(["orange", "yellow", "green"], steps=10)
@@ -233,6 +260,39 @@ Color("display-p3", [0, 1, 0]).steps(
 ```
 
 The default delta E method is delta E 76, which is a simple euclidean distancing in the CIELAB color space.
+
+## Piecewise Interpolation
+
+The [`interploate`](#interpolating) and [`steps`](#steps) method allows for piecewise interpolation across multiple
+color ranges. Anytime, multiple colors are provided via a list, the piecewise logic will be applied to the various
+segments.
+
+```color
+Color('red').interpolate(['white', 'black', 'blue'])
+```
+
+The interpolation between each pair of colors defaults to using the options provided via the `interpolate` parameters,
+but you can change them for a given range by using the [`Piecewise`](./api/index.md#piecewise) object. For instance, we
+could apply an easing between just the `#!color white` and `#!color black`. Notice that `Piecewise` is applied to the
+second color in the range, and the options will only apply to the interpolation of that color and the color immediately
+before it.
+
+```color
+Color('red').interpolate(['white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'])
+```
+
+Additionally, you can set color stops using the `stop` parameter. To set the `stop` on the base color, simply set the
+`stop` parameter in the [`interploate`](#interpolating) method.
+
+```color
+Color('red').interpolate([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4)
+```
+
+As previously mentioned, this can also be applied to steps as well.
+
+```color
+Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4, steps=15)
+```
 
 ## Null Handling
 

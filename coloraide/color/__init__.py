@@ -97,6 +97,11 @@ class Color(
 
         return util.is_nan(self.get(name))
 
+    def _is_color(self, obj):
+        """Test if the input is a color."""
+
+        return isinstance(obj, Color)
+
     def _attach(self, space):
         """Attach the this objects convert space to the color."""
 
@@ -109,7 +114,7 @@ class Color(
             color = self.new(color)
         elif sequence and isinstance(color, Sequence):
             color = [self._handle_color_input(c) for c in color]
-        elif not isinstance(color, Color):
+        elif not self._is_color(color):
             raise TypeError("Unexpected type '{}'".format(type(color)))
         return color
 

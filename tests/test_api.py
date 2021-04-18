@@ -1,6 +1,6 @@
 """Test API."""
 import unittest
-from coloraide import Color, NaN
+from coloraide import Color, NaN, Piecewise
 from . import util
 import math
 import warnings
@@ -1339,6 +1339,19 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(226.89 -24.311 79.195)"))
         self.assertColorEqual(Color('red').mix('blue', 0.0), Color("rgb(255 0 0)"))
 
+    def test_bad_mix_input(self):
+        """Test bad mix input."""
+
+        with self.assertRaises(TypeError):
+            Color('red').mix(1)
+
+    def test_mix_input_piecewise(self):
+        """Test mix with piecewise."""
+
+        self.assertColorEqual(
+            Color('red').mix(Piecewise('blue'), 0.5, space="srgb"), Color("srgb", [0.5, 0, 0.5])
+        )
+
     def test_mix_space(self):
         """Test color mix in different space."""
 
@@ -1630,12 +1643,6 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color("lab(54.292% 80.812 69.885)")
         )
 
-    def test_bad_progress(self):
-        """Test bad progress."""
-
-        with self.assertRaises(TypeError):
-            Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress="bad")
-
     def test_interpolate(self):
         """Test interpolation."""
 
@@ -1644,6 +1651,43 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').interpolate('blue', space="srgb")(0.5), Color("srgb", [0.5, 0, 0.5]))
         self.assertColorEqual(Color('red').interpolate('blue', space="srgb")(0.25), Color("srgb", [0.75, 0, 0.25]))
         self.assertColorEqual(Color('red').interpolate('blue', space="srgb")(0), Color("srgb", [1, 0, 0]))
+
+    def test_interpolate_channel(self):
+        """Test interpolating a specific channel differently."""
+
+        self.assertColorEqual(
+            Color('red').interpolate(Color('blue').set('alpha', 0), progress={'alpha': lambda t: t ** 3})(0.5),
+            Color('rgb(192.99 -29.51 136.17 / 0.875)')
+        )
+
+    def test_interpolate_channel_all(self):
+        """Test interpolating a specific channel differently, but setting the others via all."""
+
+        self.assertColorEqual(
+            Color('red').interpolate(
+                Color('blue').set('alpha', 0), progress={
+                    'alpha': lambda t: t ** 3,
+                    'all': lambda t: 0
+                })(0.5),
+            Color('rgb(255 0 0 / 0.875)')
+        )
+
+    def test_interpolate_input_piecewise(self):
+        """Test interpolation with piecewise."""
+
+        self.assertColorEqual(
+            Color('red').interpolate(Piecewise('blue'), space="srgb")(0.5), Color("srgb", [0.5, 0, 0.5])
+        )
+
+    def test_interpolate_stop(self):
+        """Test interpolation with piecewise."""
+
+        self.assertColorEqual(
+            Color('red').interpolate('blue', space="srgb", stop=0.6)(0.5), Color('red')
+        )
+        self.assertColorEqual(
+            Color('red').interpolate('blue', space="srgb", stop=0.6)(0.7), Color('rgb(191.25 0 63.75)')
+        )
 
     def test_interpolate_space(self):
         """Test color mix in different space."""
@@ -1659,15 +1703,15 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(Color('green').interpolate([])(0.5), Color('green'))
 
-    def test_interpolate_multi(self):
+    def test_interpolate_piecewise(self):
         """Test multiple inputs for interpolation."""
 
         func = Color('white').interpolate(['red', 'black'])
         self.assertColorEqual(func(0), Color('white'))
         self.assertColorEqual(func(0.5), Color('red'))
         self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(250.72 264.35 268.3)'))
-        self.assertColorEqual(func(1.1), Color('rgb(-78.68 -40.405 -16.116)'))
+        self.assertColorEqual(func(-0.1), Color('rgb(245.78 273.68 281.72)'))
+        self.assertColorEqual(func(1.1), Color('rgb(-31.539 -12.727 -3.1327)'))
 
     def test_interpolate_out_space(self):
         """Test interpolation."""
@@ -1802,6 +1846,13 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(colors[2], Color("srgb", [0.5, 0, 0.5]))
         self.assertColorEqual(colors[1], Color("srgb", [0.75, 0, 0.25]))
         self.assertColorEqual(colors[0], Color("srgb", [1, 0, 0]))
+
+    def test_steps_input_piecewise(self):
+        """Test steps with piecewise."""
+
+        self.assertColorEqual(
+            Color('red').steps(Piecewise('blue'), space="srgb", steps=5)[2], Color("srgb", [0.5, 0, 0.5])
+        )
 
     def test_steps_multi(self):
         """Test steps with multiple color ranges."""

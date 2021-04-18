@@ -93,9 +93,9 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
-    from coloraide import Color, NaN
+    from coloraide import Color, NaN, Piecewise
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN}
+    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
     console = ''
     colors = []
 

@@ -44,7 +44,7 @@ class TestRoundTrip:
                 print('----- Color Space {} -----'.format(color.space()))
                 print(color)
                 print('>>> Convert to: {}'.format(space))
-                self.assertEqual(str1, str2)
+                assert str1 == str2
 
     @pytest.mark.parametrize('space', list(Color.CS_MAP.keys()))
     def test_round_trip(self, space):

@@ -51,6 +51,7 @@ NaNs
 Oklab
 Oklch
 PQ
+Piecewise
 Premultiply
 ProPhoto
 PyPI
@@ -77,6 +78,7 @@ cz
 fixup
 grayscale
 hz
+interpolator
 ish
 js
 jz
@@ -85,6 +87,7 @@ luminance
 macOS
 opRGB
 opto
+piecewise
 pre
 premultiplication
 premultiplied
