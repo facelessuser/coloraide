@@ -2,9 +2,10 @@
 
 ## 0.10a18
 
-- **NEW**: `interpolate` can now accept multiple colors and will return an interpolation function that spans all
+- **NEW**: Refactor of internals.
+- **NEW**: `interpolate` and `steps` can now accept multiple colors and will return an interpolation function that spans all
   specified colors via the range of `[0..1]`.
-- **NEW**: `step` can now accept multiple colors and will return colors from the entire range.
+- **NEW**: Better control over piecewise interpolation: setting stops, adjusting options per segment, etc.
 - **NEW**: `compose` can now accept multiple colors and will return a result where all colors are layered on top of each
   other.
 - **NEW**: `new` method does not need to be a `classmethod`. Make it a normal method on the instance.
