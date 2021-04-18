@@ -20,6 +20,12 @@ DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
 
 
+def constrain_hue(hue):
+    """Constrain hue to 0 - 360."""
+
+    return hue % 360 if not is_nan(hue) else hue
+
+
 def is_number(value):
     """Check if value is a number."""
 

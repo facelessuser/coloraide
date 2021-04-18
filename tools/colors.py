@@ -1,5 +1,6 @@
 """Color swatch."""
 from coloraide import Color
+from coloraide.color.interpolate import Interpolator
 from pymdownx import superfences
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence
@@ -9,7 +10,6 @@ from io import StringIO
 import contextlib
 import sys
 import re
-import functools
 
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
@@ -43,7 +43,7 @@ def get_colors(result):
     colors = []
     if isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(), result))
-    elif isinstance(result, functools.partial) and result.func.__name__ == '_interpolate':
+    elif isinstance(result, Interpolator):
         colors = ColorInterpolate()
         for x in range(20):
             c = result(x / 20)
