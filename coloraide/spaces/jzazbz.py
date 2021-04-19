@@ -82,7 +82,7 @@ def pq_encode(lms):
                 (C1 + (C2 * ((c / 10000) ** N))) /
                 (1 + (C3 * ((c / 10000) ** N)))
             ) ** P
-        ) for c in lms
+        ).real for c in lms
     ]
 
 
@@ -97,7 +97,7 @@ def pq_decode(pqlms):
                     ((C3 * (c ** PINV)) - C2)
                 ) ** NINV
             )
-        ) for c in pqlms
+        ).real for c in pqlms
     ]
 
 
