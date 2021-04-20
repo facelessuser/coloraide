@@ -5,7 +5,6 @@ from .srgb import SRGB
 from .xyz import XYZ
 from .. import util
 import re
-import math
 
 ET = 1 / 512
 ET2 = 16 / 512
@@ -52,11 +51,10 @@ def lin_prophoto(rgb):
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
-        abs_i = abs(i)
-        if abs_i < ET2:
+        if abs(i) < ET2:
             result.append(i / 16.0)
         else:
-            result.append(math.copysign(abs_i ** 1.8, i))
+            result.append(util.npow(i, 1.8))
     return result
 
 
@@ -72,11 +70,10 @@ def gam_prophoto(rgb):
     result = []
     for i in rgb:
         # Mirror linear nature of algorithm on the negative axis
-        abs_i = abs(i)
-        if abs_i < ET:
+        if abs(i) < ET:
             result.append(16.0 * i)
         else:
-            result.append(math.copysign(abs_i ** (1.0 / 1.8), i))
+            result.append(util.npow(i, 1.0 / 1.8))
     return result
 
 

@@ -44,7 +44,7 @@ def gam_2020(rgb):
         if abs_i < BETA:
             result.append(4.5 * i)
         else:
-            result.append(math.copysign(ALPHA * abs_i ** 0.45 - (ALPHA - 1), i))
+            result.append(math.copysign(ALPHA * (abs_i ** 0.45) - (ALPHA - 1), i))
     return result
 
 
