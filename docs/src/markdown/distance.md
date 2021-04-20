@@ -25,6 +25,8 @@ was more perceptually uniform than it actually was. At first, the distance algor
 implementation (Delta E 1976), but over time it has been tweaked to make corrections to account for the fact that it is
 not perfectly uniform. There are areas and industries that still use many of these for different reasons.
 
+Additionally, there are other implementations that use different color spaces, such as Delta E ITP which uses ICtCp.
+
 ColorAide implements the following delta E methods:
 
 Name             | Parameter\ Name | Weighted\ Parameters
@@ -33,3 +35,4 @@ CIE76            | `76`            |
 CMC\ l:c\ (1984) | `cmc`           | `l=2, c=1`
 CIE94            | `94`            | `kl=1, k1=0.045, k2=0.015`
 CIEDE2000        | `2000`          | `kl=1, kc=1, kh=1`
+ICtCp            | `itp`           | `scalar=470`

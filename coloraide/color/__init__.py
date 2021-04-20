@@ -27,12 +27,13 @@ from ..spaces.oklab import Oklab
 from ..spaces.oklch import Oklch
 from ..spaces.jzazbz import Jzazbz
 from ..spaces.jzczhz import JzCzhz
+from ..spaces.ictcp import ICtCp
 
 
 SUPPORTED = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
-    Oklab, Oklch, Jzazbz, JzCzhz
+    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp
 )
 
 

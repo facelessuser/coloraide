@@ -20,6 +20,9 @@ ColorAide
 ColorHelper
 Cz
 DCI
+EOTF
+Ebner
+Fairchild
 Formatter
 HDR
 HSB
@@ -29,6 +32,9 @@ HSV
 HWB
 HWB
 Hz
+ICtCp
+IPT
+ITP
 ITU
 Interpolator
 Iz
@@ -59,6 +65,7 @@ Pyodide
 RGB
 ROMM
 SDR
+SMPTE
 SRGB
 Sharma
 TODO
@@ -67,6 +74,7 @@ UHDTV
 Verou
 WCG
 XYZ
+YCbCr
 accessor
 accessors
 az
@@ -74,6 +82,7 @@ boolean
 bz
 cd
 chroma
+cp
 cz
 fixup
 grayscale
@@ -94,6 +103,7 @@ premultiplied
 prerelease
 prereleases
 prophoto
+quantizer
 rgb
 sRGB
 sRGB's

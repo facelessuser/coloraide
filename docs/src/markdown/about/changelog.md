@@ -11,6 +11,7 @@
 - **NEW**: `new` method does not need to be a `classmethod`. Make it a normal method on the instance.
 - **NEW**: Add Jzazbz and JzCzhz color spaces.
 - **NEW**: Add D65 variants of CIELAB, CIELCH, and XYZ.
+- **NEW**: Add ICtCp color space and Delta E ITP method.
 - **FIX**: Actually make `mix` default to `lab` like `interpolate` and friends do.
 
 ## 0.1.0a17
