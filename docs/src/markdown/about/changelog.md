@@ -3,8 +3,8 @@
 ## 0.10a18
 
 - **NEW**: Refactor of internals.
-- **NEW**: `interpolate` and `steps` can now accept multiple colors and will return an interpolation function that spans all
-  specified colors via the range of `[0..1]`.
+- **NEW**: `interpolate` and `steps` can now accept multiple colors and will return an interpolation function that spans
+  all specified colors via the range of `[0..1]`.
 - **NEW**: Better control over piecewise interpolation: setting stops, adjusting options per segment, etc.
 - **NEW**: `compose` can now accept multiple colors and will return a result where all colors are layered on top of each
   other.
