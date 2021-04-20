@@ -9,32 +9,27 @@ from .xyz_d65 import XYZ
 from .. import util
 import re
 
-# Many libraries use 200, but `Colorjs.io` uses 203
-# The author explains why 203 was chosen:
-#
-#   Maximum luminance in PQ is 10,000 cd/m^2
-#   Relative XYZ has Y=1 for media white
-#   BT.2048 says media white Y=203 at PQ 58
-#
-# We will currently use 203 for now the difference is minimal.
-# If there were a significant difference, and one clearly gave
-# better results, that would make the decision easier, but the
-# explanation above seems sufficient for now.
-YW = 203
-
 B = 1.15
 G = 0.66
-N = 2610 / (2 ** 14)
-NINV = (2 ** 14) / 2610
-C1 = 3424 / (2 ** 12)
-C2 = 2413 / (2 ** 7)
-C3 = 2392 / (2 ** 7)
-P = 1.7 * 2523 / (2 ** 5)
-PINV = (2 ** 5) / (1.7 * 2523)
 D = -0.56
 D0 = 1.6295499532821566E-11
 
-# XYZ cone matrices
+# All PQ Values are equivalent to defaults as stated in link below except `M2` (and `IM2`):
+# https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
+#
+# ```
+# M1 = 2610 / (2 ** 14)
+# IM1 = (2 ** 14) / 2610
+# C1 = 3424 / (2 ** 12)
+# C2 = 2413 / (2 ** 7)
+# C3 = 2392 / (2 ** 7)
+# M2 = 1.7 * 2523 / (2 ** 5)
+# IM2 = (2 ** 5) / (1.7 * 2523)
+# ```
+M2 = 1.7 * 2523 / (2 ** 5)
+
+
+# XYZ transform matrices
 xyz_to_lms_m = [
     [0.41478972, 0.579999, 0.0146480],
     [-0.2015100, 1.120649, 0.0531008],
@@ -61,46 +56,6 @@ izazbz_to_lms_p_mi = [
 ]
 
 
-def xyz_d65_to_absxyzd65(xyzd65):
-    """XYZ D65 to Absolute XYZ D65."""
-
-    return [max(c * YW, 0) for c in xyzd65]
-
-
-def absxyzd65_to_xyz_d65(absxyzd65):
-    """Absolute XYZ D65 XYZ D65."""
-
-    return [max(c / YW, 0) for c in absxyzd65]
-
-
-def pq_encode(lms):
-    """PQ encoding function to encode high dynamic range luminance."""
-
-    return [
-        (
-            (
-                (C1 + (C2 * ((c / 10000) ** N))) /
-                (1 + (C3 * ((c / 10000) ** N)))
-            ) ** P
-        ).real for c in lms
-    ]
-
-
-def pq_decode(pqlms):
-    """Decode PQ LMS."""
-
-    return [
-        (
-            10000 * (
-                (
-                    (C1 - (c ** PINV)) /
-                    ((C3 * (c ** PINV)) - C2)
-                ) ** NINV
-            )
-        ).real for c in pqlms
-    ]
-
-
 def jzazbz_to_xyz_d65(jzazbz):
     """From Jzazbz to XYZ."""
 
@@ -113,7 +68,7 @@ def jzazbz_to_xyz_d65(jzazbz):
     pqlms = util.dot(izazbz_to_lms_p_mi, [iz, az, bz])
 
     # Decode PQ LMS to LMS
-    lms = pq_decode(pqlms)
+    lms = util.pq_st2084_eotf(pqlms, m2=M2)
 
     # Convert back to absolute XYZ D65
     xm, ym, za = util.dot(lms_to_xyz_mi, lms)
@@ -121,14 +76,14 @@ def jzazbz_to_xyz_d65(jzazbz):
     ya = (ym + ((G - 1) * xa)) / G
 
     # Convert back to normal XYZ D65
-    return absxyzd65_to_xyz_d65([xa, ya, za])
+    return util.absxyzd65_to_xyz_d65([xa, ya, za])
 
 
 def xyz_d65_to_jzazbz(xyzd65):
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
-    xa, ya, za = xyz_d65_to_absxyzd65(xyzd65)
+    xa, ya, za = util.xyz_d65_to_absxyzd65(xyzd65)
     xm = (B * xa) - ((B - 1) * za)
     ym = (G * ya) - ((G - 1) * xa)
 
@@ -136,7 +91,7 @@ def xyz_d65_to_jzazbz(xyzd65):
     lms = util.dot(xyz_to_lms_m, [xm, ym, za])
 
     # PQ encode the LMS
-    pqlms = pq_encode(lms)
+    pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
 
     # Calculate Izazbz
     iz, az, bz = util.dot(lms_p_to_izazbz_m, pqlms)

@@ -4,6 +4,7 @@ from . import delta_e_76  # noqa: F401
 from . import delta_e_94  # noqa: F401
 from . import delta_e_cmc  # noqa: F401
 from . import delta_e_2000  # noqa: F401
+from . import delta_e_itp  # noqa: F401
 
 
 class Distance:

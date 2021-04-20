@@ -305,7 +305,7 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
     hue        | 0 - 360
 
 The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
-(chroma, relative saturation) and h° (hue angle, angle of the hue in the CIELAB color wheel) instead of the Cartesian
+(chroma, relative saturation) and h&deg; (hue angle, angle of the hue in the CIELAB color wheel) instead of the Cartesian
 coordinates a\* and b\*. The CIELAB lightness L\* remains unchanged.
 
 _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
@@ -448,4 +448,29 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 JzCzhz is the cylindrical form of [Jzazbz](#jzazbz).
 
 _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
+</div>
+
+## ICtCp
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Identifier:** `ictcp`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    i          | 0 - 1
+    ct         | -0.5 - 0.5
+    cp         | -0.5 - 0.5
+
+ICtCp is a color space format with better perceptual uniformity than [CIELAB](#cielab) and is used as a part of the
+color image pipeline in video and digital photography systems for high dynamic range (HDR) and wide color gamut (WCG)
+imagery. It was developed by Dolby Laboratories from the IPT color space by Ebner and Fairchild. It was designed with
+the intention to replace YCbCr.
+
+_[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 </div>
