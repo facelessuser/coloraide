@@ -53,11 +53,12 @@ def get_colors(result):
     """Get color from results."""
 
     from coloraide import Color
+    from coloraide.color.interpolate import Interpolator
 
     colors = []
     if isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(), result))
-    elif isinstance(result, functools.partial) and result.func.__name__ == '_interpolate':
+    elif isinstance(result, Interpolator):
         colors = ColorInterpolate()
         for x in range(20):
             c = result(x / 20)
@@ -92,9 +93,9 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
-    from coloraide import Color, NaN
+    from coloraide import Color, NaN, Piecewise
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN}
+    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
     console = ''
     colors = []
 
