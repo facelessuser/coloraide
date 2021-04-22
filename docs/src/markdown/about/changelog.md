@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10a19
+
+- **FIX**: Ensure that subclassed `Color` objects are normalized when performing operations to with more than one color
+  to prevent issues in case one subclassed object has overridden important functions.
+
 ## 0.10a18
 
 - **NEW**: Refactor of internals.

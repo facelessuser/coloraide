@@ -98,8 +98,13 @@ class Color(
 
         return util.is_nan(self.get(name))
 
+    def _is_this_color(self, obj):
+        """Test if the input is "this" Color, not a subclass."""
+
+        return type(obj) is type(self)
+
     def _is_color(self, obj):
-        """Test if the input is a color."""
+        """Test if the input is a Color."""
 
         return isinstance(obj, Color)
 
@@ -111,7 +116,7 @@ class Color(
     def _handle_color_input(self, color, sequence=False):
         """Handle color input."""
 
-        if isinstance(color, str):
+        if isinstance(color, str) or (self._is_color(color) and not self._is_this_color(color)):
             color = self.new(color)
         elif sequence and isinstance(color, Sequence):
             color = [self._handle_color_input(c) for c in color]

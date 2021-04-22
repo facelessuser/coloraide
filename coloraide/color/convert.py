@@ -14,8 +14,7 @@ class Convert:
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
                 converted = self.convert(space, in_place=in_place)
-                converted.fit(space, method=method, in_place=True)
-                return converted
+                return converted.fit(space, method=method, in_place=True)
 
         convert_to = '_to_{}'.format(space)
         convert_from = '_from_{}'.format(self.space())
@@ -43,25 +42,20 @@ class Convert:
                 func = getattr(obj, '_from_xyz')
                 coords = func(coords)
 
-        converted = self.new(space, coords, self.alpha)
-
-        return self.mutate(converted) if in_place else converted
+        return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
 
     def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Mutate the current color to a new color."""
 
-        self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
+        c = self.new(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._attach(c._space)
         return self
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
 
-        clone = self.clone()
-        obj = self._parse(color, data, alpha, filters=filters, **kwargs)
-        clone._attach(obj)
-
-        if clone.space() != self.space():
-            clone.convert(self.space(), in_place=True)
-
-        self._attach(clone._space)
+        c = self.new(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        if c.space() != self.space():
+            c.convert(self.space(), in_place=True)
+        self._attach(c._space)
         return self

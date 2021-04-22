@@ -30,6 +30,9 @@ class Gamut:
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""
 
+        if space is None:
+            space = self.space()
+
         if method is None:
             method = self.FIT
 
@@ -45,19 +48,11 @@ class Gamut:
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        if space is not None:
-            c = self.convert(space)
-        else:
-            c = self.clone()
+        c = self.convert(space)
 
-        # If we are perfectly in gamut, don't waste time fitting
-        if c.in_gamut(tolerance=0.0):
-            c._space._coords = norm_angles(c)
-            this.update(c)
-            return this
-
-        # Apply mapping/clipping/etc.
-        c._space._coords = func(self.clone(), c)
+        # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
+        # If out of gamut, apply mapping/clipping/etc.
+        c._space._coords = norm_angles(c) if c.in_gamut(tolerance=0.0) else func(self.clone(), c)
 
         # Adjust "this" color
         return this.update(c)
@@ -65,8 +60,10 @@ class Gamut:
     def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
         """Check if current color is in gamut."""
 
+        space = space.lower() if space is not None else self.space()
+
         # Check gamut in the provided space
-        if space is not None:
+        if space is not None and space != self.space():
             c = self.convert(space)
             return c.in_gamut(tolerance=tolerance)
 
@@ -74,8 +71,8 @@ class Gamut:
         # If it proves to be in gamut, we will then test if the current
         # space is constrained properly.
         if self._space.GAMUT_CHECK is not None:
-            c2 = self.convert(self._space.GAMUT_CHECK)
-            if not c2.in_gamut(tolerance=tolerance):
+            c = self.convert(self._space.GAMUT_CHECK)
+            if not c.in_gamut(tolerance=tolerance):
                 return False
 
         # Verify the values are in bound
