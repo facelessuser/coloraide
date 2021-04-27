@@ -2,10 +2,11 @@
 
 ## 0.10a19
 
-- **FIX**: Ensure that subclassed `Color` objects are normalized when performing operations to with more than one color
-  to prevent issues in case one subclassed object has overridden important functions.
-- **FIX**: Space like `lab`, `lch`, etc., which specify certain channels as percent only should require the `color()`
-  format to only accept percentages for those channels and output those channels as percentages.
+- **FIX**: Ensure that subclassed `Color` objects are normalized when performing operations with more than one color to
+  prevent issues in case one subclassed object has overridden important functions.
+- **FIX**: Spaces like `lab`, `lch`, etc., which specify certain channels as percent only should require the `color()`
+  format to only accept percentages for those channels and output those channels as percentages when converting to a
+  string.
 
 ## 0.10a18
 
