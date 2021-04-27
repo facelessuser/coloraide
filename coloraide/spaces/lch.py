@@ -49,7 +49,7 @@ class LchBase(Cylindrical, Space):
 
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
 
-    _range = (
+    RANGE = (
         # I think chroma, specifically should be clamped.
         # Some libraries don't to prevent rounding issues. We should only get
         # negative chroma via direct user input, but when translating to

@@ -13,7 +13,7 @@ class XYZD65(XYZ):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = _cat.WHITES["D65"]
 
-    _range = (
+    RANGE = (
         GamutUnbound([0.0, 1.0]),
         GamutUnbound([0.0, 1.0]),
         GamutUnbound([0.0, 1.0])

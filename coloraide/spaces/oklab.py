@@ -54,7 +54,7 @@ class Oklab(Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = _cat.WHITES["D65"]
 
-    _range = (
+    RANGE = (
         GamutUnbound([0, 1]),
         GamutUnbound([-0.5, 0.5]),
         GamutUnbound([-0.5, 0.5])

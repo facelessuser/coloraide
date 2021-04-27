@@ -57,7 +57,7 @@ class LabBase(Space):
 
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
 
-    _range = (
+    RANGE = (
         GamutUnbound([Percent(0), Percent(100.0)]),  # Technically we could/should clamp the zero side.
         GamutUnbound([-160, 160]),  # No limit, but we could impose one +/-160?
         GamutUnbound([-160, 160])  # No limit, but we could impose one +/-160?

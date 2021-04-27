@@ -9,7 +9,7 @@ def norm_angles(color):
     """Normalize angles."""
 
     channels = util.no_nan(color.coords())
-    gamut = color._space._range
+    gamut = color._space.RANGE
     fit = []
     for i, value in enumerate(channels):
         a = gamut[i][0]
@@ -78,8 +78,8 @@ class Gamut:
         # Verify the values are in bound
         channels = util.no_nan(self.coords())
         for i, value in enumerate(channels):
-            a, b = self._space._range[i]
-            is_bound = isinstance(self._space._range[i], GamutBound)
+            a, b = self._space.RANGE[i]
+            is_bound = isinstance(self._space.RANGE[i], GamutBound)
 
             # Angles will wrap, so no sense checking them
             if isinstance(a, Angle):

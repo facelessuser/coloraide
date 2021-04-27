@@ -97,7 +97,7 @@ class Space(
     def __repr__(self):
         """Representation."""
 
-        gamut = self._range
+        gamut = self.RANGE
         values = []
         for i, coord in enumerate(util.no_nan(self.coords())):
             value = util.fmt_float(coord, util.DEF_PREC)
@@ -178,7 +178,7 @@ class Space(
 
         method = None if not isinstance(fit, str) else fit
         coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
-        gamut = self._range
+        gamut = self.RANGE
         template = "color({} {} / {})" if alpha else "color({} {})"
 
         values = []
@@ -221,7 +221,7 @@ class Space(
             channels = []
             for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < cls.NUM_COLOR_CHANNELS:
-                    is_percent = isinstance(cls._range[i][0], Percent)
+                    is_percent = isinstance(cls.RANGE[i][0], Percent)
                     if is_percent and not c.endswith('%'):
                         # We have an invalid percentage channel
                         return None, None

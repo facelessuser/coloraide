@@ -59,7 +59,7 @@ class HSV(Cylindrical, Space):
     GAMUT_CHECK = "hsl"
     WHITE = _cat.WHITES["D65"]
 
-    _range = (
+    RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
         GamutBound([Percent(0.0), Percent(100.0)]),
         GamutBound([Percent(0.0), Percent(100.0)])

@@ -7,7 +7,7 @@ def fit(base, color):
     """Gamut clipping."""
 
     channels = util.no_nan(color.coords())
-    gamut = color._space._range
+    gamut = color._space.RANGE
     fit = []
 
     for i, value in enumerate(channels):
