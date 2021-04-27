@@ -56,7 +56,7 @@ def compose(color1, color2, blend, operator, non_seperable):
         compositor = None
 
     # Perform compositing
-    gamut = color1._space._range
+    gamut = color1._space.RANGE
     coords = []
     if not non_seperable:
         # Blend each channel. Afterward, clip and apply alpha compositing.

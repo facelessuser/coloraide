@@ -83,7 +83,7 @@ class SRGB(Space):
     CHANNEL_NAMES = ("red", "green", "blue", "alpha")
     WHITE = _cat.WHITES["D65"]
 
-    _range = (
+    RANGE = (
         GamutBound([0.0, 1.0]),
         GamutBound([0.0, 1.0]),
         GamutBound([0.0, 1.0])

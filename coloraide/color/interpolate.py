@@ -206,7 +206,7 @@ def postdivide(color):
         return
 
     channels = color.coords()
-    gamut = color._space._range
+    gamut = color._space.RANGE
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
@@ -227,7 +227,7 @@ def premultiply(color):
         return
 
     channels = color.coords()
-    gamut = color._space._range
+    gamut = color._space.RANGE
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):

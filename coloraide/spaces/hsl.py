@@ -62,7 +62,7 @@ class HSL(Cylindrical, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = _cat.WHITES["D65"]
 
-    _range = (
+    RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
         GamutBound([Percent(0.0), Percent(100.0)]),
         GamutBound([Percent(0.0), Percent(100.0)])
