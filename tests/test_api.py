@@ -9,6 +9,11 @@ import warnings
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_missing_percent(self):
+        """Test missing percent."""
+
+        self.assertIsNone(Color.match('color(lab 90 50 -20)'))
+
     def test_less_input(self):
         """Test when not enough color channels are provided."""
 
@@ -515,6 +520,11 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test string representation."""
 
         self.assertEqual(str(Color('red')), 'color(srgb 1 0 0 / 1)')
+
+    def test_repr_percent(self):
+        """Test string percent representation."""
+
+        self.assertEqual(str(Color('white').convert('lab')), 'color(lab 100% 0 0 / 1)')
 
     def test_in_gamut(self):
         """Test in gamut check."""
@@ -1413,7 +1423,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test premultiplication in a cylindrical space."""
 
         self.assertColorEqual(
-            Color('color(hsl 20 30 75 / 0.5)').mix('color(hsl 20 60 10 / 0.75)', premultiplied=True, space="hsl"),
+            Color('color(hsl 20 30% 75% / 0.5)').mix('color(hsl 20 60% 10% / 0.75)', premultiplied=True, space="hsl"),
             Color('hsl(20 48% 36% / 0.625)')
         )
 

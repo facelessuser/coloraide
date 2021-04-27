@@ -17,25 +17,6 @@ color\(\s*
 )
 
 
-def split_channels(cls, color):
-    """Split channels."""
-
-    channels = []
-    color = color.strip()
-    split = _parse.RE_SLASH_SPLIT.split(color, maxsplit=1)
-    alpha = 1.0
-    if len(split) > 1:
-        alpha = _parse.norm_alpha_channel(split[-1])
-    for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
-        if c and i < cls.NUM_COLOR_CHANNELS:
-            is_percent = isinstance(cls._range[i][0], Percent)
-            channels.append(_parse.norm_color_channel(c, not is_percent))
-    if len(channels) < cls.NUM_COLOR_CHANNELS:
-        diff = cls.NUM_COLOR_CHANNELS - len(channels)
-        channels.extend([0.0] * diff)
-    return cls.null_adjust(channels, alpha)
-
-
 class Angle(float):
     """Angle type."""
 
@@ -116,9 +97,17 @@ class Space(
     def __repr__(self):
         """Representation."""
 
+        gamut = self._range
+        values = []
+        for i, coord in enumerate(util.no_nan(self.coords())):
+            value = util.fmt_float(coord, util.DEF_PREC)
+            if isinstance(gamut[i][0], Percent):
+                value += '%'
+            values.append(value)
+
         return 'color({} {} / {})'.format(
             self.space(),
-            ' '.join([util.fmt_float(c, util.DEF_PREC) for c in util.no_nan(self.coords())]),
+            ' '.join(values),
             util.fmt_float(util.no_nan(self.alpha), util.DEF_PREC)
         )
 
@@ -189,16 +178,20 @@ class Space(
 
         method = None if not isinstance(fit, str) else fit
         coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
-        template = "color({} {} {} {} / {})" if alpha else "color({} {} {} {})"
-        values = [
-            util.fmt_float(coords[0], precision),
-            util.fmt_float(coords[1], precision),
-            util.fmt_float(coords[2], precision)
-        ]
-        if alpha:
-            values.append(util.fmt_float(a, max(precision, util.DEF_PREC)))
+        gamut = self._range
+        template = "color({} {} / {})" if alpha else "color({} {})"
 
-        return template.format(self.space(), *values)
+        values = []
+        for i, coord in enumerate(coords):
+            value = util.fmt_float(coord, precision)
+            if isinstance(gamut[i][0], Percent):
+                value += '%'
+            values.append(value)
+
+        if alpha:
+            return template.format(self.space(), ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC)))
+        else:
+            return template.format(self.space(), ' '.join(values))
 
     @classmethod
     def null_adjust(cls, coords, alpha):
@@ -217,5 +210,29 @@ class Space(
                 (m.group(1) and m.group(1).lower() == cls.space())
             ) and (not fullmatch or m.end(0) == len(string))
         ):
-            return split_channels(cls, m.group(2)), m.end(0)
+
+            # Break channels up into a list
+            split = _parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
+
+            # Get alpha channel
+            alpha = _parse.norm_alpha_channel(split[-1]) if len(split) > 1 else 1.0
+
+            # Parse color channels
+            channels = []
+            for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
+                if c and i < cls.NUM_COLOR_CHANNELS:
+                    is_percent = isinstance(cls._range[i][0], Percent)
+                    if is_percent and not c.endswith('%'):
+                        # We have an invalid percentage channel
+                        return None, None
+                    channels.append(_parse.norm_color_channel(c, not is_percent))
+
+            # Missing channels are filled with zeros
+            if len(channels) < cls.NUM_COLOR_CHANNELS:
+                diff = cls.NUM_COLOR_CHANNELS - len(channels)
+                channels.extend([0.0] * diff)
+
+            # Apply null adjustments (null hues) if applicable
+            return cls.null_adjust(channels, alpha), m.end(0)
+
         return None, None
