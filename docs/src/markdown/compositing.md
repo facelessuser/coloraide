@@ -258,6 +258,8 @@ was performed on Chrome in macOS using a display that uses `display-p3`.
 ### Normal
 
 The blending formula simply selects the source color.
+
+_Specified as `#!py3 'normal'`_.
 </div>
 </div>
 
@@ -277,6 +279,8 @@ The blending formula simply selects the source color.
 The source color is multiplied by the destination color and replaces the destination. The resultant color is always at
 least as dark as either the source or destination color. Multiplying any color with black results in black. Multiplying
 any color with white preserves the original color.
+
+_Specified as `#!py3 'multiply'`_.
 </div>
 </div>
 
@@ -297,6 +301,8 @@ Multiplies the complements of the backdrop and source color values, then complem
 always at least as light as either of the two constituent colors. Screening any color with white produces white;
 screening with black leaves the original color unchanged. The effect is similar to projecting multiple photographic
 slides simultaneously onto a single screen.
+
+_Specified as `#!py3 'screen'`_.
 </div>
 </div>
 
@@ -316,6 +322,8 @@ slides simultaneously onto a single screen.
 Multiplies or screens the colors, depending on the backdrop color value. Source colors overlay the backdrop while
 preserving its highlights and shadows. The backdrop color is not replaced but is mixed with the source color to reflect
 the lightness or darkness of the backdrop.
+
+_Specified as `#!py3 'overlay'`_.
 </div>
 </div>
 
@@ -334,6 +342,8 @@ the lightness or darkness of the backdrop.
 
 Selects the darker of the backdrop and source colors. The backdrop is replaced with the source where the source is
 darker; otherwise, it is left unchanged.
+
+_Specified as `#!py3 'darken'`_.
 </div>
 </div>
 
@@ -352,6 +362,8 @@ darker; otherwise, it is left unchanged.
 
 Selects the lighter of the backdrop and source colors. The backdrop is replaced with the source where the source is
 lighter; otherwise, it is left unchanged.
+
+_Specified as `#!py3 'lighten'`_.
 </div>
 </div>
 
@@ -369,6 +381,8 @@ lighter; otherwise, it is left unchanged.
 ### Color Dodge
 
 Brightens the backdrop color to reflect the source color. Painting with black produces no changes.
+
+_Specified as `#!py3 'color-dodge'`_.
 </div>
 </div>
 
@@ -386,6 +400,8 @@ Brightens the backdrop color to reflect the source color. Painting with black pr
 ### Color Burn
 
 Darkens the backdrop color to reflect the source color. Painting with white produces no change.
+
+_Specified as `#!py3 'color-burn'`_.
 </div>
 </div>
 
@@ -404,6 +420,8 @@ Darkens the backdrop color to reflect the source color. Painting with white prod
 
 Multiplies or screens the colors, depending on the source color value. The effect is similar to shining a harsh
 spotlight on the backdrop.
+
+_Specified as `#!py3 'hard-light'`_.
 </div>
 </div>
 
@@ -422,6 +440,8 @@ spotlight on the backdrop.
 
 Darkens or lightens the colors, depending on the source color value. The effect is similar to shining a diffused
 spotlight on the backdrop.
+
+_Specified as `#!py3 'soft-light'`_.
 </div>
 </div>
 
@@ -440,6 +460,8 @@ spotlight on the backdrop.
 
 Subtracts the darker of the two constituent colors from the lighter color. Painting with white inverts the backdrop
 color; painting with black produces no change.
+
+_Specified as `#!py3 'difference'`_.
 </div>
 </div>
 
@@ -458,6 +480,8 @@ color; painting with black produces no change.
 
 Produces an effect similar to that of the Difference mode but lower in contrast. Painting with white inverts the
 backdrop color; painting with black produces no change.
+
+_Specified as `#!py3 'exclusion'`_.
 </div>
 </div>
 
@@ -475,6 +499,8 @@ backdrop color; painting with black produces no change.
 ### Hue
 
 Creates a color with the hue of the source color and the saturation and luminosity of the backdrop color.
+
+_Specified as `#!py3 'hue'`_.
 </div>
 </div>
 
@@ -493,6 +519,8 @@ Creates a color with the hue of the source color and the saturation and luminosi
 
 Creates a color with the saturation of the source color and the hue and luminosity of the backdrop color. Painting with
 this mode in an area of the backdrop that is a pure gray (no saturation) produces no change.
+
+_Specified as `#!py3 'saturation'`_.
 </div>
 </div>
 
@@ -512,6 +540,8 @@ this mode in an area of the backdrop that is a pure gray (no saturation) produce
 Creates a color with the luminosity of the source color and the hue and saturation of the backdrop color. This produces
 an inverse effect to that of the Color mode. This mode is the one you can use to create monochrome "tinted" image
 effects like the ones you can see in different website headers.
+
+_Specified as `#!py3 'luminosity'`_.
 </div>
 </div>
 
@@ -530,6 +560,8 @@ effects like the ones you can see in different website headers.
 
 Creates a color with the hue and saturation of the source color and the luminosity of the backdrop color. This preserves
 the gray levels of the backdrop and is useful for coloring monochrome images or tinting color images.
+
+_Specified as `#!py3 'color'`_.
 </div>
 </div>
 
@@ -541,11 +573,15 @@ No regions are enabled.
 
 ![Clear](images/PD_clr.svg)
 
+_Specified as `#!py3 'clear'`_.
+
 ### Copy
 
 Only the source will be present.
 
 ![Clear](images/PD_src.svg)
+
+_Specified as `#!py3 'copy'`_.
 
 ### Destination
 
@@ -553,11 +589,15 @@ Only the destination will be present.
 
 ![Clear](images/PD_dst.svg)
 
+_Specified as `#!py3 'destination'`_.
+
 ### Source Over
 
 Source is placed over the destination.
 
 ![Clear](images/PD_src-over.svg)
+
+_Specified as `#!py3 'source-over'`_.
 
 ### Destination Over
 
@@ -565,11 +605,15 @@ Destination is placed over the source.
 
 ![Clear](images/PD_dst-over.svg)
 
+_Specified as `#!py3 'destination-over'`_.
+
 ### Source In
 
 The source that overlaps the destination, replaces the destination.
 
 ![Clear](images/PD_src-in.svg)
+
+_Specified as `#!py3 'source-in'`_.
 
 ### Destination In
 
@@ -577,11 +621,15 @@ Destination which overlaps the source, replaces the source.
 
 ![Destination In](images/PD_dst-in.svg)
 
+_Specified as `#!py3 'destination-in'`_.
+
 ### Source Out
 
 Source is placed, where it falls outside of the destination.
 
 ![Clear](images/PD_src-out.svg)
+
+_Specified as `#!py3 'source-out'`_.
 
 ### Destination Out
 
@@ -589,11 +637,15 @@ Destination is placed, where it falls outside of the source.
 
 ![Clear](images/PD_dst-out.svg)
 
+_Specified as `#!py3 'destination-out'`_.
+
 ### Source Atop
 
 Source which overlaps the destination, replaces the destination. Destination is placed elsewhere.
 
 ![Clear](images/PD_src-atop.svg)
+
+_Specified as `#!py3 'source-atop'`_.
 
 ### Destination Atop
 
@@ -601,15 +653,21 @@ Destination which overlaps the source replaces the source. Source is placed else
 
 ![Clear](images/PD_dst-atop.svg)
 
+_Specified as `#!py3 'destination-atop'`_.
+
 ### XOR
 
 Destination which overlaps the source replaces the source. Source is placed elsewhere.
 
 ![Clear](images/PD_xor.svg)
 
+_Specified as `#!py3 'xor'`_.
+
 ### Lighter
 
 Display the sum of the source image and destination image.
+
+_Specified as `#!py3 'lighter'`_.
 
 --8<-- "refs.txt"
 --8<-- "compositing.txt"

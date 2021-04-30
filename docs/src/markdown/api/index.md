@@ -104,6 +104,16 @@ Description
     The `match` class method provides access to the color matching interface and allows a user to provide a color string
     and get back a `ColorMatch` object. `ColorMatch` objects contain three properties:
 
+    ```py3
+    class ColorMatch:
+        def __init__(
+            self,
+            color,
+            start,
+            end
+        ):
+    ```
+
     1. `color`: the `Color` object.
     2. `start`: the starting point within the string buffer where the color was found.
     3. `end`: the ending point within the string buffer where the color was found.

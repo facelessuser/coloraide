@@ -16,21 +16,34 @@ Color("#00ff00"),
 Color("rgb(0 0 255 / 1)")
 ```
 
-As shown above, we can use all sorts of valid CSS syntax, and we get the same color `#!color red`.
+In general, each color space can be recognized using valid CSS syntax as specified in the CSS level 4 spec. All colors,
+even colors not officially supported in the CSS spec, can be specified using the generic CSS color function:
+`#!css-color color(space coord1, coord2, ... / alpha)`. While the `#!css-color color()` function in CSS does not
+explicitly support color spaces with angular channels (hues), it has been adapted to support cylindrical colors, and is
+generally used as a generic, input and default for string representation of colors.
 
-We can also insert raw data points directly, but notice, when doing this, we are required to enter the data as it is
-used internally, and in the case for sRGB, the channels are in the range of \[0, 1\]. Additionally, alpha is always
-handled as a separate parameter.
+```color
+Color('color(hsl 130 40% 75% / 0.5)')
+```
+
+While CSS input is useful, we can also insert raw data points directly. When doing things this way, we must be mindful
+of the actual accepted input range. For instance, RGB colors are not specified in ranges from 0 - 255, but from 0 - 1.
+Raw inputs are always accepted exactly as they are specified and are treated as the user directly setting the channels.
 
 ```color
 Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
-We can also pass in other color objects, which is really only useful if we've subclassed the `Color` object and want
-to cast the object between the classes.
+If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
 
-The same color creation can be preformed from a color's `new` class method as well. `new` accepts the same inputs
-as the class object itself.
+```color
+c1 = Color('red')
+c2 = Color(c1)
+
+c1, c2
+```
+
+You can also use the `new` method to generate new colors from already instantiated colors.
 
 ```color
 color1 = Color("red")
