@@ -130,6 +130,7 @@ const inputs = document.getElementById("playground-inputs");
 const results = document.getElementById("playground-results");
 const pgcode = document.getElementById("playground-code");
 const button_edit = document.querySelector("button#playground-edit");
+const button_share = document.querySelector("button#playground-share");
 const button_run = document.querySelector("button#playground-run");
 const button_cancel = document.querySelector("button#playground-cancel");
 const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
@@ -265,7 +266,33 @@ code.scrollTop = inputs.scrollTop
     button_run.classList.toggle('hidden');
     button_cancel.classList.toggle('hidden');
     button_edit.classList.toggle('hidden');
+    button_share.classList.toggle('hidden');
     inputs.focus();
+    busy = false;
+  });
+
+  button_share.addEventListener("click", (e) => {
+    // Handle the share click: copy URL with code as parameter.
+
+    if (busy) {
+      return;
+    }
+
+    busy = true;
+    const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
+      return '%' + c.charCodeAt(0).toString(16);
+    });
+    const loc = window.location;
+    const path = loc.protocol + '//' + loc.host + loc.pathname + '?code=' + uri;
+    if (uri.length > 1000) {
+      alert('Code must be under a 1000 characters to generate a URL!');
+    } else {
+      navigator.clipboard.writeText(path).then(function() {
+        alert('Link copied to clipboard :)');
+      }, function() {
+        alert('Failed to copy link clipboard!');
+      });
+    }
     busy = false;
   });
 
@@ -282,6 +309,7 @@ code.scrollTop = inputs.scrollTop
     pgcode.classList.toggle('hidden');
     results.classList.toggle('hidden');
     button_edit.classList.toggle('hidden');
+    button_share.classList.toggle('hidden');
     button_run.classList.toggle('hidden');
     button_cancel.classList.toggle('hidden');
     busy = false;
@@ -299,6 +327,7 @@ code.scrollTop = inputs.scrollTop
     pgcode.classList.toggle('hidden');
     results.classList.toggle('hidden');
     button_edit.classList.toggle('hidden');
+    button_share.classList.toggle('hidden');
     button_run.classList.toggle('hidden');
     button_cancel.classList.toggle('hidden');
     busy = false;
@@ -333,6 +362,11 @@ code.scrollTop = inputs.scrollTop
       highlight();
       pyexecute();
     }
+  } else if (params.has('code')) {
+    // Raw code provided.
+    inputs.value = decodeURI(params.get('code'));
+    highlight();
+    pyexecute();
   } else {
     // No gist specified, so just load default content
     inputs.value = default_text;
