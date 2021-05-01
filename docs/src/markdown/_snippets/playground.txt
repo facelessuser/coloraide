@@ -8,11 +8,13 @@
   display: block;
   width: 100%;
   min-height: 15em;
+  height: calc(100% + 0.2rem);
   border: none;
   padding: .7720588235em 1.1764705882em;
   outline: none;
   cursor: text;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   caret-color: var(--md-code-fg-color);
   color: transparent;
   background-color: transparent;
@@ -35,15 +37,18 @@
 #playground-code {
   margin-top: 2px;
   width: 100%;
-  height: 15em;
+  height: 100%;
   position: relative;
   overlow: hidden;
+}
+
+#playground-code .highlight code {
+  min-height: 15em;
 }
 
 #playground-code .highlight,
 #playground-code .highlight code {
   margin: 0;
-  height: 15em;
   overflow: hidden;
 }
 
@@ -54,7 +59,7 @@
 }
 
 #playground-results code {
-  height: 15em;
+  min-height: 15em;
 }
 
 #playground-results pre {
@@ -67,6 +72,23 @@
 
 #playground-results .color-command {
   margin-bottom: 0;
+}
+
+.hidden .highlight,
+.hidden #playground-inputs,
+button.hidden {
+    display: none;
+}
+
+button:not(.md-clipboard) {
+    padding: 0.25em 1em;
+    background: var(--md-primary-fg-color);
+    color: var(--md-primary-bg-color);
+    border-radius: .1rem;
+}
+
+button:not(.md-clipboard):hover {
+  cursor: pointer;
 }
 
 /* Enabling custom scroll bar causes issues with Safari.
@@ -101,68 +123,224 @@
 }*/
 </style>
 
-<script type="text/javascript">
-// set the Pyodide files URL (packages.json, pyodide.asm.data etc)
-window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.17.0/full/';
-</script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
 
 <script type="text/javascript">
 const inputs = document.getElementById("playground-inputs");
 const results = document.getElementById("playground-results");
 const pgcode = document.getElementById("playground-code");
+const button_edit = document.querySelector("button#playground-edit");
+const button_run = document.querySelector("button#playground-run");
+const button_cancel = document.querySelector("button#playground-cancel");
+const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
 let busy = false;
 let requests = 0;
-inputs.value = "# Insert your code here!\ncoloraide.__version__\nColor('red')\n"
+let last_text = '';
 
-function pyexecute(str) {
+async function main() {
+  // Setup input highlighting and events to run Python code blocks.
+
+  // Load Piodide and related packages.
+  await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" });
+  await pyodide.loadPackage(['micropip', 'Pygments']);
+
+  async function pyexecute() {
+    // Execute Python code
 
     let pycode = `
 --8<-- "pycode.txt"
 `
-    languagePluginLoader.then(() => {
-      return pyodide.loadPackage(['micropip', 'Pygments']);
-    }).then(() => {
-      pyodide.globals.set('payload', str + '\n')
-      pyodide.runPython(pycode);
-      busy = false;
-      if (requests) {
-        setTimeout(payload, 100);
+    inputs.setAttribute('readonly', '');
+    await pyodide.runPythonAsync(pycode);
+    inputs.removeAttribute('readonly');
+  }
+
+  async function pyhighlight(str) {
+    // Highlight current input code
+
+    let pycode = `
+from js import document
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import find_formatter_class
+
+HtmlFormatter = find_formatter_class('html')
+
+def colorize(src, lang, **options):
+    """Colorize."""
+
+    lexer = get_lexer_by_name(lang, **options)
+    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
+    return highlight(src, lexer, formatter).strip()
+
+inputs = document.getElementById("playground-inputs")
+pgcode = document.getElementById("playground-code")
+
+div = pgcode.querySelector(".highlight")
+template = document.createElement('template')
+html = colorize(inputs.value + '\\n', 'py3', **{'python3': True, 'stripnl': False})
+template.innerHTML = html;
+pgcode.replaceChild(template.content.firstChild, div)
+code = pgcode.querySelector('code')
+code.scrollLeft = inputs.scrollLeft
+code.scrollTop = inputs.scrollTop
+`
+    await pyodide.runPythonAsync(pycode);
+    busy = false;
+    if (requests) {
+      setTimeout(pyhighlight, 100);
+    }
+  }
+
+  function highlight () {
+    // Manage incoming highlight requests.
+
+    // Throttle requests
+    if (busy) {
+      return;
+    }
+
+    // Execute
+    if (requests) {
+      requests = 0;
+      busy = true;
+      pyhighlight(inputs.value);
+    }
+  };
+
+  inputs.addEventListener("input", (e) => {
+    // Handle highlighting as input changes.
+
+    requests++;
+    highlight();
+  });
+
+  inputs.addEventListener("scroll", (e) => {
+    // Sync overlay textarea scrolling with highlighted code block underneath.
+
+    const code = pgcode.querySelector("code");
+    code.scrollLeft = e.target.scrollLeft;
+    code.scrollTop = e.target.scrollTop;
+  });
+
+  document.addEventListener("keydown", (e) => {
+    // Ctrl + Enter in textarea will execute the code.
+
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    }
+
+    if (e.ctrlKey && e.key === "Enter") {
+      if (button_edit.classList.contains('hidden')) {
+        button_run.click();
+      } else {
+        button_edit.click();
       }
-    });
+    } else if (
+      e.key === "Escape" &&
+      button_edit.classList.contains('hidden') &&
+      document.querySelector('input.md-search__input') !== document.activeElement
+    ) {
+      button_cancel.click();
+    }
+  });
+
+  inputs.addEventListener('touchmove', (e) => {
+    // Stop propogation on "touchmove".
+
+    e.stopPropagation();
+  });
+
+  button_edit.addEventListener("click", (e) => {
+    // Handle the button click: show source or execute source.
+
+    if (busy) {
+      return;
+    }
+
+    busy = true;
+    last_text = inputs.value;
+    pgcode.classList.toggle('hidden');
+    results.classList.toggle('hidden');
+    button_run.classList.toggle('hidden');
+    button_cancel.classList.toggle('hidden');
+    button_edit.classList.toggle('hidden');
+    inputs.focus();
+    busy = false;
+  });
+
+  button_run.addEventListener("click", async function(e) {
+    // Handle the button click: show source or execute source.
+
+    if (busy) {
+      return;
+    }
+
+    busy = true;
+    results.querySelector('code').innerHTML = '';
+    pyexecute();
+    pgcode.classList.toggle('hidden');
+    results.classList.toggle('hidden');
+    button_edit.classList.toggle('hidden');
+    button_run.classList.toggle('hidden');
+    button_cancel.classList.toggle('hidden');
+    busy = false;
+  });
+
+  button_cancel.addEventListener("click", (e) => {
+    // Cancel edit.
+
+    if (busy) {
+      return;
+    }
+
+    busy = true;
+    inputs.value = last_text;
+    pgcode.classList.toggle('hidden');
+    results.classList.toggle('hidden');
+    button_edit.classList.toggle('hidden');
+    button_run.classList.toggle('hidden');
+    button_cancel.classList.toggle('hidden');
+    busy = false;
+    requests++;
+    highlight();
+  });
+
+  inputs.focus();
+  requests = 1;
+  let params = new URLSearchParams(window.location.search);
+  if (params.has('source')) {
+    // A source was specified, so load it.
+    try {
+      const uri = decodeURI(params.get('source')).replace('gist.github.com', 'gist.githubusercontent.com') + '/raw';
+      console.log(uri);
+      let xhr = new XMLHttpRequest();
+      xhr.open("GET", uri, true);
+      xhr.onload = function (e) {
+        // Try and load the requested content
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            inputs.value = xhr.responseText;
+          }
+        }
+        highlight();
+        pyexecute();
+      };
+      xhr.send();
+    } catch (err) {
+      // Failed, so just load the default content
+      inputs.value = default_text;
+      highlight();
+      pyexecute();
+    }
+  } else {
+    // No gist specified, so just load default content
+    inputs.value = default_text;
+    highlight();
+    pyexecute();
+  }
 }
 
-inputs.addEventListener("input", (e) => {
-  requests++;
-  payload();
-});
-
-inputs.addEventListener("scroll", (e) => {
-  const code = pgcode.querySelector("code");
-  code.scrollLeft = e.target.scrollLeft;
-  code.scrollTop = e.target.scrollTop;
-});
-
-inputs.addEventListener('touchmove', function(e){
-  e.stopPropagation();
-});
-
-function payload () {
-  // Throttle requests
-  if (busy) {
-    return;
-  }
-
-  // Execute
-  if (requests) {
-    requests = 0;
-    busy = true;
-    pyexecute(inputs.value);
-  }
-};
-
-// Initial first run after load.
-inputs.focus();
-busy = true;
-pyexecute(inputs.value);
+// Run main
+main();
 </script>

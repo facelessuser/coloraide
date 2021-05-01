@@ -18,6 +18,7 @@ Changelog
 Chroma
 ColorAide
 ColorHelper
+Ctrl
 Cz
 DCI
 EOTF

@@ -13,7 +13,6 @@ from io import StringIO
 import contextlib
 import sys
 import re
-import functools
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
@@ -111,34 +110,42 @@ def execute(cmd):
         start = node.lineno
         end = node.end_lineno
         stmt = lines[start - 1: end]
+        command = ''
         for i, line in enumerate(stmt, 0):
             if i == 0:
                 stmt[i] = '>>> ' + line
             else:
                 stmt[i] = '... ' + line
-        console += '\\n'.join(stmt)
+        command += '\\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
-            console += '\\n... '
+            command += '\\n... '
 
-        # Capture anything sent to standard out
-        text = ''
-        with std_output() as s:
-            # Execute code
-            if isinstance(node, ast.Expr):
-                _eval = ast.Expression(node.value)
-                result = eval(compile(_eval, '<string>', 'eval'), g)
-            else:
-                _exec = ast.Module([node], [])
-                exec(compile(_exec, '<string>', 'exec'), g)
+        try:
+            # Capture anything sent to standard out
+            text = ''
+            with std_output() as s:
+                # Execute code
+                if isinstance(node, ast.Expr):
+                    _eval = ast.Expression(node.value)
+                    result = eval(compile(_eval, '<string>', 'eval'), g)
+                else:
+                    _exec = ast.Module([node], [])
+                    exec(compile(_exec, '<string>', 'exec'), g)
 
-            # Output captured standard out after statements
-            text = s.getvalue()
-            if text:
-                clist = find_colors(text)
-                if clist:
-                    colors.extend(clist)
-                console += '\\n{}'.format(text)
-            s.flush()
+                # Execution went well, so append command
+                console += command
+
+                # Output captured standard out after statements
+                text = s.getvalue()
+                if text:
+                    clist = find_colors(text)
+                    if clist:
+                        colors.extend(clist)
+                    console += '\\n{}'.format(text)
+                s.flush()
+        except Exception:
+            # Failed for some reason, so quit
+            break
 
         # If we got a result, output it as well
         if result is not None:
@@ -229,18 +236,8 @@ def process_code(*args):
     """Process code."""
 
     try:
-        # Highlight current input code
-        div = pgcode.querySelector(".highlight")
-        template = document.createElement('template')
-        html = colorize(payload, 'py3', **{'python3': True, 'stripnl': False})
-        template.innerHTML = html;
-        pgcode.replaceChild(template.content.firstChild, div)
-        code = pgcode.querySelector('code')
-        code.scrollLeft = inputs.scrollLeft
-        code.scrollTop = inputs.scrollTop
-
         # Run code
-        results.innerHTML = color_command_formatter(payload)
+        results.innerHTML = color_command_formatter(inputs.value)
         scrollingElement = results.querySelector('code')
         scrollingElement.scrollTop = scrollingElement.scrollHeight
     except Exception as e:
