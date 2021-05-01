@@ -389,7 +389,7 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-wheel = '/playground/coloraide-0.1.0a19-py3-none-any.whl'
+wheel = './coloraide-0.1.0a19-py3-none-any.whl'
 
 micropip.install(wheel).add_done_callback(process_code)
 `
