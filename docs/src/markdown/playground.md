@@ -20,6 +20,7 @@ hide:
 </div>
 
 <button id="playground-edit" title="Ctrl + Enter">:material-pencil: Edit</button>
+<button id="playground-share" title="Copy URL to current snippet">:material-monitor-share: Share</button>
 <button id="playground-run" class="hidden" title="Ctrl + Enter">:material-console: Run</button>
 <button id="playground-cancel" class="hidden" title="Escape">:material-cancel: Cancel</button>
 
