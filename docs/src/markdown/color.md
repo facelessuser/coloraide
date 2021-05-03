@@ -179,7 +179,7 @@ for m in RE_COLOR_START.finditer(text):
 ## Override Default Settings
 
 ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
-mode, etc. All of these options can be set on-demand when calling certain functions. When not explicitly set, thenbase
+mode, etc. All of these options can be set on demand when calling certain functions. When not explicitly set, the base
 class' default is used. If needed, the defaults can be changed for an entire application or library. To do so, simply
 subclass the `Color` object and override the class defaults. Then the new derived class can be used throughout an
 application or library.

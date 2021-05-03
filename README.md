@@ -2,9 +2,9 @@
 [![Discord][discord-image]][discord-link]
 [![Build][github-ci-image]][github-ci-link]
 [![Coverage Status][codecov-image]][codecov-link]
-![License][license-image-mit]
 [![PyPI Version][pypi-image]][pypi-link]
 [![PyPI - Python Version][python-image]][pypi-link]
+![License][license-image-mit]
 
 # ColorAide
 
