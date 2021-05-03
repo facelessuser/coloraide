@@ -29,10 +29,12 @@ Additionally, there are other implementations that use different color spaces, s
 
 ColorAide implements the following delta E methods:
 
-Name             | Parameter\ Name | Weighted\ Parameters
----------------- | --------------- | --------------------
-CIE76            | `76`            |
-CMC\ l:c\ (1984) | `cmc`           | `l=2, c=1`
-CIE94            | `94`            | `kl=1, k1=0.045, k2=0.015`
-CIEDE2000        | `2000`          | `kl=1, kc=1, kh=1`
-ICtCp            | `itp`           | `scalar=470`
+Name                      | Parameter\ Name | Weighted\ Parameters
+------------------------- | --------------- | --------------------
+[CIE76][de76]             | `76`            |
+[CMC\ l:c\ (1984)][decmc] | `cmc`           | `l=2, c=1`
+[CIE94][de94]             | `94`            | `kl=1, k1=0.045, k2=0.015`
+[CIEDE2000 ][de2000]      | `2000`          | `kl=1, kc=1, kh=1`
+[ICtCp (JND)][deitp]      | `itp`           | `scalar=720`
+
+--8<-- "refs.txt"
