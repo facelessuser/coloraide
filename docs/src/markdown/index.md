@@ -8,8 +8,8 @@
 
 ColorAide is a color library for Python with the intent to provide an easy to use interface to work with colors. While
 ColorAide is not just for CSS colors, there is a focus on supporting modern CSS color syntax as it is a format that is
-very commonly used. In addition to being able to parse almost all colors as specified in the CSS specifications,
-ColorAide also supports a number of colors and formats for colors that are not in the CSS specifications.
+very commonly used. In addition to being able to parse almost all colors as specified in the CSS specification,
+ColorAide also supports a number of colors and formats for colors that are not in the CSS spec.
 
 ColorAide is built on the idea of having a general color object in which you can easily manipulate a color, convert
 between colors in different spaces, and perform color related functions: interpolation, color distancing, color
