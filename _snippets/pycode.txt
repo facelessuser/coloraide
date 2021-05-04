@@ -187,7 +187,7 @@ def color_command_formatter(src):
                 stops = []
                 for color in item:
                     color.color.fit("srgb", in_place=True)
-                    stops.append(color.color.convert("srgb").to_string(hex=True))
+                    stops.append(color.color.convert("srgb").to_string())
                 if not stops:
                     stops.extend(['transparent'] * 2)
                 if len(stops) == 1:
@@ -207,8 +207,8 @@ def color_command_formatter(src):
                     else:
                         color.color.fit('srgb', in_place=True)
                         srgb = color.color.convert('srgb')
-                        value1 = srgb.to_string(hex=True, alpha=False)
-                        value2 = srgb.to_string(hex=True)
+                        value1 = srgb.to_string(alpha=False)
+                        value2 = srgb.to_string()
                         style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
                         title = color.string
                         classes = base_classes
