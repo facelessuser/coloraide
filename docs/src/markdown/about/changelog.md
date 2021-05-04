@@ -12,7 +12,7 @@
   format to only accept percentages for those channels and output those channels as percentages when converting to a
   string.
 
-## 0.10a18
+## 0.1.0a18
 
 - **NEW**: Refactor of internals.
 - **NEW**: `interpolate` and `steps` can now accept multiple colors and will return an interpolation function that spans
