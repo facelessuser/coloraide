@@ -341,8 +341,7 @@ code.scrollTop = inputs.scrollTop
   if (params.has('source')) {
     // A source was specified, so load it.
     try {
-      const uri = decodeURI(params.get('source')).replace('gist.github.com', 'gist.githubusercontent.com') + '/raw';
-      console.log(uri);
+      const uri = params.get('source');
       let xhr = new XMLHttpRequest();
       xhr.open("GET", uri, true);
       xhr.onload = function (e) {
@@ -364,7 +363,7 @@ code.scrollTop = inputs.scrollTop
     }
   } else if (params.has('code')) {
     // Raw code provided.
-    inputs.value = decodeURI(params.get('code'));
+    inputs.value = params.get('code');
     highlight();
     pyexecute();
   } else {
