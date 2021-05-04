@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.10a19
+## 0.1.0a20
+
+- **FIX**: Fix `lab-d65` which was not using the correct white point in all places.
+
+## 0.1.0a19
 
 - **FIX**: Ensure that subclassed `Color` objects are normalized when performing operations with more than one color to
   prevent issues in case one subclassed object has overridden important functions.

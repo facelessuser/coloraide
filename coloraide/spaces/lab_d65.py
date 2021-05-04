@@ -17,10 +17,10 @@ class LabD65(LabBase):
     def _to_xyz(cls, lab):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lab_to_xyz(lab))
+        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lab_to_xyz(lab, cls.white()))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return xyz_to_lab(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_to_lab(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz), cls.white())

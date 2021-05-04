@@ -12,7 +12,7 @@ RATIO2 = 108 / 841
 RATIO3 = 841 / 108
 
 
-def lab_to_xyz(lab):
+def lab_to_xyz(lab, white):
     """
     Convert Lab to D50-adapted XYZ.
 
@@ -34,14 +34,14 @@ def lab_to_xyz(lab):
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return util.multiply(xyz, Lab.white())
+    return util.multiply(xyz, white)
 
 
-def xyz_to_lab(xyz):
+def xyz_to_lab(xyz, white):
     """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = util.divide(xyz, Lab.white())
+    xyz = util.divide(xyz, white)
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = [util.cbrt(i) if i > EPSILON3 else (RATIO3 * i) + RATIO1 for i in xyz]
 
@@ -111,10 +111,10 @@ class Lab(LabBase):
     def _to_xyz(cls, lab):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lab_to_xyz(lab))
+        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lab_to_xyz(lab, cls.white()))
 
     @classmethod
     def _from_xyz(cls, xyz):
         """From XYZ."""
 
-        return xyz_to_lab(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_to_lab(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz), cls.white())
