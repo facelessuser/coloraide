@@ -5,6 +5,7 @@ Alvy
 Az
 BT
 Bz
+CATs
 CIE
 CIEDE
 CIEHLC
@@ -44,6 +45,7 @@ JND
 Jz
 JzCzhz
 Jzazbz
+Kries
 LMS
 Lab
 Lch
@@ -73,6 +75,7 @@ TODO
 Twemoji
 UHDTV
 Verou
+Von
 WCG
 XYZ
 YCbCr
@@ -88,6 +91,7 @@ cz
 fixup
 grayscale
 hz
+illuminants
 interpolator
 ish
 js
@@ -113,6 +117,8 @@ subclassing
 sublicense
 subsamplings
 un
+uncomment
 unsaturate
 validator
+von
 webcolor

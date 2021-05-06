@@ -4,7 +4,6 @@ JzCzhz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle
-from . import _cat
 from .jzazbz import Jzazbz
 from .. import util
 import re
@@ -57,7 +56,7 @@ class JzCzhz(Cylindrical, Space):
     SPACE = "jzczhz"
     CHANNEL_NAMES = ("jz", "chroma", "hue", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutUnbound([0.0, 1.0]),
@@ -110,25 +109,25 @@ class JzCzhz(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_jzazbz(cls, jzczhz):
+    def _to_jzazbz(cls, parent, jzczhz):
         """To Jzazbz."""
 
         return jzczhz_to_jzazbz(jzczhz)
 
     @classmethod
-    def _from_jzazbz(cls, jzazbz):
+    def _from_jzazbz(cls, parent, jzazbz):
         """From Jzazbz."""
 
         return jzazbz_to_jzczhz(jzazbz)
 
     @classmethod
-    def _to_xyz(cls, jzczhz):
+    def _to_xyz(cls, parent, jzczhz):
         """To XYZ."""
 
-        return Jzazbz._to_xyz(cls._to_jzazbz(jzczhz))
+        return Jzazbz._to_xyz(parent, cls._to_jzazbz(parent, jzczhz))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_jzazbz(Jzazbz._from_xyz(xyz))
+        return cls._from_jzazbz(parent, Jzazbz._from_xyz(parent, xyz))

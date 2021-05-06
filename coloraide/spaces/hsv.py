@@ -1,6 +1,5 @@
 """HSV class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from . import _cat
 from .srgb import SRGB
 from .hsl import HSL
 from .. import util
@@ -57,7 +56,7 @@ class HSV(Cylindrical, Space):
     CHANNEL_NAMES = ("hue", "saturation", "value", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     GAMUT_CHECK = "hsl"
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -110,37 +109,37 @@ class HSV(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_xyz(cls, hsv):
+    def _to_xyz(cls, parent, hsv):
         """To XYZ."""
 
-        return SRGB._to_xyz(cls._to_srgb(hsv))
+        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsv))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_srgb(SRGB._from_xyz(xyz))
+        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
 
     @classmethod
-    def _to_hsl(cls, hsv):
+    def _to_hsl(cls, parent, hsv):
         """To HSL."""
 
         return hsv_to_hsl(hsv)
 
     @classmethod
-    def _from_hsl(cls, hsl):
+    def _from_hsl(cls, parent, hsl):
         """From HSL."""
 
         return hsl_to_hsv(hsl)
 
     @classmethod
-    def _to_srgb(cls, hsv):
+    def _to_srgb(cls, parent, hsv):
         """To sRGB."""
 
-        return HSL._to_srgb(cls._to_hsl(hsv))
+        return HSL._to_srgb(parent, cls._to_hsl(parent, hsv))
 
     @classmethod
-    def _from_srgb(cls, rgb):
+    def _from_srgb(cls, parent, rgb):
         """From sRGB."""
 
-        return cls._from_hsl(HSL._from_srgb(rgb))
+        return cls._from_hsl(parent, HSL._from_srgb(parent, rgb))

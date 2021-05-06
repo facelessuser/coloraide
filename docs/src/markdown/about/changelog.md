@@ -2,6 +2,8 @@
 
 ## 0.1.0a21
 
+- **NEW**: Refactor CAT to allow for other CAT methods. While we don't formally document it, one could change the
+  default CAT method to, but the only available one is von Kries.
 - **FIX**: Fix issues gamut mapping algorithm.
 
 ## 0.1.0a20

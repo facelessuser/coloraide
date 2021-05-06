@@ -1,6 +1,5 @@
 """A98 RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from ..spaces import _cat
 from .srgb import SRGB
 from .xyz import XYZ
 from .. import util
@@ -55,16 +54,16 @@ class A98RGB(SRGB):
 
     SPACE = "a98-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, rgb):
+    def _to_xyz(cls, parent, rgb):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return gam_a98rgb(xyz_to_lin_a98rgb(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz)))
+        return gam_a98rgb(xyz_to_lin_a98rgb(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
