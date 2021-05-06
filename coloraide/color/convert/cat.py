@@ -32,7 +32,7 @@ CATS = {
 }
 
 
-@lru_cache
+@lru_cache(maxsize=22)
 def calc_adaptation_matrices(w1, w2, method='bradford'):
     """
     Get the adaptation matrix based on the method and illuminants.
