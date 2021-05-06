@@ -222,11 +222,37 @@ def divide(a, b):
     return value
 
 
+def diag(v, k=0):
+    """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
+
+    is_vector = isinstance(v[0], numbers.Number)
+    size = len(v)
+    d = []
+
+    if is_vector:
+        # Create a diagonal matrix with the provided values
+        for i, value in enumerate(v):
+            # Check that the matrix is square, we .cannot invert the matrix if it is not
+            d.append([0] * i + [value] + [0] * (size - i - 1))
+    else:  # pragma: no cover
+        for r in v:
+            if len(r) != size:
+                raise ValueError('Matrix must be a n x n matrix')
+            if 0 <= k < size:
+                d.append(r[k])
+            k += 1
+    return d
+
+
 def inv(matrix):
     """
     Invert the matrix.
 
-    https://github.com/ThomIves/MatrixInverse.
+    Derived from https://github.com/ThomIves/MatrixInverse.
+
+    While not as performant as using `numpy`, we are often caching any
+    inversion we are doing, so this keeps us from having to require all
+    of `numpy` for the few hits to this we do.
 
     This is free and unencumbered software released into the public domain.
 
@@ -254,17 +280,17 @@ def inv(matrix):
     For more information, please refer to <http://unlicense.org/>
     """
 
-    length = len(matrix)
-    indices = list(range(length))
+    size = len(matrix)
+    indices = list(range(size))
     m = copy.deepcopy(matrix)
-    im = []
+
+    # Ensure we have a square matrix
+    for r in m:
+        if len(r) != size:  # pragma: no cover
+            raise ValueError('Matrix must be a n x n matrix')
 
     # Create an identity matrix of the same size as our provided matrix
-    for i in indices:
-        # Check that the matrix is square, we .cannot invert the matrix if it is not
-        if len(m[i]) != length:  # pragma: no cover
-            raise ValueError('Matrix must be a n x n matrix')
-        im.append([0] * i + [1] + [0] * (length - i - 1))
+    im = diag([1] * size)
 
     # Iterating through each row, we will scale each row by it's "focus diagonal".
     # Then using the scaled row, we will adjust the other rows.
@@ -284,7 +310,7 @@ def inv(matrix):
         # So scale the diagonal such that it will now equal 1.
         # Additionally, the same operations will be applied to the identity matrix
         # and will turn it into `m ** -1` (what we are looking for)
-        fd_scalar = 1.0 / m[fd][fd]
+        fd_scalar = 1.0 / denom
         for j in indices:
             m[fd][j] *= fd_scalar
             im[fd][j] *= fd_scalar

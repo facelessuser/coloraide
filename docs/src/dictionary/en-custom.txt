@@ -101,6 +101,7 @@ luminance
 macOS
 opRGB
 opto
+performant
 piecewise
 pre
 premultiplication
