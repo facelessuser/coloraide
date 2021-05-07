@@ -1,6 +1,5 @@
 """LCH class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle
-from . import _cat
 from .oklab import Oklab
 from .. import util
 import re
@@ -49,7 +48,7 @@ class Oklch(Cylindrical, Space):
     SPACE = "oklch"
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutUnbound([0.0, 1.0]),
@@ -102,25 +101,25 @@ class Oklch(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_oklab(cls, oklch):
+    def _to_oklab(cls, parent, oklch):
         """To Lab."""
 
         return oklch_to_oklab(oklch)
 
     @classmethod
-    def _from_oklab(cls, oklab):
+    def _from_oklab(cls, parent, oklab):
         """To Lab."""
 
         return oklab_to_oklch(oklab)
 
     @classmethod
-    def _to_xyz(cls, oklch):
+    def _to_xyz(cls, parent, oklch):
         """To XYZ."""
 
-        return Oklab._to_xyz(cls._to_oklab(oklch))
+        return Oklab._to_xyz(parent, cls._to_oklab(parent, oklch))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_oklab(Oklab._from_xyz(xyz))
+        return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

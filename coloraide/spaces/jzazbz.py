@@ -4,7 +4,6 @@ Jzazbz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
-from . import _cat
 from .xyz_d65 import XYZ
 from .. import util
 import re
@@ -107,7 +106,7 @@ class Jzazbz(Space):
     SPACE = "jzazbz"
     CHANNEL_NAMES = ("jz", "az", "bz", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutUnbound([0, 1]),
@@ -152,13 +151,13 @@ class Jzazbz(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, jzazbz):
+    def _to_xyz(cls, parent, jzazbz):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), jzazbz_to_xyz_d65(jzazbz))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, jzazbz_to_xyz_d65(jzazbz))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return xyz_d65_to_jzazbz(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_d65_to_jzazbz(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))

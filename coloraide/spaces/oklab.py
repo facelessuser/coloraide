@@ -4,7 +4,6 @@ Oklab class.
 https://bottosson.github.io/posts/oklab/
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
-from . import _cat
 from .xyz import XYZ
 from .. import util
 import re
@@ -52,7 +51,7 @@ class Oklab(Space):
     SPACE = "oklab"
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutUnbound([0, 1]),
@@ -97,13 +96,13 @@ class Oklab(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, oklab):
+    def _to_xyz(cls, parent, oklab):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), oklab_to_xyz_d65(oklab))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, oklab_to_xyz_d65(oklab))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return xyz_d65_to_oklab(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz))
+        return xyz_d65_to_oklab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))

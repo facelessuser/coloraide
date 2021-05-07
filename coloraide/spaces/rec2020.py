@@ -1,6 +1,5 @@
 """Rec 2020 color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from . import _cat
 from .srgb import SRGB
 from .xyz import XYZ
 from .. import util
@@ -82,16 +81,16 @@ class Rec2020(SRGB):
 
     SPACE = "rec2020"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, rgb):
+    def _to_xyz(cls, parent, rgb):
         """To XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lin_2020_to_xyz(lin_2020(rgb)))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_2020_to_xyz(lin_2020(rgb)))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return gam_2020(xyz_to_lin_2020(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz)))
+        return gam_2020(xyz_to_lin_2020(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))

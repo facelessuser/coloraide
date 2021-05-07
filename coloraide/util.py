@@ -1,4 +1,5 @@
 """Utilities."""
+import copy
 import decimal
 import math
 import numbers
@@ -97,7 +98,7 @@ def is_number(value):
 
 
 def is_nan(value):
-    """Print is "not a number"."""
+    """Check if value is "not a number"."""
 
     return math.isnan(value)
 
@@ -219,6 +220,114 @@ def divide(a, b):
         value = [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
 
     return value
+
+
+def diag(v, k=0):
+    """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
+
+    is_vector = isinstance(v[0], numbers.Number)
+    size = len(v)
+    d = []
+
+    if is_vector:
+        # Create a diagonal matrix with the provided values
+        for i, value in enumerate(v):
+            # Check that the matrix is square, we .cannot invert the matrix if it is not
+            d.append([0] * i + [value] + [0] * (size - i - 1))
+    else:  # pragma: no cover
+        for r in v:
+            if len(r) != size:
+                raise ValueError('Matrix must be a n x n matrix')
+            if 0 <= k < size:
+                d.append(r[k])
+            k += 1
+    return d
+
+
+def inv(matrix):
+    """
+    Invert the matrix.
+
+    Derived from https://github.com/ThomIves/MatrixInverse.
+
+    While not as performant as using `numpy`, we are often caching any
+    inversion we are doing, so this keeps us from having to require all
+    of `numpy` for the few hits to this we do.
+
+    This is free and unencumbered software released into the public domain.
+
+    Anyone is free to copy, modify, publish, use, compile, sell, or
+    distribute this software, either in source code form or as a compiled
+    binary, for any purpose, commercial or non-commercial, and by any
+    means.
+
+    In jurisdictions that recognize copyright laws, the author or authors
+    of this software dedicate any and all copyright interest in the
+    software to the public domain. We make this dedication for the benefit
+    of the public at large and to the detriment of our heirs and
+    successors. We intend this dedication to be an overt act of
+    relinquishment in perpetuity of all present and future rights to this
+    software under copyright law.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+
+    For more information, please refer to <http://unlicense.org/>
+    """
+
+    size = len(matrix)
+    indices = list(range(size))
+    m = copy.deepcopy(matrix)
+
+    # Ensure we have a square matrix
+    for r in m:
+        if len(r) != size:  # pragma: no cover
+            raise ValueError('Matrix must be a n x n matrix')
+
+    # Create an identity matrix of the same size as our provided matrix
+    im = diag([1] * size)
+
+    # Iterating through each row, we will scale each row by it's "focus diagonal".
+    # Then using the scaled row, we will adjust the other rows.
+    # ```
+    # [[fd, 0,  0 ]
+    #  [0,  fd, 0 ]
+    #  [0,  0,  fd]]
+    # ```
+    for fd in indices:
+        # We will divide each value in the row by the "focus diagonal" value.
+        # If the we have a zero for the given `fd` value, we cannot invert.
+        denom = m[fd][fd]
+        if denom == 0:  # pragma: no cover
+            raise ValueError('Matrix is not invertable')
+
+        # We are converting the matrix to the identity and vice versa,
+        # So scale the diagonal such that it will now equal 1.
+        # Additionally, the same operations will be applied to the identity matrix
+        # and will turn it into `m ** -1` (what we are looking for)
+        fd_scalar = 1.0 / denom
+        for j in indices:
+            m[fd][j] *= fd_scalar
+            im[fd][j] *= fd_scalar
+
+        # Now, using the value found at the index `fd` in the remaining rows (excluding `row[fd]`),
+        # Where `cr` is the current row under evaluation, subtract `row[cr][fd] * row[fd] from row[cr]`.
+        for cr in indices[0:fd] + indices[fd + 1:]:
+            # The scalar for the current row
+            cr_scalar = m[cr][fd]
+
+            # Scale each item in the `row[fd]` and subtract it from the current row `row[cr]`
+            for j in indices:
+                m[cr][j] -= cr_scalar * m[fd][j]
+                im[cr][j] -= cr_scalar * im[fd][j]
+
+    # The identify matrix is now the inverse matrix and vice versa.
+    return im
 
 
 def cbrt(x):

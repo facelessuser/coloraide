@@ -53,6 +53,7 @@ class Color(
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
+    CHROMATIC_ADAPTATION = 'bradford'
 
     def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Initialize."""

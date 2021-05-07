@@ -2,6 +2,8 @@
 
 ## 0.1.0a21
 
+- **NEW**: Refactor CAT to allow for other CAT methods: `von-kries`, `xyz-scaling`, `cat02`, `cmccat97`, `cmccat2000`,
+and `sharp`. Currently, `bradford` is the default and the overall preferred option.
 - **FIX**: Fix issues gamut mapping algorithm.
 
 ## 0.1.0a20

@@ -1,6 +1,5 @@
 """HSL class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from . import _cat
 from .srgb import SRGB
 from .. import util
 import re
@@ -60,7 +59,7 @@ class HSL(Cylindrical, Space):
     SPACE = "hsl"
     CHANNEL_NAMES = ("hue", "saturation", "lightness", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -113,25 +112,25 @@ class HSL(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, hsl):
+    def _to_srgb(cls, parent, hsl):
         """To sRGB."""
 
         return hsl_to_srgb(hsl)
 
     @classmethod
-    def _from_srgb(cls, rgb):
+    def _from_srgb(cls, parent, rgb):
         """From sRGB."""
 
         return srgb_to_hsl(rgb)
 
     @classmethod
-    def _to_xyz(cls, hsl):
+    def _to_xyz(cls, parent, hsl):
         """To XYZ."""
 
-        return SRGB._to_xyz(cls._to_srgb(hsl))
+        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsl))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_srgb(SRGB._from_xyz(xyz))
+        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))

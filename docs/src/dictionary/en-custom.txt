@@ -5,6 +5,7 @@ Alvy
 Az
 BT
 Bz
+CATs
 CIE
 CIEDE
 CIEHLC
@@ -17,6 +18,7 @@ CSS
 Changelog
 Chroma
 ColorAide
+ColorAide's
 ColorHelper
 Ctrl
 Cz
@@ -44,6 +46,7 @@ JND
 Jz
 JzCzhz
 Jzazbz
+Kries
 LMS
 Lab
 Lch
@@ -73,6 +76,7 @@ TODO
 Twemoji
 UHDTV
 Verou
+Von
 WCG
 XYZ
 YCbCr
@@ -88,6 +92,8 @@ cz
 fixup
 grayscale
 hz
+illuminant
+illuminants
 interpolator
 ish
 js
@@ -97,6 +103,7 @@ luminance
 macOS
 opRGB
 opto
+performant
 piecewise
 pre
 premultiplication
@@ -112,7 +119,10 @@ subclassed
 subclassing
 sublicense
 subsamplings
+th
 un
+uncomment
 unsaturate
 validator
+von
 webcolor

@@ -1,9 +1,16 @@
 """Convert utilities."""
-from .. import util
+from ... import util
+from . import cat
 
 
 class Convert:
     """Conversion methods."""
+
+    def chromatic_adaptation(self, w1, w2, xyz):
+        """Apply chromatic adaption to XYZ coordinates."""
+
+        method = self.CHROMATIC_ADAPTATION
+        return cat.chromatic_adaptation(w1, w2, xyz, method=method)
 
     def convert(self, space, *, fit=False, in_place=False):
         """Convert to color space."""
@@ -28,19 +35,19 @@ class Convert:
         coords = self.coords()
         if hasattr(self._space, convert_to):
             func = getattr(self._space, convert_to)
-            coords = func(coords)
+            coords = func(self, coords)
         elif hasattr(obj, convert_from):
             func = getattr(obj, convert_from)
-            coords = func(coords)
+            coords = func(self, coords)
 
         # See if there is an XYZ route
         if func is None and self.space() != space:
             func = getattr(self._space, '_to_xyz')
-            coords = func(coords)
+            coords = func(self, coords)
 
             if space != 'xyz':
                 func = getattr(obj, '_from_xyz')
-                coords = func(coords)
+                coords = func(self, coords)
 
         return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
 

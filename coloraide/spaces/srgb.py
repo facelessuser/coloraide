@@ -1,6 +1,5 @@
 """SRGB color class."""
 from ..spaces import RE_DEFAULT_MATCH, Space, GamutBound
-from . import _cat
 from .xyz import XYZ
 from .. import util
 import re
@@ -81,7 +80,7 @@ class SRGB(Space):
     GAMUT_CHECK = "hsl"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     CHANNEL_NAMES = ("red", "green", "blue", "alpha")
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutBound([0.0, 1.0]),
@@ -126,13 +125,13 @@ class SRGB(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, rgb):
+    def _to_xyz(cls, parent, rgb):
         """SRGB to XYZ."""
 
-        return _cat.chromatic_adaption(cls.white(), XYZ.white(), lin_srgb_to_xyz(lin_srgb(rgb)))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_srgb_to_xyz(lin_srgb(rgb)))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """XYZ to SRGB."""
 
-        return gam_srgb(xyz_to_lin_srgb(_cat.chromatic_adaption(XYZ.white(), cls.white(), xyz)))
+        return gam_srgb(xyz_to_lin_srgb(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))

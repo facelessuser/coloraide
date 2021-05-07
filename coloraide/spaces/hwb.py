@@ -1,6 +1,5 @@
 """HWB class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from . import _cat
 from .srgb import SRGB
 from .hsv import HSV
 from .. import util
@@ -44,7 +43,7 @@ class HWB(Cylindrical, Space):
     CHANNEL_NAMES = ("hue", "whiteness", "blackness", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     GAMUT_CHECK = "hsl"
-    WHITE = _cat.WHITES["D65"]
+    WHITE = "D65"
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
@@ -97,49 +96,49 @@ class HWB(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_xyz(cls, hwb):
+    def _to_xyz(cls, parent, hwb):
         """SRGB to XYZ."""
 
-        return SRGB._to_xyz(cls._to_srgb(hwb))
+        return SRGB._to_xyz(parent, cls._to_srgb(parent, hwb))
 
     @classmethod
-    def _from_xyz(cls, xyz):
+    def _from_xyz(cls, parent, xyz):
         """XYZ to SRGB."""
 
-        return cls._from_srgb(SRGB._from_xyz(xyz))
+        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
 
     @classmethod
-    def _to_srgb(cls, hwb):
+    def _to_srgb(cls, parent, hwb):
         """To sRGB."""
 
-        return HSV._to_srgb(cls._to_hsv(hwb))
+        return HSV._to_srgb(parent, cls._to_hsv(parent, hwb))
 
     @classmethod
-    def _from_srgb(cls, srgb):
+    def _from_srgb(cls, parent, srgb):
         """From sRGB."""
 
-        return cls._from_hsv(HSV._from_srgb(srgb))
+        return cls._from_hsv(parent, HSV._from_srgb(parent, srgb))
 
     @classmethod
-    def _to_hsl(cls, hwb):
+    def _to_hsl(cls, parent, hwb):
         """To HSL."""
 
-        return HSV._to_hsl(hwb_to_hsv(hwb))
+        return HSV._to_hsl(parent, hwb_to_hsv(hwb))
 
     @classmethod
-    def _from_hsl(cls, hsl):
+    def _from_hsl(cls, parent, hsl):
         """From HSL."""
 
-        return hsv_to_hwb(HSV._from_hsl(hsl))
+        return hsv_to_hwb(HSV._from_hsl(parent, hsl))
 
     @classmethod
-    def _to_hsv(cls, hwb):
+    def _to_hsv(cls, parent, hwb):
         """To HSV."""
 
         return hwb_to_hsv(hwb)
 
     @classmethod
-    def _from_hsv(cls, hsv):
+    def _from_hsv(cls, parent, hsv):
         """From HSV."""
 
         return hsv_to_hwb(hsv)
