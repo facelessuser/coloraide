@@ -1,11 +1,14 @@
 """Fit by compressing chroma in Lch."""
 
+EPSILON = 0.001
 
-def fit(base, color):
+
+def fit(color):
     """
     Gamut mapping via chroma Lch.
 
-    Algorithm comes from https://colorjs.io/docs/gamut-mapping.html.
+    Algorithm originally came from https://colorjs.io/docs/gamut-mapping.html.
+    Some things have been optimized and fixed though to better perform as intended.
 
     The idea is to hold hue and lightness constant and decrease lightness until
     color comes under gamut.
@@ -19,41 +22,41 @@ def fit(base, color):
     License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
     """
 
-    # Compare clipped against original to
-    # judge how far we are off with the worst case fitting
     space = color.space()
-    clipped = color.clone()
-    clipped.fit(space=space, method="clip", in_place=True)
-    base_error = base.delta_e(clipped, method="2000")
 
-    if base_error > 2.3:
-        threshold = .001
-        # Compare mapped against desired space
-        mapcolor = color.convert("lch")
-        error = color.delta_e(mapcolor, method="2000")
-        low = 0.0
-        high = mapcolor.chroma
+    # If flooring chroma doesn't work, just clip the floored color
+    # because there is no optimal compression.
+    floor = color.clone().set('lch.chroma', 0)
+    if not floor.in_gamut():
+        return floor.fit(method="clip").coords()
 
-        # Adjust chroma (using binary search).
-        # This helps preserve the color more (in most cases).
-        # After each adjustment, see if clipping gets us close enough.
-        while (high - low) > threshold and error < base_error:
-            clipped = mapcolor.clone()
-            clipped.fit(space, method="clip", in_place=True)
-            delta = mapcolor.delta_e(clipped, method="2000")
-            error = color.delta_e(mapcolor, method="2000")
-            if delta - 2 < threshold:
-                low = mapcolor.chroma
-            else:
-                if abs(delta - 2) < threshold:  # pragma: no cover
-                    # Can this occur?
-                    break
-                high = mapcolor.chroma
-            mapcolor.chroma = (high + low) / 2
-        # Trim off noise allowed by our tolerance
-        color.update(mapcolor)
-        color.fit(space, method="clip", in_place=True)
-    else:
-        # We are close enough that we should just clip.
-        color.update(clipped)
-    return color.coords()
+    # If we are already below the JND, just clip as we will gain no
+    # noticeable difference moving forward.
+    clipped = color.fit(method="clip")
+    if color.delta_e(clipped, method="2000") < 2.3:
+        return clipped.coords()
+
+    # Convert to CIELCH and set our boundaries
+    mapcolor = color.convert("lch")
+    low = 0.0
+    high = mapcolor.chroma
+
+    # Adjust chroma (using binary search).
+    # This helps preserve the other attributes of the color.
+    # Each time we compare the compressed color to it's clipped form
+    # to see how close we are. A delta less than 2 is our target.
+    while (high - low) > EPSILON:
+        delta = mapcolor.delta_e(
+            mapcolor.fit(space, method="clip"),
+            method="2000"
+        )
+
+        if (delta - 2) < EPSILON:
+            low = mapcolor.chroma
+        else:
+            high = mapcolor.chroma
+
+        mapcolor.chroma = (high + low) * 0.5
+
+    # Update and clip off noise
+    return color.update(mapcolor).fit(space, method="clip", in_place=True).coords()

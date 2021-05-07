@@ -3,7 +3,7 @@ from ... import util
 from ... spaces import Angle, GamutBound
 
 
-def fit(base, color):
+def fit(color):
     """Gamut clipping."""
 
     channels = util.no_nan(color.coords())

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a21
+
+- **FIX**: Fix issues gamut mapping algorithm.
+
 ## 0.1.0a20
 
 - **FIX**: Fix `lab-d65` which was not using the correct white point in all places.
