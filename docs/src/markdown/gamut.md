@@ -2,8 +2,8 @@
 
 ## Overview
 
-Many color spaces have limits the colors they can accurately represent. This is the color gamut. The bounds represent
-the limits in which a color space can represent a color. Some color spaces are theoretically unbounded, but past a
+Many color spaces have limits to the colors they can accurately represent. This is the color gamut. The bounds represent
+the limits to which a color space can represent a color. Some color spaces are theoretically unbounded, but past a
 point, the eye can't see them.
 
 When moving from a large color space like CIELCH to a small color space like sRGB, many CIELAB colors will not fit
