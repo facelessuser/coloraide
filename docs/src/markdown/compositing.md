@@ -669,5 +669,10 @@ Display the sum of the source image and destination image.
 
 _Specified as `#!py3 'lighter'`_.
 
---8<-- "refs.txt"
---8<-- "compositing.txt"
+--8<--
+playground.txt
+
+refs.txt
+
+compositing.txt
+--8<--

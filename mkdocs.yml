@@ -64,8 +64,8 @@ markdown_extensions:
       custom_fences:
         - name: color
           class: color
-          format: !!python/name:tools.colors.color_command_formatter
-          validator: !!python/name:tools.colors.color_command_validator
+          format: !!python/name:tools.playground.color_command_formatter
+          validator: !!python/name:tools.playground.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline
@@ -80,10 +80,10 @@ markdown_extensions:
       custom_inline:
         - name: color-no-fit
           class: color
-          format: !!python/name:tools.colors.color_formatter_no_fit
+          format: !!python/name:tools.playground.color_formatter_no_fit
         - name: color
           class: color
-          format: !!python/name:tools.colors.color_formatter
+          format: !!python/name:tools.playground.color_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true

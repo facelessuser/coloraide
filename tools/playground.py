@@ -1,4 +1,5 @@
 """Color swatch."""
+import coloraide
 from coloraide import Color, NaN, Piecewise
 from coloraide.color.interpolate import Interpolator
 from pymdownx import superfences
@@ -17,6 +18,27 @@ RE_COLOR_START = re.compile(
     r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
 )
 
+template = '''
+<div class="playground" id="__playground_{el_id}">
+<div class="playground-results" id="__playground-results_{el_id}">
+{results}
+</div>
+<div class="playground-code hidden" id="__playground-code_{el_id}">
+{hl_source}
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_{el_id}" class="playground-edit" title="Ctrl + Enter">Edit</button>
+<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_{el_id}" class="playground-run hidden" title="Ctrl + Enter">Run</button>
+<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Escape">Cancel</button>
+</div>
+'''
+
+code_id = 0
+
 
 class ColorInterpolate(list):
     """Color interpolate."""
@@ -24,6 +46,15 @@ class ColorInterpolate(list):
 
 class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
+
+
+def _escape(txt):
+    """Basic HTML escaping."""
+
+    txt = txt.replace('&', '&amp;')
+    txt = txt.replace('<', '&lt;')
+    txt = txt.replace('>', '&gt;')
+    return txt
 
 
 @contextlib.contextmanager
@@ -77,7 +108,7 @@ def find_colors(text):
 def execute(cmd):
     """Execute color commands."""
 
-    g = {'Color': Color, 'Nan': NaN, 'Piecewise': Piecewise}
+    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
     console = ''
     colors = []
 
@@ -149,7 +180,12 @@ def color_command_validator(language, inputs, options, attrs, md):
 def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
     """Formatter wrapper."""
 
+    global code_id
+
     try:
+        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
+            code_id = 0
+
         fit = not options.get('no-fit', False)
         console, colors = execute(src.strip())
         el = ''
@@ -210,6 +246,16 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             **kwargs
         )
         el = '<div class="color-command">{}</div>'.format(el)
+        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=src,
+            class_name="highlight",
+            language='py3',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
+        code_id += 1
     except Exception:
         import traceback
         print(traceback.format_exc())

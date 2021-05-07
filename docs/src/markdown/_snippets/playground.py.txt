@@ -5,7 +5,7 @@ Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
 import micropip
-from js import document
+from js import document, location
 from collections.abc import Sequence
 from collections import namedtuple
 import ast
@@ -18,9 +18,9 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 HtmlFormatter = find_formatter_class('html')
 
-inputs = document.getElementById("playground-inputs")
-results = document.getElementById("playground-results")
-pgcode = document.getElementById("playground-code")
+inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
+results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
+pgcode = document.getElementById("__playground-code_{}".format(globals()['id_num']))
 
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
@@ -68,6 +68,11 @@ def get_colors(result):
         for x in result:
             if isinstance(x, Color):
                 colors.append(ColorTuple(x.to_string(), x))
+            elif isinstance(x, str):
+                try:
+                    colors.append(ColorTuple(x, Color(x)))
+                except Exception:
+                    pass
     return colors
 
 
@@ -242,4 +247,10 @@ def process_code(*args):
 
 --8<-- "package.txt"
 
-micropip.install(wheel).add_done_callback(process_code)
+w = (
+    location.origin + '/' +
+    ('coloraide/' if location.origin == 'https://facelessuser.github.io' else '') +
+    'playground/' + wheel
+)
+
+micropip.install(w).add_done_callback(process_code)

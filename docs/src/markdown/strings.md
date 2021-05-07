@@ -118,3 +118,9 @@ transparency.
 ```color
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 ```
+
+--8<--
+playground.txt
+
+refs.txt
+--8<--

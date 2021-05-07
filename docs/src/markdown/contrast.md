@@ -17,3 +17,9 @@ To get the contrast ratio between two colors, simply pass in the second color:
 ```color
 Color("blue").contrast("red")
 ```
+
+--8<--
+playground.txt
+
+refs.txt
+--8<--

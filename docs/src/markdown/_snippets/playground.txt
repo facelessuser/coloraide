@@ -1,165 +1,72 @@
-<style>
-#playground-inputs {
-  -webkit-appearance: textarea;
-  position: absolute;
-  margin: 0;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 100%;
-  min-height: 15em;
-  height: calc(100% + 0.2rem);
-  border: none;
-  padding: .7720588235em 1.1764705882em;
-  outline: none;
-  cursor: text;
-  overflow-x: auto;
-  overflow-y: hidden;
-  caret-color: var(--md-code-fg-color);
-  color: transparent;
-  background-color: transparent;
-  font-feature-settings: "kern";
-  font-family: var(--md-code-font-family,_),SFMono-Regular,Consolas,Menlo,monospace;
-  line-height: 1.4;
-  font-size: .85em;
-  z-index: 1;
-  resize: none;
-  word-wrap: unset;
-  white-space: pre;
-}
-
-#playground-inputs::selection {
-  color: var(--md-code-bg-color);
-  background: var(--md-code-fg-color);
-  font-weight: bold;
-}
-
-#playground-code {
-  margin-top: 2px;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overlow: hidden;
-}
-
-#playground-code .highlight code {
-  min-height: 15em;
-}
-
-#playground-code .highlight,
-#playground-code .highlight code {
-  margin: 0;
-  overflow: hidden;
-}
-
-#playground-code pre {
-  margin: 0;
-  pointer-events: none;
-  height: calc(100% + 0.2rem);
-}
-
-#playground-results code {
-  min-height: 15em;
-}
-
-#playground-results pre {
-  margin-bottom: 0;
-}
-
-#playground-results .swatch-bar {
-  min-height: calc(3em + 4px);
-}
-
-#playground-results .color-command {
-  margin-bottom: 0;
-}
-
-.hidden .highlight,
-.hidden #playground-inputs,
-button.hidden {
-    display: none;
-}
-
-button:not(.md-clipboard) {
-    padding: 0.25em 1em;
-    background: var(--md-primary-fg-color);
-    color: var(--md-primary-bg-color);
-    border-radius: .1rem;
-}
-
-button:not(.md-clipboard):hover {
-  cursor: pointer;
-}
-
-/* Enabling custom scroll bar causes issues with Safari.
-   Safari renders `textarea` content in a shadow DOM, and
-   the content is smaller than the text area with scrollbar.
-   This can cause the overlay text to not be aligned with the
-   underlying code highlighted content. */
-/*.md-typeset textarea::-webkit-scrollbar {
-  width: 0.2rem;
-  height: 0.2rem;
-}
-
-.md-typeset textarea::-webkit-scrollbar-corner {
-  background-color: transparent;
-}
-
-.md-typeset textarea::-webkit-scrollbar-thumb {
-  background-color: var(--md-default-fg-color--lighter);
-}
-
-.md-typeset textarea::-webkit-scrollbar-thumb:hover {
-  background-color: var(--md-accent-fg-color);
-}
-
-.md-typeset textarea {
-  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
-  scrollbar-width: thin;
-}
-
-.md-typeset textarea:hover {
-  scrollbar-color: var(--md-accent-fg-color) transparent;
-}*/
-</style>
-
 <script src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
 
 <script type="text/javascript">
-const inputs = document.getElementById("playground-inputs");
-const results = document.getElementById("playground-results");
-const pgcode = document.getElementById("playground-code");
-const button_edit = document.querySelector("button#playground-edit");
-const button_share = document.querySelector("button#playground-share");
-const button_run = document.querySelector("button#playground-run");
-const button_cancel = document.querySelector("button#playground-cancel");
-const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
 let busy = false;
 let requests = 0;
 let last_text = '';
+const reIdNum = /.*?_(\d+)$/;
+let initialized = false;
 
-async function main() {
-  // Setup input highlighting and events to run Python code blocks.
 
-  // Load Piodide and related packages.
-  await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" });
-  await pyodide.loadPackage(['micropip', 'Pygments']);
+async function pyexecute(current_id) {
+  // Execute Python code
 
-  async function pyexecute() {
-    // Execute Python code
-
-    let pycode = `
---8<-- "pycode.txt"
+  let pycode = `
+--8<-- "playground.py.txt"
 `
-    inputs.setAttribute('readonly', '');
-    await pyodide.runPythonAsync(pycode);
-    inputs.removeAttribute('readonly');
+  console.log(`__playground-inputs_${current_id}`)
+  const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
+  current_inputs.setAttribute('readonly', '');
+  pyodide.globals.set('id_num', current_id);
+  await pyodide.runPythonAsync(pycode);
+  current_inputs.removeAttribute('readonly');
+}
+
+async function load_pyodide() {
+  if (!initialized) {
+    const buttons = document.querySelectorAll('.playground button');
+    if (buttons) {
+      buttons.forEach((b) => {
+        b.setAttribute('disabled', '');
+        if (b.classList.contains('playground-edit')) {
+          b.innerHTML = 'Loading...';
+        }
+      });
+    }
+    initialized = true;
+    await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" });
+    await pyodide.loadPackage(['micropip', 'Pygments']);
+    if (buttons) {
+      buttons.forEach((b) => {
+        b.removeAttribute('disabled');
+        if (b.classList.contains('playground-edit')) {
+          b.innerHTML = 'Edit';
+        }
+      });
+    }
+  }
+}
+
+function highlight (inputs, current_id) {
+  // Manage incoming highlight requests.
+
+  // Throttle requests
+  if (busy) {
+    return;
   }
 
-  async function pyhighlight(str) {
-    // Highlight current input code
+  // Execute
+  if (requests) {
+    requests = 0;
+    busy = true;
+    pyhighlight(inputs.value, current_id);
+  }
+};
 
-    let pycode = `
+async function pyhighlight(inputs, current_id) {
+  // Highlight current input code
+
+  let pycode = `
 from js import document
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -174,8 +81,8 @@ def colorize(src, lang, **options):
     formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
     return highlight(src, lexer, formatter).strip()
 
-inputs = document.getElementById("playground-inputs")
-pgcode = document.getElementById("playground-code")
+inputs = document.getElementById("__playground-inputs_${current_id}")
+pgcode = document.getElementById("__playground-code_${current_id}")
 
 div = pgcode.querySelector(".highlight")
 template = document.createElement('template')
@@ -186,192 +93,200 @@ code = pgcode.querySelector('code')
 code.scrollLeft = inputs.scrollLeft
 code.scrollTop = inputs.scrollTop
 `
-    await pyodide.runPythonAsync(pycode);
-    busy = false;
-    if (requests) {
-      setTimeout(pyhighlight, 100);
-    }
+  await pyodide.runPythonAsync(pycode);
+  busy = false;
+  if (requests) {
+    setTimeout(() => {highlight(inputs, current_id);}, 100);
   }
+}
 
-  function highlight () {
-    // Manage incoming highlight requests.
-
-    // Throttle requests
-    if (busy) {
-      return;
-    }
-
-    // Execute
-    if (requests) {
-      requests = 0;
-      busy = true;
-      pyhighlight(inputs.value);
-    }
-  };
-
-  inputs.addEventListener("input", (e) => {
-    // Handle highlighting as input changes.
-
-    requests++;
-    highlight();
-  });
-
-  inputs.addEventListener("scroll", (e) => {
-    // Sync overlay textarea scrolling with highlighted code block underneath.
-
-    const code = pgcode.querySelector("code");
-    code.scrollLeft = e.target.scrollLeft;
-    code.scrollTop = e.target.scrollTop;
-  });
-
-  document.addEventListener("keydown", (e) => {
-    // Ctrl + Enter in textarea will execute the code.
-
-    if (event.defaultPrevented) {
-      return; // Do nothing if the event was already processed
-    }
-
-    if (e.ctrlKey && e.key === "Enter") {
-      if (button_edit.classList.contains('hidden')) {
-        button_run.click();
-      } else {
-        button_edit.click();
-      }
-    } else if (
-      e.key === "Escape" &&
-      button_edit.classList.contains('hidden') &&
-      document.querySelector('input.md-search__input') !== document.activeElement
-    ) {
-      button_cancel.click();
-    }
-  });
-
-  inputs.addEventListener('touchmove', (e) => {
-    // Stop propogation on "touchmove".
-
-    e.stopPropagation();
-  });
-
-  button_edit.addEventListener("click", (e) => {
-    // Handle the button click: show source or execute source.
-
-    if (busy) {
-      return;
-    }
-
-    busy = true;
-    last_text = inputs.value;
-    pgcode.classList.toggle('hidden');
-    results.classList.toggle('hidden');
-    button_run.classList.toggle('hidden');
-    button_cancel.classList.toggle('hidden');
-    button_edit.classList.toggle('hidden');
-    button_share.classList.toggle('hidden');
-    inputs.focus();
-    busy = false;
-  });
-
-  button_share.addEventListener("click", (e) => {
-    // Handle the share click: copy URL with code as parameter.
-
-    if (busy) {
-      return;
-    }
-
-    busy = true;
-    const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-    const loc = window.location;
-    const path = loc.protocol + '//' + loc.host + loc.pathname + '?code=' + uri;
-    if (uri.length > 1000) {
-      alert('Code must be under a 1000 characters to generate a URL!');
-    } else {
-      navigator.clipboard.writeText(path).then(function() {
-        alert('Link copied to clipboard :)');
-      }, function() {
-        alert('Failed to copy link clipboard!');
-      });
-    }
-    busy = false;
-  });
-
-  button_run.addEventListener("click", async function(e) {
-    // Handle the button click: show source or execute source.
-
-    if (busy) {
-      return;
-    }
-
-    busy = true;
-    results.querySelector('code').innerHTML = '';
-    pyexecute();
-    pgcode.classList.toggle('hidden');
-    results.classList.toggle('hidden');
-    button_edit.classList.toggle('hidden');
-    button_share.classList.toggle('hidden');
-    button_run.classList.toggle('hidden');
-    button_cancel.classList.toggle('hidden');
-    busy = false;
-  });
-
-  button_cancel.addEventListener("click", (e) => {
-    // Cancel edit.
-
-    if (busy) {
-      return;
-    }
-
-    busy = true;
-    inputs.value = last_text;
-    pgcode.classList.toggle('hidden');
-    results.classList.toggle('hidden');
-    button_edit.classList.toggle('hidden');
-    button_share.classList.toggle('hidden');
-    button_run.classList.toggle('hidden');
-    button_cancel.classList.toggle('hidden');
-    busy = false;
-    requests++;
-    highlight();
-  });
-
-  inputs.focus();
-  requests = 1;
-  let params = new URLSearchParams(window.location.search);
-  if (params.has('source')) {
-    // A source was specified, so load it.
-    try {
-      const uri = params.get('source');
-      let xhr = new XMLHttpRequest();
-      xhr.open("GET", uri, true);
-      xhr.onload = function (e) {
-        // Try and load the requested content
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            inputs.value = xhr.responseText;
+async function loadExternalSrc() {
+  if (window.location.pathname.endsWith("/playground/")) {
+    const pginputs = document.querySelector('.playground-inputs');
+    const pg_id = pginputs.id.replace(reIdNum, '$1');
+    let params = new URLSearchParams(window.location.search);
+    if (params.has('source')) {
+      // A source was specified, so load it.
+      await load_pyodide();
+      try {
+        const uri = params.get('source');
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", uri, true);
+        xhr.onload = function (e) {
+          // Try and load the requested content
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              pginputs.value = xhr.responseText;
+            }
           }
-        }
-        highlight();
-        pyexecute();
-      };
-      xhr.send();
-    } catch (err) {
-      // Failed, so just load the default content
-      inputs.value = default_text;
-      highlight();
-      pyexecute();
+          requests = 1;
+          highlight(pginputs, pg_id);
+          pyexecute(pg_id);
+        };
+        xhr.send();
+      } catch (err) {}
+    } else if (params.has('code')) {
+      // Raw code provided.
+      await load_pyodide();
+      requests = 1;
+      pginputs.value = params.get('code');
+      highlight(pginputs, pg_id);
+      pyexecute(pg_id);
     }
-  } else if (params.has('code')) {
-    // Raw code provided.
-    inputs.value = params.get('code');
-    highlight();
-    pyexecute();
-  } else {
-    // No gist specified, so just load default content
-    inputs.value = default_text;
-    highlight();
-    pyexecute();
   }
+}
+
+async function main() {
+  // Setup input highlighting and events to run Python code blocks.
+
+  const playgrounds = document.querySelectorAll('.playground');
+  playgrounds.forEach(async function(pg) {
+
+    const current_id = pg.id.replace(reIdNum, '$1');
+    const inputs = document.getElementById(`__playground-inputs_${current_id}`);
+    const results = document.getElementById(`__playground-results_${current_id}`);
+    const pgcode = document.getElementById(`__playground-code_${current_id}`);
+    const button_edit = document.querySelector(`button#__playground-edit_${current_id}`);
+    const button_share = document.querySelector(`button#__playground-share_${current_id}`);
+    const button_run = document.querySelector(`button#__playground-run_${current_id}`);
+    const button_cancel = document.querySelector(`button#__playground-cancel_${current_id}`);
+    const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
+
+    inputs.addEventListener("input", (e) => {
+      // Handle highlighting as input changes.
+
+      requests++;
+      highlight(inputs, current_id);
+    });
+
+    inputs.addEventListener("scroll", (e) => {
+      // Sync overlay textarea scrolling with highlighted code block underneath.
+
+      const code = pgcode.querySelector("code");
+      code.scrollLeft = e.target.scrollLeft;
+      code.scrollTop = e.target.scrollTop;
+    });
+
+    document.addEventListener("keydown", (e) => {
+      // Ctrl + Enter in textarea will execute the code.
+
+      if (event.defaultPrevented) {
+        return; // Do nothing if the event was already processed
+      }
+
+      if (e.ctrlKey && e.key === "Enter") {
+        if (button_edit.classList.contains('hidden')) {
+          button_run.click();
+        } else {
+          button_edit.click();
+        }
+      } else if (
+        e.key === "Escape" &&
+        button_edit.classList.contains('hidden') &&
+        document.querySelector('input.md-search__input') !== document.activeElement
+      ) {
+        button_cancel.click();
+      }
+    });
+
+    inputs.addEventListener('touchmove', (e) => {
+      // Stop propogation on "touchmove".
+
+      e.stopPropagation();
+    });
+
+    button_edit.addEventListener("click", async function(e) {
+      // Handle the button click: show source or execute source.
+
+      if (busy) {
+        return;
+      }
+
+      // Load Piodide and related packages.
+      await load_pyodide();
+
+      busy = true;
+      last_text = inputs.value;
+      pgcode.classList.toggle('hidden');
+      results.classList.toggle('hidden');
+      button_run.classList.toggle('hidden');
+      button_cancel.classList.toggle('hidden');
+      button_edit.classList.toggle('hidden');
+      button_share.classList.toggle('hidden');
+      inputs.focus();
+      busy = false;
+    });
+
+    button_share.addEventListener("click", (e) => {
+      // Handle the share click: copy URL with code as parameter.
+
+      if (busy) {
+        return;
+      }
+
+      busy = true;
+      const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
+        return '%' + c.charCodeAt(0).toString(16);
+      });
+      const loc = window.location;
+      let pathname = '/playground/';
+      if (loc.pathname.startsWith('/coloraide/')) {
+        pathname = '/coloraide/playground/'
+      }
+      const path = loc.protocol + '//' + loc.host + pathname + '?code=' + uri;
+      if (uri.length > 1000) {
+        alert('Code must be under a 1000 characters to generate a URL!');
+      } else {
+        navigator.clipboard.writeText(path).then(function() {
+          alert('Link copied to clipboard :)');
+        }, function() {
+          alert('Failed to copy link clipboard!');
+        });
+      }
+      busy = false;
+    });
+
+    button_run.addEventListener("click", async function(e) {
+      // Handle the button click: show source or execute source.
+
+      if (busy) {
+        return;
+      }
+
+      busy = true;
+      results.querySelector('code').innerHTML = '';
+      pyexecute(current_id);
+      pgcode.classList.toggle('hidden');
+      results.classList.toggle('hidden');
+      button_edit.classList.toggle('hidden');
+      button_share.classList.toggle('hidden');
+      button_run.classList.toggle('hidden');
+      button_cancel.classList.toggle('hidden');
+      busy = false;
+    });
+
+    button_cancel.addEventListener("click", (e) => {
+      // Cancel edit.
+
+      if (busy) {
+        return;
+      }
+
+      busy = true;
+      inputs.value = last_text;
+      pgcode.classList.toggle('hidden');
+      results.classList.toggle('hidden');
+      button_edit.classList.toggle('hidden');
+      button_share.classList.toggle('hidden');
+      button_run.classList.toggle('hidden');
+      button_cancel.classList.toggle('hidden');
+      busy = false;
+      requests++;
+      highlight(inputs, current_id);
+    });
+  });
+
+  await loadExternalSrc();
 }
 
 // Run main
