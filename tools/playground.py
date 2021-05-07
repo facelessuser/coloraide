@@ -30,10 +30,10 @@ template = '''
 </form>
 </div>
 
-<button id="__playground-edit_{el_id}" class="playground-edit" title="Ctrl + Enter">Edit</button>
+<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_{el_id}" class="playground-run hidden" title="Ctrl + Enter">Run</button>
-<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Escape">Cancel</button>
+<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 '''
 

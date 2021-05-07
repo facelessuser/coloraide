@@ -174,16 +174,17 @@ async function main() {
         return; // Do nothing if the event was already processed
       }
 
-      if (e.ctrlKey && e.key === "Enter") {
-        if (button_edit.classList.contains('hidden')) {
-          button_run.click();
-        } else {
-          button_edit.click();
-        }
+      if (
+        e.ctrlKey &&
+        e.key === "Enter" &&
+        button_edit.classList.contains('hidden') &&
+        inputs === document.activeElement
+      ) {
+        button_run.click();
       } else if (
         e.key === "Escape" &&
         button_edit.classList.contains('hidden') &&
-        document.querySelector('input.md-search__input') !== document.activeElement
+        inputs === document.activeElement
       ) {
         button_cancel.click();
       }
