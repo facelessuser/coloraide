@@ -61,5 +61,7 @@ $ pip install coloraide
 ```
 
 --8<--
+playground.txt
+
 refs.txt
 --8<--

@@ -37,4 +37,8 @@ Name                      | Parameter\ Name | Weighted\ Parameters
 [CIEDE2000 ][de2000]      | `2000`          | `kl=1, kc=1, kh=1`
 [ICtCp (JND)][deitp]      | `itp`           | `scalar=720`
 
---8<-- "refs.txt"
+--8<--
+playground.txt
+
+refs.txt
+--8<--

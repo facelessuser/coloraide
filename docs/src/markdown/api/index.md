@@ -880,4 +880,8 @@ color space.
 
 For more complex setting operations, or to chain multiple set operations, please use [`set`](#set) and [`get`](#get).
 
---8<-- "refs.txt"
+--8<--
+playground.txt
+
+refs.txt
+--8<--

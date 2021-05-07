@@ -127,3 +127,9 @@ This is equivalent to using the `math` library and comparing the value directly:
 import math
 math.isnan(Color('hsl(360 0% 100%)').hue)
 ```
+
+--8<--
+playground.txt
+
+refs.txt
+--8<--

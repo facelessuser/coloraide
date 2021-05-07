@@ -198,3 +198,9 @@ Properties             | Description
 `DELTA_E`              | The default delta E algorithm used for gamut distancing calls internally.
 `PRECISION`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
+
+--8<--
+playground.txt
+
+refs.txt
+--8<--
