@@ -56,6 +56,15 @@ class Interpolator(metaclass=ABCMeta):
     def __call__(self, p):
         """Call the interpolator."""
 
+    @abstractmethod
+    def get_delta(self):
+        """Initialize."""
+
+    def steps(self, steps=2, max_steps=1000, max_delta_e=0):
+        """Steps."""
+
+        return color_steps(self, steps, max_steps, max_delta_e)
+
 
 class InterpolateSingle(Interpolator):
     """Interpolate a single range of two colors."""
@@ -71,6 +80,11 @@ class InterpolateSingle(Interpolator):
         self.space = space
         self.outspace = outspace
         self.premultiplied = premultiplied
+
+    def get_delta(self):
+        """Get the delta."""
+
+        return self.create(self.space, self.channels1).delta_e(self.create(self.space, self.channels2))
 
     def __call__(self, p):
         """Run through the coordinates and run the interpolation on them."""
@@ -110,6 +124,11 @@ class InterpolatePiecewise(Interpolator):
         self.end = stops[len(stops) - 1]
         self.stops = stops
         self.interpolators = interpolators
+
+    def get_delta(self):
+        """Get the delta total."""
+
+        return [i.get_delta() for i in self.interpolators]
 
     def __call__(self, p):
         """Interpolate."""
@@ -287,6 +306,58 @@ def adjust_hues(color1, color2, hue):
     color2.set(name, c2)
 
 
+def color_steps(interpolator, steps=2, max_steps=1000, max_delta_e=0):
+    """Color steps."""
+
+    if max_delta_e <= 0:
+        actual_steps = steps
+    else:
+        actual_steps = 0
+        deltas = interpolator.get_delta()
+        if not isinstance(deltas, Sequence):
+            deltas = [deltas]
+        actual_steps = sum([d / max_delta_e for d in deltas])
+        actual_steps = max(steps, math.ceil(actual_steps) + 1)
+
+    if max_steps is not None:
+        actual_steps = min(actual_steps, max_steps)
+
+    ret = []
+    if actual_steps == 1:
+        ret = [{"p": 0.5, "color": interpolator(0.5)}]
+    else:
+        step = 1 / (actual_steps - 1)
+        for i in range(actual_steps):
+            p = i * step
+            ret.append({'p': p, 'color': interpolator(p)})
+
+    # Iterate over all the stops inserting stops in between if all colors
+    # if we have any two colors with a max delta greater than what was requested.
+    # We inject between every stop to ensure the midpoint does not shift.
+    if max_delta_e > 0:
+        # Initial check to see if we need to insert more stops
+        m_delta = 0
+        for i, entry in enumerate(ret):
+            if i == 0:
+                continue
+            m_delta = max(m_delta, entry['color'].delta_e(ret[i - 1]['color']))
+
+        while m_delta > max_delta_e:
+            # Inject stops while measuring again to see if it was sufficient
+            m_delta = 0
+            i = 1
+            while i < len(ret) and len(ret) < max_steps:
+                prev = ret[i - 1]
+                cur = ret[i]
+                p = (cur['p'] + prev['p']) / 2
+                color = interpolator(p)
+                m_delta = max(m_delta, color.delta_e(prev['color']), color.delta_e(cur['color']))
+                ret.insert(i, {'p': p, 'color': color})
+                i += 2
+
+    return [i['color'] for i in ret]
+
+
 def color_piecewise_lerp(pw, space, out_space, progress, hue, premultiplied):
     """Piecewise Interpolation."""
 
@@ -387,66 +458,7 @@ class Interpolate:
         Default delta E method used is delta E 76.
         """
 
-        interpolator = self.interpolate(color, **interpolate_args)
-
-        if isinstance(color, Piecewise):
-            color = self._handle_color_input(color.color)
-        elif not isinstance(color, str) and isinstance(color, Sequence):
-            color = [self._handle_color_input(c.color if isinstance(c, Piecewise) else c) for c in color]
-
-        color = self._handle_color_input(color, sequence=True)
-
-        if not isinstance(color, Sequence) and max_delta_e > 0:
-            color = [self, color]
-
-        if max_delta_e <= 0:
-            actual_steps = steps
-        else:
-            actual_steps = 0
-            current = self
-            for c in color:
-                total_delta = current.delta_e(c)
-                actual_steps += total_delta / max_delta_e
-                current = c
-            actual_steps = max(steps, math.ceil(actual_steps) + 1)
-
-        if max_steps is not None:
-            actual_steps = min(actual_steps, max_steps)
-
-        ret = []
-        if actual_steps == 1:
-            ret = [{"p": 0.5, "color": interpolator(0.5)}]
-        else:
-            step = 1 / (actual_steps - 1)
-            for i in range(actual_steps):
-                p = i * step
-                ret.append({'p': p, 'color': interpolator(p)})
-
-        # Iterate over all the stops inserting stops in between if all colors
-        # if we have any two colors with a max delta greater than what was requested.
-        # We inject between every stop to ensure the midpoint does not shift.
-        if max_delta_e > 0:
-            # Initial check to see if we need to insert more stops
-            m_delta = 0
-            for i, entry in enumerate(ret):
-                if i == 0:
-                    continue
-                m_delta = max(m_delta, entry['color'].delta_e(ret[i - 1]['color']))
-
-            while m_delta > max_delta_e:
-                # Inject stops while measuring again to see if it was sufficient
-                m_delta = 0
-                i = 1
-                while i < len(ret) and len(ret) < max_steps:
-                    prev = ret[i - 1]
-                    cur = ret[i]
-                    p = (cur['p'] + prev['p']) / 2
-                    color = interpolator(p)
-                    m_delta = max(m_delta, color.delta_e(prev['color']), color.delta_e(cur['color']))
-                    ret.insert(i, {'p': p, 'color': color})
-                    i += 2
-
-        return [i['color'] for i in ret]
+        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e)
 
     def mix(self, color, percent=util.DEF_MIX, *, in_place=False, **interpolate_args):
         """

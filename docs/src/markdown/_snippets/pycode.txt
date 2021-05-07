@@ -58,10 +58,7 @@ def get_colors(result):
     if isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(), result))
     elif isinstance(result, Interpolator):
-        colors = ColorInterpolate()
-        for x in range(20):
-            c = result(x / 20)
-            colors.append(ColorTuple(c.to_string(), c))
+        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
     elif isinstance(result, str):
         try:
             colors.append(ColorTuple(result, Color(result)))
@@ -186,8 +183,8 @@ def color_command_formatter(src):
                 style = "--swatch-stops: "
                 stops = []
                 for color in item:
-                    color.color.fit("srgb", in_place=True)
-                    stops.append(color.color.convert("srgb").to_string())
+                    color.fit("srgb", in_place=True)
+                    stops.append(color.convert("srgb").to_string())
                 if not stops:
                     stops.extend(['transparent'] * 2)
                 if len(stops) == 1:

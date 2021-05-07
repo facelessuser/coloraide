@@ -62,7 +62,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').fit().to_string(),
-            'rgb(227.19 144.22 130.07)'
+            'rgb(255 117.9 100.4)'
         )
 
         self.assertEqual(
@@ -1183,6 +1183,21 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(colors[0], Color('white'))
         self.assertColorEqual(colors[1], Color('red'))
         self.assertColorEqual(colors[2], Color('black'))
+
+    def test_steps_multi_max_delta_e(self):
+        """Test steps with multiple color ranges and max_delta_e."""
+
+        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=10)
+        for index, color in enumerate(colors, 0):
+            if not index:
+                continue
+            self.assertTrue(color.delta_e(colors[index - 1]) <= 10)
+
+        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=3)
+        for index, color in enumerate(colors, 0):
+            if not index:
+                continue
+            self.assertTrue(color.delta_e(colors[index - 1]) <= 3)
 
     def test_steps_empty_list(self):
         """Test steps with empty list."""
