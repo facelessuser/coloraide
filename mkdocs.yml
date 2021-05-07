@@ -32,6 +32,7 @@ nav:
       - Compositing and Blending: compositing.md
       - Color Distance and Delta E: distance.md
       - Gamut Mapping: gamut.md
+      - Chromatic Adaptation: cat.md
       - Contrast: contrast.md
       - String Output: strings.md
   - Color Spaces:

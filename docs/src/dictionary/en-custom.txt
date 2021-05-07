@@ -18,6 +18,7 @@ CSS
 Changelog
 Chroma
 ColorAide
+ColorAide's
 ColorHelper
 Ctrl
 Cz
@@ -91,6 +92,7 @@ cz
 fixup
 grayscale
 hz
+illuminant
 illuminants
 interpolator
 ish
@@ -117,6 +119,7 @@ subclassed
 subclassing
 sublicense
 subsamplings
+th
 un
 uncomment
 unsaturate

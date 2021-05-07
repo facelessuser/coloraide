@@ -192,8 +192,9 @@ Color('rgb(128.12345 0 128.12345)').to_string()
 Color2('rgb(128.12345 0 128.12345)').to_string()
 ```
 
-Properties  | Description
------------ | -----------
-`FIT`       | The default gamut mapping method used by the [`Color`](#color) object.
-`DELTA_E`   | The default delta E algorithm used for gamut distancing calls internally.
-`PRECISION` | The default precision for string outputs.
+Properties             | Description
+---------------------- | -----------
+`FIT`                  | The default gamut mapping method used by the [`Color`](#color) object.
+`DELTA_E`              | The default delta E algorithm used for gamut distancing calls internally.
+`PRECISION`            | The default precision for string outputs.
+`CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
