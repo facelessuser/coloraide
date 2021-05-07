@@ -1,1 +1,3 @@
 *[JND]: just noticeable difference
+*[CAT]: chromatic adaptation transform
+*[CATs]: chromatic adaptation transform
