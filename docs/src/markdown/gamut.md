@@ -43,13 +43,27 @@ method, and specifying `srgb` as the target color space, we can fit it in the sR
 Color("lch(100% 50 75)").fit("srgb")
 ```
 
-If desired, simple clipping can be used instead of the default gamut fitting. Generally this is not recommended, but
-there are times and places for everything. In this example, we can change the fitting `method` parameter to `clip`.
-Notice the difference when compared to the previous fitting result:
+If desired, simple clipping can be used instead of the default gamut fitting. While gamut mapping via chroma compression
+can give better results, gamut clipping is much faster and is actually what browsers do. So if your desire is to match
+browsers, or speed is more important, clipping may be the way to go.
+
+In this example, we can change the fitting `method` parameter to `clip`. Notice the difference when compared to the
+previous fitting result:
 
 ```color
 Color("lch(100% 50 75)").fit("srgb", method="clip")
 Color("lch(100% 50 75)").fit("srgb")
+```
+
+If we wanted to change the default "fitting" to `clip`, we can also just use a
+[class override](./color.md#override-default-settings). Doing this will default to `clip` any time a color needs
+to be mapped. Though you can still use chroma compression by specifying `lch-chroma` for the `method`.
+
+```color
+class Custom(Color):
+    FIT = 'clip'
+
+Custom("lch(100% 50 75)").fit("srgb")
 ```
 
 Gamut fitting will always return a new color unless `in_place` is set `#!py3 True`.
