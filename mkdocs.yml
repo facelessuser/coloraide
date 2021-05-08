@@ -126,4 +126,4 @@ plugins:
       minify_html: true
 
 extra_css:
-  - colorswatch.css
+  - playground.css
