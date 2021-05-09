@@ -474,9 +474,3 @@ the intention to replace YCbCr.
 
 _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 </div>
-
---8<--
-playground.txt
-
-refs.txt
---8<--

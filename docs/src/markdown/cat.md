@@ -80,9 +80,3 @@ CAT           |
 `cat02`       |
 `cmccat97`    |
 `cmccat2000`  |
-
---8<--
-playground.txt
-
-refs.txt
---8<--

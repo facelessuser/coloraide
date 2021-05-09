@@ -11,9 +11,3 @@ import coloraide
 coloraide.__version__
 Color('red')
 ```
-
---8<--
-playground.txt
-
-refs.txt
---8<--

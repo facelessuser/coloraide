@@ -879,9 +879,3 @@ When written, they can accept a numerical value or a string value using CSS synt
 color space.
 
 For more complex setting operations, or to chain multiple set operations, please use [`set`](#set) and [`get`](#get).
-
---8<--
-playground.txt
-
-refs.txt
---8<--

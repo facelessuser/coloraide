@@ -59,9 +59,3 @@ ColorAide can be installed via Python's `pip`:
 ```console
 $ pip install coloraide
 ```
-
---8<--
-playground.txt
-
-refs.txt
---8<--

@@ -140,5 +140,3 @@ and `sharp`. Currently, `bradford` is the default and the overall preferred opti
 ## 0.1.0a1
 
 - **NEW**: Initial alpha release. Library is experimental and API is unstable.
-
---8<-- "refs.txt"

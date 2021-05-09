@@ -14,7 +14,7 @@ previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`
 
 ```color
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
-[i(x/20).to_string() for x in range(20)]
+[i(x/10).to_string() for x in range(10)]
 ```
 
 This allows us to create a range of colors that we can use in a gradient.
@@ -34,23 +34,24 @@ is used (which is covered in more detail later).
 Color('black').interpolate(['red', 'white'])
 ```
 
-If desired, we can target one or more specific channels for mixing which will keep all the other channels constant on
-the base color. Channels can be any channel associated with the color space in which the interpolation is taking place
-(including `alpha`).
+If desired, we can target one or more specific channels (even alpha) for interpolation which will keep all the other
+base color channels constant. Specified channels must be associated with the color space in which the interpolation is
+taking place.
 
-In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we mix with
-`#!color lch(56% 49.1 257.1)`. We also specify that we want to only mix the `hue` channel by applying a mask to all the
-other channels except `hue`. Applying this logic, we will end up with a range of colors that maintain the same lightness
-and chroma, but with different hues. To learn more about masking and null hues, check out
+In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we then interpolate with
+`#!color lch(56% 49.1 257.1)`. We also specify that we want to only interpolate the `hue` channel by applying a mask to
+all the other channels except `hue`. Applying this logic, we will end up with a range of colors that maintains the same
+lightness and chroma, but with different hues. To learn more about masking and null hues, check out
 [Null Handling](#null-handling).
 
 We can see as we step through the colors that only the hue is interpolated.
 
 ```color
-Color("lch(52% 58.1 22.7)").interpolate(
+i = Color("lch(52% 58.1 22.7)").interpolate(
     Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
     space="lch"
 )
+[i(x/10).to_string() for x in range(10)]
 ```
 
 Additionally, hues are special, and we can control the way the interpolation is evaluated. The `hue` parameter
@@ -72,11 +73,10 @@ i(0.2477).to_string()
 ```
 
 To help visualize the different hue methods, consider the following evaluation between `#!color rebeccapurple` and
-`#!color lch(85% 85 805)` in the table below. Check out the [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation)
-to learn more about each one.
+`#!color lch(85% 85 805)`. Below we will demonstrate each of the different hue evaluations. To learn more check out the
+[CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) to learn more about each one.
 
-`shorter`:
-: 
+=== "shorter"
     ```color
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
@@ -85,8 +85,7 @@ to learn more about each one.
     )
     ```
 
-`longer`:
-: 
+=== "longer"
     ```color
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
@@ -95,8 +94,7 @@ to learn more about each one.
     )
     ```
 
-`increasing`:
-: 
+=== "increasing"
     ```color
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
@@ -105,8 +103,7 @@ to learn more about each one.
     )
     ```
 
-`decreasing`:
-: 
+=== "decreasing"
     ```color
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
@@ -115,8 +112,7 @@ to learn more about each one.
     )
     ```
 
-`specified`:
-: 
+=== "specified"
     ```color
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
@@ -135,7 +131,8 @@ Color("lch(50% 50 0)").interpolate(
 )
 ```
 
-We can even apply a specific easing functions to a specific channels. You can specify one or more channels, all with
+We can even apply a specific easing functions to a specific channels. Below, we apply `#!py3 t ** 3` to `alpha` while
+`#!py3 t` (the default) is applied to all other channels. This can be done to one or more channels, all with
 different functions.
 
 ```color
@@ -202,8 +199,7 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 ## Steps
 
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
-Just provide two colors, and specify how many `steps` are wanted. The `steps` parameter essentially acts as a minimum
-steps requirement.
+Just provide two colors, and specify how many `steps` are wanted.
 
 ```color
 Color("red").steps("blue", steps=10)
@@ -246,8 +242,8 @@ Color("display-p3", [0, 1, 0]).steps(
 )
 ```
 
-While `steps` (which functions as a minimum required steps) will push the delta even smaller if the required steps is
-greater than the calculated maximum Delta E.
+When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
+if the required steps is greater than the calculated maximum Delta E.
 
 ```color
 Color("display-p3", [0, 1, 0]).steps(
@@ -259,7 +255,8 @@ Color("display-p3", [0, 1, 0]).steps(
 )
 ```
 
-The default delta E method is delta E 76, which is a simple euclidean distancing in the CIELAB color space.
+The default delta E method is Delta E 76, which is a simple euclidean distancing in the CIELAB color space. While a
+Delta E 2000 is far more accurate, it is a much more expensive operation.
 
 ## Piecewise Interpolation
 
@@ -294,7 +291,7 @@ As previously mentioned, this can also be applied to steps as well.
 Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4, steps=15)
 ```
 
-## Null Handling
+## Null/NaN Handling {#null-handling}
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
 HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color" or

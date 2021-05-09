@@ -17,7 +17,7 @@ overlap. Conceptually, the colors in the source element (top layer) are blended 
 
 There are various blend modes, the most common is the `normal` blend mode which is the default blending mode for
 browsers when a layer is placed over another layer. The `normal` mode simply returns the top layer's color when two are
-overlaid. Some weighting of colors can occur if top layer is semi-transparent.
+overlaid. Some weighting of colors can occur if the top layer is semi-transparent.
 
 <span class="isolate blend-normal dual">
   <span class="circle circle-1"></span>
@@ -670,9 +670,5 @@ Display the sum of the source image and destination image.
 _Specified as `#!py3 'lighter'`_.
 
 --8<--
-playground.txt
-
-refs.txt
-
 compositing.txt
 --8<--

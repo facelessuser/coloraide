@@ -3,7 +3,7 @@
 ## Convert to Strings
 
 Colors can be translated to strings by using the `to_string` method. The color class will convert the current color into
-one of many of the color's CSS formats.
+one of the many of CSS formats supported for the given color space.
 
 ```color
 Color("srgb", [0.5, 0, 1], 0.3).to_string()
@@ -118,9 +118,3 @@ transparency.
 ```color
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 ```
-
---8<--
-playground.txt
-
-refs.txt
---8<--

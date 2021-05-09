@@ -67,9 +67,3 @@ Custom("lch(100% 50 75)").fit("srgb")
 ```
 
 Gamut fitting will always return a new color unless `in_place` is set `#!py3 True`.
-
---8<--
-playground.txt
-
-refs.txt
---8<--

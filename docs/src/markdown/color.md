@@ -61,6 +61,18 @@ color1
 color1.new("blue")
 ```
 
+If desired, all creation method can be configured to also filter out color spaces that we are not interested in by using
+the `filter` parameter and specifying only the color spaces we do care about. Valid colors will then be constrained only
+to those spaces in the list.
+
+```color
+try:
+    Color("red", filters=["hsl"])
+except ValueError:
+    print('Not a valid color')
+Color("hsl(130 30% 75%)", filters=["hsl"])
+```
+
 ## Cloning
 
 The `clone` method is an easy way to duplicate the current color object.
@@ -99,7 +111,8 @@ Color("red").update("lch(80% 50 130)")
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
-Here the `#!color red` color object literally becomes the specified CIELCH color of `#!color lch(80% 50 130)`.
+In this example, the `#!color red` color object literally becomes the specified CIELCH color of
+`#!color lch(80% 50 130)`.
 
 ```color
 Color("red").mutate("lch(80% 50 130)")
@@ -107,9 +120,9 @@ Color("red").mutate("lch(80% 50 130)")
 
 ## Converting
 
-Colors can be converted to other color spaces as needed. Converting will always return a new color unless `in_place` is
-set `#!py3 True`, in which case the current color will be mutated to the new converted color and then `covert` will
-return a reference to the current color object.
+Colors can be converted to other color spaces as needed. Converting will always return a new color unless the `in_place`
+parameter is set to `#!py3 True`, in which case, the current color will be mutated to the new converted color and a
+reference to itself is returned.
 
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELAB,
 we could simply call the `convert` method with the desired color space.
@@ -120,9 +133,10 @@ Color('yellow').convert("lab")
 
 ## Color Matching
 
-As previously mentioned, `#!py3 Color()` objects can take in CSS style string inputs. The string matching logic is
-exposed via the `match` method. We can simply give it a string, and it will return a `ColorMatch` object. The 
-`ColorMatch` object will have the matched color as a `Color` object, and the `start` and `end` points it was located at.
+As previously mentioned, the `#!py3 Color()` object can take in CSS style string inputs. The string matching logic is
+exposed via the `match` method. We can simply pass `match` a string, and, if the string is a valid color, a `ColorMatch`
+object will be returned. The `ColorMatch` object has a simple structure that contains the matched `color` as a `Color`
+object, and the `start` and `end` points it was located at.
 
 ```color
 Color.match("red")
@@ -143,8 +157,8 @@ characters later, we will match `#!color yellow` instead of `#!color red`.
 Color.match("red and yellow", start=8)
 ```
 
-If we'd like to only match certain color spaces, we can provide a filter list that will constrain the match only to the
-specified color spaces.
+Filtering unwanted color spaces is also available via the `filter` parameter, and is typically how creation methods
+avoid parsing unwanted color spaces.
 
 ```color
 Color.match("red and yellow", filters=["hsl"])
@@ -152,12 +166,14 @@ Color.match("hsl(130 30% 75%)", filters=["hsl"])
 ```
 
 A method to find all colors in a buffer is not currently provided as looping through all the color spaces and matching
-all potential colors on every character is not really efficient. If such behavior is desired, what is recommended would
+all potential colors on every character is not really efficient. Additionally, some buffers way require additional
+context that is not available to the to the match function. If such behavior is desired, what is recommended would
 be to apply this with some logic to find potential places in the buffer to test, and only test those places.
 
-In this example, we construct a regex to find places within the buffer that potentially have a valid color, but we also
-try and filter out cases that are unfavorable, particularly in HTML or CSS. We don't want to match hex in HTML entities
-or color names that are part of color variables (`#!css var(--color-red)`).
+In this example, we construct a regex to find places within the buffer that potentially has a valid color, but we also
+try and filter out cases that are unfavorable by providing additional context. As we are interested in matching full
+colors in HTML or CSS, we don't want to match hex in HTML entities or color names that are part of color variables
+(`#!css var(--color-red)`).
 
 ```color
 import re
@@ -165,7 +181,21 @@ from coloraide import Color
 
 RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)")
 
-text = """Red and yellow are colors. So are #000088 and lch(75% 50 50)."""
+text = """
+<html>
+<head>
+<style>
+body {
+    background-color: red;
+    color: yellow;
+}
+</style>
+</head>
+<body>
+<p>This is a test <span style="background-color: #000088; color: lch(75% 50 50)">test</span></p>
+</body>
+</html>
+"""
 
 colors = []
 for m in RE_COLOR_START.finditer(text):
@@ -179,10 +209,10 @@ for m in RE_COLOR_START.finditer(text):
 ## Override Default Settings
 
 ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
-mode, etc. All of these options can be set on demand when calling certain functions. When not explicitly set, the base
-class' default is used. If needed, the defaults can be changed for an entire application or library. To do so, simply
-subclass the `Color` object and override the class defaults. Then the new derived class can be used throughout an
-application or library.
+mode, etc. All of these options can be set on demand when calling certain functions, but when not explicitly set, the
+base class defaults are used. If needed, the defaults can be changed for an entire application or library. To do so,
+simply subclass the `Color` object and override the class defaults. The new derived class can be used throughout an
+application or library and will use the specified defaults.
 
 ```color
 class Color2(Color):
@@ -198,9 +228,3 @@ Properties             | Description
 `DELTA_E`              | The default delta E algorithm used for gamut distancing calls internally.
 `PRECISION`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
-
---8<--
-playground.txt
-
-refs.txt
---8<--
