@@ -105,9 +105,9 @@ float('nan') + 3</textarea> </form> </div> <button id=__playground-edit_13 class
 <span class=n>math</span><span class=o>.</span><span class=n>isnan</span><span class=p>(</span><span class=n>Color</span><span class=p>(</span><span class=s1>&#39;hsl(360 0</span><span class=si>% 100%</span><span class=s1>)&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>hue</span><span class=p>)</span>
 </code></pre></div> <form autocomplete=off> <textarea class=playground-inputs id=__playground-inputs_15 spellcheck=false>import math
 math.isnan(Color('hsl(360 0% 100%)').hue)</textarea> </form> </div> <button id=__playground-edit_15 class=playground-edit title="Edit the current snippet">Edit</button> <button id=__playground-share_15 class=playground-share title="Copy URL to current snippet">Share</button> <button id=__playground-run_15 class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button> <button id=__playground-cancel_15 class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button> </div> </p> <script src=https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js></script> <script type=text/javascript>
-let busy = false;
+let pgBusy = false;
 let requests = 0;
-let last_text = '';
+let lastText = '';
 const reIdNum = /.*?_(\d+)$/;
 let initialized = false;
 
@@ -410,14 +410,14 @@ function highlight (inputs, current_id) {
   // Manage incoming highlight requests.
 
   // Throttle requests
-  if (busy) {
+  if (pgBusy) {
     return;
   }
 
   // Execute
   if (requests) {
     requests = 0;
-    busy = true;
+    pgBusy = true;
     pyhighlight(inputs.value, current_id);
   }
 };
@@ -453,7 +453,7 @@ code.scrollLeft = inputs.scrollLeft
 code.scrollTop = inputs.scrollTop
 `
   await pyodide.runPythonAsync(pycode);
-  busy = false;
+  pgBusy = false;
   if (requests) {
     setTimeout(() => {highlight(inputs, current_id);}, 100);
   }
@@ -558,15 +558,15 @@ async function main() {
     button_edit.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
       // Load Piodide and related packages.
       await load_pyodide();
 
-      busy = true;
-      last_text = inputs.value;
+      pgBusy = true;
+      lastText = inputs.value;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
@@ -574,17 +574,17 @@ async function main() {
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       inputs.focus();
-      busy = false;
+      pgBusy = false;
     });
 
     button_share.addEventListener("click", (e) => {
       // Handle the share click: copy URL with code as parameter.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
         return '%' + c.charCodeAt(0).toString(16);
       });
@@ -603,17 +603,17 @@ async function main() {
           alert('Failed to copy link clipboard!');
         });
       }
-      busy = false;
+      pgBusy = false;
     });
 
     button_run.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       results.querySelector('code').innerHTML = '';
       pyexecute(current_id);
       pgcode.classList.toggle('hidden');
@@ -622,25 +622,25 @@ async function main() {
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
     });
 
     button_cancel.addEventListener("click", (e) => {
       // Cancel edit.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
-      inputs.value = last_text;
+      pgBusy = true;
+      inputs.value = lastText;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
       requests++;
       highlight(inputs, current_id);
     });

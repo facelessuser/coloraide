@@ -205,9 +205,9 @@ for m in RE_COLOR_START.finditer(text):
 
 Color('rgb(128.12345 0 128.12345)').to_string()
 Color2('rgb(128.12345 0 128.12345)').to_string()</textarea> </form> </div> <button id=__playground-edit_20 class=playground-edit title="Edit the current snippet">Edit</button> <button id=__playground-share_20 class=playground-share title="Copy URL to current snippet">Share</button> <button id=__playground-run_20 class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button> <button id=__playground-cancel_20 class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button> </div> </p> <table> <thead> <tr> <th>Properties</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td><code>FIT</code></td> <td>The default gamut mapping method used by the <a href=#color><code>Color</code></a> object.</td> </tr> <tr> <td><code>DELTA_E</code></td> <td>The default delta E algorithm used for gamut distancing calls internally.</td> </tr> <tr> <td><code>PRECISION</code></td> <td>The default precision for string outputs.</td> </tr> <tr> <td><code>CHROMATIC_ADAPTATION</code></td> <td>The default chromatic adaptation method (default is <code>bradford</code>). See <a href=../cat/ >Chromatic Adaptation</a> for more information.</td> </tr> </tbody> </table> <script src=https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js></script> <script type=text/javascript>
-let busy = false;
+let pgBusy = false;
 let requests = 0;
-let last_text = '';
+let lastText = '';
 const reIdNum = /.*?_(\d+)$/;
 let initialized = false;
 
@@ -510,14 +510,14 @@ function highlight (inputs, current_id) {
   // Manage incoming highlight requests.
 
   // Throttle requests
-  if (busy) {
+  if (pgBusy) {
     return;
   }
 
   // Execute
   if (requests) {
     requests = 0;
-    busy = true;
+    pgBusy = true;
     pyhighlight(inputs.value, current_id);
   }
 };
@@ -553,7 +553,7 @@ code.scrollLeft = inputs.scrollLeft
 code.scrollTop = inputs.scrollTop
 `
   await pyodide.runPythonAsync(pycode);
-  busy = false;
+  pgBusy = false;
   if (requests) {
     setTimeout(() => {highlight(inputs, current_id);}, 100);
   }
@@ -658,15 +658,15 @@ async function main() {
     button_edit.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
       // Load Piodide and related packages.
       await load_pyodide();
 
-      busy = true;
-      last_text = inputs.value;
+      pgBusy = true;
+      lastText = inputs.value;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
@@ -674,17 +674,17 @@ async function main() {
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       inputs.focus();
-      busy = false;
+      pgBusy = false;
     });
 
     button_share.addEventListener("click", (e) => {
       // Handle the share click: copy URL with code as parameter.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
         return '%' + c.charCodeAt(0).toString(16);
       });
@@ -703,17 +703,17 @@ async function main() {
           alert('Failed to copy link clipboard!');
         });
       }
-      busy = false;
+      pgBusy = false;
     });
 
     button_run.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       results.querySelector('code').innerHTML = '';
       pyexecute(current_id);
       pgcode.classList.toggle('hidden');
@@ -722,25 +722,25 @@ async function main() {
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
     });
 
     button_cancel.addEventListener("click", (e) => {
       // Cancel edit.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
-      inputs.value = last_text;
+      pgBusy = true;
+      inputs.value = lastText;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
       requests++;
       highlight(inputs, current_id);
     });

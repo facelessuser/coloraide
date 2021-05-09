@@ -36,9 +36,9 @@ cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], method='brad
 d50 = Custom('color(xyz 0.11627 0.07261 0.23256 / 1)')
 d65 = d50.convert('xyz-d65')
 d50, d65</textarea> </form> </div> <button id=__playground-edit_2 class=playground-edit title="Edit the current snippet">Edit</button> <button id=__playground-share_2 class=playground-share title="Copy URL to current snippet">Share</button> <button id=__playground-run_2 class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button> <button id=__playground-cancel_2 class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button> </div> </p> <h2 id=supported-cats>Supported <abbr title="chromatic adaptation transform">CATs</abbr><a class=headerlink href=#supported-cats title="Permanent link"></a></h2> <p>There are various <abbr title="chromatic adaptation transform">CATs</abbr>, all varying in complexity and accuracy. We will not go through all of them and instead will leave that up to the user to research as needed. Suffice it to say though that the Bradford <abbr title="chromatic adaptation transform">CAT</abbr> is currently the industry standard (in most cases), but there are a variety options available, and research continues to try and improve upon <abbr title="chromatic adaptation transform">CATs</abbr> of the past to come up with a better <abbr title="chromatic adaptation transform">CAT</abbr> for the future.</p> <p>Currently, ColorAide mainly supports von Kries type <abbr title="chromatic adaptation transform">CATs</abbr> (named after an early 20<sup>th</sup> century color scientist), or <abbr title="chromatic adaptation transform">CATs</abbr> that are similar to and/or are built upon the original von Kries <abbr title="chromatic adaptation transform">CAT</abbr>. We also do not currently support every known von Kries <abbr title="chromatic adaptation transform">CAT</abbr> out there, but a good number are available. In the future, support may be expanded.</p> <table> <thead> <tr> <th><abbr title="chromatic adaptation transform">CAT</abbr></th> </tr> </thead> <tbody> <tr> <td><code>bradford</code></td> </tr> <tr> <td><code>von-kries</code></td> </tr> <tr> <td><code>xyz-scaling</code></td> </tr> <tr> <td><code>sharp</code></td> </tr> <tr> <td><code>cat02</code></td> </tr> <tr> <td><code>cmccat97</code></td> </tr> <tr> <td><code>cmccat2000</code></td> </tr> </tbody> </table> <script src=https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js></script> <script type=text/javascript>
-let busy = false;
+let pgBusy = false;
 let requests = 0;
-let last_text = '';
+let lastText = '';
 const reIdNum = /.*?_(\d+)$/;
 let initialized = false;
 
@@ -341,14 +341,14 @@ function highlight (inputs, current_id) {
   // Manage incoming highlight requests.
 
   // Throttle requests
-  if (busy) {
+  if (pgBusy) {
     return;
   }
 
   // Execute
   if (requests) {
     requests = 0;
-    busy = true;
+    pgBusy = true;
     pyhighlight(inputs.value, current_id);
   }
 };
@@ -384,7 +384,7 @@ code.scrollLeft = inputs.scrollLeft
 code.scrollTop = inputs.scrollTop
 `
   await pyodide.runPythonAsync(pycode);
-  busy = false;
+  pgBusy = false;
   if (requests) {
     setTimeout(() => {highlight(inputs, current_id);}, 100);
   }
@@ -489,15 +489,15 @@ async function main() {
     button_edit.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
       // Load Piodide and related packages.
       await load_pyodide();
 
-      busy = true;
-      last_text = inputs.value;
+      pgBusy = true;
+      lastText = inputs.value;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
@@ -505,17 +505,17 @@ async function main() {
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       inputs.focus();
-      busy = false;
+      pgBusy = false;
     });
 
     button_share.addEventListener("click", (e) => {
       // Handle the share click: copy URL with code as parameter.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
         return '%' + c.charCodeAt(0).toString(16);
       });
@@ -534,17 +534,17 @@ async function main() {
           alert('Failed to copy link clipboard!');
         });
       }
-      busy = false;
+      pgBusy = false;
     });
 
     button_run.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       results.querySelector('code').innerHTML = '';
       pyexecute(current_id);
       pgcode.classList.toggle('hidden');
@@ -553,25 +553,25 @@ async function main() {
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
     });
 
     button_cancel.addEventListener("click", (e) => {
       // Cancel edit.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
-      inputs.value = last_text;
+      pgBusy = true;
+      inputs.value = lastText;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
       requests++;
       highlight(inputs, current_id);
     });

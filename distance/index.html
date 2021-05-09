@@ -13,9 +13,9 @@ Color("red").distance("blue", space="lab")</textarea> </form> </div> <button id=
 <span class=n>Color</span><span class=p>(</span><span class=s2>&quot;red&quot;</span><span class=p>)</span><span class=o>.</span><span class=n>delta_e</span><span class=p>(</span><span class=s2>&quot;blue&quot;</span><span class=p>,</span> <span class=n>method</span><span class=o>=</span><span class=s2>&quot;2000&quot;</span><span class=p>)</span>
 </code></pre></div> <form autocomplete=off> <textarea class=playground-inputs id=__playground-inputs_1 spellcheck=false>Color("red").delta_e("blue")
 Color("red").delta_e("blue", method="2000")</textarea> </form> </div> <button id=__playground-edit_1 class=playground-edit title="Edit the current snippet">Edit</button> <button id=__playground-share_1 class=playground-share title="Copy URL to current snippet">Share</button> <button id=__playground-run_1 class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button> <button id=__playground-cancel_1 class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button> </div> </p> <p>The default implementation is Delta E 1976. Originally, when the CIELAB color space was created, it was thought that it was more perceptually uniform than it actually was. At first, the distance algorithm was a simple euclidean implementation (Delta E 1976), but over time it has been tweaked to make corrections to account for the fact that it is not perfectly uniform. There are areas and industries that still use many of these for different reasons.</p> <p>Additionally, there are other implementations that use different color spaces, such as Delta E ITP which uses ICtCp.</p> <p>ColorAide implements the following delta E methods:</p> <table> <thead> <tr> <th>Name</th> <th>Parameter&nbsp;Name</th> <th>Weighted&nbsp;Parameters</th> </tr> </thead> <tbody> <tr> <td><a href=http://www.brucelindbloom.com/index.html?Math.html>CIE76</a></td> <td><code>76</code></td> <td></td> </tr> <tr> <td><a href=http://www.brucelindbloom.com/index.html?Math.html>CMC&nbsp;l:c&nbsp;(1984)</a></td> <td><code>cmc</code></td> <td><code>l=2, c=1</code></td> </tr> <tr> <td><a href=http://www.brucelindbloom.com/index.html?Math.html>CIE94</a></td> <td><code>94</code></td> <td><code>kl=1, k1=0.045, k2=0.015</code></td> </tr> <tr> <td><a href=http://www.brucelindbloom.com/index.html?Math.html>CIEDE2000 </a></td> <td><code>2000</code></td> <td><code>kl=1, kc=1, kh=1</code></td> </tr> <tr> <td><a href=https://kb.portrait.com/help/ictcp-color-difference-metric>ICtCp (<abbr title="just noticeable difference">JND</abbr>)</a></td> <td><code>itp</code></td> <td><code>scalar=720</code></td> </tr> </tbody> </table> <script src=https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js></script> <script type=text/javascript>
-let busy = false;
+let pgBusy = false;
 let requests = 0;
-let last_text = '';
+let lastText = '';
 const reIdNum = /.*?_(\d+)$/;
 let initialized = false;
 
@@ -318,14 +318,14 @@ function highlight (inputs, current_id) {
   // Manage incoming highlight requests.
 
   // Throttle requests
-  if (busy) {
+  if (pgBusy) {
     return;
   }
 
   // Execute
   if (requests) {
     requests = 0;
-    busy = true;
+    pgBusy = true;
     pyhighlight(inputs.value, current_id);
   }
 };
@@ -361,7 +361,7 @@ code.scrollLeft = inputs.scrollLeft
 code.scrollTop = inputs.scrollTop
 `
   await pyodide.runPythonAsync(pycode);
-  busy = false;
+  pgBusy = false;
   if (requests) {
     setTimeout(() => {highlight(inputs, current_id);}, 100);
   }
@@ -466,15 +466,15 @@ async function main() {
     button_edit.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
       // Load Piodide and related packages.
       await load_pyodide();
 
-      busy = true;
-      last_text = inputs.value;
+      pgBusy = true;
+      lastText = inputs.value;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
@@ -482,17 +482,17 @@ async function main() {
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       inputs.focus();
-      busy = false;
+      pgBusy = false;
     });
 
     button_share.addEventListener("click", (e) => {
       // Handle the share click: copy URL with code as parameter.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
         return '%' + c.charCodeAt(0).toString(16);
       });
@@ -511,17 +511,17 @@ async function main() {
           alert('Failed to copy link clipboard!');
         });
       }
-      busy = false;
+      pgBusy = false;
     });
 
     button_run.addEventListener("click", async function(e) {
       // Handle the button click: show source or execute source.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
+      pgBusy = true;
       results.querySelector('code').innerHTML = '';
       pyexecute(current_id);
       pgcode.classList.toggle('hidden');
@@ -530,25 +530,25 @@ async function main() {
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
     });
 
     button_cancel.addEventListener("click", (e) => {
       // Cancel edit.
 
-      if (busy) {
+      if (pgBusy) {
         return;
       }
 
-      busy = true;
-      inputs.value = last_text;
+      pgBusy = true;
+      inputs.value = lastText;
       pgcode.classList.toggle('hidden');
       results.classList.toggle('hidden');
       button_edit.classList.toggle('hidden');
       button_share.classList.toggle('hidden');
       button_run.classList.toggle('hidden');
       button_cancel.classList.toggle('hidden');
-      busy = false;
+      pgBusy = false;
       requests++;
       highlight(inputs, current_id);
     });
