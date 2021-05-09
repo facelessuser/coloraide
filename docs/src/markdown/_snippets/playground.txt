@@ -7,13 +7,13 @@
   let lastText = '';
   const reIdNum = /.*?_(\d+)$/;
   let initialized = false;
+  const pycode = `
+--8<-- "playground.py.txt"
+`
 
   async function pyexecute(current_id) {
     // Execute Python code
 
-    let pycode = `
-  --8<-- "playground.py.txt"
-  `
     const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
     current_inputs.setAttribute('readonly', '');
     pyodide.globals.set('id_num', current_id);
@@ -66,32 +66,32 @@
     // Highlight current input code
 
     let pycode = `
-  from js import document
-  from pygments import highlight
-  from pygments.lexers import get_lexer_by_name
-  from pygments.formatters import find_formatter_class
+from js import document
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import find_formatter_class
 
-  HtmlFormatter = find_formatter_class('html')
+HtmlFormatter = find_formatter_class('html')
 
-  def colorize(src, lang, **options):
-      """Colorize."""
+def colorize(src, lang, **options):
+    """Colorize."""
 
-      lexer = get_lexer_by_name(lang, **options)
-      formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-      return highlight(src, lexer, formatter).strip()
+    lexer = get_lexer_by_name(lang, **options)
+    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
+    return highlight(src, lexer, formatter).strip()
 
-  inputs = document.getElementById("__playground-inputs_${current_id}")
-  pgcode = document.getElementById("__playground-code_${current_id}")
+inputs = document.getElementById("__playground-inputs_${current_id}")
+pgcode = document.getElementById("__playground-code_${current_id}")
 
-  div = pgcode.querySelector(".highlight")
-  template = document.createElement('template')
-  html = colorize(inputs.value + '\\n', 'py3', **{'python3': True, 'stripnl': False})
-  template.innerHTML = html;
-  pgcode.replaceChild(template.content.firstChild, div)
-  code = pgcode.querySelector('code')
-  code.scrollLeft = inputs.scrollLeft
-  code.scrollTop = inputs.scrollTop
-  `
+div = pgcode.querySelector(".highlight")
+template = document.createElement('template')
+html = colorize(inputs.value + '\\n', 'py3', **{'python3': True, 'stripnl': False})
+template.innerHTML = html;
+pgcode.replaceChild(template.content.firstChild, div)
+code = pgcode.querySelector('code')
+code.scrollLeft = inputs.scrollLeft
+code.scrollTop = inputs.scrollTop
+`
     await pyodide.runPythonAsync(pycode);
     busy = false;
     if (requests) {
