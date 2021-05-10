@@ -4,7 +4,7 @@
 
 Relative luminance is used to calculate the contrast ratio. To get the luminance, simply call the `luminance` method:
 
-```color
+```playground
 Color("black").luminance()
 Color("white").luminance()
 Color("blue").luminance()
@@ -14,6 +14,6 @@ Color("blue").luminance()
 
 To get the contrast ratio between two colors, simply pass in the second color:
 
-```color
+```playground
 Color("blue").contrast("red")
 ```

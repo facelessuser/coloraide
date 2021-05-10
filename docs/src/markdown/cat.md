@@ -25,7 +25,7 @@ For a quick example, we can demonstrate the basic principle when translating a c
 illuminant to a D65 illuminant. Below, we can see that the colors look pretty much the same, even though they are now
 described under different illuminants.
 
-```color
+```playground
 d50 = Color('color(xyz 0.11627 0.07261 0.23256 / 1)')
 d65 = d50.convert('xyz-d65')
 d50, d65
@@ -38,7 +38,7 @@ So we can actually do this manually and compare the results to what we did above
 the specified "white point" for the source color and the "white point" for the destination color along with the XYZ
 coordinates we wish to transform:
 
-```color
+```playground
 from coloraide.color.convert import cat
 Color('color(xyz 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
 cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], method='bradford')
@@ -51,7 +51,7 @@ Changing the default CAT is easy and follows the same pattern as the rest of the
 original and override the `CHROMATIC_ADAPTATION` property with the [name of the desired CAT](#supported-cats).
 Afterwards, all color transforms will use the specified CAT.
 
-```color
+```playground
 class Custom(Color):
     CHROMATIC_ADAPTATION = 'cat02'
 

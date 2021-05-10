@@ -23,7 +23,7 @@ our API.
 
 With ColorAide, you can create colors:
 
-```color
+```playground
 from coloraide import Color
 c = Color('red')
 c.to_string()
@@ -31,21 +31,21 @@ c.to_string()
 
 Convert colors:
 
-```color
+```playground
 from coloraide import Color
 Color('red').convert('hsl').to_string()
 ```
 
 Modify colors:
 
-```color
+```playground
 from coloraide import Color
 Color('red').set("lch.chroma", 30).to_string()
 ```
 
 Mix colors:
 
-```color
+```playground
 from coloraide import Color
 Color("blue").mix("yellow", space="lch").to_string()
 ```

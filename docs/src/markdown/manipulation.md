@@ -6,14 +6,14 @@ There are various ways to read the current values of color coordinates.
 
 1. Channel properties can be read directly:
 
-    ```color
+    ```playground
     color = Color("orange")
     color.red
     ```
 
 2. Channel values can also be read by using the `get` method and providing the name of desired channel.
 
-    ```color
+    ```playground
     color = Color("orange")
     color.get("green")
     ```
@@ -21,7 +21,7 @@ There are various ways to read the current values of color coordinates.
 3. All coordinates can be read simultaneously by using the `coords` function. The alpha channel is excluded from
    `coords` and must be retrieved separately.
 
-    ```color
+    ```playground
     color = Color("orange")
     color.coords()
     color.alpha
@@ -31,7 +31,7 @@ If a color coordinate is needed from another color space, it can be accessed by 
 the name of the desired coordinate. The necessary conversions will happen behind the scenes and the desired value will
 be returned.
 
-```color
+```playground
 Color("blue").get("lch.chroma")
 ```
 
@@ -40,7 +40,7 @@ Color("blue").get("lch.chroma")
 Channel properties can be modified directly by using the named property. Here we modify `#!color red` by adjusting its
 `green` property and get an orange hued color.
 
-```color
+```playground
 color = Color("red")
 color.green = 0.5
 color.to_string()
@@ -53,7 +53,7 @@ Much like reading with the `get` method, values can be modified with the `set` m
 reference to the current class, multiple set operations can be chained together. Chaining multiple `set` operations
 together, we can transform `#!color white` to `#!color rgb(0 127.5 255)`.
 
-```color
+```playground
 Color("white").set("red", 0).set("green", 0.5)
 ```
 
@@ -70,7 +70,7 @@ Color("blue").set('lch.hue', 130)
 Functions can also be used to modify a channel property. This allows us to do more complex set operations. Here we do a
 relative adjustment of the green channel and transform the color `#!color pink` to `#!color rgb(255 249.6 203)`.
 
-```color
+```playground
 Color("pink").set('green', lambda g: g * 1.3)
 ```
 
@@ -86,20 +86,20 @@ you can read more about it in [Interpolation](./interpolation.md).
 Suffice it to say, a user may want to mask channels on their own for various reasons, using the `mask` function can
 allow for a user to quickly and easily mask one or more channels:
 
-```color
+```playground
 Color('white').coords()
 Color('white').mask(['red', 'green']).coords()
 ```
 
 The `alpha` channel can also be masked:
 
-```color
+```playground
 Color('white').mask('alpha').alpha
 ```
 
 Additionally, you can do inverse masks, or masks that apply to every channel not specified.
 
-```color
+```playground
 c = Color('white').mask('blue', invert=True)
 c.coords()
 c.alpha
@@ -117,7 +117,7 @@ saturation is 0. Essentially, hue could be set to anything, and it would still h
 ColorAide will actually set hue to `NaN` (or "not a number"). When outputting to a string, `NaN` is treated as a zero on
 output.
 
-```color
+```playground
 color = Color('hsl(360 0% 100%)')
 color
 color.coords()
@@ -127,7 +127,7 @@ The only time `hue` is not automatically evaluated is when raw data inputs are u
 instantiates a color with raw data points or manually sets the channel with an explicit value. While the rendered color
 still looks the same as the previous example, the channel values are preserved.
 
-```color
+```playground
 color = Color('hsl', [360, 0, 100])
 color
 color.coords()
@@ -138,7 +138,7 @@ color
 Because `NaN` values are not numbers, and these values cannot be added, multiplied, or take part in any real math
 operations. All math operations performed with a `NaN` simply return `NaN`.
 
-```color
+```playground
 float('nan') * 3
 float('nan') + 3
 ```
@@ -148,13 +148,13 @@ applying certain operations. To make checking for `NaN`s easy, the convenience f
 available. You can simply give `is_nan` the property you wish to check, and it will return either `#!py3 True` or
 `#!py3 False`.
 
-```color
+```playground
 Color('hsl(360 0% 100%)').is_nan('hue')
 ```
 
 This is equivalent to using the `math` library and comparing the value directly:
 
-```color
+```playground
 import math
 math.isnan(Color('hsl(360 0% 100%)').hue)
 ```

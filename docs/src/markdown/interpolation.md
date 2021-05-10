@@ -12,14 +12,14 @@ will be extrapolated and the results may be surprising.
 In this example, we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)` (color
 previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
 
-```color
+```playground
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
 [i(x/10).to_string() for x in range(10)]
 ```
 
 This allows us to create a range of colors that we can use in a gradient.
 
-```color
+```playground
 Color("rebeccapurple").interpolate(
     "lch(85% 100 85)",
     space='lch'
@@ -30,7 +30,7 @@ Interpolation can also be done across multiple colors. The function, just like w
 takes a range of 0 - 1. When interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation)
 is used (which is covered in more detail later).
 
-```color
+```playground
 Color('black').interpolate(['red', 'white'])
 ```
 
@@ -46,7 +46,7 @@ lightness and chroma, but with different hues. To learn more about masking and n
 
 We can see as we step through the colors that only the hue is interpolated.
 
-```color
+```playground
 i = Color("lch(52% 58.1 22.7)").interpolate(
     Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
     space="lch"
@@ -58,7 +58,7 @@ Additionally, hues are special, and we can control the way the interpolation is 
 accepts such values as `shorter`, `longer`, `increasing`, `decreasing`, and `specified` (`shorter` being the default).
 Below, we can see how the interpolation varies using `shorter` vs `longer`.
 
-```color
+```playground
 i = Color("lch(52% 58.1 22.7)").interpolate(
     Color("lch(56% 49.1 257.1)").mask("hue", invert=True),
     space="lch"
@@ -77,7 +77,7 @@ To help visualize the different hue methods, consider the following evaluation b
 [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) to learn more about each one.
 
 === "shorter"
-    ```color
+    ```playground
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
         space='lch',
@@ -86,7 +86,7 @@ To help visualize the different hue methods, consider the following evaluation b
     ```
 
 === "longer"
-    ```color
+    ```playground
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
         space='lch',
@@ -95,7 +95,7 @@ To help visualize the different hue methods, consider the following evaluation b
     ```
 
 === "increasing"
-    ```color
+    ```playground
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
         space='lch',
@@ -104,7 +104,7 @@ To help visualize the different hue methods, consider the following evaluation b
     ```
 
 === "decreasing"
-    ```color
+    ```playground
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
         space='lch',
@@ -113,7 +113,7 @@ To help visualize the different hue methods, consider the following evaluation b
     ```
 
 === "specified"
-    ```color
+    ```playground
     Color("rebeccapurple").interpolate(
         "lch(85% 100 805)",
         space='lch',
@@ -124,7 +124,7 @@ To help visualize the different hue methods, consider the following evaluation b
 We can also apply easing functions by providing a function via `progress`. Here we use a function that returns
 `#!py3 t ** 3` for the period when interpolating each channel:
 
-```color
+```playground
 Color("lch(50% 50 0)").interpolate(
     "lch(90% 50 20)",
     progress=lambda t: t ** 3
@@ -135,7 +135,7 @@ We can even apply a specific easing functions to a specific channels. Below, we 
 `#!py3 t` (the default) is applied to all other channels. This can be done to one or more channels, all with
 different functions.
 
-```color
+```playground
 Color("lch(50% 50 0)").interpolate(
     "lch(90% 50 20 / 0)",
     progress={
@@ -146,7 +146,7 @@ Color("lch(50% 50 0)").interpolate(
 
 You can also set all the channels to a function via `all` and then override specific channels.
 
-```color
+```playground
 Color("lch(50% 50 0)").interpolate(
     "lch(90% 50 20 / 0)",
     progress={
@@ -168,7 +168,7 @@ within a color space smaller than the original, the colors will be gamut mapped 
 As an example, if we had the color `#!color red` and the color
 `#!color blue`, and we wanted to mix them, we can just call the `mix` method, and we'll get:
 
-```color
+```playground
 Color("red").mix(Color("blue"))
 ```
 
@@ -176,21 +176,21 @@ The `mix` method will mix the two colors in the CIELAB color space by default. I
 specified with the `space` parameter. Notice below that this creates a different color. The results of mixing in a
 different color space may be more desirable as color mixing may be more natural.
 
-```color
+```playground
 Color("red").mix(Color("blue"), space="lch")
 ```
 
 By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
 the color `#!color red` at 20%. This gives us the color of `#!color rgb(204 0 51)` (after fitting).
 
-```color
+```playground
 Color("red").mix(Color("blue"), 0.2)
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
 color afterwards.
 
-```color
+```playground
 Color("red").mix("blue", 0.2)
 ```
 
@@ -201,7 +201,7 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 The `steps` method creates a list of discrete colors. Like mixing, it is also built on [`interpolate`](#interpolating).
 Just provide two colors, and specify how many `steps` are wanted.
 
-```color
+```playground
 Color("red").steps("blue", steps=10)
 ```
 
@@ -209,7 +209,7 @@ If desired, multiple colors can be provided, and steps will be returned for all 
 interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
 detail later).
 
-```color
+```playground
 Color("red").steps(["orange", "yellow", "green"], steps=10)
 ```
 
@@ -220,7 +220,7 @@ In this example, we specify the color `#!color color(display-p3 0 1 0)` and inte
 The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
 result of 10.
 
-```color
+```playground
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
@@ -232,7 +232,7 @@ Color("display-p3", [0, 1, 0]).steps(
 `max_steps` can be used to limit the results of `max_delta_e`. Obviously, this affects the Delta E between the colors
 inversely.
 
-```color
+```playground
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
@@ -245,7 +245,7 @@ Color("display-p3", [0, 1, 0]).steps(
 When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
 if the required steps is greater than the calculated maximum Delta E.
 
-```color
+```playground
 Color("display-p3", [0, 1, 0]).steps(
     "red",
     space="lch",
@@ -264,7 +264,7 @@ The [`interploate`](#interpolating) and [`steps`](#steps) method allows for piec
 color ranges. Anytime, multiple colors are provided via a list, the piecewise logic will be applied to the various
 segments.
 
-```color
+```playground
 Color('red').interpolate(['white', 'black', 'blue'])
 ```
 
@@ -274,20 +274,20 @@ could apply an easing between just the `#!color white` and `#!color black`. Noti
 second color in the range, and the options will only apply to the interpolation of that color and the color immediately
 before it.
 
-```color
+```playground
 Color('red').interpolate(['white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'])
 ```
 
 Additionally, you can set color stops using the `stop` parameter. To set the `stop` on the base color, simply set the
 `stop` parameter in the [`interploate`](#interpolating) method.
 
-```color
+```playground
 Color('red').interpolate([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4)
 ```
 
 As previously mentioned, this can also be applied to steps as well.
 
-```color
+```playground
 Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4, steps=15)
 ```
 
@@ -312,7 +312,7 @@ for the same channel, then `0` will be returned.
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color purple`), the hue of the second color is used.
 
-```color
+```playground
 color = Color('white').convert('hsl')
 color.coords()
 color2 = Color('purple').convert('hsl')
@@ -323,14 +323,14 @@ color.mix(color2, space="hsl")
 Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used
 for. It can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
 
-```color
+```playground
 Color('white').mask(['red', 'green']).coords()
 ```
 
 Channels can also be set directly to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
 manually setting it via a channel property or accessor. CSS input string do not allow the `NaN` values at this time.
 
-```color
+```playground
 from coloraide import NaN
 Color("srgb", [1, NaN, 1]).coords()
 Color("red").set('green', NaN).coords()
@@ -338,21 +338,21 @@ Color("red").set('green', NaN).coords()
 
 When printing to a string, `NaN`s are always converted to `0`:
 
-```color
+```playground
 from coloraide import NaN
 Color("srgb", [1, NaN, 1])
 ```
 
 At any time, a channel can be checked for whether it is `NaN` by using the `is_nan` method:
 
-```color
+```playground
 Color("white").convert('hsl').is_nan('hue')
 ```
 
 It can be useful to check whether a channel is `NaN` as `NaN` values can't be added, subtracted, multiplied, etc. They
 will always return `NaN` unless you directly replace them.
 
-```color
+```playground
 color = Color("white").convert('hsl')
 color.hue = color.hue + 3
 color.is_nan('hue')

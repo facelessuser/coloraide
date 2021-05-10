@@ -1,5 +1,8 @@
 """
-Special Python color code blocks.
+Execute Python code in code blocks (color previews added specifically for ColorAide).
+
+This is meant to be executed by Pyodide, so backslashes and backticks must be escaped
+as this will be inserted into a JavaScript template string.
 
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
@@ -245,7 +248,7 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
---8<-- "package.txt"
+wheel = 'coloraide-0.1.0a21-py3-none-any.whl'
 
 w = (
     location.origin + '/' +

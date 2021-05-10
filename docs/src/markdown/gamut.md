@@ -18,14 +18,14 @@ have suggested limits for usability purposes, but may not have actual limits.
 Let's assume we have a color `#!color-no-fit rgb(30% 105% 0%)` which is not in its own gamut as the green channel
 exceeds the sRGB limit of `100%`. We can check this via the `in_gamut` method, and we can see that it is not in gamut.
 
-```color
+```playground
 Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
 We can also test if a color from one color space fits in a completely different color space. In the example below, we
 can see that the LCH color of `#!color-no-fit lch(100% 50 75)` is outside the narrow gamut of sRGB.
 
-```color
+```playground
 Color("lch(100% 50 75)").in_gamut("srgb")
 ```
 
@@ -39,7 +39,7 @@ In this example, we will take the color `#!color-no-fit lch(100% 50 75)`. CIELCH
 if we try to fit it in the sRGB gamut, as noted earlier, it is outside the narrow gamut of sRGB. So, using the `fit`
 method, and specifying `srgb` as the target color space, we can fit it in the sRGB gamut.
 
-```color
+```playground
 Color("lch(100% 50 75)").fit("srgb")
 ```
 
@@ -50,7 +50,7 @@ browsers, or speed is more important, clipping may be the way to go.
 In this example, we can change the fitting `method` parameter to `clip`. Notice the difference when compared to the
 previous fitting result:
 
-```color
+```playground
 Color("lch(100% 50 75)").fit("srgb", method="clip")
 Color("lch(100% 50 75)").fit("srgb")
 ```
@@ -59,7 +59,7 @@ If we wanted to change the default "fitting" to `clip`, we can also just use a
 [class override](./color.md#override-default-settings). Doing this will default to `clip` any time a color needs
 to be mapped. Though you can still use chroma compression by specifying `lch-chroma` for the `method`.
 
-```color
+```playground
 class Custom(Color):
     FIT = 'clip'
 

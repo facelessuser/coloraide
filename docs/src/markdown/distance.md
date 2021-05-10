@@ -6,7 +6,7 @@ ColorAide provides a simple euclidean color distance function. By default, it ev
 space, but it can be configured to evaluate in any color space. It may be less useful in some color spaces compared to
 others:
 
-```color
+```playground
 Color("red").distance("blue", space="srgb")
 Color("red").distance("blue", space="lab")
 ```
@@ -15,7 +15,7 @@ Color("red").distance("blue", space="lab")
 
 The `delta_e` function gives access to various delta E implementations.
 
-```color
+```playground
 Color("red").delta_e("blue")
 Color("red").delta_e("blue", method="2000")
 ```

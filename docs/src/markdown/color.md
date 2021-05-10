@@ -10,7 +10,7 @@ from coloraide import Color
 
 Afterwards, colors can be created using various, valid CSS syntax:
 
-```color
+```playground
 Color("red"),
 Color("#00ff00"),
 Color("rgb(0 0 255 / 1)")
@@ -23,14 +23,14 @@ even if the color is not defined in the CSS color spec or supported in the spec 
 adapted to support cylindrical colors, and is generally used as a generic input and default output for string
 representation of colors.
 
-```color
+```playground
 Color('color(hsl 130 40% 75% / 0.5)')
 ```
 
 While CSS input is useful, we can also insert raw data points directly. When doing things this way, we must be mindful
 of the actual accepted input range. For instance, RGB colors are not specified in ranges from 0 - 255, but from 0 - 1.
 
-```color
+```playground
 Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
@@ -39,14 +39,14 @@ color with zero saturation. When providing a color via a string, the color is pa
 we pass in an HSL color with zero saturation, the parsed string will treat the hue as undefined, while the raw input
 values remain unaltered. Raw inputs are essentially treated as if the user is directly setting those channels.
 
-```color
+```playground
 Color("hsl(130 0% 50%)")
 Color("hsl", [130, 0, 50])
 ```
 
 If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
 
-```color
+```playground
 c1 = Color('red')
 c2 = Color(c1)
 
@@ -55,7 +55,7 @@ c1, c2
 
 You can also use the `new` method to generate new colors from already instantiated colors.
 
-```color
+```playground
 color1 = Color("red")
 color1
 color1.new("blue")
@@ -65,7 +65,7 @@ If desired, all creation method can be configured to also filter out color space
 the `filter` parameter and specifying only the color spaces we do care about. Valid colors will then be constrained only
 to those spaces in the list.
 
-```color
+```playground
 try:
     Color("red", filters=["hsl"])
 except ValueError:
@@ -79,7 +79,7 @@ The `clone` method is an easy way to duplicate the current color object.
 
 Here we clone the `#!color green` object so we have two.
 
-```color
+```playground
 c1 = Color("green")
 c1
 c1.clone()
@@ -94,14 +94,14 @@ are identical to the `new` method, so we can use a color object, a color string,
 
 Here we update the color `#!color red` to the color `#!color blue`:
 
-```color
+```playground
 Color("red")
 Color("red").update(Color("blue"))
 ```
 
 Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
 
-```color
+```playground
 Color("red").update("lch(80% 50 130)")
 ```
 
@@ -114,7 +114,7 @@ raw data points.
 In this example, the `#!color red` color object literally becomes the specified CIELCH color of
 `#!color lch(80% 50 130)`.
 
-```color
+```playground
 Color("red").mutate("lch(80% 50 130)")
 ```
 
@@ -127,7 +127,7 @@ reference to itself is returned.
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELAB,
 we could simply call the `convert` method with the desired color space.
 
-```color
+```playground
 Color('yellow').convert("lab")
 ```
 
@@ -138,14 +138,14 @@ exposed via the `match` method. We can simply pass `match` a string, and, if the
 object will be returned. The `ColorMatch` object has a simple structure that contains the matched `color` as a `Color`
 object, and the `start` and `end` points it was located at.
 
-```color
+```playground
 Color.match("red")
 ```
 
 By default it matches at the start of the buffer and returns a color if it finds one. If desired, we can do a
 `fullmatch` which requires the entire buffer to match a color.
 
-```color
+```playground
 Color.match("red and yellow")
 Color.match("red and yellow", fullmatch=True)
 ```
@@ -153,14 +153,14 @@ Color.match("red and yellow", fullmatch=True)
 We can also adjust the start position of the search. In this case, by adjusting the start position to 8
 characters later, we will match `#!color yellow` instead of `#!color red`.
 
-```color
+```playground
 Color.match("red and yellow", start=8)
 ```
 
 Filtering unwanted color spaces is also available via the `filter` parameter, and is typically how creation methods
 avoid parsing unwanted color spaces.
 
-```color
+```playground
 Color.match("red and yellow", filters=["hsl"])
 Color.match("hsl(130 30% 75%)", filters=["hsl"])
 ```
@@ -175,7 +175,7 @@ try and filter out cases that are unfavorable by providing additional context. A
 colors in HTML or CSS, we don't want to match hex in HTML entities or color names that are part of color variables
 (`#!css var(--color-red)`).
 
-```color
+```playground
 import re
 from coloraide import Color
 
@@ -214,7 +214,7 @@ base class defaults are used. If needed, the defaults can be changed for an enti
 simply subclass the `Color` object and override the class defaults. The new derived class can be used throughout an
 application or library and will use the specified defaults.
 
-```color
+```playground
 class Color2(Color):
     PRECISION = 3
 

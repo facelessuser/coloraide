@@ -45,12 +45,12 @@ and replicate it in ColorAide.
 </span>
 
 === "Display P3"
-    ```color
+    ```playground
     Color('#07c7ed').compose('#fc3d99', blend='multiply', space="display-p3")
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     Color('#07c7ed').compose('#fc3d99', blend='multiply', space="srgb")
     ```
 
@@ -65,12 +65,12 @@ right most color being on the bottom of the stack, and the base color being on t
 </span>
 
 === "Display P3"
-    ```color
+    ```playground
     Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="display-p3")
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="srgb")
     ```
 
@@ -114,12 +114,12 @@ will use the demonstration above and replicate the result in the example below. 
 </span>
 
 === "Display P3"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="display-p3")
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="srgb")
     ```
 
@@ -134,12 +134,12 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
 </span>
 
 === "Display P3"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', operator='destination-over', space="display-p3")
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', operator='destination-over', space="srgb")
     ```
 
@@ -158,7 +158,7 @@ calculate the center color where all three layers overlap.
 </div>
 
 === "Display P3"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose(
         [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
         blend='normal',
@@ -167,7 +167,7 @@ calculate the center color where all three layers overlap.
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     Color('#07c7ed').set('alpha', 0.5).compose(
         [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
         blend='normal',
@@ -204,7 +204,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 </div>
 
 === "Display P3"
-    ```color
+    ```playground
     c1 = Color('#07c7ed').set('alpha', 0.5)
     c2 = Color('#fc3d99').set('alpha', 0.5)
     c3 = Color('#f5d311').set('alpha', 0.5)
@@ -222,7 +222,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
     ```
 
 === "sRGB"
-    ```color
+    ```playground
     c1 = Color('#07c7ed').set('alpha', 0.5)
     c2 = Color('#fc3d99').set('alpha', 0.5)
     c3 = Color('#f5d311').set('alpha', 0.5)
@@ -670,5 +670,5 @@ Display the sum of the source image and destination image.
 _Specified as `#!py3 'lighter'`_.
 
 --8<--
-compositing.txt
+compositing.md
 --8<--

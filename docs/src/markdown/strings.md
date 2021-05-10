@@ -5,7 +5,7 @@
 Colors can be translated to strings by using the `to_string` method. The color class will convert the current color into
 one of the many of CSS formats supported for the given color space.
 
-```color
+```playground
 Color("srgb", [0.5, 0, 1], 0.3).to_string()
 ```
 
@@ -17,7 +17,7 @@ All color spaces support the following parameters:
   actually adjust the precision and scale of the values. The default is 5. In some cases, like sRGB hex output,
   precision may not really come into play as hex values are rounded to the nearest whole number anyways.
 
-    ```color
+    ```playground
     Color("rgb(30.3456% 75% 100%)").to_string(precision=5, percent=True)
     Color("rgb(30.3456% 75% 100%)").to_string(precision=4, percent=True)
     Color("rgb(30.3456% 75% 100%)").to_string(precision=3, percent=True)
@@ -27,14 +27,14 @@ All color spaces support the following parameters:
 
     Providing a precision of `0` will simply enable simple rounding to the nearest whole number.
 
-    ```color
+    ```playground
     Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)
     ```
 
     Providing a precision of `-1` is a special input that will give the highest precision that can be given. Not
     particularly helpful except to look at the raw decimal number.
 
-    ```color
+    ```playground
     Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, percent=True)
     ```
 
@@ -58,7 +58,7 @@ All color spaces support the following parameters:
 - `color`: for some color spaces, this is the default output, but for others this format can be explicitly requested by
   setting `color` to `#!py3 True`. If set to `#!py3 True`, this will take priority over other format options.
 
-    ```color
+    ```playground
     Color("rebeccapurple").to_string(color=True)
     ```
 
@@ -69,13 +69,13 @@ have options unique to itself.
 
 sRGB can output colors to a hex format which is unique compared to HSL and others. Simply enable `hex`.
 
-```color
+```playground
 Color("rebeccapurple").to_string(hex=True)
 ```
 
 You can force hex to output in uppercase.
 
-```color
+```playground
 Color("red").to_string(hex=True)
 Color("red").to_string(hex=True, upper=True)
 ```
@@ -83,7 +83,7 @@ Color("red").to_string(hex=True, upper=True)
 When converting to the hex color format, a color can be compressed in certain cases. Enabling `compress` will compress a
 hex color if possible.
 
-```color
+```playground
 Color("#11223388").to_string(hex=True)
 Color("#11223388").to_string(hex=True, compress=True)
 ```
@@ -91,7 +91,7 @@ Color("#11223388").to_string(hex=True, compress=True)
 sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
 instead of using the range [0,255].
 
-```color
+```playground
 Color("rebeccapurple").to_string(percent=True)
 ```
 
@@ -99,7 +99,7 @@ sRGB can also output color names. If a color evaluates to a hex code which also 
 internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
 fallback to whatever the other options dictate. Simply enable `names`.
 
-```color
+```playground
 Color("#663399").to_string(names=True)
 ```
 
@@ -115,6 +115,6 @@ output in other subtle ways. As the comma format is the old legacy approach, whe
 `rgba` instead of the `rgb`. If using the default space syntax, `rgb` is always used, even when the color has
 transparency.
 
-```color
+```playground
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 ```

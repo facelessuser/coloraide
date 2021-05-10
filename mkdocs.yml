@@ -62,8 +62,8 @@ markdown_extensions:
   - pymdownx.superfences:
       preserve_tabs: true
       custom_fences:
-        - name: color
-          class: color
+        - name: playground
+          class: playground
           format: !!python/name:tools.playground.color_command_formatter
           validator: !!python/name:tools.playground.color_command_validator
   - pymdownx.highlight:
@@ -105,11 +105,11 @@ markdown_extensions:
   - pymdownx.striphtml:
   - pymdownx.snippets:
       base_path:
-      - docs/src/markdown/_snippets
+      - docs/src/markdown/.snippets
       - LICENSE.md
       auto_append:
-      - refs.txt
-      - playground.txt
+      - refs.md
+      - playground.md
   - pymdownx.keys:
       separator: "\uff0b"
   - pymdownx.details:
