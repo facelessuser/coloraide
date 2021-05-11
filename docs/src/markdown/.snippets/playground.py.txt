@@ -177,7 +177,6 @@ def color_command_formatter(src):
     from coloraide import Color
 
     try:
-        fit = True
         console, colors = execute(src.strip())
         el = ''
         bar = False
@@ -205,19 +204,16 @@ def color_command_formatter(src):
                 bar = True
                 base_classes = "swatch"
                 for color in item:
-                    if not color.color.in_gamut('srgb') and not fit:
-                        c = '<span class="swatch-color"></span>'
-                        classes = base_classes + " out-of-gamut"
-                        title = "Out of Gamut&#10;{}".format(color.string)
-                    else:
-                        color.color.fit('srgb', in_place=True)
-                        srgb = color.color.convert('srgb')
-                        value1 = srgb.to_string(alpha=False)
-                        value2 = srgb.to_string()
-                        style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                        title = color.string
-                        classes = base_classes
-                        c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                    if not color.color.in_gamut('srgb'):
+                        base_classes += " out-of-gamut"
+                    color.color.fit('srgb', in_place=True)
+                    srgb = color.color.convert('srgb')
+                    value1 = srgb.to_string(alpha=False)
+                    value2 = srgb.to_string()
+                    style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                    title = color.string
+                    classes = base_classes
+                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
                     c = '<span class="{classes}" title="{title}">{color}</span>'.format(
                         classes=classes,
                         color=c,

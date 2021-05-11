@@ -42,7 +42,7 @@ All color spaces support the following parameters:
     `1`, in this case, can throw the color out of gamut. So remember to use a sufficient precision for what you are
     doing and the values you are working in.
 
-    ```{.color no-fit}
+    ```playground
     Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
     ```
 
@@ -50,7 +50,7 @@ All color spaces support the following parameters:
   are technically unbounded, so no fitting may occur in those color spaces. Additionally, some color formats, like sRGB
   hex, are always fitted (regardless of the this setting) as they must fit into the gamut or they cannot be translated.
 
-      ```{.color no-fit}
+      ```playground
       Color("rgb(30% 105% 0%)").to_string(),
       Color("rgb(30% 105% 0%)").to_string(fit=False)
       ```

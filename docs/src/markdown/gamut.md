@@ -15,7 +15,7 @@ mapping.
 A color can be checked to see if it fits in its own gamut or the gamut of another color space. Some color spaces may
 have suggested limits for usability purposes, but may not have actual limits.
 
-Let's assume we have a color `#!color-no-fit rgb(30% 105% 0%)` which is not in its own gamut as the green channel
+Let's assume we have a color `#!color rgb(30% 105% 0%)` which is not in its own gamut as the green channel
 exceeds the sRGB limit of `100%`. We can check this via the `in_gamut` method, and we can see that it is not in gamut.
 
 ```playground
@@ -23,7 +23,7 @@ Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
 We can also test if a color from one color space fits in a completely different color space. In the example below, we
-can see that the LCH color of `#!color-no-fit lch(100% 50 75)` is outside the narrow gamut of sRGB.
+can see that the LCH color of `#!color lch(100% 50 75)` is outside the narrow gamut of sRGB.
 
 ```playground
 Color("lch(100% 50 75)").in_gamut("srgb")
@@ -35,7 +35,7 @@ The recommended approach for fitting/mapping a color is to compress the chroma w
 simplified). This is the approach that our reference ([`colorjs`](https://colorjs.io/)) chose, so we ported it over here
 as well.
 
-In this example, we will take the color `#!color-no-fit lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but
+In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but
 if we try to fit it in the sRGB gamut, as noted earlier, it is outside the narrow gamut of sRGB. So, using the `fit`
 method, and specifying `srgb` as the target color space, we can fit it in the sRGB gamut.
 

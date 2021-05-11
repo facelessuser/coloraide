@@ -78,9 +78,6 @@ markdown_extensions:
             python3: true
   - pymdownx.inlinehilite:
       custom_inline:
-        - name: color-no-fit
-          class: color
-          format: !!python/name:tools.playground.color_formatter_no_fit
         - name: color
           class: color
           format: !!python/name:tools.playground.color_formatter
