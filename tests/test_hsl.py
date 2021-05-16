@@ -251,3 +251,9 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 
         c = Color('hsl(120 0% 75% / 1)')
         self.assertTrue(c.is_nan('hue'))
+
+    def test_corner_case_null(self):
+        """Test corner case that produces null."""
+
+        c = Color('color(srgb -2 0 2)').convert('hsl')
+        self.assertTrue(c.is_nan('hue'))
