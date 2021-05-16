@@ -310,7 +310,7 @@ def inv(matrix):
         # So scale the diagonal such that it will now equal 1.
         # Additionally, the same operations will be applied to the identity matrix
         # and will turn it into `m ** -1` (what we are looking for)
-        fd_scalar = 1.0 / denom
+        fd_scalar = (1.0 if isinstance(denom, float) else decimal.Decimal(1)) / denom
         for j in indices:
             m[fd][j] *= fd_scalar
             im[fd][j] *= fd_scalar
@@ -330,12 +330,23 @@ def inv(matrix):
     return im
 
 
-def cbrt(x):
-    """Cube root."""
+def cbrt(n):
+    """Calculate cube root."""
 
-    if 0 <= x:
-        return x ** (1.0 / 3.0)
-    return -(-x) ** (1.0 / 3.0)
+    return nth_root(n, 3)
+
+
+def nth_root(n, p):
+    """Calculate nth root."""
+
+    if p == 0:  # pragma: no cover
+        return float('inf')
+
+    if n == 0:
+        # Can't do anything with zero
+        return 0
+
+    return math.copysign(abs(n) ** (p ** -1), n)
 
 
 def clamp(value, mn=None, mx=None):

@@ -51,8 +51,15 @@ All color spaces support the following parameters:
   hex, are always fitted (regardless of the this setting) as they must fit into the gamut or they cannot be translated.
 
       ```playground
-      Color("rgb(30% 105% 0%)").to_string(),
+      Color("rgb(30% 105% 0%)").to_string()
       Color("rgb(30% 105% 0%)").to_string(fit=False)
+      ```
+
+      Additionally, we can choose a different fitting method by passing `fit` the name of the method we would like.
+
+      ```playground
+      Color("rgb(30% 105% 0%)").to_string()
+      Color("rgb(30% 105% 0%)").to_string(fit='clip')
       ```
 
 - `color`: for some color spaces, this is the default output, but for others this format can be explicitly requested by

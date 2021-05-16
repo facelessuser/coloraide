@@ -54,12 +54,6 @@ CATS = {
 }
 
 
-def matrix_round(m, precision=16):
-    """Round a matrix."""
-
-    return [[round(c, precision) for c in r] for r in m]
-
-
 @lru_cache(maxsize=20)
 def calc_adaptation_matrices(w1, w2, method='bradford'):
     """
@@ -93,7 +87,7 @@ def calc_adaptation_matrices(w1, w2, method='bradford'):
     m2 = util.diag(util.divide(first, second))
     adapt = util.dot(mi, util.dot(m2, m))
 
-    return matrix_round(adapt), matrix_round(util.inv(adapt))
+    return adapt, util.inv(adapt)
 
 
 def get_adaptation_matrix(w1, w2, method):

@@ -19,15 +19,15 @@ class TestRoundTrip:
 
     # Skip colors with null hues or hues that can wrap.
     COLORS = [
-        # Color('red'),
+        Color('red'),
         Color('orange'),
         Color('yellow'),
         Color('green'),
         Color('blue'),
         Color('indigo'),
         Color('violet'),
-        # Color('white'),
-        # Color('black')
+        # Color('white'),  # General: this is difficult as not everything lands exactly
+        Color('black')
     ]
 
     def assert_round_trip(self, color, space):
@@ -39,11 +39,13 @@ class TestRoundTrip:
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
             str1 = c1.to_string(color=True)
-            str2 = c2.to_string(color=True)
+            # Run back through parsing in case we hit something like a hue that needs normalization.
+            str2 = Color(c2.to_string(color=True)).to_string(color=True)
             if str1 != str2:
-                print('----- Color Space {} -----'.format(color.space()))
-                print(color)
-                print('>>> Convert to: {}'.format(space))
+                print('----- Convert: {} <=> {} -----'.format(c1.space(), space))
+                print('Original: ', color.to_string(color=True))
+                print(c1.space() + ': ', str1, c1.coords())
+                print(space + ': ', str2, c2.coords())
                 assert str1 == str2
 
     @pytest.mark.parametrize('space', list(Color.CS_MAP.keys()))

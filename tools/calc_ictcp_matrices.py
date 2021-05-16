@@ -5,9 +5,9 @@ https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 import numpy as np
 
-np.set_printoptions(floatmode="unique", precision=None, sign='-')
+np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
-a = np.asarray(
+a = np.asfarray(
     [
         [0.92, 0.04, 0.04],
         [0.04, 0.92, 0.04],
@@ -15,7 +15,7 @@ a = np.asarray(
     ]
 )
 
-b = np.asarray(
+b = np.asfarray(
     [
         [0.4002, 0.7076, -0.0808],
         [-0.2263, 1.1653, 0.0457],
@@ -27,7 +27,7 @@ b = np.asarray(
 m1 = np.dot(a, b)
 
 # LMS to ICtCp
-m2 = np.asarray(
+m2 = np.asfarray(
     [
         [2048 / 4096, 2048 / 4096, 0],
         [6610 / 4096, -13613 / 4096, 7003 / 4096],

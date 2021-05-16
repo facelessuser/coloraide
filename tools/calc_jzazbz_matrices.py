@@ -1,9 +1,9 @@
 """Calculate Jzazbz matrices."""
 import numpy as np
 
-np.set_printoptions(floatmode="unique", precision=None, sign='-')
+np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
-m1 = np.asarray(
+m1 = np.asfarray(
     [
         [0.41478972, 0.579999, 0.0146480],
         [-0.2015100, 1.120649, 0.0531008],
@@ -11,7 +11,7 @@ m1 = np.asarray(
     ]
 )
 
-m2 = np.asarray(
+m2 = np.asfarray(
     [
         [0.5, 0.5, 0],
         [3.524000, -4.066708, 0.542708],

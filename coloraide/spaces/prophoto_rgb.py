@@ -30,8 +30,8 @@ def xyz_to_lin_prophoto(xyz):
     """Convert XYZ to linear-light prophoto-rgb."""
 
     m = [
-        [1.3459433009386652, -0.255607509316767, -0.051111765870885],
-        [-0.544598869458717, 1.508167317720767, 0.0205351415866469],
+        [1.3459433009386652, -0.25560750931676696, -0.05111176587088495],
+        [-0.544598869458717, 1.508167317720767, 0.020535141586646915],
         [0.0, 0.0, 1.2118127506937628]
     ]
 
@@ -72,7 +72,7 @@ def gam_prophoto(rgb):
         if abs(i) < ET:
             result.append(16.0 * i)
         else:
-            result.append(util.npow(i, 1.0 / 1.8))
+            result.append(util.nth_root(i, 1.8))
     return result
 
 

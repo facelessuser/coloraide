@@ -55,7 +55,7 @@ class HSV(Cylindrical, Space):
     SPACE = "hsv"
     CHANNEL_NAMES = ("hue", "saturation", "value", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
-    GAMUT_CHECK = "hsl"
+    GAMUT_CHECK = "srgb"
     WHITE = "D65"
 
     RANGE = (

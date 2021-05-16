@@ -27,13 +27,13 @@ def fit(color):
     # If flooring chroma doesn't work, just clip the floored color
     # because there is no optimal compression.
     floor = color.clone().set('lch.chroma', 0)
-    if not floor.in_gamut():
+    if not floor.in_gamut(tolerance=0):
         return floor.fit(method="clip").coords()
 
     # If we are already below the JND, just clip as we will gain no
     # noticeable difference moving forward.
     clipped = color.fit(method="clip")
-    if color.delta_e(clipped, method="2000") < 2.3:
+    if color.delta_e(clipped, method="2000") < 2:
         return clipped.coords()
 
     # Convert to CIELCH and set our boundaries

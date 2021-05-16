@@ -52,7 +52,9 @@ class Gamut:
 
         # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
         # If out of gamut, apply mapping/clipping/etc.
-        c._space._coords = norm_angles(c) if c.in_gamut(tolerance=0.0) else func(c)
+        c._space._coords, c._space._alpha = (
+            c._space.null_adjust(norm_angles(c) if c.in_gamut(tolerance=0.0) else func(c), self.alpha)
+        )
 
         # Adjust "this" color
         return this.update(c)

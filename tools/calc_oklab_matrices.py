@@ -1,8 +1,10 @@
 """Calculate `oklab` matrices."""
 import numpy as np
 
+np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
-m1 = np.asarray(
+
+m1 = np.asfarray(
     [
         [+0.8189330101, +0.0329845436, +0.0482003018],
         [+0.3618667424, +0.9293118715, +0.2643662691],
@@ -10,7 +12,7 @@ m1 = np.asarray(
     ]
 )
 
-m2 = np.asarray(
+m2 = np.asfarray(
     [
         [+0.2104542553, +1.9779984951, +0.0259040371],
         [+0.7936177850, -2.4285922050, +0.7827717662],
@@ -23,8 +25,8 @@ if __name__ == "__main__":
     print('===== m1 =====')
     print(m1)
     print('===== m1^-1 =====')
-    print(np.linalg.inv(m1).tolist())
+    print(np.linalg.inv(m1))
     print('===== m2 =====')
     print(m2)
     print('===== m2^-1 =====')
-    print(np.linalg.inv(m2).tolist())
+    print(np.linalg.inv(m2))

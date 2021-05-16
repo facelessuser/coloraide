@@ -57,22 +57,45 @@ together, we can transform `#!color white` to `#!color rgb(0 127.5 255)`.
 Color("white").set("red", 0).set("green", 0.5)
 ```
 
-Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` by
-editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`. Keep in mind
-though that the colors are being converted to the specified space under the hood, set, and then converted back, so if
-you have multiple operations to apply in a given color space, it may be more efficient to convert to that space, apply
-the set operations directly, and then convert back.
-
-```{.color fit}
-Color("blue").set('lch.hue', 130)
-```
-
 Functions can also be used to modify a channel property. This allows us to do more complex set operations. Here we do a
 relative adjustment of the green channel and transform the color `#!color pink` to `#!color rgb(255 249.6 203)`.
 
 ```playground
 Color("pink").set('green', lambda g: g * 1.3)
 ```
+
+Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` by
+editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`. Keep in mind
+though that the colors are being converted to the specified space under the hood, set, and then converted back, so if
+you have multiple operations to apply in a given color space, it may be more efficient to convert to that space, apply
+the set operations directly, and then convert back.
+
+```playground
+Color("blue").set('lch.hue', 130)
+```
+
+When setting a color in another color space, the final value is subject to any rounding errors that may occur in the
+round trip to and from the specified color space. Also, depending on the transform functions of the spaces involved and
+whether the original color is on the edge of its own gamut, this can lead to a color going slightly out of gamut, and if
+one of the spaces involved in the conversion doesn't handle out of gamut colors with sensible values, you may get
+something unexpected back.
+
+```playground
+Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
+Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100)
+Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100).convert('srgb').coords()
+```
+
+The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise, but the
+CIELCH D65 example is not quite as precise and returns a color with a saturation that is way out of bounds. But keep in
+mind, it looks worse than it really is. When converting the HSL value to sRGB, we see it is barely off. None of this is
+a bug, it is just the nature of the algorithms we are using to convert, the precision of the floats, and the slight
+rounding errors that occur when using [floating-point arithmetic][floating-point].
+
+In the end, while the HSL color with high saturation seems a bit unexpected, it is actually pretty close to the intended
+value once you realize that the 100% lightness dominates the result and makes the saturation and hue values
+insignificant. For this reason, it makes a lot of sense that the sRGB coordinates are still so close. HSL just doesn't
+represent out of gamut colors as well as sRGB does.
 
 ## Masking Channels
 

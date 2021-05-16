@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0a22
+
+- **FIX**: Don't have sRGB fail gamut check due to HSL having extreme numbers. If sRGB is within tolerance range, it
+  should pass. Instead, HSL, HSV, and HWB will all be checked to see if they are within the sRGB gamut as they are just
+  representations of sRGB, but they will also have the tolerance checked against their own coordinates to help catch
+  values that are way out of bounds but still yield values within the sRGB tolerance range.
+- **FIX**: Improve gamut mapping a bit more.
+
 ## 0.1.0a21
 
 - **NEW**: Refactor CAT to allow for other CAT methods: `von-kries`, `xyz-scaling`, `cat02`, `cmccat97`, `cmccat2000`,

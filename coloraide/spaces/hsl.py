@@ -60,6 +60,7 @@ class HSL(Cylindrical, Space):
     CHANNEL_NAMES = ("hue", "saturation", "lightness", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
     WHITE = "D65"
+    GAMUT_CHECK = "srgb"
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),

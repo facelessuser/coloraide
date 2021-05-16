@@ -1,12 +1,12 @@
 """Calculate CATs."""
 import numpy as np
 
-np.set_printoptions(precision=16, sign='-')
+np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
-white_d65 = [0.95047, 1.00000, 1.08883]
-white_d50 = [0.96422, 1.00000, 0.82521]
+white_d65 = np.asfarray([0.95047, 1.00000, 1.08883])
+white_d50 = np.asfarray([0.96422, 1.00000, 0.82521])
 
-bradford_m = np.asarray(
+bradford_m = np.asfarray(
     [
         [0.8951000, 0.2664000, -0.1614000],
         [-0.7502000, 1.7135000, 0.0367000],
@@ -14,7 +14,7 @@ bradford_m = np.asarray(
     ]
 )
 
-von_kries_m = np.asarray(
+von_kries_m = np.asfarray(
     [
         [0.4002400, 0.7076000, -0.0808100],
         [-0.2263000, 1.1653200, 0.0457000],
@@ -30,7 +30,7 @@ xyz_scale_m = np.asfarray(
     ]
 )
 
-cat02_m = np.asarray(
+cat02_m = np.asfarray(
     [
         [0.7328000, 0.4296000, -0.1624000],
         [-0.7036000, 1.6975000, 0.0061000],
@@ -38,7 +38,7 @@ cat02_m = np.asarray(
     ]
 )
 
-cmccat97_m = np.asarray(
+cmccat97_m = np.asfarray(
     [
         [0.8951000, -0.7502000, 0.0389000],
         [0.2664000, 1.7135000, 0.0685000],
@@ -46,7 +46,7 @@ cmccat97_m = np.asarray(
     ]
 )
 
-sharp_m = np.asarray(
+sharp_m = np.asfarray(
     [
         [1.2694000, -0.0988000, -0.1706000],
         [-0.8364000, 1.8006000, 0.0357000],
@@ -54,7 +54,7 @@ sharp_m = np.asarray(
     ]
 )
 
-cmccat2000_m = np.asarray(
+cmccat2000_m = np.asfarray(
     [
         [0.7982000, 0.3389000, -0.1371000],
         [-0.5918000, 1.5512000, 0.0406000],

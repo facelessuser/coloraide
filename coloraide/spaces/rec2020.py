@@ -25,7 +25,7 @@ def lin_2020(rgb):
         if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(((abs_i + ALPHA - 1) / ALPHA) ** (1 / 0.45), i))
+            result.append(math.copysign(util.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
     return result
 
 
@@ -68,9 +68,9 @@ def xyz_to_lin_2020(xyz):
     """Convert XYZ to linear-light rec-2020."""
 
     m = [
-        [1.7165106697619734, -0.3556416699867159, -0.2533455418219072],
+        [1.7165106697619734, -0.35564166998671587, -0.25334554182190716],
         [-0.6666930011826241, 1.6165022083469103, 0.015768750389995],
-        [0.017643638767459, -0.0427797816690446, 0.9423050727200183]
+        [0.017643638767459002, -0.04277978166904461, 0.9423050727200183]
     ]
 
     return util.dot(m, xyz)
