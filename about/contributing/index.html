@@ -7,7 +7,10 @@
   let initialized = false;
   const pycode = `
 """
-Special Python color code blocks.
+Execute Python code in code blocks (color previews added specifically for ColorAide).
+
+This is meant to be executed by Pyodide, so backslashes and backticks must be escaped
+as this will be inserted into a JavaScript template string.
 
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
@@ -64,7 +67,7 @@ def get_colors(result):
 
     colors = []
     if isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(), result))
+        colors.append(ColorTuple(result.to_string(fit=False), result))
     elif isinstance(result, Interpolator):
         colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
     elif isinstance(result, str):
@@ -75,7 +78,7 @@ def get_colors(result):
     elif isinstance(result, Sequence):
         for x in result:
             if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(), x))
+                colors.append(ColorTuple(x.to_string(fit=False), x))
             elif isinstance(x, str):
                 try:
                     colors.append(ColorTuple(x, Color(x)))
@@ -182,7 +185,6 @@ def color_command_formatter(src):
     from coloraide import Color
 
     try:
-        fit = True
         console, colors = execute(src.strip())
         el = ''
         bar = False
@@ -210,19 +212,16 @@ def color_command_formatter(src):
                 bar = True
                 base_classes = "swatch"
                 for color in item:
-                    if not color.color.in_gamut('srgb') and not fit:
-                        c = '<span class="swatch-color"></span>'
-                        classes = base_classes + " out-of-gamut"
-                        title = "Out of Gamut&#10;{}".format(color.string)
-                    else:
-                        color.color.fit('srgb', in_place=True)
-                        srgb = color.color.convert('srgb')
-                        value1 = srgb.to_string(alpha=False)
-                        value2 = srgb.to_string()
-                        style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                        title = color.string
-                        classes = base_classes
-                        c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                    if not color.color.in_gamut('srgb'):
+                        base_classes += " out-of-gamut"
+                    color.color.fit('srgb', in_place=True)
+                    srgb = color.color.convert('srgb')
+                    value1 = srgb.to_string(alpha=False)
+                    value2 = srgb.to_string()
+                    style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                    title = color.string
+                    classes = base_classes
+                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
                     c = '<span class="{classes}" title="{title}">{color}</span>'.format(
                         classes=classes,
                         color=c,
@@ -253,7 +252,7 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-wheel = 'coloraide-0.1.0a21-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a22-py3-none-any.whl'
 
 w = (
     location.origin + '/' +
