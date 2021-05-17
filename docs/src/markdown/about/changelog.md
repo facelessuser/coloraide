@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a23
+
+- **FIX**: Faster precision adjustment.
+
 ## 0.1.0a22
 
 - **FIX**: Don't have sRGB fail gamut check due to HSL having extreme numbers. If sRGB is within tolerance range, it

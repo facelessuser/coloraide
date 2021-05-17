@@ -52,7 +52,7 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(util.round_half_up(3.345, 1), 3.3)
         self.assertEqual(util.round_half_up(3.345, 2), 3.35)
         self.assertEqual(util.round_half_up(3.345, 3), 3.345)
-        self.assertEqual(util.round_half_up(3.345678, -1), 3.345678)
+        self.assertEqual(util.round_half_up(333, -2), 300)
 
     def test_cbrt(self):
         """Test cube root."""

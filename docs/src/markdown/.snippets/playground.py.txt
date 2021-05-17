@@ -244,7 +244,7 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-wheel = 'coloraide-0.1.0a21-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a23-py3-none-any.whl'
 
 w = (
     location.origin + '/' +

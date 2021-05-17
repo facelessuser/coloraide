@@ -1,13 +1,10 @@
 """Utilities."""
 import copy
-import decimal
 import math
 import numbers
-import re
 import warnings
 from functools import wraps
 
-RE_FLOAT_TRIM = re.compile(r'^(?P<keep>-?\d+)(?P<trash>\.0+|(?P<keep2>\.\d*[1-9])0+)$')
 NaN = float('nan')
 INF = float('inf')
 ACHROMATIC_THRESHOLD = 0.0005
@@ -310,7 +307,7 @@ def inv(matrix):
         # So scale the diagonal such that it will now equal 1.
         # Additionally, the same operations will be applied to the identity matrix
         # and will turn it into `m ** -1` (what we are looking for)
-        fd_scalar = (1.0 if isinstance(denom, float) else decimal.Decimal(1)) / denom
+        fd_scalar = 1.0 / denom
         for j in indices:
             m[fd][j] *= fd_scalar
             im[fd][j] *= fd_scalar
@@ -362,34 +359,6 @@ def clamp(value, mn=None, mx=None):
         return max(min(value, mx), mn)
 
 
-def adjust_precision(f, p):
-    """Adjust precision and scale."""
-
-    with decimal.localcontext() as ctx:
-        if p > 0:
-            # Set precision
-            ctx.prec = p
-        ctx.rounding = decimal.ROUND_HALF_UP
-
-        if p == -1:
-            # Full precision
-            value = decimal.Decimal(f)
-        elif p == 0:
-            # Just round to integer
-            value = decimal.Decimal(round_half_up(f))
-        else:
-            # Round to precision
-            value = (decimal.Decimal(f) * decimal.Decimal('1.0'))
-            exp = value.as_tuple().exponent
-            if exp < 0 and abs(value.as_tuple().exponent) > p:
-                value = value.quantize(decimal.Decimal(10) ** -p)
-
-        if value.is_zero():
-            value = abs(value)
-
-        return float(value)
-
-
 def fmt_float(f, p=0):
     """
     Set float precision and trim precision zeros.
@@ -401,19 +370,26 @@ def fmt_float(f, p=0):
 
     value = adjust_precision(f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
-    m = RE_FLOAT_TRIM.match(string)
-    if m:
-        string = m.group('keep')
-        if m.group('keep2'):
-            string += m.group('keep2')
-    return string
+    return string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
+
+
+def adjust_precision(f, p=0):
+    """Adjust precision."""
+
+    if p == -1:
+        return f
+
+    elif p == 0:
+        return round_half_up(f)
+
+    else:
+        whole = int(f)
+        digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
+        return round_half_up(whole if digits >= p else f, p - digits)
 
 
 def round_half_up(n, scale=0):
     """Round half up."""
-
-    if scale == -1:
-        return n
 
     mult = 10 ** scale
     return math.floor(n * mult + 0.5) / mult
