@@ -1,7 +1,8 @@
-<script src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.18.0/full/pyodide.js"></script>
 
 <script type="text/javascript">
 (() => {
+  let pyodide = null;
   let busy = false;
   let requests = 0;
   let lastText = '';
@@ -33,7 +34,7 @@
         });
       }
       initialized = true;
-      await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/" });
+      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.0/full/" });
       await pyodide.loadPackage(['micropip', 'Pygments']);
       if (buttons) {
         buttons.forEach((b) => {

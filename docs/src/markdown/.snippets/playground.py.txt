@@ -246,10 +246,4 @@ def process_code(*args):
 
 wheel = 'coloraide-0.1.0a23-py3-none-any.whl'
 
-w = (
-    location.origin + '/' +
-    ('coloraide/' if location.origin == 'https://facelessuser.github.io' else '') +
-    'playground/' + wheel
-)
-
-micropip.install(w).add_done_callback(process_code)
+micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
