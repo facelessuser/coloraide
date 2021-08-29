@@ -1,13 +1,14 @@
 """
 Interpolation methods.
 
-A lot of code was ported and or adapted from the https://colorjs.io project. Particularly
-the `interpolate` method and the functions built on top of it, such as `mix` and `steps`.
-
-While we deviate in some ways, a lot of it, at the time of this comment, are a direct port.
+Originally, the base code for `interpolate`, `mix` and `steps` was ported from the
+https://colorjs.io project. Since that time, there has been significant modifications
+that add additional features etc. The base logic though is attributed to the original
+authors.
 
 In general, the logic mimics in many ways the `color-mix` function as outlined in the Level 5
-color draft (Oct 2020), but the approach was modeled directly off of the work done in color.js.
+color draft (Oct 2020), but the initial approach was modeled directly off of the work done in
+color.js.
 ---
 Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
