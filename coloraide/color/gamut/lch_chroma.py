@@ -10,7 +10,7 @@ def fit(color):
     Algorithm originally came from https://colorjs.io/docs/gamut-mapping.html.
     Some things have been optimized and fixed though to better perform as intended.
 
-    The idea is to hold hue and lightness constant and decrease lightness until
+    The idea is to hold hue and lightness constant and decrease chroma until
     color comes under gamut.
 
     We'll use a binary search and at after each stage, we will clip the color
