@@ -1,8 +1,8 @@
 """
 Execute Python code in code blocks (color previews added specifically for ColorAide).
 
-This is meant to be executed by Pyodide, so backslashes and backticks must be escaped
-as this will be inserted into a JavaScript template string.
+This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
+code snippets using `coloraide`.
 
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
@@ -105,7 +105,7 @@ def execute(cmd):
 
     # Build AST tree
     src = cmd.strip()
-    lines = src.split('\\n')
+    lines = src.split('\n')
     tree = ast.parse(src)
 
     for node in tree.body:
@@ -121,9 +121,9 @@ def execute(cmd):
                 stmt[i] = '>>> ' + line
             else:
                 stmt[i] = '... ' + line
-        command += '\\n'.join(stmt)
+        command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
-            command += '\\n... '
+            command += '\n... '
 
         try:
             # Capture anything sent to standard out
@@ -146,7 +146,7 @@ def execute(cmd):
                     clist = find_colors(text)
                     if clist:
                         colors.extend(clist)
-                    console += '\\n{}'.format(text)
+                    console += '\n{}'.format(text)
                 s.flush()
         except Exception:
             # Failed for some reason, so quit
@@ -157,8 +157,8 @@ def execute(cmd):
             clist = get_colors(result)
             if clist:
                 colors.append(clist)
-            console += '{}{}'.format('\\n' if not text else '', str(result))
-        console += '\\n'
+            console += '{}{}'.format('\n' if not text else '', str(result))
+        console += '\n'
 
     return console, colors
 
@@ -173,8 +173,6 @@ def colorize(src, lang, **options):
 
 def color_command_formatter(src):
     """Formatter wrapper."""
-
-    from coloraide import Color
 
     try:
         console, colors = execute(src.strip())
@@ -244,6 +242,7 @@ def process_code(*args):
     except Exception as e:
         print(e)
 
-wheel = 'coloraide-0.1.0a23-py3-none-any.whl'
+
+wheel = ''
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)

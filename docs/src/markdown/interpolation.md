@@ -359,9 +359,3 @@ color.is_nan('hue')
 color.hue = 3
 color.is_nan('hue')
 ```
-
---8<--
-playground.txt
-
-refs.txt
---8<--

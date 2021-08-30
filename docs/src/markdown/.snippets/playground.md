@@ -9,7 +9,7 @@
   const reIdNum = /.*?_(\d+)$/;
   let initialized = false;
   const pycode = `
---8<-- "playground.py.txt"
+--8<-- "playground.txt"
 `
 
   async function pyexecute(current_id) {

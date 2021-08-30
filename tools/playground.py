@@ -1,4 +1,11 @@
-"""Color swatch."""
+"""
+Color playground.
+
+Any fenced code blocks with `playground` as the language will be converted to interactive playgrounds that
+are initialized with the results of the initial contents.
+
+Any inline code blocks with `color` as the language will be evaluated as a simple color swatch.
+"""
 import coloraide
 from coloraide import Color, NaN, Piecewise
 from coloraide.color.interpolate import Interpolator

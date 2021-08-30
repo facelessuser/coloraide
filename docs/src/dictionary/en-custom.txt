@@ -107,6 +107,7 @@ opto
 performant
 piecewise
 pre
+preformatted
 premultiplication
 premultiplied
 prerelease
