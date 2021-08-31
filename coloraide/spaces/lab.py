@@ -4,18 +4,20 @@ from .xyz import XYZ
 from .. import util
 import re
 
-EPSILON3 = 216 / 24389  # `6^3 / 29^3`
-EPSILON = 24 / 116
-RATIO1 = 16 / 116
-RATIO2 = 108 / 841
-RATIO3 = 841 / 108
+EPSILON = 216 / 24389  # `6^3 / 29^3`
+EPSILON3 = 6 / 29  # Cube root of EPSILON
+KAPPA = 24389 / 27
+KE = 8  # KAPPA * EPSILON = 8
 
 
 def lab_to_xyz(lab, white):
     """
     Convert Lab to D50-adapted XYZ.
 
-    http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+    http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
+
+    While the derivation is different than the specification, the results are the same as Appendix D:
+    https://www.cdvplus.cz/file/3-publikace-cie15-2004/
     """
 
     l, a, b = lab
@@ -27,9 +29,9 @@ def lab_to_xyz(lab, white):
 
     # compute `xyz`
     xyz = [
-        fx ** 3 if fx > EPSILON else (fx - RATIO1) * RATIO2,
-        fy ** 3 if fy > EPSILON or l > 8 else (fy - RATIO1) * RATIO2,
-        fz ** 3 if fz > EPSILON else (fz - RATIO1) * RATIO2
+        fx ** 3 if fx > EPSILON3 else (116 * fx - 16) / KAPPA,
+        fy ** 3 if l > KE else l / KAPPA,
+        fz ** 3 if fz > EPSILON3 else (116 * fz - 16) / KAPPA
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
@@ -37,12 +39,19 @@ def lab_to_xyz(lab, white):
 
 
 def xyz_to_lab(xyz, white):
-    """Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard."""
+    """
+    Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard.
+
+    http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
+
+    While the derivation is different than the specification, the results are the same:
+    https://www.cdvplus.cz/file/3-publikace-cie15-2004/
+    """
 
     # compute `xyz`, which is XYZ scaled relative to reference white
     xyz = util.divide(xyz, white)
     # Compute `fx`, `fy`, and `fz`
-    fx, fy, fz = [util.cbrt(i) if i > EPSILON3 else (RATIO3 * i) + RATIO1 for i in xyz]
+    fx, fy, fz = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 
     return (
         (116.0 * fy) - 16.0,
