@@ -4,7 +4,7 @@ Jzazbz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
-from .xyz_d65 import XYZ
+from .xyz import XYZ
 from .. import util
 import re
 
