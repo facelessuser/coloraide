@@ -21,10 +21,11 @@ Additionally, all colors are recognized using the CSS color function (`#!css-col
 even if the color is not defined in the CSS color spec or supported in the spec in this way. While the
 `#!css-color color()` function in CSS does not explicitly support color spaces with angular channels (hues), it has been
 adapted to support cylindrical colors, and is generally used as a generic input and default output for string
-representation of colors.
+representation of colors. Colors not found in the CSS spec are usually done as custom names with leading `--`. Check the
+[documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name.
 
 ```playground
-Color('color(hsl 130 40% 75% / 0.5)')
+Color('color(--hsl 130 40% 75% / 0.5)')
 ```
 
 While CSS input is useful, we can also insert raw data points directly. When doing things this way, we must be mindful
@@ -32,6 +33,14 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 
 ```playground
 Color("srgb", [0.5, 0, 1], 0.3)
+```
+
+The name is usually just the name of the color space and will not necessarily match the CSS identifier name. For
+instance, HSL will use `--hsl` in the CSS color function, but will just use the `hsl` when specify raw colors.
+
+```playground
+Color('color(--hsl 130 40% 75% / 0.5)')
+Color("hsl", [130, 40, 75], 0.5)
 ```
 
 It is important to note that raw inputs are always accepted exactly as they are specified. Take, for instance, an HSL
@@ -53,7 +62,7 @@ c2 = Color(c1)
 c1, c2
 ```
 
-You can also use the `new` method to generate new colors from already instantiated colors.
+You can also use the `new` method to generate new colors from already instantiated color objects.
 
 ```playground
 color1 = Color("red")
@@ -179,7 +188,7 @@ colors in HTML or CSS, we don't want to match hex in HTML entities or color name
 import re
 from coloraide import Color
 
-RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)")
+RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&$])(?:color\((?!\s*-)|(?:hsla?|lch|lab|hwb|rgba?)\()|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)")
 
 text = """
 <html>

@@ -1,6 +1,6 @@
 """SRGB Linear color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb import SRGB, lin_srgb_to_xyz, xyz_to_lin_srgb, lin_srgb, gam_srgb
+from .srgb.base import SRGB, lin_srgb_to_xyz, xyz_to_lin_srgb, lin_srgb, gam_srgb
 from .xyz import XYZ
 import re
 
@@ -9,7 +9,8 @@ class SRGBLinear(SRGB):
     """SRGB linear."""
 
     SPACE = "srgb-linear"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    SERIALIZE = ("--srgb-linear",)
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     @classmethod

@@ -1,23 +1,23 @@
-"""HWB class."""
+"""Lch class."""
 import re
-from ...spaces import hwb as generic
+from . import base
 from ...spaces import _parse
 from ... import util
 
 
-class HWB(generic.HWB):
-    """HWB class."""
+class Lch(base.Lch):
+    """Lch class."""
 
-    DEF_VALUE = "hwb(0 0% 0% / 1)"
-    START = re.compile(r'(?i)\bhwb\(')
+    DEF_VALUE = "lch(0% 0 0 / 1)"
+    START = re.compile(r'(?i)\blch\(')
     MATCH = re.compile(
         r"""(?xi)
-        \bhwb\(\s*
+        \blch\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
             # comma separated format
-            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
+            {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
         )
         \s*\)
         """.format(**_parse.COLOR_PARTS)
@@ -41,15 +41,15 @@ class HWB(generic.HWB):
         coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
 
         if alpha:
-            template = "hwb({}, {}%, {}%, {})" if options.get("comma") else "hwb({} {}% {}% / {})"
+            template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_float(coords[1], precision),
                 util.fmt_float(coords[2], precision),
-                util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
+                util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "hwb({}, {}%, {}%)" if options.get("comma") else "hwb({} {}% {}%)"
+            template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_float(coords[1], precision),
@@ -61,9 +61,11 @@ class HWB(generic.HWB):
         """Translate channel string."""
 
         if channel == 0:
-            return _parse.norm_angle_channel(value)
-        elif channel in (1, 2):
             return _parse.norm_percent_channel(value)
+        elif channel == 1:
+            return _parse.norm_float(value)
+        elif channel == 2:
+            return _parse.norm_angle_channel(value)
         elif channel == -1:
             return _parse.norm_alpha_channel(value)
 

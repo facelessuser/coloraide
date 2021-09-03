@@ -1,7 +1,7 @@
 """Lab class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent
-from .xyz import XYZ
-from .. import util
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent
+from ..xyz import XYZ
+from ... import util
 import re
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
@@ -112,7 +112,8 @@ class Lab(LabBase):
     """Lab class."""
 
     SPACE = "lab"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    SERIALIZE = ("--lab",)
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
     @classmethod

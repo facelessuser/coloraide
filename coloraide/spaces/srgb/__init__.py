@@ -1,0 +1,1 @@
+"""SRGB color class."""

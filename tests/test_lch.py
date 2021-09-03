@@ -22,15 +22,15 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test color input/output format."""
 
         args = {"color": True}
-        color = "color(lch 20% 10 130)"
+        color = "color(--lch 20% 10 130)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(lch 20% 10 130)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20% 10 130)')
 
-        color = "color(lch 20% 10 130 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(lch 20% 10 130 / 0.5)')
+        color = "color(--lch 20% 10 130 / 0.5)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20% 10 130 / 0.5)')
 
-        color = "color(lch 20% 10 130 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(lch 20% 10 130 / 0.5)')
+        color = "color(--lch 20% 10 130 / 50%)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20% 10 130 / 0.5)')
 
     def test_comma(self):
         """Test comma input and comma output format."""
@@ -122,7 +122,7 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_precision(self):
         """Test precision."""
 
-        color = 'color(lch 20.1234567% 10.1234567 130.1234567)'
+        color = 'color(--lch 20.1234567% 10.1234567 130.1234567)'
         self.assertEqual(Color(color).to_string(), 'lch(20.123% 10.123 130.12)')
         self.assertEqual(Color(color).to_string(precision=3), 'lch(20.1% 10.1 130)')
         self.assertEqual(Color(color).to_string(precision=0), 'lch(20% 10 130)')
@@ -135,17 +135,17 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(lch -20% 20 120)').to_string(),
+            Color('color(--lch -20% 20 120)').to_string(),
             'lch(-20% 20 120)'
         )
 
         self.assertEqual(
-            Color('color(lch -20% 20 120)').to_string(fit="clip"),
+            Color('color(--lch -20% 20 120)').to_string(fit="clip"),
             'lch(-20% 20 120)'
         )
 
         self.assertEqual(
-            Color('color(lch -20% 20 120)').to_string(fit=False),
+            Color('color(--lch -20% 20 120)').to_string(fit=False),
             'lch(-20% 20 120)'
         )
 
@@ -175,7 +175,7 @@ class TestLCHProperties(util.ColorAsserts, unittest.TestCase):
     def test_lightness(self):
         """Test `lightness`."""
 
-        c = Color('color(lch 90% 50 120 / 1)')
+        c = Color('color(--lch 90% 50 120 / 1)')
         self.assertEqual(c.lightness, 90)
         c.lightness = 80
         self.assertEqual(c.lightness, 80)
@@ -183,7 +183,7 @@ class TestLCHProperties(util.ColorAsserts, unittest.TestCase):
     def test_chroma(self):
         """Test `chroma`."""
 
-        c = Color('color(lch 90% 50 120 / 1)')
+        c = Color('color(--lch 90% 50 120 / 1)')
         self.assertEqual(c.chroma, 50)
         c.chroma = 40
         self.assertEqual(c.chroma, 40)
@@ -191,7 +191,7 @@ class TestLCHProperties(util.ColorAsserts, unittest.TestCase):
     def test_hue(self):
         """Test `hue`."""
 
-        c = Color('color(lch 90% 50 120 / 1)')
+        c = Color('color(--lch 90% 50 120 / 1)')
         self.assertEqual(c.hue, 120)
         c.hue = 110
         self.assertEqual(c.hue, 110)
@@ -199,7 +199,7 @@ class TestLCHProperties(util.ColorAsserts, unittest.TestCase):
     def test_alpha(self):
         """Test `alpha`."""
 
-        c = Color('color(lch 90% 50 120 / 1)')
+        c = Color('color(--lch 90% 50 120 / 1)')
         self.assertEqual(c.alpha, 1)
         c.alpha = 0.5
         self.assertEqual(c.alpha, 0.5)

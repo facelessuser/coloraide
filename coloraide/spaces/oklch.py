@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, OptionalPercent
 from .oklab import Oklab
 from .. import util
 import re
@@ -46,12 +46,13 @@ class Oklch(Cylindrical, Space):
     """Oklch class."""
 
     SPACE = "oklch"
+    SERIALIZE = ("--oklch",)
     CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([0.0, 1.0]),
+        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
         GamutUnbound([0.0, 1.0]),
         GamutUnbound([Angle(0.0), Angle(360.0)]),
     )

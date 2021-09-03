@@ -1,7 +1,7 @@
 """Test A98 RGB library."""
 import unittest
 from . import util
-from coloraide.css import Color
+from coloraide import Color
 
 
 class TestA98RGBInputOutput(util.ColorAsserts, unittest.TestCase):

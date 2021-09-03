@@ -1,14 +1,14 @@
 """SRGB color class."""
 import re
-from . import _color_names
-from ...spaces import srgb as generic
-from ...spaces import _parse
+from . import color_names
+from . import base
+from .. import _parse
 from ... import util
 
 RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**_parse.COLOR_PARTS))
 
 
-class SRGB(generic.SRGB):
+class SRGB(base.SRGB):
     """SRGB class."""
 
     DEF_VALUE = "rgb(0 0 0 / 1)"
@@ -75,7 +75,7 @@ class SRGB(generic.SRGB):
                 index = int(length / 4)
                 if length in (8, 4) and h[-index:].lower() == ("f" * index):
                     h = h[:-index]
-                n = _color_names.hex2name(h)
+                n = color_names.hex2name(h)
                 if n is not None:
                     value = n
 
@@ -197,7 +197,7 @@ class SRGB(generic.SRGB):
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
-                string = _color_names.name2hex(string[m.start(0):m.end(0)])
+                string = color_names.name2hex(string[m.start(0):m.end(0)])
                 if string is not None:
                     return cls.split_channels(string), m.end(0)
             else:

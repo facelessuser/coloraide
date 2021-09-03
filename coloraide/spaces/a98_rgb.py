@@ -1,6 +1,6 @@
 """A98 RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb import SRGB
+from .srgb.base import SRGB
 from .xyz import XYZ
 from .. import util
 import re
@@ -53,7 +53,7 @@ class A98RGB(SRGB):
     """A98 RGB class."""
 
     SPACE = "a98-rgb"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D65"
 
     @classmethod

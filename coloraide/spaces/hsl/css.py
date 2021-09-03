@@ -1,27 +1,25 @@
-"""Lab class."""
+"""HSL class."""
 import re
-from ...spaces import lab as generic
+from . import base
 from ...spaces import _parse
 from ... import util
 
 
-class Lab(generic.Lab):
-    """Lab class."""
+class HSL(base.HSL):
+    """HSL class."""
 
-    DEF_VALUE = "lab(0% 0 0 / 1)"
-    START = re.compile(r'(?i)\blab\(')
+    DEF_VALUE = "hsl(0 0% 0% / 1)"
+    START = re.compile(r'(?i)\bhsla?\(')
     MATCH = re.compile(
         r"""(?xi)
+        \bhsla?\(\s*
         (?:
-            \blab\(\s*
-            (?:
-                # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |
-                # comma separated format
-                {percent}{comma}{float}{comma}{float}(?:{comma}(?:{percent}|{float}))?
-            )
-            \s*\)
+            # Space separated format
+            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |
+            # comma separated format
+            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
         )
+        \s*\)
         """.format(**_parse.COLOR_PARTS)
     )
 
@@ -30,10 +28,10 @@ class Lab(generic.Lab):
     ):
         """Convert to CSS."""
 
+        options = kwargs
         if precision is None:
             precision = parent.PRECISION
 
-        options = kwargs
         if options.get("color"):
             return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, **kwargs)
 
@@ -43,7 +41,7 @@ class Lab(generic.Lab):
         coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
 
         if alpha:
-            template = "lab({}%, {}, {}, {})" if options.get("comma") else "lab({}% {} {} / {})"
+            template = "hsla({}, {}%, {}%, {})" if options.get("comma") else "hsl({} {}% {}% / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_float(coords[1], precision),
@@ -51,7 +49,7 @@ class Lab(generic.Lab):
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "lab({}%, {}, {})" if options.get("comma") else "lab({}% {} {})"
+            template = "hsl({}, {}%, {}%)" if options.get("comma") else "hsl({} {}% {}%)"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_float(coords[1], precision),
@@ -60,12 +58,12 @@ class Lab(generic.Lab):
 
     @classmethod
     def translate_channel(cls, channel, value):
-        """Translate channel string."""
+        """Translate channel."""
 
         if channel == 0:
-            return _parse.norm_percent_channel(value)
+            return _parse.norm_angle_channel(value)
         elif channel in (1, 2):
-            return _parse.norm_float(value)
+            return _parse.norm_percent_channel(value)
         elif channel == -1:
             return _parse.norm_alpha_channel(value)
 
@@ -73,13 +71,13 @@ class Lab(generic.Lab):
     def split_channels(cls, color):
         """Split channels."""
 
-        start = 4
+        start = 5 if color[:4].lower() == 'hsla' else 4
         channels = []
         alpha = 1.0
         for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
             if i <= 2:
                 channels.append(cls.translate_channel(i, c))
-            else:
+            elif i == 3:
                 alpha = cls.translate_channel(-1, c)
         return cls.null_adjust(channels, alpha)
 

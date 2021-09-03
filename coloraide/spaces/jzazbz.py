@@ -3,7 +3,7 @@ Jzazbz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent
 from .xyz import XYZ
 from .. import util
 import re
@@ -104,12 +104,13 @@ class Jzazbz(Space):
     """Jzazbz class."""
 
     SPACE = "jzazbz"
+    SERIALIZE = ("--jzazbz",)
     CHANNEL_NAMES = ("jz", "az", "bz", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([0, 1]),
+        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
         GamutUnbound([-0.5, 0.5]),
         GamutUnbound([-0.5, 0.5])
     )

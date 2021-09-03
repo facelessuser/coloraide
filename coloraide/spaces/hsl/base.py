@@ -1,7 +1,7 @@
 """HSL class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from .srgb import SRGB
-from .. import util
+from ...spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ..srgb.base import SRGB
+from ... import util
 import re
 
 
@@ -57,8 +57,9 @@ class HSL(Cylindrical, Space):
     """HSL class."""
 
     SPACE = "hsl"
+    SERIALIZE = ("--hsl",)
     CHANNEL_NAMES = ("hue", "saturation", "lightness", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
     GAMUT_CHECK = "srgb"
 

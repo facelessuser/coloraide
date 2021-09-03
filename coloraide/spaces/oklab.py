@@ -3,7 +3,7 @@ Oklab class.
 
 https://bottosson.github.io/posts/oklab/
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent
 from .xyz import XYZ
 from .. import util
 import re
@@ -49,12 +49,13 @@ class Oklab(Space):
     """Oklab class."""
 
     SPACE = "oklab"
+    SERIALIZE = ("--oklab",)
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([0, 1]),
+        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
         GamutUnbound([-0.5, 0.5]),
         GamutUnbound([-0.5, 0.5])
     )

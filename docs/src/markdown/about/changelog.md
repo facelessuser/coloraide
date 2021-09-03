@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.0a24
+
+- **NEW**: `color()` function locks accepted to channels to the number of actual channels.
+- **NEW**: All `color()` function implementations for color spaces that do not formally support such notation in the
+  current CSS spec now use the custom identifier notation `--name`. For instance, HSL, which does not support the
+  `color()` format in the CSS spec, is now specified via: `color(--hsl h s l / a)`.
+- **NEW**: Channels that do not support percentages will no longer be accepted in the `color()` form. For instance,
+  according to the CSS spec, XYZ color space does not allow percentages in the `color()` format. ColorAide will no
+  longer allow such notation in order to conform to the spec. `color(--lab)` will still support percentages for `l` as
+  it did prior to removal from the spec. All other percentage only channels will also still be supported.
+- **NEW**: Internal restructuring of some files and file locations.
+
 ## 0.1.0a23
 
 - **FIX**: Faster precision adjustment.
