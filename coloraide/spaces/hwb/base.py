@@ -1,8 +1,8 @@
 """HWB class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from .srgb import SRGB
-from .hsv import HSV
-from .. import util
+from ...spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ..srgb.base import SRGB
+from ..hsv import HSV
+from ... import util
 import re
 
 
@@ -40,8 +40,9 @@ class HWB(Cylindrical, Space):
     """HWB class."""
 
     SPACE = "hwb"
+    SERIALIZE = ("--hwb",)
     CHANNEL_NAMES = ("hue", "whiteness", "blackness", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     GAMUT_CHECK = "srgb"
     WHITE = "D65"
 

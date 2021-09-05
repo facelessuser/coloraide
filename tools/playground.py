@@ -156,7 +156,7 @@ def execute(cmd):
             if text:
                 clist = find_colors(text)
                 if clist:
-                    colors.extend(clist)
+                    colors.append(clist)
                 console += '\n{}'.format(text)
             s.flush()
 
@@ -165,8 +165,9 @@ def execute(cmd):
             clist = get_colors(result)
             if clist:
                 colors.append(clist)
-            console += '{}{}'.format('\n' if not text else '', str(result))
-        console += '\n'
+            console += '{}{}\n'.format('\n' if not text else '', str(result))
+        else:
+            console += '\n' if not text else ''
 
     return console, colors
 

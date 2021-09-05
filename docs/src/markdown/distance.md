@@ -35,4 +35,4 @@ Name                      | Parameter\ Name | Weighted\ Parameters
 [CMC\ l:c\ (1984)][decmc] | `cmc`           | `l=2, c=1`
 [CIE94][de94]             | `94`            | `kl=1, k1=0.045, k2=0.015`
 [CIEDE2000 ][de2000]      | `2000`          | `kl=1, kc=1, kh=1`
-[ICtCp (JND)][deitp]      | `itp`           | `scalar=720`
+[ICtCp][deitp]            | `itp`           | `scalar=720`

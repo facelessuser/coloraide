@@ -1,7 +1,7 @@
 """SRGB color class."""
-from ..spaces import RE_DEFAULT_MATCH, Space, GamutBound
-from .xyz import XYZ
-from .. import util
+from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, OptionalPercent
+from ..xyz import XYZ
+from ... import util
 import re
 import math
 
@@ -77,14 +77,14 @@ class SRGB(Space):
     # In addition to the current gamut, check HSL as it is much more sensitive to small
     # gamut changes. This is mainly for a better user experience. Colors will still be
     # mapped/clipped in the current space, unless specified otherwise.
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     CHANNEL_NAMES = ("red", "green", "blue", "alpha")
     WHITE = "D65"
 
     RANGE = (
-        GamutBound([0.0, 1.0]),
-        GamutBound([0.0, 1.0]),
-        GamutBound([0.0, 1.0])
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
     )
 
     @property

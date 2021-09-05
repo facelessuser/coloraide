@@ -1,6 +1,6 @@
 """Pro Photo RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb import SRGB
+from .srgb.base import SRGB
 from .xyz import XYZ
 from .. import util
 import re
@@ -80,7 +80,7 @@ class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
     SPACE = "prophoto-rgb"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D50"
 
     @classmethod

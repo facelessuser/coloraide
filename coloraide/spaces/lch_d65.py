@@ -1,7 +1,7 @@
 """Lch D65 class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .lab_d65 import LabD65
-from .lch import LchBase, lch_to_lab, lab_to_lch
+from .lch.base import LchBase, lch_to_lab, lab_to_lch
 import re
 
 
@@ -9,7 +9,8 @@ class LchD65(LchBase):
     """Lch D65 class."""
 
     SPACE = "lch-d65"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    SERIALIZE = ("--lch-d65",)
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     @classmethod

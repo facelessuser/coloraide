@@ -7,8 +7,9 @@ class XYZ(Space):
     """XYZ class."""
 
     SPACE = "xyz"
+    SERIALIZE = ("xyz", "--xyz-d50")
     CHANNEL_NAMES = ("x", "y", "z", "alpha")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
     RANGE = (

@@ -9,7 +9,7 @@ from . import _parse
 RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
 (?:({{color_space}})\s+)?
-((?:{percent}|{float})(?:{space}(?:{percent}|{float})){{{{,6}}}}(?:{slash}(?:{percent}|{float}))?)
+((?:{percent}|{float})(?:{space}(?:{percent}|{float})){{{{,{{channels:d}}}}}}(?:{slash}(?:{percent}|{float}))?)
 \s*\)
 """.format(
     **_parse.COLOR_PARTS
@@ -38,6 +38,10 @@ class Percent(float):
     """Percent type."""
 
 
+class OptionalPercent(float):
+    """Optional percent type."""
+
+
 class GamutBound(tuple):
     """Bounded gamut value."""
 
@@ -62,6 +66,8 @@ class Space(
 
     # Color space name
     SPACE = ""
+    # Serialized name
+    SERIALIZE = None
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
@@ -119,7 +125,7 @@ class Space(
             values.append(value)
 
         return 'color({} {} / {})'.format(
-            self.space(),
+            self._serialize()[0],
             ' '.join(values),
             util.fmt_float(util.no_nan(self.alpha), util.DEF_PREC)
         )
@@ -143,6 +149,12 @@ class Space(
         """Get the color space."""
 
         return cls.SPACE
+
+    @classmethod
+    def _serialize(cls):
+        """Get the serialized name."""
+
+        return (cls.space(),) if cls.SERIALIZE is None else cls.SERIALIZE
 
     @classmethod
     def white(cls):
@@ -202,9 +214,11 @@ class Space(
             values.append(value)
 
         if alpha:
-            return template.format(self.space(), ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC)))
+            return template.format(
+                self._serialize()[0], ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC))
+            )
         else:
-            return template.format(self.space(), ' '.join(values))
+            return template.format(self._serialize()[0], ' '.join(values))
 
     @classmethod
     def null_adjust(cls, coords, alpha):
@@ -220,7 +234,7 @@ class Space(
         if (
             m is not None and
             (
-                (m.group(1) and m.group(1).lower() == cls.space())
+                (m.group(1) and m.group(1).lower() in cls._serialize())
             ) and (not fullmatch or m.end(0) == len(string))
         ):
 
@@ -235,8 +249,13 @@ class Space(
             for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < cls.NUM_COLOR_CHANNELS:
                     is_percent = isinstance(cls.RANGE[i][0], Percent)
-                    if is_percent and not c.endswith('%'):
+                    is_optional_percent = isinstance(cls.RANGE[i][0], OptionalPercent)
+                    has_percent = c.endswith('%')
+                    if is_percent and not has_percent:
                         # We have an invalid percentage channel
+                        return None, None
+                    elif (not is_percent and not is_optional_percent) and has_percent:
+                        # Percents are not allowed for this channel.
                         return None, None
                     channels.append(_parse.norm_color_channel(c, not is_percent))
 

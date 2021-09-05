@@ -64,10 +64,10 @@ strict tolerance, this would make sense:
 ```playground
 Color('rgb(255 255 255)').in_gamut('srgb', tolerance=0)
 Color('hsl(0 0% 100%)').in_gamut('srgb', tolerance=0)
-Color('color(hsv 0 0% 100%)').in_gamut('srgb', tolerance=0)
+Color('color(--hsv 0 0% 100%)').in_gamut('srgb', tolerance=0)
 Color('rgb(255.05 255 255)').in_gamut('srgb', tolerance=0)
 Color('hsl(0 0% 100.05%)').in_gamut('srgb', tolerance=0)
-Color('color(hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)
+Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 ```
 
 HWB is a little funny as values over 100% for whiteness and blackness are normalized, but the results are technically

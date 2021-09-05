@@ -1,7 +1,7 @@
 """Lch class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, Percent
-from .lab import Lab
-from .. import util
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, Percent
+from ..lab.base import Lab
+from ... import util
 import re
 import math
 
@@ -107,7 +107,8 @@ class Lch(LchBase):
     """Lch class."""
 
     SPACE = "lch"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    SERIALIZE = ("--lch",)
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
     @classmethod

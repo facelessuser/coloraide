@@ -1,6 +1,6 @@
 """Display-p3 color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb import SRGB, lin_srgb, gam_srgb
+from .srgb.base import SRGB, lin_srgb, gam_srgb
 from .xyz import XYZ
 from .. import util
 import re
@@ -51,7 +51,7 @@ class DisplayP3(SRGB):
     """Display-p3 class."""
 
     SPACE = "display-p3"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE))
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D65"
 
     @classmethod
