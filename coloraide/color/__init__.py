@@ -30,12 +30,14 @@ from ..spaces.jzczhz import JzCzhz
 from ..spaces.ictcp import ICtCp
 from ..spaces.din99o import Din99o
 from ..spaces.din99o_lch import Din99oLch
+from ..spaces.luv import Luv
+from ..spaces.lchuv import Lchuv
 
 
 SUPPORTED = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
-    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch
+    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv
 )
 
 
