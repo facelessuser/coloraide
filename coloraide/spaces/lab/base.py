@@ -1,5 +1,5 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, Labish
 from ..xyz import XYZ
 from ... import util
 import re
@@ -60,7 +60,7 @@ def xyz_to_lab(xyz, white):
     )
 
 
-class LabBase(Space):
+class LabBase(Labish, Space):
     """Lab class."""
 
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")

@@ -3,7 +3,7 @@ Oklab class.
 
 https://bottosson.github.io/posts/oklab/
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
 from .xyz import XYZ
 from .. import util
 import re
@@ -45,7 +45,7 @@ def oklab_to_xyz_d65(oklab):
     return util.dot([x ** 3 for x in util.dot(oklab, m2i)], m1i)
 
 
-class Oklab(Space):
+class Oklab(Labish, Space):
     """Oklab class."""
 
     SPACE = "oklab"

@@ -3,7 +3,7 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, WHITES
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, WHITES, Labish
 from .xyz import XYZ
 from .. import util
 import re
@@ -62,7 +62,7 @@ def luv_to_xyz(luv, white):
     return [x, y, z]
 
 
-class Luv(Space):
+class Luv(Labish, Space):
     """Oklab class."""
 
     SPACE = "luv"
@@ -76,6 +76,11 @@ class Luv(Space):
         GamutUnbound([-175.0, 175.0]),
         GamutUnbound([-175.0, 175.0])
     )
+
+    def labish_names(self):
+        """Labish names."""
+
+        return self.CHANNEL_NAMES[:3]
 
     @property
     def lightness(self):
