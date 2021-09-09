@@ -3,7 +3,7 @@
 from . import distance_euclidean
 
 
-def distance(color1, color2, **kwargs):
+def distance(color, sample, **kwargs):
     """
     Delta E 1976 color distance formula.
 
@@ -13,4 +13,4 @@ def distance(color1, color2, **kwargs):
     """
 
     # Equation (1)
-    return distance_euclidean.distance(color1, color2, space="lab")
+    return distance_euclidean.distance(color, sample, space="lab")

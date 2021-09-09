@@ -3,15 +3,15 @@ import math
 from ... import util
 
 
-def distance(color1, color2, kl=1, k1=0.045, k2=0.015):
+def distance(color, sample, kl=1, k1=0.045, k2=0.015):
     """
     Delta E 1994 color distance formula.
 
     http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
     """
 
-    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
-    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
+    l1, a1, b1 = util.no_nan(color.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
 
     # Equation (5)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)
