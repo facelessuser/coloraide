@@ -13,20 +13,25 @@ KE = 1
 KCH = 1
 
 # --- Din99o ---
+# C1 was a bit off due to rounding and gave us less than 100
+# lightness when translating from sRGB white.
+# Solving the equation for a lightness of 100 and KE of 1,
+# which should give us a 100 lightness for white:
+#
+# ```
+# L99o = (303.67 * ln(1 + 0.0039 * L*)) / KE
+# 303.67 = 100 / ln(1 + 0.0039 * 100)
+# 303.67 = 100 / ln(1.39)
+# ```
+#
+# This gives 303.67100547050995 without rounding and fixes
+# white translation.
 RADS = math.radians(26)
 FACTOR = 0.83
-C1 = 303.67
+C1 = 100 / math.log(1.39)
 C2 = 0.0039
 C3 = 0.075
 C4 = 0.0435
-
-# --- Din99 ---
-# RADS = math.radians(16)
-# FACTOR = 0.7
-# C1 = 105.51
-# C2 = 0.0158
-# C3 = 0.045
-# C4 = 0.045
 
 
 def lab_to_din99o(lab):
