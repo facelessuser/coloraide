@@ -12,4 +12,4 @@ def distance(color, sample, **kwargs):
     """Delta E ITP color distance formula."""
 
     # Equation (1)
-    return distance_euclidean.distance(color1, color2, space="din99o-lab")
+    return distance_euclidean.distance(color, sample, space="din99o-lab")
