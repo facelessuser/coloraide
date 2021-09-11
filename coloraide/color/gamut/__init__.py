@@ -27,6 +27,11 @@ def norm_angles(color):
 class Gamut:
     """Handle gamut related functions."""
 
+    FIT_MAP = {
+        "clip": clip.fit,
+        "lch-chroma": lch_chroma.fit
+    }
+
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""
 
@@ -39,10 +44,8 @@ class Gamut:
         this = self.clone() if not in_place else self
 
         # Select appropriate mapping algorithm
-        if method == "clip":
-            func = clip.fit
-        elif method == "lch-chroma":
-            func = lch_chroma.fit
+        if method in self.FIT_MAP:
+            func = self.FIT_MAP[method]
         else:
             # Unknown fit method
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))

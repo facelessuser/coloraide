@@ -65,7 +65,7 @@ class Labish:
     def labish_names(self):
         """Return lab-ish names in the order L a b."""
 
-        return ["lightness", "a", "b"]
+        return self.CHANNEL_NAMES[:3]
 
 
 class Space(

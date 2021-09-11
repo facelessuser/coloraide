@@ -95,11 +95,6 @@ class ICtCp(Labish, Space):
         GamutUnbound([-0.5, 0.5])
     )
 
-    def labish_names(self):
-        """Labish names."""
-
-        return self.CHANNEL_NAMES[:3]
-
     @property
     def i(self):
         """`I` channel."""

@@ -115,11 +115,6 @@ class Jzazbz(Labish, Space):
         GamutUnbound([-0.5, 0.5])
     )
 
-    def labish_names(self):
-        """Labish names."""
-
-        return self.CHANNEL_NAMES[:3]
-
     @property
     def jz(self):
         """Jz channel."""
