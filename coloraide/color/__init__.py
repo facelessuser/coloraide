@@ -1,5 +1,6 @@
 """Colors."""
 from collections.abc import Sequence
+import functools
 from . import distance
 from . import convert
 from . import gamut
@@ -200,8 +201,11 @@ class Color(
     def __getattr__(self, name):
         """Get attribute."""
 
+        if name.startswith('delta_e_'):
+            return functools.partial(getattr(self, 'delta_e'), method=name[8:])
+
         # Don't test `_space` as it is used to get Space channel attributes.
-        if name != "_space":
+        elif name != "_space":
             # Get channel names
             names = set()
             result = getattr(self, "_space")

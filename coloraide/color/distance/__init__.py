@@ -20,7 +20,7 @@ class Distance:
         '2000': delta_e_2000.distance,
         'itp': delta_e_itp.distance,
         '99o': delta_e_99o.distance,
-        'z': delta_e_z.distance,
+        'jz': delta_e_z.distance,
         'hyab': delta_e_hyab.distance
     }
 
