@@ -13,6 +13,7 @@ CIELAB
 CIELAB's
 CIELCH
 CIELCH's
+CIELUV
 CMC
 CMYK
 CSS
@@ -35,6 +36,7 @@ HSL
 HSV
 HWB
 HWB
+HyAB
 Hz
 ICtCp
 IPT
@@ -52,6 +54,7 @@ LMS
 Lab
 Lch
 Lilley
+Luv
 MERCHANTABILITY
 MacAdam
 Matcher
@@ -125,6 +128,7 @@ th
 un
 uncomment
 unsaturate
+uv
 validator
 von
 webcolor

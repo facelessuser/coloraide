@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.0a25
+
+- **NEW**: Add `luv` and `lchuv` color space using a `D50` illuminant.
+- **NEW**: Add `din99o` and `din99o-lch` color space using a `D65` illuminant and associated Delta E~99o~ distance
+  algorithm.
+- **NEW**: Make it easier to add additional Delta E methods and gamut mapping methods to a custom `Color()` class.
+- **NEW**: Add new Delta E~z~ algorithm (Jzazbz).
+- **NEW**: Add new Delta E~hyab~ algorithm for any Lab-ish style color spaces.
+- **NEW**: Expose `delta_e_<type>` methods dynamically depending on what Delta E methods are currently available.
+
 ## 0.1.0a24
 
 - **NEW**: `color()` function locks accepted to channels to the number of actual channels.

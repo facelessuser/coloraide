@@ -7,7 +7,7 @@
 [decmc]: http://www.brucelindbloom.com/index.html?Math.html
 [deitp]: https://kb.portrait.com/help/ictcp-color-difference-metric
 [dez]: https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
-[din99o]: https://de.wikipedia.org/wiki/DIN99-Farbraum
+[de99o]: https://de.wikipedia.org/wiki/DIN99-Farbraum
 [dehyab]: http://markfairchild.org/PDFs/PAP40.pdf
 [floating-point]: https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations
 [issues]: https://github.com/facelessuser/coloraide/issues
