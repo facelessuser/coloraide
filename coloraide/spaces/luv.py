@@ -46,8 +46,8 @@ def luv_to_xyz(luv, white):
     un, vn = xyz_to_uv(WHITES[white])
 
     if l != 0:
-        up = (u / ( 13 * l)) + un
-        vp = (v / ( 13 * l)) + vn
+        up = (u / (13 * l)) + un
+        vp = (v / (13 * l)) + vn
     else:
         up = vp = 0
 
@@ -69,18 +69,13 @@ class Luv(Labish, Space):
     SERIALIZE = ("--luv",)
     CHANNEL_NAMES = ("lightness", "u", "v", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = "D50"
 
     RANGE = (
         GamutUnbound([Percent(0), Percent(100.0)]),
         GamutUnbound([-175.0, 175.0]),
         GamutUnbound([-175.0, 175.0])
     )
-
-    def labish_names(self):
-        """Labish names."""
-
-        return self.CHANNEL_NAMES[:3]
 
     @property
     def lightness(self):

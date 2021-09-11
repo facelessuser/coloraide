@@ -3,7 +3,6 @@ Delta E z.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from . import distance_euclidean
 import math
 from ... import util
 

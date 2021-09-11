@@ -15,7 +15,7 @@ KCH = 1
 # --- Din99o ---
 # C1 was a bit off due to rounding and gave us less than 100
 # lightness when translating from sRGB white.
-# Solving the equation for a lightness of 100 and KE of 1,
+# Solving the equation for a lightness of 100 and `KE` of 1,
 # which should give us a 100 lightness for white:
 #
 # ```
@@ -87,8 +87,8 @@ def din99o_to_lab(din99o):
 class Din99o(LabBase):
     """Din99o class."""
 
-    SPACE = "din99o-lab"
-    SERIALIZE = ("--din99o-lab",)
+    SPACE = "din99o"
+    SERIALIZE = ("--din99o",)
     CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"

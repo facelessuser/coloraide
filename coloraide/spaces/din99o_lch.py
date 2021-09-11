@@ -51,13 +51,13 @@ class Din99oLch(LchBase):
     WHITE = "D65"
 
     @classmethod
-    def _to_din99o_lab(cls, parent, lch):
+    def _to_din99o(cls, parent, lch):
         """To Lab."""
 
         return lch_to_lab(lch)
 
     @classmethod
-    def _from_din99o_lab(cls, parent, lab):
+    def _from_din99o(cls, parent, lab):
         """To Lab."""
 
         return lab_to_lch(lab)
@@ -66,10 +66,10 @@ class Din99oLch(LchBase):
     def _to_xyz(cls, parent, lch):
         """To XYZ."""
 
-        return Din99o._to_xyz(parent, cls._to_din99o_lab(parent, lch))
+        return Din99o._to_xyz(parent, cls._to_din99o(parent, lch))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_din99o_lab(parent, Din99o._from_xyz(parent, xyz))
+        return cls._from_din99o(parent, Din99o._from_xyz(parent, xyz))
