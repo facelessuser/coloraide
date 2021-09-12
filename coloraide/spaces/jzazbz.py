@@ -3,7 +3,7 @@ Jzazbz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
 from .xyz import XYZ
 from .. import util
 import re
@@ -100,7 +100,7 @@ def xyz_d65_to_jzazbz(xyzd65):
     return jz, az, bz
 
 
-class Jzazbz(Space):
+class Jzazbz(Labish, Space):
     """Jzazbz class."""
 
     SPACE = "jzazbz"

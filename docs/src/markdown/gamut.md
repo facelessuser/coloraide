@@ -114,10 +114,10 @@ hsl.convert('srgb').coords()
 hsl.in_gamut('hsl')
 ```
 
-But don't worry, the tolerance constraint above isn't _solely_ based on the the HSL coordinates. If the color deviates
-past the threshold for sRGB **or** HSL, the gamut will yield `#!py3 False`. It is simply an extra check added that
-ensures the tolerance is compared against both the Cartesian coordinates and the cylindrical coordinates to ensure that
-we are working with sane values.
+But don't worry, the tolerance constraint above isn't _solely_ based on the HSL coordinates. If the color deviates past
+the threshold for sRGB **or** HSL, the gamut will yield `#!py3 False`. It is simply an extra check added that ensures
+the tolerance is compared against both the Cartesian coordinates and the cylindrical coordinates to ensure that we are
+working with sane values.
 
 If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
 problem, `srgb` can always be specified. `#!py3 tolerance=0` can always be used to constrain the check to values exactly

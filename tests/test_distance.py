@@ -2,6 +2,7 @@
 from coloraide import Color
 from . import util
 import pytest
+import unittest
 
 
 class TestDistance(util.ColorAsserts):
@@ -16,6 +17,137 @@ class TestDistance(util.ColorAsserts):
         """Assert not equal."""
 
         assert a != b
+
+    @pytest.mark.parametrize(
+        'color1,color2,space,value',
+        [
+            ('red', 'orange', 'lab', 75.3854),
+            ('red', 'orange', 'lab-d65', 79.06950),
+            ('red', 'orange', 'luv', 125.1865),
+            ('red', 'orange', 'din99o', 45.6107),
+            ('red', 'orange', 'oklab', 0.3367),
+            ('red', 'orange', 'jzazbz', 0.1224),
+            ('red', 'orange', 'ictcp', 0.2688)
+        ]
+    )
+    def test_delta_e_hyab_spaces(self, color1, color2, space, value):
+        """Test delta e HyAB."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="hyab", space=space),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 75.3854),
+            ('red', 'yellow', 142.6999),
+            ('red', 'green', 138.1441),
+            ('red', 'blue', 207.0685),
+            ('red', 'indigo', 163.2506),
+            ('red', 'violet', 125.2466),
+            ('red', 'white', 152.5473),
+            ('red', 'black', 161.1308),
+            ('red', 'gray', 107.5457),
+            ('red', 'red', 0),
+            ('orange', 'red', 75.3854),
+            ('yellow', 'red', 142.6999),
+            ('green', 'red', 138.1441),
+            ('blue', 'red', 207.0685),
+            ('indigo', 'red', 163.2506),
+            ('violet', 'red', 125.2466),
+            ('white', 'red', 152.5473),
+            ('black', 'red', 161.1308),
+            ('gray', 'red', 107.5457)
+        ]
+    )
+    def test_delta_e_hyab(self, color1, color2, value):
+        """Test delta e HyAB."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="hyab"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 32.4071),
+            ('red', 'yellow', 63.8142),
+            ('red', 'green', 70.1885),
+            ('red', 'blue', 74.4103),
+            ('red', 'indigo', 67.608),
+            ('red', 'violet', 51.6678),
+            ('red', 'white', 65.6918),
+            ('red', 'black', 75.9866),
+            ('red', 'gray', 49.9161),
+            ('red', 'red', 0),
+            ('orange', 'red', 32.4071),
+            ('yellow', 'red', 63.8142),
+            ('green', 'red', 70.1885),
+            ('blue', 'red', 74.4103),
+            ('indigo', 'red', 67.608),
+            ('violet', 'red', 51.6678),
+            ('white', 'red', 65.6918),
+            ('black', 'red', 75.9866),
+            ('gray', 'red', 49.9161)
+        ]
+    )
+    def test_delta_e_99o(self, color1, color2, value):
+        """Test delta e 99o."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="99o"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 0.0941),
+            ('red', 'yellow', 0.1663),
+            ('red', 'green', 0.1996),
+            ('red', 'blue', 0.3396),
+            ('red', 'indigo', 0.2401),
+            ('red', 'violet', 0.1785),
+            ('red', 'white', 0.1848),
+            ('red', 'black', 0.2109),
+            ('red', 'gray', 0.1635),
+            ('red', 'red', 0),
+            ('orange', 'red', 0.0941),
+            ('yellow', 'red', 0.1663),
+            ('green', 'red', 0.1996),
+            ('blue', 'red', 0.3396),
+            ('indigo', 'red', 0.2401),
+            ('violet', 'red', 0.1785),
+            ('white', 'red', 0.1848),
+            ('black', 'red', 0.2109),
+            ('gray', 'red', 0.1635)
+        ]
+    )
+    def test_delta_e_jz(self, color1, color2, value):
+        """Test delta e z."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="jz"),
+            value,
+            rounding=4
+        )
 
     @pytest.mark.parametrize(
         'color1,color2,value',
@@ -322,3 +454,29 @@ class TestDistance(util.ColorAsserts):
             value,
             rounding=4
         )
+
+
+class TestDistanceSpecifcCases(util.ColorAsserts, unittest.TestCase):
+    """Test distance specific cases."""
+
+    def test_delta_e_alternate_calls(self):
+        """Test alternative delta e calls."""
+
+        self.assertCompare(
+            Color('red').delta_e('blue', method='2000'),
+            Color('red').delta_e_2000('blue')
+        )
+
+    def test_delta_e_alternate_calls_with_params(self):
+        """Test alternative delta e calls with parameters."""
+
+        self.assertCompare(
+            Color('red').delta_e('blue', method='hyab', space="din99o"),
+            Color('red').delta_e_hyab('blue', space="din99o")
+        )
+
+    def test_hyab_bad_space(self):
+        """Test HyAB with bad space."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('orange', method="hyab", space="lch")

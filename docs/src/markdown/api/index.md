@@ -482,7 +482,7 @@ Parameters
     ----------- | ------------- | -----------
     `channel`   |               | A string specifying a channel, or a list of strings specifying multiple channels. Specified channels will be masked (or the only channels not masked if `invert` is `#!py3 True`).
     `invert`    | `#!py3 False` | Use inverse masking logic and mask all channels that are not specified.
-    `in_place`  | `#!py3 False` | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `in_place`  | `#!py3 False` | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
 : 

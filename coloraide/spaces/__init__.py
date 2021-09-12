@@ -59,6 +59,15 @@ class Cylindrical:
         return "hue"
 
 
+class Labish:
+    """Lab-ish color spaces."""
+
+    def labish_names(self):
+        """Return lab-ish names in the order L a b."""
+
+        return self.CHANNEL_NAMES[:3]
+
+
 class Space(
     metaclass=ABCMeta
 ):

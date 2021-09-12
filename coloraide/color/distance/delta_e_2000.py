@@ -5,7 +5,7 @@ from ... import util
 G_CONST = 25 ** 7
 
 
-def distance(color1, color2, kl=1, kc=1, kh=1, **kwargs):
+def distance(color, sample, kl=1, kc=1, kh=1, **kwargs):
     """
     Calculate distance doing a direct translation of the algorithm from the CIE Delta E 2000 paper.
 
@@ -15,8 +15,8 @@ def distance(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
     """
 
-    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
-    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
+    l1, a1, b1 = util.no_nan(color.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
 
     # Equation (2)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)
@@ -44,13 +44,13 @@ def distance(color1, color2, kl=1, kc=1, kh=1, **kwargs):
     hp2 = math.degrees(hp2 + 2 * math.pi if hp2 < 0.0 else hp2)
 
     # Equation (8)
-    dl = l2 - l1
+    dl = l1 - l2
 
     # Equation (9)
-    dc = cp2 - cp1
+    dc = cp1 - cp2
 
     # Equation (10)
-    hdiff = hp2 - hp1
+    hdiff = hp1 - hp2
     if cp1 * cp2 == 0.0:
         dh = 0.0
     elif abs(hdiff) <= 180.0:

@@ -3,7 +3,7 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
 from .xyz import XYZ
 from .. import util
 import re
@@ -80,7 +80,7 @@ def xyz_d65_to_ictcp(xyzd65):
     return util.dot(lms_p_to_ictcp_m, pqlms)
 
 
-class ICtCp(Space):
+class ICtCp(Labish, Space):
     """ICtCp class."""
 
     SPACE = "ictcp"

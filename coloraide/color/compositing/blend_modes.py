@@ -2,16 +2,6 @@
 import math
 from operator import itemgetter
 
-SUPPORTED = frozenset(
-    [
-        'normal', 'multiply', 'darken', 'lighten', 'color-burn', 'color-dodge', 'screen',
-        'overlay', 'hard-light', 'exclusion', 'difference', 'soft-light',
-        'hue', 'saturation', 'luminosity', 'color'
-    ]
-)
-
-NON_SEPARABLE = frozenset(['color', 'hue', 'saturation', 'luminosity'])
-
 
 def is_non_seperable(mode):
     """Check if blend mode is non-separable."""
@@ -196,6 +186,7 @@ def blend_color(cb, cs):
 def get_blender(blend):
     """Get desired blend mode."""
 
-    if blend not in SUPPORTED:
+    try:
+        return globals()['blend_{}'.format(blend.replace('-', '_'))]
+    except KeyError:
         raise ValueError("'{}' is not a recognized blend mode".format(blend))
-    return globals()['blend_{}'.format(blend.replace('-', '_'))]

@@ -13,6 +13,7 @@ CIELAB
 CIELAB's
 CIELCH
 CIELCH's
+CIELUV
 CMC
 CMYK
 CSS
@@ -21,11 +22,14 @@ Chroma
 ColorAide
 ColorAide's
 ColorHelper
+Colorimetry
 Ctrl
 Cz
 DCI
 EOTF
 Ebner
+FNF
+FNL
 Fairchild
 Formatter
 HDR
@@ -35,6 +39,7 @@ HSL
 HSV
 HWB
 HWB
+HyAB
 Hz
 ICtCp
 IPT
@@ -48,10 +53,12 @@ Jz
 JzCzhz
 Jzazbz
 Kries
+LCHuv
 LMS
 Lab
 Lch
 Lilley
+Luv
 MERCHANTABILITY
 MacAdam
 Matcher
@@ -125,6 +132,7 @@ th
 un
 uncomment
 unsaturate
+uv
 validator
 von
 webcolor

@@ -3,15 +3,15 @@ import math
 from ... import util
 
 
-def distance(color1, color2, l=2, c=1):
+def distance(color, sample, l=2, c=1):
     """
     Delta E CMC.
 
     http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
     """
 
-    l1, a1, b1 = util.no_nan(color1.convert("lab").coords())
-    l2, a2, b2 = util.no_nan(color2.convert("lab").coords())
+    l1, a1, b1 = util.no_nan(color.convert("lab").coords())
+    l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
 
     # Equation (3)
     c1 = math.sqrt(a1 ** 2 + b1 ** 2)

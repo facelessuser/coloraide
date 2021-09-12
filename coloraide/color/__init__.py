@@ -1,5 +1,6 @@
 """Colors."""
 from collections.abc import Sequence
+import functools
 from . import distance
 from . import convert
 from . import gamut
@@ -28,12 +29,16 @@ from ..spaces.oklch import Oklch
 from ..spaces.jzazbz import Jzazbz
 from ..spaces.jzczhz import JzCzhz
 from ..spaces.ictcp import ICtCp
+from ..spaces.din99o import Din99o
+from ..spaces.din99o_lch import Din99oLch
+from ..spaces.luv import Luv
+from ..spaces.lchuv import Lchuv
 
 
 SUPPORTED = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
-    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp
+    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv
 )
 
 
@@ -196,8 +201,11 @@ class Color(
     def __getattr__(self, name):
         """Get attribute."""
 
+        if name.startswith('delta_e_'):
+            return functools.partial(getattr(self, 'delta_e'), method=name[8:])
+
         # Don't test `_space` as it is used to get Space channel attributes.
-        if name != "_space":
+        elif name != "_space":
             # Get channel names
             names = set()
             result = getattr(self, "_space")
