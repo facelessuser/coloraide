@@ -12,7 +12,7 @@ import math
 KE = 1
 KCH = 1
 
-# --- Din99o ---
+# --- DIN99o ---
 # C1 was a bit off due to rounding and gave us less than 100
 # lightness when translating from sRGB white.
 # Solving the equation for a lightness of 100 and `KE` of 1,

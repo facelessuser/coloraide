@@ -13,9 +13,6 @@ CIELAB
 CIELAB's
 CIELCH
 CIELCH's
-Colorimetry
-FNF
-FNL
 CIELUV
 CMC
 CMYK
@@ -25,11 +22,14 @@ Chroma
 ColorAide
 ColorAide's
 ColorHelper
+Colorimetry
 Ctrl
 Cz
 DCI
 EOTF
 Ebner
+FNF
+FNL
 Fairchild
 Formatter
 HDR
@@ -53,6 +53,7 @@ Jz
 JzCzhz
 Jzazbz
 Kries
+LCHuv
 LMS
 Lab
 Lch
