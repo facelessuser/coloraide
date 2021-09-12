@@ -124,8 +124,8 @@ plugins:
   - search
   - git-revision-date-localized
   - mkdocs_pymdownx_material_extras
-  - minify:
-      minify_html: true
+  # - minify:
+  #     minify_html: true
 
 extra_css:
   - playground.css
