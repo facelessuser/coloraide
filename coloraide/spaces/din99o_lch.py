@@ -6,7 +6,7 @@ from .. import util
 import math
 import re
 
-ACHROMATIC_THRESHOLD = 0.000000000002
+ACHROMATIC_THRESHOLD = 0.0000000002
 
 
 def lch_to_lab(lch):

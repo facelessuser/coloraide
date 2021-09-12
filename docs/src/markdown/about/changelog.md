@@ -9,6 +9,7 @@
 - **NEW**: Add new Delta E~z~ algorithm (Jzazbz).
 - **NEW**: Add new Delta E~hyab~ algorithm for any Lab-ish style color spaces.
 - **NEW**: Expose `delta_e_<type>` methods dynamically depending on what Delta E methods are currently available.
+- **FIX**: Consistent calculation of achromatic thresholds across all Lch-ish color spaces.
 
 ## 0.1.0a24
 

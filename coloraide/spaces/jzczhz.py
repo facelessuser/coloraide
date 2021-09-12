@@ -9,7 +9,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.0002
+ACHROMATIC_THRESHOLD = 0.0003
 
 
 def jzazbz_to_jzczhz(jzazbz):

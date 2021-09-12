@@ -5,7 +5,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.000000000002
+ACHROMATIC_THRESHOLD = 0.0000000002
 
 
 def luv_to_lchuv(luv):
