@@ -21,8 +21,8 @@ Additionally, all colors are recognized using the CSS color function (`#!css-col
 even if the color is not defined in the CSS color spec or supported in the spec in this way. While the
 `#!css-color color()` function in CSS does not explicitly support color spaces with angular channels (hues), it has been
 adapted to support cylindrical colors, and is generally used as a generic input and default output for string
-representation of colors. Colors not found in the CSS spec are usually done as custom names with leading `--`. Check the
-[documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name.
+representation of colors. Colors not found in the CSS spec are usually done as custom names with the `--` prefix. Check
+the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name.
 
 ```playground
 Color('color(--hsl 130 40% 75% / 0.5)')
