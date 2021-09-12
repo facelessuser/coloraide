@@ -4,10 +4,9 @@ import argparse
 import os
 
 sys.path.append(os.getcwd())
-print(os.getcwd())
 
-from coloraide import Color
-from coloraide import util
+from coloraide import Color  # noqa: E402
+from coloraide import util  # noqa: E402
 
 
 def main():

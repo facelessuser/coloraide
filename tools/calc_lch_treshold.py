@@ -22,17 +22,16 @@ expected conversions.
 Looking at its Lab counterpart's `a` and `b` value is optional.
 This is mainly if you are curious to see how the other channels
 respond, or if you wanted use `a` and `b` to determine achromatic
-reponse.
+response.
 """
 import sys
 import argparse
 import os
+import re
 
 sys.path.append(os.getcwd())
-print(os.getcwd())
 
-from coloraide import Color
-import re
+from coloraide import Color  # noqa: E402
 
 RE_LEAD_ZERO = re.compile(r'^0\.0+')
 
