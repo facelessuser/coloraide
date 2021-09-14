@@ -38,7 +38,8 @@ def lab_to_din99o(lab):
     """XYZ to Din99o."""
 
     l, a, b = lab
-    l99o = C1 * math.log(1 + C2 * l) / KE
+    val = 1 + C2 * l
+    l99o = C1 * math.copysign(math.log(abs(val)), val) / KE
 
     if a == 0 and b == 0:
         a99o = b99o = 0
@@ -46,7 +47,8 @@ def lab_to_din99o(lab):
         eo = a * math.cos(RADS) + b * math.sin(RADS)
         fo = FACTOR * (b * math.cos(RADS) - a * math.sin(RADS))
         go = math.sqrt(eo ** 2 + fo ** 2)
-        c99o = math.log(1 + C3 * go) / (C4 * KE * KCH)
+        val = 1 + C3 * go
+        c99o = math.copysign(math.log(abs(val)), val) / (C4 * KE * KCH)
         h99o = math.atan2(fo, eo) + RADS
 
         a99o = c99o * math.cos(h99o)
@@ -73,9 +75,13 @@ def din99o_to_lab(din99o):
     """Din99o to XYZ."""
 
     l99o, c99o, h99o = din99o_lab_to_lch(din99o)
-    g = (math.exp(C4 * c99o * KCH * KE) - 1) / C3
+    val = C4 * c99o * KCH * KE
+    g = (math.copysign(math.exp(abs(val)), val) - 1) / C3
     e = g * math.cos(h99o - RADS)
     f = g * math.sin(h99o - RADS)
+
+    val = (l99o * KE) / C1
+    (math.copysign(math.exp(abs(val)), val) - 1) / C2
 
     return [
         (math.exp((l99o * KE) / C1) - 1) / C2,
