@@ -3,8 +3,16 @@ import numpy as np
 
 np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
-white_d65 = np.asfarray([0.95047, 1.00000, 1.08883])
-white_d50 = np.asfarray([0.96422, 1.00000, 0.82521])
+
+def xy_to_xyz(x, y):
+    """Convert `xyY` to `xyz`."""
+
+    return [x / y, 1, (1 - x - y) / y]
+
+
+white_d65 = np.asfarray(xy_to_xyz(0.31270, 0.32900))
+white_d50 = np.asfarray(xy_to_xyz(0.34570, 0.35850))
+
 
 bradford_m = np.asfarray(
     [

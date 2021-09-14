@@ -244,6 +244,6 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)

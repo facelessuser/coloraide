@@ -39,6 +39,26 @@ C2 = 2413 / 128
 C3 = 2392 / 128
 
 
+def xy_to_xyz(x, y, y2=1):
+    """Convert `xyY` to `xyz`."""
+
+    return [(x * y2) / y, y2, (1 - x - y) * y2 / y]
+
+
+def xyz_to_uv(xyz):
+    """XYZ to UV."""
+
+    x, y, z = xyz
+    denom = (x + 15 * y + 3 * z)
+    if denom != 0:
+        u = (4 * x) / (x + 15 * y + 3 * z)
+        v = (9 * y) / (x + 15 * y + 3 * z)
+    else:
+        u = v = 0
+
+    return u, v
+
+
 def pq_st2084_inverse_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):
     """Perceptual quantizer (SMPTE ST 2084) - inverse EOTF."""
 

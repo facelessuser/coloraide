@@ -9,27 +9,14 @@ from .. import util
 import re
 
 
-def xyz_to_uv(xyz):
-    """XYZ to UV."""
-
-    x, y, z = xyz
-    denom = (x + 15 * y + 3 * z)
-    if denom != 0:
-        u = (4 * x) / (x + 15 * y + 3 * z)
-        v = (9 * y) / (x + 15 * y + 3 * z)
-    else:
-        u = v = 0
-
-    return u, v
-
-
 def xyz_to_luv(xyz, white):
     """XYZ to Luv."""
 
-    u, v = xyz_to_uv(xyz)
-    un, vn = xyz_to_uv(WHITES[white])
+    u, v = util.xyz_to_uv(xyz)
+    w_xyz = util.xy_to_xyz(*WHITES[white])
+    un, vn = util.xyz_to_uv(w_xyz)
 
-    y = xyz[1] / WHITES[white][1]
+    y = xyz[1] / w_xyz[1]
     l = 116 * util.nth_root(y, 3) - 16 if y > ((6 / 29) ** 3) else ((29 / 3) ** 3) * y
 
     return [
@@ -43,7 +30,8 @@ def luv_to_xyz(luv, white):
     """Luv to XYZ."""
 
     l, u, v = luv
-    un, vn = xyz_to_uv(WHITES[white])
+    xyz = util.xy_to_xyz(*WHITES[white])
+    un, vn = util.xyz_to_uv(xyz)
 
     if l != 0:
         up = (u / (13 * l)) + un
@@ -51,7 +39,7 @@ def luv_to_xyz(luv, white):
     else:
         up = vp = 0
 
-    y = WHITES[white][1] * ((l + 16) / 116) ** 3 if l > 8 else WHITES[white][1] * l * ((3 / 29) ** 3)
+    y = xyz[1] * ((l + 16) / 116) ** 3 if l > 8 else xyz[1] * l * ((3 / 29) ** 3)
 
     if vp != 0:
         x = y * ((9 * up) / (4 * vp))

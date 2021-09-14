@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a26
+
+- **NEW**: Use D65 and D50 white points as specified in CSS spec, but limited to 4 decimals as everyone else seems to
+  do. Other white points were also adjusted as outlined in CIE 2004 Colorimetry T.3 and T.8.
+
 ## 0.1.0a25
 
 - **NEW**: Add `luv` and `lchuv` color space using a `D50` illuminant.

@@ -5,7 +5,7 @@ from .. import util
 import re
 import math
 
-ACHROMATIC_THRESHOLD = 0.0003
+ACHROMATIC_THRESHOLD = 0.0004
 
 
 def oklab_to_oklch(oklab):
