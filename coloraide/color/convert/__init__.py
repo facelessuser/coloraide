@@ -32,22 +32,27 @@ class Convert:
 
         # See if there is a direct conversion route
         func = None
-        coords = self.coords()
-        if hasattr(self._space, convert_to):
-            func = getattr(self._space, convert_to)
-            coords = func(self, coords)
-        elif hasattr(obj, convert_from):
-            func = getattr(obj, convert_from)
-            coords = func(self, coords)
-
-        # See if there is an XYZ route
-        if func is None and self.space() != space:
-            func = getattr(self._space, '_to_xyz')
-            coords = func(self, coords)
-
-            if space != 'xyz':
-                func = getattr(obj, '_from_xyz')
+        if self.space() != space:
+            # Don't send NaNs
+            coords = util.no_nan(self.coords())
+            if hasattr(self._space, convert_to):
+                func = getattr(self._space, convert_to)
                 coords = func(self, coords)
+            elif hasattr(obj, convert_from):
+                func = getattr(obj, convert_from)
+                coords = func(self, coords)
+
+            # See if there is an XYZ route
+            if func is None and self.space() != space:
+                func = getattr(self._space, '_to_xyz')
+                coords = func(self, coords)
+
+                if space != 'xyz':
+                    func = getattr(obj, '_from_xyz')
+                    coords = func(self, coords)
+        else:
+            # Nothing to convert, just pass values as is
+            coords = self.coords()
 
         return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
 

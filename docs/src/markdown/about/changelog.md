@@ -4,6 +4,7 @@
 
 - **NEW**: Use D65 and D50 white points as specified in CSS spec, but limited to 4 decimals as everyone else seems to
   do. Other white points were also adjusted as outlined in CIE 2004 Colorimetry T.3 and T.8.
+- **FIX**: When converting, ensure that `NaN`s are converted to normal numbers.
 
 ## 0.1.0a25
 
