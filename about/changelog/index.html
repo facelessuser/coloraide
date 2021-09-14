@@ -667,6 +667,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#010a26" class="md-nav__link">
+    0.1.0a26
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#010a25" class="md-nav__link">
     0.1.0a25
   </a>
@@ -893,6 +900,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#010a26" class="md-nav__link">
+    0.1.0a26
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#010a25" class="md-nav__link">
     0.1.0a25
   </a>
@@ -1086,6 +1100,12 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="010a26">0.1.0a26<a class="headerlink" href="#010a26" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Use D65 and D50 white points as specified in CSS spec, but limited to 4 decimals as everyone else seems to
+  do. Other white points were also adjusted as outlined in CIE 2004 Colorimetry T.3 and T.8.</li>
+<li><strong>FIX</strong>: When converting, ensure that <code>NaN</code>s are converted to normal numbers.</li>
+</ul>
 <h2 id="010a25">0.1.0a25<a class="headerlink" href="#010a25" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add <code>luv</code> and <code>lchuv</code> color space using a <code>D50</code> illuminant.</li>
@@ -1519,7 +1539,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `
@@ -1814,7 +1834,7 @@ code.scrollTop = inputs.scrollTop
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 12, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 14, 2021</span>
       
     
   </small>

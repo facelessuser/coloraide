@@ -889,7 +889,7 @@ be returned.</p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lch.chroma&quot;</span><span class="p">)</span>
-<span class="go">131.2070487171167</span>
+<span class="go">131.2014480889621</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
@@ -986,15 +986,15 @@ relative adjustment of the green channel and transform the color <span><span cla
 </div>
 </p>
 <p>Channels in other color spaces can also be modified with the <code>set</code> function. Here we alter the color <span><span class="swatch" title="blue"><span class="swatch-color" style="--swatch-stops: #0000ff,#0000ff;"></span></span><code class="highlight"><span class="kc">blue</span><span class="w"></span></code></span> by
-editing the <code>hue</code> channel in the CIELCH color space and get <span><span class="swatch out-of-gamut" title="rgb(-63.895 91.012 -63.176)"><span class="swatch-color" style="--swatch-stops: #085200,#085200;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(-</span><span class="m">63</span><span class="g">.</span><span class="m">895</span><span class="w"> </span><span class="m">91</span><span class="g">.</span><span class="m">012</span><span class="w"> </span><span class="g">-</span><span class="m">63</span><span class="g">.</span><span class="m">176</span><span class="g">)</span><span class="w"></span></code></span>. Keep in mind
+editing the <code>hue</code> channel in the CIELCH color space and get <span><span class="swatch out-of-gamut" title="rgb(-63.911 91.016 -63.173)"><span class="swatch-color" style="--swatch-stops: #075200,#075200;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(-</span><span class="m">63</span><span class="g">.</span><span class="m">911</span><span class="w"> </span><span class="m">91</span><span class="g">.</span><span class="m">016</span><span class="w"> </span><span class="g">-</span><span class="m">63</span><span class="g">.</span><span class="m">173</span><span class="g">)</span><span class="w"></span></code></span>. Keep in mind
 though that the colors are being converted to the specified space under the hood, set, and then converted back, so if
 you have multiple operations to apply in a given color space, it may be more efficient to convert to that space, apply
 the set operations directly, and then convert back.</p>
 <p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
-<div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(-63.895 91.012 -63.176)"><span class="swatch-color" style="--swatch-stops: rgb(7.5497 81.91 0) 50%, rgb(7.5497 81.91 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch.hue&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
-<span class="go">color(srgb -0.25057 0.35691 -0.24775 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(-63.911 91.016 -63.173)"><span class="swatch-color" style="--swatch-stops: rgb(7.497 81.914 0) 50%, rgb(7.497 81.914 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch.hue&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
+<span class="go">color(srgb -0.25063 0.35692 -0.24774 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
@@ -1019,12 +1019,12 @@ something unexpected back.</p>
 <p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch" title="hsl(137.14 200% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.blackness&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.whiteness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.blackness&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.whiteness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="go">color(--hsl 0 0% 100% / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch-d65.lightness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="go">color(--hsl 137.14 200% 100% / 1)</span>
+<span class="go">color(--hsl 0 0% 100% / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch-d65.lightness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.999999999999999, 1.0000000000000004, 0.9999999999999993]</span>
+<span class="go">[1.0, 1.0, 1.0]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
@@ -1547,7 +1547,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `

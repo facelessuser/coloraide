@@ -1138,8 +1138,8 @@ Color("red").update(Color("blue"))</textarea>
 <p>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(154.01 214.15 123.41)"><span class="swatch-color" style="--swatch-stops: rgb(154.01 214.15 123.41) 50%, rgb(154.01 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
-<span class="go">color(srgb 0.60398 0.83979 0.48395 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(154 214.15 123.41)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 0.60392 0.8398 0.48396 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
@@ -1165,7 +1165,7 @@ raw data points.</p>
 <p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: rgb(154.01 214.15 123.41) 50%, rgb(154.01 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 80% 50 130 / 1)</span>
 </code></pre></div></div>
 </div>
@@ -1192,8 +1192,8 @@ we could simply call the <code>convert</code> method with the desired color spac
 <p>
 <div class="playground" id="__playground_15">
 <div class="playground-results" id="__playground-results_15">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(97.607% -15.753 93.388)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span>
-<span class="go">color(--lab 97.607% -15.753 93.388 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(97.607% -15.75 93.394)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span>
+<span class="go">color(--lab 97.607% -15.75 93.394 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_15">
@@ -1322,7 +1322,7 @@ colors in HTML or CSS, we don't want to match hex in HTML entities or color name
 <p>
 <div class="playground" id="__playground_20">
 <div class="playground-results" id="__playground-results_20">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(255 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 136)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 136) 50%, rgb(0 0 136) 50%"></span></span> <span class="swatch" title="lch(75% 50 50)"><span class="swatch-color" style="--swatch-stops: rgb(253.04 160.46 115.69) 50%, rgb(253.04 160.46 115.69) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(255 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 136)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 136) 50%, rgb(0 0 136) 50%"></span></span> <span class="swatch" title="lch(75% 50 50)"><span class="swatch-color" style="--swatch-stops: rgb(253.05 160.46 115.69) 50%, rgb(253.05 160.46 115.69) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">RE_COLOR_START</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?i)(?:\b(?&lt;![-#&amp;$])(?:color\((?!\s*-)|(?:hsla?|lch|lab|hwb|rgba?)\()|\b(?&lt;![-#&amp;$])[\w]{3,}(?![(-])\b|(?&lt;![&amp;])#)&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -1742,7 +1742,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `

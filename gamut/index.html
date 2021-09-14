@@ -873,7 +873,7 @@ to have some tolerance, and other times not.</p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999994, 1.0000000000000004, 0.9999999999999997]</span>
+<span class="go">[0.9999999999999999, 0.9999999999999997, 1.0000000000000002]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1095,7 +1095,7 @@ can. As the color's lightness is so high, when fitting, we essentially end up wi
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.1833269780446558, 0.9589983579557303, 0.6278136524369253]</span>
+<span class="go">[1.1833386979489748, 0.9589979721391798, 0.6278282254203291]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 <span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
@@ -1129,8 +1129,8 @@ previous fitting result. We now end up with a very yellow-ish color.</p>
 <p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.817% 42.313 96.905)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.09) 50%, rgb(255 244.54 160.09) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 95.817% 42.313 96.905 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
+<span class="go">color(--lch 95.816% 42.313 96.903 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 100% 0 0 / 1)</span>
 </code></pre></div></div>
@@ -1157,11 +1157,11 @@ color needs to be mapped. Though, you can still use chroma compression by specif
 <p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.09)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.09) 50%, rgb(255 244.54 160.09) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">FIT</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
 <span class="gp">... </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="go">color(srgb 1 0.959 0.62781 / 1)</span>
+<span class="go">color(srgb 1 0.959 0.62783 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;lch-chroma&#39;</span><span class="p">)</span>
 <span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
@@ -1198,9 +1198,9 @@ consider a color within the gamut, calling <code>fit</code> will fit any color t
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999994, 1.0000000000000004, 0.9999999999999997]</span>
+<span class="go">[1.0000000000000002, 0.9999999999999997, 0.9999999999999997]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999997, 1.0, 1.0]</span>
+<span class="go">[1.0, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
@@ -1256,9 +1256,9 @@ mainly mentioned as fitting in one color space and round tripping back may not g
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999994, 1.0, 0.9999999999999997]</span>
+<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999997, 0.9999999999999997, 0.9999999999999994]</span>
+<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
@@ -1536,7 +1536,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `

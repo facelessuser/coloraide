@@ -800,10 +800,10 @@ described under different illuminants.</p>
 <p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.004 153) 50%, rgb(102 51.004 153) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12412 0.07493 0.30923)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.004 153) 50%, rgb(102 51.004 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12413 0.07493 0.30933)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span><span class="p">,</span> <span class="n">d65</span>
-<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12412 0.07493 0.30923 / 1))</span>
+<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12413 0.07493 0.30933 / 1))</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
@@ -834,9 +834,9 @@ coordinates we wish to transform:</p>
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide.color.convert</span> <span class="kn">import</span> <span class="n">cat</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.12412134052607839, 0.07492817577403253, 0.30922646450496694]</span>
+<span class="go">[0.12412728550131341, 0.07493061731402743, 0.3093325898995686]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span><span class="o">.</span><span class="n">chromatic_adaptation</span><span class="p">(</span><span class="s2">&quot;D50&quot;</span><span class="p">,</span> <span class="s2">&quot;D65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.11627</span><span class="p">,</span> <span class="mf">0.07261</span><span class="p">,</span> <span class="mf">0.23256</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bradford&#39;</span><span class="p">)</span>
-<span class="go">[0.12412134052607839, 0.07492817577403253, 0.30922646450496694]</span>
+<span class="go">[0.12412728550131341, 0.07493061731402743, 0.3093325898995686]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
@@ -865,13 +865,13 @@ Afterwards, all color transforms will use the specified <abbr title="chromatic a
 <p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.23 152.14) 50%, rgb(102.7 52.23 152.14) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12475 0.07614 0.30571)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.23 152.14) 50%, rgb(102.7 52.23 152.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12476 0.07614 0.30581)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">CHROMATIC_ADAPTATION</span> <span class="o">=</span> <span class="s1">&#39;cat02&#39;</span>
 <span class="gp">... </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Custom</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span><span class="p">,</span> <span class="n">d65</span>
-<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12475 0.07614 0.30571 / 1))</span>
+<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12476 0.07614 0.30581 / 1))</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
@@ -1193,7 +1193,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `

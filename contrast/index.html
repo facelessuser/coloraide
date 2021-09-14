@@ -772,9 +772,9 @@
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">luminance</span><span class="p">()</span>
 <span class="go">0.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">luminance</span><span class="p">()</span>
-<span class="go">1.0000000000000002</span>
+<span class="go">1.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">luminance</span><span class="p">()</span>
-<span class="go">0.0721749933065596</span>
+<span class="go">0.07219231536073374</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
@@ -801,7 +801,7 @@ Color("blue").luminance()</textarea>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">contrast</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
-<span class="go">2.1499723003587805</span>
+<span class="go">2.149390533243867</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
@@ -1075,7 +1075,7 @@ def process_code(*args):
         print(e)
 
 
-wheel = 'coloraide-0.1.0a25-py3-none-any.whl'
+wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
 
 micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
 `
