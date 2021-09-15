@@ -8,6 +8,7 @@ Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
 import micropip
+import traceback
 from js import document, location
 from collections.abc import Sequence
 from collections import namedtuple
@@ -149,6 +150,7 @@ def execute(cmd):
                     console += '\\n{}'.format(text)
                 s.flush()
         except Exception:
+            console += '{}\\n{}'.format(command, traceback.format_exc())
             # Failed for some reason, so quit
             break
 
