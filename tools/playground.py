@@ -18,6 +18,7 @@ from io import StringIO
 import contextlib
 import sys
 import re
+import traceback
 
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
@@ -131,34 +132,43 @@ def execute(cmd):
         start = node.lineno
         end = node.end_lineno
         stmt = lines[start - 1: end]
+        command = ''
         for i, line in enumerate(stmt, 0):
             if i == 0:
                 stmt[i] = '>>> ' + line
             else:
                 stmt[i] = '... ' + line
-        console += '\n'.join(stmt)
+        command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
-            console += '\n... '
+            command += '\n... '
 
         # Capture anything sent to standard out
-        text = ''
-        with std_output() as s:
-            # Execute code
-            if isinstance(node, ast.Expr):
-                _eval = ast.Expression(node.value)
-                result = eval(compile(_eval, '<string>', 'eval'), g)
-            else:
-                _exec = ast.Module([node], [])
-                exec(compile(_exec, '<string>', 'exec'), g)
+        try:
+            text = ''
+            with std_output() as s:
+                # Execute code
+                if isinstance(node, ast.Expr):
+                    _eval = ast.Expression(node.value)
+                    result = eval(compile(_eval, '<string>', 'eval'), g)
+                else:
+                    _exec = ast.Module([node], [])
+                    exec(compile(_exec, '<string>', 'exec'), g)
 
-            # Output captured standard out after statements
-            text = s.getvalue()
-            if text:
-                clist = find_colors(text)
-                if clist:
-                    colors.append(clist)
-                console += '\n{}'.format(text)
-            s.flush()
+                # Execution went well, so append command
+                console += command
+
+                # Output captured standard out after statements
+                text = s.getvalue()
+                if text:
+                    clist = find_colors(text)
+                    if clist:
+                        colors.append(clist)
+                    console += '\n{}'.format(text)
+                s.flush()
+        except Exception:
+            console += '{}\n{}'.format(command, traceback.format_exc())
+            # Failed for some reason, so quit
+            break
 
         # If we got a result, output it as well
         if result is not None:

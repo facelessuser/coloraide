@@ -136,14 +136,10 @@ div.color-command .highlight:not(:first-child) {
 
 .playground-inputs {
   -webkit-appearance: textarea;
-  position: absolute;
   margin: 0;
-  top: 0;
-  left: 0;
   display: block;
   width: 100%;
   min-height: 3em;
-  height: calc(100% + 0.2rem);
   border: none;
   padding: .7720588235em 1.1764705882em;
   outline: none;
@@ -151,8 +147,8 @@ div.color-command .highlight:not(:first-child) {
   overflow-x: auto;
   overflow-y: hidden;
   caret-color: var(--md-code-fg-color);
-  color: transparent;
-  background-color: transparent;
+  color: var(--md-code-fg-color);
+  background: var(--md-code-bg-color);
   font-feature-settings: "kern";
   font-family: var(--md-code-font-family,_),SFMono-Regular,Consolas,Menlo,monospace;
   line-height: 1.4;
@@ -220,6 +216,10 @@ div.color-command .highlight:not(:first-child) {
 .hidden .highlight,
 .hidden .playground-inputs,
 button.hidden {
+  display: none;
+}
+
+.playground-code:not(.hidden) div.highlight {
   display: none;
 }
 

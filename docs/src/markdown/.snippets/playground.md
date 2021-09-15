@@ -8,9 +8,20 @@
   let lastText = '';
   const reIdNum = /.*?_(\d+)$/;
   let initialized = false;
+  // This is the Python payload that will be executed when the user
+  // presses the `Run` button. It will execute the code, create a
+  // Python console output, find color references, steps, and interpolation
+  // references and render the appropriate preview.
   const pycode = `
 --8<-- "playground.txt"
 `
+
+  async function textResize(inputs) {
+    // Resize inputs based on text height.
+
+    inputs.style.height = "5px";
+    inputs.style.height = (inputs.scrollHeight) + "px";
+  };
 
   async function pyexecute(current_id) {
     // Execute Python code
@@ -23,6 +34,8 @@
   }
 
   async function load_pyodide() {
+    // Load `Pyodide`` and the any default packages we can need and can load.
+
     if (!initialized) {
       const buttons = document.querySelectorAll('.playground button');
       if (buttons) {
@@ -47,66 +60,20 @@
     }
   }
 
-  function highlight (inputs, current_id) {
-    // Manage incoming highlight requests.
-
-    // Throttle requests
-    if (busy) {
-      return;
-    }
-
-    // Execute
-    if (requests) {
-      requests = 0;
-      busy = true;
-      pyhighlight(inputs.value, current_id);
-    }
-  };
-
-  async function pyhighlight(inputs, current_id) {
-    // Highlight current input code
-
-    let pycode = `
-from js import document
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-
-HtmlFormatter = find_formatter_class('html')
-
-def colorize(src, lang, **options):
-    """Colorize."""
-
-    lexer = get_lexer_by_name(lang, **options)
-    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-    return highlight(src, lexer, formatter).strip()
-
-inputs = document.getElementById("__playground-inputs_${current_id}")
-pgcode = document.getElementById("__playground-code_${current_id}")
-
-div = pgcode.querySelector(".highlight")
-template = document.createElement('template')
-html = colorize(inputs.value + '\\n', 'py3', **{'python3': True, 'stripnl': False})
-template.innerHTML = html;
-pgcode.replaceChild(template.content.firstChild, div)
-code = pgcode.querySelector('code')
-code.scrollLeft = inputs.scrollLeft
-code.scrollTop = inputs.scrollTop
-`
-    await pyodide.runPythonAsync(pycode);
-    busy = false;
-    if (requests) {
-      setTimeout(() => {highlight(inputs, current_id);}, 100);
-    }
-  }
-
   async function loadExternalSrc() {
+    // Load external source to render in a playground.
+    // This can be something like a file on a gist we must read in (?source=)
+    // or raw code (?code=).
+
     if (window.location.pathname.endsWith("/playground/")) {
       const pginputs = document.querySelector('.playground-inputs');
       const pg_id = pginputs.id.replace(reIdNum, '$1');
+      const pg_results = document.getElementById(`__playground-results_${pg_id}`).querySelector('code');
       let params = new URLSearchParams(window.location.search);
       if (params.has('source')) {
         // A source was specified, so load it.
+        pg_results.innerHTML = '';
+        pginputs.value = ''
         await load_pyodide();
         try {
           const uri = params.get('source');
@@ -120,17 +87,17 @@ code.scrollTop = inputs.scrollTop
               }
             }
             requests = 1;
-            highlight(pginputs, pg_id);
             pyexecute(pg_id);
           };
           xhr.send();
         } catch (err) {}
       } else if (params.has('code')) {
         // Raw code provided.
+        pg_results.innerHTML = '';
+        pginputs.value = ''
         await load_pyodide();
         requests = 1;
         pginputs.value = params.get('code');
-        highlight(pginputs, pg_id);
         pyexecute(pg_id);
       }
     }
@@ -153,18 +120,9 @@ code.scrollTop = inputs.scrollTop
       const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
 
       inputs.addEventListener("input", (e) => {
-        // Handle highlighting as input changes.
+        // Adjust textarea height on text input.
 
-        requests++;
-        highlight(inputs, current_id);
-      });
-
-      inputs.addEventListener("scroll", (e) => {
-        // Sync overlay textarea scrolling with highlighted code block underneath.
-
-        const code = pgcode.querySelector("code");
-        code.scrollLeft = e.target.scrollLeft;
-        code.scrollTop = e.target.scrollTop;
+        textResize(inputs);
       });
 
       document.addEventListener("keydown", (e) => {
@@ -214,6 +172,7 @@ code.scrollTop = inputs.scrollTop
         button_cancel.classList.toggle('hidden');
         button_edit.classList.toggle('hidden');
         button_share.classList.toggle('hidden');
+        textResize(inputs);
         inputs.focus();
         busy = false;
       });
@@ -283,7 +242,6 @@ code.scrollTop = inputs.scrollTop
         button_cancel.classList.toggle('hidden');
         busy = false;
         requests++;
-        highlight(inputs, current_id);
       });
     });
 
