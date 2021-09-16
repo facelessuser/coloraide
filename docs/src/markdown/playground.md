@@ -4,10 +4,17 @@ hide:
   - toc
 ---
 
-!!! new "This sandbox is powered by [Pyodide](https://github.com/pyodide/pyodide). Preview, convert, interpolate, and explore!"
+[:material-notebook-edit:](#){: #__notebook-edit .source-link title="Edit notebook page"}
+[:material-language-python:](#){: #__notebook-py-gist .source-link title="Load Python code from source"}
+[:material-language-markdown:](#){: #__notebook-md-gist .source-link title="Load page from Markdown source"}
+<h1>Notebook</h1>
 
-```playground
-import coloraide
-coloraide.__version__
-Color('red')
-```
+---
+
+<div id="__notebook-render"></div>
+
+<div id="__notebook-source" style="height: 100%;" class="hidden">
+<textarea id="__notebook-input"></textarea>
+<button id="__notebook-submit" title="Submit">Submit</button>
+<button id="__notebook-cancel" title="Cancel">Cancel</button>
+</div>
