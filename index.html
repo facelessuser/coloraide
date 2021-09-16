@@ -197,7 +197,7 @@
     
       <div class="md-header__source">
         
-<a href="https://github.com/facelessuser/coloraide/" title="Go to repository" class="md-source" data-md-component="source">
+<a href="https://github.com/facelessuser/coloraide" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
@@ -329,7 +329,7 @@
   
     <div class="md-nav__source">
       
-<a href="https://github.com/facelessuser/coloraide/" title="Go to repository" class="md-source" data-md-component="source">
+<a href="https://github.com/facelessuser/coloraide" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
@@ -758,10 +758,6 @@
               
   
                 
-                  <a href="https://github.com/facelessuser/coloraide/tree/master/docs/src/markdown/index.md" title="Edit this page" class="md-content__button md-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-                  </a>
-                
                 
                 <h1 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link"></a></h1>
 <div class="admonition warning">
@@ -890,7 +886,7 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
 <p>ColorAide can be installed via Python's <code>pip</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">$ </span>pip install coloraide
 </code></pre></div>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
 
 <script type="text/javascript">
 (() => {
@@ -898,8 +894,15 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
   let busy = false;
   let requests = 0;
   let lastText = '';
+  let raw = '';
+  let gist = '';
+  let gistType = '';
   const reIdNum = /.*?_(\d+)$/;
   let initialized = false;
+  // This is the Python payload that will be executed when the user
+  // presses the `Run` button. It will execute the code, create a
+  // Python console output, find color references, steps, and interpolation
+  // references and render the appropriate preview.
   const pycode = `
 """
 Execute Python code in code blocks (color previews added specifically for ColorAide).
@@ -912,6 +915,7 @@ and finding and outputting color previews.
 """
 import micropip
 from js import document, location
+import xml.etree.ElementTree as Etree
 from collections.abc import Sequence
 from collections import namedtuple
 import ast
@@ -924,15 +928,32 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 HtmlFormatter = find_formatter_class('html')
 
-inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
-results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-pgcode = document.getElementById("__playground-code_{}".format(globals()['id_num']))
-
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
 RE_COLOR_START = re.compile(
     r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
 )
+
+template = '''
+<div class="playground" id="__playground_{el_id}">
+<div class="playground-results" id="__playground-results_{el_id}">
+{results}
+</div>
+<div class="playground-code hidden" id="__playground-code_{el_id}">
+{hl_source}
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+'''
+
+code_id = 0
 
 
 class ColorInterpolate(list):
@@ -941,6 +962,15 @@ class ColorInterpolate(list):
 
 class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
+
+
+def _escape(txt):
+    """Basic HTML escaping."""
+
+    txt = txt.replace('&', '&amp;')
+    txt = txt.replace('<', '&lt;')
+    txt = txt.replace('>', '&gt;')
+    return txt
 
 
 @contextlib.contextmanager
@@ -985,12 +1015,12 @@ def get_colors(result):
 def find_colors(text):
     """Find colors in text buffer."""
 
-    from coloraide import Color
+    import coloraide
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
         start = m.start()
-        mcolor = Color.match(text, start=start)
+        mcolor = coloraide.Color.match(text, start=start)
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
@@ -1000,9 +1030,8 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
-    from coloraide import Color, NaN, Piecewise
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
+    g = {'Color': coloraide.Color, 'coloraide': coloraide, 'NaN': coloraide.NaN, 'Piecewise': coloraide.Piecewise}
     console = ''
     colors = []
 
@@ -1052,6 +1081,8 @@ def execute(cmd):
                     console += '\\n{}'.format(text)
                 s.flush()
         except Exception:
+            import traceback
+            console += '{}\\n{}'.format(command, traceback.format_exc())
             # Failed for some reason, so quit
             break
 
@@ -1075,56 +1106,117 @@ def colorize(src, lang, **options):
     return highlight(src, lexer, formatter).strip()
 
 
-def color_command_formatter(src):
+def color_command_validator(language, inputs, options, attrs, md):
+    """Color validator."""
+
+    valid_inputs = set()
+
+    for k, v in inputs.items():
+        if k in valid_inputs:
+            options[k] = True
+            continue
+        attrs[k] = v
+    return True
+
+
+def _color_command_console(colors):
+    """Color command formatter."""
+
+    el = ''
+    bar = False
+    values = []
+    for item in colors:
+        if isinstance(item, ColorInterpolate):
+            if bar:
+                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                values = []
+            sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
+            style = "--swatch-stops: "
+            stops = []
+            for color in item:
+                color.fit("srgb", in_place=True)
+                stops.append(color.convert("srgb").to_string())
+            if not stops:
+                stops.extend(['transparent'] * 2)
+            if len(stops) == 1:
+                stops.append(stops[0])
+            style += ','.join(stops)
+            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
+            el += sub_el1.format(sub_el2)
+            bar = False
+        else:
+            bar = True
+            base_classes = "swatch"
+            for color in item:
+                if not color.color.in_gamut('srgb'):
+                    base_classes += " out-of-gamut"
+                color.color.fit('srgb', in_place=True)
+                srgb = color.color.convert('srgb')
+                value1 = srgb.to_string(alpha=False)
+                value2 = srgb.to_string()
+                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                title = color.string
+                classes = base_classes
+                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
+                    classes=classes,
+                    color=c,
+                    title=title
+                )
+                values.append(c)
+    if bar:
+        el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+        values = []
+
+    return el
+
+
+def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
+    """Formatter wrapper."""
+
+    global code_id
+
+    try:
+        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
+            code_id = 0
+
+        console, colors = execute(src.strip())
+        el = _color_command_console(colors)
+
+        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=console,
+            class_name="highlight",
+            language='pycon',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = '<div class="color-command">{}</div>'.format(el)
+        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=src,
+            class_name="highlight",
+            language='py3',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
+        code_id += 1
+    except Exception:
+        from pymdownx import superfences
+        import traceback
+        print(traceback.format_exc())
+        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
+    return el
+
+
+def live_color_command_formatter(src):
     """Formatter wrapper."""
 
     try:
         console, colors = execute(src.strip())
-        el = ''
-        bar = False
-        values = []
-        for item in colors:
-            if isinstance(item, ColorInterpolate):
-                if bar:
-                    el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                    values = []
-                sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
-                style = "--swatch-stops: "
-                stops = []
-                for color in item:
-                    color.fit("srgb", in_place=True)
-                    stops.append(color.convert("srgb").to_string())
-                if not stops:
-                    stops.extend(['transparent'] * 2)
-                if len(stops) == 1:
-                    stops.append(stops[0])
-                style += ','.join(stops)
-                sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
-                el += sub_el1.format(sub_el2)
-                bar = False
-            else:
-                bar = True
-                base_classes = "swatch"
-                for color in item:
-                    if not color.color.in_gamut('srgb'):
-                        base_classes += " out-of-gamut"
-                    color.color.fit('srgb', in_place=True)
-                    srgb = color.color.convert('srgb')
-                    value1 = srgb.to_string(alpha=False)
-                    value2 = srgb.to_string()
-                    style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                    title = color.string
-                    classes = base_classes
-                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                    c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                        classes=classes,
-                        color=c,
-                        title=title
-                    )
-                    values.append(c)
-        if bar:
-            el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-            values = []
+        el = _color_command_console(colors)
+
         if not colors:
             el += '<div class="swatch-bar"></div>'
 
@@ -1135,22 +1227,215 @@ def color_command_formatter(src):
     return el
 
 
-def process_code(*args):
-    """Process code."""
+def color_formatter(src="", language="", class_name=None, md=""):
+    """Formatter wrapper."""
+
+    from coloraide import Color
+
+    try:
+        result = src.strip()
+        try:
+            console, colors = execute(result)
+            if len(colors) != 1 or len(colors[0]) != 1:
+                raise ValueError('Need one color only')
+            color = colors[0][0].color
+            result = colors[0][0].string
+        except Exception:
+            color = Color(result.strip())
+        el = Etree.Element('span')
+        stops = []
+        if not color.in_gamut("srgb"):
+            color.fit("srgb", in_place=True)
+            attributes = {'class': "swatch out-of-gamut", "title": result}
+            sub_el = Etree.SubElement(el, 'span', attributes)
+            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            if color.alpha < 1.0:
+                stops[-1] += ' 50%'
+                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+        else:
+            attributes = {'class': "swatch", "title": result}
+            sub_el = Etree.SubElement(el, 'span', attributes)
+            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            if color.alpha < 1.0:
+                stops[-1] += ' 50%'
+                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+
+        if not stops:
+            stops.extend(['transparent'] * 2)
+        if len(stops) == 1:
+            stops.append(stops[0])
+
+        Etree.SubElement(
+            sub_el,
+            'span',
+            {
+                "class": "swatch-color",
+                "style": "--swatch-stops: {};".format(','.join(stops))
+            }
+        )
+
+        el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
+    except Exception:
+        import traceback
+        print(traceback.format_exc())
+        el = md.inlinePatterns['backtick'].handle_code('text', src)
+    return el
+
+
+def render_console(*args):
+    """Render console update."""
 
     try:
         # Run code
-        results.innerHTML = color_command_formatter(inputs.value)
+        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
+        results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
+        results.innerHTML = live_color_command_formatter(inputs.value)
         scrollingElement = results.querySelector('code')
         scrollingElement.scrollTop = scrollingElement.scrollHeight
     except Exception as e:
         print(e)
 
 
-wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
+def render_notebook(*args):
 
-micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
+    import markdown
+    from pymdownx import slugs
+
+    text = globals().get('content', '')
+    extensions = [
+        'markdown.extensions.toc',
+        'markdown.extensions.admonition',
+        'markdown.extensions.smarty',
+        'pymdownx.betterem',
+        'markdown.extensions.attr_list',
+        'markdown.extensions.def_list',
+        'markdown.extensions.tables',
+        'markdown.extensions.abbr',
+        'markdown.extensions.footnotes',
+        'markdown.extensions.md_in_html',
+        'pymdownx.superfences',
+        'pymdownx.highlight',
+        'pymdownx.inlinehilite',
+        'pymdownx.magiclink',
+        'pymdownx.tilde',
+        'pymdownx.caret',
+        'pymdownx.smartsymbols',
+        'pymdownx.emoji',
+        'pymdownx.escapeall',
+        'pymdownx.tasklist',
+        'pymdownx.striphtml',
+        'pymdownx.snippets',
+        'pymdownx.keys',
+        'pymdownx.details',
+        'pymdownx.saneheaders',
+        'pymdownx.tabbed'
+    ]
+    extension_configs = {
+        'markdown.extensions.toc': {
+            'slugify': slugs.uslugify,
+            'permalink': ""
+        },
+        'markdown.extensions.smarty': {
+            "smart_quotes": False,
+        },
+        'pymdownx.superfences': {
+            'preserve_tabs': True,
+            'custom_fences': [
+                {
+                    "name": 'playground',
+                    "class": 'playground',
+                    "format": color_command_formatter,
+                    "validator": color_command_validator
+                }
+            ]
+        },
+        'pymdownx.inlinehilite': {
+            'custom_inline': [
+                {
+                    'name': 'color',
+                    'class': 'color',
+                    'format': color_formatter
+                }
+            ]
+        },
+        'pymdownx.magiclink': {
+            'repo_url_shortener': True,
+            'repo_url_shorthand': True,
+            'social_url_shorthand': True,
+            'user': 'facelessuser',
+            'repo': 'coloraide'
+        },
+        'pymdownx.keys': {
+            'separator': "\\uff0b"
+        }
+    }
+
+    try:
+        html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
+    except Exception:
+        html = ''
+    content = document.getElementById("__notebook-render")
+    content.innerHTML = html
+
+
+# Load up necessary wheels and then execute the appropriate payload
+cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
+mwheel = 'Markdown-3.3.4-py3-none-any.whl'
+pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
+
+wheels = [
+    location.origin + '/coloraide/playground/' + cwheel
+]
+
+action = globals().get('action')
+if action == 'render':
+    callback = render_notebook
+    wheels.extend(
+        [
+            location.origin + '/coloraide/playground/' + mwheel,
+            location.origin + '/coloraide/playground/' + pwheel
+        ]
+    )
+else:
+    callback = render_console
+
+# We run this from inside an async JavaScript function
+# so it is okay to call await outside a coroutine as
+# we are technically still inside one.
+await micropip.install(wheels)
+callback()
 `
+  const defContent = `import coloraide
+coloraide.__version__
+Color('red')`;
+
+
+  function getContent(content) {
+      return `
+!!! new "This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
+Learn more [here](?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md). \
+Preview, convert, interpolate, and explore!"
+
+\`\`\`\`\`\`\`\`playground
+${content}
+\`\`\`\`\`\`\`\`
+`;
+  }
+
+  async function textResize(inpt) {
+    // Resize inputs based on text height.
+
+    inpt.style.height = "5px";
+    inpt.style.height = (inpt.scrollHeight) + "px";
+  };
+
+  function encodeuri(uri) {
+    // Encode the URI component.
+
+    return encodeURIComponent(uri).replace(/[.!'()*]/g, (c) => {
+      return '%' + c.charCodeAt(0).toString(16);
+    });
+  };
 
   async function pyexecute(current_id) {
     // Execute Python code
@@ -1158,23 +1443,45 @@ micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_ca
     const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
     current_inputs.setAttribute('readonly', '');
     pyodide.globals.set('id_num', current_id);
+    pyodide.globals.set('action', 'notebook');
     await pyodide.runPythonAsync(pycode);
     current_inputs.removeAttribute('readonly');
   }
 
-  async function load_pyodide() {
+  async function pyrender(text) {
+    // Execute Python code
+
+    pyodide.globals.set('content', text);
+    pyodide.globals.set('action', 'render');
+    await pyodide.runPythonAsync(pycode);
+    src = document.getElementById('__notebook-input');
+    if (src) {
+      raw = text;
+      src.value = text;
+    }
+    if (window.location.hash) {
+      window.location.href = window.location.href;
+    }
+  }
+
+  async function load_pyodide(button_notify) {
+    // Load `Pyodide` and the any default packages we can need and can load.
+
+    const buttons = document.querySelectorAll('.playground button');
+
     if (!initialized) {
-      const buttons = document.querySelectorAll('.playground button');
-      if (buttons) {
-        buttons.forEach((b) => {
-          b.setAttribute('disabled', '');
-          if (b.classList.contains('playground-edit')) {
-            b.innerHTML = 'Loading...';
-          }
-        });
+      if (button_notify) {
+        if (buttons) {
+          buttons.forEach((b) => {
+            b.setAttribute('disabled', '');
+            if (b.classList.contains('playground-edit')) {
+              b.innerHTML = 'Loading...';
+            }
+          });
+        }
       }
       initialized = true;
-      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.0/full/" });
+      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/" });
       await pyodide.loadPackage(['micropip', 'Pygments']);
       if (buttons) {
         buttons.forEach((b) => {
@@ -1187,98 +1494,26 @@ micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_ca
     }
   }
 
-  function highlight (inputs, current_id) {
-    // Manage incoming highlight requests.
-
-    // Throttle requests
-    if (busy) {
-      return;
+  async function showBusy(label) {
+    if (!label) {
+      label = 'Loading Pyodide...';
     }
-
-    // Execute
-    if (requests) {
-      requests = 0;
-      busy = true;
-      pyhighlight(inputs.value, current_id);
-    }
-  };
-
-  async function pyhighlight(inputs, current_id) {
-    // Highlight current input code
-
-    let pycode = `
-from js import document
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-
-HtmlFormatter = find_formatter_class('html')
-
-def colorize(src, lang, **options):
-    """Colorize."""
-
-    lexer = get_lexer_by_name(lang, **options)
-    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-    return highlight(src, lexer, formatter).strip()
-
-inputs = document.getElementById("__playground-inputs_${current_id}")
-pgcode = document.getElementById("__playground-code_${current_id}")
-
-div = pgcode.querySelector(".highlight")
-template = document.createElement('template')
-html = colorize(inputs.value + '\\n', 'py3', **{'python3': True, 'stripnl': False})
-template.innerHTML = html;
-pgcode.replaceChild(template.content.firstChild, div)
-code = pgcode.querySelector('code')
-code.scrollLeft = inputs.scrollLeft
-code.scrollTop = inputs.scrollTop
-`
-    await pyodide.runPythonAsync(pycode);
-    busy = false;
-    if (requests) {
-      setTimeout(() => {highlight(inputs, current_id);}, 100);
-    }
+    var template = document.createElement('template');
+    template.innerHTML = `<div class="loading"><div class="loader"></div><div>${label}</div></div>`;
+    document.querySelector('article').appendChild(template.content.firstChild);
   }
 
-  async function loadExternalSrc() {
-    if (window.location.pathname.endsWith("/playground/")) {
-      const pginputs = document.querySelector('.playground-inputs');
-      const pg_id = pginputs.id.replace(reIdNum, '$1');
-      let params = new URLSearchParams(window.location.search);
-      if (params.has('source')) {
-        // A source was specified, so load it.
-        await load_pyodide();
-        try {
-          const uri = params.get('source');
-          let xhr = new XMLHttpRequest();
-          xhr.open("GET", uri, true);
-          xhr.onload = function (e) {
-            // Try and load the requested content
-            if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                pginputs.value = xhr.responseText;
-              }
-            }
-            requests = 1;
-            highlight(pginputs, pg_id);
-            pyexecute(pg_id);
-          };
-          xhr.send();
-        } catch (err) {}
-      } else if (params.has('code')) {
-        // Raw code provided.
-        await load_pyodide();
-        requests = 1;
-        pginputs.value = params.get('code');
-        highlight(pginputs, pg_id);
-        pyexecute(pg_id);
-      }
-    }
+  async function hideBusy() {
+    const spinner = document.querySelector('article .loading');
+    spinner.parentNode.removeChild(spinner);
   }
 
-  async function main() {
+  async function init(first) {
     // Setup input highlighting and events to run Python code blocks.
 
+    requests = 0;
+
+    const notebook = document.getElementById(`__notebook-source`);
     const playgrounds = document.querySelectorAll('.playground');
     playgrounds.forEach(async function(pg) {
 
@@ -1290,48 +1525,72 @@ code.scrollTop = inputs.scrollTop
       const button_share = document.querySelector(`button#__playground-share_${current_id}`);
       const button_run = document.querySelector(`button#__playground-run_${current_id}`);
       const button_cancel = document.querySelector(`button#__playground-cancel_${current_id}`);
-      const default_text = "# Insert your code here!\ncoloraide.__version__\nColor('red')";
 
       inputs.addEventListener("input", (e) => {
-        // Handle highlighting as input changes.
+        // Adjust textarea height on text input.
 
-        requests++;
-        highlight(inputs, current_id);
+        textResize(inputs);
       });
 
-      inputs.addEventListener("scroll", (e) => {
-        // Sync overlay textarea scrolling with highlighted code block underneath.
+      if (notebook && first) {
+        document.getElementById('__notebook-input').addEventListener("input", (e) => {
+          // Adjust textarea height on text input.
 
-        const code = pgcode.querySelector("code");
-        code.scrollLeft = e.target.scrollLeft;
-        code.scrollTop = e.target.scrollTop;
-      });
+          textResize(e.target);
+        });
 
-      document.addEventListener("keydown", (e) => {
-        // Ctrl + Enter in textarea will execute the code.
+        const edit_page = document.getElementById('__notebook-edit');
+        edit_page.addEventListener("click", async function(e) {
+          document.getElementById('__notebook-render').classList.toggle('hidden');
+          document.getElementById('__notebook-source').classList.toggle('hidden');
+          textResize(document.getElementById('__notebook-input'));
+        });
 
-        if (event.defaultPrevented) {
-          return; // Do nothing if the event was already processed
-        }
+        document.getElementById('__notebook-md-gist').addEventListener("click", function(e) {
+          let uri = prompt("Please enter Markdown page source:", gist);
+          if (uri != null) {
+            uri = encodeuri(uri);
+            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('notebook=' + uri).toString();
+            history.pushState(null, '', relativePathQuery);
+            setTimeout(() => {main(false);}, 0);
+          }
+        });
 
-        if (
-          e.ctrlKey &&
-          e.key === "Enter" &&
-          button_edit.classList.contains('hidden') &&
-          inputs === document.activeElement
-        ) {
-          button_run.click();
-        } else if (
-          e.key === "Escape" &&
-          button_edit.classList.contains('hidden') &&
-          inputs === document.activeElement
-        ) {
-          button_cancel.click();
-        }
-      });
+        document.getElementById('__notebook-py-gist').addEventListener("click", function(e) {
+          let uri = prompt("Please enter Python code source:", gist);
+          if (uri != null) {
+            uri = encodeuri(uri);
+            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('source=' + uri).toString();
+            history.pushState(null, '', relativePathQuery);
+            setTimeout(() => {main(false);}, 0);
+            return true;
+          }
+          return false;
+        });
+
+        document.getElementById('__notebook-input').value = raw;
+        document.getElementById('__notebook-cancel').addEventListener("click", async function(e) {
+          document.getElementById('__notebook-render').classList.toggle('hidden');
+          document.getElementById('__notebook-source').classList.toggle('hidden');
+        });
+
+        document.getElementById('__notebook-submit').addEventListener("click", async function(e) {
+          const render = document.getElementById('__notebook-render');
+          raw = document.getElementById('__notebook-input').value;
+          render.classList.toggle('hidden');
+          document.getElementById('__notebook-source').classList.toggle('hidden');
+          const article = document.querySelector('article');
+          await showBusy(article);
+          render.innerHTML = '';
+          await load_pyodide();
+          await pyrender(raw);
+          await init();
+          await hideBusy(article);
+        });
+      }
 
       inputs.addEventListener('touchmove', (e) => {
-        // Stop propogation on "touchmove".
+        // Stop propagation on "touchmove".
 
         e.stopPropagation();
       });
@@ -1343,8 +1602,10 @@ code.scrollTop = inputs.scrollTop
           return;
         }
 
-        // Load Piodide and related packages.
-        await load_pyodide();
+        // Load Pyodide and related packages.
+        await showBusy();
+        await load_pyodide(true);
+        await hideBusy();
 
         busy = true;
         lastText = inputs.value;
@@ -1354,6 +1615,7 @@ code.scrollTop = inputs.scrollTop
         button_cancel.classList.toggle('hidden');
         button_edit.classList.toggle('hidden');
         button_share.classList.toggle('hidden');
+        textResize(inputs);
         inputs.focus();
         busy = false;
       });
@@ -1366,9 +1628,7 @@ code.scrollTop = inputs.scrollTop
         }
 
         busy = true;
-        const uri = encodeURIComponent(inputs.value).replace(/[.!'()*]/g, (c) => {
-          return '%' + c.charCodeAt(0).toString(16);
-        });
+        const uri = encodeuri(inputs.value);
         const loc = window.location;
         let pathname = '/playground/';
         if (loc.pathname.startsWith('/coloraide/')) {
@@ -1422,16 +1682,73 @@ code.scrollTop = inputs.scrollTop
         button_run.classList.toggle('hidden');
         button_cancel.classList.toggle('hidden');
         busy = false;
-        requests++;
-        highlight(inputs, current_id);
       });
     });
+  }
 
-    await loadExternalSrc();
+  async function main(first) {
+    // Load external source to render in a playground.
+    // This can be something like a file on a gist we must read in (?source=)
+    // or raw code (?code=).
+
+    if (window.location.pathname.endsWith("/playground/")) {
+      let params = new URLSearchParams(window.location.search);
+      const msg = initialized ? 'Loading Notebook...' : 'Loading Pyodide...';
+      const uri = params.has('source') ? params.get('source') : params.get('notebook');
+      if (uri != null && uri.trim()) {
+        // A source was specified, so load it.
+        await showBusy(msg);
+        await load_pyodide();
+        try {
+          const uri = params.has('source') ? params.get('source') : params.get('notebook');
+          const gistType = params.has('source') ? 'source' : 'notebook';
+          let value = '';
+          let xhr = new XMLHttpRequest();
+          gist = uri;
+          xhr.open("GET", uri, true);
+          xhr.onload = async function (e) {
+            // Try and load the requested content
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                value = xhr.responseText;
+              }
+            }
+
+            requests = 1;
+            if (gistType === 'source') {
+              await pyrender(getContent(value));
+            } else {
+              await pyrender(value);
+            }
+            await hideBusy();
+            await init(first);
+          };
+          xhr.send();
+        } catch (err) {}
+      } else if (params.has('code')) {
+        gist = '';
+        gistType = '';
+        await showBusy(msg);
+        await load_pyodide();
+        await pyrender(getContent(params.get('code')));
+        await hideBusy();
+        await init(first);
+      } else {
+        gist = '';
+        gistType = '';
+        await showBusy(msg);
+        await load_pyodide();
+        await pyrender(getContent(defContent));
+        await hideBusy();
+        await init(first);
+      }
+    } else {
+      await init(first);
+    }
   }
 
   // Run main
-  main();
+  document.addEventListener("DOMContentLoaded", async function() {main(true);});
 })()
 </script>
                 
