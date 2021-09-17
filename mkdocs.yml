@@ -1,7 +1,7 @@
 site_name: ColorAide Documentation
 site_url: https://facelessuser.github.io/coloraide
 repo_url: https://github.com/facelessuser/coloraide
-edit_uri: tree/master/docs/src/markdown
+edit_uri: ""
 site_description: A library to aid in using colors
 copyright: |
   Copyright &copy; 2014 - 2021 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>

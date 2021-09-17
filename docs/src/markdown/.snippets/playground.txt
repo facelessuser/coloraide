@@ -8,8 +8,8 @@ Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
 import micropip
-import traceback
 from js import document, location
+import xml.etree.ElementTree as Etree
 from collections.abc import Sequence
 from collections import namedtuple
 import ast
@@ -22,15 +22,32 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 HtmlFormatter = find_formatter_class('html')
 
-inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
-results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-pgcode = document.getElementById("__playground-code_{}".format(globals()['id_num']))
-
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
 RE_COLOR_START = re.compile(
     r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
 )
+
+template = '''
+<div class="playground" id="__playground_{el_id}">
+<div class="playground-results" id="__playground-results_{el_id}">
+{results}
+</div>
+<div class="playground-code hidden" id="__playground-code_{el_id}">
+{hl_source}
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+'''
+
+code_id = 0
 
 
 class ColorInterpolate(list):
@@ -39,6 +56,15 @@ class ColorInterpolate(list):
 
 class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
+
+
+def _escape(txt):
+    """Basic HTML escaping."""
+
+    txt = txt.replace('&', '&amp;')
+    txt = txt.replace('<', '&lt;')
+    txt = txt.replace('>', '&gt;')
+    return txt
 
 
 @contextlib.contextmanager
@@ -83,12 +109,12 @@ def get_colors(result):
 def find_colors(text):
     """Find colors in text buffer."""
 
-    from coloraide import Color
+    import coloraide
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
         start = m.start()
-        mcolor = Color.match(text, start=start)
+        mcolor = coloraide.Color.match(text, start=start)
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
@@ -98,9 +124,8 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
-    from coloraide import Color, NaN, Piecewise
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
+    g = {'Color': coloraide.Color, 'coloraide': coloraide, 'NaN': coloraide.NaN, 'Piecewise': coloraide.Piecewise}
     console = ''
     colors = []
 
@@ -150,6 +175,7 @@ def execute(cmd):
                     console += '\\n{}'.format(text)
                 s.flush()
         except Exception:
+            import traceback
             console += '{}\\n{}'.format(command, traceback.format_exc())
             # Failed for some reason, so quit
             break
@@ -174,56 +200,117 @@ def colorize(src, lang, **options):
     return highlight(src, lexer, formatter).strip()
 
 
-def color_command_formatter(src):
+def color_command_validator(language, inputs, options, attrs, md):
+    """Color validator."""
+
+    valid_inputs = set()
+
+    for k, v in inputs.items():
+        if k in valid_inputs:
+            options[k] = True
+            continue
+        attrs[k] = v
+    return True
+
+
+def _color_command_console(colors):
+    """Color command formatter."""
+
+    el = ''
+    bar = False
+    values = []
+    for item in colors:
+        if isinstance(item, ColorInterpolate):
+            if bar:
+                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                values = []
+            sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
+            style = "--swatch-stops: "
+            stops = []
+            for color in item:
+                color.fit("srgb", in_place=True)
+                stops.append(color.convert("srgb").to_string())
+            if not stops:
+                stops.extend(['transparent'] * 2)
+            if len(stops) == 1:
+                stops.append(stops[0])
+            style += ','.join(stops)
+            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
+            el += sub_el1.format(sub_el2)
+            bar = False
+        else:
+            bar = True
+            base_classes = "swatch"
+            for color in item:
+                if not color.color.in_gamut('srgb'):
+                    base_classes += " out-of-gamut"
+                color.color.fit('srgb', in_place=True)
+                srgb = color.color.convert('srgb')
+                value1 = srgb.to_string(alpha=False)
+                value2 = srgb.to_string()
+                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                title = color.string
+                classes = base_classes
+                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
+                    classes=classes,
+                    color=c,
+                    title=title
+                )
+                values.append(c)
+    if bar:
+        el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+        values = []
+
+    return el
+
+
+def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
+    """Formatter wrapper."""
+
+    global code_id
+
+    try:
+        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
+            code_id = 0
+
+        console, colors = execute(src.strip())
+        el = _color_command_console(colors)
+
+        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=console,
+            class_name="highlight",
+            language='pycon',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = '<div class="color-command">{}</div>'.format(el)
+        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=src,
+            class_name="highlight",
+            language='py3',
+            md=md,
+            options=options,
+            **kwargs
+        )
+        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
+        code_id += 1
+    except Exception:
+        from pymdownx import superfences
+        import traceback
+        print(traceback.format_exc())
+        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
+    return el
+
+
+def live_color_command_formatter(src):
     """Formatter wrapper."""
 
     try:
         console, colors = execute(src.strip())
-        el = ''
-        bar = False
-        values = []
-        for item in colors:
-            if isinstance(item, ColorInterpolate):
-                if bar:
-                    el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                    values = []
-                sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
-                style = "--swatch-stops: "
-                stops = []
-                for color in item:
-                    color.fit("srgb", in_place=True)
-                    stops.append(color.convert("srgb").to_string())
-                if not stops:
-                    stops.extend(['transparent'] * 2)
-                if len(stops) == 1:
-                    stops.append(stops[0])
-                style += ','.join(stops)
-                sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
-                el += sub_el1.format(sub_el2)
-                bar = False
-            else:
-                bar = True
-                base_classes = "swatch"
-                for color in item:
-                    if not color.color.in_gamut('srgb'):
-                        base_classes += " out-of-gamut"
-                    color.color.fit('srgb', in_place=True)
-                    srgb = color.color.convert('srgb')
-                    value1 = srgb.to_string(alpha=False)
-                    value2 = srgb.to_string()
-                    style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                    title = color.string
-                    classes = base_classes
-                    c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                    c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                        classes=classes,
-                        color=c,
-                        title=title
-                    )
-                    values.append(c)
-        if bar:
-            el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-            values = []
+        el = _color_command_console(colors)
+
         if not colors:
             el += '<div class="swatch-bar"></div>'
 
@@ -234,18 +321,180 @@ def color_command_formatter(src):
     return el
 
 
-def process_code(*args):
-    """Process code."""
+def color_formatter(src="", language="", class_name=None, md=""):
+    """Formatter wrapper."""
+
+    from coloraide import Color
+
+    try:
+        result = src.strip()
+        try:
+            console, colors = execute(result)
+            if len(colors) != 1 or len(colors[0]) != 1:
+                raise ValueError('Need one color only')
+            color = colors[0][0].color
+            result = colors[0][0].string
+        except Exception:
+            color = Color(result.strip())
+        el = Etree.Element('span')
+        stops = []
+        if not color.in_gamut("srgb"):
+            color.fit("srgb", in_place=True)
+            attributes = {'class': "swatch out-of-gamut", "title": result}
+            sub_el = Etree.SubElement(el, 'span', attributes)
+            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            if color.alpha < 1.0:
+                stops[-1] += ' 50%'
+                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+        else:
+            attributes = {'class': "swatch", "title": result}
+            sub_el = Etree.SubElement(el, 'span', attributes)
+            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            if color.alpha < 1.0:
+                stops[-1] += ' 50%'
+                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+
+        if not stops:
+            stops.extend(['transparent'] * 2)
+        if len(stops) == 1:
+            stops.append(stops[0])
+
+        Etree.SubElement(
+            sub_el,
+            'span',
+            {
+                "class": "swatch-color",
+                "style": "--swatch-stops: {};".format(','.join(stops))
+            }
+        )
+
+        el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
+    except Exception:
+        import traceback
+        print(traceback.format_exc())
+        el = md.inlinePatterns['backtick'].handle_code('text', src)
+    return el
+
+
+def render_console(*args):
+    """Render console update."""
 
     try:
         # Run code
-        results.innerHTML = color_command_formatter(inputs.value)
+        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
+        results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
+        results.innerHTML = live_color_command_formatter(inputs.value)
         scrollingElement = results.querySelector('code')
         scrollingElement.scrollTop = scrollingElement.scrollHeight
     except Exception as e:
         print(e)
 
 
-wheel = 'coloraide-0.1.0a26-py3-none-any.whl'
+def render_notebook(*args):
 
-micropip.install(location.origin + '/coloraide/playground/' + wheel).add_done_callback(process_code)
+    import markdown
+    from pymdownx import slugs
+
+    text = globals().get('content', '')
+    extensions = [
+        'markdown.extensions.toc',
+        'markdown.extensions.admonition',
+        'markdown.extensions.smarty',
+        'pymdownx.betterem',
+        'markdown.extensions.attr_list',
+        'markdown.extensions.def_list',
+        'markdown.extensions.tables',
+        'markdown.extensions.abbr',
+        'markdown.extensions.footnotes',
+        'markdown.extensions.md_in_html',
+        'pymdownx.superfences',
+        'pymdownx.highlight',
+        'pymdownx.inlinehilite',
+        'pymdownx.magiclink',
+        'pymdownx.tilde',
+        'pymdownx.caret',
+        'pymdownx.smartsymbols',
+        'pymdownx.emoji',
+        'pymdownx.escapeall',
+        'pymdownx.tasklist',
+        'pymdownx.striphtml',
+        'pymdownx.snippets',
+        'pymdownx.keys',
+        'pymdownx.details',
+        'pymdownx.saneheaders',
+        'pymdownx.tabbed'
+    ]
+    extension_configs = {
+        'markdown.extensions.toc': {
+            'slugify': slugs.uslugify,
+            'permalink': ""
+        },
+        'markdown.extensions.smarty': {
+            "smart_quotes": False,
+        },
+        'pymdownx.superfences': {
+            'preserve_tabs': True,
+            'custom_fences': [
+                {
+                    "name": 'playground',
+                    "class": 'playground',
+                    "format": color_command_formatter,
+                    "validator": color_command_validator
+                }
+            ]
+        },
+        'pymdownx.inlinehilite': {
+            'custom_inline': [
+                {
+                    'name': 'color',
+                    'class': 'color',
+                    'format': color_formatter
+                }
+            ]
+        },
+        'pymdownx.magiclink': {
+            'repo_url_shortener': True,
+            'repo_url_shorthand': True,
+            'social_url_shorthand': True,
+            'user': 'facelessuser',
+            'repo': 'coloraide'
+        },
+        'pymdownx.keys': {
+            'separator': "\\uff0b"
+        }
+    }
+
+    try:
+        html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
+    except Exception:
+        html = ''
+    content = document.getElementById("__notebook-render")
+    content.innerHTML = html
+
+
+# Load up necessary wheels and then execute the appropriate payload
+cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
+mwheel = 'Markdown-3.3.4-py3-none-any.whl'
+pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
+
+wheels = [
+    location.origin + '/coloraide/playground/' + cwheel
+]
+
+action = globals().get('action')
+if action == 'render':
+    callback = render_notebook
+    wheels.extend(
+        [
+            location.origin + '/coloraide/playground/' + mwheel,
+            location.origin + '/coloraide/playground/' + pwheel
+        ]
+    )
+else:
+    callback = render_console
+
+# We run this from inside an async JavaScript function
+# so it is okay to call await outside a coroutine as
+# we are technically still inside one.
+await micropip.install(wheels)
+callback()

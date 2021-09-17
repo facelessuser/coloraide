@@ -90,14 +90,17 @@ XYZ
 YCbCr
 accessor
 accessors
+async
 az
 boolean
 bz
 cd
 chroma
+coroutine
 cp
 cz
 fixup
+formatter
 grayscale
 hz
 illuminant
