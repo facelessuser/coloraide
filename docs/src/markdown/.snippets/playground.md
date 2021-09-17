@@ -35,7 +35,7 @@ ${content}
 `;
   }
 
-  async function textResize(inpt) {
+  function textResize(inpt) {
     // Resize inputs based on text height.
 
     inpt.style.height = "5px";
@@ -107,7 +107,7 @@ ${content}
     }
   }
 
-  async function showBusy(label) {
+  function showBusy(label) {
     if (!label) {
       label = 'Loading Pyodide...';
     }
@@ -116,7 +116,7 @@ ${content}
     document.querySelector('article').appendChild(template.content.firstChild);
   }
 
-  async function hideBusy() {
+  function hideBusy() {
     const spinner = document.querySelector('article .loading');
     spinner.parentNode.removeChild(spinner);
   }
@@ -128,8 +128,9 @@ ${content}
 
     const notebook = document.getElementById(`__notebook-source`);
     const playgrounds = document.querySelectorAll('.playground');
-    playgrounds.forEach(async function(pg) {
+    playgrounds.forEach(function(pg) {
 
+      console.log('playground!');
       const current_id = pg.id.replace(reIdNum, '$1');
       const inputs = document.getElementById(`__playground-inputs_${current_id}`);
       const results = document.getElementById(`__playground-results_${current_id}`);
@@ -153,36 +154,34 @@ ${content}
         });
 
         const edit_page = document.getElementById('__notebook-edit');
-        edit_page.addEventListener("click", async function(e) {
+        edit_page.addEventListener("click", (e) => {
           document.getElementById('__notebook-render').classList.toggle('hidden');
           document.getElementById('__notebook-source').classList.toggle('hidden');
           textResize(document.getElementById('__notebook-input'));
         });
 
-        document.getElementById('__notebook-md-gist').addEventListener("click", function(e) {
+        document.getElementById('__notebook-md-gist').addEventListener("click", async function(e) {
           let uri = prompt("Please enter Markdown page source:", gist);
           if (uri != null) {
             uri = encodeuri(uri);
             const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('notebook=' + uri).toString();
             history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
+            main(false);
           }
         });
 
-        document.getElementById('__notebook-py-gist').addEventListener("click", function(e) {
+        document.getElementById('__notebook-py-gist').addEventListener("click", async function(e) {
           let uri = prompt("Please enter Python code source:", gist);
           if (uri != null) {
             uri = encodeuri(uri);
             const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('source=' + uri).toString();
             history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-            return true;
+            main(false);
           }
-          return false;
         });
 
         document.getElementById('__notebook-input').value = raw;
-        document.getElementById('__notebook-cancel').addEventListener("click", async function(e) {
+        document.getElementById('__notebook-cancel').addEventListener("click", (e) => {
           document.getElementById('__notebook-render').classList.toggle('hidden');
           document.getElementById('__notebook-source').classList.toggle('hidden');
         });
@@ -192,12 +191,12 @@ ${content}
           raw = document.getElementById('__notebook-input').value;
           render.classList.toggle('hidden');
           document.getElementById('__notebook-source').classList.toggle('hidden');
-          await showBusy("Loading Notebook...");
+          showBusy("Loading Notebook...");
           render.innerHTML = '';
           await load_pyodide();
           await pyrender(raw);
-          await init();
-          await hideBusy();
+          await init()
+          hideBusy();
         });
       }
 
@@ -215,10 +214,9 @@ ${content}
         }
 
         // Load Pyodide and related packages.
-        await showBusy();
+        showBusy();
         await load_pyodide(true);
-        await hideBusy();
-
+        hideBusy();
         busy = true;
         lastText = inputs.value;
         pgcode.classList.toggle('hidden');
@@ -232,7 +230,7 @@ ${content}
         busy = false;
       });
 
-      button_share.addEventListener("click", (e) => {
+      button_share.addEventListener("click", async function(e) {
         // Handle the share click: copy URL with code as parameter.
 
         if (busy) {
@@ -249,14 +247,16 @@ ${content}
         const path = loc.protocol + '//' + loc.host + pathname + '?code=' + uri;
         if (uri.length > 1000) {
           alert('Code must be under a 1000 characters to generate a URL!');
+          busy = false;
         } else {
-          navigator.clipboard.writeText(path).then(function() {
+          navigator.clipboard.writeText(path).then(async function() {
             alert('Link copied to clipboard :)');
-          }, function() {
+            busy = false;
+          }, async function() {
             alert('Failed to copy link clipboard!');
+            busy = false;
           });
         }
-        busy = false;
       });
 
       button_run.addEventListener("click", async function(e) {
@@ -268,7 +268,7 @@ ${content}
 
         busy = true;
         results.querySelector('code').innerHTML = '';
-        pyexecute(current_id);
+        await pyexecute(current_id);
         pgcode.classList.toggle('hidden');
         results.classList.toggle('hidden');
         button_edit.classList.toggle('hidden');
@@ -309,7 +309,7 @@ ${content}
       const uri = params.has('source') ? params.get('source') : params.get('notebook');
       if (uri != null && uri.trim()) {
         // A source was specified, so load it.
-        await showBusy(msg);
+        showBusy(msg);
         await load_pyodide();
         try {
           const uri = params.has('source') ? params.get('source') : params.get('notebook');
@@ -328,34 +328,24 @@ ${content}
 
             requests = 1;
             if (gistType === 'source') {
-              await pyrender(getContent(value));
-            } else {
-              await pyrender(value);
+              value = getContent(value);
             }
-            await hideBusy();
+            await pyrender(value);
             await init(first);
+            hideBusy();
           };
           xhr.send();
         } catch (err) {}
-      } else if (params.has('code')) {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(params.get('code')));
-        await hideBusy();
-        await init(first);
       } else {
+        const content = getContent(params.has('code') ? params.get('code') : defContent);
         gist = '';
         gistType = '';
-        await showBusy(msg);
+        showBusy(msg);
         await load_pyodide();
-        await pyrender(getContent(defContent));
-        await hideBusy();
+        await pyrender(content);
         await init(first);
+        hideBusy();
       }
-    } else {
-      await init(first);
     }
   }
 
