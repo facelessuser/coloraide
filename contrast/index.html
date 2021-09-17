@@ -1409,7 +1409,7 @@ ${content}
         }
       }
       initialized = true;
-      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/" });
+      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/", fullStdLib: false});
       await pyodide.loadPackage(['micropip', 'Pygments']);
       if (buttons) {
         buttons.forEach((b) => {
