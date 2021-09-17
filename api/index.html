@@ -3174,13 +3174,12 @@ ${content}
           raw = document.getElementById('__notebook-input').value;
           render.classList.toggle('hidden');
           document.getElementById('__notebook-source').classList.toggle('hidden');
-          const article = document.querySelector('article');
-          await showBusy(article);
+          await showBusy("Loading Notebook...");
           render.innerHTML = '';
           await load_pyodide();
           await pyrender(raw);
           await init();
-          await hideBusy(article);
+          await hideBusy();
         });
       }
 
