@@ -109,12 +109,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools tox build
         npm install
-        chmod +x tools/buildwheel.sh
     - name: Install Aspell
       run: |
         sudo apt-get install aspell aspell-en
     - name: Build documents
       run: |
-        ./tools/buildwheel.sh
+        python tools/buildwheel.py
         npm run build
         python -m tox
