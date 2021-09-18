@@ -22,6 +22,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.top
+    - navigation.instant
 
 nav:
   - ColorAide:
@@ -116,7 +117,7 @@ extra_css:
   - assets/coloraide-extras/extra-ccd229caf0.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-b0a77810.js
+  - assets/coloraide-extras/extra-notebook-41b44ecf.js
 
 extra:
   social:

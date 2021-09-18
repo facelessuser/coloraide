@@ -319,8 +319,8 @@ ${content}
     }
   }
 
-  // Run main
-  document.addEventListener("DOMContentLoaded", () => {
+  // Run main (Subscribe to Materials reloads)
+  window.document$.subscribe(() => {
     main(true)
   })
 })()
