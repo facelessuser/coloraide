@@ -47,7 +47,7 @@
     
     
     
-      <link rel="stylesheet" href="../playground.css">
+      <link rel="stylesheet" href="../assets/coloraide-extras/extra-7ddc78df16.css">
     
       <link rel="stylesheet" href="../assets/pymdownx-extras/extra-aa7dff8003.css">
     
@@ -786,7 +786,6 @@ mapping.</p>
 allows for comparing the current color's specified values against the color space's gamut.</p>
 <p>Let's assume we have a color <span><span class="swatch out-of-gamut" title="rgb(30% 105% 0%)"><span class="swatch-color" style="--swatch-stops: #6aff3b,#6aff3b;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">30</span><span class="k">%</span><span class="w"> </span><span class="m">105</span><span class="k">%</span><span class="w"> </span><span class="m">0</span><span class="k">%</span><span class="g">)</span><span class="w"></span></code></span>. The color is out of gamut due to the green channel exceeding
 the channel's limit of <code class="highlight"><span class="mi">100</span><span class="o">%</span></code>. When we execute <code>in_gamut</code>, we can see that the color is not in its own gamut.</p>
-<p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
@@ -794,8 +793,6 @@ the channel's limit of <code class="highlight"><span class="mi">100</span><span 
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">Color("rgb(30% 105% 0%)").in_gamut()</textarea>
 </form>
@@ -806,11 +803,9 @@ the channel's limit of <code class="highlight"><span class="mi">100</span><span 
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>On the other hand, some colors do not have a limit, only suggested limits for usability. CIELAB does not really have
 bounds as it is formulated in such a way that it can represent any color, even if they are not visible. When we check a
 CIELAB color, we will find that it is always in gamut.</p>
-<p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab(200% -20 40 / 1)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
@@ -818,8 +813,6 @@ CIELAB color, we will find that it is always in gamut.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab(200% -20 40 / 1)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">Color("lab(200% -20 40 / 1)").in_gamut()</textarea>
 </form>
@@ -830,13 +823,11 @@ CIELAB color, we will find that it is always in gamut.</p>
 <button id="__playground-run_1" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>While checking CIELAB's own gamut isn't very useful, we can test it against a different color space's gamut. By simply
 passing in the name of a different color space, the current color will be converted to the provided space and then
 will run <code>in_gamut</code> on the new color. You could do this manually, but using <code>in_gamut</code> in this manner can be very
 convenient. In the example below, we can see that the CIELAB color of <span><span class="swatch out-of-gamut" title="lab(200% -20 40 / 1)"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="nf">lab</span><span class="g">(</span><span class="m">200</span><span class="k">%</span><span class="w"> </span><span class="g">-</span><span class="m">20</span><span class="w"> </span><span class="m">40</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="m">1</span><span class="g">)</span><span class="w"></span></code></span> is outside the
 narrow gamut of sRGB.</p>
-<p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab(200% -20 40 / 1)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
@@ -844,8 +835,6 @@ narrow gamut of sRGB.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab(200% -20 40 / 1)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">Color("lab(200% -20 40 / 1)").in_gamut('srgb')</textarea>
 </form>
@@ -856,7 +845,6 @@ narrow gamut of sRGB.</p>
 <button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Generally, ColorAide does not round off values in order to guarantee the best possible values for round tripping, but
 due to <a href="https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations">limitations of floating-point arithmetic</a>, there can be edge cases where colors don't round trip
 perfectly. By default, <code>in_gamut</code> allows for a tolerance of <code class="highlight"><span class="mf">0.000075</span></code> to account for such cases where a color
@@ -865,7 +853,6 @@ is "close enough". If desired, this "tolerance" can be adjusted.</p>
 original color. We can see that when using a tolerance of zero, the color is considered out of gamut. Depending on what
 you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be desirable
 to have some tolerance, and other times not.</p>
-<p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
@@ -877,10 +864,6 @@ to have some tolerance, and other times not.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 1 1 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;lab&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color('color(srgb 1 1 1)').convert('lab').convert('srgb').coords()
 Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut()
@@ -893,12 +876,10 @@ Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut(tolerance=0)<
 <button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>On the topic of tolerance, there are some spaces that inherently are based off gamuts of other spaces. For instance, the
 cylindrical spaces HSL, HSV, and HWB are just different color models for the sRGB space, so their gamut is the same as
 sRGB. So it stands to reason that simply using the sRGB gamut check for them should be sufficient, and if we are using
 strict tolerance, this would make sense:</p>
-<p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;rgb(255 255 255)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -916,13 +897,6 @@ strict tolerance, this would make sense:</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_4">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;rgb(255 255 255)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsv 0 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;rgb(255.05 255 255)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 100.05%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsv 0 0</span><span class="si">% 100.05%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_4" spellcheck="false">Color('rgb(255 255 255)').in_gamut('srgb', tolerance=0)
 Color('hsl(0 0% 100%)').in_gamut('srgb', tolerance=0)
@@ -938,10 +912,8 @@ Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)</textarea>
 <button id="__playground-run_4" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>HWB is a little funny as values over 100% for whiteness and blackness are normalized, but the results are technically
 correct as the value will convert to an sRGB value perfectly in gamut.</p>
-<p>
 <div class="playground" id="__playground_5">
 <div class="playground-results" id="__playground-results_5">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -953,10 +925,6 @@ correct as the value will convert to an sRGB value perfectly in gamut.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_5">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100.05</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100.05</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_5" spellcheck="false">Color('hwb(0 100% 0%)').in_gamut('srgb', tolerance=0)
 Color('hwb(0 100.05% 0%)').in_gamut('srgb', tolerance=0)
@@ -969,12 +937,10 @@ Color('hwb(0 100.05% 0%)').convert('srgb').coords()</textarea>
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>But when using a tolerance check in a Cartesian model while in a cylindrical model, we can end up with some surprising
 results. In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL
 we can see wildly large saturation. There isn't anything technically wrong with this value as saturation and hue are
 essentially meaningless when lightness is <code class="highlight"><span class="mi">100</span><span class="o">%</span></code>, but this may be undesirable to a user.</p>
-<p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
@@ -985,10 +951,6 @@ essentially meaningless when lightness is <code class="highlight"><span class="m
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_6">
-<div class="highlight"><pre><span></span><code><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-<span class="n">hsl</span>
-<span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
 hsl
@@ -1001,7 +963,6 @@ hsl.in_gamut('srgb')</textarea>
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>For this reason, if passing in <code>hsl</code>, <code>hsv</code>, or <code>hwb</code> as gamut inputs, the tolerance is also compared not only against
 the Cartesian coordinates, but also the cylindrical coordinates. In this way, we are still checking that the colors are
 in the sRGB gamut, but the tolerance is now relative to the constraints of the cylindrical color model.</p>
@@ -1009,7 +970,6 @@ in the sRGB gamut, but the tolerance is now relative to the constraints of the c
 Display P3 color space, which has a different gamut, to one of these models.</p>
 <p>We can see below that now the gamut check will fail. If the color is an HSL color, we do not have to specify <code>hsl</code>, as
 it will be the default for that color space, but we specify it below just for illustration.</p>
-<p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
@@ -1020,10 +980,6 @@ it will be the default for that color space, but we specify it below just for il
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
-<div class="highlight"><pre><span></span><code><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-<span class="n">hsl</span>
-<span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
 hsl
@@ -1036,9 +992,7 @@ hsl.in_gamut('hsl')</textarea>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>We can also see that the tolerance is now relative to the color model:</p>
-<p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(140 100.000002</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span>
@@ -1049,10 +1003,6 @@ hsl.in_gamut('hsl')</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
-<div class="highlight"><pre><span></span><code><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(140 100.000002</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">hsl</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">hsl = Color('hsl(140 100.000002% 0%)')
 hsl.convert('srgb').coords()
@@ -1065,7 +1015,6 @@ hsl.in_gamut('hsl')</textarea>
 <button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>But don't worry, the tolerance constraint above isn't <em>solely</em> based on the HSL coordinates. If the color deviates past
 the threshold for sRGB <strong>or</strong> HSL, the gamut will yield <code class="highlight"><span class="kc">False</span></code>. It is simply an extra check added that ensures
 the tolerance is compared against both the Cartesian coordinates and the cylindrical coordinates to ensure that we are
@@ -1084,7 +1033,6 @@ is essentially the basic concept.</p>
 convert the color to sRGB, we find that the color is out of gamut. So, using the <code>fit</code> method, we can actually transform
 the color to one that fits in the sRGB space and gives a color that represents the intent of the larger color as best we
 can. As the color's lightness is so high, when fitting, we essentially end up with <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span>.</p>
-<p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
@@ -1097,11 +1045,6 @@ can. As the color's lightness is so high, when fitting, we essentially end up wi
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_9">
-<div class="highlight"><pre><span></span><code><span class="n">rgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="n">rgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
-<span class="n">rgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">rgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">rgb = Color("lch(100% 50 75)").convert('srgb')
 rgb.in_gamut()
@@ -1115,14 +1058,12 @@ rgb.fit()</textarea>
 <button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
 it simply truncates any color channels whose values are two big or too small. While gamut mapping via chroma compression
 can give better results, gamut clipping is much faster and is actually what browsers do. If your desire is to match how
 browsers handle out of gamut color or if you greatly value speed over correctness, clipping may be the way to go.</p>
 <p>In this example, we can change the fitting <code>method</code> parameter to <code>clip</code>. Notice the difference when compared to the
 previous fitting result. We now end up with a very yellow-ish color.</p>
-<p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
@@ -1132,9 +1073,6 @@ previous fitting result. We now end up with a very yellow-ish color.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("lch(100% 50 75)").fit("srgb", method="clip")
 Color("lch(100% 50 75)").fit("srgb")</textarea>
@@ -1146,11 +1084,9 @@ Color("lch(100% 50 75)").fit("srgb")</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>If we wanted to change the default "fitting" to <code>clip</code>, we can also just use a
 <a href="../color/#override-default-settings">class override</a>. Doing this will cause the class to default to <code>clip</code> any time a
 color needs to be mapped. Though, you can still use chroma compression by specifying <code>lch-chroma</code> for the <code>method</code>.</p>
-<p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
@@ -1163,12 +1099,6 @@ color needs to be mapped. Though, you can still use chroma compression by specif
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_11">
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
-    <span class="n">FIT</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
-
-<span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;lch-chroma&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">class Custom(Color):
     FIT = 'clip'
@@ -1183,10 +1113,8 @@ Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')</textarea>
 <button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>It is important to note that when using fit, there is no tolerance, so even if <code>in_gamut</code> allowed enough tolerance to
 consider a color within the gamut, calling <code>fit</code> will fit any color that is not exactly in gamut.</p>
-<p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">lab</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;lab(100% 0 0)&#39;</span><span class="p">)</span>
@@ -1200,12 +1128,6 @@ consider a color within the gamut, calling <code>fit</code> will fit any color t
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
-<div class="highlight"><pre><span></span><code><span class="n">lab</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;lab(100% 0 0)&#39;</span><span class="p">)</span>
-<span class="n">srgb</span> <span class="o">=</span> <span class="n">lab</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="n">srgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
-<span class="n">srgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">srgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">lab = Color('lab(100% 0 0)')
 srgb = lab.convert('srgb')
@@ -1220,9 +1142,7 @@ srgb.fit().coords()</textarea>
 <button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
-<p>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
@@ -1230,8 +1150,6 @@ srgb.fit().coords()</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("lch(100% 50 75)").fit('srgb')</textarea>
 </form>
@@ -1242,13 +1160,11 @@ srgb.fit().coords()</textarea>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>When fitting in another color space, results may vary depending on what color space you are in and what color space you
 are using to fit the color. We went into great depths when discussing <a href="#gamut-checking">gamut checking</a> about how
 transform functions from one color space to another are not always exact. We also gave quite a number of examples
 showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
 mainly mentioned as fitting in one color space and round tripping back may not give exact results:</p>
-<p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
@@ -1258,9 +1174,6 @@ mainly mentioned as fitting in one color space and round tripping back may not g
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("lch(100% 50 75)").convert('srgb').fit().coords()
 Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
@@ -1272,873 +1185,8 @@ Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
 <button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Depending on what you are doing, and what spaces you are working in, it may make sense to fully convert to a space and
 work directly in that space opposed to the indirect fitting of a color in a different color space.</p>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
-
-<script type="text/javascript">
-(() => {
-  let pyodide = null;
-  let busy = false;
-  let requests = 0;
-  let lastText = '';
-  let raw = '';
-  let gist = '';
-  let gistType = '';
-  const reIdNum = /.*?_(\d+)$/;
-  let initialized = false;
-  // This is the Python payload that will be executed when the user
-  // presses the `Run` button. It will execute the code, create a
-  // Python console output, find color references, steps, and interpolation
-  // references and render the appropriate preview.
-  const pycode = `
-"""
-Execute Python code in code blocks (color previews added specifically for ColorAide).
-
-This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
-code snippets using \`coloraide\`.
-
-Transform Python code by executing it, transforming to a Python console output,
-and finding and outputting color previews.
-"""
-import micropip
-from js import document, location
-import xml.etree.ElementTree as Etree
-from collections.abc import Sequence
-from collections import namedtuple
-import ast
-from io import StringIO
-import contextlib
-import sys
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-HtmlFormatter = find_formatter_class('html')
-
-AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
-
-RE_COLOR_START = re.compile(
-    r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
-)
-
-template = '''
-<div class="playground" id="__playground_{el_id}">
-<div class="playground-results" id="__playground-results_{el_id}">
-{results}
-</div>
-<div class="playground-code hidden" id="__playground-code_{el_id}">
-{hl_source}
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-'''
-
-code_id = 0
-
-
-class ColorInterpolate(list):
-    """Color interpolate."""
-
-
-class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
-    """Color tuple."""
-
-
-def _escape(txt):
-    """Basic HTML escaping."""
-
-    txt = txt.replace('&', '&amp;')
-    txt = txt.replace('<', '&lt;')
-    txt = txt.replace('>', '&gt;')
-    return txt
-
-
-@contextlib.contextmanager
-def std_output(stdout=None):
-    """Capture standard out."""
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
-
-
-def get_colors(result):
-    """Get color from results."""
-
-    from coloraide import Color
-    from coloraide.color.interpolate import Interpolator
-
-    colors = []
-    if isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(fit=False), result))
-    elif isinstance(result, Interpolator):
-        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
-    elif isinstance(result, str):
-        try:
-            colors.append(ColorTuple(result, Color(result)))
-        except Exception:
-            pass
-    elif isinstance(result, Sequence):
-        for x in result:
-            if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(fit=False), x))
-            elif isinstance(x, str):
-                try:
-                    colors.append(ColorTuple(x, Color(x)))
-                except Exception:
-                    pass
-    return colors
-
-
-def find_colors(text):
-    """Find colors in text buffer."""
-
-    import coloraide
-
-    colors = []
-    for m in RE_COLOR_START.finditer(text):
-        start = m.start()
-        mcolor = coloraide.Color.match(text, start=start)
-        if mcolor is not None:
-            colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
-    return colors
-
-
-def execute(cmd):
-    """Execute color commands."""
-
-    import coloraide
-
-    g = {'Color': coloraide.Color, 'coloraide': coloraide, 'NaN': coloraide.NaN, 'Piecewise': coloraide.Piecewise}
-    console = ''
-    colors = []
-
-    # Build AST tree
-    src = cmd.strip()
-    lines = src.split('\\n')
-    tree = ast.parse(src)
-
-    for node in tree.body:
-        result = None
-
-        # Format source as Python console statements
-        start = node.lineno
-        end = node.end_lineno
-        stmt = lines[start - 1: end]
-        command = ''
-        for i, line in enumerate(stmt, 0):
-            if i == 0:
-                stmt[i] = '>>> ' + line
-            else:
-                stmt[i] = '... ' + line
-        command += '\\n'.join(stmt)
-        if isinstance(node, AST_BLOCKS):
-            command += '\\n... '
-
-        try:
-            # Capture anything sent to standard out
-            text = ''
-            with std_output() as s:
-                # Execute code
-                if isinstance(node, ast.Expr):
-                    _eval = ast.Expression(node.value)
-                    result = eval(compile(_eval, '<string>', 'eval'), g)
-                else:
-                    _exec = ast.Module([node], [])
-                    exec(compile(_exec, '<string>', 'exec'), g)
-
-                # Execution went well, so append command
-                console += command
-
-                # Output captured standard out after statements
-                text = s.getvalue()
-                if text:
-                    clist = find_colors(text)
-                    if clist:
-                        colors.append(clist)
-                    console += '\\n{}'.format(text)
-                s.flush()
-        except Exception:
-            import traceback
-            console += '{}\\n{}'.format(command, traceback.format_exc())
-            # Failed for some reason, so quit
-            break
-
-        # If we got a result, output it as well
-        if result is not None:
-            clist = get_colors(result)
-            if clist:
-                colors.append(clist)
-            console += '{}{}\\n'.format('\\n' if not text else '', str(result))
-        else:
-            console += '\\n' if not text else ''
-
-    return console, colors
-
-
-def colorize(src, lang, **options):
-    """Colorize."""
-
-    lexer = get_lexer_by_name(lang, **options)
-    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-    return highlight(src, lexer, formatter).strip()
-
-
-def color_command_validator(language, inputs, options, attrs, md):
-    """Color validator."""
-
-    valid_inputs = set()
-
-    for k, v in inputs.items():
-        if k in valid_inputs:
-            options[k] = True
-            continue
-        attrs[k] = v
-    return True
-
-
-def _color_command_console(colors):
-    """Color command formatter."""
-
-    el = ''
-    bar = False
-    values = []
-    for item in colors:
-        if isinstance(item, ColorInterpolate):
-            if bar:
-                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                values = []
-            sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
-            style = "--swatch-stops: "
-            stops = []
-            for color in item:
-                color.fit("srgb", in_place=True)
-                stops.append(color.convert("srgb").to_string())
-            if not stops:
-                stops.extend(['transparent'] * 2)
-            if len(stops) == 1:
-                stops.append(stops[0])
-            style += ','.join(stops)
-            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
-            el += sub_el1.format(sub_el2)
-            bar = False
-        else:
-            bar = True
-            base_classes = "swatch"
-            for color in item:
-                if not color.color.in_gamut('srgb'):
-                    base_classes += " out-of-gamut"
-                color.color.fit('srgb', in_place=True)
-                srgb = color.color.convert('srgb')
-                value1 = srgb.to_string(alpha=False)
-                value2 = srgb.to_string()
-                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                title = color.string
-                classes = base_classes
-                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                    classes=classes,
-                    color=c,
-                    title=title
-                )
-                values.append(c)
-    if bar:
-        el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-        values = []
-
-    return el
-
-
-def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
-    """Formatter wrapper."""
-
-    global code_id
-
-    try:
-        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
-            code_id = 0
-
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=console,
-            class_name="highlight",
-            language='pycon',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = '<div class="color-command">{}</div>'.format(el)
-        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
-        code_id += 1
-    except Exception:
-        from pymdownx import superfences
-        import traceback
-        print(traceback.format_exc())
-        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
-    return el
-
-
-def live_color_command_formatter(src):
-    """Formatter wrapper."""
-
-    try:
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        if not colors:
-            el += '<div class="swatch-bar"></div>'
-
-        el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
-        el = '<div class="color-command">{}</div>'.format(el)
-    except Exception:
-        return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
-    return el
-
-
-def color_formatter(src="", language="", class_name=None, md=""):
-    """Formatter wrapper."""
-
-    from coloraide import Color
-
-    try:
-        result = src.strip()
-        try:
-            console, colors = execute(result)
-            if len(colors) != 1 or len(colors[0]) != 1:
-                raise ValueError('Need one color only')
-            color = colors[0][0].color
-            result = colors[0][0].string
-        except Exception:
-            color = Color(result.strip())
-        el = Etree.Element('span')
-        stops = []
-        if not color.in_gamut("srgb"):
-            color.fit("srgb", in_place=True)
-            attributes = {'class': "swatch out-of-gamut", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-        else:
-            attributes = {'class': "swatch", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-
-        if not stops:
-            stops.extend(['transparent'] * 2)
-        if len(stops) == 1:
-            stops.append(stops[0])
-
-        Etree.SubElement(
-            sub_el,
-            'span',
-            {
-                "class": "swatch-color",
-                "style": "--swatch-stops: {};".format(','.join(stops))
-            }
-        )
-
-        el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        el = md.inlinePatterns['backtick'].handle_code('text', src)
-    return el
-
-
-def render_console(*args):
-    """Render console update."""
-
-    try:
-        # Run code
-        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
-        results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        results.innerHTML = live_color_command_formatter(inputs.value)
-        scrollingElement = results.querySelector('code')
-        scrollingElement.scrollTop = scrollingElement.scrollHeight
-    except Exception as e:
-        print(e)
-
-
-def render_notebook(*args):
-
-    import markdown
-    from pymdownx import slugs
-
-    text = globals().get('content', '')
-    extensions = [
-        'markdown.extensions.toc',
-        'markdown.extensions.admonition',
-        'markdown.extensions.smarty',
-        'pymdownx.betterem',
-        'markdown.extensions.attr_list',
-        'markdown.extensions.def_list',
-        'markdown.extensions.tables',
-        'markdown.extensions.abbr',
-        'markdown.extensions.footnotes',
-        'markdown.extensions.md_in_html',
-        'pymdownx.superfences',
-        'pymdownx.highlight',
-        'pymdownx.inlinehilite',
-        'pymdownx.magiclink',
-        'pymdownx.tilde',
-        'pymdownx.caret',
-        'pymdownx.smartsymbols',
-        'pymdownx.emoji',
-        'pymdownx.escapeall',
-        'pymdownx.tasklist',
-        'pymdownx.striphtml',
-        'pymdownx.snippets',
-        'pymdownx.keys',
-        'pymdownx.details',
-        'pymdownx.saneheaders',
-        'pymdownx.tabbed'
-    ]
-    extension_configs = {
-        'markdown.extensions.toc': {
-            'slugify': slugs.uslugify,
-            'permalink': ""
-        },
-        'markdown.extensions.smarty': {
-            "smart_quotes": False,
-        },
-        'pymdownx.superfences': {
-            'preserve_tabs': True,
-            'custom_fences': [
-                {
-                    "name": 'playground',
-                    "class": 'playground',
-                    "format": color_command_formatter,
-                    "validator": color_command_validator
-                }
-            ]
-        },
-        'pymdownx.inlinehilite': {
-            'custom_inline': [
-                {
-                    'name': 'color',
-                    'class': 'color',
-                    'format': color_formatter
-                }
-            ]
-        },
-        'pymdownx.magiclink': {
-            'repo_url_shortener': True,
-            'repo_url_shorthand': True,
-            'social_url_shorthand': True,
-            'user': 'facelessuser',
-            'repo': 'coloraide'
-        },
-        'pymdownx.keys': {
-            'separator': "\\uff0b"
-        }
-    }
-
-    try:
-        html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
-    except Exception:
-        html = ''
-    content = document.getElementById("__notebook-render")
-    content.innerHTML = html
-
-
-# Load up necessary wheels and then execute the appropriate payload
-cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
-mwheel = 'Markdown-3.3.4-py3-none-any.whl'
-pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
-
-wheels = [
-    location.origin + '/coloraide/playground/' + cwheel
-]
-
-action = globals().get('action')
-if action == 'render':
-    callback = render_notebook
-    wheels.extend(
-        [
-            location.origin + '/coloraide/playground/' + mwheel,
-            location.origin + '/coloraide/playground/' + pwheel
-        ]
-    )
-else:
-    callback = render_console
-
-# We run this from inside an async JavaScript function
-# so it is okay to call await outside a coroutine as
-# we are technically still inside one.
-await micropip.install(wheels)
-callback()
-`
-  const defContent = `import coloraide
-coloraide.__version__
-Color('red')`;
-
-
-  function getContent(content) {
-      return `
-!!! new "This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
-Learn more [here](?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md). \
-Preview, convert, interpolate, and explore!"
-
-\`\`\`\`\`\`\`\`playground
-${content}
-\`\`\`\`\`\`\`\`
-`;
-  }
-
-  async function textResize(inpt) {
-    // Resize inputs based on text height.
-
-    inpt.style.height = "5px";
-    inpt.style.height = (inpt.scrollHeight) + "px";
-  };
-
-  function encodeuri(uri) {
-    // Encode the URI component.
-
-    return encodeURIComponent(uri).replace(/[.!'()*]/g, (c) => {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  };
-
-  async function pyexecute(current_id) {
-    // Execute Python code
-
-    const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
-    current_inputs.setAttribute('readonly', '');
-    pyodide.globals.set('id_num', current_id);
-    pyodide.globals.set('action', 'notebook');
-    await pyodide.runPythonAsync(pycode);
-    current_inputs.removeAttribute('readonly');
-  }
-
-  async function pyrender(text) {
-    // Execute Python code
-
-    pyodide.globals.set('content', text);
-    pyodide.globals.set('action', 'render');
-    await pyodide.runPythonAsync(pycode);
-    src = document.getElementById('__notebook-input');
-    if (src) {
-      raw = text;
-      src.value = text;
-    }
-    if (window.location.hash) {
-      window.location.href = window.location.href;
-    }
-  }
-
-  async function load_pyodide(button_notify) {
-    // Load `Pyodide` and the any default packages we can need and can load.
-
-    const buttons = document.querySelectorAll('.playground button');
-
-    if (!initialized) {
-      if (button_notify) {
-        if (buttons) {
-          buttons.forEach((b) => {
-            b.setAttribute('disabled', '');
-            if (b.classList.contains('playground-edit')) {
-              b.innerHTML = 'Loading...';
-            }
-          });
-        }
-      }
-      initialized = true;
-      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/", fullStdLib: false});
-      await pyodide.loadPackage(['micropip', 'Pygments']);
-      if (buttons) {
-        buttons.forEach((b) => {
-          b.removeAttribute('disabled');
-          if (b.classList.contains('playground-edit')) {
-            b.innerHTML = 'Edit';
-          }
-        });
-      }
-    }
-  }
-
-  async function showBusy(label) {
-    if (!label) {
-      label = 'Loading Pyodide...';
-    }
-    var template = document.createElement('template');
-    template.innerHTML = `<div class="loading"><div class="loader"></div><div>${label}</div></div>`;
-    document.querySelector('article').appendChild(template.content.firstChild);
-  }
-
-  async function hideBusy() {
-    const spinner = document.querySelector('article .loading');
-    spinner.parentNode.removeChild(spinner);
-  }
-
-  async function init(first) {
-    // Setup input highlighting and events to run Python code blocks.
-
-    requests = 0;
-
-    const notebook = document.getElementById(`__notebook-source`);
-    const playgrounds = document.querySelectorAll('.playground');
-    playgrounds.forEach(async function(pg) {
-
-      const current_id = pg.id.replace(reIdNum, '$1');
-      const inputs = document.getElementById(`__playground-inputs_${current_id}`);
-      const results = document.getElementById(`__playground-results_${current_id}`);
-      const pgcode = document.getElementById(`__playground-code_${current_id}`);
-      const button_edit = document.querySelector(`button#__playground-edit_${current_id}`);
-      const button_share = document.querySelector(`button#__playground-share_${current_id}`);
-      const button_run = document.querySelector(`button#__playground-run_${current_id}`);
-      const button_cancel = document.querySelector(`button#__playground-cancel_${current_id}`);
-
-      inputs.addEventListener("input", (e) => {
-        // Adjust textarea height on text input.
-
-        textResize(inputs);
-      });
-
-      if (notebook && first) {
-        document.getElementById('__notebook-input').addEventListener("input", (e) => {
-          // Adjust textarea height on text input.
-
-          textResize(e.target);
-        });
-
-        const edit_page = document.getElementById('__notebook-edit');
-        edit_page.addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          textResize(document.getElementById('__notebook-input'));
-        });
-
-        document.getElementById('__notebook-md-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Markdown page source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('notebook=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-          }
-        });
-
-        document.getElementById('__notebook-py-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Python code source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('source=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-            return true;
-          }
-          return false;
-        });
-
-        document.getElementById('__notebook-input').value = raw;
-        document.getElementById('__notebook-cancel').addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-        });
-
-        document.getElementById('__notebook-submit').addEventListener("click", async function(e) {
-          const render = document.getElementById('__notebook-render');
-          raw = document.getElementById('__notebook-input').value;
-          render.classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          await showBusy("Loading Notebook...");
-          render.innerHTML = '';
-          await load_pyodide();
-          await pyrender(raw);
-          await init();
-          await hideBusy();
-        });
-      }
-
-      inputs.addEventListener('touchmove', (e) => {
-        // Stop propagation on "touchmove".
-
-        e.stopPropagation();
-      });
-
-      button_edit.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        // Load Pyodide and related packages.
-        await showBusy();
-        await load_pyodide(true);
-        await hideBusy();
-
-        busy = true;
-        lastText = inputs.value;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        textResize(inputs);
-        inputs.focus();
-        busy = false;
-      });
-
-      button_share.addEventListener("click", (e) => {
-        // Handle the share click: copy URL with code as parameter.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        const uri = encodeuri(inputs.value);
-        const loc = window.location;
-        let pathname = '/playground/';
-        if (loc.pathname.startsWith('/coloraide/')) {
-          pathname = '/coloraide/playground/'
-        }
-        const path = loc.protocol + '//' + loc.host + pathname + '?code=' + uri;
-        if (uri.length > 1000) {
-          alert('Code must be under a 1000 characters to generate a URL!');
-        } else {
-          navigator.clipboard.writeText(path).then(function() {
-            alert('Link copied to clipboard :)');
-          }, function() {
-            alert('Failed to copy link clipboard!');
-          });
-        }
-        busy = false;
-      });
-
-      button_run.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        results.querySelector('code').innerHTML = '';
-        pyexecute(current_id);
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-
-      button_cancel.addEventListener("click", (e) => {
-        // Cancel edit.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        inputs.value = lastText;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-    });
-  }
-
-  async function main(first) {
-    // Load external source to render in a playground.
-    // This can be something like a file on a gist we must read in (?source=)
-    // or raw code (?code=).
-
-    if (window.location.pathname.endsWith("/playground/")) {
-      let params = new URLSearchParams(window.location.search);
-      const msg = initialized ? 'Loading Notebook...' : 'Loading Pyodide...';
-      const uri = params.has('source') ? params.get('source') : params.get('notebook');
-      if (uri != null && uri.trim()) {
-        // A source was specified, so load it.
-        await showBusy(msg);
-        await load_pyodide();
-        try {
-          const uri = params.has('source') ? params.get('source') : params.get('notebook');
-          const gistType = params.has('source') ? 'source' : 'notebook';
-          let value = '';
-          let xhr = new XMLHttpRequest();
-          gist = uri;
-          xhr.open("GET", uri, true);
-          xhr.onload = async function (e) {
-            // Try and load the requested content
-            if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                value = xhr.responseText;
-              }
-            }
-
-            requests = 1;
-            if (gistType === 'source') {
-              await pyrender(getContent(value));
-            } else {
-              await pyrender(value);
-            }
-            await hideBusy();
-            await init(first);
-          };
-          xhr.send();
-        } catch (err) {}
-      } else if (params.has('code')) {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(params.get('code')));
-        await hideBusy();
-        await init(first);
-      } else {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(defContent));
-        await hideBusy();
-        await init(first);
-      }
-    } else {
-      await init(first);
-    }
-  }
-
-  // Run main
-  document.addEventListener("DOMContentLoaded", async function() {main(true);});
-})()
-</script>
                 
                   
                     
@@ -2283,6 +1331,10 @@ ${content}
     
     
       <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+      
+        <script src="../assets/coloraide-extras/extra-notebook-b0a77810.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

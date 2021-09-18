@@ -47,7 +47,7 @@
     
     
     
-      <link rel="stylesheet" href="../playground.css">
+      <link rel="stylesheet" href="../assets/coloraide-extras/extra-7ddc78df16.css">
     
       <link rel="stylesheet" href="../assets/pymdownx-extras/extra-aa7dff8003.css">
     
@@ -777,7 +777,6 @@
 <h2 id="convert-to-strings">Convert to Strings<a class="headerlink" href="#convert-to-strings" title="Permanent link"></a></h2>
 <p>Colors can be translated to strings by using the <code>to_string</code> method. The color class will convert the current color into
 one of the many of CSS formats supported for the given color space.</p>
-<p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(127.5 0 255 / 0.3)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 0 255) 50%, rgb(127.5 0 255 / 0.3) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
@@ -785,8 +784,6 @@ one of the many of CSS formats supported for the given color space.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">Color("srgb", [0.5, 0, 1], 0.3).to_string()</textarea>
 </form>
@@ -797,7 +794,6 @@ one of the many of CSS formats supported for the given color space.</p>
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>All color spaces support the following parameters:</p>
 <ul>
 <li><code>alpha</code>: set to <code class="highlight"><span class="kc">None</span></code> by default, alpha will only be shown if less than 100%, but if set to <code class="highlight"><span class="kc">True</span></code>, alpha
@@ -806,7 +802,6 @@ one of the many of CSS formats supported for the given color space.</p>
 <p><code>precision</code>: precision controls the precision of the output values. The name is a little misleading as it will
   actually adjust the precision and scale of the values. The default is 5. In some cases, like sRGB hex output,
   precision may not really come into play as hex values are rounded to the nearest whole number anyways.</p>
-<p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(30.346% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(77.382 191.25 255) 50%, rgb(77.382 191.25 255) 50%"></span></span> <span class="swatch" title="rgb(30.35% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(77.393 191.25 255) 50%, rgb(77.393 191.25 255) 50%"></span></span> <span class="swatch" title="rgb(30.3% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(77.265 191.25 255) 50%, rgb(77.265 191.25 255) 50%"></span></span> <span class="swatch" title="rgb(30% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 191.25 255) 50%, rgb(76.5 191.25 255) 50%"></span></span> <span class="swatch" title="rgb(30% 80% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 204 255) 50%, rgb(76.5 204 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -822,12 +817,6 @@ one of the many of CSS formats supported for the given color space.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">Color("rgb(30.3456% 75% 100%)").to_string(precision=5, percent=True)
 Color("rgb(30.3456% 75% 100%)").to_string(precision=4, percent=True)
@@ -842,9 +831,7 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)</textarea>
 <button id="__playground-run_1" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Providing a precision of <code>0</code> will simply enable simple rounding to the nearest whole number.</p>
-<p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(30% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 191.25 255) 50%, rgb(76.5 191.25 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -852,8 +839,6 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)</textarea>
 </form>
@@ -864,10 +849,8 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)</textarea>
 <button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Providing a precision of <code>-1</code> is a special input that will give the highest precision that can be given. Not
 particularly helpful except to look at the raw decimal number.</p>
-<p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(30.345600000000001017497197608463466167449951171875% 75% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(77.381 191.25 255) 50%, rgb(77.381 191.25 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -875,8 +858,6 @@ particularly helpful except to look at the raw decimal number.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, percent=True)</textarea>
 </form>
@@ -887,11 +868,9 @@ particularly helpful except to look at the raw decimal number.</p>
 <button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>One note though, format of the value matters. Here we output in the range of 0 - 255. We can see that a precision of
 <code>1</code>, in this case, can throw the color out of gamut. So remember to use a sufficient precision for what you are
 doing and the values you are working in.</p>
-<p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
 <div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(80 200 300)"><span class="swatch-color" style="--swatch-stops: rgb(132.18 197.13 255) 50%, rgb(132.18 197.13 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -899,8 +878,6 @@ doing and the values you are working in.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_4">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_4" spellcheck="false">Color("rgb(30.3456% 75% 100%)").to_string(precision=1)</textarea>
 </form>
@@ -911,13 +888,11 @@ doing and the values you are working in.</p>
 <button id="__playground-run_4" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 <li>
 <p><code>fit</code>: set to <code class="highlight"><span class="kc">True</span></code> by default, <code>fit</code> controls whether colors are fit to their gamut or not. Some color spaces
   are technically unbounded, so no fitting may occur in those color spaces. Additionally, some color formats, like sRGB
   hex, are always fitted (regardless of the this setting) as they must fit into the gamut or they cannot be translated.</p>
-<p>
 <div class="playground" id="__playground_5">
 <div class="playground-results" id="__playground-results_5">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(106.26 255 58.974)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span> <span class="swatch out-of-gamut" title="rgb(76.5 267.75 0)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
@@ -927,9 +902,6 @@ doing and the values you are working in.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_5">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_5" spellcheck="false">Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit=False)</textarea>
@@ -941,9 +913,7 @@ Color("rgb(30% 105% 0%)").to_string(fit=False)</textarea>
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Additionally, we can choose a different fitting method by passing <code>fit</code> the name of the method we would like.</p>
-<p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(106.26 255 58.974)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span> <span class="swatch" title="rgb(76.5 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 255 0) 50%, rgb(76.5 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
@@ -953,9 +923,6 @@ Color("rgb(30% 105% 0%)").to_string(fit=False)</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_6">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit='clip')</textarea>
@@ -967,12 +934,10 @@ Color("rgb(30% 105% 0%)").to_string(fit='clip')</textarea>
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 <li>
 <p><code>color</code>: for some color spaces, this is the default output, but for others this format can be explicitly requested by
   setting <code>color</code> to <code class="highlight"><span class="kc">True</span></code>. If set to <code class="highlight"><span class="kc">True</span></code>, this will take priority over other format options.</p>
-<p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(srgb 0.4 0.2 0.6)"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -980,8 +945,6 @@ Color("rgb(30% 105% 0%)").to_string(fit='clip')</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">Color("rebeccapurple").to_string(color=True)</textarea>
 </form>
@@ -992,14 +955,12 @@ Color("rgb(30% 105% 0%)").to_string(fit='clip')</textarea>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 </ul>
 <p>In general, a color in a given color space may share the same options as listed above, but a given color space may also
 have options unique to itself.</p>
 <h2 id="srgb-specific">sRGB Specific<a class="headerlink" href="#srgb-specific" title="Permanent link"></a></h2>
 <p>sRGB can output colors to a hex format which is unique compared to HSL and others. Simply enable <code>hex</code>.</p>
-<p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="#663399"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1007,8 +968,6 @@ have options unique to itself.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">Color("rebeccapurple").to_string(hex=True)</textarea>
 </form>
@@ -1019,9 +978,7 @@ have options unique to itself.</p>
 <button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>You can force hex to output in uppercase.</p>
-<p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="#ff0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="#FF0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1031,9 +988,6 @@ have options unique to itself.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_9">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">Color("red").to_string(hex=True)
 Color("red").to_string(hex=True, upper=True)</textarea>
@@ -1045,10 +999,8 @@ Color("red").to_string(hex=True, upper=True)</textarea>
 <button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>When converting to the hex color format, a color can be compressed in certain cases. Enabling <code>compress</code> will compress a
 hex color if possible.</p>
-<p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="#11223388"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span> <span class="swatch" title="#1238"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1058,9 +1010,6 @@ hex color if possible.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("#11223388").to_string(hex=True)
 Color("#11223388").to_string(hex=True, compress=True)</textarea>
@@ -1072,10 +1021,8 @@ Color("#11223388").to_string(hex=True, compress=True)</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
 instead of using the range [0,255].</p>
-<p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(40% 20% 60%)"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1083,8 +1030,6 @@ instead of using the range [0,255].</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_11">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("rebeccapurple").to_string(percent=True)</textarea>
 </form>
@@ -1095,11 +1040,9 @@ instead of using the range [0,255].</p>
 <button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>sRGB can also output color names. If a color evaluates to a hex code which also evaluates to a color name in the
 internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
 fallback to whatever the other options dictate. Simply enable <code>names</code>.</p>
-<p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rebeccapurple"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#663399&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1107,8 +1050,6 @@ fallback to whatever the other options dictate. Simply enable <code>names</code>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#663399&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">Color("#663399").to_string(names=True)</textarea>
 </form>
@@ -1119,7 +1060,6 @@ fallback to whatever the other options dictate. Simply enable <code>names</code>
 <button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <h2 id="comma-format">Comma Format<a class="headerlink" href="#comma-format" title="Permanent link"></a></h2>
 <p>In CSS, there are a number of color spaces that allow a comma format: <code>srgb</code> and <code>hsl</code>. ColorAide allows these to be
 read in and to be output in their legacy comma format. Even though <code>lch</code>, <code>lab</code>, and <code>hwb</code> do not have a comma format,
@@ -1130,7 +1070,6 @@ it is strict about its format.</p>
 output in other subtle ways. As the comma format is the old legacy approach, when sRGB has commas enabled, it will use
 <code>rgba</code> instead of the <code>rgb</code>. If using the default space syntax, <code>rgb</code> is always used, even when the color has
 transparency.</p>
-<p>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgba(30, 75, 100, 0.2)"><span class="swatch-color" style="--swatch-stops: rgb(30 75 100) 50%, rgb(30 75 100 / 0.2) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30 75 100 / 20%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">comma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1138,8 +1077,6 @@ transparency.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30 75 100 / 20%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">comma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("rgb(30 75 100 / 20%)").to_string(comma=True)</textarea>
 </form>
@@ -1150,871 +1087,6 @@ transparency.</p>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
-
-<script type="text/javascript">
-(() => {
-  let pyodide = null;
-  let busy = false;
-  let requests = 0;
-  let lastText = '';
-  let raw = '';
-  let gist = '';
-  let gistType = '';
-  const reIdNum = /.*?_(\d+)$/;
-  let initialized = false;
-  // This is the Python payload that will be executed when the user
-  // presses the `Run` button. It will execute the code, create a
-  // Python console output, find color references, steps, and interpolation
-  // references and render the appropriate preview.
-  const pycode = `
-"""
-Execute Python code in code blocks (color previews added specifically for ColorAide).
-
-This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
-code snippets using \`coloraide\`.
-
-Transform Python code by executing it, transforming to a Python console output,
-and finding and outputting color previews.
-"""
-import micropip
-from js import document, location
-import xml.etree.ElementTree as Etree
-from collections.abc import Sequence
-from collections import namedtuple
-import ast
-from io import StringIO
-import contextlib
-import sys
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-HtmlFormatter = find_formatter_class('html')
-
-AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
-
-RE_COLOR_START = re.compile(
-    r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
-)
-
-template = '''
-<div class="playground" id="__playground_{el_id}">
-<div class="playground-results" id="__playground-results_{el_id}">
-{results}
-</div>
-<div class="playground-code hidden" id="__playground-code_{el_id}">
-{hl_source}
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-'''
-
-code_id = 0
-
-
-class ColorInterpolate(list):
-    """Color interpolate."""
-
-
-class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
-    """Color tuple."""
-
-
-def _escape(txt):
-    """Basic HTML escaping."""
-
-    txt = txt.replace('&', '&amp;')
-    txt = txt.replace('<', '&lt;')
-    txt = txt.replace('>', '&gt;')
-    return txt
-
-
-@contextlib.contextmanager
-def std_output(stdout=None):
-    """Capture standard out."""
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
-
-
-def get_colors(result):
-    """Get color from results."""
-
-    from coloraide import Color
-    from coloraide.color.interpolate import Interpolator
-
-    colors = []
-    if isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(fit=False), result))
-    elif isinstance(result, Interpolator):
-        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
-    elif isinstance(result, str):
-        try:
-            colors.append(ColorTuple(result, Color(result)))
-        except Exception:
-            pass
-    elif isinstance(result, Sequence):
-        for x in result:
-            if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(fit=False), x))
-            elif isinstance(x, str):
-                try:
-                    colors.append(ColorTuple(x, Color(x)))
-                except Exception:
-                    pass
-    return colors
-
-
-def find_colors(text):
-    """Find colors in text buffer."""
-
-    import coloraide
-
-    colors = []
-    for m in RE_COLOR_START.finditer(text):
-        start = m.start()
-        mcolor = coloraide.Color.match(text, start=start)
-        if mcolor is not None:
-            colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
-    return colors
-
-
-def execute(cmd):
-    """Execute color commands."""
-
-    import coloraide
-
-    g = {'Color': coloraide.Color, 'coloraide': coloraide, 'NaN': coloraide.NaN, 'Piecewise': coloraide.Piecewise}
-    console = ''
-    colors = []
-
-    # Build AST tree
-    src = cmd.strip()
-    lines = src.split('\\n')
-    tree = ast.parse(src)
-
-    for node in tree.body:
-        result = None
-
-        # Format source as Python console statements
-        start = node.lineno
-        end = node.end_lineno
-        stmt = lines[start - 1: end]
-        command = ''
-        for i, line in enumerate(stmt, 0):
-            if i == 0:
-                stmt[i] = '>>> ' + line
-            else:
-                stmt[i] = '... ' + line
-        command += '\\n'.join(stmt)
-        if isinstance(node, AST_BLOCKS):
-            command += '\\n... '
-
-        try:
-            # Capture anything sent to standard out
-            text = ''
-            with std_output() as s:
-                # Execute code
-                if isinstance(node, ast.Expr):
-                    _eval = ast.Expression(node.value)
-                    result = eval(compile(_eval, '<string>', 'eval'), g)
-                else:
-                    _exec = ast.Module([node], [])
-                    exec(compile(_exec, '<string>', 'exec'), g)
-
-                # Execution went well, so append command
-                console += command
-
-                # Output captured standard out after statements
-                text = s.getvalue()
-                if text:
-                    clist = find_colors(text)
-                    if clist:
-                        colors.append(clist)
-                    console += '\\n{}'.format(text)
-                s.flush()
-        except Exception:
-            import traceback
-            console += '{}\\n{}'.format(command, traceback.format_exc())
-            # Failed for some reason, so quit
-            break
-
-        # If we got a result, output it as well
-        if result is not None:
-            clist = get_colors(result)
-            if clist:
-                colors.append(clist)
-            console += '{}{}\\n'.format('\\n' if not text else '', str(result))
-        else:
-            console += '\\n' if not text else ''
-
-    return console, colors
-
-
-def colorize(src, lang, **options):
-    """Colorize."""
-
-    lexer = get_lexer_by_name(lang, **options)
-    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-    return highlight(src, lexer, formatter).strip()
-
-
-def color_command_validator(language, inputs, options, attrs, md):
-    """Color validator."""
-
-    valid_inputs = set()
-
-    for k, v in inputs.items():
-        if k in valid_inputs:
-            options[k] = True
-            continue
-        attrs[k] = v
-    return True
-
-
-def _color_command_console(colors):
-    """Color command formatter."""
-
-    el = ''
-    bar = False
-    values = []
-    for item in colors:
-        if isinstance(item, ColorInterpolate):
-            if bar:
-                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                values = []
-            sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
-            style = "--swatch-stops: "
-            stops = []
-            for color in item:
-                color.fit("srgb", in_place=True)
-                stops.append(color.convert("srgb").to_string())
-            if not stops:
-                stops.extend(['transparent'] * 2)
-            if len(stops) == 1:
-                stops.append(stops[0])
-            style += ','.join(stops)
-            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
-            el += sub_el1.format(sub_el2)
-            bar = False
-        else:
-            bar = True
-            base_classes = "swatch"
-            for color in item:
-                if not color.color.in_gamut('srgb'):
-                    base_classes += " out-of-gamut"
-                color.color.fit('srgb', in_place=True)
-                srgb = color.color.convert('srgb')
-                value1 = srgb.to_string(alpha=False)
-                value2 = srgb.to_string()
-                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                title = color.string
-                classes = base_classes
-                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                    classes=classes,
-                    color=c,
-                    title=title
-                )
-                values.append(c)
-    if bar:
-        el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-        values = []
-
-    return el
-
-
-def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
-    """Formatter wrapper."""
-
-    global code_id
-
-    try:
-        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
-            code_id = 0
-
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=console,
-            class_name="highlight",
-            language='pycon',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = '<div class="color-command">{}</div>'.format(el)
-        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
-        code_id += 1
-    except Exception:
-        from pymdownx import superfences
-        import traceback
-        print(traceback.format_exc())
-        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
-    return el
-
-
-def live_color_command_formatter(src):
-    """Formatter wrapper."""
-
-    try:
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        if not colors:
-            el += '<div class="swatch-bar"></div>'
-
-        el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
-        el = '<div class="color-command">{}</div>'.format(el)
-    except Exception:
-        return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
-    return el
-
-
-def color_formatter(src="", language="", class_name=None, md=""):
-    """Formatter wrapper."""
-
-    from coloraide import Color
-
-    try:
-        result = src.strip()
-        try:
-            console, colors = execute(result)
-            if len(colors) != 1 or len(colors[0]) != 1:
-                raise ValueError('Need one color only')
-            color = colors[0][0].color
-            result = colors[0][0].string
-        except Exception:
-            color = Color(result.strip())
-        el = Etree.Element('span')
-        stops = []
-        if not color.in_gamut("srgb"):
-            color.fit("srgb", in_place=True)
-            attributes = {'class': "swatch out-of-gamut", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-        else:
-            attributes = {'class': "swatch", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-
-        if not stops:
-            stops.extend(['transparent'] * 2)
-        if len(stops) == 1:
-            stops.append(stops[0])
-
-        Etree.SubElement(
-            sub_el,
-            'span',
-            {
-                "class": "swatch-color",
-                "style": "--swatch-stops: {};".format(','.join(stops))
-            }
-        )
-
-        el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        el = md.inlinePatterns['backtick'].handle_code('text', src)
-    return el
-
-
-def render_console(*args):
-    """Render console update."""
-
-    try:
-        # Run code
-        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
-        results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        results.innerHTML = live_color_command_formatter(inputs.value)
-        scrollingElement = results.querySelector('code')
-        scrollingElement.scrollTop = scrollingElement.scrollHeight
-    except Exception as e:
-        print(e)
-
-
-def render_notebook(*args):
-
-    import markdown
-    from pymdownx import slugs
-
-    text = globals().get('content', '')
-    extensions = [
-        'markdown.extensions.toc',
-        'markdown.extensions.admonition',
-        'markdown.extensions.smarty',
-        'pymdownx.betterem',
-        'markdown.extensions.attr_list',
-        'markdown.extensions.def_list',
-        'markdown.extensions.tables',
-        'markdown.extensions.abbr',
-        'markdown.extensions.footnotes',
-        'markdown.extensions.md_in_html',
-        'pymdownx.superfences',
-        'pymdownx.highlight',
-        'pymdownx.inlinehilite',
-        'pymdownx.magiclink',
-        'pymdownx.tilde',
-        'pymdownx.caret',
-        'pymdownx.smartsymbols',
-        'pymdownx.emoji',
-        'pymdownx.escapeall',
-        'pymdownx.tasklist',
-        'pymdownx.striphtml',
-        'pymdownx.snippets',
-        'pymdownx.keys',
-        'pymdownx.details',
-        'pymdownx.saneheaders',
-        'pymdownx.tabbed'
-    ]
-    extension_configs = {
-        'markdown.extensions.toc': {
-            'slugify': slugs.uslugify,
-            'permalink': ""
-        },
-        'markdown.extensions.smarty': {
-            "smart_quotes": False,
-        },
-        'pymdownx.superfences': {
-            'preserve_tabs': True,
-            'custom_fences': [
-                {
-                    "name": 'playground',
-                    "class": 'playground',
-                    "format": color_command_formatter,
-                    "validator": color_command_validator
-                }
-            ]
-        },
-        'pymdownx.inlinehilite': {
-            'custom_inline': [
-                {
-                    'name': 'color',
-                    'class': 'color',
-                    'format': color_formatter
-                }
-            ]
-        },
-        'pymdownx.magiclink': {
-            'repo_url_shortener': True,
-            'repo_url_shorthand': True,
-            'social_url_shorthand': True,
-            'user': 'facelessuser',
-            'repo': 'coloraide'
-        },
-        'pymdownx.keys': {
-            'separator': "\\uff0b"
-        }
-    }
-
-    try:
-        html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
-    except Exception:
-        html = ''
-    content = document.getElementById("__notebook-render")
-    content.innerHTML = html
-
-
-# Load up necessary wheels and then execute the appropriate payload
-cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
-mwheel = 'Markdown-3.3.4-py3-none-any.whl'
-pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
-
-wheels = [
-    location.origin + '/coloraide/playground/' + cwheel
-]
-
-action = globals().get('action')
-if action == 'render':
-    callback = render_notebook
-    wheels.extend(
-        [
-            location.origin + '/coloraide/playground/' + mwheel,
-            location.origin + '/coloraide/playground/' + pwheel
-        ]
-    )
-else:
-    callback = render_console
-
-# We run this from inside an async JavaScript function
-# so it is okay to call await outside a coroutine as
-# we are technically still inside one.
-await micropip.install(wheels)
-callback()
-`
-  const defContent = `import coloraide
-coloraide.__version__
-Color('red')`;
-
-
-  function getContent(content) {
-      return `
-!!! new "This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
-Learn more [here](?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md). \
-Preview, convert, interpolate, and explore!"
-
-\`\`\`\`\`\`\`\`playground
-${content}
-\`\`\`\`\`\`\`\`
-`;
-  }
-
-  async function textResize(inpt) {
-    // Resize inputs based on text height.
-
-    inpt.style.height = "5px";
-    inpt.style.height = (inpt.scrollHeight) + "px";
-  };
-
-  function encodeuri(uri) {
-    // Encode the URI component.
-
-    return encodeURIComponent(uri).replace(/[.!'()*]/g, (c) => {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  };
-
-  async function pyexecute(current_id) {
-    // Execute Python code
-
-    const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
-    current_inputs.setAttribute('readonly', '');
-    pyodide.globals.set('id_num', current_id);
-    pyodide.globals.set('action', 'notebook');
-    await pyodide.runPythonAsync(pycode);
-    current_inputs.removeAttribute('readonly');
-  }
-
-  async function pyrender(text) {
-    // Execute Python code
-
-    pyodide.globals.set('content', text);
-    pyodide.globals.set('action', 'render');
-    await pyodide.runPythonAsync(pycode);
-    src = document.getElementById('__notebook-input');
-    if (src) {
-      raw = text;
-      src.value = text;
-    }
-    if (window.location.hash) {
-      window.location.href = window.location.href;
-    }
-  }
-
-  async function load_pyodide(button_notify) {
-    // Load `Pyodide` and the any default packages we can need and can load.
-
-    const buttons = document.querySelectorAll('.playground button');
-
-    if (!initialized) {
-      if (button_notify) {
-        if (buttons) {
-          buttons.forEach((b) => {
-            b.setAttribute('disabled', '');
-            if (b.classList.contains('playground-edit')) {
-              b.innerHTML = 'Loading...';
-            }
-          });
-        }
-      }
-      initialized = true;
-      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/", fullStdLib: false});
-      await pyodide.loadPackage(['micropip', 'Pygments']);
-      if (buttons) {
-        buttons.forEach((b) => {
-          b.removeAttribute('disabled');
-          if (b.classList.contains('playground-edit')) {
-            b.innerHTML = 'Edit';
-          }
-        });
-      }
-    }
-  }
-
-  async function showBusy(label) {
-    if (!label) {
-      label = 'Loading Pyodide...';
-    }
-    var template = document.createElement('template');
-    template.innerHTML = `<div class="loading"><div class="loader"></div><div>${label}</div></div>`;
-    document.querySelector('article').appendChild(template.content.firstChild);
-  }
-
-  async function hideBusy() {
-    const spinner = document.querySelector('article .loading');
-    spinner.parentNode.removeChild(spinner);
-  }
-
-  async function init(first) {
-    // Setup input highlighting and events to run Python code blocks.
-
-    requests = 0;
-
-    const notebook = document.getElementById(`__notebook-source`);
-    const playgrounds = document.querySelectorAll('.playground');
-    playgrounds.forEach(async function(pg) {
-
-      const current_id = pg.id.replace(reIdNum, '$1');
-      const inputs = document.getElementById(`__playground-inputs_${current_id}`);
-      const results = document.getElementById(`__playground-results_${current_id}`);
-      const pgcode = document.getElementById(`__playground-code_${current_id}`);
-      const button_edit = document.querySelector(`button#__playground-edit_${current_id}`);
-      const button_share = document.querySelector(`button#__playground-share_${current_id}`);
-      const button_run = document.querySelector(`button#__playground-run_${current_id}`);
-      const button_cancel = document.querySelector(`button#__playground-cancel_${current_id}`);
-
-      inputs.addEventListener("input", (e) => {
-        // Adjust textarea height on text input.
-
-        textResize(inputs);
-      });
-
-      if (notebook && first) {
-        document.getElementById('__notebook-input').addEventListener("input", (e) => {
-          // Adjust textarea height on text input.
-
-          textResize(e.target);
-        });
-
-        const edit_page = document.getElementById('__notebook-edit');
-        edit_page.addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          textResize(document.getElementById('__notebook-input'));
-        });
-
-        document.getElementById('__notebook-md-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Markdown page source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('notebook=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-          }
-        });
-
-        document.getElementById('__notebook-py-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Python code source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('source=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-            return true;
-          }
-          return false;
-        });
-
-        document.getElementById('__notebook-input').value = raw;
-        document.getElementById('__notebook-cancel').addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-        });
-
-        document.getElementById('__notebook-submit').addEventListener("click", async function(e) {
-          const render = document.getElementById('__notebook-render');
-          raw = document.getElementById('__notebook-input').value;
-          render.classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          await showBusy("Loading Notebook...");
-          render.innerHTML = '';
-          await load_pyodide();
-          await pyrender(raw);
-          await init();
-          await hideBusy();
-        });
-      }
-
-      inputs.addEventListener('touchmove', (e) => {
-        // Stop propagation on "touchmove".
-
-        e.stopPropagation();
-      });
-
-      button_edit.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        // Load Pyodide and related packages.
-        await showBusy();
-        await load_pyodide(true);
-        await hideBusy();
-
-        busy = true;
-        lastText = inputs.value;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        textResize(inputs);
-        inputs.focus();
-        busy = false;
-      });
-
-      button_share.addEventListener("click", (e) => {
-        // Handle the share click: copy URL with code as parameter.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        const uri = encodeuri(inputs.value);
-        const loc = window.location;
-        let pathname = '/playground/';
-        if (loc.pathname.startsWith('/coloraide/')) {
-          pathname = '/coloraide/playground/'
-        }
-        const path = loc.protocol + '//' + loc.host + pathname + '?code=' + uri;
-        if (uri.length > 1000) {
-          alert('Code must be under a 1000 characters to generate a URL!');
-        } else {
-          navigator.clipboard.writeText(path).then(function() {
-            alert('Link copied to clipboard :)');
-          }, function() {
-            alert('Failed to copy link clipboard!');
-          });
-        }
-        busy = false;
-      });
-
-      button_run.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        results.querySelector('code').innerHTML = '';
-        pyexecute(current_id);
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-
-      button_cancel.addEventListener("click", (e) => {
-        // Cancel edit.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        inputs.value = lastText;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-    });
-  }
-
-  async function main(first) {
-    // Load external source to render in a playground.
-    // This can be something like a file on a gist we must read in (?source=)
-    // or raw code (?code=).
-
-    if (window.location.pathname.endsWith("/playground/")) {
-      let params = new URLSearchParams(window.location.search);
-      const msg = initialized ? 'Loading Notebook...' : 'Loading Pyodide...';
-      const uri = params.has('source') ? params.get('source') : params.get('notebook');
-      if (uri != null && uri.trim()) {
-        // A source was specified, so load it.
-        await showBusy(msg);
-        await load_pyodide();
-        try {
-          const uri = params.has('source') ? params.get('source') : params.get('notebook');
-          const gistType = params.has('source') ? 'source' : 'notebook';
-          let value = '';
-          let xhr = new XMLHttpRequest();
-          gist = uri;
-          xhr.open("GET", uri, true);
-          xhr.onload = async function (e) {
-            // Try and load the requested content
-            if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                value = xhr.responseText;
-              }
-            }
-
-            requests = 1;
-            if (gistType === 'source') {
-              await pyrender(getContent(value));
-            } else {
-              await pyrender(value);
-            }
-            await hideBusy();
-            await init(first);
-          };
-          xhr.send();
-        } catch (err) {}
-      } else if (params.has('code')) {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(params.get('code')));
-        await hideBusy();
-        await init(first);
-      } else {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(defContent));
-        await hideBusy();
-        await init(first);
-      }
-    } else {
-      await init(first);
-    }
-  }
-
-  // Run main
-  document.addEventListener("DOMContentLoaded", async function() {main(true);});
-})()
-</script>
                 
                   
                     
@@ -2159,6 +1231,10 @@ ${content}
     
     
       <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+      
+        <script src="../assets/coloraide-extras/extra-notebook-b0a77810.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

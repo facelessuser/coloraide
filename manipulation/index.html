@@ -47,7 +47,7 @@
     
     
     
-      <link rel="stylesheet" href="../playground.css">
+      <link rel="stylesheet" href="../assets/coloraide-extras/extra-7ddc78df16.css">
     
       <link rel="stylesheet" href="../assets/pymdownx-extras/extra-aa7dff8003.css">
     
@@ -793,7 +793,6 @@
 <ol>
 <li>
 <p>Channel properties can be read directly:</p>
-<p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
@@ -802,9 +801,6 @@
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
-<span class="n">color</span><span class="o">.</span><span class="n">red</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">color = Color("orange")
 color.red</textarea>
@@ -816,11 +812,9 @@ color.red</textarea>
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 <li>
 <p>Channel values can also be read by using the <code>get</code> method and providing the name of desired channel.</p>
-<p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
@@ -829,9 +823,6 @@ color.red</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
-<span class="n">color</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">color = Color("orange")
 color.get("green")</textarea>
@@ -843,12 +834,10 @@ color.get("green")</textarea>
 <button id="__playground-run_1" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 <li>
 <p>All coordinates can be read simultaneously by using the <code>coords</code> function. The alpha channel is excluded from
    <code>coords</code> and must be retrieved separately.</p>
-<p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
@@ -859,10 +848,6 @@ color.get("green")</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
-<span class="n">color</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">color</span><span class="o">.</span><span class="n">alpha</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">color = Color("orange")
 color.coords()
@@ -875,13 +860,11 @@ color.alpha</textarea>
 <button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 </li>
 </ol>
 <p>If a color coordinate is needed from another color space, it can be accessed by passing in the color space followed by
 the name of the desired coordinate. The necessary conversions will happen behind the scenes and the desired value will
 be returned.</p>
-<p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lch.chroma&quot;</span><span class="p">)</span>
@@ -889,8 +872,6 @@ be returned.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lch.chroma&quot;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color("blue").get("lch.chroma")</textarea>
 </form>
@@ -901,11 +882,9 @@ be returned.</p>
 <button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <h2 id="modifying-coordinates">Modifying Coordinates<a class="headerlink" href="#modifying-coordinates" title="Permanent link"></a></h2>
 <p>Channel properties can be modified directly by using the named property. Here we modify <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> by adjusting its
 <code>green</code> property and get an orange hued color.</p>
-<p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 127.5 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 127.5 0) 50%, rgb(255 127.5 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
@@ -915,10 +894,6 @@ be returned.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_4">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
-<span class="n">color</span><span class="o">.</span><span class="n">green</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="n">color</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_4" spellcheck="false">color = Color("red")
 color.green = 0.5
@@ -931,13 +906,11 @@ color.to_string()</textarea>
 <button id="__playground-run_4" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>When doing so, keep in mind, the internal coordinates are being adjusted, and so they must be modified within the range
 in which the values are stored, and for sRGB, it is in the range of [0, 1].</p>
 <p>Much like reading with the <code>get</code> method, values can be modified with the <code>set</code> method. As these methods return a
 reference to the current class, multiple set operations can be chained together. Chaining multiple <code>set</code> operations
 together, we can transform <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span> to <span><span class="swatch" title="rgb(0 127.5 255)"><span class="swatch-color" style="--swatch-stops: #0080ff,#0080ff;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">0</span><span class="w"> </span><span class="m">127</span><span class="g">.</span><span class="m">5</span><span class="w"> </span><span class="m">255</span><span class="g">)</span><span class="w"></span></code></span>.</p>
-<p>
 <div class="playground" id="__playground_5">
 <div class="playground-results" id="__playground-results_5">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(0 127.5 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 127.5 255) 50%, rgb(0 127.5 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
@@ -945,8 +918,6 @@ together, we can transform <span><span class="swatch" title="white"><span class=
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_5">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_5" spellcheck="false">Color("white").set("red", 0).set("green", 0.5)</textarea>
 </form>
@@ -957,10 +928,8 @@ together, we can transform <span><span class="swatch" title="white"><span class=
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Functions can also be used to modify a channel property. This allows us to do more complex set operations. Here we do a
 relative adjustment of the green channel and transform the color <span><span class="swatch" title="pink"><span class="swatch-color" style="--swatch-stops: #ffc0cb,#ffc0cb;"></span></span><code class="highlight"><span class="kc">pink</span><span class="w"></span></code></span> to <span><span class="swatch" title="rgb(255 249.6 203)"><span class="swatch-color" style="--swatch-stops: #fffacb,#fffacb;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">255</span><span class="w"> </span><span class="m">249</span><span class="g">.</span><span class="m">6</span><span class="w"> </span><span class="m">203</span><span class="g">)</span><span class="w"></span></code></span>.</p>
-<p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 249.6 203)"><span class="swatch-color" style="--swatch-stops: rgb(255 249.6 203) 50%, rgb(255 249.6 203) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span> <span class="o">*</span> <span class="mf">1.3</span><span class="p">)</span>
@@ -968,8 +937,6 @@ relative adjustment of the green channel and transform the color <span><span cla
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_6">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span> <span class="o">*</span> <span class="mf">1.3</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">Color("pink").set('green', lambda g: g * 1.3)</textarea>
 </form>
@@ -980,13 +947,11 @@ relative adjustment of the green channel and transform the color <span><span cla
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Channels in other color spaces can also be modified with the <code>set</code> function. Here we alter the color <span><span class="swatch" title="blue"><span class="swatch-color" style="--swatch-stops: #0000ff,#0000ff;"></span></span><code class="highlight"><span class="kc">blue</span><span class="w"></span></code></span> by
 editing the <code>hue</code> channel in the CIELCH color space and get <span><span class="swatch out-of-gamut" title="rgb(-63.911 91.016 -63.173)"><span class="swatch-color" style="--swatch-stops: #075200,#075200;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(-</span><span class="m">63</span><span class="g">.</span><span class="m">911</span><span class="w"> </span><span class="m">91</span><span class="g">.</span><span class="m">016</span><span class="w"> </span><span class="g">-</span><span class="m">63</span><span class="g">.</span><span class="m">173</span><span class="g">)</span><span class="w"></span></code></span>. Keep in mind
 though that the colors are being converted to the specified space under the hood, set, and then converted back, so if
 you have multiple operations to apply in a given color space, it may be more efficient to convert to that space, apply
 the set operations directly, and then convert back.</p>
-<p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
 <div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(-63.911 91.016 -63.173)"><span class="swatch-color" style="--swatch-stops: rgb(7.497 81.914 0) 50%, rgb(7.497 81.914 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch.hue&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
@@ -994,8 +959,6 @@ the set operations directly, and then convert back.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch.hue&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">Color("blue").set('lch.hue', 130)</textarea>
 </form>
@@ -1006,13 +969,11 @@ the set operations directly, and then convert back.</p>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>When setting a color in another color space, the final value is subject to any rounding errors that may occur in the
 round trip to and from the specified color space. Also, depending on the transform functions of the spaces involved and
 whether the original color is on the edge of its own gamut, this can lead to a color going slightly out of gamut, and if
 one of the spaces involved in the conversion doesn't handle out of gamut colors with sensible values, you may get
 something unexpected back.</p>
-<p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.blackness&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.whiteness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -1024,10 +985,6 @@ something unexpected back.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.blackness&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;hwb.whiteness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch-d65.lightness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(0 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;lch-d65.lightness&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
 Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100)
@@ -1040,7 +997,6 @@ Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100).convert('srgb').coords()</t
 <button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise, but the
 CIELCH D65 example is not quite as precise and returns a color with a saturation that is way out of bounds. But keep in
 mind, it looks worse than it really is. When converting the HSL value to sRGB, we see it is barely off. None of this is
@@ -1058,7 +1014,6 @@ specifics here, we will demonstrate how to mask channels. To learn more about in
 you can read more about it in <a href="../interpolation/">Interpolation</a>.</p>
 <p>Suffice it to say, a user may want to mask channels on their own for various reasons, using the <code>mask</code> function can
 allow for a user to quickly and easily mask one or more channels:</p>
-<p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
@@ -1068,9 +1023,6 @@ allow for a user to quickly and easily mask one or more channels:</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_9">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">([</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">Color('white').coords()
 Color('white').mask(['red', 'green']).coords()</textarea>
@@ -1082,9 +1034,7 @@ Color('white').mask(['red', 'green']).coords()</textarea>
 <button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>The <code>alpha</code> channel can also be masked:</p>
-<p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">alpha</span>
@@ -1092,8 +1042,6 @@ Color('white').mask(['red', 'green']).coords()</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">alpha</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color('white').mask('alpha').alpha</textarea>
 </form>
@@ -1104,9 +1052,7 @@ Color('white').mask(['red', 'green']).coords()</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Additionally, you can do inverse masks, or masks that apply to every channel not specified.</p>
-<p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1117,10 +1063,6 @@ Color('white').mask(['red', 'green']).coords()</textarea>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_11">
-<div class="highlight"><pre><span></span><code><span class="n">c</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">c</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">c</span><span class="o">.</span><span class="n">alpha</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">c = Color('white').mask('blue', invert=True)
 c.coords()
@@ -1133,7 +1075,6 @@ c.alpha</textarea>
 <button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <h2 id="checking-for-nullnan">Checking for Null/<abbr title="not a number">NaN</abbr><a class="headerlink" href="#checking-for-nullnan" title="Permanent link"></a></h2>
 <p>As previously mentioned, a user can set a channel to <code>NaN</code> via the <code>mask</code> function, or potentially by passing <code>NaN</code>
 directly to  the channel. In addition, cylindrical colors that offer a <code>hue</code> property can sometimes return <code>NaN</code> for a
@@ -1143,7 +1084,6 @@ or when interpreting a color string input.</p>
 saturation is 0. Essentially, hue could be set to anything, and it would still have no affect on the actual color. So,
 ColorAide will actually set hue to <code>NaN</code> (or "not a number"). When outputting to a string, <code>NaN</code> is treated as a zero on
 output.</p>
-<p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(360 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span>
@@ -1154,10 +1094,6 @@ output.</p>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(360 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="n">color</span>
-<span class="n">color</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">color = Color('hsl(360 0% 100%)')
 color
@@ -1170,11 +1106,9 @@ color.coords()</textarea>
 <button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>The only time <code>hue</code> is not automatically evaluated is when raw data inputs are used. This can be when a user
 instantiates a color with raw data points or manually sets the channel with an explicit value. While the rendered color
 still looks the same as the previous example, the channel values are preserved.</p>
-<p>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(360 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch" title="hsl(270 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">360</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
@@ -1188,12 +1122,6 @@ still looks the same as the previous example, the channel values are preserved.<
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
-<div class="highlight"><pre><span></span><code><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">360</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
-<span class="n">color</span>
-<span class="n">color</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="n">color</span><span class="o">.</span><span class="n">hue</span> <span class="o">=</span> <span class="mi">270</span>
-<span class="n">color</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">color = Color('hsl', [360, 0, 100])
 color
@@ -1208,10 +1136,8 @@ color</textarea>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Because <code>NaN</code> values are not numbers, and these values cannot be added, multiplied, or take part in any real math
 operations. All math operations performed with a <code>NaN</code> simply return <code>NaN</code>.</p>
-<p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span>
@@ -1221,9 +1147,6 @@ operations. All math operations performed with a <code>NaN</code> simply return 
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
-<div class="highlight"><pre><span></span><code><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span>
-<span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">float('nan') * 3
 float('nan') + 3</textarea>
@@ -1235,12 +1158,10 @@ float('nan') + 3</textarea>
 <button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>Because a <code>NaN</code> may cause unexpected results, it can be useful to check if a hue (or any channel) is <code>NaN</code> before
 applying certain operations. To make checking for <code>NaN</code>s easy, the convenience function <code>is_nan</code> has been made
 available. You can simply give <code>is_nan</code> the property you wish to check, and it will return either <code class="highlight"><span class="kc">True</span></code> or
 <code class="highlight"><span class="kc">False</span></code>.</p>
-<p>
 <div class="playground" id="__playground_15">
 <div class="playground-results" id="__playground-results_15">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(360 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">is_nan</span><span class="p">(</span><span class="s1">&#39;hue&#39;</span><span class="p">)</span>
@@ -1248,8 +1169,6 @@ available. You can simply give <code>is_nan</code> the property you wish to chec
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_15">
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(360 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">is_nan</span><span class="p">(</span><span class="s1">&#39;hue&#39;</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color('hsl(360 0% 100%)').is_nan('hue')</textarea>
 </form>
@@ -1260,9 +1179,7 @@ available. You can simply give <code>is_nan</code> the property you wish to chec
 <button id="__playground-run_15" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_15" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
 <p>This is equivalent to using the <code>math</code> library and comparing the value directly:</p>
-<p>
 <div class="playground" id="__playground_16">
 <div class="playground-results" id="__playground-results_16">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">math</span>
@@ -1271,9 +1188,6 @@ available. You can simply give <code>is_nan</code> the property you wish to chec
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_16">
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">math</span>
-<span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(360 0</span><span class="si">% 100%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">hue</span><span class="p">)</span>
-</code></pre></div>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_16" spellcheck="false">import math
 math.isnan(Color('hsl(360 0% 100%)').hue)</textarea>
@@ -1285,871 +1199,6 @@ math.isnan(Color('hsl(360 0% 100%)').hue)</textarea>
 <button id="__playground-run_16" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_16" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</p>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
-
-<script type="text/javascript">
-(() => {
-  let pyodide = null;
-  let busy = false;
-  let requests = 0;
-  let lastText = '';
-  let raw = '';
-  let gist = '';
-  let gistType = '';
-  const reIdNum = /.*?_(\d+)$/;
-  let initialized = false;
-  // This is the Python payload that will be executed when the user
-  // presses the `Run` button. It will execute the code, create a
-  // Python console output, find color references, steps, and interpolation
-  // references and render the appropriate preview.
-  const pycode = `
-"""
-Execute Python code in code blocks (color previews added specifically for ColorAide).
-
-This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
-code snippets using \`coloraide\`.
-
-Transform Python code by executing it, transforming to a Python console output,
-and finding and outputting color previews.
-"""
-import micropip
-from js import document, location
-import xml.etree.ElementTree as Etree
-from collections.abc import Sequence
-from collections import namedtuple
-import ast
-from io import StringIO
-import contextlib
-import sys
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-HtmlFormatter = find_formatter_class('html')
-
-AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
-
-RE_COLOR_START = re.compile(
-    r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
-)
-
-template = '''
-<div class="playground" id="__playground_{el_id}">
-<div class="playground-results" id="__playground-results_{el_id}">
-{results}
-</div>
-<div class="playground-code hidden" id="__playground-code_{el_id}">
-{hl_source}
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-'''
-
-code_id = 0
-
-
-class ColorInterpolate(list):
-    """Color interpolate."""
-
-
-class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
-    """Color tuple."""
-
-
-def _escape(txt):
-    """Basic HTML escaping."""
-
-    txt = txt.replace('&', '&amp;')
-    txt = txt.replace('<', '&lt;')
-    txt = txt.replace('>', '&gt;')
-    return txt
-
-
-@contextlib.contextmanager
-def std_output(stdout=None):
-    """Capture standard out."""
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
-
-
-def get_colors(result):
-    """Get color from results."""
-
-    from coloraide import Color
-    from coloraide.color.interpolate import Interpolator
-
-    colors = []
-    if isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(fit=False), result))
-    elif isinstance(result, Interpolator):
-        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
-    elif isinstance(result, str):
-        try:
-            colors.append(ColorTuple(result, Color(result)))
-        except Exception:
-            pass
-    elif isinstance(result, Sequence):
-        for x in result:
-            if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(fit=False), x))
-            elif isinstance(x, str):
-                try:
-                    colors.append(ColorTuple(x, Color(x)))
-                except Exception:
-                    pass
-    return colors
-
-
-def find_colors(text):
-    """Find colors in text buffer."""
-
-    import coloraide
-
-    colors = []
-    for m in RE_COLOR_START.finditer(text):
-        start = m.start()
-        mcolor = coloraide.Color.match(text, start=start)
-        if mcolor is not None:
-            colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
-    return colors
-
-
-def execute(cmd):
-    """Execute color commands."""
-
-    import coloraide
-
-    g = {'Color': coloraide.Color, 'coloraide': coloraide, 'NaN': coloraide.NaN, 'Piecewise': coloraide.Piecewise}
-    console = ''
-    colors = []
-
-    # Build AST tree
-    src = cmd.strip()
-    lines = src.split('\\n')
-    tree = ast.parse(src)
-
-    for node in tree.body:
-        result = None
-
-        # Format source as Python console statements
-        start = node.lineno
-        end = node.end_lineno
-        stmt = lines[start - 1: end]
-        command = ''
-        for i, line in enumerate(stmt, 0):
-            if i == 0:
-                stmt[i] = '>>> ' + line
-            else:
-                stmt[i] = '... ' + line
-        command += '\\n'.join(stmt)
-        if isinstance(node, AST_BLOCKS):
-            command += '\\n... '
-
-        try:
-            # Capture anything sent to standard out
-            text = ''
-            with std_output() as s:
-                # Execute code
-                if isinstance(node, ast.Expr):
-                    _eval = ast.Expression(node.value)
-                    result = eval(compile(_eval, '<string>', 'eval'), g)
-                else:
-                    _exec = ast.Module([node], [])
-                    exec(compile(_exec, '<string>', 'exec'), g)
-
-                # Execution went well, so append command
-                console += command
-
-                # Output captured standard out after statements
-                text = s.getvalue()
-                if text:
-                    clist = find_colors(text)
-                    if clist:
-                        colors.append(clist)
-                    console += '\\n{}'.format(text)
-                s.flush()
-        except Exception:
-            import traceback
-            console += '{}\\n{}'.format(command, traceback.format_exc())
-            # Failed for some reason, so quit
-            break
-
-        # If we got a result, output it as well
-        if result is not None:
-            clist = get_colors(result)
-            if clist:
-                colors.append(clist)
-            console += '{}{}\\n'.format('\\n' if not text else '', str(result))
-        else:
-            console += '\\n' if not text else ''
-
-    return console, colors
-
-
-def colorize(src, lang, **options):
-    """Colorize."""
-
-    lexer = get_lexer_by_name(lang, **options)
-    formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
-    return highlight(src, lexer, formatter).strip()
-
-
-def color_command_validator(language, inputs, options, attrs, md):
-    """Color validator."""
-
-    valid_inputs = set()
-
-    for k, v in inputs.items():
-        if k in valid_inputs:
-            options[k] = True
-            continue
-        attrs[k] = v
-    return True
-
-
-def _color_command_console(colors):
-    """Color command formatter."""
-
-    el = ''
-    bar = False
-    values = []
-    for item in colors:
-        if isinstance(item, ColorInterpolate):
-            if bar:
-                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                values = []
-            sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
-            style = "--swatch-stops: "
-            stops = []
-            for color in item:
-                color.fit("srgb", in_place=True)
-                stops.append(color.convert("srgb").to_string())
-            if not stops:
-                stops.extend(['transparent'] * 2)
-            if len(stops) == 1:
-                stops.append(stops[0])
-            style += ','.join(stops)
-            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
-            el += sub_el1.format(sub_el2)
-            bar = False
-        else:
-            bar = True
-            base_classes = "swatch"
-            for color in item:
-                if not color.color.in_gamut('srgb'):
-                    base_classes += " out-of-gamut"
-                color.color.fit('srgb', in_place=True)
-                srgb = color.color.convert('srgb')
-                value1 = srgb.to_string(alpha=False)
-                value2 = srgb.to_string()
-                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
-                title = color.string
-                classes = base_classes
-                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
-                    classes=classes,
-                    color=c,
-                    title=title
-                )
-                values.append(c)
-    if bar:
-        el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-        values = []
-
-    return el
-
-
-def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
-    """Formatter wrapper."""
-
-    global code_id
-
-    try:
-        if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
-            code_id = 0
-
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=console,
-            class_name="highlight",
-            language='pycon',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = '<div class="color-command">{}</div>'.format(el)
-        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
-        code_id += 1
-    except Exception:
-        from pymdownx import superfences
-        import traceback
-        print(traceback.format_exc())
-        return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
-    return el
-
-
-def live_color_command_formatter(src):
-    """Formatter wrapper."""
-
-    try:
-        console, colors = execute(src.strip())
-        el = _color_command_console(colors)
-
-        if not colors:
-            el += '<div class="swatch-bar"></div>'
-
-        el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
-        el = '<div class="color-command">{}</div>'.format(el)
-    except Exception:
-        return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
-    return el
-
-
-def color_formatter(src="", language="", class_name=None, md=""):
-    """Formatter wrapper."""
-
-    from coloraide import Color
-
-    try:
-        result = src.strip()
-        try:
-            console, colors = execute(result)
-            if len(colors) != 1 or len(colors[0]) != 1:
-                raise ValueError('Need one color only')
-            color = colors[0][0].color
-            result = colors[0][0].string
-        except Exception:
-            color = Color(result.strip())
-        el = Etree.Element('span')
-        stops = []
-        if not color.in_gamut("srgb"):
-            color.fit("srgb", in_place=True)
-            attributes = {'class': "swatch out-of-gamut", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-        else:
-            attributes = {'class': "swatch", "title": result}
-            sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
-                stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
-
-        if not stops:
-            stops.extend(['transparent'] * 2)
-        if len(stops) == 1:
-            stops.append(stops[0])
-
-        Etree.SubElement(
-            sub_el,
-            'span',
-            {
-                "class": "swatch-color",
-                "style": "--swatch-stops: {};".format(','.join(stops))
-            }
-        )
-
-        el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        el = md.inlinePatterns['backtick'].handle_code('text', src)
-    return el
-
-
-def render_console(*args):
-    """Render console update."""
-
-    try:
-        # Run code
-        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
-        results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        results.innerHTML = live_color_command_formatter(inputs.value)
-        scrollingElement = results.querySelector('code')
-        scrollingElement.scrollTop = scrollingElement.scrollHeight
-    except Exception as e:
-        print(e)
-
-
-def render_notebook(*args):
-
-    import markdown
-    from pymdownx import slugs
-
-    text = globals().get('content', '')
-    extensions = [
-        'markdown.extensions.toc',
-        'markdown.extensions.admonition',
-        'markdown.extensions.smarty',
-        'pymdownx.betterem',
-        'markdown.extensions.attr_list',
-        'markdown.extensions.def_list',
-        'markdown.extensions.tables',
-        'markdown.extensions.abbr',
-        'markdown.extensions.footnotes',
-        'markdown.extensions.md_in_html',
-        'pymdownx.superfences',
-        'pymdownx.highlight',
-        'pymdownx.inlinehilite',
-        'pymdownx.magiclink',
-        'pymdownx.tilde',
-        'pymdownx.caret',
-        'pymdownx.smartsymbols',
-        'pymdownx.emoji',
-        'pymdownx.escapeall',
-        'pymdownx.tasklist',
-        'pymdownx.striphtml',
-        'pymdownx.snippets',
-        'pymdownx.keys',
-        'pymdownx.details',
-        'pymdownx.saneheaders',
-        'pymdownx.tabbed'
-    ]
-    extension_configs = {
-        'markdown.extensions.toc': {
-            'slugify': slugs.uslugify,
-            'permalink': ""
-        },
-        'markdown.extensions.smarty': {
-            "smart_quotes": False,
-        },
-        'pymdownx.superfences': {
-            'preserve_tabs': True,
-            'custom_fences': [
-                {
-                    "name": 'playground',
-                    "class": 'playground',
-                    "format": color_command_formatter,
-                    "validator": color_command_validator
-                }
-            ]
-        },
-        'pymdownx.inlinehilite': {
-            'custom_inline': [
-                {
-                    'name': 'color',
-                    'class': 'color',
-                    'format': color_formatter
-                }
-            ]
-        },
-        'pymdownx.magiclink': {
-            'repo_url_shortener': True,
-            'repo_url_shorthand': True,
-            'social_url_shorthand': True,
-            'user': 'facelessuser',
-            'repo': 'coloraide'
-        },
-        'pymdownx.keys': {
-            'separator': "\\uff0b"
-        }
-    }
-
-    try:
-        html = markdown.markdown(text, extensions=extensions, extension_configs=extension_configs)
-    except Exception:
-        html = ''
-    content = document.getElementById("__notebook-render")
-    content.innerHTML = html
-
-
-# Load up necessary wheels and then execute the appropriate payload
-cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
-mwheel = 'Markdown-3.3.4-py3-none-any.whl'
-pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
-
-wheels = [
-    location.origin + '/coloraide/playground/' + cwheel
-]
-
-action = globals().get('action')
-if action == 'render':
-    callback = render_notebook
-    wheels.extend(
-        [
-            location.origin + '/coloraide/playground/' + mwheel,
-            location.origin + '/coloraide/playground/' + pwheel
-        ]
-    )
-else:
-    callback = render_console
-
-# We run this from inside an async JavaScript function
-# so it is okay to call await outside a coroutine as
-# we are technically still inside one.
-await micropip.install(wheels)
-callback()
-`
-  const defContent = `import coloraide
-coloraide.__version__
-Color('red')`;
-
-
-  function getContent(content) {
-      return `
-!!! new "This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
-Learn more [here](?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md). \
-Preview, convert, interpolate, and explore!"
-
-\`\`\`\`\`\`\`\`playground
-${content}
-\`\`\`\`\`\`\`\`
-`;
-  }
-
-  async function textResize(inpt) {
-    // Resize inputs based on text height.
-
-    inpt.style.height = "5px";
-    inpt.style.height = (inpt.scrollHeight) + "px";
-  };
-
-  function encodeuri(uri) {
-    // Encode the URI component.
-
-    return encodeURIComponent(uri).replace(/[.!'()*]/g, (c) => {
-      return '%' + c.charCodeAt(0).toString(16);
-    });
-  };
-
-  async function pyexecute(current_id) {
-    // Execute Python code
-
-    const current_inputs = document.getElementById(`__playground-inputs_${current_id}`);
-    current_inputs.setAttribute('readonly', '');
-    pyodide.globals.set('id_num', current_id);
-    pyodide.globals.set('action', 'notebook');
-    await pyodide.runPythonAsync(pycode);
-    current_inputs.removeAttribute('readonly');
-  }
-
-  async function pyrender(text) {
-    // Execute Python code
-
-    pyodide.globals.set('content', text);
-    pyodide.globals.set('action', 'render');
-    await pyodide.runPythonAsync(pycode);
-    src = document.getElementById('__notebook-input');
-    if (src) {
-      raw = text;
-      src.value = text;
-    }
-    if (window.location.hash) {
-      window.location.href = window.location.href;
-    }
-  }
-
-  async function load_pyodide(button_notify) {
-    // Load `Pyodide` and the any default packages we can need and can load.
-
-    const buttons = document.querySelectorAll('.playground button');
-
-    if (!initialized) {
-      if (button_notify) {
-        if (buttons) {
-          buttons.forEach((b) => {
-            b.setAttribute('disabled', '');
-            if (b.classList.contains('playground-edit')) {
-              b.innerHTML = 'Loading...';
-            }
-          });
-        }
-      }
-      initialized = true;
-      pyodide = await loadPyodide({indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/", fullStdLib: false});
-      await pyodide.loadPackage(['micropip', 'Pygments']);
-      if (buttons) {
-        buttons.forEach((b) => {
-          b.removeAttribute('disabled');
-          if (b.classList.contains('playground-edit')) {
-            b.innerHTML = 'Edit';
-          }
-        });
-      }
-    }
-  }
-
-  async function showBusy(label) {
-    if (!label) {
-      label = 'Loading Pyodide...';
-    }
-    var template = document.createElement('template');
-    template.innerHTML = `<div class="loading"><div class="loader"></div><div>${label}</div></div>`;
-    document.querySelector('article').appendChild(template.content.firstChild);
-  }
-
-  async function hideBusy() {
-    const spinner = document.querySelector('article .loading');
-    spinner.parentNode.removeChild(spinner);
-  }
-
-  async function init(first) {
-    // Setup input highlighting and events to run Python code blocks.
-
-    requests = 0;
-
-    const notebook = document.getElementById(`__notebook-source`);
-    const playgrounds = document.querySelectorAll('.playground');
-    playgrounds.forEach(async function(pg) {
-
-      const current_id = pg.id.replace(reIdNum, '$1');
-      const inputs = document.getElementById(`__playground-inputs_${current_id}`);
-      const results = document.getElementById(`__playground-results_${current_id}`);
-      const pgcode = document.getElementById(`__playground-code_${current_id}`);
-      const button_edit = document.querySelector(`button#__playground-edit_${current_id}`);
-      const button_share = document.querySelector(`button#__playground-share_${current_id}`);
-      const button_run = document.querySelector(`button#__playground-run_${current_id}`);
-      const button_cancel = document.querySelector(`button#__playground-cancel_${current_id}`);
-
-      inputs.addEventListener("input", (e) => {
-        // Adjust textarea height on text input.
-
-        textResize(inputs);
-      });
-
-      if (notebook && first) {
-        document.getElementById('__notebook-input').addEventListener("input", (e) => {
-          // Adjust textarea height on text input.
-
-          textResize(e.target);
-        });
-
-        const edit_page = document.getElementById('__notebook-edit');
-        edit_page.addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          textResize(document.getElementById('__notebook-input'));
-        });
-
-        document.getElementById('__notebook-md-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Markdown page source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('notebook=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-          }
-        });
-
-        document.getElementById('__notebook-py-gist').addEventListener("click", function(e) {
-          let uri = prompt("Please enter Python code source:", gist);
-          if (uri != null) {
-            uri = encodeuri(uri);
-            const relativePathQuery = window.location.pathname + '?' + new URLSearchParams('source=' + uri).toString();
-            history.pushState(null, '', relativePathQuery);
-            setTimeout(() => {main(false);}, 0);
-            return true;
-          }
-          return false;
-        });
-
-        document.getElementById('__notebook-input').value = raw;
-        document.getElementById('__notebook-cancel').addEventListener("click", async function(e) {
-          document.getElementById('__notebook-render').classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-        });
-
-        document.getElementById('__notebook-submit').addEventListener("click", async function(e) {
-          const render = document.getElementById('__notebook-render');
-          raw = document.getElementById('__notebook-input').value;
-          render.classList.toggle('hidden');
-          document.getElementById('__notebook-source').classList.toggle('hidden');
-          await showBusy("Loading Notebook...");
-          render.innerHTML = '';
-          await load_pyodide();
-          await pyrender(raw);
-          await init();
-          await hideBusy();
-        });
-      }
-
-      inputs.addEventListener('touchmove', (e) => {
-        // Stop propagation on "touchmove".
-
-        e.stopPropagation();
-      });
-
-      button_edit.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        // Load Pyodide and related packages.
-        await showBusy();
-        await load_pyodide(true);
-        await hideBusy();
-
-        busy = true;
-        lastText = inputs.value;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        textResize(inputs);
-        inputs.focus();
-        busy = false;
-      });
-
-      button_share.addEventListener("click", (e) => {
-        // Handle the share click: copy URL with code as parameter.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        const uri = encodeuri(inputs.value);
-        const loc = window.location;
-        let pathname = '/playground/';
-        if (loc.pathname.startsWith('/coloraide/')) {
-          pathname = '/coloraide/playground/'
-        }
-        const path = loc.protocol + '//' + loc.host + pathname + '?code=' + uri;
-        if (uri.length > 1000) {
-          alert('Code must be under a 1000 characters to generate a URL!');
-        } else {
-          navigator.clipboard.writeText(path).then(function() {
-            alert('Link copied to clipboard :)');
-          }, function() {
-            alert('Failed to copy link clipboard!');
-          });
-        }
-        busy = false;
-      });
-
-      button_run.addEventListener("click", async function(e) {
-        // Handle the button click: show source or execute source.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        results.querySelector('code').innerHTML = '';
-        pyexecute(current_id);
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-
-      button_cancel.addEventListener("click", (e) => {
-        // Cancel edit.
-
-        if (busy) {
-          return;
-        }
-
-        busy = true;
-        inputs.value = lastText;
-        pgcode.classList.toggle('hidden');
-        results.classList.toggle('hidden');
-        button_edit.classList.toggle('hidden');
-        button_share.classList.toggle('hidden');
-        button_run.classList.toggle('hidden');
-        button_cancel.classList.toggle('hidden');
-        busy = false;
-      });
-    });
-  }
-
-  async function main(first) {
-    // Load external source to render in a playground.
-    // This can be something like a file on a gist we must read in (?source=)
-    // or raw code (?code=).
-
-    if (window.location.pathname.endsWith("/playground/")) {
-      let params = new URLSearchParams(window.location.search);
-      const msg = initialized ? 'Loading Notebook...' : 'Loading Pyodide...';
-      const uri = params.has('source') ? params.get('source') : params.get('notebook');
-      if (uri != null && uri.trim()) {
-        // A source was specified, so load it.
-        await showBusy(msg);
-        await load_pyodide();
-        try {
-          const uri = params.has('source') ? params.get('source') : params.get('notebook');
-          const gistType = params.has('source') ? 'source' : 'notebook';
-          let value = '';
-          let xhr = new XMLHttpRequest();
-          gist = uri;
-          xhr.open("GET", uri, true);
-          xhr.onload = async function (e) {
-            // Try and load the requested content
-            if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                value = xhr.responseText;
-              }
-            }
-
-            requests = 1;
-            if (gistType === 'source') {
-              await pyrender(getContent(value));
-            } else {
-              await pyrender(value);
-            }
-            await hideBusy();
-            await init(first);
-          };
-          xhr.send();
-        } catch (err) {}
-      } else if (params.has('code')) {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(params.get('code')));
-        await hideBusy();
-        await init(first);
-      } else {
-        gist = '';
-        gistType = '';
-        await showBusy(msg);
-        await load_pyodide();
-        await pyrender(getContent(defContent));
-        await hideBusy();
-        await init(first);
-      }
-    } else {
-      await init(first);
-    }
-  }
-
-  // Run main
-  document.addEventListener("DOMContentLoaded", async function() {main(true);});
-})()
-</script>
                 
                   
                     
@@ -2294,6 +1343,10 @@ ${content}
     
     
       <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+      
+        <script src="../assets/coloraide-extras/extra-notebook-b0a77810.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       
