@@ -1,0 +1,25 @@
+div.color-command {
+  margin: 1em 0;
+  line-height: 0;
+
+  .highlight:not(:first-child) {
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    pre {
+      margin-top: 0;
+    }
+  }
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-typeset > div.color-command {
+    margin-right:  px2rem(-16px);
+    margin-left: px2rem(-16px);
+
+    .highlight code {
+      border-radius: 0;
+    }
+  }
+}

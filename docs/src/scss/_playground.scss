@@ -1,0 +1,56 @@
+.playground-code {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin-top: 2px;
+  overflow: hidden;
+}
+
+.playground-code .highlight code {
+  min-height: 3em;
+}
+
+.playground-code .highlight,
+.playground-code .highlight code {
+  margin: 0;
+  overflow: hidden;
+}
+
+.playground-code pre {
+  height: calc(100% + px2rem(4px));
+  margin: 0;
+  pointer-events: none;
+}
+
+.playground-results code {
+  min-height: 3em;
+}
+
+.playground-results pre {
+  margin-bottom: 0;
+}
+
+.playground-results .swatch-bar {
+  min-height: calc(3em + 4px);
+}
+
+.playground-results .swatch-bar:empty {
+  display: none;
+}
+
+.playground-results .swatch-bar:empty + .highlight {
+  border-color: transparent;
+}
+
+.playground-results .color-command {
+  margin-bottom: 0;
+}
+
+.hidden .highlight,
+.hidden .playground-inputs {
+  display: none;
+}
+
+.playground-code:not(.hidden) div.highlight {
+  display: none;
+}

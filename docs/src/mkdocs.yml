@@ -113,10 +113,10 @@ markdown_extensions:
   - pymdownx.tabbed:
 
 extra_css:
-  - assets/coloraide-extras/extra-7ddc78df16.css
+  - assets/coloraide-extras/extra.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-b0a77810.js
+  - assets/coloraide-extras/extra-notebook.js
 
 extra:
   social:
