@@ -1,0 +1,33 @@
+textarea#__notebook-input,
+.playground-inputs {
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 3em;
+
+  margin: 0;
+  padding: .7720588235em 1.1764705882em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--md-code-fg-color);
+  caret-color: var(--md-code-fg-color);
+
+  font-size: .85em;
+  font-family: var(--md-code-font-family,_),SFMono-Regular,Consolas,Menlo,monospace;
+  font-feature-settings: "kern";
+  line-height: 1.4;
+  white-space: pre;
+  word-wrap: unset;
+  background: var(--md-code-bg-color);
+
+  border: none;
+  outline: none;
+  cursor: text;
+  appearance: textarea;
+  resize: none;
+
+  &::selection {
+    color: var(--md-code-bg-color);
+    background: var(--md-code-fg-color);
+  }
+}

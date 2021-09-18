@@ -1,0 +1,26 @@
+.md-typeset textarea {
+
+  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
+  scrollbar-width: thin;
+
+  &:hover {
+    scrollbar-color: var(--md-accent-fg-color) transparent;
+  }
+
+  &::-webkit-scrollbar {
+      width: px2rem(4px);
+      height: px2rem(4px);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--md-default-fg-color--lighter);
+
+    *:hover {
+      background-color: var(--md-accent-fg-color);
+    }
+  }
+}

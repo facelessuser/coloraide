@@ -2,7 +2,7 @@
 Execute Python code in code blocks (color previews added specifically for ColorAide).
 
 This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
-code snippets using \`coloraide\`.
+code snippets using `coloraide`.
 
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
@@ -25,16 +25,14 @@ HtmlFormatter = find_formatter_class('html')
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
 RE_COLOR_START = re.compile(
-    r"(?i)(?:\\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\\(|\\b(?<![-#&$])[\\w]{3,}(?![(-])\\b|(?<![&])#)"
+    r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
 )
 
-template = '''
-<div class="playground" id="__playground_{el_id}">
+template = '''<div class="playground" id="__playground_{el_id}">
 <div class="playground-results" id="__playground-results_{el_id}">
 {results}
 </div>
 <div class="playground-code hidden" id="__playground-code_{el_id}">
-{hl_source}
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
 </form>
@@ -44,8 +42,7 @@ template = '''
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-'''
+</div>'''
 
 code_id = 0
 
@@ -131,7 +128,7 @@ def execute(cmd):
 
     # Build AST tree
     src = cmd.strip()
-    lines = src.split('\\n')
+    lines = src.split('\n')
     tree = ast.parse(src)
 
     for node in tree.body:
@@ -147,9 +144,9 @@ def execute(cmd):
                 stmt[i] = '>>> ' + line
             else:
                 stmt[i] = '... ' + line
-        command += '\\n'.join(stmt)
+        command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
-            command += '\\n... '
+            command += '\n... '
 
         try:
             # Capture anything sent to standard out
@@ -172,11 +169,11 @@ def execute(cmd):
                     clist = find_colors(text)
                     if clist:
                         colors.append(clist)
-                    console += '\\n{}'.format(text)
+                    console += '\n{}'.format(text)
                 s.flush()
         except Exception:
             import traceback
-            console += '{}\\n{}'.format(command, traceback.format_exc())
+            console += '{}\n{}'.format(command, traceback.format_exc())
             # Failed for some reason, so quit
             break
 
@@ -185,9 +182,9 @@ def execute(cmd):
             clist = get_colors(result)
             if clist:
                 colors.append(clist)
-            console += '{}{}\\n'.format('\\n' if not text else '', str(result))
+            console += '{}{}\n'.format('\n' if not text else '', str(result))
         else:
-            console += '\\n' if not text else ''
+            console += '\n' if not text else ''
 
     return console, colors
 
@@ -286,15 +283,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             **kwargs
         )
         el = '<div class="color-command">{}</div>'.format(el)
-        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
+        el = template.format(el_id=code_id, raw_source=_escape(src), results=el)
         code_id += 1
     except Exception:
         from pymdownx import superfences
@@ -391,6 +380,7 @@ def render_console(*args):
 
 
 def render_notebook(*args):
+    """Render notebook."""
 
     import markdown
     from pymdownx import slugs
@@ -460,7 +450,7 @@ def render_notebook(*args):
             'repo': 'coloraide'
         },
         'pymdownx.keys': {
-            'separator': "\\uff0b"
+            'separator': "\uff0b"
         }
     }
 
@@ -473,9 +463,9 @@ def render_notebook(*args):
 
 
 # Load up necessary wheels and then execute the appropriate payload
-cwheel = 'coloraide-0.1.0a26-py3-none-any.whl'
-mwheel = 'Markdown-3.3.4-py3-none-any.whl'
-pwheel = 'pymdown_extensions-8.2-py3-none-any.whl'
+cwheel = ''
+mwheel = ''
+pwheel = ''
 
 wheels = [
     location.origin + '/coloraide/playground/' + cwheel

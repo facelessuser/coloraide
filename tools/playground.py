@@ -26,13 +26,11 @@ RE_COLOR_START = re.compile(
     r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
 )
 
-template = '''
-<div class="playground" id="__playground_{el_id}">
+template = '''<div class="playground" id="__playground_{el_id}">
 <div class="playground-results" id="__playground-results_{el_id}">
 {results}
 </div>
 <div class="playground-code hidden" id="__playground-code_{el_id}">
-{hl_source}
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
 </form>
@@ -42,8 +40,7 @@ template = '''
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-'''
+</div>'''
 
 code_id = 0
 
@@ -260,20 +257,13 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
             **kwargs
         )
         el = '<div class="color-command">{}</div>'.format(el)
-        code = md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
-            src=src,
-            class_name="highlight",
-            language='py3',
-            md=md,
-            options=options,
-            **kwargs
-        )
-        el = template.format(el_id=code_id, hl_source=code, raw_source=_escape(src), results=el)
+        el = template.format(el_id=code_id, raw_source=_escape(src), results=el)
         code_id += 1
     except Exception:
         import traceback
         print(traceback.format_exc())
         return superfences.fence_code_format(src, 'text', class_name, options, md, **kwargs)
+
     return el
 
 

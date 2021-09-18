@@ -1,0 +1,101 @@
+:root {
+  --swatch-border-color: hsl(0, 0%, 90%);
+  --swatch-bg-color: hsl(0, 0%, 100%);
+  --swatch-bg-alt-color: hsl(0, 0%, 87%);
+  --swatch-gamut-border-color: hsl(340 82% 52%);
+  --swatch-stops: transparent, transparent;
+
+  [data-md-color-scheme="slate"] {
+    --swatch-border-color: hsla(232, 15%, 25%, 1);
+  }
+
+  [data-md-color-scheme="dracula"] {
+      --swatch-border-color: hsl(233, 15%, 33%, 1);
+      --swatch-gamut-border-color: hsl(326, 100%, 74%);
+    }
+}
+
+.swatch {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 0.2em;
+  margin-left: 0.25em;
+  line-height: 0;
+  vertical-align: text-bottom;
+  background-color: var(--swatch-bg-color);
+  background-image: linear-gradient(45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
+                    linear-gradient(-45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, var(--swatch-bg-alt-color) 75%),
+                    linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
+  background-position: 0 0, 0 0.25em, 0.25em -0.25em, -0.25em 0px;
+  background-size: 0.5em 0.5em;
+  border-radius: 100px;
+  box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, .3);
+  transition: all 0.5s ease;
+
+  &:hover {
+    z-index: 2;
+    transform: scale(2);
+  }
+}
+
+.swatch-color {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0;
+  padding: 0;
+  vertical-align: text-bottom;
+  background: linear-gradient(to right, var(--swatch-stops));
+  border: 2px solid var(--swatch-border-color);
+  border-radius: 100px;
+}
+
+.swatch-gradient,
+.swatch-gradient .swatch-color {
+  width: 100%;
+  height: 3em;
+  margin: 0;
+  border-radius: 0;
+}
+
+div.swatch-bar {
+  box-sizing: border-box;
+  background-color: var(--md-default-bg-color);
+  background-image: linear-gradient(45deg, var(--md-code-bg-color) 25%, transparent 25%),
+                    linear-gradient(-45deg, var(--md-code-bg-color) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, var(--md-code-bg-color) 75%),
+                    linear-gradient(-45deg, transparent 75%, var(--md-code-bg-color) 75%);
+  background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
+  background-size: 1em 1em;
+  border: 2px solid var(--md-code-bg-color);
+
+  .swatch {
+    background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
+    background-size: 1em 1em;
+    box-shadow: none;
+
+    &:not(.swatch-gradient),
+    &:not(.swatch-gradient) .swatch-color {
+      width: 3em;
+      height: 3em;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    &:hover {
+      transform: scale(1.2) translateY(-0.2em);
+    }
+  }
+
+  .swatch-gradient:hover {
+    transform: scale(1.02, 1.2) translateY(-0.2em);
+  }
+}
+
+.swatch.out-of-gamut .swatch-color {
+  border: 1px solid var(--swatch-gamut-border-color);
+  box-shadow: inset 0 0 0 1px var(--md-code-bg-color);
+}
