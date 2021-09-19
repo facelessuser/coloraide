@@ -5,14 +5,13 @@
   let gist = ""
   const reIdNum = /.*?_(\d+)$/
   let initialized = false
+  let lastSearch = ""
   // This is the Python payload that will be executed when the user
   // presses the `Run` button. It will execute the code, create a
   // Python console output, find color references, steps, and interpolation
   // references and render the appropriate preview.
   const pycode = "{{pycode}}"
-  const defContent = `import coloraide
-coloraide.__version__
-Color('red')`
+  const defContent = "import coloraide\ncoloraide.__version__\nColor('red')"
 
   const getContent = content => {
     return `
@@ -65,6 +64,7 @@ ${content}
       src.value = text
     }
     if (window.location.hash) {
+      // Force jumping to hashes
       window.location.href = window.location.href // eslint-disable-line no-self-assign
     }
   }
@@ -94,6 +94,39 @@ ${content}
     const loading = target.querySelector(".loading")
     if (loading) {
       target.removeChild(target.querySelector(".loading"))
+    }
+  }
+
+  const popState = e => {
+    if (
+      window.location.pathname === "/coloraide/playground/"
+    ) {
+      const current = decodeURIComponent(new URLSearchParams(window.location.search).toString())
+      if (current !== lastSearch) {
+        main(false) // eslint-disable-line no-use-before-define
+      }
+    }
+  }
+
+  const interceptClickEvent = e => {
+    const target = e.target || e.srcElement
+    if (target.tagName === "A" && main) { // eslint-disable-line no-use-before-define
+      if (
+        target.getAttribute("href") &&
+        target.host === window.location.host &&
+        window.location.pathname === "/coloraide/playground/" &&
+        window.location.pathname === target.pathname &&
+        window.location.search !== target.search
+      ) {
+        e.preventDefault()
+        const search = new URLSearchParams(target.search)
+        const state = {}
+        for (const [key, value] of search) {
+          state[key] = value
+        }
+        history.pushState(state, "", target.href)
+        main(false) // eslint-disable-line no-use-before-define
+      }
     }
   }
 
@@ -133,22 +166,22 @@ ${content}
           textResize(document.getElementById("__notebook-input"))
         })
 
-        document.getElementById("__notebook-md-gist").addEventListener("click", async() => {
+        document.getElementById("__notebook-md-gist").addEventListener("click", async e => {
           let uri = prompt("Please enter link to the Markdown page source:", gist) // eslint-disable-line no-alert
           if (uri !== null) {
             uri = encodeuri(uri)
-            const relativePathQuery = `${window.location.pathname}?${new URLSearchParams(`notebook=${uri}`).toString()}`
-            history.pushState(null, "", relativePathQuery)
+            e.preventDefault()
+            history.pushState({notebook: uri}, "", `?${new URLSearchParams(`notebook=${uri}`).toString()}`)
             main(false) // eslint-disable-line no-use-before-define
           }
         })
 
-        document.getElementById("__notebook-py-gist").addEventListener("click", async() => {
+        document.getElementById("__notebook-py-gist").addEventListener("click", async e => {
           let uri = prompt("Please enter the link to the Python code source:", gist) // eslint-disable-line no-alert
           if (uri !== null) {
             uri = encodeuri(uri)
-            const relativePathQuery = `${window.location.pathname}?${new URLSearchParams(`source=${uri}`).toString()}`
-            history.pushState(null, "", relativePathQuery)
+            e.preventDefault()
+            history.pushState({source: uri}, "", `?${new URLSearchParams(`source=${uri}`).toString()}`)
             main(false) // eslint-disable-line no-use-before-define
           }
         })
@@ -281,6 +314,7 @@ ${content}
         showBusy(article, pageMsg)
         try {
           const gistType = params.has("source") ? "source" : "notebook"
+          lastSearch = decodeURIComponent(params.toString())
           let value = ""
           const xhr = new XMLHttpRequest()
           gist = uri
@@ -305,6 +339,7 @@ ${content}
       } else {
         gist = ""
         const content = getContent(params.has("code") ? params.get("code") : defContent)
+        lastSearch = decodeURIComponent(params.toString())
         showBusy(article, loadMsg)
         await setupPyodide()
         hideBusy(article)
@@ -315,11 +350,18 @@ ${content}
       }
     } else {
       gist = ""
+      lastSearch = ""
       init(first)
     }
   }
 
-  // Run main (Subscribe to Materials reloads)
+  // Capture links in notebook pages so that we can make playgound links load instantly
+  document.addEventListener("click", interceptClickEvent)
+
+  // Handle history of pages on notebooks as they are loaded dynamically
+  window.addEventListener("popstate", popState)
+
+  // Attach main via subscribe (subscribes to Materials on page load and instant page loads)
   window.document$.subscribe(() => {
     main(true)
   })

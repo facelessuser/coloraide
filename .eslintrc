@@ -155,7 +155,7 @@
     "prefer-numeric-literals": 2,
     "prefer-spread": 2,
     "prefer-template": 2,
-    "quotes": [2, "double"],
+    // "quotes": [2, "double"],
     "radix": 2,
     "require-jsdoc": [1, {
       "require": {
