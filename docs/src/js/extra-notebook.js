@@ -6,6 +6,7 @@
   const reIdNum = /.*?_(\d+)$/
   let initialized = false
   let lastSearch = ""
+  let fake = false
   // This is the Python payload that will be executed when the user
   // presses the `Run` button. It will execute the code, create a
   // Python console output, find color references, steps, and interpolation
@@ -24,6 +25,15 @@ Learn more [here](\
 ${content}
 \`\`\`\`\`\`\`\`
 `
+  }
+
+  const fakeDOMContentLoaded = () => {
+    // Send a fake `DOMContentLoaded`
+    fake = true
+    window.document.dispatchEvent(new Event("DOMContentLoaded", {
+      bubbles: true,
+      cancelable: true
+    }))
   }
 
   const textResize = inpt => {
@@ -83,6 +93,8 @@ ${content}
   }
 
   const showBusy = (target, label, relative) => {
+    // Show busy indicator
+
     const loaderLabel = (typeof label === "undefined" || label === null) ? "Loading..." : label
     const classes = relative ? "loading relative" : "loading"
     const template = document.createElement("template")
@@ -91,6 +103,8 @@ ${content}
   }
 
   const hideBusy = target => {
+    // Hide busy indicator
+
     const loading = target.querySelector(".loading")
     if (loading) {
       target.removeChild(target.querySelector(".loading"))
@@ -98,6 +112,8 @@ ${content}
   }
 
   const popState = e => {
+    // Handle notebook history
+
     if (
       window.location.pathname === "/coloraide/playground/"
     ) {
@@ -109,6 +125,8 @@ ${content}
   }
 
   const interceptClickEvent = e => {
+    // Catch links to other notebook pages and handle them
+
     const target = e.target || e.srcElement
     if (target.tagName === "A" && main) { // eslint-disable-line no-use-before-define
       if (
@@ -333,6 +351,7 @@ ${content}
             await pyrender(value)
             await init(first)
             hideBusy(article)
+            // fakeDOMContentLoaded()
           }
           xhr.send()
         } catch (err) {} // eslint-disable-line no-empty
@@ -347,6 +366,7 @@ ${content}
         await pyrender(content)
         await init(first)
         hideBusy(article)
+        // fakeDOMContentLoaded()
       }
     } else {
       gist = ""
@@ -358,11 +378,23 @@ ${content}
   // Capture links in notebook pages so that we can make playgound links load instantly
   document.addEventListener("click", interceptClickEvent)
 
-  // Handle history of pages on notebooks as they are loaded dynamically
+  // Handle history of notebook pages as they are loaded dynamically
   window.addEventListener("popstate", popState)
+
+  // Before leaving, turn off fake, just in case we navigated away before finished
+  window.addEventListener("unload", () => {
+    console.log('doing it!')
+    fake = true
+  })
 
   // Attach main via subscribe (subscribes to Materials on page load and instant page loads)
   window.document$.subscribe(() => {
+    // To get other libraries to to reload, we may create a fake `DOMContentLoaded`
+    // No need to process these events.
+    if (fake) {
+      fake = false
+      return
+    }
     main(true)
   })
 })()
