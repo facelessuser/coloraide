@@ -111,7 +111,7 @@ ${content}
     }
   }
 
-  const popState = e => {
+  const popState = () => {
     // Handle notebook history
 
     if (
