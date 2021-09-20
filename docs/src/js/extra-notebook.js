@@ -351,7 +351,7 @@ ${content}
             await pyrender(value)
             await init(first)
             hideBusy(article)
-            // fakeDOMContentLoaded()
+            fakeDOMContentLoaded()
           }
           xhr.send()
         } catch (err) {} // eslint-disable-line no-empty
@@ -366,7 +366,7 @@ ${content}
         await pyrender(content)
         await init(first)
         hideBusy(article)
-        // fakeDOMContentLoaded()
+        fakeDOMContentLoaded()
       }
     } else {
       gist = ""
@@ -383,7 +383,6 @@ ${content}
 
   // Before leaving, turn off fake, just in case we navigated away before finished
   window.addEventListener("unload", () => {
-    console.log('doing it!')
     fake = true
   })
 
