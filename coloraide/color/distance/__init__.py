@@ -1,28 +1,45 @@
 """Distance and Delta E."""
+from ... import util
 from . import distance_euclidean
-from . import delta_e_76  # noqa: F401
-from . import delta_e_94  # noqa: F401
-from . import delta_e_cmc  # noqa: F401
-from . import delta_e_2000  # noqa: F401
-from . import delta_e_itp  # noqa: F401
-from . import delta_e_99o  # noqa: F401
-from . import delta_e_z  # noqa: F401
-from . import delta_e_hyab  # noqa: F401
+from . import delta_e_76
+from . import delta_e_94
+from . import delta_e_cmc
+from . import delta_e_2000
+from . import delta_e_itp
+from . import delta_e_99o
+from . import delta_e_jz
+from . import delta_e_hyab
+
+SUPPORTED = [
+    delta_e_76, delta_e_94, delta_e_cmc, delta_e_2000,
+    delta_e_itp, delta_e_99o, delta_e_jz, delta_e_hyab
+]
+
+
+class DeltaEMap(util.Map):
+    """
+    Immutable delta E mapping.
+
+    This is not required to be used by users but is
+    more for internal use to discourage people from
+    accidentally altering the base class mapping.
+    """
+
+    def __init__(self, values):
+        """Delta E mapping."""
+
+        self._d = {value.__name__.split('.')[-1].replace('delta_e_', ''): value.distance for value in values}
+
+    def _error(self):  # pragma: no cover
+        """Error message."""
+
+        return util.ERR_MAP_MSG.format(name="DE_MAP")
 
 
 class Distance:
     """Distance."""
 
-    DE_MAP = {
-        '76': delta_e_76.distance,
-        '94': delta_e_94.distance,
-        'cmc': delta_e_cmc.distance,
-        '2000': delta_e_2000.distance,
-        'itp': delta_e_itp.distance,
-        '99o': delta_e_99o.distance,
-        'jz': delta_e_z.distance,
-        'hyab': delta_e_hyab.distance
-    }
+    DE_MAP = DeltaEMap(SUPPORTED)
 
     def delta_e(self, color, *, method=None, **kwargs):
         """Delta E distance."""

@@ -42,6 +42,26 @@ SUPPORTED = (
 )
 
 
+class ColorSpaceMap(util.Map):
+    """
+    Immutable color space mapping.
+
+    This is not required to be used by users but is
+    more for internal use to discourage people from
+    accidentally altering the base class mapping.
+    """
+
+    def __init__(self, values):
+        """Initialize."""
+
+        self._d = dict({value.space(): value for value in values})
+
+    def _error(self):  # pragma: no cover
+        """Error message."""
+
+        return util.ERR_MAP_MSG.format(name="CS_MAP")
+
+
 class Color(
     convert.Convert,
     gamut.Gamut,
@@ -53,7 +73,7 @@ class Color(
 ):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP = {obj.space(): obj for obj in SUPPORTED}
+    CS_MAP = ColorSpaceMap(SUPPORTED)
 
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
