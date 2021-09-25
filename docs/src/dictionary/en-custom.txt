@@ -4,6 +4,7 @@ Accessors
 Alvy
 Az
 BT
+Björn
 Bz
 CATs
 CIE
@@ -71,8 +72,12 @@ MkDocs
 NONINFRINGEMENT
 NaN
 NaNs
+Okhsl
+Okhsv
+Okhsv
 Oklab
 Oklch
+Ottosson
 PQ
 Piecewise
 Premultiply

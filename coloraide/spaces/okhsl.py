@@ -1,7 +1,7 @@
 """
 Okhsl class.
 
-Translation to/from Oklab is licenced under MIT by the original author, all
+Translation to/from Oklab is licensed under MIT by the original author, all
 other code also licensed under MIT: Copyright (c) 2021 Isaac Muse.
 
 ---- Oklab license ----
@@ -132,7 +132,7 @@ def find_gamut_intersection(a, b, l1, c1, l0, cusp=None):
     if cusp is None:
         cusp = get_cs([l1, a, b])
 
-    # Find the intersection for upper and lower half seprately
+    # Find the intersection for upper and lower half separately
     if ((l1 - l0) * cusp[1] - (cusp[0] - l0) * c1) <= 0.0:
         # Lower half
         t = cusp[1] * l0 / (c1 * cusp[0] + cusp[1] * (l0 - l1))
@@ -371,9 +371,11 @@ def okhsl_to_oklab(hsl):
         c_0, c_mid, c_max = get_cs([L, a_, b_])
 
         # Interpolate the three values for C so that:
+        # ```
         # At s=0: dC/ds = C_0, C=0
         # At s=0.8: C=C_mid
         # At s=1.0: C=C_max
+        # ```
 
         mid = 0.8
         mid_inv = 1.25
@@ -415,7 +417,7 @@ def oklab_to_okhsl(lab):
 
         c_0, c_mid, c_max = get_cs([L, a_, b_])
 
-        # Inverse of the interpolation in okhsl_to_srgb:
+        # Inverse of the interpolation in `okhsl_to_srgb`:
 
         mid = 0.8
         mid_inv = 1.25

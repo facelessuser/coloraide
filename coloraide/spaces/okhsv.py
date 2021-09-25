@@ -1,7 +1,7 @@
 """
 Okhsv class.
 
-Translation to/from Oklab is licenced under MIT by the original author, all
+Translation to/from Oklab is licensed under MIT by the original author, all
 other code also licensed under MIT: Copyright (c) 2021 Isaac Muse.
 
 ---- Oklab license ----
@@ -106,7 +106,7 @@ def oklab_to_okhsv(lab):
         s_0 = 0.5
         k = 1 - s_0 / s_max
 
-        # first we find L_v, C_v, L_vt and C_vt
+        # first we find `L_v`, `C_v`, `L_vt` and `C_vt`
         t = t_max / (c + l * t_max)
         l_v = t * l
         c_v = t * c
