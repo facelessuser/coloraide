@@ -43,39 +43,46 @@ def okhsv_to_oklab(hsv):
     v /= 100
     h = util.no_nan(h) / 360.0
 
-    a_ = math.cos(2.0 * math.pi * h)
-    b_ = math.sin(2.0 * math.pi * h)
+    l = toe_inv(v)
+    a = b = 0
 
-    cusp = find_cusp(a_, b_)
-    s_max, t_max = to_st(cusp)
-    s_0 = 0.5
-    k = 1 - s_0 / s_max
+    if l != 0 and s != 0:
+        a_ = math.cos(2.0 * math.pi * h)
+        b_ = math.sin(2.0 * math.pi * h)
 
-    # first we compute L and V as if the gamut is a perfect triangle:
+        cusp = find_cusp(a_, b_)
+        s_max, t_max = to_st(cusp)
+        s_0 = 0.5
+        k = 1 - s_0 / s_max
 
-    # L, C when v==1:
-    l_v = 1 - s * s_0 / (s_0 + t_max - t_max * k * s)
-    c_v = s * t_max * s_0 / (s_0 + t_max - t_max * k * s)
+        # first we compute L and V as if the gamut is a perfect triangle:
 
-    l = v * l_v
-    c = v * c_v
+        # L, C when v==1:
+        l_v = 1 - s * s_0 / (s_0 + t_max - t_max * k * s)
+        c_v = s * t_max * s_0 / (s_0 + t_max - t_max * k * s)
 
-    # then we compensate for both toe and the curved top part of the triangle:
-    l_vt = toe_inv(l_v)
-    c_vt = c_v * l_vt / l_v
+        l = v * l_v
+        c = v * c_v
 
-    l_new = toe_inv(l)
-    c = c * l_new / l
-    l = l_new
+        # then we compensate for both toe and the curved top part of the triangle:
+        l_vt = toe_inv(l_v)
+        c_vt = c_v * l_vt / l_v
 
-    # RGB scale
-    rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
-    scale_l = util.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
+        l_new = toe_inv(l)
+        c = c * l_new / l
+        l = l_new
 
-    l = l * scale_l
-    c = c * scale_l
+        # RGB scale
+        rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
+        scale_l = util.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
-    return [l, c * a_, c * b_]
+        l = l * scale_l
+        c = c * scale_l
+
+        a = c * a_
+        b = c * b_
+
+    return [l, a, b]
 
 
 def oklab_to_okhsv(lab):
@@ -88,7 +95,7 @@ def oklab_to_okhsv(lab):
     s = 0
     v = toe(l)
 
-    if c != 0 and l != 0:
+    if c != 0 and l != 0 and l != 1:
         a_ = lab[1] / c
         b_ = lab[2] / c
 

@@ -361,41 +361,41 @@ def okhsl_to_oklab(hsl):
     l /= 100
     h = util.no_nan(h) / 360.0
 
-    if l == 1.0:
-        return 1.0, 0.0, 0.0
-
-    elif l == 0.0:
-        return 0.0, 0.0, 0.0
-
-    a_ = math.cos(2.0 * math.pi * h)
-    b_ = math.sin(2.0 * math.pi * h)
     L = toe_inv(l)
+    a = b = 0
 
-    c_0, c_mid, c_max = get_cs([L, a_, b_])
+    if L != 0 and L != 1 and s != 0:
+        a_ = math.cos(2.0 * math.pi * h)
+        b_ = math.sin(2.0 * math.pi * h)
 
-    # Interpolate the three values for C so that:
-    # At s=0: dC/ds = C_0, C=0
-    # At s=0.8: C=C_mid
-    # At s=1.0: C=C_max
+        c_0, c_mid, c_max = get_cs([L, a_, b_])
 
-    mid = 0.8
-    mid_inv = 1.25
+        # Interpolate the three values for C so that:
+        # At s=0: dC/ds = C_0, C=0
+        # At s=0.8: C=C_mid
+        # At s=1.0: C=C_max
 
-    if s < mid:
-        t = mid_inv * s
-        k_0 = 0
-        k_1 = mid * c_0
-        k_2 = (1.0 - k_1 / c_mid)
+        mid = 0.8
+        mid_inv = 1.25
 
-    else:
-        t = 5 * (s - 0.8)
-        k_0 = c_mid
-        k_1 = 0.2 * (c_mid ** 2) * (1.25 ** 2) / c_0
-        k_2 = (1.0 - (k_1) / (c_max - c_mid))
+        if s < mid:
+            t = mid_inv * s
+            k_0 = 0
+            k_1 = mid * c_0
+            k_2 = (1.0 - k_1 / c_mid)
 
-    c = k_0 + t * k_1 / (1.0 - k_2 * t)
+        else:
+            t = 5 * (s - 0.8)
+            k_0 = c_mid
+            k_1 = 0.2 * (c_mid ** 2) * (1.25 ** 2) / c_0
+            k_2 = (1.0 - (k_1) / (c_max - c_mid))
 
-    return [L, c * a_, c * b_]
+        c = k_0 + t * k_1 / (1.0 - k_2 * t)
+
+        a = c * a_
+        b = c * b_
+
+    return [L, a, b]
 
 
 def oklab_to_okhsl(lab):
