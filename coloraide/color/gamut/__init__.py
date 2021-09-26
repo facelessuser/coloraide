@@ -1,8 +1,21 @@
 """Gamut handling."""
 from ... import util
 from ... spaces import Angle, GamutBound
-from . import clip
-from . import lch_chroma
+from abc import ABCMeta, abstractmethod
+
+
+class Fit(ABCMeta):
+    """Fit plugin class."""
+
+    @staticmethod
+    @abstractmethod
+    def name():
+        """Get name of method."""
+
+    @staticmethod
+    @abstractmethod
+    def distance(color):
+        """Get coordinates of the new gamut mapped color."""
 
 
 def norm_angles(color):
@@ -26,11 +39,6 @@ def norm_angles(color):
 
 class Gamut:
     """Handle gamut related functions."""
-
-    FIT_MAP = {
-        "clip": clip.fit,
-        "lch-chroma": lch_chroma.fit
-    }
 
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""

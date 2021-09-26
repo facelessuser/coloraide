@@ -17,6 +17,16 @@ DEF_DISTANCE_SPACE = "lab"
 DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
 
+ERR_MAP_MSG = """
+    To add or remove items from this mapping, please subclass the
+    'Color' object and replace the entire mapping by either copying
+    this mapping and then altering it or by creating an entirely
+    new mapping. Example:
+
+    class MyNewClass(Color):
+        {name} = {{**Color.{name}, **my_override_map}}
+"""
+
 # Many libraries use 200, but `Colorjs.io` uses 203
 # The author explains why 203 was chosen:
 #

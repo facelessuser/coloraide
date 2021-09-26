@@ -1,31 +1,42 @@
 """Clip to fit in gamut."""
 from ... import util
 from ... spaces import Angle, GamutBound
+from ..gamut import Fit
 
 
-def fit(color):
-    """Gamut clipping."""
+class Clip(Fit):
+    """Clip gamut mapping class."""
 
-    channels = util.no_nan(color.coords())
-    gamut = color._space.RANGE
-    fit = []
+    @staticmethod
+    def name():
+        """Get name."""
 
-    for i, value in enumerate(channels):
-        a, b = gamut[i]
-        is_bound = isinstance(gamut[i], GamutBound)
+        return "clip"
 
-        # Wrap the angle. Not technically out of gamut, but we will clean it up.
-        if isinstance(a, Angle) and isinstance(b, Angle):
-            fit.append(value % 360.0)
-            continue
+    @staticmethod
+    def fit(color):
+        """Gamut clipping."""
 
-        # These parameters are unbounded
-        if not is_bound:  # pragma: no cover
-            # Will not execute unless we have a space that defines some coordinates
-            # as bound and others as not. We do not currently have such spaces.
-            a = None
-            b = None
+        channels = util.no_nan(color.coords())
+        gamut = color._space.RANGE
+        fit = []
 
-        # Fit value in bounds.
-        fit.append(util.clamp(value, a, b))
-    return fit
+        for i, value in enumerate(channels):
+            a, b = gamut[i]
+            is_bound = isinstance(gamut[i], GamutBound)
+
+            # Wrap the angle. Not technically out of gamut, but we will clean it up.
+            if isinstance(a, Angle) and isinstance(b, Angle):
+                fit.append(value % 360.0)
+                continue
+
+            # These parameters are unbounded
+            if not is_bound:  # pragma: no cover
+                # Will not execute unless we have a space that defines some coordinates
+                # as bound and others as not. We do not currently have such spaces.
+                a = None
+                b = None
+
+            # Fit value in bounds.
+            fit.append(util.clamp(value, a, b))
+        return fit

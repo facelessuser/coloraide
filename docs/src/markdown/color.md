@@ -215,7 +215,14 @@ for m in RE_COLOR_START.finditer(text):
 [x.to_string() for x in colors]
 ```
 
-## Override Default Settings
+## Custom Color Classes
+
+In general, it is always recommended to subclass the [`Color`](#color) object when setting up a custom preferences or
+adding and removing plugins. This prevents modifying the base class which may affect other libraries relying on the
+module. When [`Color`](#color) is subclassed, it is safe to then update global overrides or register and deregister
+plugins without worry of affecting the base class.
+
+### Override Default Settings
 
 ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
 mode, etc. All of these options can be set on demand when calling certain functions, but when not explicitly set, the
@@ -237,3 +244,49 @@ Properties             | Description
 `DELTA_E`              | The default delta E algorithm used for gamut distancing calls internally.
 `PRECISION`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
+
+### Plugins
+
+Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.
+
+If you wanted a more light weight [`Color`](#color) object, could deregister color spaces you don't need. Keep in mind
+some color spaces are essential (like XYZ which is used to convert almost every color space to another) or could break
+functionality of of certain features reliant on that color space, such as CIELAB which is used when doing which is used
+delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
+
+While we won't get into the specifics of how to create plugins -- users can check out the source to see how to make
+plugins -- or go into the relationships of which spaces are required for which functionality, we will speak briefly on
+how to register new ones and deregister existing ones.
+
+Registration is performed by the `register` method. It can take a single plugin or a list of plugins. Based on the
+plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
+a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If `overwrite` set
+to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place of
+the existing plugin.
+
+Here we just overwrite the existing Jzazbz color space plugin with itself again.
+
+```playground
+class Custom(Color): ...
+from coloraide.spaces import jzazbz
+Custom.register(jzazbz.Jzazbz, overwrite=True)
+Custom('red').convert('jzazbz')
+```
+
+If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to
+deregister: `category:name`. Valid categories are `space`, `delta-e`, and `fit`. If the given plugin is not found,
+an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the there will
+be no error thrown.
+
+```playground
+class Custom(Color): ...
+Custom.deregister('space:jzazbz')
+try:
+    Custom('red').convert('jzazbz')
+except ValueError:
+    print('Could not convert to Jzazbz as it is no longer registered')
+```
+
+Use of `*` with `deregister` will remove all plugins. Use of `category:*` will remove all plugins of that category.
+This is in case a user wishes to build up a color classes plugins from scratch. This may be useful if there is a desire
+to explicitly define allowed plugins and exclude any unknown new ones that may become available.

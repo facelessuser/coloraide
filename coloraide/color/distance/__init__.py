@@ -1,28 +1,24 @@
 """Distance and Delta E."""
 from . import distance_euclidean
-from . import delta_e_76  # noqa: F401
-from . import delta_e_94  # noqa: F401
-from . import delta_e_cmc  # noqa: F401
-from . import delta_e_2000  # noqa: F401
-from . import delta_e_itp  # noqa: F401
-from . import delta_e_99o  # noqa: F401
-from . import delta_e_z  # noqa: F401
-from . import delta_e_hyab  # noqa: F401
+from abc import ABCMeta, abstractmethod
+
+
+class DeltaE(ABCMeta):
+    """Delta E plugin class."""
+
+    @staticmethod
+    @abstractmethod
+    def name():
+        """Get name of method."""
+
+    @staticmethod
+    @abstractmethod
+    def distance(color, sample, **kwargs):
+        """Get distance between color and sample."""
 
 
 class Distance:
     """Distance."""
-
-    DE_MAP = {
-        '76': delta_e_76.distance,
-        '94': delta_e_94.distance,
-        'cmc': delta_e_cmc.distance,
-        '2000': delta_e_2000.distance,
-        'itp': delta_e_itp.distance,
-        '99o': delta_e_99o.distance,
-        'jz': delta_e_z.distance,
-        'hyab': delta_e_hyab.distance
-    }
 
     def delta_e(self, color, *, method=None, **kwargs):
         """Delta E distance."""

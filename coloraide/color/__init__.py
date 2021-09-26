@@ -1,5 +1,6 @@
 """Colors."""
 from collections.abc import Sequence
+import abc
 import functools
 from . import distance
 from . import convert
@@ -9,6 +10,7 @@ from . import interpolate
 from . import contrast
 from . import match
 from .. import util
+from ..spaces import Space
 from ..spaces.hsv import HSV
 from ..spaces.srgb.css import SRGB
 from ..spaces.srgb_linear import SRGBLinear
@@ -33,13 +35,44 @@ from ..spaces.din99o import Din99o
 from ..spaces.din99o_lch import Din99oLch
 from ..spaces.luv import Luv
 from ..spaces.lchuv import Lchuv
+from .distance import DeltaE
+from .distance.delta_e_76 import DE76
+from .distance.delta_e_94 import DE94
+from .distance.delta_e_cmc import DECMC
+from .distance.delta_e_2000 import DE2000
+from .distance.delta_e_itp import DEITP
+from .distance.delta_e_99o import DE99o
+from .distance.delta_e_z import DEZ
+from .distance.delta_e_hyab import DEHyAB
+from .gamut import Fit
+from .gamut.lch_chroma import LchChroma
+from .gamut.clip import Clip
 
+SUPPORTED_DE = (
+    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB
+)
 
-SUPPORTED = (
+SUPPORTED_SPACES = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
     Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv
 )
+
+SUPPORTED_FIT = (
+    LchChroma, Clip
+)
+
+
+class BaseColor(abc.ABCMeta):
+    """Ensure on subclass that the subclass has new instances of mappings."""
+
+    def __init__(cls, name, bases, clsdict):
+        """Copy mappings on subclass."""
+
+        if len(cls.mro()) > 2:
+            cls.CS_MAP = dict(cls.CS_MAP)
+            cls.DE_MAP = dict(cls.DE_MAP)
+            cls.FIT_MAP = dict(cls.FIT_MAP)
 
 
 class Color(
@@ -49,12 +82,14 @@ class Color(
     interpolate.Interpolate,
     distance.Distance,
     contrast.Contrast,
-    match.Match
+    match.Match,
+    metaclass=BaseColor
 ):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP = {obj.space(): obj for obj in SUPPORTED}
-
+    CS_MAP = {}
+    DE_MAP = {}
+    FIT_MAP = {}
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
@@ -98,6 +133,66 @@ class Color(
         if obj is None:
             raise ValueError("Could not process the provided color")
         return obj
+
+    @classmethod
+    def register(cls, plugin, overwrite=False):
+        """Register the hook."""
+
+        if not isinstance(plugin, Sequence):
+            plugin = [plugin]
+
+        for p in plugin:
+            if issubclass(p, Space):
+                name = p.space()
+                value = p
+                mapping = cls.CS_MAP
+            elif issubclass(p, DeltaE):
+                name = p.name()
+                value = p.distance
+                mapping = cls.DE_MAP
+            elif issubclass(p, Fit):
+                name = p.name()
+                value = p.fit
+                mapping = cls.FIT_MAP
+            else:
+                raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
+
+            if name != "*" and name not in mapping or overwrite:
+                mapping[name] = value
+            else:
+                raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
+
+    @classmethod
+    def deregister(cls, plugin, silent=False):
+        """Deregister a plugin by name of specified plugin type."""
+
+        if isinstance(plugin, str):
+            plugin = [plugin]
+
+        for p in plugin:
+            if p == '*':
+                cls.CS_MAP.clear()
+                cls.DE_MAP.clear()
+                cls.FIT_MAP.clear()
+                return
+
+            ptype, name = p.split(':', 1)
+            mapping = None
+            if ptype == 'space':
+                mapping = cls.CS_MAP
+            elif ptype == "delta-e":
+                mapping = cls.DE_MAP
+            elif ptype == "fit":
+                mapping = cls.FIT_MAP
+            else:
+                raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
+
+            if name == '*':
+                mapping.clear()
+            elif name in mapping:
+                del mapping[name]
+            elif not silent:
+                raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
 
     def is_nan(self, name):
         """Check if channel is NaN."""
@@ -227,3 +322,6 @@ class Color(
             pass
         # Set all attributes on the Color class.
         super().__setattr__(name, value)
+
+
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT)

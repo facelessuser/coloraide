@@ -3,11 +3,22 @@ Delta E 99o.
 
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
+from ..distance import DeltaE
 from . import distance_euclidean
 
 
-def distance(color, sample, **kwargs):
-    """Delta E 99o color distance formula."""
+class DE99o(DeltaE):
+    """Delta E 99o class."""
 
-    # Equation (1)
-    return distance_euclidean.distance(color, sample, space="din99o")
+    @staticmethod
+    def name():
+        """Name of method."""
+
+        return "99o"
+
+    @staticmethod
+    def distance(color, sample, **kwargs):
+        """Delta E 99o color distance formula."""
+
+        # Equation (1)
+        return distance_euclidean.distance(color, sample, space="din99o")
