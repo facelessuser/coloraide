@@ -286,3 +286,7 @@ try:
 except ValueError:
     print('Could not convert to Jzazbz as it is no longer registered')
 ```
+
+Use of `*` with `deregister` will remove all plugins. Use of `category:*` will remove all plugins of that category.
+This is in case a user wishes to build up a color classes plugins from scratch. This may be useful if there is a desire
+to explicitly define allowed plugins and exclude any unknown new ones that may become available.

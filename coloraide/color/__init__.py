@@ -157,10 +157,10 @@ class Color(
             else:
                 raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
 
-            if name not in mapping or overwrite:
+            if name != "*" and name not in mapping or overwrite:
                 mapping[name] = value
             else:
-                raise KeyError("A plugin with the name of '{}' already exists".format(name))
+                raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
 
     @classmethod
     def deregister(cls, plugin, silent=False):
@@ -170,6 +170,12 @@ class Color(
             plugin = [plugin]
 
         for p in plugin:
+            if p == '*':
+                cls.CS_MAP.clear()
+                cls.DE_MAP.clear()
+                cls.FIT_MAP.clear()
+                return
+
             ptype, name = p.split(':', 1)
             mapping = None
             if ptype == 'space':
@@ -181,10 +187,12 @@ class Color(
             else:
                 raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
 
-            if name in mapping:
+            if name == '*':
+                mapping.clear()
+            elif name in mapping:
                 del mapping[name]
             elif not silent:
-                raise KeyError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
+                raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
 
     def is_nan(self, name):
         """Check if channel is NaN."""

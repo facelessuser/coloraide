@@ -1462,6 +1462,27 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         Custom.register(lch_chroma.LchChroma)
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
+    def test_deregister_all_category(self):
+        """Test deregistration of all plugins in a category."""
+
+        class Custom(Color):
+            pass
+
+        Custom.deregister('fit:*')
+        self.assertEqual(Custom.FIT_MAP, {})
+        self.assertNotEqual(Custom.CS_MAP, {})
+
+    def test_deregister_all(self):
+        """Test deregistration of all plugins."""
+
+        class Custom(Color):
+            pass
+
+        Custom.deregister('*')
+        self.assertEqual(Custom.FIT_MAP, {})
+        self.assertEqual(Custom.CS_MAP, {})
+        self.assertEqual(Custom.DE_MAP, {})
+
     def test_bad_registration_type(self):
         """Test bad registration type."""
 
@@ -1471,6 +1492,26 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             Custom.register('string')
 
+    def test_bad_registration_star(self):
+        """Test bad registration type."""
+
+        from coloraide.color.distance import DeltaE
+
+        class Custom(Color):
+            pass
+
+        class CustomDE(DeltaE):
+            @staticmethod
+            def name():
+                return '*'
+
+            @staticmethod
+            def distance(color, sample, **kwargs):
+                return 0
+
+        with self.assertRaises(ValueError):
+            Custom.register(CustomDE)
+
     def test_bad_registration_exists(self):
         """Test bad registration of plugin that exists."""
 
@@ -1479,7 +1520,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ValueError):
             Custom.register(Jzazbz)
 
         Custom.register(Jzazbz, overwrite=True)
@@ -1499,5 +1540,5 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ValueError):
             Custom.deregister('space:bad')

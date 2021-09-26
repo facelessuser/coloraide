@@ -105,8 +105,7 @@ Parameters
     Parameters  | Defaults      | Description
     ----------- | ------------- | -----------
     `plugin`    |               | A plugin object or list of plugin objects to register.
-    `overwrite` | `#!py3 False` | `overwrite` will avoid allow an already registered plugin to be overwritten if the
-    plugin to register specifies a `name` that is already used for registration.
+    `overwrite` | `#!py3 False` | `overwrite` will avoid allow an already registered plugin to be overwritten if the plugin to register specifies a `name` that is already used for registration.
 
 ## `Color.deregister` {#deregister}
 
@@ -127,7 +126,7 @@ Parameters
 : 
     Parameters  | Defaults       | Description
     ----------- | -------------- | -----------
-    `plugin`    |                | A string or list of strings that describe the plugin to be removed. Strings should be in the format `category:name` where `category` is either `space`, `delta-e`, or `fit` and `name` is the name the plugin was registered under.
+    `plugin`    |                | A string or list of strings that describe the plugin to be removed. Strings should be in the format `category:name` where `category` is either `space`, `delta-e`, or `fit` and `name` is the name the plugin was registered under. `*` will remove all plugins and `category:*` will remove all within a specific category.
     `silent`     | `#!py3 False` | `silent` will avoid throwing an error if the `name` can not be found in the specified category.
 
 ## `Color.match` {#match}
