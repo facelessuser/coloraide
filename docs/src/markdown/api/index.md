@@ -85,6 +85,51 @@ Parameters
     `alpha`    | `#!py3 1`    | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
     `filters`  | `#!py3 None` | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
 
+## `Color.register` {#register}
+
+```py
+@classmethod
+def register(
+    cls,
+    plugin,
+    overwrite=False
+):
+```
+
+Description
+: 
+    Register a plugin(s).
+
+Parameters
+: 
+    Parameters  | Defaults      | Description
+    ----------- | ------------- | -----------
+    `plugin`    |               | A plugin object or list of plugin objects to register.
+    `overwrite` | `#!py3 False` | `overwrite` will avoid allow an already registered plugin to be overwritten if the
+    plugin to register specifies a `name` that is already used for registration.
+
+## `Color.deregister` {#deregister}
+
+```py
+@classmethod
+def deregister(
+    cls,
+    plugin,
+    silent=False
+):
+```
+
+Description
+: 
+    Remove an already registered plugin(s).
+
+Parameters
+: 
+    Parameters  | Defaults       | Description
+    ----------- | -------------- | -----------
+    `plugin`    |                | A string or list of strings that describe the plugin to be removed. Strings should be in the format `category:name` where `category` is either `space`, `delta-e`, or `fit` and `name` is the name the plugin was registered under.
+    `silent`     | `#!py3 False` | `silent` will avoid throwing an error if the `name` can not be found in the specified category.
+
 ## `Color.match` {#match}
 
 ```py3
@@ -125,7 +170,7 @@ Parameters
     Parameters  | Defaults      | Description
     ----------- | ------------- | -----------
     `string`    |               | A string representing the color.
-    `start`     | `#!py3 0`     | Accepts a integer offset into the provided string buffer to start the match.
+    `start`     | `#!py3 0`     | Accepts an integer offset into the provided string buffer to start the match.
     `fullmatch` | `#!py3 False` | A boolean which defines whether match must match to the end of the string buffer.
     `filters`   | `#!py3 None`  | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
 

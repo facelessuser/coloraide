@@ -135,40 +135,42 @@ class Color(
         return obj
 
     @classmethod
-    def register(cls, obj, overwrite=False):
+    def register(cls, plugin, overwrite=False):
         """Register the hook."""
 
-        if not isinstance(obj, Sequence):
-            obj = [obj]
+        if not isinstance(plugin, Sequence):
+            plugin = [plugin]
 
-        for o in obj:
-            if issubclass(o, Space):
-                name = o.space()
-                value = o
+        for p in plugin:
+            if issubclass(p, Space):
+                name = p.space()
+                value = p
                 mapping = cls.CS_MAP
-            elif issubclass(o, DeltaE):
-                name = o.name()
-                value = o.distance
+            elif issubclass(p, DeltaE):
+                name = p.name()
+                value = p.distance
                 mapping = cls.DE_MAP
-            elif issubclass(o, Fit):
-                name = o.name()
-                value = o.fit
+            elif issubclass(p, Fit):
+                name = p.name()
+                value = p.fit
                 mapping = cls.FIT_MAP
             else:
-                return
+                raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
 
             if name not in mapping or overwrite:
                 mapping[name] = value
+            else:
+                raise KeyError("A plugin with the name of '{}' already exists".format(name))
 
     @classmethod
-    def deregister(cls, plugin):
+    def deregister(cls, plugin, silent=False):
         """Deregister a plugin by name of specified plugin type."""
 
         if isinstance(plugin, str):
             plugin = [plugin]
 
         for p in plugin:
-            ptype, name = p.split(':')
+            ptype, name = p.split(':', 1)
             mapping = None
             if ptype == 'space':
                 mapping = cls.CS_MAP
@@ -176,8 +178,13 @@ class Color(
                 mapping = cls.DE_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
-            if mapping is not None and name in mapping:
+            else:
+                raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
+
+            if name in mapping:
                 del mapping[name]
+            elif not silent:
+                raise KeyError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
 
     def is_nan(self, name):
         """Check if channel is NaN."""

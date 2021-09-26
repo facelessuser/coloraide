@@ -27,6 +27,7 @@ Ctrl
 Cz
 DCI
 Deregister
+Deregistration
 EOTF
 Ebner
 FNF
@@ -101,6 +102,7 @@ coroutine
 cp
 cz
 deregister
+deregistration
 fixup
 formatter
 grayscale
