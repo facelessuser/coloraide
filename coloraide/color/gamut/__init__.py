@@ -1,30 +1,21 @@
 """Gamut handling."""
 from ... import util
 from ... spaces import Angle, GamutBound
-from . import clip
-from . import lch_chroma
-
-SUPPORTED = [clip, lch_chroma]
+from abc import ABCMeta, abstractmethod
 
 
-class FitMap(util.Map):
-    """
-    Immutable delta E mapping.
+class Fit(ABCMeta):
+    """Fit plugin class."""
 
-    This is not required to be used by users but is
-    more for internal use to discourage people from
-    accidentally altering the base class mapping.
-    """
+    @staticmethod
+    @abstractmethod
+    def name():
+        """Get name of method."""
 
-    def __init__(self, values):
-        """Delta E mapping."""
-
-        self._d = {value.__name__.split('.')[-1].replace('_', '-'): value.fit for value in values}
-
-    def _error(self):  # pragma: no cover
-        """Error message."""
-
-        return util.ERR_MAP_MSG.format(name="FIT_MAP")
+    @staticmethod
+    @abstractmethod
+    def distance(color):
+        """Get coordinates of the new gamut mapped color."""
 
 
 def norm_angles(color):
@@ -48,8 +39,6 @@ def norm_angles(color):
 
 class Gamut:
     """Handle gamut related functions."""
-
-    FIT_MAP = FitMap(SUPPORTED)
 
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""

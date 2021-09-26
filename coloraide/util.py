@@ -4,9 +4,6 @@ import math
 import numbers
 import warnings
 from functools import wraps
-from collections.abc import Mapping
-from abc import ABCMeta, abstractmethod
-import copy
 
 NaN = float('nan')
 INF = float('inf')
@@ -446,57 +443,3 @@ def deprecated(message, stacklevel=2):  # pragma: no cover
             return func(*args, **kwargs)
         return _func
     return _decorator
-
-
-class Map(Mapping, metaclass=ABCMeta):
-    """Immutable dictionary."""
-
-    @abstractmethod
-    def __init__(self, values):  # pragma: no cover
-        """Initialize."""
-
-    @abstractmethod
-    def _error(self):  # pragma: no cover
-        """Error message."""
-
-    def __iter__(self):
-        """Iterator."""
-
-        return iter(self._d)
-
-    def __len__(self):
-        """Length."""
-
-        return len(self._d)
-
-    def __setitem__(self, key, value):  # pragma: no cover
-        """Throw an error alerting the user that they should subclass."""
-
-        raise NotImplementedError(self._error())
-
-    def __delitem__(self, key):  # pragma: no cover
-        """Throw an error alerting the user that they should subclass."""
-
-        raise NotImplementedError(self._error())
-
-    def __getitem__(self, key):
-        """Get item: `namespace['key']`."""
-
-        return self._d[key]
-
-    def __copy__(self):  # pragma: no cover
-        """Copy as a read/write dictionary."""
-
-        return copy.copy(self._d)
-
-    def __deepcopy__(self):  # pragma: no cover
-        """Deep copy as a read/write dictionary."""
-
-        return copy.deepcopy(self._d)
-
-    def __repr__(self):  # pragma: no cover
-        """Representation."""
-
-        return "{!r}".format(self._d)
-
-    __str__ = __repr__

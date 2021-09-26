@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0a27
+
+- **NEW**: Add new `register` and `deregister` method to allow adding new spaces, Delta E methods, or gamut mapping
+  methods.
+- **NEW**: Rework Delta E and gamut mapping methods as static plugin classes.
+- **NEW**: When `Color()` class is subclassed, ensure the subclass is using copies of the base class plugin mappings.
+  This is done with a special `metaclass`. This will prevent accidental appending and deleting of plugins on a subclass
+  that affects the base class.
+
 ## 0.1.0a26
 
 - **NEW**: Use D65 and D50 white points as specified in CSS spec, but limited to 4 decimals as everyone else seems to

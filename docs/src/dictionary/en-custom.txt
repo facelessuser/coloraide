@@ -26,6 +26,7 @@ Colorimetry
 Ctrl
 Cz
 DCI
+Deregister
 EOTF
 Ebner
 FNF
@@ -99,6 +100,7 @@ chroma
 coroutine
 cp
 cz
+deregister
 fixup
 formatter
 grayscale
