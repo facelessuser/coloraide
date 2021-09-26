@@ -1489,8 +1489,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
+        class BadClass:
+            pass
+
         with self.assertRaises(TypeError):
-            Custom.register('string')
+            Custom.register(BadClass)
 
     def test_bad_registration_star(self):
         """Test bad registration type."""
