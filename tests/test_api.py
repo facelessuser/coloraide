@@ -9,6 +9,11 @@ import warnings
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_white(self):
+        """Test white."""
+
+        self.assertEqual(Color('red').white(), [0.9504559270516716, 1, 1.0890577507598784])
+
     def test_missing_percent(self):
         """Test missing percent."""
 

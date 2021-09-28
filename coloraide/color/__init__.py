@@ -264,7 +264,7 @@ class Color(
     def white(self):
         """Get the white point."""
 
-        return util.xy_to_xyz(self._space.white().coords())
+        return util.xy_to_xyz(self._space.white())
 
     def uv(self, mode='1976'):
         """Convert to `xy`."""
