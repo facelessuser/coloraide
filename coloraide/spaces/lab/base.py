@@ -35,7 +35,7 @@ def lab_to_xyz(lab, white):
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return util.multiply(xyz, util.xy_to_xyz(*white))
+    return util.multiply(xyz, util.xy_to_xyz(white))
 
 
 def xyz_to_lab(xyz, white):
@@ -49,7 +49,7 @@ def xyz_to_lab(xyz, white):
     """
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = util.divide(xyz, util.xy_to_xyz(*white))
+    xyz = util.divide(xyz, util.xy_to_xyz(white))
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 

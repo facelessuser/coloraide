@@ -75,12 +75,12 @@ def calc_adaptation_matrices(w1, w2, method='bradford'):
     mi = util.inv(m)
 
     try:
-        first = util.dot(m, util.xy_to_xyz(*WHITES[w1]))
+        first = util.dot(m, util.xy_to_xyz(WHITES[w1]))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w1))
 
     try:
-        second = util.dot(m, util.xy_to_xyz(*WHITES[w2]))
+        second = util.dot(m, util.xy_to_xyz(WHITES[w2]))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 

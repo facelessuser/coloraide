@@ -261,6 +261,32 @@ class Color(
 
     __str__ = __repr__
 
+    def white(self):
+        """Get the white point."""
+
+        return util.xy_to_xyz(self._space.white().coords())
+
+    def uv(self, mode='1976'):
+        """Convert to `xy`."""
+
+        uv = None
+        if mode == '1976':
+            xyz = self.convert('xyz')
+            xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+            uv = util.xyz_to_uv(xyz)
+        elif mode == '1960':
+            uv = util.xy_to_uv_1960(self.xy())
+        else:
+            raise ValueError("'mode' must be either '1960' or '1976' (default), not '{}'".format(mode))
+        return uv
+
+    def xy(self):
+        """Convert to `xy`."""
+
+        xyz = self.convert('xyz')
+        xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+        return util.xyz_to_xyY(xyz, self._space.white())[:2]
+
     def get(self, name):
         """Get channel."""
 

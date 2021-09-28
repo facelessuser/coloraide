@@ -3,7 +3,7 @@ import sys
 import argparse
 import os
 
-sys.path.append(os.getcwd())
+sys.path.insert(0, os.getcwd())
 
 from coloraide import Color  # noqa: E402
 from coloraide import util  # noqa: E402

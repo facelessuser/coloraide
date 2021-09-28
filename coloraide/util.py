@@ -49,10 +49,11 @@ C2 = 2413 / 128
 C3 = 2392 / 128
 
 
-def xy_to_xyz(x, y, y2=1):
+def xy_to_xyz(xy, Y=1):
     """Convert `xyY` to `xyz`."""
 
-    return [(x * y2) / y, y2, (1 - x - y) * y2 / y]
+    x, y = xy
+    return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (1 - x - y) * Y / y]
 
 
 def xyz_to_uv(xyz):
@@ -61,12 +62,62 @@ def xyz_to_uv(xyz):
     x, y, z = xyz
     denom = (x + 15 * y + 3 * z)
     if denom != 0:
-        u = (4 * x) / (x + 15 * y + 3 * z)
-        v = (9 * y) / (x + 15 * y + 3 * z)
+        u = (4 * x) / denom
+        v = (9 * y) / denom
     else:
         u = v = 0
 
     return u, v
+
+
+def uv_to_xy(uv):
+    """XYZ to UV."""
+
+    u, v = uv
+    denom = (6 * u - 16 * v + 12)
+    if denom != 0:
+        x = (9 * u) / denom
+        y = (4 * v) / denom
+    else:
+        x = y = 0
+
+    return x, y
+
+
+def xy_to_uv_1960(xy):
+    """XYZ to UV."""
+
+    x, y = xy
+    denom = (12 * y - 2 * x + 3)
+    if denom != 0:
+        u = (4 * x) / denom
+        v = (6 * y) / denom
+    else:
+        u = v = 0
+
+    return u, v
+
+
+def uv_1960_to_xy(uv):
+    """XYZ to UV."""
+
+    u, v = uv
+    denom = (2 * u - 8 * v + 4)
+    if denom != 0:
+        x = (3 * u) / denom
+        y = (2 * v) / denom
+    else:
+        x = y = 0
+
+    return x, y
+
+
+def xyz_to_xyY(xyz, white):
+    """XYZ to `xyY`."""
+
+    x, y, z = xyz
+    d = x + y + z
+    return [white[0], white[1], y] if d == 0 else [x / d, y / d, y]
 
 
 def pq_st2084_inverse_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):

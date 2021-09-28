@@ -13,7 +13,7 @@ def xyz_to_luv(xyz, white):
     """XYZ to Luv."""
 
     u, v = util.xyz_to_uv(xyz)
-    w_xyz = util.xy_to_xyz(*WHITES[white])
+    w_xyz = util.xy_to_xyz(WHITES[white])
     un, vn = util.xyz_to_uv(w_xyz)
 
     y = xyz[1] / w_xyz[1]
@@ -30,7 +30,7 @@ def luv_to_xyz(luv, white):
     """Luv to XYZ."""
 
     l, u, v = luv
-    xyz = util.xy_to_xyz(*WHITES[white])
+    xyz = util.xy_to_xyz(WHITES[white])
     un, vn = util.xyz_to_uv(xyz)
 
     if l != 0:
