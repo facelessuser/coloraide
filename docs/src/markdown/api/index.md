@@ -910,6 +910,62 @@ Return
 : 
     Returns a boolean indicating whether the specified color space's channel is `NaN`.
 
+## `Color.white` {#white}
+
+```py3
+def white(
+    self
+):
+```
+
+Description
+: 
+    Retrieves the white point for the current color's color space.
+
+Return
+: 
+    Returns a set of XYZ coordinates that align with the white point for the given color space.
+
+## `Color.xy` {#xy}
+
+```py3
+def xy(
+    self
+):
+```
+
+Description
+: 
+    Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color.
+
+Return
+: 
+    Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color.
+
+## `Color.uv` {#xy}
+
+```py3
+def uv(
+    self,
+    mode='1976'
+):
+```
+
+Description
+: 
+    Retrieves the UCS 1960 (u, v) chromaticity coordinates for a given color or the CIE 1976 UCS (u', v') chromaticity
+    coordinates, the latter being the default.
+
+Parameters
+: 
+    Parameters | Defaults           | Description
+    ---------- | ------------------ | -----------
+    `mode`     | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 USC and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+
+Return
+: 
+    Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color.
+
 ## `Color` Channel Properties
 
 Depending on the given color space, channel properties will be available on the color object as well. These are
