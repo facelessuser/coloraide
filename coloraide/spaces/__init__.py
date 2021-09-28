@@ -71,8 +71,18 @@ class Labish:
         return self.CHANNEL_NAMES[:3]
 
 
+class BaseSpace(ABCMeta):
+    """Ensure on subclass that the subclass has new instances of mappings."""
+
+    def __init__(cls, name, bases, clsdict):
+        """Copy mappings on subclass."""
+
+        if len(cls.mro()) > 2:
+            cls.CHANNEL_ALIASES = dict(cls.CHANNEL_ALIASES)
+
+
 class Space(
-    metaclass=ABCMeta
+    metaclass=BaseSpace
 ):
     """Base color space object."""
 
@@ -84,6 +94,8 @@ class Space(
     NUM_COLOR_CHANNELS = 3
     # Channel names
     CHANNEL_NAMES = ("alpha",)
+    # Channel aliases
+    CHANNEL_ALIASES = {}
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
     DEFAULT_MATCH = ""
@@ -189,6 +201,7 @@ class Space(
     def set(self, name, value):  # noqa: A003
         """Set the given channel."""
 
+        name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
 
@@ -198,6 +211,7 @@ class Space(
     def get(self, name):
         """Get the given channel's value."""
 
+        name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
         return getattr(self, name)

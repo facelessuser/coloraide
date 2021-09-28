@@ -8,6 +8,11 @@
 - **NEW**: When `Color()` class is subclassed, ensure the subclass is using copies of the base class plugin mappings.
   This is done with a special `metaclass`. This will prevent accidental appending and deleting of plugins on a subclass
   that affects the base class.
+- **NEW**: Add new API for getting `uv` and `xy` values.
+- **NEW**: Add new API for getting the white point (as an XYZ value) for a specific color.
+- **NEW**: Channel values are generally more terse for easy typing, but many channels that map to a more verbose name
+  (think `l` and `lightness`) will still recognize the more verbose alias. Others that didn't specifically use the
+  more verbose name (think `jz` which is also `lightness`) now have a more verbose alias.
 
 ## 0.1.0a26
 

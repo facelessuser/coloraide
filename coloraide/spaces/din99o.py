@@ -95,7 +95,6 @@ class Din99o(LabBase):
 
     SPACE = "din99o"
     SERIALIZE = ("--din99o",)
-    CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 

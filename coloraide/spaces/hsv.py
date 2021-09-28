@@ -54,7 +54,12 @@ class HSV(Cylindrical, Space):
 
     SPACE = "hsv"
     SERIALIZE = ("--hsv",)
-    CHANNEL_NAMES = ("hue", "saturation", "value", "alpha")
+    CHANNEL_NAMES = ("h", "s", "v", "alpha")
+    CHANNEL_ALIASES = {
+        "hue": "h",
+        "saturation": "s",
+        "value": "v"
+    }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     GAMUT_CHECK = "srgb"
     WHITE = "D65"
@@ -66,37 +71,37 @@ class HSV(Cylindrical, Space):
     )
 
     @property
-    def hue(self):
+    def h(self):
         """Hue channel."""
 
         return self._coords[0]
 
-    @hue.setter
-    def hue(self, value):
+    @h.setter
+    def h(self, value):
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def saturation(self):
+    def s(self):
         """Saturation channel."""
 
         return self._coords[1]
 
-    @saturation.setter
-    def saturation(self, value):
+    @s.setter
+    def s(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def value(self):
+    def v(self):
         """Value channel."""
 
         return self._coords[2]
 
-    @value.setter
-    def value(self, value):
+    @v.setter
+    def v(self, value):
         """Set value channel."""
 
         self._coords[2] = self._handle_input(value)

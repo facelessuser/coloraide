@@ -58,7 +58,12 @@ class HSL(Cylindrical, Space):
 
     SPACE = "hsl"
     SERIALIZE = ("--hsl",)
-    CHANNEL_NAMES = ("hue", "saturation", "lightness", "alpha")
+    CHANNEL_NAMES = ("h", "s", "l", "alpha")
+    CHANNEL_ALIASES = {
+        "hue": "h",
+        "saturation": "s",
+        "lightness": "l"
+    }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
     GAMUT_CHECK = "srgb"
@@ -70,37 +75,37 @@ class HSL(Cylindrical, Space):
     )
 
     @property
-    def hue(self):
+    def h(self):
         """Hue channel."""
 
         return self._coords[0]
 
-    @hue.setter
-    def hue(self, value):
+    @h.setter
+    def h(self, value):
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def saturation(self):
+    def s(self):
         """Saturation channel."""
 
         return self._coords[1]
 
-    @saturation.setter
-    def saturation(self, value):
+    @s.setter
+    def s(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def lightness(self):
+    def l(self):
         """Lightness channel."""
 
         return self._coords[2]
 
-    @lightness.setter
-    def lightness(self, value):
+    @l.setter
+    def l(self, value):
         """Set lightness channel."""
 
         self._coords[2] = self._handle_input(value)
