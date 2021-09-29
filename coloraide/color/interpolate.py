@@ -440,7 +440,10 @@ class Interpolate:
         """Mask color channels."""
 
         this = self if in_place else self.clone()
-        masks = set([channel] if isinstance(channel, str) else channel)
+        aliases = self._space.CHANNEL_ALIASES
+        masks = set(
+            [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
+        )
         for name in self._space.CHANNEL_NAMES:
             if (not invert and name in masks) or (invert and name not in masks):
                 this.set(name, util.NaN)

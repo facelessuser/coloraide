@@ -78,7 +78,12 @@ class SRGB(Space):
     # gamut changes. This is mainly for a better user experience. Colors will still be
     # mapped/clipped in the current space, unless specified otherwise.
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
-    CHANNEL_NAMES = ("red", "green", "blue", "alpha")
+    CHANNEL_NAMES = ("r", "g", "b", "alpha")
+    CHANNEL_ALIASES = {
+        "red": 'r',
+        "green": 'g',
+        "blue": 'b'
+    }
     WHITE = "D65"
 
     RANGE = (
@@ -88,37 +93,37 @@ class SRGB(Space):
     )
 
     @property
-    def red(self):
+    def r(self):
         """Adjust red."""
 
         return self._coords[0]
 
-    @red.setter
-    def red(self, value):
+    @r.setter
+    def r(self, value):
         """Adjust red."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def green(self):
+    def g(self):
         """Adjust green."""
 
         return self._coords[1]
 
-    @green.setter
-    def green(self, value):
+    @g.setter
+    def g(self, value):
         """Adjust green."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def blue(self):
+    def b(self):
         """Adjust blue."""
 
         return self._coords[2]
 
-    @blue.setter
-    def blue(self, value):
+    @b.setter
+    def b(self, value):
         """Adjust blue."""
 
         self._coords[2] = self._handle_input(value)

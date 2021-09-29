@@ -41,7 +41,12 @@ class HWB(Cylindrical, Space):
 
     SPACE = "hwb"
     SERIALIZE = ("--hwb",)
-    CHANNEL_NAMES = ("hue", "whiteness", "blackness", "alpha")
+    CHANNEL_NAMES = ("h", "w", "b", "alpha")
+    CHANNEL_ALIASES = {
+        "hue": "h",
+        "whiteness": "w",
+        "blackness": "b"
+    }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     GAMUT_CHECK = "srgb"
     WHITE = "D65"
@@ -53,37 +58,37 @@ class HWB(Cylindrical, Space):
     )
 
     @property
-    def hue(self):
+    def h(self):
         """Hue channel."""
 
         return self._coords[0]
 
-    @hue.setter
-    def hue(self, value):
+    @h.setter
+    def h(self, value):
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def whiteness(self):
+    def w(self):
         """Whiteness channel."""
 
         return self._coords[1]
 
-    @whiteness.setter
-    def whiteness(self, value):
+    @w.setter
+    def w(self, value):
         """Set whiteness channel."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def blackness(self):
+    def b(self):
         """Blackness channel."""
 
         return self._coords[2]
 
-    @blackness.setter
-    def blackness(self, value):
+    @b.setter
+    def b(self, value):
         """Set blackness channel."""
 
         self._coords[2] = self._handle_input(value)

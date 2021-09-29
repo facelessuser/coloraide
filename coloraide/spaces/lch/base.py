@@ -46,7 +46,12 @@ def lch_to_lab(lch):
 class LchBase(Cylindrical, Space):
     """Lch class."""
 
-    CHANNEL_NAMES = ("lightness", "chroma", "hue", "alpha")
+    CHANNEL_NAMES = ("l", "c", "h", "alpha")
+    CHANNEL_ALIASES = {
+        "lightness": "l",
+        "chroma": "c",
+        "hue": "h"
+    }
 
     RANGE = (
         # I think chroma, specifically should be clamped.
@@ -59,37 +64,37 @@ class LchBase(Cylindrical, Space):
     )
 
     @property
-    def lightness(self):
+    def l(self):
         """Lightness."""
 
         return self._coords[0]
 
-    @lightness.setter
-    def lightness(self, value):
+    @l.setter
+    def l(self, value):
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def chroma(self):
+    def c(self):
         """Chroma."""
 
         return self._coords[1]
 
-    @chroma.setter
-    def chroma(self, value):
+    @c.setter
+    def c(self, value):
         """chroma."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def hue(self):
+    def h(self):
         """Hue."""
 
         return self._coords[2]
 
-    @hue.setter
-    def hue(self, value):
+    @h.setter
+    def h(self, value):
         """Shift the hue."""
 
         self._coords[2] = self._handle_input(value)

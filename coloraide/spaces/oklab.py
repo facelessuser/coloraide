@@ -50,7 +50,10 @@ class Oklab(Labish, Space):
 
     SPACE = "oklab"
     SERIALIZE = ("--oklab",)
-    CHANNEL_NAMES = ("lightness", "a", "b", "alpha")
+    CHANNEL_NAMES = ("l", "a", "b", "alpha")
+    CHANNEL_ALIASES = {
+        "lightness": "l"
+    }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
@@ -61,13 +64,13 @@ class Oklab(Labish, Space):
     )
 
     @property
-    def lightness(self):
+    def l(self):
         """L channel."""
 
         return self._coords[0]
 
-    @lightness.setter
-    def lightness(self, value):
+    @l.setter
+    def l(self, value):
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)

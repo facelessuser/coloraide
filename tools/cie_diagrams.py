@@ -437,7 +437,7 @@ def cie_diagram(
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
         if opt.mode == "1931":
-            x, y = util.xyz_to_xyY(*v, (0.31270, 0.32900))[:2]
+            x, y = util.xyz_to_xyY(v, (0.31270, 0.32900))[:2]
             xs.append(x)
             ys.append(y)
         elif opt.mode == "1976":
@@ -445,7 +445,7 @@ def cie_diagram(
             xs.append(x)
             ys.append(y)
         else:
-            x, y = util.xy_to_uv_1960(util.xyz_to_xyY(*v, (0.31270, 0.32900))[:2])
+            x, y = util.xy_to_uv_1960(util.xyz_to_xyY(v, (0.31270, 0.32900))[:2])
             xs.append(x)
             ys.append(y)
 

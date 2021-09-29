@@ -264,7 +264,7 @@ class Color(
     def white(self):
         """Get the white point."""
 
-        return util.xy_to_xyz(self._space.white().coords())
+        return util.xy_to_xyz(self._space.white())
 
     def uv(self, mode='1976'):
         """Convert to `xy`."""
@@ -328,19 +328,19 @@ class Color(
         # Don't test `_space` as it is used to get Space channel attributes.
         elif name != "_space":
             # Get channel names
-            names = set()
             result = getattr(self, "_space")
             if result is not None:
-                names = result.CHANNEL_NAMES
-            # If requested attribute is a channel name, return the attribute from the Space instance.
-            if name in names:
-                return getattr(result, name)
+                # If requested attribute is a channel name, return the attribute from the Space instance.
+                name = result.CHANNEL_ALIASES.get(name, name)
+                if name in result.CHANNEL_NAMES:
+                    return getattr(result, name)
 
     def __setattr__(self, name, value):
         """Set attribute."""
 
         try:
             # See if we need to set the space specific channel attributes.
+            name = self._space.CHANNEL_ALIASES.get(name, name)
             if name in self._space.CHANNEL_NAMES:
                 setattr(self._space, name, value)
                 return
