@@ -960,7 +960,7 @@ Parameters
 : 
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
-    `mode`     | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 USC and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    `mode`     | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
 
 Return
 : 

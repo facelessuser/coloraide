@@ -40,7 +40,7 @@ class TestChromaticity(util.ColorAsserts):
         ]
     )
     def test_xy(self, color, xy):
-        """Test `xy` covnersions."""
+        """Test `xy` conversions."""
 
         xy2 = Color(color).xy()
         for v1, v2 in zip(xy, xy2):
@@ -67,7 +67,7 @@ class TestChromaticity(util.ColorAsserts):
         ]
     )
     def test_xy_1976(self, color, uv):
-        """Test `uv` 1976 covnersions."""
+        """Test `uv` 1976 conversions."""
 
         uv2 = Color(color).uv()
         for v1, v2 in zip(uv, uv2):
@@ -94,7 +94,7 @@ class TestChromaticity(util.ColorAsserts):
         ]
     )
     def test_xy_1960(self, color, uv):
-        """Test `uv` 1960 covnersions."""
+        """Test `uv` 1960 conversions."""
 
         uv2 = Color(color).uv('1960')
         for v1, v2 in zip(uv, uv2):
