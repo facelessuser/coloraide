@@ -3,10 +3,12 @@
   let busy = false
   let raw = ""
   let gist = ""
+  let editTemp = {}
   const reIdNum = /.*?_(\d+)$/
   let initialized = false
   let lastSearch = ""
   let fake = false
+  const tabStart = /^( {1,4}|\t)/
   // This is the Python payload that will be executed when the user
   // presses the `Run` button. It will execute the code, create a
   // Python console output, find color references, steps, and interpolation
@@ -148,6 +150,53 @@ ${content}
     }
   }
 
+  const handleTab = e => {
+    // Prevent tab from tabbing out.
+
+    if (e.key === 'Tab') {
+      const target = e.target
+
+      if (target.selectionStart !== target.selectionEnd) {
+        e.preventDefault()
+
+        let start = target.selectionStart
+        let end = target.selectionEnd
+
+        const text = target.value
+
+        while (start > 0 && text[start - 1] !== '\n') {
+          start--
+        }
+        while (end > 0 && text[end - 1] !== '\n' && end < text.length) {
+          end++
+        }
+
+        let lines = text.substr(start, end - start).split('\n')
+
+        for (let i = 0; i < lines.length; i++) {
+
+          // Don't indent last line if cursor at start of line
+          if (i === lines.length - 1 && lines[i].length === 0) {
+            continue
+          }
+
+          // Indent or deindent
+          if (e.shiftKey) {
+            lines[i] = lines[i].replace(tabStart, '')
+          } else {
+            lines[i] = `    ${lines[i]}`
+          }
+        }
+        lines = lines.join('\n')
+
+        // Update the text area
+        target.value = text.substr(0, start) + lines + text.substr(end)
+        target.selectionStart = start
+        target.selectionEnd = start + lines.length
+      }
+    }
+  }
+
   const init = async first => {
     // Setup input highlighting and events to run Python code blocks.
 
@@ -170,15 +219,22 @@ ${content}
         textResize(inputs)
       })
 
+      inputs.addEventListener('keydown', handleTab)
+
       if (notebook && first) {
-        document.getElementById("__notebook-input").addEventListener("input", e => {
+        const notebookInput = document.getElementById("__notebook-input")
+
+        notebookInput.addEventListener("input", e => {
           // Adjust textarea height on text input.
 
           textResize(e.target)
         })
 
+        notebookInput.addEventListener('keydown', handleTab)
+
         const editPage = document.getElementById("__notebook-edit")
         editPage.addEventListener("click", () => {
+          editTemp[notebookInput.id] = notebookInput.value
           document.getElementById("__notebook-render").classList.toggle("hidden")
           document.getElementById("__notebook-source").classList.toggle("hidden")
           textResize(document.getElementById("__notebook-input"))
@@ -206,6 +262,8 @@ ${content}
 
         document.getElementById("__notebook-input").value = raw
         document.getElementById("__notebook-cancel").addEventListener("click", () => {
+          notebookInput.value = editTemp[notebookInput.id]
+          delete editTemp[notebookInput.id]
           document.getElementById("__notebook-render").classList.toggle("hidden")
           document.getElementById("__notebook-source").classList.toggle("hidden")
         })
@@ -218,6 +276,7 @@ ${content}
           const article = document.querySelector("article")
           showBusy(article, "Loading Notebook...")
           render.innerHTML = ""
+          editTemp = {}
           await setupPyodide()
           await pyrender(raw)
           await init()
@@ -234,6 +293,7 @@ ${content}
       buttonEdit.addEventListener("click", async() => {
         // Handle the button click: show source or execute source.
 
+        editTemp[currentID] = inputs.value
         pgcode.classList.toggle("hidden")
         results.classList.toggle("hidden")
         buttonRun.classList.toggle("hidden")
@@ -297,12 +357,16 @@ ${content}
         buttonShare.classList.toggle("hidden")
         buttonRun.classList.toggle("hidden")
         buttonCancel.classList.toggle("hidden")
+
+        delete editTemp[currentID]
         busy = false
       })
 
       buttonCancel.addEventListener("click", () => {
         // Cancel edit.
 
+        inputs.value = editTemp[currentID]
+        delete editTemp[currentID]
         pgcode.classList.toggle("hidden")
         results.classList.toggle("hidden")
         buttonEdit.classList.toggle("hidden")
@@ -317,6 +381,8 @@ ${content}
     // Load external source to render in a playground.
     // This can be something like a file on a gist we must read in (?source=)
     // or raw code (?code=).
+
+    editTemp = {}
 
     if (window.location.pathname.endsWith("/playground/")) {
       const params = new URLSearchParams(window.location.search)
