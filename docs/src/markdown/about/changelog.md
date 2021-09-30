@@ -2,6 +2,7 @@
 
 ## Next
 
+- **NEW**: All color channels now accept the `none` key word to specify an undefined channel.
 - **NEW**: Provide a way to dump a color object to a simple dictionary and have the `Color()` object accept that
   dictionary to recreate the color object.
 - **NEW**: Provide `cat16` chromatic adaptation.

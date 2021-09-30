@@ -15,9 +15,9 @@ RE_COMMA_SPlIT = re.compile(r'(?:\s*,\s*)')
 RE_SLASH_SPLIT = re.compile(r'(?:\s*/\s*)')
 
 COLOR_PARTS = {
-    "percent": r"[+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?%",
-    "float": r"[+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?",
-    "angle": r"[+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?(deg|rad|turn|grad)?",
+    "percent": r"([+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?%|none)",
+    "float": r"([+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?|none)",
+    "angle": r"([+\-]?(?:(?:[0-9]*\.[0-9]+)|[0-9]+)(?:e[-+]?[0-9]*)?(deg|rad|turn|grad)?|none)",
     "space": r"\s+",
     "comma": r"\s*,\s*",
     "slash": r"\s*/\s*",
@@ -30,7 +30,9 @@ COLOR_PARTS = {
 def norm_float(string):
     """Normalize a float value."""
 
-    if string.lower().endswith(('e-', 'e+', 'e')):
+    if string == "none":
+        string = util.NaN
+    elif string.lower().endswith(('e-', 'e+', 'e')):
         string += '0'
     return float(string)
 
@@ -48,7 +50,7 @@ def norm_hex_channel(string):
 def norm_percent_channel(value, scale=False):
     """Normalize percent channel."""
 
-    if value.endswith('%'):
+    if value.endswith('%') or value == "none":
         value = norm_float(value[:-1])
         return value / 100.0 if scale else value
     else:  # pragma: no cover

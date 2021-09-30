@@ -95,7 +95,7 @@ class InterpolateSingle(Interpolator):
             name = self.names[i]
             c2 = self.channels2[i]
             if util.is_nan(c1) and util.is_nan(c2):
-                value = 0.0
+                value = util.NaN
             elif util.is_nan(c1):
                 value = c2
             elif util.is_nan(c2):

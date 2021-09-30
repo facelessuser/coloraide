@@ -449,9 +449,22 @@ def fmt_float(f, p=0):
     <positive number>: precision level
     """
 
+    if is_nan(f):
+        return "none"
+
     value = adjust_precision(f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
     return string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
+
+
+def fmt_percent(f, p=0):
+    """Get percent."""
+
+    if not is_nan(f):
+        value = '{}%'.format(fmt_float(f, p))
+    else:
+        value = 'none'
+    return value
 
 
 def adjust_precision(f, p=0):

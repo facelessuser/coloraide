@@ -416,7 +416,7 @@ def render_notebook(*args):
     ]
     extension_configs = {
         'markdown.extensions.toc': {
-            'slugify': slugs.uslugify,
+            'slugify': slugs.slugify(case="lower"),
             'permalink': ""
         },
         'markdown.extensions.smarty': {

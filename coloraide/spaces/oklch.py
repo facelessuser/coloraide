@@ -102,8 +102,9 @@ class Oklch(Lchish, Space):
     def null_adjust(cls, coords, alpha):
         """On color update."""
 
-        if coords[1] < ACHROMATIC_THRESHOLD:
+        if util.is_nan(coords[1]) or coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
+
         return coords, alpha
 
     @classmethod

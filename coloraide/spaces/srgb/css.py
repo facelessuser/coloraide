@@ -46,7 +46,7 @@ class SRGB(base.SRGB):
     HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)\b".format(**_parse.COLOR_PARTS))
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, **kwargs
+        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
     ):
         """Convert to CSS."""
 
@@ -59,8 +59,8 @@ class SRGB(base.SRGB):
 
         # Handle hex and color names
         value = ''
-        a = util.no_nan(self.alpha)
-        alpha = alpha is not False and (alpha is True or a < 1.0)
+        a = util.no_nan(self.alpha) if not none else self.alpha
+        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
         compress = options.get("compress", False)
         if options.get("hex") or options.get("names"):
             h = self._get_hex(parent, options, alpha=alpha, precision=precision, fit=fit)
@@ -85,28 +85,26 @@ class SRGB(base.SRGB):
             comma = options.get("comma", False)
             factor = 100.0 if percent else 255.0
             method = None if not isinstance(fit, str) else fit
-            coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
 
+            coords = parent.fit(method=method).coords() if fit else self.coords()
+            if not none:
+                coords = util.no_nan(coords)
+
+            fmt = util.fmt_percent if percent else util.fmt_float
             if alpha:
-                if percent:
-                    template = "rgba({}%, {}%, {}%, {})" if comma else "rgb({}% {}% {}% / {})"
-                else:
-                    template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
+                template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
                 value = template.format(
-                    util.fmt_float(coords[0] * factor, precision),
-                    util.fmt_float(coords[1] * factor, precision),
-                    util.fmt_float(coords[2] * factor, precision),
+                    fmt(coords[0] * factor, precision),
+                    fmt(coords[1] * factor, precision),
+                    fmt(coords[2] * factor, precision),
                     util.fmt_float(a, max(util.DEF_PREC, precision))
                 )
             else:
-                if percent:
-                    template = "rgb({}%, {}%, {}%)" if comma else "rgb({}% {}% {}%)"
-                else:
-                    template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
+                template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
                 value = template.format(
-                    util.fmt_float(coords[0] * factor, precision),
-                    util.fmt_float(coords[1] * factor, precision),
-                    util.fmt_float(coords[2] * factor, precision)
+                    fmt(coords[0] * factor, precision),
+                    fmt(coords[1] * factor, precision),
+                    fmt(coords[2] * factor, precision),
                 )
         return value
 
@@ -160,6 +158,7 @@ class SRGB(base.SRGB):
             channels = []
             alpha = 1.0
             for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+                c = c.lower()
                 if i <= 2:
                     channels.append(cls.translate_channel(i, c))
                 elif i == 3:
