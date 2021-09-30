@@ -322,12 +322,6 @@ color2.coords()
 color.mix(color2, space="hsl")
 ```
 
-Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used
-for. It can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
-
-```playground
-Color('white').mask(['red', 'green']).coords()
-```
-
-Channels can also be set directly to `NaN` via the key word `none` or by directly setting the channel to `NaN` by
-instantiating a `Color` object with raw data that contains `NaN`s for one or more of its channels.
+Technically, any channel can be set to `NaN`. And there are various ways to do this. The
+[Color Manipulation documentation](./manipulation.md#undefined-values) goes into the details of how these `Nan` values
+naturally occur and the various ways a user and manipulate them.

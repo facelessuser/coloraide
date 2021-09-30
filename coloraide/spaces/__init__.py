@@ -173,11 +173,9 @@ class Space(
 
         gamut = self.RANGE
         values = []
-        for i, coord in enumerate(util.no_nan(self.coords())):
-            value = util.fmt_float(coord, util.DEF_PREC)
-            if isinstance(gamut[i][0], Percent):
-                value += '%'
-            values.append(value)
+        for i, coord in enumerate(self.coords()):
+            fmt = util.fmt_percent if isinstance(gamut[i][0], Percent) else util.fmt_float
+            values.append(fmt(coord, util.DEF_PREC))
 
         return 'color({} {} / {})'.format(
             self._serialize()[0],

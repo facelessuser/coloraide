@@ -2,7 +2,9 @@
 
 ## Next
 
-- **NEW**: All color channels now accept the `none` key word to specify an undefined channel.
+- **NEW**: All color channels now accept the `none` key word to specify an undefined channel. They can also optionally
+  output CSS strings with the key word.
+- **NEW**: Interpolation will return an undefined channel if both colors have that channel set to undefined.
 - **NEW**: Provide a way to dump a color object to a simple dictionary and have the `Color()` object accept that
   dictionary to recreate the color object.
 - **NEW**: Provide `cat16` chromatic adaptation.

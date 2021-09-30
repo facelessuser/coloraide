@@ -110,7 +110,7 @@ class HSV(Cylindrical, Space):
     def null_adjust(cls, coords, alpha):
         """On color update."""
 
-        if util.is_nan(coords[1]) or coords[1] == 0:
+        if coords[1] == 0:
             coords[0] = util.NaN
 
         return coords, alpha
