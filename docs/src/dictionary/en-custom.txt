@@ -19,6 +19,7 @@ CMYK
 CSS
 Changelog
 Chroma
+Chromaticities
 Chromaticity
 ColorAide
 ColorAide's
@@ -146,3 +147,4 @@ uv
 validator
 von
 webcolor
+xy

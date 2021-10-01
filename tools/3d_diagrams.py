@@ -17,14 +17,27 @@ from coloraide import Color  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402
 from coloraide.util import is_nan  # noqa: E402
 
-UNSUPPORTED = """Rendering of '{}' is not officially supported.
-Cylindrical spaces will, at their best, be mislabeled and
-rendered as their cartesian counter part. At their worst, they
-will be incomplete and/or distored.
-"""
+axis_map = {
+    # Lab like spaces
+    "lab": [1, 2, 0],
+    "lab-d65": [1, 2, 0],
+    "oklab": [1, 2, 0],
+    "jzazbz": [1, 2, 0],
+    "ictcp": [1, 2, 0],
+    "din99o": [1, 2, 0],
+    "luv": [1, 2, 0],
+
+    # Lch like spaces
+    "lch": [2, 1, 0],
+    "lch-d65": [2, 1, 0],
+    "oklch": [2, 1, 0],
+    "jzczhz": [2, 1, 0],
+    "din99o-lch": [2, 1, 0],
+    "lchuv": [2, 1, 0]
+}
 
 
-def add_srgb_color(space, color, x, y, z, c):
+def add_color(space, color, x, y, z, c):
     """Add color to the provided arrays."""
 
     coords = color.convert(space).coords()
@@ -35,40 +48,40 @@ def add_srgb_color(space, color, x, y, z, c):
     c.append(s)
 
 
-def add_srgb_color_cyl(space, color, x, y, z, c):
-    """Add color to the provided arrays."""
+def add_cyl_color(space, color, x, y, z, c):
+    """
+    Add color to the provided arrays.
+
+    Handles cylindrical spaces. Returns x (hue), y (chroma/saturation), z (value/lightness).
+    """
 
     cyl = color.convert(space)
-    c1 = None
-    c2 = None
 
-    # Cylindrical spaces we support usually have
-    # two of the below attributes.
-    for attr in ('saturation', 'chroma', 'whiteness'):
-        if hasattr(cyl, attr):
-            c1 = getattr(cyl, attr)
-            break
-    for attr in ('lightness', 'value', 'blackness'):
-        if hasattr(cyl, attr):
-            c2 = getattr(cyl, attr)
-            break
+    chroma = cyl.chroma
+    lightness = cyl.lightness
     hue = cyl.hue
+
     if is_nan(hue):
         hue = 0
 
-    x.append(c1 * math.sin(math.radians(hue)))
-    y.append(c1 * math.cos(math.radians(hue)))
-    z.append(c2)
+    z.append(chroma * math.sin(math.radians(hue)))
+    y.append(chroma * math.cos(math.radians(hue)))
+    x.append(lightness)
+
     s = color.convert('srgb').to_string(hex=True)
     c.append(s)
 
 
-def render_space(space, add, resolution, factor, x, y, z, c):
+def render_space(space, add, resolution, factor, data, c, offset=0):
     """Render the space with the given resolution and factor."""
 
+    x, y, z = data
+
+    # We are rendering the spaces using sRGB, so just do a shell by picking
+    # all the colors on the outside of the sRGB space. Render will be hollow.
     for c1, c2 in itertools.product(
-        ((x / resolution) * factor for x in range(0, resolution + 1)),
-        ((x / resolution) * factor for x in range(0, resolution + 1))
+        (((x / resolution) * factor) + offset for x in range(0, resolution + 1)),
+        (((x / resolution) * factor) + offset for x in range(0, resolution + 1))
     ):
 
         add(space, Color('srgb', [0, c1, c2]), x, y, z, c)
@@ -81,49 +94,102 @@ def render_space(space, add, resolution, factor, x, y, z, c):
         add(space, Color('srgb', [c1, c2, 1]), x, y, z, c)
 
 
-def plot_space_in_srgb(space, dark=False, resolution=70):
+def render_cyl_space(space, resolution, factor, data, c, offset=0):
+    """Render the space with the given resolution and factor."""
+
+    x, y, z = data
+
+    res = int(resolution * 1.5)
+
+    # We are rendering the spaces using sRGB, so just do a shell by picking
+    # all the colors on the outside of the sRGB space. Render will be hollow.
+    for c1, c2 in itertools.product(
+        (((x / res) * factor) * 359 + offset for x in range(0, res + 1)),
+        (((x / res) * factor) * 100 + offset for x in range(0, res + 1))
+    ):
+
+        # Top disc
+        x.append(c2 * math.sin(math.radians(c1)))
+        y.append(c2 * math.cos(math.radians(c1)))
+        z.append(100)
+        c.append(Color(space, [c1, c2, 100]).convert('srgb').to_string(hex=True))
+
+        # Bottom disc
+        x.append(c2 * math.sin(math.radians(c1)))
+        y.append(c2 * math.cos(math.radians(c1)))
+        z.append(0)
+        c.append(Color(space, [c1, c2, 0]).convert('srgb').to_string(hex=True))
+
+    for c1, c2 in itertools.product(
+        (((x / res) * factor) * 359 + offset for x in range(0, res + 1)),
+        (((x / res) * factor) * 100 + offset for x in range(0, res + 1))
+    ):
+        # Cylinder portion
+        x.append(100 * math.sin(math.radians(c1)))
+        y.append(100 * math.cos(math.radians(c1)))
+        z.append(c2)
+        c.append(Color(space, [c1, 100, c2]).convert('srgb').to_string(hex=True))
+
+
+def plot_space_in_srgb(space, title="", dark=False, resolution=70):
     """Plot the given space in sRGB."""
 
-    x = []
-    y = []
-    z = []
+    data = [[], [], []]
     c = []
 
+    # Get names for
     names = Color.CS_MAP[space].CHANNEL_NAMES
     is_cyl = issubclass(Color.CS_MAP[space], Cylindrical)
 
-    if is_cyl:
-        print(UNSUPPORTED.format(space))
+    # Some spaces need us to rearrange the order of the data
+    axm = axis_map.get(space, [0, 1, 2])
 
-    add = add_srgb_color if not is_cyl else add_srgb_color_cyl
-
+    # Select the right theme
     if dark:
         plt.style.use('dark_background')
     else:
         plt.style.use('seaborn-whitegrid')
 
+    # Setup figure and axis
     figure = plt.figure()
+    plt.tight_layout()
     ax = plt.axes(
         projection='3d',
-        xlabel=names[0],
-        ylabel=names[1],
-        zlabel=names[2]
+        xlabel=names[axm[0]] if not is_cyl else "{} (0˚ - 360˚)".format(names[axm[0]]),
+        ylabel=names[axm[1]],
+        zlabel=names[axm[2]]
     )
+    # Turn off ticks for cylindrical hue
+    if is_cyl:
+        ax.xaxis.set_ticks([])
     figure.add_axes(ax)
-    plt.title('srgb rendered in {}'.format(space), pad=20)
 
-    render_space(space, add, resolution, 1, x, y, z, c)
+    # Add title
+    plt.title(title if title else 'srgb rendered in {}'.format(space), pad=20)
 
-    # Oklab needs much higher resolution near black
-    if space in ('oklab', 'oklch'):
-        render_space(space, add, resolution // 2, 0.0124, x, y, z, c)
-    # ICtCp needs an absurd amount of resolution near black
-    elif space == 'ictcp':
-        render_space(space, add, resolution, 0.3, x, y, z, c)
-        render_space(space, add, resolution, 0.1, x, y, z, c)
-        render_space(space, add, resolution, 0.03, x, y, z, c)
+    # Render the space
+    if is_cyl and space in ('hsl', 'hsv', 'hwb'):
+        render_cyl_space(space, resolution, 1, data, c)
+    else:
+        # Select the right color handler for the space
+        add = add_cyl_color if is_cyl else add_color
+        render_space(space, add, resolution, 1, data, c)
 
-    ax.scatter3D(x, y, z, c=c)
+        # Oklab needs higher resolution near black
+        if space in ('oklab', 'oklch'):
+            render_space(space, add, resolution // 2, 0.0124, data, c)
+        # ICtCp needs an absurd amount of resolution near black,
+        # do multiple, increasingly higher resolution passes
+        elif space == 'ictcp':
+            render_space(space, add, resolution, 0.3, data, c)
+            render_space(space, add, resolution, 0.1, data, c)
+            render_space(space, add, resolution, 0.03, data, c)
+
+    # Setup the aspect ratio
+    ax.set_box_aspect((1, 1, 1))
+
+    # Plot the data
+    ax.scatter3D(data[axm[0]], data[axm[1]], data[axm[2]], c=c)
 
 
 def main():
@@ -139,12 +205,14 @@ def main():
             "but it comes at the cost of speed."
         )
     )
+    parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     args = parser.parse_args()
 
     plot_space_in_srgb(
         args.space,
+        title=args.title,
         dark=args.dark,
         resolution=int(args.resolution)
     )

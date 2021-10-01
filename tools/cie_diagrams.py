@@ -425,7 +425,7 @@ def cie_diagram(
         ylabel=opt.axis_labels[1]
     )
     ax.set_aspect('auto')
-    if axis == False:
+    if axis is False:
         plt.axis('off')
     figure.add_axes(ax)
     plt.title(opt.title)
