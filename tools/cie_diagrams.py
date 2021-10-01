@@ -464,8 +464,8 @@ def cie_diagram(
         c = []
         path = mpltpath.Path(list(zip(xs, ys)))
         for r in itertools.product(
-            (x / RESOLUTION for x in range(0, RESOLUTION)),
-            (x / RESOLUTION for x in range(0, RESOLUTION))
+            (x / RESOLUTION for x in range(0, RESOLUTION + 1)),
+            (x / RESOLUTION for x in range(0, RESOLUTION + 1))
         ):
             if path.contains_point(r):
                 if opt.mode == "1931":
