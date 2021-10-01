@@ -413,7 +413,8 @@ class DiagramOptions:
 
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
-    white_points=None, theme='light', title='', show_labels=True
+    white_points=None, theme='light', title='', show_labels=True, axis=True,
+    show_legend=True
 ):
     """CIE diagram."""
 
@@ -424,6 +425,8 @@ def cie_diagram(
         ylabel=opt.axis_labels[1]
     )
     ax.set_aspect('auto')
+    if axis == False:
+        plt.axis('off')
     figure.add_axes(ax)
     plt.title(opt.title)
     if show_labels:
@@ -579,7 +582,7 @@ def cie_diagram(
             )
 
     # We current only add labels when drawing RGB triangles
-    if rgb_spaces:
+    if rgb_spaces and show_legend:
         ax.legend()
 
 
@@ -592,6 +595,9 @@ def main():
     parser.add_argument('--white-point', '-w', action='append', help="A white point to plot.")
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
+    parser.add_argument('--transparent', '-p', action="store_true", help="Export with transparent background.")
+    parser.add_argument('--no-axis', '-x', action="store_true", help="Disable display axis.")
+    parser.add_argument('--no-legend', '-g', action="store_true", help="Disable legend.")
     parser.add_argument('--no-labels', '-l', action='store_true', help="Disable showing wavelength labels.")
     parser.add_argument('--no-background', '-b', action='store_true', help="Disable diagram color background.")
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
@@ -608,11 +614,13 @@ def main():
         colorize=not args.no_background,
         opacity=0.3 if not args.no_alpha else 1.0,
         show_labels=not args.no_labels,
+        show_legend=not args.no_legend,
+        axis=not args.no_axis,
         title=args.title
     )
 
     if args.output:
-        plt.savefig(args.output, bbox_inches='tight')
+        plt.savefig(args.output, bbox_inches='tight', transparent=args.transparent)
     else:
         plt.show()
 

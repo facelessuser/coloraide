@@ -56,9 +56,9 @@ def add_srgb_color_cyl(space, color, x, y, z, c):
     if is_nan(hue):
         hue = 0
 
-    x.append(c2 * math.sin(math.radians(hue)))
-    y.append(c2 * math.cos(math.radians(hue)))
-    z.append(c1)
+    x.append(c1 * math.sin(math.radians(hue)))
+    y.append(c1 * math.cos(math.radians(hue)))
+    z.append(c2)
     s = color.convert('srgb').to_string(hex=True)
     c.append(s)
 
