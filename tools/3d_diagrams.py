@@ -18,9 +18,9 @@ from coloraide.spaces import Cylindrical  # noqa: E402
 from coloraide.util import is_nan  # noqa: E402
 
 UNSUPPORTED = """Rendering of '{}' is not officially supported.
-Cylindrical spaces will, at their best, will be mislabeled and
-rendered as their cartesian counter part. At worst, they will be
-incomplete and/or distored.
+Cylindrical spaces will, at their best, be mislabeled and
+rendered as their cartesian counter part. At their worst, they
+will be incomplete and/or distored.
 """
 
 
