@@ -1,5 +1,10 @@
 # Changelog
 
+## Next
+
+- **FIX**: Fix an attribute "get" issue where attributes that were not present on the `Color()` object appeared to be
+  present when using `hasattr()`.
+
 ## 0.1.0a27
 
 - **NEW**: Add new `register` and `deregister` method to allow adding new spaces, Delta E methods, or gamut mapping

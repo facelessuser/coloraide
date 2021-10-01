@@ -323,7 +323,9 @@ class Color(
         """Get attribute."""
 
         if name.startswith('delta_e_'):
-            return functools.partial(getattr(self, 'delta_e'), method=name[8:])
+            de = name[8:]
+            if de in self.DE_MAP:
+                return functools.partial(getattr(self, 'delta_e'), method=de)
 
         # Don't test `_space` as it is used to get Space channel attributes.
         elif name != "_space":
@@ -334,6 +336,8 @@ class Color(
                 name = result.CHANNEL_ALIASES.get(name, name)
                 if name in result.CHANNEL_NAMES:
                     return getattr(result, name)
+
+        return super().__getattribute__(name)
 
     def __setattr__(self, name, value):
         """Set attribute."""

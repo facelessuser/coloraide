@@ -1435,7 +1435,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         Custom.deregister('delta-e:jz')
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             Custom('red').delta_e_jz('green')
 
         # But it should not affect the base class
