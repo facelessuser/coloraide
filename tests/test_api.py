@@ -9,6 +9,15 @@ import warnings
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_color_dict(self):
+        """Color dictionaries."""
+
+        c1 = Color('red')
+        d = c1.to_dict()
+        c2 = Color(d)
+
+        self.assertEqual(c1, c2)
+
     def test_white(self):
         """Test white."""
 
@@ -43,7 +52,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test bad input."""
 
         with self.assertRaises(TypeError):
-            Color({'dict': True})
+            Color(3)
 
     def test_bad_indirect_input(self):
         """Test bad input when it is done indirectly through a method."""
