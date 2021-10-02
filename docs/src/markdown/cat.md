@@ -78,5 +78,6 @@ CAT           |
 `xyz-scaling` |
 `sharp`       |
 `cat02`       |
+`cat16`       |
 `cmccat97`    |
 `cmccat2000`  |
