@@ -1,5 +1,5 @@
 """Colors."""
-from collections.abc import Sequence
+from collections.abc import Sequence, Mapping
 import abc
 import functools
 from . import distance
@@ -122,6 +122,14 @@ class Color(
                         data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
                     obj = space_class(data[:space_class.NUM_COLOR_CHANNELS], alpha)
                     return obj
+        elif isinstance(color, Mapping):
+            space = color['space']
+            if not filters or space in filters:
+                cs = self.CS_MAP[space]
+                coords = [color[name] for name in cs.CHANNEL_NAMES[:-1]]
+                alpha = color['alpha']
+                obj = cs(coords, alpha)
+                return obj
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
                 obj = self.CS_MAP[color.space()](color._space)
@@ -193,6 +201,15 @@ class Color(
                 del mapping[name]
             elif not silent:
                 raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
+
+    def to_dict(self):
+        """Return color as a data object."""
+
+        data = {'space': self.space()}
+        coords = self.coords() + [self.alpha]
+        for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
+            data[name] = coords[i]
+        return data
 
     def is_nan(self, name):
         """Check if channel is NaN."""
