@@ -66,7 +66,16 @@ class Labish:
     """Lab-ish color spaces."""
 
     def labish_names(self):
-        """Return lab-ish names in the order L a b."""
+        """Return Lab-ish names in the order L a b."""
+
+        return self.CHANNEL_NAMES[:3]
+
+
+class Lchish(Cylindrical):
+    """Lch-ish color spaces."""
+
+    def lchish_names(self):  # pragma: no cover
+        """Return Lch-ish names in the order L c h."""
 
         return self.CHANNEL_NAMES[:3]
 

@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, OptionalPercent
 from .oklab import Oklab
 from .. import util
 import re
@@ -42,7 +42,7 @@ def oklch_to_oklab(oklch):
     )
 
 
-class Oklch(Cylindrical, Space):
+class Oklch(Lchish, Space):
     """Oklch class."""
 
     SPACE = "oklch"

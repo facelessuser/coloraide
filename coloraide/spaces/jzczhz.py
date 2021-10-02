@@ -3,7 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, OptionalPercent
 from .jzazbz import Jzazbz
 from .. import util
 import re
@@ -46,7 +46,7 @@ def jzczhz_to_jzazbz(jzczhz):
     )
 
 
-class JzCzhz(Cylindrical, Space):
+class JzCzhz(Lchish, Space):
     """
     JzCzhz class.
 

@@ -59,7 +59,8 @@ def run(lch, lab):
 
             if lch:
                 lchish = color.convert(lch)
-                chroma = lchish.chroma
+                c_name = lchish.lchish_names()[1]
+                chroma = lchish.get(c_name)
                 if chroma > max_chroma:
                     max_chroma = chroma
 

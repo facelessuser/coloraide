@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, Percent
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent, Lchish
 from ..lab.base import Lab
 from ... import util
 import re
@@ -43,7 +43,7 @@ def lch_to_lab(lch):
     )
 
 
-class LchBase(Cylindrical, Space):
+class LchBase(Lchish, Space):
     """Lch class."""
 
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
