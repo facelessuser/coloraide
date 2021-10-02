@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Cylindrical, Angle, Percent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent
 from .luv import Luv
 from .. import util
 import re
@@ -42,7 +42,7 @@ def lchuv_to_luv(lchuv):
     )
 
 
-class Lchuv(Cylindrical, Space):
+class Lchuv(Lchish, Space):
     """Lch(uv) class."""
 
     SPACE = "lchuv"
