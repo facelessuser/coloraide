@@ -211,6 +211,12 @@ class Color(
             data[name] = coords[i]
         return data
 
+    def normalize(self, *, in_place=False):
+        """Normalize the color."""
+
+        coords, alpha = self._space.null_adjust(self.coords(), self.alpha)
+        return self.mutate(self.space(), coords, alpha) if in_place else self.new(self.space(), coords, alpha)
+
     def is_nan(self, name):
         """Check if channel is NaN."""
 

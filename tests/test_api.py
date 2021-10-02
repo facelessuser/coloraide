@@ -9,6 +9,14 @@ import warnings
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_normalize(self):
+        """Test normalize."""
+
+        c1 = Color("hsl", [30, 0, 30])
+        self.assertFalse(c1.is_nan('hue'))
+        c1.normalize(in_place=True)
+        self.assertTrue(c1.is_nan('hue'))
+
     def test_color_dict(self):
         """Color dictionaries."""
 
