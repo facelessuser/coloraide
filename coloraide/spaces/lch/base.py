@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent, Lchish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent
 from ..lab.base import Lab
 from ... import util
 import re
