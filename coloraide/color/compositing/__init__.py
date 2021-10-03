@@ -115,7 +115,7 @@ class Compose:
 
         return (
             self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
-        ).normalize(in_place=True)
+        ).normalize()
 
     @util.deprecated("'overlay' is deprecated, 'compose' should be used instead.")
     def overlay(self, backdrop, *, space=None, in_place=False):

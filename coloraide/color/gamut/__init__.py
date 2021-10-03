@@ -50,7 +50,7 @@ class Gamut:
                 c.set(name, util.constrain_hue(c.get(name)))
         else:
             c._space._coords = func(c)
-        c.normalize(in_place=True)
+        c.normalize()
 
         # Adjust "this" color
         return this.update(c)

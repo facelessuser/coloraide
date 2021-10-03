@@ -115,7 +115,7 @@ class InterpolateSingle(Interpolator):
         if self.outspace != color.space():
             return color.convert(self.outspace, in_place=True)
         else:
-            return color.normalize(in_place=True)
+            return color.normalize()
 
 
 class InterpolatePiecewise(Interpolator):

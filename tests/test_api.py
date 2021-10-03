@@ -14,7 +14,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color("hsl", [30, 0, 30])
         self.assertFalse(c1.is_nan('hue'))
-        c1.normalize(in_place=True)
+        c1.normalize()
         self.assertTrue(c1.is_nan('hue'))
 
     def test_color_dict(self):
