@@ -1,6 +1,15 @@
 # Supported Colors
 
-## sRGB
+## RGB
+
+RGB is a color model used by a number of different color spaces. The sRGB color space is probably the one most think of
+when someone mentions RGB.
+
+The RGB model represents colors with three channels: red, green, and blue. Though a number of color spaces use the RGB
+model, how colors translate to those coordinates differs from one color space to another. Depending on the color space,
+the range of colors within its gamut can be quite different.
+
+### sRGB
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -11,203 +20,67 @@
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    red        | [0, 1]
-    green      | [0, 1]
-    blue       | [0, 1]
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![sRGB](../images/srgb.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- sRGB Chromaticities</figcaption>
+</figure>
 
 The sRGB space is a standard RGB (red, green, blue) color space that HP and Microsoft created cooperatively in 1996 to
 use on monitors, printers, and the Web. SRGB stands for "Standard RGB". It is the most widely used color space and is
 supported by most operating systems, software programs, monitors, and printers.
 
----
-
-Parsed input and string output formats support all valid CSS forms:
-
-```css-color
-black                  // Color name
-#RRGGBBAA              // Hex
-rgb(r g b / a)         // RGB function
-rgb(r, g, b)           // Legacy RGB Function
-rgba(r, g, b, a)       // Legacy RGBA function
-color(srgb r g b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("srgb", [0, 0, 0], 1)
-```
-
-The string representation of the color object will always default to the `#!css-color color(srgb r g b / a)` form, but
-the default string output will be the `#!css-color rgb(r g b / a)` form.
-
-```playground
-Color("srgb", [0, 0, 0], 1)
-Color("srgb", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
 </div>
 
-## HSV
+??? abstract "ColorAide Details"
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
 
-    **Name:** `hsv`
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
 
-    **White Point:** D65
+        ```css-color
+        black                  // Color name
+        #RRGGBBAA              // Hex
+        rgb(r g b / a)         // RGB function
+        rgb(r, g, b)           // Legacy RGB Function
+        rgba(r, g, b, a)       // Legacy RGBA function
+        color(srgb r g b / a)  // Color function
+        ```
 
-    **Coordinates:**
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
-    Name       | Range
-    ---------- | -----
-    hue        | [0, 360)
-    saturation | [0, 100]
-    value      | [0, 100]
+        ```py
+        Color("srgb", [0, 0, 0], 1)
+        ```
 
-HSV is a color space similar to the modern [RGB](#srgb) and CMYK models. The HSV color space has three components: hue,
-saturation and value. 'Value' is sometimes substituted with 'brightness' and then it is known as HSB. HSV models how
-colors appear under light.
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(srgb r g b / a)`
+        form, but the default string output will be the `#!css-color rgb(r g b / a)` form.
 
----
+        ```playground
+        Color("srgb", [0, 0, 0], 1)
+        Color("srgb", [0, 0, 0], 1).to_string()
+        ```
 
-HSV is not supported via the CSS spec and the parser input and string output only supports the `#!css-color color()`
-function format using the custom name `#!css-color --hsv`:
-
-```css-color
-color(--hsv 0 0% 0% / 1)
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("hsv", [0, 0, 0], 1)
-```
-
-The string representation of the color object and default string output will always use the
-`#!css-color color(hsv h s v / a)` form.
-
-```playground
-Color("hsv", [0, 0, 0], 1)
-Color("hsv", [0, 0, 0], 1).to_string()
-```
-
-_[Learn about HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)_
-</div>
-
-## HSL
-
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
-
-    **Name:** `hsl`
-
-    **White Point:**   D65
-
-    **Coordinates:**
-
-    Name       | Range
-    ---------- | -----
-    hue        | [0, 360)
-    saturation | [0, 100]
-    lightness  | [0, 100]
-
-HSL is an alternative representations of the [RGB](#srgb) color model, designed in the 1970s by computer graphics
-researchers to more closely align with the way human vision perceives color-making attributes. In these models, colors
-of each hue are arranged in a radial slice, around a central axis of neutral colors which ranges from black at the
-bottom to white at the top.
-
-HSL models the way different paints mix together to create color in the real world, with the lightness dimension
-resembling the varying amounts of black or white paint in the mixture.
-
----
-
-Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-function format using the custom name `#!css-color --hsl`:
-
-```css-color
-hsl(h s l / a)          // HSL function
-hsl(h, s, l)            // Legacy HSL function
-hsla(h, s, l, a)        // Legacy HSLA function
-color(--hsl h s l / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("hsl", [0, 0, 0], 1)
-```
-
-The string representation of the color object will always default to the `#!css-color color(--hsl h s l / a)` form, but
-the default string output will be the `#!css-color hsl(h s l / a)` form.
-
-```playground
-Color("hsl", [0, 0, 0], 1)
-Color("hsl", [0, 0, 0], 1).to_string()
-```
-
-_[Learn about HSL](https://en.wikipedia.org/wiki/HSL_and_HSV)_
-</div>
-
-## HWB
-
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
-
-    **Name:** `hwb`
-
-    **White Point:** D65
-
-    **Coordinates:**
-
-    Name       | Range
-    ---------- | -----
-    hue        | [0, 360)
-    whiteness  | [0, 100]
-    blackness  | [0, 100]
-
-HWB is a cylindrical-coordinate representation of points in an [RGB](#srgb) color model, similar to HSL and HSV. It was
-developed by [HSV](#hsv)'s creator Alvy Ray Smith in 1996 to address some of the issues with HSV. HWB was designed to be
-more intuitive for humans to use and slightly faster to compute. The first coordinate, H (Hue), is the same as the Hue
-coordinate in [HSL](#hsl) and [HSV](#hsv). W and B stand for Whiteness and Blackness respectively and range from 0-100%
-(or 0-1). The mental model is that the user can pick a main hue and then "mix" it with white and/or black to produce the
-desired color.
-
----
-
-Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-function format using the custom name `#!css-color --hwb`:
-
-```css-color
-hwb(h w b / a)          // HWB function
-color(--hwb h w b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("hwb", [0, 0, 100], 1)
-```
-
-The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)` form, but
-the default string output will be the `#!css-color hsl(h s l / a)` form.
-
-```playground
-Color("hwb", [0, 0, 100], 1)
-Color("hwb", [0, 0, 100], 1).to_string()
-```
-
-_[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
-</div>
-
-## Display P3
+### Display P3
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -218,43 +91,62 @@ _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    red        | [0, 1]
-    green      | [0, 1]
-    blue       | [0, 1]
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![Display P3](../images/display-p3.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Display P3 Chromaticities</figcaption>
+</figure>
 
 Display P3 is a combination of the DCI-P3 color gamut with the D65 white point together with the [sRGB](#srgb) gamma
 curve. It originated from the DCI-P3 color gamut's implementation in digital cinema projectors, as this standard offers
 more vibrant greens and reds than the traditional [sRGB](#srgb) color gamut.
 
----
-
-Parsed input and string output formats support all valid CSS forms:
-
-```css-color
-color(display-p3 r g b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("display-p3", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output will be in the
-`#!css-color color(display-p3 r g b / a)` form.
-
-```playground
-Color("display-p3", [0, 0, 0], 1)
-Color("display-p3", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about Display P3](https://en.wikipedia.org/wiki/DCI-P3#Display_P3)_
 </div>
 
-## A98 RGB
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
+
+        ```css-color
+        color(display-p3 r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("display-p3", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(display-p3 r g b / a)` form.
+
+        ```playground
+        Color("display-p3", [0, 0, 0], 1)
+        Color("display-p3", [0, 0, 0], 1).to_string()
+        ```
+
+### A98 RGB
 
 <div class="info-container" markdown="1">
 
@@ -266,11 +158,18 @@ _[Learn about Display P3](https://en.wikipedia.org/wiki/DCI-P3#Display_P3)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    red        | [0, 1]
-    green      | [0, 1]
-    blue       | [0, 1]
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![A98 RGB](../images/a98-rgb.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Adobe RGB 1998 Chromaticities</figcaption>
+</figure>
 
 The Adobe RGB (1998) color space or opRGB is a color space developed by Adobe Systems, Inc. in 1998. It was designed to
 encompass most of the colors achievable on CMYK color printers, but by using [RGB](#srgb) primary colors on a device
@@ -278,33 +177,45 @@ such as a computer display. The Adobe RGB (1998) color space encompasses roughly
 the [CIELAB](#cielab) color space - improving upon the gamut of the [sRGB](#srgb) color space, primarily in cyan-green
 hues.
 
----
-
-Parsed input and string output formats support all valid CSS forms:
-
-```css-color
-color(a98-rgb r g b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("a98-rgb", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output will be in the
-`#!css-color color(a98-rgb r g b / a)` form.
-
-```playground
-Color("a98-rgb", [0, 0, 0], 1)
-Color("a98-rgb", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
 </div>
 
-## REC.2020
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
+
+        ```css-color
+        color(a98-rgb r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("a98-rgb", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(a98-rgb r g b / a)` form.
+
+        ```playground
+        Color("a98-rgb", [0, 0, 0], 1)
+        Color("a98-rgb", [0, 0, 0], 1).to_string()
+        ```
+
+### REC. 2020
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -315,45 +226,66 @@ _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    red        | [0, 1]
-    green      | [0, 1]
-    blue       | [0, 1]
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
 
-The Rec. 2020 color space is a result of this and is a very wide gamut RGB color space which is used in 4k and 8k UHDTV.
-ITU-R Recommendation BT.2020, more commonly known by the abbreviations Rec. 2020 or BT.2020, defines various aspects of
-ultra-high-definition television (UHDTV) with standard dynamic range (SDR) and wide color gamut (WCG), including picture
-resolutions, frame rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations,
-chroma subsamplings, and an opto-electronic transfer function.
+<figure markdown="1">
 
----
+![Rec. 2020](../images/rec2020.png)
 
-Parsed input and string output formats support all valid CSS forms:
+<figcaption>CIE 1931 xy Chromaticity -- Rec. 2020 Chromaticities</figcaption>
+</figure>
 
-```css-color
-color(rec2020 r g b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("rec2020", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output will be in the
-`#!css-color color(rec2020 r g b / a)` form.
-
-```playground
-Color("rec2020", [0, 0, 0], 1)
-Color("rec2020", [0, 0, 0], 1).to_string()
-```
+The Rec. 2020 color space is a very wide gamut RGB color space which is used in 4k and 8k UHDTV. ITU-R Recommendation
+BT.2020, more commonly known by the abbreviations Rec. 2020 or BT.2020, defines various aspects of ultra-high-definition
+television (UHDTV) with standard dynamic range (SDR) and wide color gamut (WCG), including picture resolutions, frame
+rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations, chroma
+subsamplings, and an opto-electronic transfer function.
 
 _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
+
 </div>
 
-## ProPhoto
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+
+        Parsed input and string output formats support all valid CSS forms:
+
+        ```css-color
+        color(rec2020 r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("rec2020", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(rec2020 r g b / a)` form.
+
+        ```playground
+        Color("rec2020", [0, 0, 0], 1)
+        Color("rec2020", [0, 0, 0], 1).to_string()
+        ```
+
+### ProPhoto
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -364,96 +296,308 @@ _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    red        | [0, 1]
-    green      | [0, 1]
-    blue       | [0, 1]
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![ProPhoto RGB](../images/prophoto-rgb.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities</figcaption>
+</figure>
 
 The ProPhoto RGB color space, also known as ROMM RGB (Reference Output Medium Metric), is an output referred RGB color
 space developed by Kodak. It offers an especially large gamut designed for use with photographic output in mind. The
 ProPhoto RGB color space encompasses over 90% of possible surface colors in the [CIE L\*a\*b\*](#cielab) color space,
 and 100% of likely occurring real-world surface colors documented by Pointer in 1980.
 
----
+??? abstract "ColorAide Details"
 
-Parsed input and string output formats support all valid CSS forms:
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
 
-```css-color
-color(prophoto-rgb r g b / a)  // Color function
-```
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
 
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
+        ```css-color
+        color(prophoto-rgb r g b / a)  // Color function
+        ```
 
-```py
-Color("prophoto-rgb", [0, 0, 0], 1)
-```
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
-The string representation of the color object and the default string output will be in the
-`#!css-color color(prophoto-rgb r g b / a)` form.
+        ```py
+        Color("prophoto-rgb", [0, 0, 0], 1)
+        ```
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(prophoto-rgb r g b / a)` form.
 
-```playground
-Color("prophoto-rgb", [0, 0, 0], 1)
-Color("prophoto-rgb", [0, 0, 0], 1).to_string()
-```
+        ```playground
+        Color("prophoto-rgb", [0, 0, 0], 1)
+        Color("prophoto-rgb", [0, 0, 0], 1).to_string()
+        ```
 
 _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
 </div>
 
-## XYZ
+## Cylindrical sRGB Spaces
+
+The sRGB color space has been represented in a number of cylindrical models. Each model was an attempt to either align
+the color with human perception or make it more intuitive to work with. The term "cylindrical" is used as the spaces
+take on the shape of a cylinder, whereas the RGB model is very much a cube:
+
+<figure markdown="1">
+
+![sRGB 3D](../images/srgb-3d.png)
+
+<figcaption>sRGB color space in 3D</figcaption>
+</figure>
+
+### HSV
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `xyz`
+    **Name:** `hsv`
 
-    **White Point:** D50
+    **White Point:** D65
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    x:         | [0.0, 0.964]^\*^
-    y:         | [0.0, 1.0]^\*^
-    z:         | [0.0, 0.825]^\*^
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    s    | [0, 100]
+    v    | [0, 100]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+<figure markdown="1">
 
-The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
-(CIE) in 1931. They resulted from a series of experiments done in the late 1920s by William David Wright using ten
-observers and John Guild using seven observers. The experimental results were combined into the specification of the
-CIE RGB color space, from which the CIE XYZ color space was derived. The CIE 1931 color spaces are the first defined
-quantitative links between distributions of wavelengths in the electromagnetic visible spectrum, and physiologically
-perceived colors in human color vision.
+![HSV 3D](../images/hsv-3d.png)
 
----
+<figcaption>HSV color space in 3D</figcaption>
+</figure>
 
-Parsed input and string output formats support all valid CSS forms:
+HSV is a color space similar to the modern [RGB](#srgb) and CMYK models. The HSV color space has three components: hue,
+saturation and value. 'Value' is sometimes substituted with 'brightness' and then it is known as HSB. HSV models how
+colors appear under light.
 
-```css-color
-color(xyz x y z / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("xyz", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output will be in the
-`#!css-color color(xyz x y z / a)` form.
-
-```playground
-Color("xyz", [0, 0, 0], 1)
-Color("xyz", [0, 0, 0], 1).to_string()
-```
-
-_[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
+_[Learn about HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)_
 </div>
 
-## XYZ D65
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `h`      | `hue`
+        `s`      | `saturation`
+        `v`      | `value`
+
+    **Inputs:**
+    : 
+        HSV is not supported via the CSS spec and the parser input and string output only supports the `#!css-color color()`
+        function format using the custom name `#!css-color --hsv`:
+
+        ```css-color
+        color(--hsv 0 0% 0% / 1)
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("hsv", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and default string output will always use the
+        `#!css-color color(hsv h s v / a)` form.
+
+        ```playground
+        Color("hsv", [0, 0, 0], 1)
+        Color("hsv", [0, 0, 0], 1).to_string()
+        ```
+
+### HSL
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hsl`
+
+    **White Point:**   D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    s    | [0, 100]
+    l    | [0, 100]
+
+<figure markdown="1">
+
+![HSL 3D](../images/hsl-3d.png)
+
+<figcaption>HSL color space in 3D</figcaption>
+</figure>
+
+HSL is an alternative representations of the [RGB](#srgb) color model, designed in the 1970s by computer graphics
+researchers to more closely align with the way human vision perceives color-making attributes. In these models, colors
+of each hue are arranged in a radial slice, around a central axis of neutral colors which ranges from black at the
+bottom to white at the top.
+
+HSL models the way different paints mix together to create color in the real world, with the lightness dimension
+resembling the varying amounts of black or white paint in the mixture.
+
+_[Learn about HSL](https://en.wikipedia.org/wiki/HSL_and_HSV)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `h`      | `hue`
+        `s`      | `saturation`
+        `l`      | `lightness`
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color 
+        color()` function format using the custom name `#!css-color --hsl`:
+
+        ```css-color
+        hsl(h s l / a)          // HSL function
+        hsl(h, s, l)            // Legacy HSL function
+        hsla(h, s, l, a)        // Legacy HSLA function
+        color(--hsl h s l / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("hsl", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--hsl h s l / a)`
+        form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
+
+        ```playground
+        Color("hsl", [0, 0, 0], 1)
+        Color("hsl", [0, 0, 0], 1).to_string()
+        ```
+
+### HWB
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hwb`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    w    | [0, 100]
+    b    | [0, 100]
+
+<figure markdown="1">
+
+![HWB 3D](../images/hwb-3d.png)
+
+<figcaption>HWB color space in 3D</figcaption>
+</figure>
+
+HWB is a cylindrical-coordinate representation of points in an [RGB](#srgb) color model, similar to HSL and HSV. It was
+developed by [HSV](#hsv)'s creator Alvy Ray Smith in 1996 to address some of the issues with HSV. HWB was designed to be
+more intuitive for humans to use and slightly faster to compute. The first coordinate, H (Hue), is the same as the Hue
+coordinate in [HSL](#hsl) and [HSV](#hsv). W and B stand for Whiteness and Blackness respectively and range from 0-100%
+(or 0-1). The mental model is that the user can pick a main hue and then "mix" it with white and/or black to produce the
+desired color.
+
+_[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `h`         | `hue`
+        `w`         | `whiteness`
+        `b`         | `blackness`
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
+        function format using the custom name `#!css-color --hwb`:
+
+        ```css-color
+        hwb(h w b / a)          // HWB function
+        color(--hwb h w b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("hwb", [0, 0, 100], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)` form, but
+        the default string output will be the `#!css-color hsl(h s l / a)` form.
+
+        ```playground
+        Color("hwb", [0, 0, 100], 1)
+        Color("hwb", [0, 0, 100], 1).to_string()
+        ```
+
+## XYZ
+
+The 1931 CIE XYZ color space encompasses all colors that are visible to a person with average eyesight. It also contains
+many colors that the human eye cannot see:
+
+<figure markdown="1">
+
+![XYZ D65](../images/xyz-d65.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- overlaid with the XYZ D65 space.</figcaption>
+</figure>
+
+In many color libraries, it is used as a space through which different color conversions are passed through as it is
+large enough to contain all visible colors. Many conversions use matrices based on this space to do chromatic adaption
+or just direct translations.
+
+While the chromaticity diagrams we've shown all use [XYZ with a D65 white point](#xyz-d65) to help generate them, XYZ
+can be represented with other white points as well. Currently, the default white point in CSS is [D50](#xyz-d50). We
+actually include access to both as while we want parity with CSS, we want access to XYZ D65 as it is commonly used for a
+variety of things.
+
+### XYZ D65
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -472,36 +616,134 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
-XYZ D65 is the same as [XYZ](#xyz) except it uses a D65 white point.
+<figure markdown="1">
 
----
+![XYZ D65 3D](../images/xyz-d65-3d.png)
 
-Parsed input and string output formats use the `#!css-color color()` format with the custom name `#!css-color --xyz-d65`
-as XYZ D65 is not currently supported in the current CSS spec:
+<figcaption>The sRGB gamut represented within the XYZ D65 color space.</figcaption>
+</figure>
 
-```css-color
-color(--xyz-d65 x y z / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("xyz-d65", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output will be in the
-`#!css-color color(--xyz x y z / a)` form.
-
-```playground
-Color("xyz-d65", [0, 0, 0], 1)
-Color("xyz-d65", [0, 0, 0], 1).to_string()
-```
+The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
+(CIE) in 1931. They resulted from a series of experiments done in the late 1920s by William David Wright using ten
+observers and John Guild using seven observers. The experimental results were combined into the specification of the
+CIE RGB color space, from which the CIE XYZ color space was derived. The CIE 1931 color spaces are the first defined
+quantitative links between distributions of wavelengths in the electromagnetic visible spectrum, and physiologically
+perceived colors in human color vision.
 
 _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 </div>
 
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `x`         |
+        `y`         |
+        `z`         |
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats use the `#!css-color color()` format with the custom name `#!css-color --xyz-d65`
+        as XYZ D65 is not currently supported in the current CSS spec:
+
+        ```css-color
+        color(--xyz-d65 x y z / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("xyz-d65", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--xyz x y z / a)` form.
+
+        ```playground
+        Color("xyz-d65", [0, 0, 0], 1)
+        Color("xyz-d65", [0, 0, 0], 1).to_string()
+        ```
+
+### XYZ D50
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `xyz`
+
+    **White Point:** D50
+
+    **Coordinates:**
+
+    Name       | Range
+    ---------- | -----
+    x:         | [0.0, 0.964]^\*^
+    y:         | [0.0, 1.0]^\*^
+    z:         | [0.0, 0.825]^\*^
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![XYZ D50 3D](../images/xyz-3d.png)
+
+<figcaption>The sRGB gamut represented within the XYZ D50 color space.</figcaption>
+</figure>
+
+XYZ D50 is the same as [XYZ D65](#xyz-d65) except it uses a D50 white point.
+
+_[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `x`         |
+        `y`         |
+        `z`         |
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
+
+        ```css-color
+        color(xyz x y z / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("xyz", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(xyz x y z / a)` form.
+
+        ```playground
+        Color("xyz", [0, 0, 0], 1)
+        Color("xyz", [0, 0, 0], 1).to_string()
+        ```
+
 ## CIELAB
+
+CIELAB -- also referred to as L\*a\*b\* -- is another CIE color space. it was created as a perceptually uniform color
+space. CIELAB doesn't really have a gamut, and pretty much any other color space can be mapped to it.
+
+Much like [XYZ](#xyz), CIELAB and CIELCH currently use a [D50](#cielab-d50) white point just like the CSS, but we've
+also included variants with D65 white points as well.
+
+### CIELAB D50
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -512,13 +754,20 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 100]^\*^
-    a          | [-79.287, 93.55]^\*^
-    b          | [-112.029, 93.388]^\*^
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    a    | [-79.287, 93.55]^\*^
+    b    | [-112.029, 93.388]^\*^
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![CIELAB D50 3D](../images/lab-3d.png)
+
+<figcaption>The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+</figure>
 
 The CIELAB color space also referred to as L\*a\*b\* is a color space defined by the International Commission on
 Illumination (abbreviated CIE) in 1976. It expresses color as three values: L\* for perceptual lightness, and a\* and
@@ -526,86 +775,47 @@ b\* for the four unique colors of human vision: red, green, blue, and yellow. CI
 uniform space, where a given numerical change corresponds to similar perceived change in color. While the CIELAB space
 is not truly perceptually uniform, it nevertheless is useful in industry for detecting small differences in color.
 
----
-
-Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-function format using the custom name `#!css-color --lab`:
-
-```css-color
-lab(l a b / a)          // Lab function
-color(--lab l a b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("lab", [0, 0, 0], 1)
-```
-
-The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)` form, but
-the default string output will be the `#!css-color hsl(h s l / a)` form.
-
-```playground
-Color("lab", [0, 0, 0], 1)
-Color("lab", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 </div>
 
-## CIELCH
+??? abstract "ColorAide Details"
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
 
-    **Name:** `lch`
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
+        function format using the custom name `#!css-color --lab`:
 
-    **White Point:** D50
+        ```css-color
+        lab(l a b / a)          // Lab function
+        color(--lab l a b / a)  // Color function
+        ```
 
-    **Coordinates:**
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 100]^\*^
-    chroma     | [0.0, 131.207]^\*^
-    hue        | [0, 360)
+        ```py
+        Color("lab", [0, 0, 0], 1)
+        ```
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)` form, but
+        the default string output will be the `#!css-color hsl(h s l / a)` form.
 
-The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
-(chroma, relative saturation) and h&deg; (hue angle, angle of the hue in the CIELAB color wheel) instead of the Cartesian
-coordinates a\* and b\*. The CIELAB lightness L\* remains unchanged.
+        ```playground
+        Color("lab", [0, 0, 0], 1)
+        Color("lab", [0, 0, 0], 1).to_string()
+        ```
 
----
-
-Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-function format using the custom name `#!css-color --lch`:
-
-```css-color
-lch(l c h / a)          // Lch function
-color(--lch l c h / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("lch", [0, 0, 0], 1)
-```
-
-The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)` form, but
-the default string output will be the `#!css-color hsl(l c h / a)` form.
-
-```playground
-Color("lch", [0, 0, 0], 1)
-Color("lch", [0, 0, 0], 1).to_string()
-```
-
-_[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
-</div>
-
-## CIELAB D65
+### CIELAB D65
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -616,44 +826,140 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Coordinates:**
 
-    Name      | Range
-    --------- | -----
-    lightness | [0, 100]^\*^
-    a         | [-86.183, 98.234]^\*^
-    b         | [-107.86, 94.478]^\*^
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    a    | [-86.183, 98.234]^\*^
+    b    | [-107.86, 94.478]^\*^
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
-CIELAB D65 is the same as [CIELAB](#cielab) except it uses a D65 white point.
+<figure markdown="1">
 
----
+![CIELAB D65 3D](../images/lab-d65-3d.png)
 
-As a D65 variant of CIELAB is not currently supported in the CSS spec, the parsed input and string output formats use
-the `#!css-color color()` function format using the custom name `#!css-color --lab-d65`:
+<figcaption>The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+</figure>
 
-```css-color
-color(--lab-d65 l a b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("lab-d65", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--lab-d65 l a b / a)` form.
-
-```playground
-Color("lab-d65", [0, 0, 0], 1)
-Color("lab-d65", [0, 0, 0], 1).to_string()
-```
+CIELAB D65 is the same as [CIELAB](#cielab-d50) except it uses a D65 white point.
 
 _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 </div>
 
-## CIELCH D65
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs:**
+    : 
+        As a D65 variant of CIELAB is not currently supported in the CSS spec, the parsed input and string output formats use
+        the `#!css-color color()` function format using the custom name `#!css-color --lab-d65`:
+
+        ```css-color
+        color(--lab-d65 l a b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("lab-d65", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--lab-d65 l a b / a)` form.
+
+        ```playground
+        Color("lab-d65", [0, 0, 0], 1)
+        Color("lab-d65", [0, 0, 0], 1).to_string()
+        ```
+
+## CIELCH
+
+CIELAB generally is not an intuitive space to work with and instead is often converted to cylindrical coordinates with
+hues represented as degrees and a chroma and lightness channel. The shape of the color space doesn't really change,
+just how the colors are manipulated. CIELCH, like CIELAB, is available with a D50 white point that matches CSS and a
+D65 white point.
+
+### CIELCH D50
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `lch`
+
+    **White Point:** D50
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    c    | [0.0, 131.207]^\*^
+    h    | [0, 360)
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![CIELCH D50 3D](../images/lch-3d.png)
+
+<figcaption>The sRGB gamut represented within the CIELCH D50 color space.</figcaption>
+</figure>
+
+The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
+(chroma, relative saturation) and h&deg; (hue angle, angle of the hue in the CIELAB color wheel) instead of the Cartesian
+coordinates a\* and b\*. The CIELAB lightness L\* remains unchanged.
+
+_[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `c`      | `chroma`
+        `h`      | `hue`
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
+        function format using the custom name `#!css-color --lch`:
+
+        ```css-color
+        lch(l c h / a)          // Lch function
+        color(--lch l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("lch", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)` form, but
+        the default string output will be the `#!css-color hsl(l c h / a)` form.
+
+        ```playground
+        Color("lch", [0, 0, 0], 1)
+        Color("lch", [0, 0, 0], 1).to_string()
+        ```
+
+### CIELCH D65
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -664,42 +970,61 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 100]^\*^
-    chroma     | [0.0, 133.808]^\*^
-    hue        | [0, 360)
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    c    | [0.0, 133.808]^\*^
+    h    | [0, 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
-CIELCH D65 is the same as [CIELCH](#cielch) except it uses a D65 white point.
+<figure markdown="1">
 
----
+![CIELCH D65 3D](../images/lch-d65-3d.png)
 
-As a D65 variant of CIELCH is not currently supported in the CSS spec, the parsed input and string output formats use
-the `#!css-color color()` function format using the custom name `#!css-color --lch-d65`:
+<figcaption>The sRGB gamut represented within the CIELCH D65 color space.</figcaption>
+</figure>
 
-```css-color
-color(--lch-d65 l c h / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("lch-d65", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--lch-d65 l c h / a)` form.
-
-```playground
-Color("lch-d65", [0, 0, 0], 1)
-Color("lch-d65", [0, 0, 0], 1).to_string()
-```
+CIELCH D65 is the same as [CIELCH](#cielch-d50) except it uses a D65 white point.
 
 _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `c`      | `chroma`
+        `h`      | `hue`
+
+    **Inputs:**
+    : 
+        As a D65 variant of CIELCH is not currently supported in the CSS spec, the parsed input and string output formats use
+        the `#!css-color color()` function format using the custom name `#!css-color --lch-d65`:
+
+        ```css-color
+        color(--lch-d65 l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("lch-d65", [0, 0, 0], 1)
+        ```
+
+    **Outputs:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--lch-d65 l c h / a)` form.
+
+        ```playground
+        Color("lch-d65", [0, 0, 0], 1)
+        Color("lch-d65", [0, 0, 0], 1).to_string()
+        ```
 
 ## CIELUV
 
@@ -712,43 +1037,62 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 100]^\*^
-    a          | [-84.937, 175.043]^\*^
-    b          | [-125.882, 87.244]^\*^
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    u    | [-84.937, 175.043]^\*^
+    v    | [-125.882, 87.244]^\*^
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
+<figure markdown="1">
+
+![CIELUV 3D](../images/luv-3d.png)
+
+<figcaption>The sRGB gamut represented within the CIELUV color space.</figcaption>
+</figure>
+
 CIELUV, is a color space adopted by the CIE in 1976, as a simple-to-compute transformation of the 1931 CIE XYZ color
-space, but which attempted perceptual uniformity.
-
----
-
-As CIELUV is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --luv`:
-
-```css-color
-color(--luv l u v / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("luv", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--luv l u v / a)` form.
-
-```playground
-Color("luv", [0, 0, 0], 1)
-Color("luv", [0, 0, 0], 1).to_string()
-```
+space, but which attempted perceptual uniformity. It is currently only available with a D50 white point.
 
 _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `u`      |
+        `v`      |
+
+    **Inputs:**
+    : 
+        As CIELUV is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --luv`:
+
+        ```css-color
+        color(--luv l u v / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("luv", [0, 0, 0], 1)
+        ```
+
+    **Outputs**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--luv l u v / a)` form.
+
+        ```playground
+        Color("luv", [0, 0, 0], 1)
+        Color("luv", [0, 0, 0], 1).to_string()
+        ```
 
 ## CIELCH~uv~
 
@@ -761,42 +1105,62 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Coordinates:**
 
-    Name   | Range
-    ------ | -----
-    jz     | [0, 100]^\*^
-    chroma | [0, 176.957]^\*^
-    hue    | [0 - 360)
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    c    | [0, 176.957]^\*^
+    h    | [0 - 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
-CIELCH~uv~ is the polar form of [CIELUV](#cieluv).
+<figure markdown="1">
 
----
+![CIELCH~uv~](../images/lchuv-3d.png)
 
-As CIELCH~uv~ is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --lchuv`:
+<figcaption>The sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
+</figure>
 
-```css-color
-color(--lchuv l c h / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("lchuv", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--lchuv jz cz hz / a)` form.
-
-```playground
-Color("lchuv", [0, 0, 0], 1)
-Color("lchuv", [0, 0, 0], 1).to_string()
-```
+CIELCH~uv~ is the polar form of [CIELUV](#cieluv). The shape is identical, but manipulation of the colors is more
+intuitive.
 
 _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `c`      | `chroma`
+        `h`      | `hue`
+
+    **Inputs:**
+    : 
+        As CIELCH~uv~ is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --lchuv`:
+
+        ```css-color
+        color(--lchuv l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("lchuv", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--lchuv jz cz hz / a)` form.
+
+        ```playground
+        Color("lchuv", [0, 0, 0], 1)
+        Color("lchuv", [0, 0, 0], 1).to_string()
+        ```
 
 ## Oklab
 
@@ -809,41 +1173,61 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 1]
-    a          | [-0.5, 0.5]
-    b          | [-0.5, 0.5]
+    Name | Range
+    ---- | -----
+    l    | [0, 1]
+    a    | [-0.5, 0.5]
+    b    | [-0.5, 0.5]
+
+<figure markdown="1">
+
+![Oklab](../images/oklab-3d.png)
+
+<figcaption>The sRGB gamut represented within the Oklab color space.</figcaption>
+</figure>
+
 
 A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
 chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
 
----
-
-As Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --oklab`:
-
-```css-color
-color(--oklab l a b / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("oklab", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--oklab l a b / a)` form.
-
-```playground
-Color("oklab", [0, 0, 0], 1)
-Color("oklab", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs:**
+    : 
+        As Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --oklab`:
+
+        ```css-color
+        color(--oklab l a b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("oklab", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--oklab l a b / a)` form.
+
+        ```playground
+        Color("oklab", [0, 0, 0], 1)
+        Color("oklab", [0, 0, 0], 1).to_string()
+        ```
 
 ## Oklch
 
@@ -856,40 +1240,59 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 1]
-    chroma     | [0, 1]
-    hue        | [0, 360)
+    Name | Range
+    ---- | -----
+    l    | [0, 1]
+    c    | [0, 1]
+    h    | [0, 360)
+
+<figure markdown="1">
+
+![Oklch](../images/oklch-3d.png)
+
+<figcaption>The sRGB gamut represented within the Oklch color space.</figcaption>
+</figure>
+
 
 Oklch is the cylindrical form of [Oklab](#oklab).
 
----
-
-As Oklch is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --oklch`:
-
-```css-color
-color(--oklch l c h / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("oklch", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--oklch l c h / a)` form.
-
-```playground
-Color("oklch", [0, 0, 0], 1)
-Color("oklch", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `u`      |
+        `v`      |
+
+    **Inputs**
+    : 
+
+        As Oklch is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --oklch`:
+
+        ```css-color
+        color(--oklch l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("oklch", [0, 0, 0], 1)
+        ```
+
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--oklch l c h / a)` form.
+
+        ```playground
+        Color("oklch", [0, 0, 0], 1)
+        Color("oklch", [0, 0, 0], 1).to_string()
+        ```
 
 ## Jzazbz
 
@@ -910,6 +1313,13 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
+<figure markdown="1">
+
+![Jzazbz](../images/jzazbz-3d.png)
+
+<figcaption>The sRGB gamut represented within the Jzazbz color space.</figcaption>
+</figure>
+
 Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
 applications. Conceptually it is similar to [CIELAB](#cielab), but claims the following improvements:
 
@@ -918,32 +1328,44 @@ applications. Conceptually it is similar to [CIELAB](#cielab), but claims the fo
   sizes.
 - Hue linearity: changing saturation or lightness has less shift in hue.
 
----
-
-As Jzazbz is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --jzazbz`:
-
-```css-color
-color(--jzazbz jz az bz / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("jzazbz", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--jzazbz jz az bz / a)` form.
-
-```playground
-Color("jzazbz", [0, 0, 0], 1)
-Color("jzazbz", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `jz`     | `lightness`
+        `az`     | `a`
+        `bz`     | `b`
+
+    **Inputs**
+    : 
+        As Jzazbz is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --jzazbz`:
+
+        ```css-color
+        color(--jzazbz jz az bz / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("jzazbz", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--jzazbz jz az bz / a)` form.
+
+        ```playground
+        Color("jzazbz", [0, 0, 0], 1)
+        Color("jzazbz", [0, 0, 0], 1).to_string()
+        ```
 
 ## JzCzhz
 
@@ -956,42 +1378,61 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     **Coordinates:**
 
-    Name   | Range
-    ------ | -----
-    jz     | [0.0, 0.222]^\*^
-    chroma | [0.0, 0.190]^\*^
-    hue    | [0.0, 360.0)
+    Name | Range
+    ---- | -----
+    jz   | [0.0, 0.222]^\*^
+    cz   | [0.0, 0.190]^\*^
+    hz   | [0.0, 360.0)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
+<figure markdown="1">
+
+![JzCzhz](../images/jzczhz-3d.png)
+
+<figcaption>The sRGB gamut represented within the JzCzhz color space.</figcaption>
+</figure>
+
 JzCzhz is the cylindrical form of [Jzazbz](#jzazbz).
-
----
-
-As JzCzhz is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --jzczhz`:
-
-```css-color
-color(--jzczhz jz cz hz / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("jzczhz", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--jzczhz jz cz hz / a)` form.
-
-```playground
-Color("jzczhz", [0, 0, 0], 1)
-Color("jzczhz", [0, 0, 0], 1).to_string()
-```
 
 _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `jz`     | `lightness`
+        `cz`     | `chroma`
+        `hz`     | `hue`
+
+    **Inputs**
+    : 
+        As JzCzhz is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --jzczhz`:
+
+        ```css-color
+        color(--jzczhz jz cz hz / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("jzczhz", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--jzczhz jz cz hz / a)` form.
+
+        ```playground
+        Color("jzczhz", [0, 0, 0], 1)
+        Color("jzczhz", [0, 0, 0], 1).to_string()
+        ```
 
 ## ICtCp
 
@@ -1012,37 +1453,56 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
+<figure markdown="1">
+
+![ICtCp](../images/ictcp-3d.png)
+
+<figcaption>The sRGB gamut represented within the ICtCp color space.</figcaption>
+</figure>
+
 ICtCp is a color space format with better perceptual uniformity than [CIELAB](#cielab) and is used as a part of the
 color image pipeline in video and digital photography systems for high dynamic range (HDR) and wide color gamut (WCG)
 imagery. It was developed by Dolby Laboratories from the IPT color space by Ebner and Fairchild. It was designed with
 the intention to replace YCbCr.
 
----
-
-As ICtCp is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --ictcp`:
-
-```css-color
-color(--ictcp i ct cp / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("ictcp", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--ictcp i ct cp / a)` form.
-
-```playground
-Color("ictcp", [0, 0, 0], 1)
-Color("ictcp", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `i`      |
+        `ct`     |
+        `cp`     |
+
+    **Inputs:**
+    : 
+        As ICtCp is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --ictcp`:
+
+        ```css-color
+        color(--ictcp i ct cp / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("ictcp", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--ictcp i ct cp / a)` form.
+
+        ```playground
+        Color("ictcp", [0, 0, 0], 1)
+        Color("ictcp", [0, 0, 0], 1).to_string()
+        ```
 
 ## DIN99o
 
@@ -1055,13 +1515,20 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    lightness  | [0, 100]^\*^
-    a          | [-40.09, 45.501]^\*^
-    b          | [-40.47, 44.344]^\*^
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    a    | [-40.09, 45.501]^\*^
+    b    | [-40.47, 44.344]^\*^
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![DIN99o](../images/din99o-3d.png)
+
+<figcaption>The sRGB gamut represented within the DIN99o color space.</figcaption>
+</figure>
 
 The DIN99 color space system is a further development of the CIELAB color space system developed by the FNF / FNL 2
 Colorimetry Working Committee. It takes the CIELAB space (with a D65 illuminant) and compresses it such that the space
@@ -1069,32 +1536,44 @@ yields better equidistant using Euclidean distance. The whole color space is ess
 color distancing algorithm opposed to CIELAB which has adapted the color distancing algorithm to better fit the color
 space, the latest iteration being ∆E^\*^~00~.
 
----
-
-As DIN99o is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --din99o`:
-
-```css-color
-color(--din99o l u v / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("din99o", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--din99o l u v / a)` form.
-
-```playground
-Color("din99o", [0, 0, 0], 1)
-Color("din99o", [0, 0, 0], 1).to_string()
-```
-
 _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs:**
+    : 
+        As DIN99o is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --din99o`:
+
+        ```css-color
+        color(--din99o l u v / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("din99o", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--din99o l u v / a)` form.
+
+        ```playground
+        Color("din99o", [0, 0, 0], 1)
+        Color("din99o", [0, 0, 0], 1).to_string()
+        ```
 
 ## DIN99o Lch
 
@@ -1107,43 +1586,61 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
     **Coordinates:**
 
-    Name   | Range
-    --------- | -----
-    lightness | [0, 100]^\*^
-    chroma    | [0.0, 51.484]^\*^
-    hue       | [0 - 360)
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    c    | [0.0, 51.484]^\*^
+    h    | [0 - 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
+<figure markdown="1">
+
+![DIN99o Lch](../images/din99o-lch-3d.png)
+
+<figcaption>The sRGB gamut represented within the DIN99o Lch color space.</figcaption>
+</figure>
+
 DIN99o Lch is the cylindrical form of [DIN99o](#din99o).
-
----
-
-As DIN99o Lch is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --din99o-lch`:
-
-```css-color
-color(--din99o-lch jz cz hz / a)  // Color function
-```
-
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-name is always used:
-
-```py
-Color("din99o-lch", [0, 0, 0], 1)
-```
-
-The string representation of the color object and the default string output use the
-`#!css-color color(--din99o-lch jz cz hz / a)` form.
-
-```playground
-Color("din99o-lch", [0, 0, 0], 1)
-Color("din99o-lch", [0, 0, 0], 1).to_string()
-```
 
 _[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 </div>
 
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `c`      | `chroma`
+        `h`      | `hue`
+
+    **Inputs:**
+    : 
+        As DIN99o Lch is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --din99o-lch`:
+
+        ```css-color
+        color(--din99o-lch jz cz hz / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
+        name is always used:
+
+        ```py
+        Color("din99o-lch", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--din99o-lch jz cz hz / a)` form.
+
+        ```playground
+        Color("din99o-lch", [0, 0, 0], 1)
+        Color("din99o-lch", [0, 0, 0], 1).to_string()
+        ```
 
 <style>
 .info-container {display: inline-block;}

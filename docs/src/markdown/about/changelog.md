@@ -2,6 +2,13 @@
 
 ## Next
 
+- **NEW**: Provide a way to dump a color object to a simple dictionary and have the `Color()` object accept that
+  dictionary to recreate the color object.
+- **NEW**: Provide `cat16` chromatic adaptation.
+- **NEW**: Add `normalize` method to force channel normalization (evaluation of channels and setting undefined as
+  appropriate).
+- **NEW**: Interpolated and composited colors will normalize undefined channels when returning a color.
+- **NEW**: Jzazbz now also has an alias for `az` and `bz` channels as `a` and `b` respectively.
 - **FIX**: Fix an attribute "get" issue where attributes that were not present on the `Color()` object appeared to be
   present when using `hasattr()`.
 

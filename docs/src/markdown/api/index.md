@@ -80,7 +80,7 @@ Parameters
 : 
     Parameters | Defaults     | Description
     ---------- | -------------| -----------
-    `color`    |              | A color string, or other `Color` class object. If given `data`, a string must be used and should represent the color space to use.
+    `color`    |              | A color string, a dictionary describing the color, or another `Color` class object. If given `data`, a string must be used and should represent the color space to use.
     `data`     | `#!py3 None` | `data` accepts a list of numbers representing the coordinates of the color. If provided, `color` must be a string specifying the color space.
     `alpha`    | `#!py3 1`    | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
     `filters`  | `#!py3 None` | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
@@ -355,6 +355,41 @@ Description
 Return
 : 
     Returns a list of numbers indicating the current coordinate values.
+
+## `Color.normalize` {#normalize}
+
+```py3
+def to_dict(
+    self
+):
+```
+
+Description
+: 
+    Force normalization of a color's channels by setting any channels to undefined if they meet the specific color's
+    criteria dictating such, e.g., hue is undefined in HSL when saturation is zero. Normalize modifies the current color
+    in place.
+
+Return
+: 
+    Returns a reference to the current [`Color`](#color) object after normalizing the channels for undefined hues.
+
+## `Color.to_dict` {#to_dict}
+
+```py3
+def to_dict(
+    self,
+    **kwargs
+):
+```
+
+Description
+: 
+    Dump the color object to a simple dictionary.
+
+Return
+: 
+    A dictionary containing the color space name, the channel name with their respective values.
 
 ## `Color.to_string` {#to_string}
 

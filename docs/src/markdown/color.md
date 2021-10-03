@@ -22,7 +22,8 @@ even if the color is not defined in the CSS color spec or supported in the spec 
 `#!css-color color()` function in CSS does not explicitly support color spaces with angular channels (hues), it has been
 adapted to support cylindrical colors, and is generally used as a generic input and default output for string
 representation of colors. Colors not found in the CSS spec are usually done as custom names with the `--` prefix. Check
-the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name.
+the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name as the
+CSS identifier may not always match the color space name as specified in ColorAide.
 
 ```playground
 Color('color(--hsl 130 40% 75% / 0.5)')
@@ -35,22 +36,37 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
-The name is usually just the name of the color space and will not necessarily match the CSS identifier name. For
-instance, HSL will use `--hsl` in the CSS color function, but will just use the `hsl` when specify raw colors.
+Since colors can be exported to a simple dictionary, which can be useful if serializing to JSON, the Color object will
+also accept this dictionary as an input.
 
 ```playground
-Color('color(--hsl 130 40% 75% / 0.5)')
-Color("hsl", [130, 40, 75], 0.5)
+d = Color('red').to_dict()
+print(d)
+Color(d)
 ```
 
-It is important to note that raw inputs are always accepted exactly as they are specified. Take, for instance, an HSL
-color with zero saturation. When providing a color via a string, the color is parsed and normalized as appropriate. If
-we pass in an HSL color with zero saturation, the parsed string will treat the hue as undefined, while the raw input
-values remain unaltered. Raw inputs are essentially treated as if the user is directly setting those channels.
+!!! note "Normalizing Undefined Channels"
+
+    Normally, when ColorAide processes a color via CSS input or returns a color via compositing, interpolation, gamut
+    fitting, etc., it will normalize undefined hues. Certain color spaces will consider a hue undefined in certain
+    cases, such as when a HSL color has a saturation of zero. Raw inputs via the dict method or the color space and list
+    method will not be normalized in such cases. Raw inputs are accepted as is. This is because they are treated as
+    manual inputs, or purposeful inputs from the user, so their values are respected and left unchanged.
+
+    If at any time, it is desired to force channel normalization after a manual input, just run `normalize`:
+
+    ```playground
+    Color("hsl(130 0% 50%)")
+    Color("hsl", [130, 0, 50])
+    Color("hsl", [130, 0, 50]).normalize(in_place=True)
+    ```
+
+The same is true when using the dict format:
 
 ```playground
 Color("hsl(130 0% 50%)")
-Color("hsl", [130, 0, 50])
+Color({"space": "hsl", "h": 130, "s": 0, "l": 50, "alpha": 1})
+Color({"space": "hsl", "h": 130, "s": 0, "l": 50, "alpha": 1}).normalize(in_place=True)
 ```
 
 If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
