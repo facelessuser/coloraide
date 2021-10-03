@@ -55,7 +55,7 @@ class SRGB(base.SRGB):
 
         options = kwargs
         if options.get("color"):
-            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
 
         # Handle hex and color names
         value = ''

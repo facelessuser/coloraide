@@ -35,7 +35,7 @@ class Lab(base.Lab):
 
         options = kwargs
         if options.get("color"):
-            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
 
         a = util.no_nan(self.alpha)
         alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
