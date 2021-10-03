@@ -620,7 +620,7 @@ variety of things.
 
 ![XYZ D65 3D](../images/xyz-d65-3d.png)
 
-<figcaption>The sRGB gamut represented within the XYZ D65 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the XYZ D65 color space.</figcaption>
 </figure>
 
 The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
@@ -692,7 +692,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
 ![XYZ D50 3D](../images/xyz-3d.png)
 
-<figcaption>The sRGB gamut represented within the XYZ D50 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the XYZ D50 color space.</figcaption>
 </figure>
 
 XYZ D50 is the same as [XYZ D65](#xyz-d65) except it uses a D50 white point.
@@ -766,7 +766,7 @@ also included variants with D65 white points as well.
 
 ![CIELAB D50 3D](../images/lab-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELAB D50 color space.</figcaption>
 </figure>
 
 The CIELAB color space also referred to as L\*a\*b\* is a color space defined by the International Commission on
@@ -838,7 +838,7 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
 ![CIELAB D65 3D](../images/lab-d65-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELAB D50 color space.</figcaption>
 </figure>
 
 CIELAB D65 is the same as [CIELAB](#cielab-d50) except it uses a D65 white point.
@@ -912,7 +912,7 @@ D65 white point.
 
 ![CIELCH D50 3D](../images/lch-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELCH D50 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH D50 color space.</figcaption>
 </figure>
 
 The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
@@ -982,7 +982,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ![CIELCH D65 3D](../images/lch-d65-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELCH D65 color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH D65 color space.</figcaption>
 </figure>
 
 CIELCH D65 is the same as [CIELCH](#cielch-d50) except it uses a D65 white point.
@@ -1049,7 +1049,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ![CIELUV 3D](../images/luv-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELUV color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELUV color space.</figcaption>
 </figure>
 
 CIELUV, is a color space adopted by the CIE in 1976, as a simple-to-compute transformation of the 1931 CIE XYZ color
@@ -1109,7 +1109,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
     ---- | -----
     l    | [0, 100]^\*^
     c    | [0, 176.957]^\*^
-    h    | [0 - 360)
+    h    | [0, 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
@@ -1117,7 +1117,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
 ![CIELCH~uv~](../images/lchuv-3d.png)
 
-<figcaption>The sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
 </figure>
 
 CIELCH~uv~ is the polar form of [CIELUV](#cieluv). The shape is identical, but manipulation of the colors is more
@@ -1183,7 +1183,7 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
 ![Oklab](../images/oklab-3d.png)
 
-<figcaption>The sRGB gamut represented within the Oklab color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklab color space.</figcaption>
 </figure>
 
 
@@ -1250,7 +1250,7 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
 ![Oklch](../images/oklch-3d.png)
 
-<figcaption>The sRGB gamut represented within the Oklch color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklch color space.</figcaption>
 </figure>
 
 
@@ -1317,7 +1317,7 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 
 ![Jzazbz](../images/jzazbz-3d.png)
 
-<figcaption>The sRGB gamut represented within the Jzazbz color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Jzazbz color space.</figcaption>
 </figure>
 
 Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
@@ -1390,7 +1390,7 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 ![JzCzhz](../images/jzczhz-3d.png)
 
-<figcaption>The sRGB gamut represented within the JzCzhz color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the JzCzhz color space.</figcaption>
 </figure>
 
 JzCzhz is the cylindrical form of [Jzazbz](#jzazbz).
@@ -1457,7 +1457,7 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 ![ICtCp](../images/ictcp-3d.png)
 
-<figcaption>The sRGB gamut represented within the ICtCp color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the ICtCp color space.</figcaption>
 </figure>
 
 ICtCp is a color space format with better perceptual uniformity than [CIELAB](#cielab) and is used as a part of the
@@ -1527,7 +1527,7 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 
 ![DIN99o](../images/din99o-3d.png)
 
-<figcaption>The sRGB gamut represented within the DIN99o color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the DIN99o color space.</figcaption>
 </figure>
 
 The DIN99 color space system is a further development of the CIELAB color space system developed by the FNF / FNL 2
@@ -1598,7 +1598,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
 ![DIN99o Lch](../images/din99o-lch-3d.png)
 
-<figcaption>The sRGB gamut represented within the DIN99o Lch color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the DIN99o Lch color space.</figcaption>
 </figure>
 
 DIN99o Lch is the cylindrical form of [DIN99o](#din99o).
@@ -1641,6 +1641,10 @@ _[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         Color("din99o-lch", [0, 0, 0], 1)
         Color("din99o-lch", [0, 0, 0], 1).to_string()
         ```
+
+[^1]: For the purposes of speed, 3D models are calculated by taking the points on the outer shell of the sRGB space and
+mapping those points to the color space of interest. While a more accurate model could be made by taking all points into
+account, this approach gives a fairly good approximation of the shape of the sRGB gamut within the targeted color space.
 
 <style>
 .info-container {display: inline-block;}

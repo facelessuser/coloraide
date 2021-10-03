@@ -3,6 +3,10 @@ Render 3D plots of sRGB in other color spaces.
 
 In order to render things fast and allow for reasonable
 performance, we render the outer shell of the space.
+
+Only sRGB and related sRGB cylindrical models are precise,
+all others are approximations of the shape due to our
+approach.
 """
 import itertools
 import matplotlib.pyplot as plt
