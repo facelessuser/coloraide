@@ -64,6 +64,8 @@ relative adjustment of the green channel and transform the color `#!color pink` 
 Color("pink").set('green', lambda g: g * 1.3)
 ```
 
+## Modifying Coordinates in Other Spaces
+
 Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` by
 editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`. Keep in mind
 though that the colors are being converted to the specified space under the hood, set, and then converted back, so if
@@ -82,20 +84,23 @@ something unexpected back.
 
 ```playground
 Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
-Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100)
-Color('hsl(0 0% 50%)').set('lch-d65.lightness', 100).convert('srgb').coords()
+Color('hsl(0 0% 50%)').set('oklab.lightness', 1)
+Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb').coords()
 ```
 
 The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise, but the
-CIELCH D65 example is not quite as precise and returns a color with a saturation that is way out of bounds. But keep in
-mind, it looks worse than it really is. When converting the HSL value to sRGB, we see it is barely off. None of this is
-a bug, it is just the nature of the algorithms we are using to convert, the precision of the floats, and the slight
-rounding errors that occur when using [floating-point arithmetic][floating-point].
+Oklab example is not quite as precise and returns a color with a saturation that is way out of bounds. This is partly
+because the Oklab max whiteness isn't exactly `1`, but more like `~0.999`, But keep in mind, it looks worse than it
+really is. When converting the HSL value to sRGB, we see it is barely off. None of this is a bug, it is just the nature
+of the algorithms we are using to convert, the precision of the floats, and the slight rounding errors that occur when
+using [floating-point arithmetic][floating-point], etc.
 
 In the end, while the HSL color with high saturation seems a bit unexpected, it is actually pretty close to the intended
-value once you realize that the 100% lightness dominates the result and makes the saturation and hue values
-insignificant. For this reason, it makes a lot of sense that the sRGB coordinates are still so close. HSL just doesn't
-represent out of gamut colors as well as sRGB does.
+value once you realize that the nearly 100% lightness dominates the result and makes the saturation and hue values
+insignificant. For this reason, it makes a lot of sense that the sRGB coordinates are still so close. Also, HSL just
+doesn't represent out of gamut colors as well as sRGB does. HSL was designed mainly to show colors from a square, RGB
+coordinate system. Anything outside of the RGB range will not be as meaningful, but the values will convert back to sane
+values in another space in most cases.
 
 ## Masking Channels
 

@@ -11,8 +11,8 @@ from coloraide import Color
 Afterwards, colors can be created using various, valid CSS syntax:
 
 ```playground
-Color("red"),
-Color("#00ff00"),
+Color("red")
+Color("#00ff00")
 Color("rgb(0 0 255 / 1)")
 ```
 
