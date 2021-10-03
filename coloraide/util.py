@@ -181,13 +181,13 @@ def is_nan(value):
     return math.isnan(value)
 
 
-def no_nan(value):
+def no_nan(value, default=0.0):
     """Convert list of numbers or single number to valid numbers."""
 
     if is_number(value):
-        return 0.0 if is_nan(value) else value
+        return default if is_nan(value) else value
     else:
-        return [(0.0 if is_nan(x) else x) for x in value]
+        return [(default if is_nan(x) else x) for x in value]
 
 
 def cmp_coords(c1, c2):

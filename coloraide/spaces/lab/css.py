@@ -38,7 +38,7 @@ class Lab(base.Lab):
             return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, **kwargs)
 
         a = util.no_nan(self.alpha)
-        alpha = alpha is not False and (alpha is True or a < 1.0)
+        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
         method = None if not isinstance(fit, str) else fit
         coords = parent.fit(method=method).coords() if fit else self.coords()
         if not none:
