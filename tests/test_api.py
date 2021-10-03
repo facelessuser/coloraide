@@ -466,14 +466,6 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c2 = Color('yellow')
         self.assertEqual(c1.compose(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
 
-    def test_overlay_no_space(self):
-        """Test overlay handling of no space."""
-
-        self.assertColorEqual(
-            Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red'),
-            Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red', space='display-p3')
-        )
-
     def test_contrast_one(self):
         """Test contrast of one."""
 
