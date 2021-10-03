@@ -903,7 +903,7 @@ D65 white point.
     Name | Range
     ---- | -----
     l    | [0, 100]^\*^
-    c    | [0.0, 131.207]^\*^
+    c    | [0, 131.207]^\*^
     h    | [0, 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
@@ -1175,9 +1175,11 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
     Name | Range
     ---- | -----
-    l    | [0, 1]
-    a    | [-0.5, 0.5]
-    b    | [-0.5, 0.5]
+    l    | [0, 1]^\*^
+    a    | [-0.234, 0.276]^\*^
+    b    | [-0.312, 0.198]^\*^
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
 <figure markdown="1">
 
@@ -1242,9 +1244,11 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
     Name | Range
     ---- | -----
-    l    | [0, 1]
-    c    | [0, 1]
+    l    | [0, 1]^\*^
+    c    | [0, 0.323]^\*^
     h    | [0, 360)
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
 <figure markdown="1">
 
@@ -1307,7 +1311,7 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 
     Name | Range
     ---- | -----
-    jz   | [0.0, 0.222]^\*^
+    jz   | [0, 0.222]^\*^
     az   | [-0.109, 0.13]^\*^
     bz   | [-0.186, 0.135]^\*^
 
@@ -1380,9 +1384,9 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     Name | Range
     ---- | -----
-    jz   | [0.0, 0.222]^\*^
-    cz   | [0.0, 0.190]^\*^
-    hz   | [0.0, 360.0)
+    jz   | [0, 0.222]^\*^
+    cz   | [0, 0.190]^\*^
+    hz   | [0, 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
@@ -1447,7 +1451,7 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     Name       | Range
     ---------- | -----
-    i          | [0.0, 0.581]^\*^
+    i          | [0, 0.581]^\*^
     ct         | [-0.281, 0.277]^\*^
     cp         | [-0.161, 0.279]^\*^
 
@@ -1589,8 +1593,8 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
     Name | Range
     ---- | -----
     l    | [0, 100]^\*^
-    c    | [0.0, 51.484]^\*^
-    h    | [0 - 360)
+    c    | [0, 51.484]^\*^
+    h    | [0, 360)
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
