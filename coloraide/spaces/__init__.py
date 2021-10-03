@@ -56,19 +56,34 @@ class GamutUnbound(tuple):
 class Cylindrical:
     """Cylindrical space."""
 
-    def hue_name(self):
+    @classmethod
+    def hue_name(cls):
         """Hue channel name."""
 
         return "h"
+
+    @classmethod
+    def hue_index(cls):  # pragma: no cover
+        """Get hue index."""
+
+        return cls.CHANNEL_NAMES.index(cls.hue_name)
 
 
 class Labish:
     """Lab-ish color spaces."""
 
-    def labish_names(self):
+    @classmethod
+    def labish_names(cls):
         """Return Lab-ish names in the order L a b."""
 
-        return self.CHANNEL_NAMES[:3]
+        return cls.CHANNEL_NAMES[:3]
+
+    @classmethod
+    def labish_indexes(cls):  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
+
+        names = cls.labish_names
+        return [cls.CHANNEL_NAMES.index(name) for name in names]
 
 
 class Lchish(Cylindrical):
@@ -78,6 +93,13 @@ class Lchish(Cylindrical):
         """Return Lch-ish names in the order L c h."""
 
         return self.CHANNEL_NAMES[:3]
+
+    @classmethod
+    def lchish_indexes(cls):  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
+
+        names = cls.labish_names
+        return [cls.CHANNEL_NAMES.index(name) for name in names]
 
 
 class BaseSpace(ABCMeta):

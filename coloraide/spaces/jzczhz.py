@@ -114,6 +114,11 @@ class JzCzhz(Lchish, Space):
             coords[2] = util.NaN
         return coords, alpha
 
+    def hue_name(self):
+        """Hue name."""
+
+        return "hz"
+
     @classmethod
     def _to_jzazbz(cls, parent, jzczhz):
         """To Jzazbz."""

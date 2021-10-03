@@ -23,16 +23,16 @@ class Convert:
                 converted = self.convert(space, in_place=in_place)
                 return converted.fit(space, method=method, in_place=True)
 
-        convert_to = '_to_{}'.format(space)
-        convert_from = '_from_{}'.format(self.space())
-
-        obj = self.CS_MAP.get(space)
-        if obj is None:
-            raise ValueError("'{}' is not a valid color space".format(space))
-
-        # See if there is a direct conversion route
-        func = None
         if self.space() != space:
+            convert_to = '_to_{}'.format(space)
+            convert_from = '_from_{}'.format(self.space())
+
+            obj = self.CS_MAP.get(space)
+            if obj is None:
+                raise ValueError("'{}' is not a valid color space".format(space))
+
+            # See if there is a direct conversion route
+            func = None
             # Don't send NaNs
             coords = util.no_nan(self.coords())
             if hasattr(self._space, convert_to):

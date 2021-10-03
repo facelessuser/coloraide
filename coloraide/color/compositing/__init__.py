@@ -113,7 +113,9 @@ class Compose:
         src = self.convert(space, fit=True)
         dest = compose(src, dest, blend, operator, non_seperable)
 
-        return self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
+        return (
+            self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
+        ).normalize(in_place=True)
 
     @util.deprecated("'overlay' is deprecated, 'compose' should be used instead.")
     def overlay(self, backdrop, *, space=None, in_place=False):
