@@ -3,7 +3,6 @@ import unittest
 from coloraide import Color, NaN, Piecewise
 from . import util
 import math
-import warnings
 
 
 class TestAPI(util.ColorAsserts, unittest.TestCase):
@@ -474,17 +473,6 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red'),
             Color('color(display-p3 0.7 0.3 0.2 / 0.5)').overlay('red', space='display-p3')
         )
-
-    def test_deprecated_overlay(self):
-        """Test overlay deprecation."""
-
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-
-            Color('color(srgb 1 0 0 / 1)').overlay('black')
-
-            self.assertTrue(len(w) == 1)
-            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
     def test_contrast_one(self):
         """Test contrast of one."""

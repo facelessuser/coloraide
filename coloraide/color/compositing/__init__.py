@@ -116,11 +116,3 @@ class Compose:
         return (
             self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
         ).normalize()
-
-    @util.deprecated("'overlay' is deprecated, 'compose' should be used instead.")
-    def overlay(self, backdrop, *, space=None, in_place=False):
-        """Redirect to compose."""
-
-        if space is None:
-            space = self.space()
-        return self.compose(backdrop, space=space, out_space=None, in_place=in_place)
