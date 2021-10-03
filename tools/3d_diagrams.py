@@ -94,19 +94,25 @@ def render_space(space, add, resolution, factor, data, c, offset=0):
         add(space, Color('srgb', [c1, c2, 1]), x, y, z, c)
 
 
-def render_cyl_space(space, resolution, factor, data, c, offset=0):
+def render_cyl_space(space, resolution, data, c):
     """Render the space with the given resolution and factor."""
 
     x, y, z = data
 
-    res = int(resolution * 1.5)
+    res = int(resolution * 2)
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
-    for c1, c2 in itertools.product(
-        (((x / res) * factor) * 359 + offset for x in range(0, res + 1)),
-        (((x / res) * factor) * 100 + offset for x in range(0, res + 1))
+    for c1, t in itertools.product(
+        ((x / res) * 360 for x in range(0, res + 1)),
+        (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
     ):
+
+        # Offset the plot on every other iteration blend the rows into a mesh
+        # Better looking when low resolution zoomed into higher resolution
+        c2, count = t
+        if count % 2 and c1 < 360:
+            c1 += (360 / res) * 0.5
 
         # Top disc
         x.append(c2 * math.sin(math.radians(c1)))
@@ -120,10 +126,16 @@ def render_cyl_space(space, resolution, factor, data, c, offset=0):
         z.append(0)
         c.append(Color(space, [c1, c2, 0]).convert('srgb').to_string(hex=True))
 
-    for c1, c2 in itertools.product(
-        (((x / res) * factor) * 359 + offset for x in range(0, res + 1)),
-        (((x / res) * factor) * 100 + offset for x in range(0, res + 1))
+    for c1, t in itertools.product(
+        ((x / res) * 360 for x in range(0, res + 1)),
+        (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
     ):
+        # Offset the plot on every other iteration blend the rows into a mesh
+        # Better looking when low resolution zoomed into higher resolution
+        c2, count = t
+        if count % 2 and c1 < 360:
+            c1 += (360 / res) * 0.5
+
         # Cylinder portion
         x.append(100 * math.sin(math.radians(c1)))
         y.append(100 * math.cos(math.radians(c1)))
@@ -169,7 +181,7 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
 
     # Render the space
     if is_cyl and space in ('hsl', 'hsv', 'hwb'):
-        render_cyl_space(space, resolution, 1, data, c)
+        render_cyl_space(space, resolution, data, c)
     else:
         # Select the right color handler for the space
         add = add_cyl_color if is_cyl else add_color
@@ -177,19 +189,21 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
 
         # Oklab needs higher resolution near black
         if space in ('oklab', 'oklch'):
-            render_space(space, add, resolution // 2, 0.0124, data, c)
+            render_space(space, add, resolution, 0.3, data, c)
+            render_space(space, add, resolution, 0.01, data, c)
         # ICtCp needs an absurd amount of resolution near black,
         # do multiple, increasingly higher resolution passes
         elif space == 'ictcp':
-            render_space(space, add, resolution, 0.3, data, c)
+            render_space(space, add, resolution // 2, 0.3, data, c)
+            render_space(space, add, resolution // 2, 0.2, data, c)
             render_space(space, add, resolution, 0.1, data, c)
-            render_space(space, add, resolution, 0.03, data, c)
+            render_space(space, add, resolution, 0.01, data, c)
 
     # Setup the aspect ratio
     ax.set_box_aspect((1, 1, 1))
 
     # Plot the data
-    ax.scatter3D(data[axm[0]], data[axm[1]], data[axm[2]], c=c)
+    ax.scatter3D(data[axm[0]], data[axm[1]], data[axm[2]], c=c, s=20 * 4)
 
 
 def main():

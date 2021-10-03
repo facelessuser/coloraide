@@ -59,7 +59,7 @@ class Cylindrical:
     def hue_name(self):
         """Hue channel name."""
 
-        return "hue"
+        return "h"
 
 
 class Labish:
