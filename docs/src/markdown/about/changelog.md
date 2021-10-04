@@ -2,7 +2,7 @@
 
 ## 0.1
 
-- First non-alpha prerelease.
+First non-alpha prerelease. Notable changes from the last alpha listed below.
 
 - **NEW**: All color channels now accept the `none` key word to specify an undefined channel. They can also optionally
   output CSS strings with the key word.
