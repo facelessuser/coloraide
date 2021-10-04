@@ -59,15 +59,16 @@ class Convert:
     def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Mutate the current color to a new color."""
 
-        c = self.new(color, data=data, alpha=alpha, filters=filters, **kwargs)
-        self._attach(c._space)
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._attach(c)
         return self
 
     def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
         """Update the existing color space with the provided color."""
 
-        c = self.new(color, data=data, alpha=alpha, filters=filters, **kwargs)
-        if c.space() != self.space():
-            c.convert(self.space(), in_place=True)
-        self._attach(c._space)
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        space = self.space()
+        self._attach(c)
+        if c.space() != space:
+            self.convert(space, in_place=True)
         return self
