@@ -470,6 +470,7 @@ def cie_diagram(
             (x / RESOLUTION for x in range(0, RESOLUTION + 1)),
             (x / RESOLUTION for x in range(0, RESOLUTION + 1))
         ):
+            srgb = Color('srgb', [])
             if path.contains_point(r):
                 if opt.mode == "1931":
                     xyz = util.xy_to_xyz(r)
@@ -479,7 +480,7 @@ def cie_diagram(
                     xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
                 px.append(r[0])
                 py.append(r[1])
-                srgb = Color('xyz-d65', xyz, opacity).convert('srgb')
+                srgb.update('xyz-d65', xyz, opacity)
                 m = max(srgb.coords())
                 srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb.coords()], srgb.alpha)
                 c.append(srgb.to_string(hex=True, fit="clip"))
@@ -554,19 +555,20 @@ def cie_diagram(
 
     # Draw RGB triangles if one is specified
     if rgb_spaces:
+        temp = Color('srgb', [])
         for space, color in rgb_spaces:
             if opt.mode == '1931':
-                red = Color(space, [1, 0, 0]).xy()
-                green = Color(space, [0, 1, 0]).xy()
-                blue = Color(space, [0, 0, 1]).xy()
+                red = temp.mutate(space, [1, 0, 0]).xy()
+                green = temp.mutate(space, [0, 1, 0]).xy()
+                blue = temp.mutate(space, [0, 0, 1]).xy()
             elif opt.mode == '1976':
-                red = Color(space, [1, 0, 0]).uv()
-                green = Color(space, [0, 1, 0]).uv()
-                blue = Color(space, [0, 0, 1]).uv()
+                red = temp.mutate(space, [1, 0, 0]).uv()
+                green = temp.mutate(space, [0, 1, 0]).uv()
+                blue = temp.mutate(space, [0, 0, 1]).uv()
             else:
-                red = Color(space, [1, 0, 0]).uv('1960')
-                green = Color(space, [0, 1, 0]).uv('1960')
-                blue = Color(space, [0, 0, 1]).uv('1960')
+                red = temp.mutate(space, [1, 0, 0]).uv('1960')
+                green = temp.mutate(space, [0, 1, 0]).uv('1960')
+                blue = temp.mutate(space, [0, 0, 1]).uv('1960')
             plt.plot(
                 [red[0], green[0], blue[0], red[0]],
                 [red[1], green[1], blue[1], red[1]],

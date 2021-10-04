@@ -83,19 +83,20 @@ def render_space(space, add, resolution, factor, data, c, offset=0):
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
+    color = Color('srgb', [])
     for c1, c2 in itertools.product(
         (((x / resolution) * factor) + offset for x in range(0, resolution + 1)),
         (((x / resolution) * factor) + offset for x in range(0, resolution + 1))
     ):
 
-        add(space, Color('srgb', [0, c1, c2]), x, y, z, c)
-        add(space, Color('srgb', [1, c1, c2]), x, y, z, c)
+        add(space, color.update('srgb', [0, c1, c2]), x, y, z, c)
+        add(space, color.update('srgb', [1, c1, c2]), x, y, z, c)
 
-        add(space, Color('srgb', [c1, 0, c2]), x, y, z, c)
-        add(space, Color('srgb', [c1, 1, c2]), x, y, z, c)
+        add(space, color.update('srgb', [c1, 0, c2]), x, y, z, c)
+        add(space, color.update('srgb', [c1, 1, c2]), x, y, z, c)
 
-        add(space, Color('srgb', [c1, c2, 0]), x, y, z, c)
-        add(space, Color('srgb', [c1, c2, 1]), x, y, z, c)
+        add(space, color.update('srgb', [c1, c2, 0]), x, y, z, c)
+        add(space, color.update('srgb', [c1, c2, 1]), x, y, z, c)
 
 
 def render_cyl_space(space, resolution, data, c):
@@ -107,6 +108,7 @@ def render_cyl_space(space, resolution, data, c):
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
+    color = Color("srgb", [])
     for c1, t in itertools.product(
         ((x / res) * 360 for x in range(0, res + 1)),
         (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
@@ -122,13 +124,13 @@ def render_cyl_space(space, resolution, data, c):
         x.append(c2 * math.sin(math.radians(c1)))
         y.append(c2 * math.cos(math.radians(c1)))
         z.append(100)
-        c.append(Color(space, [c1, c2, 100]).convert('srgb').to_string(hex=True))
+        c.append(color.update(space, [c1, c2, 100]).to_string(hex=True))
 
         # Bottom disc
         x.append(c2 * math.sin(math.radians(c1)))
         y.append(c2 * math.cos(math.radians(c1)))
         z.append(0)
-        c.append(Color(space, [c1, c2, 0]).convert('srgb').to_string(hex=True))
+        c.append(color.update(space, [c1, c2, 0]).to_string(hex=True))
 
     for c1, t in itertools.product(
         ((x / res) * 360 for x in range(0, res + 1)),
@@ -144,7 +146,7 @@ def render_cyl_space(space, resolution, data, c):
         x.append(100 * math.sin(math.radians(c1)))
         y.append(100 * math.cos(math.radians(c1)))
         z.append(c2)
-        c.append(Color(space, [c1, 100, c2]).convert('srgb').to_string(hex=True))
+        c.append(color.update(space, [c1, 100, c2]).to_string(hex=True))
 
 
 def plot_space_in_srgb(space, title="", dark=False, resolution=70):

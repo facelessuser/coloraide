@@ -39,11 +39,11 @@ def run(target, rgb):
 
     print('-> Current:', end="")
     x = y = z = 0
+    color = Color(rgb, [0, 0, 0])
     while True:
-        color = Color('color({} {} {} {})'.format(rgb, x / 255, y / 255, z / 255))
+        color.update(rgb, [x / 255, y / 255, z / 255])
         print('\rCurrent: {}'.format(color.to_string(hex=True)), end="")
-        color2 = color.convert(target)
-        cx, cy, cz = color2.coords()
+        cx, cy, cz = color.convert(target).coords()
         if cx < min_x:
             min_x = cx
         if cy < min_y:
