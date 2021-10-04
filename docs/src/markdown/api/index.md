@@ -3,7 +3,7 @@
 ## `coloraide.NaN` {#nan}
 
 Description
-: `NaN` is a convenience constant for `float('nan')`. `NaN`.
+: `NaN` is a convenience constant for `float('nan')`.
 
 Import path
 : 
@@ -1014,3 +1014,13 @@ When written, they can accept a numerical value or a string value using CSS synt
 color space.
 
 For more complex setting operations, or to chain multiple set operations, please use [`set`](#set) and [`get`](#get).
+
+## `Color` Dynamic Methods
+
+Depending on what ∆E methods are available, you can access the method, not only as `Color.delta_e(value, method="name")`,
+you can can also access them directly via `Color.delta_e_name(value)`:
+
+```playground
+Color('red').delta_e('green', method="2000")
+Color('red').delta_e_2000('green')
+```
