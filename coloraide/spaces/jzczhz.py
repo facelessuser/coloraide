@@ -112,6 +112,7 @@ class JzCzhz(Lchish, Space):
 
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
+
         return coords, alpha
 
     def hue_name(self):

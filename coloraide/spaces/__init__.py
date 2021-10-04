@@ -173,11 +173,9 @@ class Space(
 
         gamut = self.RANGE
         values = []
-        for i, coord in enumerate(util.no_nan(self.coords())):
-            value = util.fmt_float(coord, util.DEF_PREC)
-            if isinstance(gamut[i][0], Percent):
-                value += '%'
-            values.append(value)
+        for i, coord in enumerate(self.coords()):
+            fmt = util.fmt_percent if isinstance(gamut[i][0], Percent) else util.fmt_float
+            values.append(fmt(coord, util.DEF_PREC))
 
         return 'color({} {} / {})'.format(
             self._serialize()[0],
@@ -248,27 +246,27 @@ class Space(
         return getattr(self, name)
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, **kwargs
+        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
     ):
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
         if precision is None:
             precision = parent.PRECISION
 
-        a = util.no_nan(self.alpha)
-        alpha = alpha is not False and (alpha is True or a < 1.0)
+        a = util.no_nan(self.alpha) if not none else self.alpha
+        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
 
         method = None if not isinstance(fit, str) else fit
-        coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
+        coords = parent.fit(method=method).coords() if fit else self.coords()
+        if not none:
+            coords = util.no_nan(coords)
         gamut = self.RANGE
         template = "color({} {} / {})" if alpha else "color({} {})"
 
         values = []
         for i, coord in enumerate(coords):
-            value = util.fmt_float(coord, precision)
-            if isinstance(gamut[i][0], Percent):
-                value += '%'
-            values.append(value)
+            fmt = util.fmt_percent if isinstance(gamut[i][0], Percent) else util.fmt_float
+            values.append(fmt(coord, precision))
 
         if alpha:
             return template.format(
@@ -299,27 +297,32 @@ class Space(
             split = _parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
 
             # Get alpha channel
-            alpha = _parse.norm_alpha_channel(split[-1]) if len(split) > 1 else 1.0
+            alpha = _parse.norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
 
             # Parse color channels
             channels = []
             for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < cls.NUM_COLOR_CHANNELS:
+                    c = c.lower()
                     is_percent = isinstance(cls.RANGE[i][0], Percent)
                     is_optional_percent = isinstance(cls.RANGE[i][0], OptionalPercent)
+                    is_none = c == 'none'
                     has_percent = c.endswith('%')
-                    if is_percent and not has_percent:
-                        # We have an invalid percentage channel
-                        return None, None
-                    elif (not is_percent and not is_optional_percent) and has_percent:
-                        # Percents are not allowed for this channel.
-                        return None, None
+
+                    if not is_none:
+                        if is_percent and not has_percent:
+                            # We have an invalid percentage channel
+                            return None, None
+                        elif (not is_percent and not is_optional_percent) and has_percent:
+                            # Percents are not allowed for this channel.
+                            return None, None
+
                     channels.append(_parse.norm_color_channel(c, not is_percent))
 
-            # Missing channels are filled with zeros
+            # Missing channels are filled with `NaN`
             if len(channels) < cls.NUM_COLOR_CHANNELS:
                 diff = cls.NUM_COLOR_CHANNELS - len(channels)
-                channels.extend([0.0] * diff)
+                channels.extend([util.NaN] * diff)
 
             # Apply null adjustments (null hues) if applicable
             return cls.null_adjust(channels, alpha), m.end(0)

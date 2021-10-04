@@ -69,6 +69,15 @@ All color spaces support the following parameters:
     Color("rebeccapurple").to_string(color=True)
     ```
 
+- `none`: colors that have undefined channels are internally represented with `NaN`. On output, these can be displayed
+  as `none` per the most recent CSS spec. These are very new, so most browsers do not support them. This is disabled
+  by default until a time when this behavior is common enough. `NaN` values will not survive fitting unless a color
+  channel is naturally undefined. An example would be a hue when the color has saturation or chroma set to zero.
+
+    ```playground
+    Color('hsl(none 0% 30%)').to_string(none=True)
+    ```
+
 In general, a color in a given color space may share the same options as listed above, but a given color space may also
 have options unique to itself.
 

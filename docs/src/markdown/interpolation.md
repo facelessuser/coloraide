@@ -291,7 +291,7 @@ As previously mentioned, this can also be applied to steps as well.
 Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4, steps=15)
 ```
 
-## Null/NaN Handling {#null-handling}
+## Undefined/Null/NaN Handling {#null-handling}
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
 HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color" or
@@ -300,14 +300,16 @@ achromatic; therefore, it has no hue, or the hue is undefined.
 Many libraries, like [d3-color](https://github.com/d3/d3-color), [chroma.js](https://gka.github.io/chroma.js/), and
 [color.js](https://github.com/LeaVerou/color.js), represent null hues with `NaN` (not a number). This is usually done
 to make color interpolation easier. Some, like d3-color, are a bit more liberal with `NaN` and will target special cases
-that are above and beyond the normal rules to help ensure good interpolation. For instance, they not only mark hue null
-on HSL colors when saturation is zero, but also when lightness is zero or one hundred (essentially appearing black or
-white). In fact, they'll mark saturation as `NaN` when lightness indicates "black" or "white".
+that are above and beyond the normal rules to help ensure good interpolation. For instance, they not only mark hue
+undefined on HSL colors when saturation is zero, but also when lightness is zero or one hundred (essentially appearing
+black or white). In fact, they'll mark saturation as `NaN` when lightness indicates "black" or "white".
 
-ColorAide also uses `NaN`, or in Python `#!py3 float('nan')`. In certain situations, when a hue is deemed undefined, the
-hue value will be set to `coloraide.NaN`, which is just a constant containing `#!py3 float('nan')`. When interpolating,
-if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
-for the same channel, then `0` will be returned.
+ColorAide also uses `NaN`, or in Python `#!py3 float('nan')`, to represent undefined channels. In certain situations,
+when a hue is deemed undefined, the hue value will be set to `coloraide.NaN`, which is just a constant containing
+`#!py3 float('nan')`.
+
+When interpolating, if one color's channel has a `NaN`, the other color's channel will be used as the result. If both
+colors have a `NaN` for the same channel, then `NaN` will be returned.
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color purple`), the hue of the second color is used.
@@ -320,42 +322,6 @@ color2.coords()
 color.mix(color2, space="hsl")
 ```
 
-Technically, any channel can be set to `NaN`. This is basically what the [`mask`](./api/index.md#mask) method is used
-for. It can set any and all specified channels to `NaN` for the purpose of restricting channels when interpolating:
-
-```playground
-Color('white').mask(['red', 'green']).coords()
-```
-
-Channels can also be set directly to `NaN`, but it must be done by instantiating a `Color` object with raw data or by
-manually setting it via a channel property or accessor. CSS input string do not allow the `NaN` values at this time.
-
-```playground
-from coloraide import NaN
-Color("srgb", [1, NaN, 1]).coords()
-Color("red").set('green', NaN).coords()
-```
-
-When printing to a string, `NaN`s are always converted to `0`:
-
-```playground
-from coloraide import NaN
-Color("srgb", [1, NaN, 1])
-```
-
-At any time, a channel can be checked for whether it is `NaN` by using the `is_nan` method:
-
-```playground
-Color("white").convert('hsl').is_nan('hue')
-```
-
-It can be useful to check whether a channel is `NaN` as `NaN` values can't be added, subtracted, multiplied, etc. They
-will always return `NaN` unless you directly replace them.
-
-```playground
-color = Color("white").convert('hsl')
-color.hue = color.hue + 3
-color.is_nan('hue')
-color.hue = 3
-color.is_nan('hue')
-```
+Technically, any channel can be set to `NaN`. And there are various ways to do this. The
+[Color Manipulation documentation](./manipulation.md#undefined-values) goes into the details of how these `Nan` values
+naturally occur and the various ways a user and manipulate them.

@@ -7,7 +7,7 @@ import glob
 
 urls = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/35/fa/6631b9aeb25e1bb62bf77c48c86b1677da98a52360cb9b5559dda8d08edb/pymdown_extensions-8.2-py3-none-any.whl"  # noqa: E501
+    "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl"  # noqa: E501
 ]
 output = 'docs/src/markdown/playground/'
 externals = {}

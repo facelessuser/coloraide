@@ -24,7 +24,7 @@ class Lch(base.Lch):
     )
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, **kwargs
+        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
     ):
         """Convert to CSS."""
 
@@ -33,25 +33,27 @@ class Lch(base.Lch):
 
         options = kwargs
         if options.get("color"):
-            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, **kwargs)
+            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
 
-        a = util.no_nan(self.alpha)
-        alpha = alpha is not False and (alpha is True or a < 1.0)
+        a = util.no_nan(self.alpha) if not none else self.alpha
+        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
         method = None if not isinstance(fit, str) else fit
-        coords = util.no_nan(parent.fit(method=method).coords() if fit else self.coords())
+        coords = parent.fit(method=method).coords() if fit else self.coords()
+        if not none:
+            coords = util.no_nan(coords)
 
         if alpha:
-            template = "lch({}%, {}, {}, {})" if options.get("comma") else "lch({}% {} {} / {})"
+            template = "lch({}, {}, {}, {})" if options.get("comma") else "lch({} {} {} / {})"
             return template.format(
-                util.fmt_float(coords[0], precision),
+                util.fmt_percent(coords[0], precision),
                 util.fmt_float(coords[1], precision),
                 util.fmt_float(coords[2], precision),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "lch({}%, {}, {})" if options.get("comma") else "lch({}% {} {})"
+            template = "lch({}, {}, {})" if options.get("comma") else "lch({} {} {})"
             return template.format(
-                util.fmt_float(coords[0], precision),
+                util.fmt_percent(coords[0], precision),
                 util.fmt_float(coords[1], precision),
                 util.fmt_float(coords[2], precision)
             )
@@ -77,6 +79,7 @@ class Lch(base.Lch):
         channels = []
         alpha = 1.0
         for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+            c = c.lower()
             if i <= 2:
                 channels.append(cls.translate_channel(i, c))
             elif i == 3:

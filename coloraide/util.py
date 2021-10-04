@@ -181,13 +181,13 @@ def is_nan(value):
     return math.isnan(value)
 
 
-def no_nan(value):
+def no_nan(value, default=0.0):
     """Convert list of numbers or single number to valid numbers."""
 
     if is_number(value):
-        return 0.0 if is_nan(value) else value
+        return default if is_nan(value) else value
     else:
-        return [(0.0 if is_nan(x) else x) for x in value]
+        return [(default if is_nan(x) else x) for x in value]
 
 
 def cmp_coords(c1, c2):
@@ -449,9 +449,22 @@ def fmt_float(f, p=0):
     <positive number>: precision level
     """
 
+    if is_nan(f):
+        return "none"
+
     value = adjust_precision(f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
     return string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
+
+
+def fmt_percent(f, p=0):
+    """Get percent."""
+
+    if not is_nan(f):
+        value = '{}%'.format(fmt_float(f, p))
+    else:
+        value = 'none'
+    return value
 
 
 def adjust_precision(f, p=0):

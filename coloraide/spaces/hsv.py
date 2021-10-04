@@ -112,6 +112,7 @@ class HSV(Cylindrical, Space):
 
         if coords[1] == 0:
             coords[0] = util.NaN
+
         return coords, alpha
 
     @classmethod

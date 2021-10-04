@@ -207,7 +207,7 @@ class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
     def test_hue(self):
         """Test `hue`."""
 
-        c = Color('color(--hsl 120 50% 100% / 1)')
+        c = Color('color(--hsl 120 50% 90% / 1)')
         self.assertEqual(c.hue, 120)
         c.hue = 110
         self.assertEqual(c.hue, 110)
@@ -215,7 +215,7 @@ class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
     def test_saturation(self):
         """Test `saturation`."""
 
-        c = Color('color(--hsl 120 50% 100% / 1)')
+        c = Color('color(--hsl 120 50% 90% / 1)')
         self.assertEqual(c.saturation, 50)
         c.saturation = 60
         self.assertEqual(c.saturation, 60)
@@ -223,15 +223,15 @@ class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
     def test_lightness(self):
         """Test `lightness`."""
 
-        c = Color('color(--hsl 120 50% 100% / 1)')
-        self.assertEqual(c.lightness, 100)
-        c.lightness = 90
+        c = Color('color(--hsl 120 50% 90% / 1)')
         self.assertEqual(c.lightness, 90)
+        c.lightness = 80
+        self.assertEqual(c.lightness, 80)
 
     def test_alpha(self):
         """Test `alpha`."""
 
-        c = Color('color(--hsl 120 50% 100% / 1)')
+        c = Color('color(--hsl 120 50% 90% / 1)')
         self.assertEqual(c.alpha, 1)
         c.alpha = 0.5
         self.assertEqual(c.alpha, 0.5)

@@ -8,6 +8,22 @@ import math
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_print_none(self):
+        """Test printing `none`."""
+
+        self.assertEqual(Color("hsl", [NaN, NaN, 30]).to_string(fit=False, none=True), 'hsl(none none 30%)')
+
+    def test_none(self):
+        """Test none."""
+
+        self.assertEqual(Color('color(srgb 1 none 1)').coords(), [1, NaN, 1])
+        self.assertTrue(Color('color(srgb 1 1 1 / none)').is_nan('alpha'))
+
+    def test_percent_none(self):
+        """Test none for percents."""
+
+        self.assertEqual(Color('color(--lch none 0 none)').coords(), [NaN, 0, NaN])
+
     def test_normalize(self):
         """Test normalize."""
 

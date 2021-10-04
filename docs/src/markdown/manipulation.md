@@ -102,79 +102,87 @@ doesn't represent out of gamut colors as well as sRGB does. HSL was designed mai
 coordinate system. Anything outside of the RGB range will not be as meaningful, but the values will convert back to sane
 values in another space in most cases.
 
-## Masking Channels
+## Undefined Values
 
-Colors in general can use `NaN` to represent undefined color channels. This currently only happens by default for `hue`
-channels when the color is achromatic and has no defined hue.
+Colors in general can sometimes have undefined channels. This can happen in a number of ways.
 
-When interpolating, undefined channels will not be interpolated. While we won't dive into all the interpolation
-specifics here, we will demonstrate how to mask channels. To learn more about interpolation and how masking can help,
-you can read more about it in [Interpolation](./interpolation.md).
+1. Channels can naturally be undefined under certain situations as defined by the color space. For instance, spaces
+with hues will have undefined hues when the color is achromatic. This can happen in scenarios where colors have no
+chroma or saturation.
 
-Suffice it to say, a user may want to mask channels on their own for various reasons, using the `mask` function can
-allow for a user to quickly and easily mask one or more channels:
+    ```playground
+    color = Color('hsl(30 0% 40%)')
+    color.coords()
+    ```
+
+2. With using the `#!css-color color()` function syntax, if a channel is not explicitly defined, it will be considered
+undefined.
+
+    ```playground
+    Color('color(srgb 1)').coords()
+    ```
+
+3. Undefined values can also occur when a user specifies a channel as such with the `none` keyword. This can also be
+done in raw color data by directly passing `#!py3 float('nan')` -- the provided `NaN` constant is essentially an alias
+for `#!py3 float('nan')`.
+
+    One may question why such a thing would ever be desired, but this can be quite useful when interpolating as
+    undefined channels will not be interpolated. To learn more about interpolation, you can read more about it in
+    [Interpolation](./interpolation.md).
+
+
+    ```playground
+    from coloraide import NaN
+    color = Color("srgb", [0.3, NaN, 0.4])
+    color.coords()
+
+    color = Color('rgb(30% none 40%)')
+    color.coords()
+    ```
+
+3. Lastly, a user can use the `mask` method. `mask` is useful as it is an easy way to quickly mask multiple channels.
+Additionally, by default, it returns a clone leaving the original untouched.
+
+    ```playground
+    Color('white').coords()
+    Color('white').mask(['red', 'green']).coords()
+    ```
+
+    The `alpha` channel can also be masked:
+
+    ```playground
+    Color('white').mask('alpha').alpha
+    ```
+
+    Additionally, you can do inverse masks, or masks that apply to every channel not specified.
+
+    ```playground
+    c = Color('white').mask('blue', invert=True)
+    c.coords()
+    c.alpha
+    ```
+
+## Checking for Undefined Values
+
+As previously mentioned, a color channel can be undefined for a number of reasons. And in cases such as interpolation,
+undefined values can even be useful. On the other hand, sometimes an undefined value may need to be handled special.
+
+Undefined values are represented as the float value `NaN`. And since `NaN` values are not numbers hence the name "not a
+number", they don't quite work the same as normal numbers. They cannot be added, multiplied, or take part in any real
+math operations. As a matter of fact, they are infectious and cause the result of any math operation performed with them
+to yield `NaN`.
 
 ```playground
-Color('white').coords()
-Color('white').mask(['red', 'green']).coords()
-```
-
-The `alpha` channel can also be masked:
-
-```playground
-Color('white').mask('alpha').alpha
-```
-
-Additionally, you can do inverse masks, or masks that apply to every channel not specified.
-
-```playground
-c = Color('white').mask('blue', invert=True)
-c.coords()
-c.alpha
-```
-
-## Checking for Null/NaN
-
-As previously mentioned, a user can set a channel to `NaN` via the `mask` function, or potentially by passing `NaN`
-directly to  the channel. In addition, cylindrical colors that offer a `hue` property can sometimes return `NaN` for a
-hue. This occurs only when the hue is undefined, and only when ColorAide is converting from one color space to another,
-or when interpreting a color string input.
-
-As an example, the color `#!color hsl(360 0% 100%)`, while assigned a hue, does not actually exhibit any real hue since
-saturation is 0. Essentially, hue could be set to anything, and it would still have no affect on the actual color. So,
-ColorAide will actually set hue to `NaN` (or "not a number"). When outputting to a string, `NaN` is treated as a zero on
-output.
-
-```playground
-color = Color('hsl(360 0% 100%)')
-color
-color.coords()
-```
-
-The only time `hue` is not automatically evaluated is when raw data inputs are used. This can be when a user
-instantiates a color with raw data points or manually sets the channel with an explicit value. While the rendered color
-still looks the same as the previous example, the channel values are preserved.
-
-```playground
-color = Color('hsl', [360, 0, 100])
-color
-color.coords()
-color.hue = 270
-color
-```
-
-Because `NaN` values are not numbers, and these values cannot be added, multiplied, or take part in any real math
-operations. All math operations performed with a `NaN` simply return `NaN`.
-
-```playground
-float('nan') * 3
-float('nan') + 3
+color = Color('color(srgb 1 none 1)')
+green = color.g
+new_green = green + 0.5
+print(new_green)
 ```
 
 Because a `NaN` may cause unexpected results, it can be useful to check if a hue (or any channel) is `NaN` before
-applying certain operations. To make checking for `NaN`s easy, the convenience function `is_nan` has been made
-available. You can simply give `is_nan` the property you wish to check, and it will return either `#!py3 True` or
-`#!py3 False`.
+applying certain operations, especially if the color potentially came from an unknown source. To make checking for
+`NaN`s easy, the convenience function `is_nan` has been made available. You can simply give `is_nan` the property you
+wish to check, and it will return either `#!py3 True` or `#!py3 False`.
 
 ```playground
 Color('hsl(360 0% 100%)').is_nan('hue')

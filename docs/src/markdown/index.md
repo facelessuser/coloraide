@@ -1,8 +1,9 @@
 # Setup
 
-!!! warning "Currently in Alpha"
-    While ColorAide is very usable, it is currently in an alpha stage. While that doesn't necessarily mean buggy, it
-    does mean the API could be unstable.
+!!! warning "Currently a Prerelease"
+    While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease. This simply means the
+    API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
+    color syntax and behavior to be decided by the CSS Working Group.
 
 ## Overview
 
