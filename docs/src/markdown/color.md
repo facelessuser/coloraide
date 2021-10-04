@@ -58,16 +58,8 @@ Color(d)
     ```playground
     Color("hsl(130 0% 50%)")
     Color("hsl", [130, 0, 50])
-    Color("hsl", [130, 0, 50]).normalize(in_place=True)
+    Color("hsl", [130, 0, 50]).normalize()
     ```
-
-The same is true when using the dict format:
-
-```playground
-Color("hsl(130 0% 50%)")
-Color({"space": "hsl", "h": 130, "s": 0, "l": 50, "alpha": 1})
-Color({"space": "hsl", "h": 130, "s": 0, "l": 50, "alpha": 1}).normalize(in_place=True)
-```
 
 If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
 
@@ -265,14 +257,14 @@ Properties             | Description
 
 Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.
 
-If you wanted a more light weight [`Color`](#color) object, could deregister color spaces you don't need. Keep in mind
-some color spaces are essential (like XYZ which is used to convert almost every color space to another) or could break
-functionality of of certain features reliant on that color space, such as CIELAB which is used when doing which is used
-delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
+If you wanted a more lightweight [`Color`](#color) object, you could deregister color spaces you don't need. Keep in
+mind that some color spaces are essential, like XYZ which is used in many color conversions. Removing some colors could
+also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is used
+when doing which is used for delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
 
-While we won't get into the specifics of how to create plugins -- users can check out the source to see how to make
-plugins -- or go into the relationships of which spaces are required for which functionality, we will speak briefly on
-how to register new ones and deregister existing ones.
+While we do not currently have an in depth guide on plugins or go into the relationships of which spaces are required
+for which functionality, we will speak briefly on how to register new ones and deregister existing ones. For those
+interested in writhing a plugin, for now, the source code is the best way to learn.
 
 Registration is performed by the `register` method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
