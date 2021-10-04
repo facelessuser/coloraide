@@ -1646,7 +1646,7 @@ _[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         Color("din99o-lch", [0, 0, 0], 1).to_string()
         ```
 
-[^1]: For the purposes of speed, 3D models are calculated by taking points on the outer shell of the sRGB space and
+[^1]: For the purposes of speed, 3D models are calculated by taking points on the outer shell of the sRGB gamut and
 mapping those points to the color space of interest. While a more accurate model could be made by taking all points into
 account, this approach gives a fairly good approximation of the shape of the sRGB gamut within the targeted color space.
 

@@ -18,7 +18,7 @@ import argparse
 sys.path.insert(0, os.getcwd())
 
 from coloraide import Color  # noqa: E402
-from coloraide.spaces import Cylindrical  # noqa: E402
+from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
 from coloraide.util import is_nan  # noqa: E402
 
 axis_map = {
@@ -76,7 +76,7 @@ def add_cyl_color(space, color, x, y, z, c):
     c.append(s)
 
 
-def render_space(space, add, resolution, factor, data, c, offset=0):
+def render_cart_space(space, resolution, data, c):
     """Render the space with the given resolution and factor."""
 
     x, y, z = data
@@ -85,32 +85,70 @@ def render_space(space, add, resolution, factor, data, c, offset=0):
     # all the colors on the outside of the sRGB space. Render will be hollow.
     color = Color('srgb', [])
     for c1, c2 in itertools.product(
-        (((x / resolution) * factor) + offset for x in range(0, resolution + 1)),
-        (((x / resolution) * factor) + offset for x in range(0, resolution + 1))
+        (x / resolution for x in range(0, resolution + 1)),
+        (x / resolution for x in range(0, resolution + 1))
     ):
 
-        add(space, color.update('srgb', [0, c1, c2]), x, y, z, c)
-        add(space, color.update('srgb', [1, c1, c2]), x, y, z, c)
+        add_color(space, color.update('srgb', [0, c1, c2]), x, y, z, c)
+        add_color(space, color.update('srgb', [1, c1, c2]), x, y, z, c)
 
-        add(space, color.update('srgb', [c1, 0, c2]), x, y, z, c)
-        add(space, color.update('srgb', [c1, 1, c2]), x, y, z, c)
+        add_color(space, color.update('srgb', [c1, 0, c2]), x, y, z, c)
+        add_color(space, color.update('srgb', [c1, 1, c2]), x, y, z, c)
 
-        add(space, color.update('srgb', [c1, c2, 0]), x, y, z, c)
-        add(space, color.update('srgb', [c1, c2, 1]), x, y, z, c)
+        add_color(space, color.update('srgb', [c1, c2, 0]), x, y, z, c)
+        add_color(space, color.update('srgb', [c1, c2, 1]), x, y, z, c)
 
 
 def render_cyl_space(space, resolution, data, c):
-    """Render the space with the given resolution and factor."""
+    """
+    Render the space with the given resolution and factor.
+
+    The sRGB gamut is used for the plot. The HSV space is used as it maps
+    far better to cylinder spaces. Very close to black, on some spaces the
+    models don't cover very well, so we make an additional pass using
+    Cartesian coordinates extremely close to black.
+
+    It can be noted, we don't bother plotting anything from the bottom
+    disc of the HSV cylinder as they all resolve to pure black. It generates
+    a lot of redundant points.
+    """
 
     x, y, z = data
 
-    res = int(resolution * 2)
+    # Resolution increase in non-hue channels helps smooth out some spaces a bit more.
+    res2 = int(resolution * 1.5)
+
+    color = Color('srgb', [])
+    is_labish = issubclass(Color.CS_MAP[space], Labish)
+    add = add_color if is_labish else add_cyl_color
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
+    for c1, c2 in itertools.product(
+        ((x / resolution) * 360 for x in range(0, resolution + 1)),
+        ((x / res2) * 100 for x in range(0, res2 + 1))
+    ):
+
+        # Only the top disc provides useful points, everything in the bottom just yields black.
+        add(space, color.update('hsv', [c1, c2, 100]), x, y, z, c)
+        add(space, color.update('hsv', [c1, 100, c2]), x, y, z, c)
+        add(space, color.update('hsv', [c1, 100, c2 * 0.005]), x, y, z, c)
+
+
+def render_srgb_cyl_space(space, resolution, data, c):
+    """
+    Render the sRGB cylindrical space: HSL, HSV, HWB, etc.
+
+    Will render cylinder with the caps on the top and bottom.
+    """
+
+    x, y, z = data
+
+    # Render the cylinder by iterating through the hues and mapping them at the farthest
+    # point from the center creating a hollow cylinder. Also, render the top and bottom disc caps.
     color = Color("srgb", [])
     for c1, t in itertools.product(
-        ((x / res) * 360 for x in range(0, res + 1)),
+        ((x / resolution) * 360 for x in range(0, resolution + 1)),
         (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
     ):
 
@@ -118,7 +156,7 @@ def render_cyl_space(space, resolution, data, c):
         # Better looking when low resolution zoomed into higher resolution
         c2, count = t
         if count % 2 and c1 < 360:
-            c1 += (360 / res) * 0.5
+            c1 += (360 / resolution) * 0.5
 
         # Top disc
         x.append(c2 * math.sin(math.radians(c1)))
@@ -131,16 +169,6 @@ def render_cyl_space(space, resolution, data, c):
         y.append(c2 * math.cos(math.radians(c1)))
         z.append(0)
         c.append(color.update(space, [c1, c2, 0]).to_string(hex=True))
-
-    for c1, t in itertools.product(
-        ((x / res) * 360 for x in range(0, res + 1)),
-        (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
-    ):
-        # Offset the plot on every other iteration blend the rows into a mesh
-        # Better looking when low resolution zoomed into higher resolution
-        c2, count = t
-        if count % 2 and c1 < 360:
-            c1 += (360 / res) * 0.5
 
         # Cylinder portion
         x.append(100 * math.sin(math.radians(c1)))
@@ -158,6 +186,8 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
     # Get names for
     names = Color.CS_MAP[space].CHANNEL_NAMES
     is_cyl = issubclass(Color.CS_MAP[space], Cylindrical)
+    is_labish = issubclass(Color.CS_MAP[space], Labish)
+    is_srgb_cyl = is_cyl and not issubclass(Color.CS_MAP[space], Lchish)
 
     # Some spaces need us to rearrange the order of the data
     axm = axis_map.get(space, [0, 1, 2])
@@ -186,24 +216,17 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
     plt.title(title if title else 'srgb rendered in {}'.format(space), pad=20)
 
     # Render the space
-    if is_cyl and space in ('hsl', 'hsv', 'hwb'):
+    if is_srgb_cyl:
+        # Render a sRGB cylinder style plot
+        render_srgb_cyl_space(space, resolution, data, c)
+    elif is_labish or is_cyl:
+        # Render cylindrical spaces. Lab like spaces are cylindrical,
+        # just represented in the Cartesian coordinate system.
         render_cyl_space(space, resolution, data, c)
     else:
-        # Select the right color handler for the space
-        add = add_cyl_color if is_cyl else add_color
-        render_space(space, add, resolution, 1, data, c)
-
-        # Oklab needs higher resolution near black
-        if space in ('oklab', 'oklch'):
-            render_space(space, add, resolution, 0.3, data, c)
-            render_space(space, add, resolution, 0.01, data, c)
-        # ICtCp needs an absurd amount of resolution near black,
-        # do multiple, increasingly higher resolution passes
-        elif space == 'ictcp':
-            render_space(space, add, resolution // 2, 0.3, data, c)
-            render_space(space, add, resolution // 2, 0.2, data, c)
-            render_space(space, add, resolution, 0.1, data, c)
-            render_space(space, add, resolution, 0.01, data, c)
+        # Render Cartesian spaces.
+        # These are rectangular spaces like RGB spaces and XYZ.
+        render_cart_space(space, resolution, data, c)
 
     # Setup the aspect ratio
     ax.set_box_aspect((1, 1, 1))
@@ -219,7 +242,7 @@ def main():
     parser.add_argument('--space', '-s', help='Desired space.')
     parser.add_argument(
         '--resolution', '-r',
-        default="70",
+        default="200",
         help=(
             "How densely to render the figure. Some spaces need higher resolution to flesh out certain areas, "
             "but it comes at the cost of speed."
