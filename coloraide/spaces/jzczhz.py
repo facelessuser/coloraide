@@ -115,7 +115,8 @@ class JzCzhz(Lchish, Space):
 
         return coords, alpha
 
-    def hue_name(self):
+    @classmethod
+    def hue_name(cls):
         """Hue name."""
 
         return "hz"

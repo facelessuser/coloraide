@@ -66,7 +66,7 @@ class Cylindrical:
     def hue_index(cls):  # pragma: no cover
         """Get hue index."""
 
-        return cls.CHANNEL_NAMES.index(cls.hue_name)
+        return cls.CHANNEL_NAMES.index(cls.hue_name())
 
 
 class Labish:
@@ -82,7 +82,7 @@ class Labish:
     def labish_indexes(cls):  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        names = cls.labish_names
+        names = cls.labish_names()
         return [cls.CHANNEL_NAMES.index(name) for name in names]
 
 
@@ -98,7 +98,7 @@ class Lchish(Cylindrical):
     def lchish_indexes(cls):  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        names = cls.labish_names
+        names = cls.lchish_names()
         return [cls.CHANNEL_NAMES.index(name) for name in names]
 
 
