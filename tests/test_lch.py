@@ -135,18 +135,18 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--lch -20% 20 120)').to_string(),
-            'lch(-20% 20 120)'
+            Color('color(--lch 20% 200 120)').to_string(),
+            'lch(20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lch -20% 20 120)').to_string(fit="clip"),
-            'lch(-20% 20 120)'
+            Color('color(--lch 20% 200 120)').to_string(fit="clip"),
+            'lch(20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lch -20% 20 120)').to_string(fit=False),
-            'lch(-20% 20 120)'
+            Color('color(--lch 20% 200 120)').to_string(fit=False),
+            'lch(20% 200 120)'
         )
 
     def test_hue_inputs(self):

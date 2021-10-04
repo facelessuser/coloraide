@@ -10,44 +10,44 @@ class TestJzCzhzInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_input_raw(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color("jzczhz", [1, 0.5, 270]), Color('color(--jzczhz 100% 0.5 270)'))
+        self.assertColorEqual(Color("jzczhz", [0.22, 0.5, 270]), Color('color(--jzczhz 22% 0.5 270)'))
 
     def test_color_class(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color(Color("jzczhz", [1, 0.5, 270])), Color('color(--jzczhz 100% 0.5 270)'))
+        self.assertColorEqual(Color(Color("jzczhz", [0.22, 0.5, 270])), Color('color(--jzczhz 22% 0.5 270)'))
 
     def test_color(self):
         """Test color input/output format."""
 
         args = {"color": True}
-        color = "color(--jzczhz 1 0.5 270)"
+        color = "color(--jzczhz 0.22 0.5 270)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 1 0.5 270)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270)')
 
-        color = "color(--jzczhz 1 0.5 270 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 1 0.5 270 / 0.5)')
+        color = "color(--jzczhz 0.22 0.5 270 / 0.5)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270 / 0.5)')
 
-        color = "color(--jzczhz 100% 0.5 270 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 1 0.5 270 / 0.5)')
+        color = "color(--jzczhz 22% 0.5 270 / 50%)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270 / 0.5)')
 
     def test_no_alpha(self):
         """Test no alpha."""
 
         args = {"alpha": False}
 
-        color = "color(--jzczhz 1 0.5 270 / 0.5)"
+        color = "color(--jzczhz 0.22 0.5 270 / 0.5)"
         jzczhz = Color(color)
-        self.assertEqual("color(--jzczhz 1 0.5 270)", jzczhz.to_string(**args))
+        self.assertEqual("color(--jzczhz 0.22 0.5 270)", jzczhz.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
         args = {"alpha": True}
 
-        color = "color(--jzczhz 1 0.5 270 / 100%)"
+        color = "color(--jzczhz 0.22 0.5 270 / 100%)"
         jzczhz = Color(color)
-        self.assertEqual("color(--jzczhz 1 0.5 270 / 1)", jzczhz.to_string(**args))
+        self.assertEqual("color(--jzczhz 0.22 0.5 270 / 1)", jzczhz.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
@@ -65,18 +65,18 @@ class TestJzCzhzInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--jzczhz -1 0.5 270)').to_string(),
-            'color(--jzczhz -1 0.5 270)'
+            Color('color(--jzczhz 0.22 200 270)').to_string(),
+            'color(--jzczhz 0.22 200 270)'
         )
 
         self.assertEqual(
-            Color('color(--jzczhz -1 0.5 270)').to_string(fit="clip"),
-            'color(--jzczhz -1 0.5 270)'
+            Color('color(--jzczhz 0.22 200 270)').to_string(fit="clip"),
+            'color(--jzczhz 0.22 200 270)'
         )
 
         self.assertEqual(
-            Color('color(--jzczhz -1 0.5 270)').to_string(fit=False),
-            'color(--jzczhz -1 0.5 270)'
+            Color('color(--jzczhz 0.22 200 270)').to_string(fit=False),
+            'color(--jzczhz 0.22 200 270)'
         )
 
 
@@ -86,15 +86,15 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_jz(self):
         """Test `jz`."""
 
-        c = Color('color(--jzczhz 1 0.5 270 / 1)')
-        self.assertEqual(c.jz, 1)
+        c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
+        self.assertEqual(c.jz, 0.22)
         c.jz = 0.2
         self.assertEqual(c.jz, 0.2)
 
     def test_cz(self):
         """Test `chroma`."""
 
-        c = Color('color(--jzczhz 1 0.5 270 / 1)')
+        c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
         self.assertEqual(c.chroma, 0.5)
         c.chroma = 0.1
         self.assertEqual(c.chroma, 0.1)
@@ -102,7 +102,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_hue(self):
         """Test `hue`."""
 
-        c = Color('color(--jzczhz 1 0.5 270 / 1)')
+        c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
         self.assertEqual(c.hue, 270)
         c.hue = 0.1
         self.assertEqual(c.hue, 0.1)
@@ -110,7 +110,7 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     def test_alpha(self):
         """Test `alpha`."""
 
-        c = Color('color(--jzczhz 1 0.5 270 / 1)')
+        c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
         self.assertEqual(c.alpha, 1)
         c.alpha = 0.5
         self.assertEqual(c.alpha, 0.5)

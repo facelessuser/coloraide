@@ -75,18 +75,18 @@ class TestDIN99oLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--din99o-lch -20% 20 120)').to_string(),
-            'color(--din99o-lch -20% 20 120)'
+            Color('color(--din99o-lch 20% 200 120)').to_string(),
+            'color(--din99o-lch 20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--din99o-lch -20% 20 120)').to_string(fit="clip"),
-            'color(--din99o-lch -20% 20 120)'
+            Color('color(--din99o-lch 20% 200 120)').to_string(fit="clip"),
+            'color(--din99o-lch 20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--din99o-lch -20% 20 120)').to_string(fit=False),
-            'color(--din99o-lch -20% 20 120)'
+            Color('color(--din99o-lch 20% 200 120)').to_string(fit=False),
+            'color(--din99o-lch 20% 200 120)'
         )
 
 

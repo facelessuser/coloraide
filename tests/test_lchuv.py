@@ -75,18 +75,18 @@ class TestLCHuvInputOutput(util.ColorAsserts, unittest.TestCase):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--lchuv -20% 20 120)').to_string(),
-            'color(--lchuv -20% 20 120)'
+            Color('color(--lchuv 20% 200 120)').to_string(),
+            'color(--lchuv 20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lchuv -20% 20 120)').to_string(fit="clip"),
-            'color(--lchuv -20% 20 120)'
+            Color('color(--lchuv 20% 200 120)').to_string(fit="clip"),
+            'color(--lchuv 20% 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lchuv -20% 20 120)').to_string(fit=False),
-            'color(--lchuv -20% 20 120)'
+            Color('color(--lchuv 20% 200 120)').to_string(fit=False),
+            'color(--lchuv 20% 200 120)'
         )
 
 
