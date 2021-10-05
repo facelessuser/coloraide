@@ -4,6 +4,7 @@ Luv class.
 https://en.wikipedia.org/wiki/CIELUV
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, WHITES, Labish
+from .lab.base import KAPPA, EPSILON, KE
 from .xyz import XYZ
 from .. import util
 import re
@@ -14,15 +15,15 @@ def xyz_to_luv(xyz, white):
 
     u, v = util.xyz_to_uv(xyz)
     w_xyz = util.xy_to_xyz(WHITES[white])
-    un, vn = util.xyz_to_uv(w_xyz)
+    ur, vr = util.xyz_to_uv(w_xyz)
 
-    y = xyz[1] / w_xyz[1]
-    l = 116 * util.nth_root(y, 3) - 16 if y > ((6 / 29) ** 3) else ((29 / 3) ** 3) * y
+    yr = xyz[1] / w_xyz[1]
+    l = 116 * util.nth_root(yr, 3) - 16 if yr > EPSILON else KAPPA * yr
 
     return [
         l,
-        13 * l * (u - un),
-        13 * l * (v - vn),
+        13 * l * (u - ur),
+        13 * l * (v - vr),
     ]
 
 
@@ -31,15 +32,15 @@ def luv_to_xyz(luv, white):
 
     l, u, v = luv
     xyz = util.xy_to_xyz(WHITES[white])
-    un, vn = util.xyz_to_uv(xyz)
+    ur, vr = util.xyz_to_uv(xyz)
 
     if l != 0:
-        up = (u / (13 * l)) + un
-        vp = (v / (13 * l)) + vn
+        up = (u / (13 * l)) + ur
+        vp = (v / (13 * l)) + vr
     else:
         up = vp = 0
 
-    y = xyz[1] * ((l + 16) / 116) ** 3 if l > 8 else xyz[1] * l * ((3 / 29) ** 3)
+    y = xyz[1] * (((l + 16) / 116) ** 3 if l > KE else l / KAPPA)
 
     if vp != 0:
         x = y * ((9 * up) / (4 * vp))
