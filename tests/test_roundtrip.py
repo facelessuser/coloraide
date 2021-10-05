@@ -17,17 +17,6 @@ class TestRoundTrip:
     enough.
     """
 
-    # Some color space have not too great round tripping.
-    PRECISION_EXCEPTIONS = {
-        # Okhsv: On the edge of red. Force a rounding of 3.
-        # ```
-        # Original:  color(srgb 1 0 0)
-        # okhsv:  color(--okhsv 29.234 99.952% 100%) [29.23388519234263, 99.9521969225699, 100.00000001685628]
-        # srgb:  color(--okhsv 29.234 100% 100%) [29.233890258729758, 100.00004917796078, 100.0000000337129]
-        # ```
-        'okhsv'
-    }
-
     # Skip colors with null hues or hues that can wrap.
     COLORS = [
         Color('red'),
@@ -47,14 +36,11 @@ class TestRoundTrip:
         c1 = Color(color).convert(space)
         for space in c1.CS_MAP.keys():
             # Print the color space to easily identify which color space broke.
-            precision = 5
-            if c1.space() in self.PRECISION_EXCEPTIONS:
-                precision = 3
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
-            str1 = c1.to_string(color=True, precision=precision)
+            str1 = c1.to_string(color=True)
             # Run back through parsing in case we hit something like a hue that needs normalization.
-            str2 = Color(c2.to_string(color=True)).to_string(color=True, precision=precision)
+            str2 = Color(c2.to_string(color=True)).to_string(color=True)
             if str1 != str2:
                 print('----- Convert: {} <=> {} -----'.format(c1.space(), space))
                 print('Original: ', color.to_string(color=True))

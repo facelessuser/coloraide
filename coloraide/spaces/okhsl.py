@@ -27,7 +27,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from ..spaces.srgb.base import SRGB, lin_srgb, gam_srgb
+from .srgb.base import lin_srgb_to_xyz, xyz_to_lin_srgb
+from .oklab import Oklab, xyz_d65_to_oklab, oklab_to_xyz_d65
 from .. import util
 import re
 import math
@@ -129,7 +130,7 @@ def find_gamut_intersection(a, b, l1, c1, l0, cusp=None):
     """
 
     if cusp is None:
-        cusp = get_cs([l1, a, b])
+        cusp = find_cusp(a, b)
 
     # Find the intersection for upper and lower half separately
     if ((l1 - l0) * cusp[1] - (cusp[0] - l0) * c1) <= 0.0:
@@ -237,38 +238,13 @@ def get_cs(lab):
 def oklab_to_linear_srgb(lab):
     """Convert from Oklab to linear sRGB."""
 
-    l_ = lab[0] + 0.3963377774 * lab[1] + 0.2158037573 * lab[2]
-    m_ = lab[0] - 0.1055613458 * lab[1] - 0.0638541728 * lab[2]
-    s_ = lab[0] - 0.0894841775 * lab[1] - 1.2914855480 * lab[2]
-
-    l = l_ ** 3
-    m = m_ ** 3
-    s = s_ ** 3
-
-    return [
-        +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
-    ]
+    return xyz_to_lin_srgb(oklab_to_xyz_d65(lab))
 
 
 def linear_srgb_to_oklab(rgb):
     """Linear sRGB to Oklab."""
 
-    r, g, b = rgb
-    l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
-    m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b
-    s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
-
-    l_ = util.nth_root(l, 3)
-    m_ = util.nth_root(m, 3)
-    s_ = util.nth_root(s, 3)
-
-    return [
-        0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
-        1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
-        0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
-    ]
+    return xyz_d65_to_oklab(lin_srgb_to_xyz(rgb))
 
 
 def compute_max_saturation(a, b):
@@ -444,18 +420,6 @@ def oklab_to_okhsl(lab):
     return util.constrain_hue(h * 360), s * 100, l * 100
 
 
-def srgb_to_okhsl(srgb):
-    """SRGB to Okhsl."""
-
-    return oklab_to_okhsl(linear_srgb_to_oklab(lin_srgb(srgb)))
-
-
-def okhsl_to_srgb(hsl):
-    """Okhsl to sRGB."""
-
-    return gam_srgb(oklab_to_linear_srgb(okhsl_to_oklab(hsl)))
-
-
 class Okhsl(Cylindrical, Space):
     """HSL class."""
 
@@ -522,25 +486,13 @@ class Okhsl(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, hsl):
-        """To sRGB."""
-
-        return okhsl_to_srgb(hsl)
-
-    @classmethod
-    def _from_srgb(cls, parent, srgb):
-        """From sRGB."""
-
-        return srgb_to_okhsl(srgb)
-
-    @classmethod
     def _to_xyz(cls, parent, hsl):
         """To XYZ."""
 
-        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsl))
+        return Oklab._to_xyz(parent, okhsl_to_oklab(hsl))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
+        return oklab_to_okhsl(Oklab._from_xyz(parent, xyz))

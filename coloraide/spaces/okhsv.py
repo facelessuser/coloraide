@@ -27,9 +27,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from ..spaces.srgb.base import SRGB, lin_srgb, gam_srgb
 from .. import util
-from .okhsl import linear_srgb_to_oklab, oklab_to_linear_srgb, toe, toe_inv, find_cusp, to_st
+from .oklab import Oklab
+from .okhsl import oklab_to_linear_srgb, toe, toe_inv, find_cusp, to_st
 import re
 import math
 
@@ -133,18 +133,6 @@ def oklab_to_okhsv(lab):
     return [util.constrain_hue(h * 360), s * 100, v * 100]
 
 
-def srgb_to_okhsv(srgb):
-    """SRGB to Okhsv."""
-
-    return oklab_to_okhsv(linear_srgb_to_oklab(lin_srgb(srgb)))
-
-
-def okhsv_to_srgb(hsv):
-    """Okhsv to sRGB."""
-
-    return gam_srgb(oklab_to_linear_srgb(okhsv_to_oklab(hsv)))
-
-
 class Okhsv(Cylindrical, Space):
     """Okhsv class."""
 
@@ -211,25 +199,13 @@ class Okhsv(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, hsv):
-        """To sRGB."""
-
-        return okhsv_to_srgb(hsv)
-
-    @classmethod
-    def _from_srgb(cls, parent, srgb):
-        """From sRGB."""
-
-        return srgb_to_okhsv(srgb)
-
-    @classmethod
     def _to_xyz(cls, parent, hsv):
         """To XYZ."""
 
-        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsv))
+        return Oklab._to_xyz(parent, okhsv_to_oklab(hsv))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
+        return oklab_to_okhsv(Oklab._from_xyz(parent, xyz))
