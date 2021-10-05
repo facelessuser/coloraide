@@ -50,7 +50,9 @@ def norm_hex_channel(string):
 def norm_percent_channel(value, scale=False):
     """Normalize percent channel."""
 
-    if value.endswith('%') or value == "none":
+    if value == 'none':
+        return norm_float(value)
+    elif value.endswith('%'):
         value = norm_float(value[:-1])
         return value / 100.0 if scale else value
     else:  # pragma: no cover

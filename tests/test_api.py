@@ -23,6 +23,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test none for percents."""
 
         self.assertEqual(Color('color(--lch none 0 none)').coords(), [NaN, 0, NaN])
+        self.assertEqual(Color('hsl(30 none none)').coords(), [30, NaN, NaN])
 
     def test_normalize(self):
         """Test normalize."""
