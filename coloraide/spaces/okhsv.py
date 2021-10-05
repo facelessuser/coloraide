@@ -27,8 +27,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from ..spaces.srgb.base import lin_srgb, gam_srgb
-from ..spaces.oklab import Oklab
+from ..spaces.srgb.base import SRGB, lin_srgb, gam_srgb
 from .. import util
 from .okhsl import linear_srgb_to_oklab, oklab_to_linear_srgb, toe, toe_inv, find_cusp, to_st
 import re
@@ -151,7 +150,12 @@ class Okhsv(Cylindrical, Space):
 
     SPACE = "okhsv"
     SERIALIZE = ("--okhsv",)
-    CHANNEL_NAMES = ("hue", "saturation", "value", "alpha")
+    CHANNEL_NAMES = ("h", "s", "v", "alpha")
+    CHANNEL_ALIASES = {
+        "hue": "h",
+        "saturation": "s",
+        "value": "l"
+    }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
     GAMUT_CHECK = "srgb"
@@ -163,37 +167,37 @@ class Okhsv(Cylindrical, Space):
     )
 
     @property
-    def hue(self):
+    def h(self):
         """Hue channel."""
 
         return self._coords[0]
 
-    @hue.setter
-    def hue(self, value):
+    @h.setter
+    def h(self, value):
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def saturation(self):
+    def s(self):
         """Saturation channel."""
 
         return self._coords[1]
 
-    @saturation.setter
-    def saturation(self, value):
+    @s.setter
+    def s(self, value):
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def value(self):
+    def v(self):
         """Value channel."""
 
         return self._coords[2]
 
-    @value.setter
-    def value(self, value):
+    @v.setter
+    def v(self, value):
         """Set value channel."""
 
         self._coords[2] = self._handle_input(value)
@@ -207,10 +211,10 @@ class Okhsv(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, hsl):
+    def _to_srgb(cls, parent, hsv):
         """To sRGB."""
 
-        return okhsv_to_srgb(hsl)
+        return okhsv_to_srgb(hsv)
 
     @classmethod
     def _from_srgb(cls, parent, srgb):
@@ -219,13 +223,13 @@ class Okhsv(Cylindrical, Space):
         return srgb_to_okhsv(srgb)
 
     @classmethod
-    def _to_xyz(cls, parent, hsl):
+    def _to_xyz(cls, parent, hsv):
         """To XYZ."""
 
-        return Oklab._to_xyz(parent, okhsv_to_oklab(hsl))
+        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsv))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return oklab_to_okhsv(Oklab._from_xyz(parent, xyz))
+        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
