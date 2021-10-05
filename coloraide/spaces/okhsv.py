@@ -1,10 +1,9 @@
 """
 Okhsv class.
 
-Translation to/from Oklab is licensed under MIT by the original author, all
-other code also licensed under MIT: Copyright (c) 2021 Isaac Muse.
+Adapted to ColorAide Python and ColorAide by Isaac Muse (2021)
 
----- Oklab license ----
+---- License ----
 
 Copyright (c) 2021 Björn Ottosson
 

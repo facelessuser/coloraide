@@ -1,10 +1,9 @@
 """
 Okhsl class.
 
-Translation to/from Oklab is licensed under MIT by the original author, all
-other code also licensed under MIT: Copyright (c) 2021 Isaac Muse.
+Adapted to ColorAide Python and ColorAide by Isaac Muse (2021)
 
----- Oklab license ----
+---- License ----
 
 Copyright (c) 2021 Björn Ottosson
 
@@ -222,7 +221,7 @@ def get_cs(lab):
     # Use a soft minimum function, instead of a sharp triangle shape to get a smooth value for chroma.
     c_a = l * st_mid[0]
     c_b = (1.0 - l) * st_mid[1]
-    c_mid = 0.9 * k * math.sqrt(math.sqrt(1.0 / (1.0 / (c_a * c_a * c_a * c_a) + 1.0 / (c_b * c_b * c_b * c_b))))
+    c_mid = 0.9 * k * math.sqrt(math.sqrt(1.0 / (1.0 / (c_a ** 4) + 1.0 / (c_b ** 4))))
 
     # For `C_0`, the shape is independent of hue, so `ST` are constant.
     # Values picked to roughly be the average values of `ST`.
@@ -230,7 +229,7 @@ def get_cs(lab):
     c_b = (1.0 - l) * 0.8
 
     # Use a soft minimum function, instead of a sharp triangle shape to get a smooth value for chroma.
-    c_0 = math.sqrt(1.0 / (1.0 / (c_a * c_a) + 1.0 / (c_b * c_b)))
+    c_0 = math.sqrt(1.0 / (1.0 / (c_a ** 2) + 1.0 / (c_b ** 2)))
 
     return c_0, c_mid, c_max
 
@@ -365,7 +364,7 @@ def okhsl_to_oklab(hsl):
             t = 5 * (s - 0.8)
             k_0 = c_mid
             k_1 = 0.2 * (c_mid ** 2) * (1.25 ** 2) / c_0
-            k_2 = (1.0 - (k_1) / (c_max - c_mid))
+            k_2 = 1.0 - k_1 / (c_max - c_mid)
 
         c = k_0 + t * k_1 / (1.0 - k_2 * t)
 
@@ -399,18 +398,18 @@ def oklab_to_okhsl(lab):
 
         if (c < c_mid):
             k_1 = mid * c_0
-            k_2 = (1.0 - k_1 / c_mid)
+            k_2 = 1.0 - k_1 / c_mid
 
             t = c / (k_1 + k_2 * c)
             s = t * mid
 
         else:
             k_0 = c_mid
-            k_1 = (1.0 - mid) * c_mid * c_mid * mid_inv * mid_inv / c_0
+            k_1 = 0.2 * (c_mid ** 2) * (mid_inv ** 2) / c_0
             k_2 = (1.0 - (k_1) / (c_max - c_mid))
 
             t = (c - k_0) / (k_1 + k_2 * (c - k_0))
-            s = mid + (1.0 - mid) * t
+            s = mid + 0.2 * t
 
     l = toe(L)
 
