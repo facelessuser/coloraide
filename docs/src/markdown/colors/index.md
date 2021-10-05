@@ -640,6 +640,7 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
         ```playground
         Color("okhsv", [0, 0, 0], 1)
         Color("okhsv", [0, 0, 0], 1).to_string()
+        ```
 
 ### Okhsl
 
@@ -706,6 +707,7 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
         ```playground
         Color("okhsl", [0, 0, 0], 1)
         Color("okhsl", [0, 0, 0], 1).to_string()
+        ```
 
 ## XYZ
 

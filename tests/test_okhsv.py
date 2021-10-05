@@ -130,19 +130,3 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 
         c = Color('color(--okhsv 120 0% 75% / 1)')
         self.assertTrue(c.is_nan('hue'))
-
-    # def test_to_hsl(self):
-    #     """Test null from Lab conversion."""
-
-    #     c1 = Color('color(--okhsv 0 0% 50%)')
-    #     c2 = c1.convert('hsl')
-    #     self.assertColorEqual(c2, Color('hsl(0 0% 50%)'))
-    #     self.assertTrue(c2.is_nan('hue'))
-
-    # def test_from_hsl(self):
-    #     """Test null from Lab conversion."""
-
-    #     c1 = Color('hsl(0 0% 50%)')
-    #     c2 = c1.convert('okhsv')
-    #     self.assertColorEqual(c2, Color('color(--okhsv 0 0% 50%)'))
-    #     self.assertTrue(c2.is_nan('hue'))

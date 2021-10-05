@@ -1,7 +1,6 @@
-"""Test Okokhsl library."""
+"""Test Okhsl library."""
 from coloraide.util import NaN
 import unittest
-import math
 from . import util
 from coloraide import Color
 

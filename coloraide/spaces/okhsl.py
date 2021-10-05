@@ -241,7 +241,7 @@ def oklab_to_linear_srgb(lab):
     return xyz_to_lin_srgb(oklab_to_xyz_d65(lab))
 
 
-def linear_srgb_to_oklab(rgb):
+def linear_srgb_to_oklab(rgb):  # pragma: no cover
     """Linear sRGB to Oklab."""
 
     return xyz_d65_to_oklab(lin_srgb_to_xyz(rgb))
