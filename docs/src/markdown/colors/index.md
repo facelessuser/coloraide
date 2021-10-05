@@ -407,15 +407,15 @@ _[Learn about HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)_
 
     **Inputs:**
     : 
-        HSV is not supported via the CSS spec and the parser input and string output only supports the `#!css-color color()`
-        function format using the custom name `#!css-color --hsv`:
+        HSV is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --hsv`:
 
         ```css-color
         color(--hsv 0 0% 0% / 1)
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("hsv", [0, 0, 0], 1)
@@ -778,15 +778,15 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Inputs:**
     : 
-        Parsed input and string output formats use the `#!css-color color()` format with the custom name `#!css-color --xyz-d65`
-        as XYZ D65 is not currently supported in the current CSS spec:
+        Parsed input and string output formats use the `#!css-color color()` format with the custom name
+        `#!css-color --xyz-d65` as XYZ D65 is not currently supported in the current CSS spec:
 
         ```css-color
         color(--xyz-d65 x y z / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("xyz-d65", [0, 0, 0], 1)
@@ -851,8 +851,8 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
         color(xyz x y z / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("xyz", [0, 0, 0], 1)
@@ -923,16 +923,16 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
     **Inputs:**
     : 
-        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-        function format using the custom name `#!css-color --lab`:
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the
+        `#!css-color color()` function format using the custom name `#!css-color --lab`:
 
         ```css-color
         lab(l a b / a)          // Lab function
         color(--lab l a b / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("lab", [0, 0, 0], 1)
@@ -940,8 +940,8 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
     **Output:**
     : 
-        The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)` form, but
-        the default string output will be the `#!css-color hsl(h s l / a)` form.
+        The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)`
+        form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
 
         ```playground
         Color("lab", [0, 0, 0], 1)
@@ -991,15 +991,15 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
     **Inputs:**
     : 
-        As a D65 variant of CIELAB is not currently supported in the CSS spec, the parsed input and string output formats use
-        the `#!css-color color()` function format using the custom name `#!css-color --lab-d65`:
+        As a D65 variant of CIELAB is not currently supported in the CSS spec, the parsed input and string output
+        formats use the `#!css-color color()` function format using the custom name `#!css-color --lab-d65`:
 
         ```css-color
         color(--lab-d65 l a b / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("lab-d65", [0, 0, 0], 1)
@@ -1067,16 +1067,16 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Inputs:**
     : 
-        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-        function format using the custom name `#!css-color --lch`:
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the
+        `#!css-color color()` function format using the custom name `#!css-color --lch`:
 
         ```css-color
         lch(l c h / a)          // Lch function
         color(--lch l c h / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("lch", [0, 0, 0], 1)
@@ -1084,8 +1084,8 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Output:**
     : 
-        The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)` form, but
-        the default string output will be the `#!css-color hsl(l c h / a)` form.
+        The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)`
+        form, but the default string output will be the `#!css-color hsl(l c h / a)` form.
 
         ```playground
         Color("lch", [0, 0, 0], 1)
@@ -1135,15 +1135,15 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Inputs:**
     : 
-        As a D65 variant of CIELCH is not currently supported in the CSS spec, the parsed input and string output formats use
-        the `#!css-color color()` function format using the custom name `#!css-color --lch-d65`:
+        As a D65 variant of CIELCH is not currently supported in the CSS spec, the parsed input and string output
+        formats use the `#!css-color color()` function format using the custom name `#!css-color --lch-d65`:
 
         ```css-color
         color(--lch-d65 l c h / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("lch-d65", [0, 0, 0], 1)
@@ -1210,8 +1210,8 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
         color(--luv l u v / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("luv", [0, 0, 0], 1)
@@ -1278,8 +1278,8 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
         color(--lchuv l c h / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("lchuv", [0, 0, 0], 1)
@@ -1347,8 +1347,8 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
         color(--oklab l a b / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("oklab", [0, 0, 0], 1)
@@ -1416,8 +1416,8 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
         color(--oklch l c h / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("oklch", [0, 0, 0], 1)
@@ -1487,8 +1487,8 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
         color(--jzazbz jz az bz / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("jzazbz", [0, 0, 0], 1)
@@ -1554,8 +1554,8 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
         color(--jzczhz jz cz hz / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("jzczhz", [0, 0, 0], 1)
@@ -1624,8 +1624,8 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
         color(--ictcp i ct cp / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("ictcp", [0, 0, 0], 1)
@@ -1695,8 +1695,8 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         color(--din99o l u v / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("din99o", [0, 0, 0], 1)
@@ -1762,8 +1762,8 @@ _[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         color(--din99o-lch jz cz hz / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("din99o-lch", [0, 0, 0], 1)
