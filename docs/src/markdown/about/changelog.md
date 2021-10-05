@@ -4,6 +4,7 @@
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.
 
+- **NEW**: New `okhsl` and `okhsv` color space.
 - **NEW**: All color channels now accept the `none` key word to specify an undefined channel. They can also optionally
   output CSS strings with the key word.
 - **NEW**: Interpolation will return an undefined channel if both colors have that channel set to undefined.

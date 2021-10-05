@@ -551,16 +551,16 @@ _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
 
     **Inputs:**
     : 
-        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the `#!css-color color()`
-        function format using the custom name `#!css-color --hwb`:
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the
+        `#!css-color color()` function format using the custom name `#!css-color --hwb`:
 
         ```css-color
         hwb(h w b / a)          // HWB function
         color(--hwb h w b / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color space
-        name is always used:
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
 
         ```py
         Color("hwb", [0, 0, 100], 1)
@@ -568,12 +568,145 @@ _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
 
     **Output:**
     : 
-        The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)` form, but
-        the default string output will be the `#!css-color hsl(h s l / a)` form.
+        The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)`
+        form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
 
         ```playground
         Color("hwb", [0, 0, 100], 1)
         Color("hwb", [0, 0, 100], 1).to_string()
+        ```
+
+### Okhsv
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `okhsv`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    s    | [0, 100]
+    v    | [0, 100]
+
+<figure markdown="1">
+
+![Okhsv 3D](../images/okhsv-3d.png)
+
+<figcaption>Okhsv color space in 3D</figcaption>
+</figure>
+
+Okhsv is a color space created by Björn Ottosson. It is based off his early work and leverages the [Oklab](#oklab) color
+space. The aim was to create a color space that was better suited for being used in color pickers than the current HSV.
+
+_[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `h`         | `hue`
+        `s`         | `saturation`
+        `v`         | `value`
+
+    **Inputs:**
+    : 
+        Okhsv is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --okhsv`:
+
+        ```css-color
+        color(--okhsv h s l / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("okhsv", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--okhsv h s l / a)` form.
+
+        ```playground
+        Color("okhsv", [0, 0, 0], 1)
+        Color("okhsv", [0, 0, 0], 1).to_string()
+        ```
+
+### Okhsl
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `okhsl`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    s    | [0, 100]
+    l    | [0, 100]
+
+<figure markdown="1">
+
+![Okhsl 3D](../images/okhsl-3d.png)
+
+<figcaption>Okhsl color space in 3D</figcaption>
+</figure>
+
+Okhsl is a another color space created by Björn Ottosson. It is based off his early work and leverages the
+[Oklab](#oklab) color space. The aim was to create a color space that was better suited for being used in color pickers
+than the current HSL.
+
+_[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `h`         | `hue`
+        `s`         | `saturation`
+        `l`         | `lightness`
+
+    **Inputs:**
+    : 
+        Okhsl is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --okhsl`:
+
+        ```css-color
+        color(--okhsl h s l / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("okhsl", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--okhsl h s l / a)` form.
+
+        ```playground
+        Color("okhsl", [0, 0, 0], 1)
+        Color("okhsl", [0, 0, 0], 1).to_string()
         ```
 
 ## XYZ
