@@ -4,6 +4,9 @@
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.
 
+- **NEW**: We do not currently restrict percentages anymore in `#!css-color color()` functions. There is no hard rules
+  that we need to at this time and no currently specified spaces that do this in the CSS specification. This is relaxed
+  for now until some future time when it becomes clear we must.
 - **NEW**: New `okhsl` and `okhsv` color space.
 - **NEW**: All color channels now accept the `none` keyword to specify an undefined channel. They can also optionally
   output CSS strings with the keyword.

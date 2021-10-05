@@ -304,18 +304,27 @@ class Space(
             for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < cls.NUM_COLOR_CHANNELS:
                     c = c.lower()
+                    # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
                     is_percent = isinstance(cls.RANGE[i][0], Percent)
-                    is_optional_percent = isinstance(cls.RANGE[i][0], OptionalPercent)
-                    is_none = c == 'none'
-                    has_percent = c.endswith('%')
 
-                    if not is_none:
-                        if is_percent and not has_percent:
-                            # We have an invalid percentage channel
-                            return None, None
-                        elif (not is_percent and not is_optional_percent) and has_percent:
-                            # Percents are not allowed for this channel.
-                            return None, None
+                    # Don't bother restricting anything yet. CSS doesn't have any defined
+                    # spaces that use percentages and only percentages anymore.
+                    # They may never have spaces again that do this, or they might.
+                    # Custom spaces can restrict colors further, if desired, but we do not
+                    # desire to restrict further unless forced.
+                    # ```
+                    # is_optional_percent = isinstance(cls.RANGE[i][0], OptionalPercent)
+                    # is_none = c == 'none'
+                    # has_percent = c.endswith('%')
+                    #
+                    # if not is_none:
+                    #     if is_percent and not has_percent:
+                    #         # We have an invalid percentage channel
+                    #         return None, None
+                    #     elif (not is_percent and not is_optional_percent) and has_percent:
+                    #         # Percents are not allowed for this channel.
+                    #         return None, None
+                    # ```
 
                     channels.append(_parse.norm_color_channel(c, not is_percent))
 

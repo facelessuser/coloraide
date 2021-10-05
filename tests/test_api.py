@@ -4,6 +4,8 @@ from coloraide import Color, NaN, Piecewise
 from . import util
 import math
 
+PERCENT_SKIP = "Skipping as we currently do not perform any percent restrictions."
+
 
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
@@ -47,10 +49,25 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(Color('red').white(), [0.9504559270516716, 1, 1.0890577507598784])
 
+    @unittest.skip(PERCENT_SKIP)
     def test_missing_percent(self):
         """Test missing percent."""
 
         self.assertIsNone(Color.match('color(--lab 90 50 -20)'))
+
+    @unittest.skip(PERCENT_SKIP)
+    def test_missing_color_percent(self):
+        """Test missing color percent."""
+
+        with self.assertRaises(ValueError):
+            Color("color(--lab 100 0 0)")
+
+    @unittest.skip(PERCENT_SKIP)
+    def test_erroneous_color_percent(self):
+        """Test percent in color function that doesn't belong."""
+
+        with self.assertRaises(ValueError):
+            Color("color(--lab 100% 0% 0)")
 
     def test_less_input(self):
         """Test when not enough color channels are provided."""
@@ -89,18 +106,6 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color("nope")
-
-    def test_missing_color_percent(self):
-        """Test missing color percent."""
-
-        with self.assertRaises(ValueError):
-            Color("color(--lab 100 0 0)")
-
-    def test_erroneous_color_percent(self):
-        """Test percent in color function that doesn't belong."""
-
-        with self.assertRaises(ValueError):
-            Color("color(--lab 100% 0% 0)")
 
     def test_bad_data_input(self):
         """Test bad data input."""
