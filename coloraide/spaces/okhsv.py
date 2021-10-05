@@ -142,7 +142,7 @@ class Okhsv(Cylindrical, Space):
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",
-        "value": "l"
+        "value": "v"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"

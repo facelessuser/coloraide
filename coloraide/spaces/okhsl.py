@@ -129,7 +129,7 @@ def find_gamut_intersection(a, b, l1, c1, l0, cusp=None):
     `a` and `b` must be normalized so `a^2 + b^2 == 1`.
     """
 
-    if cusp is None:
+    if cusp is None:  # pragma: no cover
         cusp = find_cusp(a, b)
 
     # Find the intersection for upper and lower half separately
