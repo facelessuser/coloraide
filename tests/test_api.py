@@ -13,7 +13,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_print_none(self):
         """Test printing `none`."""
 
-        self.assertEqual(Color("hsl", [NaN, NaN, 30]).to_string(fit=False, none=True), 'hsl(none none 30%)')
+        self.assertEqual(Color("hsl", [NaN, NaN, 0.3]).to_string(fit=False, none=True), 'hsl(none none 30%)')
 
     def test_none(self):
         """Test none."""
@@ -255,7 +255,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test get with another space."""
 
         c1 = Color('orange')
-        self.assertEqual(c1.get("hsl.lightness"), 50.0)
+        self.assertEqual(c1.get("hsl.lightness"), 0.5)
 
     def test_get_bad(self):
         """Test bad get."""
@@ -910,17 +910,17 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test mix hue with `NaN`."""
 
         self.assertColorEqual(
-            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50, space="hsl"),
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl"),
             Color("hsl(0, 0%, 57.5%)")
         )
 
         self.assertColorEqual(
-            Color('hsl', [NaN, 0, 25]).mix(Color('hsl', [120, 50, 90]), 0.50, space="hsl"),
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [120, 0.5, 0.9]), 0.50, space="hsl"),
             Color("hsl(120, 25%, 57.5%)")
         )
 
         self.assertColorEqual(
-            Color('hsl', [120, 50, 25]).mix(Color('hsl', [NaN, 0, 90]), 0.50, space="hsl"),
+            Color('hsl', [120, 0.5, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl"),
             Color("hsl(120, 25%, 57.5%)")
         )
 

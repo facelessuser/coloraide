@@ -4,6 +4,14 @@
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.
 
+!!! warning "Breaking Changes"
+    There are some breaking changes if coming from the previous alpha releases. All sRGB cylindrical spaces' non-hue
+    data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not changed.
+
+- **NEW**: By accepting HSL, HSV, and HWB as non-hue channels as 0-100, we do lose a little precision, so for 1.0, we
+  are switching to accepting and returning raw data values between 0 - 1. We've kept hue between 0 - 360 as it is easier
+  for users to deal with hues between 0 - 360. Doing this will also match the new color spaces Okhsl and Okhsv that
+  need to be kept at 0 - 1 to get better rounding.
 - **NEW**: We do not currently restrict percentages anymore in `#!css-color color()` functions. There is no hard rules
   that we need to at this time and no currently specified spaces that do this in the CSS specification. This is relaxed
   for now until some future time when it becomes clear we must.

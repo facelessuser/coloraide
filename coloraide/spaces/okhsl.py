@@ -25,7 +25,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ..spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
 from .oklab import Oklab, oklab_to_linear_srgb
 from .. import util
 import re
@@ -318,8 +318,6 @@ def okhsl_to_oklab(hsl):
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
-    s /= 100
-    l /= 100
     h = util.no_nan(h) / 360.0
 
     L = toe_inv(l)
@@ -403,7 +401,7 @@ def oklab_to_okhsl(lab):
     if s == 0:
         h = util.NaN
 
-    return util.constrain_hue(h * 360), s * 100, l * 100
+    return [util.constrain_hue(h * 360), s, l]
 
 
 class Okhsl(Cylindrical, Space):
@@ -423,8 +421,8 @@ class Okhsl(Cylindrical, Space):
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)])
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
     )
 
     @property

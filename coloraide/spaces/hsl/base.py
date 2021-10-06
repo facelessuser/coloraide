@@ -1,5 +1,5 @@
 """HSL class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ...spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
 from ..srgb.base import SRGB
 from ... import util
 import re
@@ -28,7 +28,7 @@ def srgb_to_hsl(rgb):
         if s == 0:
             h = util.NaN
 
-    return util.constrain_hue(h), s * 100, l * 100
+    return [util.constrain_hue(h), s, l]
 
 
 def hsl_to_srgb(hsl):
@@ -41,8 +41,6 @@ def hsl_to_srgb(hsl):
     h, s, l = hsl
     h = util.no_nan(h)
     h = h % 360
-    s /= 100.0
-    l /= 100.0
 
     def f(n):
         """Calculate the channels."""
@@ -50,7 +48,7 @@ def hsl_to_srgb(hsl):
         a = s * min(l, 1 - l)
         return l - a * max(-1, min(k - 3, 9 - k, 1))
 
-    return f(0), f(8), f(4)
+    return [f(0), f(8), f(4)]
 
 
 class HSL(Cylindrical, Space):
@@ -70,8 +68,8 @@ class HSL(Cylindrical, Space):
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)])
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
     )
 
     @property
