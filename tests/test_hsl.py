@@ -12,12 +12,12 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_input_raw(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color("hsl", [20, 100, 75]), Color('hsl(20 100% 75%)'))
+        self.assertColorEqual(Color("hsl", [20, 1, 0.75]), Color('hsl(20 100% 75%)'))
 
     def test_color_class(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color(Color("hsl", [20, 100, 75])), Color('hsl(20 100% 75%)'))
+        self.assertColorEqual(Color(Color("hsl", [20, 1, 0.75])), Color('hsl(20 100% 75%)'))
 
     def test_color(self):
         """Test color input/output format."""
@@ -25,13 +25,13 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"color": True}
         color = "color(--hsl 20 100% 75%)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 100% 75%)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75)')
 
-        color = "color(--hsl 20 100% 75% / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 100% 75% / 0.5)')
+        color = "color(--hsl 20 1 0.75 / 0.5)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75 / 0.5)')
 
         color = "color(--hsl 20 100% 75% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 100% 75% / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75 / 0.5)')
 
     def test_comma(self):
         """Test comma input and comma output format."""
@@ -154,13 +154,13 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_precision(self):
         """Test precision."""
 
-        color = 'color(--hsl 20.1234567 50.1234567% 50.1234567%)'
-        self.assertEqual(Color(color).to_string(), 'hsl(20.123 50.123% 50.123%)')
-        self.assertEqual(Color(color).to_string(precision=3), 'hsl(20.1 50.1% 50.1%)')
-        self.assertEqual(Color(color).to_string(precision=0), 'hsl(20 50% 50%)')
+        color = 'color(--hsl 20.1234567 0.1234567 0.1234567)'
+        self.assertEqual(Color(color).to_string(), 'hsl(20.123 12.346% 12.346%)')
+        self.assertEqual(Color(color).to_string(precision=3), 'hsl(20.1 12.3% 12.3%)')
+        self.assertEqual(Color(color).to_string(precision=0), 'hsl(20 12% 12%)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'hsl(20.12345669999999842048055143095552921295166015625 50.12345669999999842048055143095552921295166015625% 50.12345669999999842048055143095552921295166015625%)'  # noqa:  E501
+            'hsl(20.12345669999999842048055143095552921295166015625 12.3456700000000001438138497178442776203155517578125% 12.3456700000000001438138497178442776203155517578125%)'  # noqa:  E501
         )
 
     def test_fit(self):
@@ -216,17 +216,17 @@ class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
         """Test `saturation`."""
 
         c = Color('color(--hsl 120 50% 90% / 1)')
-        self.assertEqual(c.saturation, 50)
-        c.saturation = 60
-        self.assertEqual(c.saturation, 60)
+        self.assertEqual(c.saturation, 0.5)
+        c.saturation = 0.6
+        self.assertEqual(c.saturation, 0.6)
 
     def test_lightness(self):
         """Test `lightness`."""
 
         c = Color('color(--hsl 120 50% 90% / 1)')
-        self.assertEqual(c.lightness, 90)
-        c.lightness = 80
-        self.assertEqual(c.lightness, 80)
+        self.assertEqual(c.lightness, 0.9)
+        c.lightness = 0.8
+        self.assertEqual(c.lightness, 0.8)
 
     def test_alpha(self):
         """Test `alpha`."""
@@ -243,7 +243,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_input(self):
         """Test null input."""
 
-        c = Color('hsl', [NaN, 50, 100], 1)
+        c = Color('hsl', [NaN, 0.5, 1], 1)
         self.assertTrue(c.is_nan('hue'))
 
     def test_auto_null(self):

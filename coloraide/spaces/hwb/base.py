@@ -1,5 +1,5 @@
 """HWB class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ...spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
 from ..srgb.base import SRGB
 from ..hsv import HSV
 from ... import util
@@ -10,30 +10,26 @@ def hwb_to_hsv(hwb):
     """HWB to HSV."""
 
     h, w, b = hwb
-    w /= 100.0
-    b /= 100.0
 
     wb = w + b
     if (wb >= 1):
         gray = w / wb
-        return [util.NaN, 0.0, gray * 100.0]
+        return [util.NaN, 0.0, gray]
 
     v = 1 - b
     s = 0 if v == 0 else 1 - w / v
-    return [h, s * 100, v * 100]
+    return [h, s, v]
 
 
 def hsv_to_hwb(hsv):
     """HSV to HWB."""
 
     h, s, v = hsv
-    s /= 100
-    v /= 100
     w = v * (1 - s)
     b = 1 - v
     if w + b >= 1:
         h = util.NaN
-    return [h, w * 100, b * 100]
+    return [h, w, b]
 
 
 class HWB(Cylindrical, Space):
@@ -53,8 +49,8 @@ class HWB(Cylindrical, Space):
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)])
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
     )
 
     @property
@@ -97,7 +93,7 @@ class HWB(Cylindrical, Space):
     def null_adjust(cls, coords, alpha):
         """On color update."""
 
-        if coords[1] + coords[2] >= 100:
+        if coords[1] + coords[2] >= 1:
             coords[0] = util.NaN
         return coords, alpha
 

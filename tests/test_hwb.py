@@ -11,12 +11,12 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_input_raw(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color("hwb", [20, 10, 75]), Color('hwb(20 10% 75%)'))
+        self.assertColorEqual(Color("hwb", [20, 0.1, 0.75]), Color('hwb(20 10% 75%)'))
 
     def test_color_class(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color(Color("hwb", [20, 10, 75])), Color('hwb(20 10% 75%)'))
+        self.assertColorEqual(Color(Color("hwb", [20, 0.1, 0.75])), Color('hwb(20 10% 75%)'))
 
     def test_color(self):
         """Test color input/output format."""
@@ -24,13 +24,13 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"color": True}
         color = "color(--hwb 20 10% 75%)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 10% 75%)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 0.1 0.75)')
 
-        color = "color(--hwb 20 10% 75% / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 10% 75% / 0.5)')
+        color = "color(--hwb 20 0.1 0.75 / 0.5)"
+        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 0.1 0.75 / 0.5)')
 
         color = "color(--hwb 20 10% 75% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 10% 75% / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 0.1 0.75 / 0.5)')
 
     def test_comma(self):
         """Test comma input and comma output format."""
@@ -184,17 +184,17 @@ class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
         """Test `whiteness`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.whiteness, 50)
-        c.whiteness = 60
-        self.assertEqual(c.whiteness, 60)
+        self.assertEqual(c.whiteness, 0.5)
+        c.whiteness = 0.6
+        self.assertEqual(c.whiteness, 0.6)
 
     def test_blackness(self):
         """Test `blackness`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.blackness, 20)
-        c.blackness = 10
-        self.assertEqual(c.blackness, 10)
+        self.assertEqual(c.blackness, 0.2)
+        c.blackness = 0.1
+        self.assertEqual(c.blackness, 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
@@ -211,7 +211,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_input(self):
         """Test null input."""
 
-        c = Color('hwb', [NaN, 10, 20], 1)
+        c = Color('hwb', [NaN, 0.1, 0.2], 1)
         self.assertTrue(c.is_nan('hue'))
 
     def test_auto_null(self):

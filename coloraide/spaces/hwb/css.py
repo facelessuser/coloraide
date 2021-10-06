@@ -46,16 +46,16 @@ class HWB(base.HWB):
             template = "hwb({}, {}, {}, {})" if options.get("comma") else "hwb({} {} {} / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
-                util.fmt_percent(coords[1], precision),
-                util.fmt_percent(coords[2], precision),
+                util.fmt_percent(coords[1] * 100, precision),
+                util.fmt_percent(coords[2] * 100, precision),
                 util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
             )
         else:
             template = "hwb({}, {}, {})" if options.get("comma") else "hwb({} {} {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
-                util.fmt_percent(coords[1], precision),
-                util.fmt_percent(coords[2], precision)
+                util.fmt_percent(coords[1] * 100, precision),
+                util.fmt_percent(coords[2] * 100, precision)
             )
 
     @classmethod
@@ -65,7 +65,7 @@ class HWB(base.HWB):
         if channel == 0:
             return _parse.norm_angle_channel(value)
         elif channel in (1, 2):
-            return _parse.norm_percent_channel(value)
+            return _parse.norm_percent_channel(value, True)
         elif channel == -1:
             return _parse.norm_alpha_channel(value)
 

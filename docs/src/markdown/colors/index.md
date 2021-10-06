@@ -378,8 +378,8 @@ take on the shape of a cylinder, whereas the RGB model is very much a cube:
     Name | Range
     ---- | -----
     h    | [0, 360)
-    s    | [0, 100]
-    v    | [0, 100]
+    s    | [0, 1]
+    v    | [0, 1]
 
 <figure markdown="1">
 
@@ -445,8 +445,8 @@ _[Learn about HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)_
     Name | Range
     ---- | -----
     h    | [0, 360)
-    s    | [0, 100]
-    l    | [0, 100]
+    s    | [0, 1]
+    l    | [0, 1]
 
 <figure markdown="1">
 
@@ -519,8 +519,8 @@ _[Learn about HSL](https://en.wikipedia.org/wiki/HSL_and_HSV)_
     Name | Range
     ---- | -----
     h    | [0, 360)
-    w    | [0, 100]
-    b    | [0, 100]
+    w    | [0, 1]
+    b    | [0, 1]
 
 <figure markdown="1">
 
@@ -590,8 +590,8 @@ _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
     Name | Range
     ---- | -----
     h    | [0, 360)
-    s    | [0, 100]
-    v    | [0, 100]
+    s    | [0, 1]
+    v    | [0, 1]
 
 <figure markdown="1">
 
@@ -656,8 +656,8 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
     Name | Range
     ---- | -----
     h    | [0, 360)
-    s    | [0, 100]
-    l    | [0, 100]
+    s    | [0, 1]
+    l    | [0, 1]
 
 <figure markdown="1">
 

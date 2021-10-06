@@ -1,5 +1,5 @@
 """HSV class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
+from ..spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
 from .srgb.base import SRGB
 from .hsl.base import HSL
 from .. import util
@@ -14,19 +14,13 @@ def hsv_to_hsl(hsv):
     """
 
     h, s, v = hsv
-    s /= 100.0
-    v /= 100.0
     l = v * (1.0 - s / 2.0)
-    s = 0.0 if (l == 0.0 or l == 1.0) else ((v - l) / min(l, 1.0 - l)) * 100
+    s = 0.0 if (l == 0.0 or l == 1.0) else (v - l) / min(l, 1.0 - l)
 
     if s == 0:
         h = util.NaN
 
-    return [
-        util.constrain_hue(h),
-        s,
-        l * 100
-    ]
+    return [util.constrain_hue(h), s, l]
 
 
 def hsl_to_hsv(hsl):
@@ -37,8 +31,6 @@ def hsl_to_hsv(hsl):
     """
 
     h, s, l = hsl
-    s /= 100.0
-    l /= 100.0
 
     v = l + s * min(l, 1.0 - l)
     s = 0.0 if (v == 0.0) else 2 * (1.0 - l / v)
@@ -46,7 +38,7 @@ def hsl_to_hsv(hsl):
     if s == 0:
         h = util.NaN
 
-    return [util.constrain_hue(h), s * 100.0, v * 100.0]
+    return [util.constrain_hue(h), s, v]
 
 
 class HSV(Cylindrical, Space):
@@ -66,8 +58,8 @@ class HSV(Cylindrical, Space):
 
     RANGE = (
         GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)]),
-        GamutBound([Percent(0.0), Percent(100.0)])
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
+        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
     )
 
     @property
