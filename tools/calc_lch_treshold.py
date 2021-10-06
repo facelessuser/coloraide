@@ -29,7 +29,7 @@ import argparse
 import os
 import re
 
-sys.path.append(os.getcwd())
+sys.path.insert(0, os.getcwd())
 
 from coloraide import Color  # noqa: E402
 
@@ -59,7 +59,7 @@ def run(lch, lab):
 
             if lch:
                 lchish = color.convert(lch)
-                c_name = lchish.lchish_names()[1]
+                c_name = lchish._space.lchish_names()[1]
                 chroma = lchish.get(c_name)
                 if chroma > max_chroma:
                     max_chroma = chroma

@@ -89,10 +89,11 @@ class Labish:
 class Lchish(Cylindrical):
     """Lch-ish color spaces."""
 
-    def lchish_names(self):  # pragma: no cover
+    @classmethod
+    def lchish_names(cls):  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return self.CHANNEL_NAMES[:3]
+        return cls.CHANNEL_NAMES[:3]
 
     @classmethod
     def lchish_indexes(cls):  # pragma: no cover
