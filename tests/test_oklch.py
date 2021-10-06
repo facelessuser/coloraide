@@ -139,7 +139,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('color(--oklch 90% 0.00009 120 / 1)')
+        c = Color('color(--oklch 90% 0.0000009 120 / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_oklab(self):
