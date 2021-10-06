@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/strings/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.24c991ad.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -1004,20 +1004,20 @@ Color("rgb(30% 105% 0%)").to_string(fit='clip')</textarea>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </li>
-</ul>
-<p>In general, a color in a given color space may share the same options as listed above, but a given color space may also
-have options unique to itself.</p>
-<h2 id="srgb-specific">sRGB Specific<a class="headerlink" href="#srgb-specific" title="Permanent link"></a></h2>
-<p>sRGB can output colors to a hex format which is unique compared to HSL and others. Simply enable <code>hex</code>.</p>
+<li>
+<p><code>none</code>: colors that have undefined channels are internally represented with <code>NaN</code>. On output, these can be displayed
+  as <code>none</code> per the most recent CSS spec. These are very new, so most browsers do not support them. This is disabled
+  by default until a time when this behavior is common enough. <code>NaN</code> values will not survive fitting unless a color
+  channel is naturally undefined. An example would be a hue when the color has saturation or chroma set to zero.</p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#663399"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">#663399</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(none 0% 30%)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 76.5 76.5) 50%, rgb(76.5 76.5 76.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(none 0</span><span class="si">% 30%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">hsl(none 0% 30%)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">Color("rebeccapurple").to_string(hex=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">Color('hsl(none 0% 30%)').to_string(none=True)</textarea>
 </form>
 </div>
 
@@ -1026,19 +1026,21 @@ have options unique to itself.</p>
 <button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>You can force hex to output in uppercase.</p>
+</li>
+</ul>
+<p>In general, a color in a given color space may share the same options as listed above, but a given color space may also
+have options unique to itself.</p>
+<h2 id="srgb-specific">sRGB Specific<a class="headerlink" href="#srgb-specific" title="Permanent link"></a></h2>
+<p>sRGB can output colors to a hex format which is unique compared to HSL and others. Simply enable <code>hex</code>.</p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#ff0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="#FF0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">#ff0000</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">#FF0000</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#663399"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">#663399</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_9">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">Color("red").to_string(hex=True)
-Color("red").to_string(hex=True, upper=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">Color("rebeccapurple").to_string(hex=True)</textarea>
 </form>
 </div>
 
@@ -1047,20 +1049,19 @@ Color("red").to_string(hex=True, upper=True)</textarea>
 <button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>When converting to the hex color format, a color can be compressed in certain cases. Enabling <code>compress</code> will compress a
-hex color if possible.</p>
+<p>You can force hex to output in uppercase.</p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#11223388"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span> <span class="swatch" title="#1238"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">#11223388</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">#1238</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#ff0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="#FF0000"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">#ff0000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">#FF0000</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("#11223388").to_string(hex=True)
-Color("#11223388").to_string(hex=True, compress=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("red").to_string(hex=True)
+Color("red").to_string(hex=True, upper=True)</textarea>
 </form>
 </div>
 
@@ -1069,17 +1070,20 @@ Color("#11223388").to_string(hex=True, compress=True)</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
-instead of using the range [0,255].</p>
+<p>When converting to the hex color format, a color can be compressed in certain cases. Enabling <code>compress</code> will compress a
+hex color if possible.</p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(40% 20% 60%)"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">rgb(40% 20% 60%)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="#11223388"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span> <span class="swatch" title="#1238"><span class="swatch-color" style="--swatch-stops: rgb(17 34 51) 50%, rgb(17 34 51 / 0.53333) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">#11223388</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#11223388&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="nb">hex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">#1238</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_11">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("rebeccapurple").to_string(percent=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("#11223388").to_string(hex=True)
+Color("#11223388").to_string(hex=True, compress=True)</textarea>
 </form>
 </div>
 
@@ -1088,18 +1092,17 @@ instead of using the range [0,255].</p>
 <button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>sRGB can also output color names. If a color evaluates to a hex code which also evaluates to a color name in the
-internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
-fallback to whatever the other options dictate. Simply enable <code>names</code>.</p>
+<p>sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
+instead of using the range [0,255].</p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rebeccapurple"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#663399&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">rebeccapurple</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(40% 20% 60%)"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rebeccapurple&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">percent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">rgb(40% 20% 60%)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">Color("#663399").to_string(names=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">Color("rebeccapurple").to_string(percent=True)</textarea>
 </form>
 </div>
 
@@ -1107,6 +1110,26 @@ fallback to whatever the other options dictate. Simply enable <code>names</code>
 <button id="__playground-share_12" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>sRGB can also output color names. If a color evaluates to a hex code which also evaluates to a color name in the
+internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
+fallback to whatever the other options dictate. Simply enable <code>names</code>.</p>
+<div class="playground" id="__playground_13">
+<div class="playground-results" id="__playground-results_13">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rebeccapurple"><span class="swatch-color" style="--swatch-stops: rgb(102 51 153) 50%, rgb(102 51 153) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#663399&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">rebeccapurple</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_13">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("#663399").to_string(names=True)</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_13" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_13" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <h2 id="comma-format">Comma Format<a class="headerlink" href="#comma-format" title="Permanent link"></a></h2>
 <p>In CSS, there are a number of color spaces that allow a comma format: <code>srgb</code> and <code>hsl</code>. ColorAide allows these to be
@@ -1118,22 +1141,22 @@ it is strict about its format.</p>
 output in other subtle ways. As the comma format is the old legacy approach, when sRGB has commas enabled, it will use
 <code>rgba</code> instead of the <code>rgb</code>. If using the default space syntax, <code>rgb</code> is always used, even when the color has
 transparency.</p>
-<div class="playground" id="__playground_13">
-<div class="playground-results" id="__playground-results_13">
+<div class="playground" id="__playground_14">
+<div class="playground-results" id="__playground-results_14">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgba(30, 75, 100, 0.2)"><span class="swatch-color" style="--swatch-stops: rgb(30 75 100) 50%, rgb(30 75 100 / 0.2) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30 75 100 / 20%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">comma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">rgba(30, 75, 100, 0.2)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_13">
+<div class="playground-code hidden" id="__playground-code_14">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("rgb(30 75 100 / 20%)").to_string(comma=True)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("rgb(30 75 100 / 20%)").to_string(comma=True)</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_13" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_13" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_14" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_14" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
                 
                   
@@ -1143,7 +1166,7 @@ transparency.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 3, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 30, 2021</span>
       
     
   </small>
@@ -1275,14 +1298,14 @@ transparency.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="../assets/javascripts/bundle.bc35569b.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-ce952873.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

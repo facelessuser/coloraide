@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.24c991ad.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.3f5d1f46.min.css">
@@ -420,6 +420,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#using-coloraide" class="md-nav__link">
+    Using ColorAide
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -787,6 +794,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#using-coloraide" class="md-nav__link">
+    Using ColorAide
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
   </a>
@@ -809,28 +823,22 @@
                 
                 <h1 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link"></a></h1>
 <div class="admonition warning">
-<p class="admonition-title">Currently in Alpha</p>
-<p>While ColorAide is very usable, it is currently in an alpha stage. While that doesn't necessarily mean buggy, it
-does mean the API could be unstable.</p>
+<p class="admonition-title">Currently a Prerelease</p>
+<p>While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease. This simply means the
+API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
+color syntax and behavior to be decided by the CSS Working Group.</p>
 </div>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
 <p>ColorAide is a color library for Python with the intent to provide an easy to use interface to work with colors. While
 ColorAide is not just for CSS colors, there is a focus on supporting modern CSS color syntax as it is a format that is
 very commonly used. In addition to being able to parse almost all colors as specified in the CSS specification,
 ColorAide also supports a number of colors and formats for colors that are not in the CSS spec.</p>
-<p>ColorAide is built on the idea of having a general color object in which you can easily manipulate a color, convert
-between colors in different spaces, and perform color related functions: interpolation, color distancing, color
-contrast, etc.</p>
-<p>In the process of developing ColorAide, we also stumbled upon the JavaScript library <a href="https://github.com/LeaVerou/color.js">Color.js</a> which is
-created/maintained by the co-authors of some of the recent CSS color specifications. This project became heavily
-influenced by Color.js as it adopted a model we were already interested in. While our aim was not to port that library
-and be a 1:1 copy of it, it provided much clarity on the CSS specification and, in the end, left a clear impression on
-our API.</p>
-<p>With ColorAide, you can create colors:</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="go">[1.0, 0.0, 0.0]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">rgb(255 0 0)</span>
 </code></pre></div></div>
@@ -839,6 +847,7 @@ our API.</p>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">from coloraide import Color
 c = Color('red')
+c.coords()
 c.to_string()</textarea>
 </form>
 </div>
@@ -848,18 +857,38 @@ c.to_string()</textarea>
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Convert colors:</p>
+<p>ColorAide was designed to be fairly easy library to pick up and start using. The idea was to have a simple interface to
+specify any color, and once you have that color, you can convert it to any color you wish, manipulate it, mix it with
+other colors, and then optionally get the color data or output into CSS strings. If desired, color spaces can be
+overridden to output strings in other string formats or simply use the raw color data to manually construct the desired
+output, but the primary focus was providing output in the familiar CSS output.</p>
+<p>There are many color libraries out there, and if you happen to be looking for a library that is more for scientific
+work, then maybe a library like <a href="https://github.com/colour-science/colour">Colour Science</a> is more appropriate. That is
+not to say you cannot analyze colors, plot them into diagrams and such with ColorAide, but we do not provide tools
+geared towards such scientific endeavors, nor do we provide the shear amount of configurable options, color spaces,
+white points, etc. that may come with a library such as Colour Science.</p>
+<p>In the process of developing ColorAide, we spent a lot of time researching the CSS color spec and various color spaces.
+In the process, we inevitably stumbled upon the JavaScript library <a href="https://github.com/LeaVerou/color.js">Color.js</a> which is created/maintained by
+the co-authors of some of the recent CSS color specifications. ColorAide became heavily influenced by Color.js as it
+was useful in clarifying many points in the CSS color spec, and it adopted a very similar interface in which we were
+aiming for. While our aim was not to port that library, we did learn a lot from it and it did leave a clear impression
+on our API, though we do vary quite a bit and have gone our own way.</p>
+<h2 id="using-coloraide">Using ColorAide<a class="headerlink" href="#using-coloraide" title="Permanent link"></a></h2>
+<p>ColorAide is easy to use.</p>
+<p>You can create colors:</p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 100% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">hsl(0 100% 50%)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">rgb(255 0 0)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">from coloraide import Color
-Color('red').convert('hsl').to_string()</textarea>
+c = Color('red')
+c.to_string()</textarea>
 </form>
 </div>
 
@@ -868,18 +897,18 @@ Color('red').convert('hsl').to_string()</textarea>
 <button id="__playground-run_1" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Modify colors:</p>
+<p>Convert colors:</p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(173.81 114.28 97.213)"><span class="swatch-color" style="--swatch-stops: rgb(173.81 114.28 97.213) 50%, rgb(173.81 114.28 97.213) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;lch.chroma&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">rgb(173.81 114.28 97.213)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 100% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">hsl(0 100% 50%)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">from coloraide import Color
-Color('red').set("lch.chroma", 30).to_string()</textarea>
+Color('red').convert('hsl').to_string()</textarea>
 </form>
 </div>
 
@@ -888,18 +917,18 @@ Color('red').set("lch.chroma", 30).to_string()</textarea>
 <button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Mix colors:</p>
+<p>Modify colors:</p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 87.006 113.14)"><span class="swatch-color" style="--swatch-stops: rgb(255 87.006 113.14) 50%, rgb(255 87.006 113.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mix</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;lch&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">rgb(255 87.006 113.14)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(173.81 114.28 97.213)"><span class="swatch-color" style="--swatch-stops: rgb(173.81 114.28 97.213) 50%, rgb(173.81 114.28 97.213) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;lch.chroma&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">rgb(173.81 114.28 97.213)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">from coloraide import Color
-Color("blue").mix("yellow", space="lch").to_string()</textarea>
+Color('red').set("lch.chroma", 30).to_string()</textarea>
 </form>
 </div>
 
@@ -907,6 +936,26 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
 <button id="__playground-share_3" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>Mix colors:</p>
+<div class="playground" id="__playground_4">
+<div class="playground-results" id="__playground-results_4">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 87.006 113.14)"><span class="swatch-color" style="--swatch-stops: rgb(255 87.006 113.14) 50%, rgb(255 87.006 113.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mix</span><span class="p">(</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;lch&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">rgb(255 87.006 113.14)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_4">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_4" spellcheck="false">from coloraide import Color
+Color("blue").mix("yellow", space="lch").to_string()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_4" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_4" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_4" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>And much more!</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link"></a></h2>
@@ -921,7 +970,7 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 10, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2021</span>
       
     
   </small>
@@ -1035,14 +1084,14 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="assets/javascripts/bundle.bc35569b.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="assets/coloraide-extras/extra-notebook-ce952873.js"></script>
+        <script src="assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
       
         <script src="assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/color/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.24c991ad.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -925,18 +925,18 @@
 <p>Afterwards, colors can be created using various, valid CSS syntax:</p>
 <div class="playground" id="__playground_3">
 <div class="playground-results" id="__playground-results_3">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 255 0) 50%, rgb(0 255 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">),</span>
-<span class="go">(color(srgb 1 0 0 / 1),)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#00ff00&quot;</span><span class="p">),</span>
-<span class="go">(color(srgb 0 1 0 / 1),)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 255 0) 50%, rgb(0 255 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 1 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;#00ff00&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 0 1 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(0 0 255 / 1)&quot;</span><span class="p">)</span>
 <span class="go">color(srgb 0 0 1 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_3">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color("red"),
-Color("#00ff00"),
+<textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color("red")
+Color("#00ff00")
 Color("rgb(0 0 255 / 1)")</textarea>
 </form>
 </div>
@@ -952,11 +952,12 @@ even if the color is not defined in the CSS color spec or supported in the spec 
 <code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function in CSS does not explicitly support color spaces with angular channels (hues), it has been
 adapted to support cylindrical colors, and is generally used as a generic input and default output for string
 representation of colors. Colors not found in the CSS spec are usually done as custom names with the <code>--</code> prefix. Check
-the <a href="../colors/">documentation of the given color space</a> to discover the appropriate CSS identifier name.</p>
+the <a href="../colors/">documentation of the given color space</a> to discover the appropriate CSS identifier name as the
+CSS identifier may not always match the color space name as specified in ColorAide.</p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(130 40% 75% / 0.5)"><span class="swatch-color" style="--swatch-stops: rgb(165.75 216.75 174.25) 50%, rgb(165.75 216.75 174.25 / 0.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsl 130 40</span><span class="si">% 75%</span><span class="s1"> / 0.5)&#39;</span><span class="p">)</span>
-<span class="go">color(--hsl 130 40% 75% / 0.5)</span>
+<span class="go">color(--hsl 130 0.4 0.75 / 0.5)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_4">
@@ -989,20 +990,22 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>The name is usually just the name of the color space and will not necessarily match the CSS identifier name. For
-instance, HSL will use <code>--hsl</code> in the CSS color function, but will just use the <code>hsl</code> when specify raw colors.</p>
+<p>Since colors can be exported to a simple dictionary, which can be useful if serializing to JSON, the Color object will
+also accept this dictionary as an input.</p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(130 40% 75% / 0.5)"><span class="swatch-color" style="--swatch-stops: rgb(165.75 216.75 174.25) 50%, rgb(165.75 216.75 174.25 / 0.5) 50%"></span></span> <span class="swatch" title="hsl(130 40% 75% / 0.5)"><span class="swatch-color" style="--swatch-stops: rgb(165.75 216.75 174.25) 50%, rgb(165.75 216.75 174.25 / 0.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsl 130 40</span><span class="si">% 75%</span><span class="s1"> / 0.5)&#39;</span><span class="p">)</span>
-<span class="go">color(--hsl 130 40% 75% / 0.5)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">75</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">)</span>
-<span class="go">color(--hsl 130 40% 75% / 0.5)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="go">{&#39;space&#39;: &#39;srgb&#39;, &#39;r&#39;: 1.0, &#39;g&#39;: 0.0, &#39;b&#39;: 0.0, &#39;alpha&#39;: 1.0}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="go">color(srgb 1 0 0 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_6">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">Color('color(--hsl 130 40% 75% / 0.5)')
-Color("hsl", [130, 40, 75], 0.5)</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">d = Color('red').to_dict()
+print(d)
+Color(d)</textarea>
 </form>
 </div>
 
@@ -1011,22 +1014,29 @@ Color("hsl", [130, 40, 75], 0.5)</textarea>
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>It is important to note that raw inputs are always accepted exactly as they are specified. Take, for instance, an HSL
-color with zero saturation. When providing a color via a string, the color is parsed and normalized as appropriate. If
-we pass in an HSL color with zero saturation, the parsed string will treat the hue as undefined, while the raw input
-values remain unaltered. Raw inputs are essentially treated as if the user is directly setting those channels.</p>
+<div class="admonition note">
+<p class="admonition-title">Normalizing Undefined Channels</p>
+<p>Normally, when ColorAide processes a color via CSS input or returns a color via compositing, interpolation, gamut
+fitting, etc., it will normalize undefined hues. Certain color spaces will consider a hue undefined in certain
+cases, such as when a HSL color has a saturation of zero. Raw inputs via the dict method or the color space and list
+method will not be normalized in such cases. Raw inputs are accepted as is. This is because they are treated as
+manual inputs, or purposeful inputs from the user, so their values are respected and left unchanged.</p>
+<p>If at any time, it is desired to force channel normalization after a manual input, just run <code>normalize</code>:</p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(130 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
-<span class="go">color(--hsl 0 0% 50% / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch out-of-gamut" title="hsl(130 0% 5000%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch out-of-gamut" title="hsl(0 0% 5000%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="go">color(--hsl none 0 0.5 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-<span class="go">color(--hsl 130 0% 50% / 1)</span>
+<span class="go">color(--hsl 130 0 50 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+<span class="go">color(--hsl none 0 50 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">Color("hsl(130 0% 50%)")
-Color("hsl", [130, 0, 50])</textarea>
+Color("hsl", [130, 0, 50])
+Color("hsl", [130, 0, 50]).normalize()</textarea>
 </form>
 </div>
 
@@ -1034,6 +1044,7 @@ Color("hsl", [130, 0, 50])</textarea>
 <button id="__playground-share_7" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
 </div>
 <p>If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.</p>
 <div class="playground" id="__playground_8">
@@ -1093,7 +1104,7 @@ to those spaces in the list.</p>
 <span class="gp">... </span>
 <span class="go">Not a valid color</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 30</span><span class="si">% 75%</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hsl&quot;</span><span class="p">])</span>
-<span class="go">color(--hsl 130 30% 75% / 1)</span>
+<span class="go">color(--hsl 130 0.3 0.75 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
@@ -1294,7 +1305,7 @@ avoid parsing unwanted color spaces.</p>
 <div class="playground-results" id="__playground-results_19">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;red and yellow&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hsl&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;hsl(130 30</span><span class="si">% 75%</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hsl&quot;</span><span class="p">])</span>
-<span class="go">ColorMatch(color=color(--hsl 130 30% 75% / 1), start=0, end=16)</span>
+<span class="go">ColorMatch(color=color(--hsl 130 0.3 0.75 / 1), start=0, end=16)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_19">
@@ -1451,13 +1462,13 @@ Color2('rgb(128.12345 0 128.12345)').to_string()</textarea>
 </table>
 <h3 id="plugins">Plugins<a class="headerlink" href="#plugins" title="Permanent link"></a></h3>
 <p>Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.</p>
-<p>If you wanted a more light weight <a href="#color"><code>Color</code></a> object, could deregister color spaces you don't need. Keep in mind
-some color spaces are essential (like XYZ which is used to convert almost every color space to another) or could break
-functionality of of certain features reliant on that color space, such as CIELAB which is used when doing which is used
-delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.</p>
-<p>While we won't get into the specifics of how to create plugins &ndash; users can check out the source to see how to make
-plugins &ndash; or go into the relationships of which spaces are required for which functionality, we will speak briefly on
-how to register new ones and deregister existing ones.</p>
+<p>If you wanted a more lightweight <a href="#color"><code>Color</code></a> object, you could deregister color spaces you don't need. Keep in
+mind that some color spaces are essential, like XYZ which is used in many color conversions. Removing some colors could
+also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is used
+when doing which is used for delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.</p>
+<p>While we do not currently have an in depth guide on plugins or go into the relationships of which spaces are required
+for which functionality, we will speak briefly on how to register new ones and deregister existing ones. For those
+interested in writhing a plugin, for now, the source code is the best way to learn.</p>
 <p>Registration is performed by the <code>register</code> method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
 a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If <code>overwrite</code> set
@@ -1532,7 +1543,7 @@ to explicitly define allowed plugins and exclude any unknown new ones that may b
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 26, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2021</span>
       
     
   </small>
@@ -1664,14 +1675,14 @@ to explicitly define allowed plugins and exclude any unknown new ones that may b
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="../assets/javascripts/bundle.bc35569b.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-ce952873.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/api/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.24c991ad.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -726,6 +726,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#normalize" class="md-nav__link">
+    Color.normalize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#to_dict" class="md-nav__link">
+    Color.to_dict
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#to_string" class="md-nav__link">
     Color.to_string
   </a>
@@ -861,6 +875,13 @@
         <li class="md-nav__item">
   <a href="#color-channel-properties" class="md-nav__link">
     Color Channel Properties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#color-dynamic-methods" class="md-nav__link">
+    Color Dynamic Methods
   </a>
   
 </li>
@@ -1088,6 +1109,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#normalize" class="md-nav__link">
+    Color.normalize
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#to_dict" class="md-nav__link">
+    Color.to_dict
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#to_string" class="md-nav__link">
     Color.to_string
   </a>
@@ -1227,6 +1262,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#color-dynamic-methods" class="md-nav__link">
+    Color Dynamic Methods
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1245,7 +1287,7 @@
 <h2 id="nan"><code>coloraide.NaN</code><a class="headerlink" href="#nan" title="Permanent link"></a></h2>
 <dl>
 <dt>Description</dt>
-<dd><code>NaN</code> is a convenience constant for <code>float('nan')</code>. <code>NaN</code>.</dd>
+<dd><code>NaN</code> is a convenience constant for <code>float('nan')</code>.</dd>
 <dt>Import path</dt>
 <dd>
 <p><code>NaN</code> is imported from the <code>coloraide</code> library:</p>
@@ -1317,7 +1359,7 @@ users to specify and manipulate colors.</dd>
 <tr>
 <td><code>color</code></td>
 <td></td>
-<td>A color string, or other <code>Color</code> class object. If given <code>data</code>, a string must be used and should represent the color space to use.</td>
+<td>A color string, a dictionary describing the color, or another <code>Color</code> class object. If given <code>data</code>, a string must be used and should represent the color space to use.</td>
 </tr>
 <tr>
 <td><code>data</code></td>
@@ -1715,6 +1757,31 @@ reference to the current <a href="#color"><code>Color</code></a> object.</dd>
 the <code>alpha</code> property or <code>get</code> and <code>set</code> accessors.</dd>
 <dt>Return</dt>
 <dd>Returns a list of numbers indicating the current coordinate values.</dd>
+</dl>
+<h2 id="normalize"><code>Color.normalize</code><a class="headerlink" href="#normalize" title="Permanent link"></a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">):</span>
+</code></pre></div>
+<dl>
+<dt>Description</dt>
+<dd>Force normalization of a color's channels by setting any channels to undefined if they meet the specific color's
+criteria dictating such, e.g., hue is undefined in HSL when saturation is zero. Normalize modifies the current color
+in place.</dd>
+<dt>Return</dt>
+<dd>Returns a reference to the current <a href="#color"><code>Color</code></a> object after normalizing the channels for undefined hues.</dd>
+</dl>
+<h2 id="to_dict"><code>Color.to_dict</code><a class="headerlink" href="#to_dict" title="Permanent link"></a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+</code></pre></div>
+<dl>
+<dt>Description</dt>
+<dd>Dump the color object to a simple dictionary.</dd>
+<dt>Return</dt>
+<dd>A dictionary containing the color space name, the channel name with their respective values.</dd>
 </dl>
 <h2 id="to_string"><code>Color.to_string</code><a class="headerlink" href="#to_string" title="Permanent link"></a></h2>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span>
@@ -2725,6 +2792,29 @@ Color channel names are defined in <a href="../colors/">Supported Colors</a>.</p
 When written, they can accept a numerical value or a string value using CSS syntax acceptable for that channel in that
 color space.</p>
 <p>For more complex setting operations, or to chain multiple set operations, please use <a href="#set"><code>set</code></a> and <a href="#get"><code>get</code></a>.</p>
+<h2 id="color-dynamic-methods"><code>Color</code> Dynamic Methods<a class="headerlink" href="#color-dynamic-methods" title="Permanent link"></a></h2>
+<p>Depending on what ∆E methods are available, you can access the method, not only as <code>Color.delta_e(value, method="name")</code>,
+you can can also access them directly via <code>Color.delta_e_name(value)</code>:</p>
+<div class="playground" id="__playground_15">
+<div class="playground-results" id="__playground-results_15">
+<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;2000&quot;</span><span class="p">)</span>
+<span class="go">70.23670072102784</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e_2000</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="go">70.23670072102784</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_15">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color('red').delta_e('green', method="2000")
+Color('red').delta_e_2000('green')</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_15" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_15" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_15" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_15" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
                 
                   
                     
@@ -2733,7 +2823,7 @@ color space.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2021</span>
       
     
   </small>
@@ -2865,14 +2955,14 @@ color space.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="../assets/javascripts/bundle.bc35569b.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-ce952873.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

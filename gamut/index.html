@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/gamut/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8b42a75e.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.24c991ad.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -993,7 +993,7 @@ essentially meaningless when lightness is <code class="highlight"><span class="m
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span>
-<span class="go">color(--hsl 142.5 200.06% 100% / 1)</span>
+<span class="go">color(--hsl 142.5 2.0006 1 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </code></pre></div></div>
@@ -1022,7 +1022,7 @@ it will be the default for that color space, but we specify it below just for il
 <div class="playground-results" id="__playground-results_7">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span>
-<span class="go">color(--hsl 142.5 200.06% 100% / 1)</span>
+<span class="go">color(--hsl 142.5 2.0006 1 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </code></pre></div></div>
@@ -1117,7 +1117,7 @@ previous fitting result. We now end up with a very yellow-ish color.</p>
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 95.816% 42.313 96.903 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 100% 0 0 / 1)</span>
+<span class="go">color(--lch 100% 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
@@ -1194,7 +1194,7 @@ srgb.fit().coords()</textarea>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="go">color(--lch 100% 0 0 / 1)</span>
+<span class="go">color(--lch 100% 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
@@ -1375,14 +1375,14 @@ work directly in that space opposed to the indirect fitting of a color in a diff
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.4fc53ad4.min.js"></script>
+      <script src="../assets/javascripts/bundle.bc35569b.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-ce952873.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       
