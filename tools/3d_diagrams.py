@@ -149,7 +149,7 @@ def render_srgb_cyl_space(space, resolution, data, c):
     color = Color("srgb", [])
     for c1, t in itertools.product(
         ((x / resolution) * 360 for x in range(0, resolution + 1)),
-        (((x / resolution) * 100, i) for i, x in enumerate(range(0, resolution + 1), 0))
+        (((x / resolution), i) for i, x in enumerate(range(0, resolution + 1), 0))
     ):
 
         # Offset the plot on every other iteration blend the rows into a mesh
@@ -161,8 +161,8 @@ def render_srgb_cyl_space(space, resolution, data, c):
         # Top disc
         x.append(c2 * math.sin(math.radians(c1)))
         y.append(c2 * math.cos(math.radians(c1)))
-        z.append(100)
-        c.append(color.update(space, [c1, c2, 100]).to_string(hex=True))
+        z.append(1)
+        c.append(color.update(space, [c1, c2, 1]).to_string(hex=True))
 
         # Bottom disc
         x.append(c2 * math.sin(math.radians(c1)))
@@ -171,10 +171,10 @@ def render_srgb_cyl_space(space, resolution, data, c):
         c.append(color.update(space, [c1, c2, 0]).to_string(hex=True))
 
         # Cylinder portion
-        x.append(100 * math.sin(math.radians(c1)))
-        y.append(100 * math.cos(math.radians(c1)))
+        x.append(1 * math.sin(math.radians(c1)))
+        y.append(1 * math.cos(math.radians(c1)))
         z.append(c2)
-        c.append(color.update(space, [c1, 100, c2]).to_string(hex=True))
+        c.append(color.update(space, [c1, 1, c2]).to_string(hex=True))
 
 
 def plot_space_in_srgb(space, title="", dark=False, resolution=70):
