@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1
+## 0.1.0
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.
 
