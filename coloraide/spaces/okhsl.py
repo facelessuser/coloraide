@@ -26,8 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, Angle, Percent, GamutBound, Cylindrical
-from .srgb.base import lin_srgb_to_xyz, xyz_to_lin_srgb
-from .oklab import Oklab, xyz_d65_to_oklab, oklab_to_xyz_d65
+from .oklab import Oklab, oklab_to_linear_srgb
 from .. import util
 import re
 import math
@@ -232,18 +231,6 @@ def get_cs(lab):
     c_0 = math.sqrt(1.0 / (1.0 / (c_a ** 2) + 1.0 / (c_b ** 2)))
 
     return c_0, c_mid, c_max
-
-
-def oklab_to_linear_srgb(lab):
-    """Convert from Oklab to linear sRGB."""
-
-    return xyz_to_lin_srgb(oklab_to_xyz_d65(lab))
-
-
-def linear_srgb_to_oklab(rgb):  # pragma: no cover
-    """Linear sRGB to Oklab."""
-
-    return xyz_d65_to_oklab(lin_srgb_to_xyz(rgb))
 
 
 def compute_max_saturation(a, b):

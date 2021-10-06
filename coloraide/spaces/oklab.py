@@ -26,14 +26,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
-from .xyz import XYZ
+from .srgb_linear import SRGBLinear
 from .. import util
 import re
 
 m1 = [
-    [0.8189330101, 0.0329845436, 0.0482003018],
-    [0.3618667424, 0.9293118715, 0.2643662691],
-    [-0.1288597137, 0.0361456387, 0.633851707]
+    [0.4122214708, 0.2119034982, 0.0883024619],
+    [0.5363325363, 0.6806995451, 0.2817188376],
+    [0.0514459929, 0.1073969566, 0.6299787005]
 ]
 
 m2 = [
@@ -43,9 +43,9 @@ m2 = [
 ]
 
 m1i = [
-    [1.2270138511035211, -0.04058017842328059, -0.07638128450570689],
-    [-0.5577999806518223, 1.11225686961683, -0.42148197841801266],
-    [0.2812561489664678, -0.0716766786656012, 1.5861632204407947]
+    [4.076741661347995, -1.268438004092176, -0.004196086541836995],
+    [-3.3077115904081937, 2.6097574006633715, -0.7034186144594496],
+    [0.23096992872942781, -0.3413193963102195, 1.7076147009309446]
 ]
 
 m2i = [
@@ -55,16 +55,16 @@ m2i = [
 ]
 
 
-def xyz_d65_to_oklab(xyzd65):
-    """XYZ D65 to Oklab."""
+def oklab_to_linear_srgb(lab):
+    """Convert from Oklab to linear sRGB."""
 
-    return util.dot([util.cbrt(x) for x in util.dot(xyzd65, m1)], m2)
+    return util.dot([c ** 3 for c in util.dot(lab, m2i)], m1i)
 
 
-def oklab_to_xyz_d65(oklab):
-    """From XYZ to LMS."""
+def linear_srgb_to_oklab(rgb):
+    """Linear sRGB to Oklab."""
 
-    return util.dot([x ** 3 for x in util.dot(oklab, m2i)], m1i)
+    return util.dot([util.cbrt(c) for c in util.dot(rgb, m1)], m2)
 
 
 class Oklab(Labish, Space):
@@ -125,10 +125,10 @@ class Oklab(Labish, Space):
     def _to_xyz(cls, parent, oklab):
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, oklab_to_xyz_d65(oklab))
+        return SRGBLinear._to_xyz(parent, oklab_to_linear_srgb(oklab))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return xyz_d65_to_oklab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return linear_srgb_to_oklab(SRGBLinear._from_xyz(parent, xyz))

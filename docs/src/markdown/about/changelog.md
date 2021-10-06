@@ -20,3 +20,4 @@ First non-alpha prerelease. Notable changes from the last alpha listed below.
 - **NEW**: Jzazbz now also has an alias for `az` and `bz` channels as `a` and `b` respectively.
 - **FIX**: Fix an attribute "get" issue where attributes that were not present on the `Color()` object appeared to be
   present when using `hasattr()`.
+- **FIX**: More accurate Oklab matrix.

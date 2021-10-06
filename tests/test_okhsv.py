@@ -66,7 +66,7 @@ class TestOkhsvInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--okhsv 20 150% 75%)').to_string(),
-            'color(--okhsv 23.806 100% 57.454%)'
+            'color(--okhsv 23.814 100% 57.455%)'
         )
 
         self.assertEqual(

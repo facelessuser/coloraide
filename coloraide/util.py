@@ -504,7 +504,7 @@ def deprecated(message, stacklevel=2):  # pragma: no cover
         @wraps(func)
         def _deprecated_func(*args, **kwargs):
             warnings.warn(
-                f"'{func.__name__}' is deprecated. {message}",
+                "'{}' is deprecated. {}".format(func.__name__, message),
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
