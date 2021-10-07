@@ -4,6 +4,34 @@ from ... spaces import Angle, Cylindrical, GamutBound
 from abc import ABCMeta, abstractmethod
 
 
+def clip_channels(color):
+    """Clip channels."""
+
+    channels = util.no_nan(color.coords())
+    gamut = color._space.RANGE
+    fit = []
+
+    for i, value in enumerate(channels):
+        a, b = gamut[i]
+        is_bound = isinstance(gamut[i], GamutBound)
+
+        # Wrap the angle. Not technically out of gamut, but we will clean it up.
+        if isinstance(a, Angle) and isinstance(b, Angle):
+            fit.append(value % 360.0)
+            continue
+
+        # These parameters are unbounded
+        if not is_bound:  # pragma: no cover
+            # Will not execute unless we have a space that defines some coordinates
+            # as bound and others as not. We do not currently have such spaces.
+            a = None
+            b = None
+
+        # Fit value in bounds.
+        fit.append(util.clamp(value, a, b))
+    return fit
+
+
 class Fit(ABCMeta):
     """Fit plugin class."""
 
@@ -21,8 +49,35 @@ class Fit(ABCMeta):
 class Gamut:
     """Handle gamut related functions."""
 
+    def clip(self, space=None, *, in_place=False):
+        """Clip the color channels."""
+
+        if space is None:
+            space = self.space()
+
+        this = self.clone() if not in_place else self
+
+        # Convert to desired space
+        c = self.convert(space)
+
+        # If we are perfectly in gamut, don't waste time clipping.
+        if c.in_gamut(tolerance=0.0):
+            if isinstance(c._space, Cylindrical):
+                name = c._space.hue_name()
+                c.set(name, util.constrain_hue(c.get(name)))
+        else:
+            c._space._coords = clip_channels(c)
+        c.normalize()
+
+        # Adjust "this" color
+        return this.update(c)
+
     def fit(self, space=None, *, method=None, in_place=False):
         """Fit the gamut using the provided method."""
+
+        # Dedicated clip method.
+        if method == 'clip' or (method is None and self.FIT == "clip"):
+            return self.clip(space, in_place=in_place)
 
         if space is None:
             space = self.space()

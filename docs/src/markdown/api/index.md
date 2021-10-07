@@ -799,6 +799,33 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
+## `Color.clip` {#clip}
+
+```py
+def clip(
+    self,
+    space=None,
+    *,
+    in_place=False
+)
+```
+
+Description
+: 
+    Performs simple clipping on color channels that are out of gamut.
+
+Parameters
+: 
+    Parameters | Defaults      | Description
+    ---------- | ------------- | -----------
+    `space`    | `#!py3 None`  | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
+    `in_place` | `#!py3 False` | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
+
 ## `Color.fit` {#fit}
 
 ```py3
@@ -832,6 +859,7 @@ Parameters
     ---------- | ------------------ | -----------
     `space`    | `#!py3 None`       | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
     `method`   | `#!py3 None`       | String that specifies which gamut mapping method to use. If `#!py3 None`, `lch-chroma` will be used.
+    `in_place` | `#!py3 False`      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
 : 

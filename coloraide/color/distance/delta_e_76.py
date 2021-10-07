@@ -1,6 +1,5 @@
 """Delta E 76."""
-from ..distance import DeltaE
-from . import distance_euclidean
+from ..distance import DeltaE, distance_euclidean
 
 
 class DE76(DeltaE):
@@ -23,4 +22,4 @@ class DE76(DeltaE):
         """
 
         # Equation (1)
-        return distance_euclidean.distance(color, sample, space="lab")
+        return distance_euclidean(color, sample, space="lab")

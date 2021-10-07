@@ -3,8 +3,9 @@
 ## Color Distance
 
 ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELAB color
-space, but it can be configured to evaluate in any color space. It may be less useful in some color spaces compared to
-others:
+space, but it can be configured to evaluate in any color space, such as Oklab, etc. It may be less useful in some color
+spaces compared to others. Some spaces may not be well suited, such as cylindrical spaces. Some spaces might not be
+very perceptually uniform.
 
 ```playground
 Color("red").distance("blue", space="srgb")

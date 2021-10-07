@@ -39,11 +39,11 @@ class LchChroma(Fit):
         # because there is no optimal compression.
         floor = color.clone().set('lch.chroma', 0)
         if not floor.in_gamut(tolerance=0):
-            return floor.fit(method="clip").coords()
+            return floor.clip().coords()
 
         # If we are already below the JND, just clip as we will gain no
         # noticeable difference moving forward.
-        clipped = color.fit(method="clip")
+        clipped = color.clip()
         if color.delta_e(clipped, method="2000") < 2:
             return clipped.coords()
 
@@ -58,7 +58,7 @@ class LchChroma(Fit):
         # to see how close we are. A delta less than 2 is our target.
         while (high - low) > EPSILON:
             delta = mapcolor.delta_e(
-                mapcolor.fit(space, method="clip"),
+                mapcolor.clip(space),
                 method="2000"
             )
 
@@ -70,4 +70,4 @@ class LchChroma(Fit):
             mapcolor.chroma = (high + low) * 0.5
 
         # Update and clip off noise
-        return color.update(mapcolor).fit(space, method="clip", in_place=True).coords()
+        return color.update(mapcolor).clip(space, in_place=True).coords()

@@ -146,16 +146,26 @@ rgb.fit()
 ```
 
 If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
-it simply truncates any color channels whose values are two big or too small. While gamut mapping via chroma compression
-can give better results, gamut clipping is much faster and is actually what browsers do. If your desire is to match how
-browsers handle out of gamut color or if you greatly value speed over correctness, clipping may be the way to go.
+it simply truncates any color channels whose values are too big. While gamut mapping via chroma compression can give
+better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to match how
+browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be the way to
+go.
 
-In this example, we can change the fitting `method` parameter to `clip`. Notice the difference when compared to the
-previous fitting result. We now end up with a very yellow-ish color.
+Clipping can simply be done using the `clip` method. Notice the difference when compared to the previous fitting
+results. We now end up with a very yellow-ish color.
 
 ```playground
-Color("lch(100% 50 75)").fit("srgb", method="clip")
+Color("lch(100% 50 75)").clip("srgb")
 Color("lch(100% 50 75)").fit("srgb")
+```
+
+Color objects could potentially install other gamut fitting methods via plugins. If more are available, you can specify
+which one to use via the `method` parameter. `clip` is a reserved method and is always available. `clip` is provided
+this way to ensure any functions, like `to_string`, that allow for specifying the gamut mapping method dynamically can
+always use `clip`.
+
+```playground
+Color("lch(100% 50 75)").fit("srgb", method='clip')
 ```
 
 If we wanted to change the default "fitting" to `clip`, we can also just use a
