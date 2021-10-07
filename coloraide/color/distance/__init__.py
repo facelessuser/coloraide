@@ -1,6 +1,20 @@
 """Distance and Delta E."""
-from . import distance_euclidean
 from abc import ABCMeta, abstractmethod
+from ... import util
+import math
+
+
+def distance_euclidean(color, sample, space="lab"):
+    """
+    Euclidean distance.
+
+    https://en.wikipedia.org/wiki/Euclidean_distance
+    """
+
+    coords1 = util.no_nan(color.convert(space).coords())
+    coords2 = util.no_nan(sample.convert(space).coords())
+
+    return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 
 
 class DeltaE(ABCMeta):
@@ -38,4 +52,4 @@ class Distance:
         """Delta."""
 
         color = self._handle_color_input(color)
-        return distance_euclidean.distance(self, color, space=space)
+        return distance_euclidean(self, color, space=space)

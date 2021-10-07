@@ -543,6 +543,35 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         color3 = color.fit()
         self.assertColorNotEqual(color2, color3)
 
+    def test_clip(self):
+        """Test fit."""
+
+        color = Color('color(srgb 2 0.5 0.5)')
+        self.assertFalse(color.in_gamut())
+        color2 = color.clip()
+        self.assertIsNot(color, color2)
+        self.assertTrue(color2.in_gamut())
+        color3 = color.fit()
+        self.assertColorNotEqual(color2, color3)
+
+    def test_clip_in_place(self):
+        """Test clip in place."""
+
+        color = Color('color(srgb 2 0.5 0.5)')
+        self.assertFalse(color.in_gamut())
+        color2 = color.clip(in_place=True)
+        self.assertIs(color, color2)
+        self.assertTrue(color2.in_gamut())
+        color3 = color.fit()
+        self.assertColorEqual(color2, color3)
+
+    def test_clip_other_space(self):
+        """Test clip other space."""
+
+        color = Color('hsl(330 110% 50%)')
+        self.assertFalse(color.in_gamut('srgb'))
+        self.assertTrue(color.clip('srgb').in_gamut('srgb'))
+
     def test_bad_fit(self):
         """Test fit."""
 
@@ -1467,7 +1496,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_plugin_registration_fit(self):
         """Test plugin registration of `Fit`."""
 
-        from coloraide.color.gamut import lch_chroma
+        from coloraide.color.gamut import fit_lch_chroma
 
         expected = Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string()
 
@@ -1483,7 +1512,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
         # Now it is registered again
-        Custom.register(lch_chroma.LchChroma)
+        Custom.register(fit_lch_chroma.LchChroma)
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
     def test_deregister_all_category(self):
@@ -1506,6 +1535,26 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Custom.FIT_MAP, {})
         self.assertEqual(Custom.CS_MAP, {})
         self.assertEqual(Custom.DE_MAP, {})
+
+    def test_reserved_registration_fit(self):
+        """Test override registration of reserved fit method."""
+
+        from coloraide.color.gamut import Fit
+
+        class Custom(Color):
+            pass
+
+        class CustomFit(Fit):
+            @staticmethod
+            def name():
+                return 'clip'
+
+            @staticmethod
+            def fit(color):
+                return [0, 0, 0]
+
+        with self.assertRaises(ValueError):
+            Custom.register(CustomFit, overwrite=True)
 
     def test_bad_registration_type(self):
         """Test bad registration type."""
@@ -1569,3 +1618,12 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Custom.deregister('space:bad')
+
+    def test_reserved_deregistration_fit(self):
+        """Test deregistration of reserved fit method."""
+
+        class Custom(Color):
+            pass
+
+        with self.assertRaises(ValueError):
+            Custom.deregister('fit:clip')

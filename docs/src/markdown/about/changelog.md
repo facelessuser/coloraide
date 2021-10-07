@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+- **NEW**: Provide dedicated `clip` method. `clip` is still a specifiable method under the `fit` function. It is also
+  a reserved name under `fit` and cannot be overridden via plugins or be removed.
+
 ## 0.1.0
 
 First non-alpha prerelease. Notable changes from the last alpha listed below.

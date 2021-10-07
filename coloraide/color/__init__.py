@@ -47,8 +47,7 @@ from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
 from .distance.delta_e_hyab import DEHyAB
 from .gamut import Fit
-from .gamut.lch_chroma import LchChroma
-from .gamut.clip import Clip
+from .gamut.fit_lch_chroma import LchChroma
 
 SUPPORTED_DE = (
     DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB
@@ -62,7 +61,7 @@ SUPPORTED_SPACES = (
 )
 
 SUPPORTED_FIT = (
-    LchChroma, Clip
+    LchChroma,
 )
 
 
@@ -165,6 +164,8 @@ class Color(
                 name = p.name()
                 value = p.fit
                 mapping = cls.FIT_MAP
+                if name == 'clip':
+                    raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
             else:
                 raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
 
@@ -195,6 +196,8 @@ class Color(
                 mapping = cls.DE_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
+                if name == 'clip':
+                    raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
             else:
                 raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
 
