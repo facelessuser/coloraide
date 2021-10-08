@@ -30,12 +30,12 @@ LMS3_TO_OKLAB = np.asfarray(
 
 
 if __name__ == "__main__":
-    print('===== sRGB Linear => lms =====')
+    print('===== sRGB Linear -> lms =====')
     print(SRGBL_TO_LMS)
     print('===== lms -> sRGB Linear =====')
     print(np.linalg.inv(SRGBL_TO_LMS))
     xyzd65_to_lms = np.dot(SRGBL_TO_LMS, XYZ_TO_RGB)
-    print('===== XYZ D65 Linear => lms =====')
+    print('===== XYZ D65 Linear -> lms =====')
     print(xyzd65_to_lms)
     print('===== lms -> XYZ D65 =====')
     print(np.linalg.inv(xyzd65_to_lms))
