@@ -196,13 +196,49 @@ class Okhsv(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_xyz(cls, parent, hsv):
+    def _to_srgb(cls, parent, okhsv):
+        """To sRGB."""
+
+        return Oklab._to_srgb(parent, cls._to_oklab(parent, okhsv))
+
+    @classmethod
+    def _from_srgb(cls, parent, srgb):
+        """From sRGB."""
+
+        return cls._from_oklab(parent, Oklab._from_srgb(parent, srgb))
+
+    @classmethod
+    def _to_srgb_linear(cls, parent, okhsv):
+        """To sRGB Linear."""
+
+        return Oklab._to_srgb_linear(parent, cls._to_oklab(parent, okhsv))
+
+    @classmethod
+    def _from_srgb_linear(cls, parent, srgbl):
+        """From SRGB Linear."""
+
+        return cls._from_oklab(parent, Oklab._from_srgb_linear(parent, srgbl))
+
+    @classmethod
+    def _to_oklab(cls, parent, okhsv):
+        """To Oklab."""
+
+        return okhsv_to_oklab(okhsv)
+
+    @classmethod
+    def _from_oklab(cls, parent, oklab):
+        """From Oklab."""
+
+        return oklab_to_okhsv(oklab)
+
+    @classmethod
+    def _to_xyz(cls, parent, okhsv):
         """To XYZ."""
 
-        return Oklab._to_xyz(parent, okhsv_to_oklab(hsv))
+        return Oklab._to_xyz(parent, cls._to_oklab(parent, okhsv))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return oklab_to_okhsv(Oklab._from_xyz(parent, xyz))
+        return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

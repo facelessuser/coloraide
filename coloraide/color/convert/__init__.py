@@ -24,8 +24,8 @@ class Convert:
                 return converted.fit(space, method=method, in_place=True)
 
         if self.space() != space:
-            convert_to = '_to_{}'.format(space)
-            convert_from = '_from_{}'.format(self.space())
+            convert_to = '_to_{}'.format(space.replace('-', '_'))
+            convert_from = '_from_{}'.format(self.space().replace('-', '_'))
 
             obj = self.CS_MAP.get(space)
             if obj is None:

@@ -26,6 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
+from .srgb_linear import SRGBLinear
 from .xyz import XYZ
 from .. import util
 import re
@@ -79,7 +80,7 @@ def oklab_to_linear_srgb(lab):
     return util.dot(LMS_TO_SRGBL, [c ** 3 for c in util.dot(OKLAB_TO_LMS3, lab)])
 
 
-def linear_srgb_to_oklab(rgb):  # pragma: no cover
+def linear_srgb_to_oklab(rgb):
     """Linear sRGB to Oklab."""
 
     return util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in util.dot(SRGBL_TO_LMS, rgb)])
@@ -150,6 +151,30 @@ class Oklab(Labish, Space):
         """B axis."""
 
         self._coords[2] = self._handle_input(value)
+
+    @classmethod
+    def _to_srgb(cls, parent, oklab):
+        """To sRGB."""
+
+        return SRGBLinear._to_srgb(parent, cls._to_srgb_linear(parent, oklab))
+
+    @classmethod
+    def _from_srgb(cls, parent, srgb):
+        """From sRGB."""
+
+        return cls._from_srgb_linear(parent, SRGBLinear._from_srgb(parent, srgb))
+
+    @classmethod
+    def _to_srgb_linear(cls, parent, oklab):
+        """To sRGB Linear."""
+
+        return oklab_to_linear_srgb(oklab)
+
+    @classmethod
+    def _from_srgb_linear(cls, parent, srgbl):
+        """From SRGB Linear."""
+
+        return linear_srgb_to_oklab(srgbl)
 
     @classmethod
     def _to_xyz(cls, parent, oklab):
