@@ -810,8 +810,9 @@
                 <h1 id="color-distance-and-delta-e">Color Distance and Delta E<a class="headerlink" href="#color-distance-and-delta-e" title="Permanent link"></a></h1>
 <h2 id="color-distance">Color Distance<a class="headerlink" href="#color-distance" title="Permanent link"></a></h2>
 <p>ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELAB color
-space, but it can be configured to evaluate in any color space. It may be less useful in some color spaces compared to
-others:</p>
+space, but it can be configured to evaluate in any color space, such as Oklab, etc. It may be less useful in some color
+spaces compared to others. Some spaces may not be well suited, such as cylindrical spaces. Some spaces might not be
+very perceptually uniform.</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
@@ -946,7 +947,7 @@ DIN99o, etc.).</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 11, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2021</span>
       
     
   </small>
@@ -1085,7 +1086,7 @@ DIN99o, etc.).</p>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-c2c63ca0.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

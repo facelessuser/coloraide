@@ -817,6 +817,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#clip" class="md-nav__link">
+    Color.clip
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fit" class="md-nav__link">
     Color.fit
   </a>
@@ -1195,6 +1202,13 @@
         <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     Color.compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clip" class="md-nav__link">
+    Color.clip
   </a>
   
 </li>
@@ -2518,6 +2532,45 @@ provide nonsense results.</p>
 <dd>Returns a reference to the new <a href="#color"><code>Color</code></a> object or a reference to the current <a href="#color"><code>Color</code></a> if
 <code>in_place</code> is <code class="highlight"><span class="kc">True</span></code>.</dd>
 </dl>
+<h2 id="clip"><code>Color.clip</code><a class="headerlink" href="#clip" title="Permanent link"></a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</code></pre></div>
+<dl>
+<dt>Description</dt>
+<dd>Performs simple clipping on color channels that are out of gamut.</dd>
+<dt>Parameters</dt>
+<dd>
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>Defaults</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>space</code></td>
+<td><code class="highlight"><span class="kc">None</span></code></td>
+<td>The color space that the color must be mapped to. If space is <code class="highlight"><span class="kc">None</span></code>, then the current color space will be used.</td>
+</tr>
+<tr>
+<td><code>in_place</code></td>
+<td><code class="highlight"><span class="kc">False</span></code></td>
+<td>Boolean used to determine if the the current color should be modified "in place" or a new <a href="#color"><code>Color</code></a> object should be returned.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt>Return</dt>
+<dd>Returns a reference to the new <a href="#color"><code>Color</code></a> object or a reference to the current <a href="#color"><code>Color</code></a> if
+<code>in_place</code> is <code class="highlight"><span class="kc">True</span></code>.</dd>
+</dl>
 <h2 id="fit"><code>Color.fit</code><a class="headerlink" href="#fit" title="Permanent link"></a></h2>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
@@ -2574,6 +2627,11 @@ of the way and the color distance measured to see how close our color is to the 
 <td><code>method</code></td>
 <td><code class="highlight"><span class="kc">None</span></code></td>
 <td>String that specifies which gamut mapping method to use. If <code class="highlight"><span class="kc">None</span></code>, <code>lch-chroma</code> will be used.</td>
+</tr>
+<tr>
+<td><code>in_place</code></td>
+<td><code class="highlight"><span class="kc">False</span></code></td>
+<td>Boolean used to determine if the the current color should be modified "in place" or a new <a href="#color"><code>Color</code></a> object should be returned.</td>
 </tr>
 </tbody>
 </table>
@@ -2823,7 +2881,7 @@ Color('red').delta_e_2000('green')</textarea>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2021</span>
       
     
   </small>
@@ -2962,7 +3020,7 @@ Color('red').delta_e_2000('green')</textarea>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-c2c63ca0.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       

@@ -1107,14 +1107,15 @@ rgb.fit()</textarea>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
-it simply truncates any color channels whose values are two big or too small. While gamut mapping via chroma compression
-can give better results, gamut clipping is much faster and is actually what browsers do. If your desire is to match how
-browsers handle out of gamut color or if you greatly value speed over correctness, clipping may be the way to go.</p>
-<p>In this example, we can change the fitting <code>method</code> parameter to <code>clip</code>. Notice the difference when compared to the
-previous fitting result. We now end up with a very yellow-ish color.</p>
+it simply truncates any color channels whose values are too big. While gamut mapping via chroma compression can give
+better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to match how
+browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be the way to
+go.</p>
+<p>Clipping can simply be done using the <code>clip</code> method. Notice the difference when compared to the previous fitting
+results. We now end up with a very yellow-ish color.</p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 95.816% 42.313 96.903 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 100% 0 none / 1)</span>
@@ -1122,7 +1123,7 @@ previous fitting result. We now end up with a very yellow-ish color.</p>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("lch(100% 50 75)").fit("srgb", method="clip")
+<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("lch(100% 50 75)").clip("srgb")
 Color("lch(100% 50 75)").fit("srgb")</textarea>
 </form>
 </div>
@@ -1132,11 +1133,32 @@ Color("lch(100% 50 75)").fit("srgb")</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
+<p>Color objects could potentially install other gamut fitting methods via plugins. If more are available, you can specify
+which one to use via the <code>method</code> parameter. <code>clip</code> is a reserved method and is always available. <code>clip</code> is provided
+this way to ensure any functions, like <code>to_string</code>, that allow for specifying the gamut mapping method dynamically can
+always use <code>clip</code>.</p>
+<div class="playground" id="__playground_11">
+<div class="playground-results" id="__playground-results_11">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
+<span class="go">color(--lch 95.816% 42.313 96.903 / 1)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_11">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("lch(100% 50 75)").fit("srgb", method='clip')</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_11" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_11" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
 <p>If we wanted to change the default "fitting" to <code>clip</code>, we can also just use a
 <a href="../color/#override-default-settings">class override</a>. Doing this will cause the class to default to <code>clip</code> any time a
 color needs to be mapped. Though, you can still use chroma compression by specifying <code>lch-chroma</code> for the <code>method</code>.</p>
-<div class="playground" id="__playground_11">
-<div class="playground-results" id="__playground-results_11">
+<div class="playground" id="__playground_12">
+<div class="playground-results" id="__playground-results_12">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">FIT</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
 <span class="gp">... </span>
@@ -1146,9 +1168,9 @@ color needs to be mapped. Though, you can still use chroma compression by specif
 <span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_11">
+<div class="playground-code hidden" id="__playground-code_12">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">class Custom(Color):
+<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">class Custom(Color):
     FIT = 'clip'
 
 Custom("lch(100% 50 75)").convert('srgb').fit()
@@ -1156,15 +1178,15 @@ Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_11" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_11" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_12" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_12" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>It is important to note that when using fit, there is no tolerance, so even if <code>in_gamut</code> allowed enough tolerance to
 consider a color within the gamut, calling <code>fit</code> will fit any color that is not exactly in gamut.</p>
-<div class="playground" id="__playground_12">
-<div class="playground-results" id="__playground-results_12">
+<div class="playground" id="__playground_13">
+<div class="playground-results" id="__playground-results_13">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">lab</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;lab(100% 0 0)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span> <span class="o">=</span> <span class="n">lab</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
@@ -1175,31 +1197,13 @@ consider a color within the gamut, calling <code>fit</code> will fit any color t
 <span class="go">[1.0, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_12">
+<div class="playground-code hidden" id="__playground-code_13">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">lab = Color('lab(100% 0 0)')
+<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">lab = Color('lab(100% 0 0)')
 srgb = lab.convert('srgb')
 srgb.in_gamut()
 srgb.coords()
 srgb.fit().coords()</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_12" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_12" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-<p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
-<div class="playground" id="__playground_13">
-<div class="playground-results" id="__playground-results_13">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="go">color(--lch 100% 0 none / 1)</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_13">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("lch(100% 50 75)").fit('srgb')</textarea>
 </form>
 </div>
 
@@ -1208,23 +1212,16 @@ srgb.fit().coords()</textarea>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>When fitting in another color space, results may vary depending on what color space you are in and what color space you
-are using to fit the color. We went into great depths when discussing <a href="#gamut-checking">gamut checking</a> about how
-transform functions from one color space to another are not always exact. We also gave quite a number of examples
-showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
-mainly mentioned as fitting in one color space and round tripping back may not give exact results:</p>
+<p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
-<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
+<span class="go">color(--lch 100% 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("lch(100% 50 75)").convert('srgb').fit().coords()
-Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("lch(100% 50 75)").fit('srgb')</textarea>
 </form>
 </div>
 
@@ -1232,6 +1229,31 @@ Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
 <button id="__playground-share_14" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>When fitting in another color space, results may vary depending on what color space you are in and what color space you
+are using to fit the color. We went into great depths when discussing <a href="#gamut-checking">gamut checking</a> about how
+transform functions from one color space to another are not always exact. We also gave quite a number of examples
+showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
+mainly mentioned as fitting in one color space and round tripping back may not give exact results:</p>
+<div class="playground" id="__playground_15">
+<div class="playground-results" id="__playground-results_15">
+<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_15">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color("lch(100% 50 75)").convert('srgb').fit().coords()
+Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_15" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_15" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_15" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_15" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>Depending on what you are doing, and what spaces you are working in, it may make sense to fully convert to a space and
 work directly in that space opposed to the indirect fitting of a color in a different color space.</p>
@@ -1243,7 +1265,7 @@ work directly in that space opposed to the indirect fitting of a color in a diff
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 11, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2021</span>
       
     
   </small>
@@ -1382,7 +1404,7 @@ work directly in that space opposed to the indirect fitting of a color in a diff
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-7c086bda.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-c2c63ca0.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
       
