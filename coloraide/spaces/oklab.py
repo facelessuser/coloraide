@@ -26,45 +26,75 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
-from .srgb_linear import SRGBLinear
+from .xyz import XYZ
 from .. import util
 import re
 
-m1 = [
-    [0.4122214708, 0.2119034982, 0.0883024619],
-    [0.5363325363, 0.6806995451, 0.2817188376],
-    [0.0514459929, 0.1073969566, 0.6299787005]
+# sRGB Linear to LMS
+SRGBL_TO_LMS = [
+    [0.4122214708, 0.5363325363, 0.0514459929],
+    [0.2119034982, 0.6806995451, 0.1073969566],
+    [0.0883024619, 0.2817188376, 0.6299787005]
 ]
 
-m2 = [
-    [0.2104542553, 1.9779984951, 0.0259040371],
-    [0.793617785, -2.428592205, 0.7827717662],
-    [-0.0040720468, 0.4505937099, -0.808675766]
+# LMS to sRGB Linear
+LMS_TO_SRGBL = [
+    [4.076741661347995, -3.3077115904081937, 0.23096992872942781],
+    [-1.268438004092176, 2.6097574006633715, -0.3413193963102195],
+    [-0.004196086541836995, -0.7034186144594496, 1.7076147009309446]
 ]
 
-m1i = [
-    [4.076741661347995, -1.268438004092176, -0.004196086541836995],
-    [-3.3077115904081937, 2.6097574006633715, -0.7034186144594496],
-    [0.23096992872942781, -0.3413193963102195, 1.7076147009309446]
+# LMS ** 1/3 to Oklab
+LMS3_TO_OKLAB = [
+    [0.2104542553, 0.793617785, -0.0040720468],
+    [1.9779984951, -2.428592205, 0.4505937099],
+    [0.0259040371, 0.7827717662, -0.808675766]
 ]
 
-m2i = [
-    [0.9999999984505199, 1.0000000088817607, 1.0000000546724108],
-    [0.3963377921737679, -0.10556134232365635, -0.08948418209496575],
-    [0.2158037580607588, -0.06385417477170591, -1.2914855378640917]
+# Oklab to LMS ** 1/3
+OKLAB_TO_LMS3 = [
+    [0.9999999984505199, 0.3963377921737679, 0.2158037580607588],
+    [1.0000000088817607, -0.10556134232365635, -0.06385417477170591],
+    [1.0000000546724108, -0.08948418209496575, -1.2914855378640917]
+]
+
+# XYZ D65 to LMS
+XYZD65_TO_LMS = [
+    [0.8190224432164319, 0.3619062562801221, -0.12887378261216417],
+    [0.0329836671980271, 0.9292868468965546, 0.0361446681699984],
+    [0.04817719956604624, 0.2642395249442277, 0.6335478258136936]
+]
+
+# LMS to XYZ
+LMS_TO_XYZD65 = [
+    [1.2268798733741557, -0.5578149965554813, 0.28139105017721594],
+    [-0.04057576262431372, 1.1122868293970594, -0.07171106666151696],
+    [-0.07637294974672142, -0.4214933239627916, 1.5869240244272422]
 ]
 
 
 def oklab_to_linear_srgb(lab):
     """Convert from Oklab to linear sRGB."""
 
-    return util.dot([c ** 3 for c in util.dot(lab, m2i)], m1i)
+    return util.dot(LMS_TO_SRGBL, [c ** 3 for c in util.dot(OKLAB_TO_LMS3, lab)])
 
 
-def linear_srgb_to_oklab(rgb):
+def linear_srgb_to_oklab(rgb):  # pragma: no cover
     """Linear sRGB to Oklab."""
 
-    return util.dot([util.cbrt(c) for c in util.dot(rgb, m1)], m2)
+    return util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in util.dot(SRGBL_TO_LMS, rgb)])
+
+
+def oklab_to_xyz_d65(lab):
+    """Convert from Oklab to linear sRGB."""
+
+    return util.dot(LMS_TO_XYZD65, [c ** 3 for c in util.dot(OKLAB_TO_LMS3, lab)])
+
+
+def xyz_d65_to_oklab(rgb):
+    """Linear sRGB to Oklab."""
+
+    return util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in util.dot(XYZD65_TO_LMS, rgb)])
 
 
 class Oklab(Labish, Space):
@@ -125,10 +155,10 @@ class Oklab(Labish, Space):
     def _to_xyz(cls, parent, oklab):
         """To XYZ."""
 
-        return SRGBLinear._to_xyz(parent, oklab_to_linear_srgb(oklab))
+        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, oklab_to_xyz_d65(oklab))
 
     @classmethod
     def _from_xyz(cls, parent, xyz):
         """From XYZ."""
 
-        return linear_srgb_to_oklab(SRGBLinear._from_xyz(parent, xyz))
+        return xyz_d65_to_oklab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
