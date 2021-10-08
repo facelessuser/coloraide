@@ -1,16 +1,16 @@
 """Calculate `oklab` matrices."""
 import numpy as np
+import sys
+import os
+
+sys.path.insert(0, os.getcwd())
+
+import tools.calc_xyz_transform as xyzt  # noqa: E402
 
 np.set_printoptions(precision=None, sign='-', floatmode='unique')
 
 # Calculated using our own `calc_xyz_transform.py`
-XYZ_TO_RGB = np.asfarray(
-    [
-        [3.2409699419045226, -1.537383177570094, -0.49861076029300355],
-        [-0.9692436362808796, 1.8759675015077202, 0.04155505740717562],
-        [0.055630079696993635, -0.2039769588889765, 1.0569715142428784]
-    ]
-)
+XYZ_TO_RGB = xyzt.get_matrix(xyzt.white_d65, 'srgb')[1]
 
 SRGBL_TO_LMS = np.asfarray(
     [
