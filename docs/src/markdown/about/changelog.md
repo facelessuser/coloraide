@@ -4,6 +4,9 @@
 
 - **NEW**: Provide dedicated `clip` method. `clip` is still a specifiable method under the `fit` function. It is also
   a reserved name under `fit` and cannot be overridden via plugins or be removed.
+- **NEW**: Add more conversion shortcuts to OK family of color spaces.
+- **FIX**: Fix an issue where the shorter conversion path wasn't always taken as convert couldn't find to/from methods
+  if the color space name had `-` in it.
 
 ## 0.1.0
 
