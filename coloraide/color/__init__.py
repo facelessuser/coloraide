@@ -102,6 +102,15 @@ class Color(
 
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
+    def __dir__(self):
+        """Get attributes for `dir()`."""
+
+        attr = super().__dir__()
+        attr.extend(self._space.CHANNEL_NAMES)
+        attr.extend(list(self._space.CHANNEL_ALIASES.keys()))
+        attr.extend(['delta_e_{}'.format(name) for name in self.DE_MAP.keys()])
+        return attr
+
     def __eq__(self, other):
         """Compare equal."""
 
