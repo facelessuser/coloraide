@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (Development)
+
+- **NEW**: When calling `dir()` on `Color()`, ensure dynamic methods are in the list.
+
 ## 0.2.0
 
 - **NEW**: Provide dedicated `clip` method. `clip` is still a specifiable method under the `fit` function. It is also
