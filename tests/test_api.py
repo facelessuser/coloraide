@@ -10,6 +10,17 @@ PERCENT_SKIP = "Skipping as we currently do not perform any percent restrictions
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_dir(self):
+        """Test `dir()` usage."""
+
+        d = dir(Color('red'))
+        # Test channel properties
+        self.assertTrue('r' in d)
+        # Test channel property aliases
+        self.assertTrue('green' in d)
+        # Test delta E methods
+        self.assertTrue('delta_e_2000' in d)
+
     def test_print_none(self):
         """Test printing `none`."""
 
