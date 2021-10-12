@@ -1025,19 +1025,19 @@ manual inputs, or purposeful inputs from the user, so their values are respected
 <p>If at any time, it is desired to force channel normalization after a manual input, just run <code>normalize</code>:</p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch out-of-gamut" title="hsl(130 0% 5000%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span> <span class="swatch out-of-gamut" title="hsl(0 0% 5000%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(130 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
 <span class="go">color(--hsl none 0 0.5 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-<span class="go">color(--hsl 130 0 50 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
-<span class="go">color(--hsl none 0 50 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="go">color(--hsl 130 0 0.5 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+<span class="go">color(--hsl none 0 0.5 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">Color("hsl(130 0% 50%)")
-Color("hsl", [130, 0, 50])
-Color("hsl", [130, 0, 50]).normalize()</textarea>
+Color("hsl", [130, 0, 0.5])
+Color("hsl", [130, 0, 0.5]).normalize()</textarea>
 </form>
 </div>
 
