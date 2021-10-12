@@ -16,6 +16,8 @@ from coloraide.spaces import WHITES  # noqa: E402
 # How dense do we scatter plot the diagram background colors?
 RESOLUTION = 1024
 
+CCT = [1000, 1500, 2000, 2500, 3000, 6000, 10000, 15000, 20000, 25000]
+
 # CIE 1931 2 degree observer
 # http://www-cvrl.ucsd.edu/cmfs.htm
 cie_2_deg_observer = {
@@ -239,6 +241,63 @@ labels = {
 }
 
 
+def black_body_curve_xy(t):
+    """
+    Calculate the black body curve for `xy` coordinates.
+
+    Good for between 1667K - 25000K.
+    """
+
+    if 1667 <= t <= 4000:
+        xc = (
+            -0.2661239 * (10 ** 9) / (t ** 3) - 0.2343589 * (10 ** 6) / (t ** 2) + 0.8776956 * (10 ** 3) / t + 0.179910
+        )
+    elif 4000 <= t <= 25000:
+        xc = (
+            -3.0258469 * (10 ** 9) / (t ** 3) + 2.1070379 * (10 ** 6) / (t ** 2) + 0.2226347 * (10 ** 3) / t + 0.240390
+        )
+    else:
+        raise ValueError('Cannot calculate a color for {:f}k'.format(t))
+
+    if 1667 <= t <= 2222:
+        yc = -1.1063814 * (xc ** 3) - 1.34811020 * (xc ** 2) + 2.18555832 * xc - 0.20219683
+    elif 2222 <= t <= 4000:
+        yc = -0.9549476 * (xc ** 3) - 1.37418593 * (xc ** 2) + 2.09137015 * xc - 0.16748867
+    elif 4000 <= t <= 25000:
+        yc = 3.0817580 * (xc ** 3) - 5.87338670 * (xc ** 2) + 3.75112997 * xc - 0.37001483
+
+    return xc, yc
+
+
+def black_body_curve(t, xy=False):
+    """
+    Calculate the black body curve for `uv` coordinates.
+
+    Good for between 1000K - 15000K.
+    """
+
+    if t > 15000:
+        x, y = black_body_curve_xy(t)
+        if xy:
+            return x, y
+        return util.xy_to_uv_1960([x, y])
+
+    u = (
+        (0.860117757 + 1.54118254 * (10 ** -4) * t + 1.28641212 * (10 ** -7) * (t ** 2)) /
+        (1 + 8.42420235 * (10 ** -4) * t + 7.08145163 * (10 ** -7) * (t ** 2))
+    )
+
+    v = (
+        (0.317398726 + 4.22806245 * (10 ** -5) * t + 4.20481691 * (10 ** -8) * (t ** 2)) /
+        (1 - 2.89741816 * (10 ** -5) * t + 1.61456053 * (10 ** -7) * (t ** 2))
+    )
+
+    if xy:
+        return util.uv_1960_to_xy([u, v])
+
+    return u, v
+
+
 def cie_xy_2_deg_offsets(wavelength):
     """
     Setup labels for CIE 2 deg for `xy` diagrams.
@@ -414,7 +473,7 @@ class DiagramOptions:
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, theme='light', title='', show_labels=True, axis=True,
-    show_legend=True
+    show_legend=True, black_body=False
 ):
     """CIE diagram."""
 
@@ -480,7 +539,7 @@ def cie_diagram(
                     xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
                 px.append(r[0])
                 py.append(r[1])
-                srgb.update('xyz-d65', xyz, opacity)
+                srgb.update('xyz', xyz, opacity)
                 m = max(srgb.coords())
                 srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb.coords()], srgb.alpha)
                 c.append(srgb.to_string(hex=True, fit="clip"))
@@ -552,6 +611,20 @@ def cie_diagram(
                 ],
                 ha='center'
             )
+
+    if black_body and opt.mode in ('1931', '1960'):
+        uaxis = []
+        vaxis = []
+        bres = 100
+        boffset = 1000
+        brange = 24000
+        for cct in range(0, bres + 1):
+            t = cct / bres * brange + boffset
+            bu, bv = black_body_curve(t, opt.mode == '1931')
+            uaxis.append(bu)
+            vaxis.append(bv)
+        plt.plot(uaxis, vaxis, color=opt.default_color, marker="", linewidth=1, markersize=0, antialiased=True)
+        # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
     # Draw RGB triangles if one is specified
     if rgb_spaces:

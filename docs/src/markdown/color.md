@@ -258,9 +258,9 @@ Properties             | Description
 Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.
 
 If you wanted a more lightweight [`Color`](#color) object, you could deregister color spaces you don't need. Keep in
-mind that some color spaces are essential, like XYZ which is used in many color conversions. Removing some colors could
-also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is used
-when doing which is used for delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
+mind that some color spaces are essential, like XYZ D65 which is used in many color conversions. Removing some colors
+could also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is
+used when doing which is used for delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
 
 While we do not currently have an in depth guide on plugins or go into the relationships of which spaces are required
 for which functionality, we will speak briefly on how to register new ones and deregister existing ones. For those

@@ -23,6 +23,8 @@ theme:
     - navigation.tabs
     - navigation.top
     - navigation.instant
+  pymdownx:
+    sponsor: "https://github.com/sponsors/facelessuser"
 
 nav:
   - ColorAide:
@@ -117,7 +119,7 @@ extra_css:
   - assets/coloraide-extras/extra-ccd229caf0.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-c2c63ca0.js
+  - assets/coloraide-extras/extra-notebook-d30b0f5c.js
 
 extra:
   social:

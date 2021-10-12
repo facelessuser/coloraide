@@ -26,8 +26,8 @@ illuminant to a D65 illuminant. Below, we can see that the colors look pretty mu
 described under different illuminants.
 
 ```playground
-d50 = Color('color(xyz 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz-d65')
+d50 = Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
+d65 = d50.convert('xyz')
 d50, d65
 ```
 
@@ -40,7 +40,7 @@ coordinates we wish to transform:
 
 ```playground
 from coloraide.color.convert import cat
-Color('color(xyz 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
+Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz').coords()
 cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], method='bradford')
 ```
 
@@ -55,8 +55,8 @@ Afterwards, all color transforms will use the specified CAT.
 class Custom(Color):
     CHROMATIC_ADAPTATION = 'cat02'
 
-d50 = Custom('color(xyz 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz-d65')
+d50 = Custom('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
+d65 = d50.convert('xyz')
 d50, d65
 ```
 

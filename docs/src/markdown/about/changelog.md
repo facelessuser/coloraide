@@ -1,8 +1,15 @@
 # Changelog
 
-## 0.3.0 (Development)
+## 0.3.0
+
+!!! warning "Breaking Change"
+    XYZ changes below will cause breakage as `xyz` now refers to XYZ with D65 instead of D50. Also, CSS identifiers
+    changed per the recent specification change.
 
 - **NEW**: When calling `dir()` on `Color()`, ensure dynamic methods are in the list.
+- **NEW**: `xyz` now refers to XYZ D65. CSS `#!css-color color()` function now specifies D65 color as either
+  `#!css-color color(xyz x y z)` or `#!css-color color(xyz-d65 x y z)`. XYZ D50 is now specified as
+  `#!css-color color(xyz-D50 x y z)`.
 
 ## 0.2.0
 

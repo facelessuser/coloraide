@@ -25,7 +25,7 @@ from ..spaces.a98_rgb import A98RGB
 from ..spaces.prophoto_rgb import ProPhotoRGB
 from ..spaces.rec2020 import Rec2020
 from ..spaces.xyz import XYZ
-from ..spaces.xyz_d65 import XYZD65
+from ..spaces.xyz_d50 import XYZD50
 from ..spaces.oklab import Oklab
 from ..spaces.oklch import Oklch
 from ..spaces.jzazbz import Jzazbz
@@ -55,7 +55,7 @@ SUPPORTED_DE = (
 
 SUPPORTED_SPACES = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD65,
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD50,
     Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv,
     Okhsl, Okhsv
 )
@@ -309,7 +309,7 @@ class Color(
 
         uv = None
         if mode == '1976':
-            xyz = self.convert('xyz')
+            xyz = self.convert('xyz-d50')
             xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
             uv = util.xyz_to_uv(xyz)
         elif mode == '1960':
@@ -321,7 +321,7 @@ class Color(
     def xy(self):
         """Convert to `xy`."""
 
-        xyz = self.convert('xyz')
+        xyz = self.convert('xyz-d50')
         xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
         return util.xyz_to_xyY(xyz, self._space.white())[:2]
 
