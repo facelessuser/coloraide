@@ -1,11 +1,11 @@
-"""Test XYZ library."""
+"""Test XYZ D65 library."""
 import unittest
 from . import util
 from coloraide import Color
 
 
-class TestXYZInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test XYZ."""
+class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
+    """Test XYZ D65."""
 
     def test_input_raw(self):
         """Test raw input."""
@@ -34,8 +34,8 @@ class TestXYZInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"alpha": False}
 
         color = "color(xyz 0.3 1 0.5 / 0.2)"
-        xyz = Color(color)
-        self.assertEqual("color(xyz 0.3 1 0.5)", xyz.to_string(**args))
+        xyzd65 = Color(color)
+        self.assertEqual("color(xyz 0.3 1 0.5)", xyzd65.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
@@ -43,8 +43,8 @@ class TestXYZInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"alpha": True}
 
         color = "color(xyz 0.3 1 0.5 / 100%)"
-        xyz = Color(color)
-        self.assertEqual("color(xyz 0.3 1 0.5 / 1)", xyz.to_string(**args))
+        xyzd65 = Color(color)
+        self.assertEqual("color(xyz 0.3 1 0.5 / 1)", xyzd65.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
@@ -77,8 +77,8 @@ class TestXYZInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestXYZProperties(util.ColorAsserts, unittest.TestCase):
-    """Test XYZ."""
+class TestXYZD65Properties(util.ColorAsserts, unittest.TestCase):
+    """Test XYZ D65."""
 
     def test_x(self):
         """Test `x`."""

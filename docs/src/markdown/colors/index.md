@@ -726,16 +726,15 @@ large enough to contain all visible colors. Many conversions use matrices based 
 or just direct translations.
 
 While the chromaticity diagrams we've shown all use [XYZ with a D65 white point](#xyz-d65) to help generate them, XYZ
-can be represented with other white points as well. Currently, the default white point in CSS is [D50](#xyz-d50). We
-actually include access to both as while we want parity with CSS, we want access to XYZ D65 as it is commonly used for a
-variety of things.
+can be represented with other white points as well. CSS actually allows using either [XYZ D50](#xyz-d50) or
+[XYZ D65](#xyz-d65). We also provide both.
 
 ### XYZ D65
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `xyz-d65`
+    **Name:** `xyz`
 
     **White Point:** D65
 
@@ -778,11 +777,12 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Inputs:**
     : 
-        Parsed input and string output formats use the `#!css-color color()` format with the custom name
-        `#!css-color --xyz-d65` as XYZ D65 is not currently supported in the current CSS spec:
+        Parsed input and string output formats use the `#!css-color color()` format with either `#!css-color xyz` or
+        `#!css-color xyz-d65`.
 
         ```css-color
-        color(--xyz-d65 x y z / a)  // Color function
+        color(xyz x y z / a)      // Color function
+        color(xyz-d65 x y z / a)  // Color function alternate name
         ```
 
         When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
@@ -794,12 +794,12 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Output:**
     : 
-        The string representation of the color object and the default string output will be in the
-        `#!css-color color(--xyz x y z / a)` form.
+        The string representation of the color object and the default string output will be in the 
+        `#!css-color color(xyz x y z / a)` form.
 
         ```playground
-        Color("xyz-d65", [0, 0, 0], 1)
-        Color("xyz-d65", [0, 0, 0], 1).to_string()
+        Color("xyz", [0, 0, 0], 1)
+        Color("xyz", [0, 0, 0], 1).to_string()
         ```
 
 ### XYZ D50
@@ -807,7 +807,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `xyz`
+    **Name:** `xyz-d50`
 
     **White Point:** D50
 
@@ -848,14 +848,14 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
         Parsed input and string output formats support all valid CSS forms:
 
         ```css-color
-        color(xyz x y z / a)  // Color function
+        color(xyz-d50 x y z / a)  // Color function
         ```
 
         When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
         space name is always used:
 
         ```py
-        Color("xyz", [0, 0, 0], 1)
+        Color("xyz-d50", [0, 0, 0], 1)
         ```
 
     **Output:**
@@ -864,8 +864,8 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
         `#!css-color color(xyz x y z / a)` form.
 
         ```playground
-        Color("xyz", [0, 0, 0], 1)
-        Color("xyz", [0, 0, 0], 1).to_string()
+        Color("xyz-d50", [0, 0, 0], 1)
+        Color("xyz-d50", [0, 0, 0], 1).to_string()
         ```
 
 ## CIELAB
