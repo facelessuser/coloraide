@@ -43,7 +43,6 @@ HSL
 HSL
 HSV
 HWB
-HWB
 HyAB
 Hz
 ICtCp
@@ -73,7 +72,6 @@ NONINFRINGEMENT
 NaN
 NaNs
 Okhsl
-Okhsv
 Okhsv
 Oklab
 Oklch
@@ -108,6 +106,7 @@ bz
 cd
 chroma
 chromaticity
+colorimetry
 coroutine
 cp
 cz
@@ -145,6 +144,7 @@ subclassed
 subclassing
 sublicense
 subsamplings
+subtractive
 th
 un
 uncomment

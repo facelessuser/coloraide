@@ -1161,6 +1161,18 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ## CIELUV
 
+CIELUV is similar to CIELAB as they were both developed in 1976 as perceptually uniform color spaces, both are derived
+from the color experiments in 1931 that brought us the XYZ color space, and neither are truly perceptually uniform.
+
+The difference between the two comes from their intent. CIELAB attempted to create a space that aligned well with
+human vision. CIELUV on the other hand was designed to be an easier-to-compute transformation of the 1931 CIE XYZ color
+space.
+
+CIELAB is more commonly used in subtractive color applications (printed pages, dyes, etc.), while CIELUV is better
+suited in additive color applications such as display colorimetry (monitors, TVs, etc.).
+
+### CIELUV D50
+
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
@@ -1182,11 +1194,11 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ![CIELUV 3D](../images/luv-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELUV color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELUV D50 color space.</figcaption>
 </figure>
 
 CIELUV, is a color space adopted by the CIE in 1976, as a simple-to-compute transformation of the 1931 CIE XYZ color
-space, but which attempted perceptual uniformity. It is currently only available with a D50 white point.
+space, but which attempted perceptual uniformity.
 
 _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 </div>
@@ -1203,7 +1215,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Inputs:**
     : 
-        As CIELUV is not currently supported in the CSS spec, the parsed input and string output formats use the
+        As CIELUV D50 is not currently supported in the CSS spec, the parsed input and string output formats use the
         `#!css-color color()` function format using the custom name `#!css-color --luv`:
 
         ```css-color
@@ -1227,14 +1239,87 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
         Color("luv", [0, 0, 0], 1).to_string()
         ```
 
-## CIELCH~uv~
+### CIELUV D65
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `jzczhz`
+    **Name:** `luv-d65`
 
     **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    u    | [-83.067, 175.01]^\*^
+    v    | [-134.11, 107.418]^\*^
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![CIELUV 3D](../images/luv-d65-3d.png)
+
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELUV D65 color space.</figcaption>
+</figure>
+
+CIELUV D65 is the same as [CIELUV](#cieluv-d50) except it uses a D65 white point.
+
+_[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `u`      |
+        `v`      |
+
+    **Inputs:**
+    : 
+        As CIELUV D65 is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --luv-d65`:
+
+        ```css-color
+        color(--luv-d65 l u v / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("luv-d65", [0, 0, 0], 1)
+        ```
+
+    **Outputs**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--luv-d65 l u v / a)` form.
+
+        ```playground
+        Color("luv-d65", [0, 0, 0], 1)
+        Color("luv-d65", [0, 0, 0], 1).to_string()
+        ```
+
+## CIELCH~uv~
+
+CIELUV generally is not an intuitive space to work with and instead is often converted to cylindrical coordinates with
+hues represented as degrees and a chroma and lightness channel. The shape of the color space doesn't really change,
+just how the colors are manipulated. CIELCH~uv~, like CIELUV, is available with a D50 white point and a D65 white point.
+
+### CIELCH~uv~ D50
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `lchuv`
+
+    **White Point:** D50
 
     **Coordinates:**
 
@@ -1250,11 +1335,11 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
 ![CIELCH~uv~](../images/lchuv-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH~uv~ D50 color space.</figcaption>
 </figure>
 
-CIELCH~uv~ is the polar form of [CIELUV](#cieluv). The shape is identical, but manipulation of the colors is more
-intuitive.
+CIELCH~uv~ D50 is the polar form of [CIELUV D50](#cieluv-d50). The shape is identical, but manipulation of the colors is
+more intuitive.
 
 _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 </div>
@@ -1271,7 +1356,7 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Inputs:**
     : 
-        As CIELCH~uv~ is not currently supported in the CSS spec, the parsed input and string output formats use the
+        As CIELCH~uv~ D50 is not currently supported in the CSS spec, the parsed input and string output formats use the
         `#!css-color color()` function format using the custom name `#!css-color --lchuv`:
 
         ```css-color
@@ -1288,11 +1373,79 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
     **Output:**
     : 
         The string representation of the color object and the default string output use the
-        `#!css-color color(--lchuv jz cz hz / a)` form.
+        `#!css-color color(--lchuv l c h / a)` form.
 
         ```playground
         Color("lchuv", [0, 0, 0], 1)
         Color("lchuv", [0, 0, 0], 1).to_string()
+        ```
+
+### CIELCH~uv~ D65
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `lchuv-d65`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    l    | [0, 100]^\*^
+    c    | [0, 179.038]^\*^
+    h    | [0, 360)
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![CIELCH~uv~](../images/lchuv-d65-3d.png)
+
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH~uv~ D65 color space.</figcaption>
+</figure>
+
+CIELCH~uv~ D65 is the polar form of [CIELUV D65](#cieluv-d65). The shape is identical, but manipulation of the colors is
+more intuitive.
+
+_[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `c`      | `chroma`
+        `h`      | `hue`
+
+    **Inputs:**
+    : 
+        As CIELCH~uv~ D65 is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --lchuv-d65`:
+
+        ```css-color
+        color(--lchuv-d65 l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("lchuv-d65", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--lchuv l c h / a)` form.
+
+        ```playground
+        Color("lchuv-d65", [0, 0, 0], 1)
+        Color("lchuv-d65", [0, 0, 0], 1).to_string()
         ```
 
 ## Oklab
