@@ -30,6 +30,7 @@ axis_map = {
     "ictcp": [1, 2, 0],
     "din99o": [1, 2, 0],
     "luv": [1, 2, 0],
+    "luv-d65": [1, 2, 0],
 
     # Lch like spaces
     "lch": [2, 1, 0],
@@ -37,7 +38,8 @@ axis_map = {
     "oklch": [2, 1, 0],
     "jzczhz": [2, 1, 0],
     "din99o-lch": [2, 1, 0],
-    "lchuv": [2, 1, 0]
+    "lchuv": [2, 1, 0],
+    "lchuv-d65": [2, 1, 0]
 }
 
 
@@ -126,13 +128,13 @@ def render_cyl_space(space, resolution, data, c):
     # all the colors on the outside of the sRGB space. Render will be hollow.
     for c1, c2 in itertools.product(
         ((x / resolution) * 360 for x in range(0, resolution + 1)),
-        ((x / res2) * 100 for x in range(0, res2 + 1))
+        ((x / res2) for x in range(0, res2 + 1))
     ):
 
         # Only the top disc provides useful points, everything in the bottom just yields black.
-        add(space, color.update('hsv', [c1, c2, 100]), x, y, z, c)
-        add(space, color.update('hsv', [c1, 100, c2]), x, y, z, c)
-        add(space, color.update('hsv', [c1, 100, c2 * 0.005]), x, y, z, c)
+        add(space, color.update('hsv', [c1, c2, 1]), x, y, z, c)
+        add(space, color.update('hsv', [c1, 1, c2]), x, y, z, c)
+        add(space, color.update('hsv', [c1, 1, c2 * 0.005]), x, y, z, c)
 
 
 def render_srgb_cyl_space(space, resolution, data, c):

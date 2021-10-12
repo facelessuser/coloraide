@@ -35,6 +35,8 @@ from ..spaces.din99o import Din99o
 from ..spaces.din99o_lch import Din99oLch
 from ..spaces.luv import Luv
 from ..spaces.lchuv import Lchuv
+from ..spaces.luv_d65 import LuvD65
+from ..spaces.lchuv_d65 import LchuvD65
 from ..spaces.okhsl import Okhsl
 from ..spaces.okhsv import Okhsv
 from .distance import DeltaE
@@ -57,7 +59,7 @@ SUPPORTED_SPACES = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
     DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD50,
     Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv,
-    Okhsl, Okhsv
+    LuvD65, LchuvD65, Okhsl, Okhsv
 )
 
 SUPPORTED_FIT = (
@@ -309,7 +311,7 @@ class Color(
 
         uv = None
         if mode == '1976':
-            xyz = self.convert('xyz-d50')
+            xyz = self.convert('xyz')
             xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
             uv = util.xyz_to_uv(xyz)
         elif mode == '1960':
@@ -321,7 +323,7 @@ class Color(
     def xy(self):
         """Convert to `xy`."""
 
-        xyz = self.convert('xyz-d50')
+        xyz = self.convert('xyz')
         xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
         return util.xyz_to_xyY(xyz, self._space.white())[:2]
 
