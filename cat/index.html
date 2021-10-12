@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/cat/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.2">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.24c991ad.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -36,6 +36,7 @@
     
 
 <script src="../assets/pymdownx-extras/material-extra-theme-7c147bb7.js" type="text/javascript"></script>
+<script src="../assets/pymdownx-extras/material-extra-3rdparty-dea8db18.js" type="text/javascript"></script>
 
     
       
@@ -49,7 +50,7 @@
     
       <link rel="stylesheet" href="../assets/coloraide-extras/extra-ccd229caf0.css">
     
-      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-aa7dff8003.css">
+      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-17a4d6d685.css">
     
     
       
@@ -843,16 +844,16 @@ illuminant to a D65 illuminant. Below, we can see that the colors look pretty mu
 described under different illuminants.</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12413 0.07493 0.30933)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz-d50 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span> <span class="swatch" title="color(xyz 0.12413 0.07493 0.30933)"><span class="swatch-color" style="--swatch-stops: rgb(102 51.006 153.01) 50%, rgb(102 51.006 153.01) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz-d50 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span><span class="p">,</span> <span class="n">d65</span>
-<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12413 0.07493 0.30933 / 1))</span>
+<span class="go">(color(xyz-d50 0.11627 0.07261 0.23256 / 1), color(xyz 0.12413 0.07493 0.30933 / 1))</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">d50 = Color('color(xyz 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz-d65')
+<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">d50 = Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
+d65 = d50.convert('xyz')
 d50, d65</textarea>
 </form>
 </div>
@@ -870,7 +871,7 @@ coordinates we wish to transform:</p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide.color.convert</span> <span class="kn">import</span> <span class="n">cat</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(xyz-d50 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
 <span class="go">[0.12412728550131341, 0.07493061731402743, 0.3093325898995686]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span><span class="o">.</span><span class="n">chromatic_adaptation</span><span class="p">(</span><span class="s2">&quot;D50&quot;</span><span class="p">,</span> <span class="s2">&quot;D65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.11627</span><span class="p">,</span> <span class="mf">0.07261</span><span class="p">,</span> <span class="mf">0.23256</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bradford&#39;</span><span class="p">)</span>
 <span class="go">[0.12412728550131341, 0.07493061731402743, 0.3093325898995686]</span>
@@ -879,7 +880,7 @@ coordinates we wish to transform:</p>
 <div class="playground-code hidden" id="__playground-code_1">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">from coloraide.color.convert import cat
-Color('color(xyz 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
+Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz').coords()
 cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], method='bradford')</textarea>
 </form>
 </div>
@@ -896,13 +897,13 @@ original and override the <code>CHROMATIC_ADAPTATION</code> property with the <a
 Afterwards, all color transforms will use the specified <abbr title="chromatic adaptation transform">CAT</abbr>.</p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span> <span class="swatch" title="color(--xyz-d65 0.12476 0.07614 0.30581)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz-d50 0.11627 0.07261 0.23256)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span> <span class="swatch" title="color(xyz 0.12476 0.07614 0.30581)"><span class="swatch-color" style="--swatch-stops: rgb(102.7 52.234 152.14) 50%, rgb(102.7 52.234 152.14) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">CHROMATIC_ADAPTATION</span> <span class="o">=</span> <span class="s1">&#39;cat02&#39;</span>
 <span class="gp">... </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Custom</span><span class="p">(</span><span class="s1">&#39;color(xyz 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz-d65&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span> <span class="o">=</span> <span class="n">Custom</span><span class="p">(</span><span class="s1">&#39;color(xyz-d50 0.11627 0.07261 0.23256 / 1)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d65</span> <span class="o">=</span> <span class="n">d50</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d50</span><span class="p">,</span> <span class="n">d65</span>
-<span class="go">(color(xyz 0.11627 0.07261 0.23256 / 1), color(--xyz-d65 0.12476 0.07614 0.30581 / 1))</span>
+<span class="go">(color(xyz-d50 0.11627 0.07261 0.23256 / 1), color(xyz 0.12476 0.07614 0.30581 / 1))</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
@@ -910,8 +911,8 @@ Afterwards, all color transforms will use the specified <abbr title="chromatic a
 <textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">class Custom(Color):
     CHROMATIC_ADAPTATION = 'cat02'
 
-d50 = Custom('color(xyz 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz-d65')
+d50 = Custom('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
+d65 = d50.convert('xyz')
 d50, d65</textarea>
 </form>
 </div>
@@ -970,7 +971,7 @@ Kries <abbr title="chromatic adaptation transform">CAT</abbr> out there, but a g
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 12, 2021</span>
       
     
   </small>
@@ -978,6 +979,7 @@ Kries <abbr title="chromatic adaptation transform">CAT</abbr> out there, but a g
                   
                 
               
+  
   <footer class="sponsorship">
     <hr>
     <a href="https://github.com/sponsors/facelessuser" title="Become a sponsor">
@@ -988,6 +990,7 @@ Kries <abbr title="chromatic adaptation transform">CAT</abbr> out there, but a g
     </a>
     <hr>
   </footer>
+  
 
               
                 
@@ -1102,16 +1105,16 @@ Kries <abbr title="chromatic adaptation transform">CAT</abbr> out there, but a g
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.bc35569b.min.js"></script>
+      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-c2c63ca0.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-d30b0f5c.js"></script>
       
-        <script src="../assets/pymdownx-extras/extra-uml-51b11a9a.js"></script>
+        <script src="../assets/pymdownx-extras/extra-loader-4d93f66e.js"></script>
       
     
   </body>
