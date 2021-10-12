@@ -57,8 +57,8 @@ Color(d)
 
     ```playground
     Color("hsl(130 0% 50%)")
-    Color("hsl", [130, 0, 50])
-    Color("hsl", [130, 0, 50]).normalize()
+    Color("hsl", [130, 0, 0.5])
+    Color("hsl", [130, 0, 0.5]).normalize()
     ```
 
 If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
