@@ -114,6 +114,7 @@ markdown_extensions:
   - pymdownx.details:
   - pymdownx.saneheaders:
   - pymdownx.tabbed:
+      alternate_style: true
 
 extra_css:
   - assets/coloraide-extras/extra.css
