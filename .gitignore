@@ -1,5 +1,6 @@
 manifest*.json
 node_modules/*
+*.whl
 
 .DS_Store
 

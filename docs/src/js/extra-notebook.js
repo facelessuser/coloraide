@@ -41,8 +41,16 @@ ${content}
   const textResize = inpt => {
     // Resize inputs based on text height.
 
+    const scrollLeft = window.pageXOffset ||
+      (document.documentElement || document.body.parentNode || document.body).scrollLeft
+
+    const scrollTop  = window.pageYOffset ||
+      (document.documentElement || document.body.parentNode || document.body).scrollTop
+
     inpt.style.height = "5px"
     inpt.style.height = `${inpt.scrollHeight}px`
+
+    window.scrollTo(scrollLeft, scrollTop)
   }
 
   const encodeuri = uri => {
