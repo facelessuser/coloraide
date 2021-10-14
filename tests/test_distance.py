@@ -349,6 +349,42 @@ class TestDistance(util.ColorAsserts):
     @pytest.mark.parametrize(
         'color1,color2,value',
         [
+            ('red', 'red', 0),
+            ('red', 'orange', 0.2381),
+            ('red', 'yellow', 0.4568),
+            ('red', 'green', 0.3813),
+            ('red', 'blue', 0.5371),
+            ('red', 'indigo', 0.422),
+            ('red', 'violet', 0.272),
+            ('red', 'white', 0.4526),
+            ('red', 'black', 0.6788),
+            ('red', 'gray', 0.2592),
+            ('red', 'red', 0),
+            ('orange', 'red', 0.2381),
+            ('yellow', 'red', 0.4568),
+            ('green', 'red', 0.3813),
+            ('blue', 'red', 0.5371),
+            ('indigo', 'red', 0.422),
+            ('violet', 'red', 0.272),
+            ('white', 'red', 0.4526),
+            ('black', 'red', 0.6788),
+            ('gray', 'red', 0.2592)
+        ]
+    )
+    def test_delta_e_ok(self, color1, color2, value):
+        """Test delta e OK."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="ok"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
             ('red', 'red', 0.0),
             ('red', 'orange', 31.4666),
             ('red', 'yellow', 60.9841),

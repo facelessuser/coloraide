@@ -14,7 +14,7 @@ class DE94(DeltaE):
         return "94"
 
     @staticmethod
-    def distance(color, sample, kl=1, k1=0.045, k2=0.015):
+    def distance(color, sample, kl=1, k1=0.045, k2=0.015, **kwargs):
         """
         Delta E 1994 color distance formula.
 

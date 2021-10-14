@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (Development)
+
+- **NEW**: Add ∆E~ok~ which is just simple Euclidean distance in the Oklab color space.
+
 ## 0.3.0
 
 !!! warning "Breaking Change"
