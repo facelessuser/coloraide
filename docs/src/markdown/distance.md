@@ -16,14 +16,23 @@ Color("red").distance("blue", space="lab")
 
 The `delta_e` function gives access to various ∆E implementations.
 
+If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) which uses a simple Euclidean distancing
+algorithm on the CIELAB color space. It is fast, but not as accurate as some algorithms as CIELAB is not actually as
+perceptually uniform as it was thought when CIELAB was developed.
+
 ```playground
 Color("red").delta_e("blue")
+```
+
+When `method` is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E~00~ which is a
+more complex, slower algorithm that accounts for the color spaces weakness in perceptually uniformity.
+
+```playground
 Color("red").delta_e("blue", method="2000")
 ```
 
-The general `delta_e` function can be used to specify any supported ∆E method. Optional parameters can be passed in if
-desired. See table below for supported methods, names, and parameters. Follow relevant links to read the specs or find
-our more about a given ∆E method.
+Below are all the supported ∆E methods. Follow relevant links to read the specs or find our more about a given ∆E
+method.
 
 Delta\ E                                 | Name            | Parameters
 ---------------------------------------- | --------------- | --------------------
@@ -44,14 +53,7 @@ Color("red").delta_e_jz("blue")
 Color("red").delta_e_hyab("blue")
 ```
 
-If no name is specified, the default implementation is ∆E^\*^~ab~ (CIE76). Originally, when the CIELAB color space was
-created, it was thought that it was more perceptually uniform than it actually was. At first, the distance algorithm was
-a simple euclidean implementation (∆E^\*^ 1976), but over time it has been tweaked to make corrections to account for
-the fact that it is not perfectly uniform. This gave rise to all of the various ∆E^\*^ methods above. There are areas
-and industries that still use many of these for different reasons.
-
-Additionally, there are other implementations that use different color spaces, such as ∆E~itp~ which uses ICtCp or ∆E~z~
-which uses Jzazbz.
-
-Also, there are some general methods such as ∆E~HyAB~. HyAB is designed to work with Lab-ish colors (CIELAB, CIELUV,
-DIN99o, etc.).
+If `delta_e` is specified with no `method` the default method, as defined by `Color.DELTA_E`, will be used along with
+any default options as set per `Color.DELTA_E_OPTS`. When using the default, as defined by `Color.DELTA_E`, optional
+parameters that the user specifies will be merged with the defaults of `Color.DELTA_E_OPTS`. On the other hand, if a
+user explicitly defines `method` the default parameters as shown below are above are assumed.

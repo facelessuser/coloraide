@@ -91,9 +91,7 @@ class Compose:
         # If we are doing non-separable, we are converting to a special space that
         # can only be done from sRGB, so we have to force sRGB anyway.
         non_seperable = blend_modes.is_non_seperable(blend)
-        if non_seperable:
-            space = 'srgb'
-        space = 'srgb' if space is None else space.lower()
+        space = 'srgb' if space is None or non_seperable else space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
 
         if not isinstance(backdrop, Sequence):

@@ -110,7 +110,7 @@ class BaseSpace(ABCMeta):
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CHANNEL_ALIASES = dict(cls.CHANNEL_ALIASES)
+            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()
 
 
 class Space(

@@ -107,6 +107,7 @@ cd
 chroma
 chromaticity
 colorimetry
+config
 coroutine
 cp
 cz
