@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
-from .oklab import Oklab, oklab_to_linear_srgb
+from .oklab.base import Oklab, oklab_to_linear_srgb
 from .. import util
 import re
 import math

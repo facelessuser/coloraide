@@ -25,10 +25,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
-from .srgb_linear import SRGBLinear
-from .xyz import XYZ
-from .. import util
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
+from ..srgb_linear import SRGBLinear
+from ..xyz import XYZ
+from ... import util
 import re
 
 # sRGB Linear to LMS

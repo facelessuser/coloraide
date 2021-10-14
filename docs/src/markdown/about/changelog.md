@@ -2,6 +2,7 @@
 
 ## 0.4.0 (Development)
 
+- **NEW**: Add the official CSS formats for Oklab and Oklch: `oklab()` and `oklch()`.
 - **NEW**: Add ∆E~ok~ which is just simple Euclidean distance in the Oklab color space.
 - **NEW**: Allow users to override the `#!py Color()` class's default distance options via `Color.DELTA_E_OPTS`. These
   preferences are only applied when the default delta E method is used via `Color.DELTA_E`, and it is only used when a

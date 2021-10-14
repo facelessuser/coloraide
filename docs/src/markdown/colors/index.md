@@ -569,7 +569,7 @@ _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
     **Output:**
     : 
         The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)`
-        form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
+        form, but the default string output will be the `#!css-color hwb(h s l / a)` form.
 
         ```playground
         Color("hwb", [0, 0, 100], 1)
@@ -941,7 +941,7 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
     **Output:**
     : 
         The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)`
-        form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
+        form, but the default string output will be the `#!css-color lab(l a b / a)` form.
 
         ```playground
         Color("lab", [0, 0, 0], 1)
@@ -1085,7 +1085,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
     **Output:**
     : 
         The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)`
-        form, but the default string output will be the `#!css-color hsl(l c h / a)` form.
+        form, but the default string output will be the `#!css-color lch(l c h / a)` form.
 
         ```playground
         Color("lch", [0, 0, 0], 1)
@@ -1157,6 +1157,146 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
         ```playground
         Color("lch-d65", [0, 0, 0], 1)
         Color("lch-d65", [0, 0, 0], 1).to_string()
+        ```
+
+## Oklab
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `oklab`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    l    | [0, 1]^\*^
+    a    | [-0.234, 0.276]^\*^
+    b    | [-0.312, 0.198]^\*^
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![Oklab](../images/oklab-3d.png)
+
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklab color space.</figcaption>
+</figure>
+
+
+A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
+chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
+
+_[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the
+        `#!css-color color()` function format using the custom name `#!css-color --oklab`:
+
+        ```css-color
+        oklab(l a b / a)          // Oklab function
+        color(--oklab l a b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("oklab", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--oklab l a b / a)`
+        form, but the default string output will be the `#!css-color oklab(l a b / a)` form.
+
+        ```playground
+        Color("oklab", [0, 0, 0], 1)
+        Color("oklab", [0, 0, 0], 1).to_string()
+        ```
+
+## Oklch
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `oklch`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    l    | [0, 1]^\*^
+    c    | [0, 0.323]^\*^
+    h    | [0, 360)
+
+    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+
+<figure markdown="1">
+
+![Oklch](../images/oklch-3d.png)
+
+<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklch color space.</figcaption>
+</figure>
+
+
+Oklch is the cylindrical form of [Oklab](#oklab).
+
+_[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `u`      |
+        `v`      |
+
+    **Inputs**
+    : 
+
+        Parsed input and string output formats support all valid CSS forms. In addition, we also allow the
+        `#!css-color color()` function format using the custom name `#!css-color --oklab`:
+
+        ```css-color
+        oklch(l c h / a)          // Oklch function
+        color(--oklch l c h / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("oklch", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
+        form, but the default string output will be the `#!css-color oklch(l c h / a)` form.
+
+        ```playground
+        Color("oklch", [0, 0, 0], 1)
+        Color("oklch", [0, 0, 0], 1).to_string()
         ```
 
 ## CIELUV
@@ -1446,142 +1586,6 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
         ```playground
         Color("lchuv-d65", [0, 0, 0], 1)
         Color("lchuv-d65", [0, 0, 0], 1).to_string()
-        ```
-
-## Oklab
-
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
-
-    **Name:** `oklab`
-
-    **White Point:** D65
-
-    **Coordinates:**
-
-    Name | Range
-    ---- | -----
-    l    | [0, 1]^\*^
-    a    | [-0.234, 0.276]^\*^
-    b    | [-0.312, 0.198]^\*^
-
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
-
-<figure markdown="1">
-
-![Oklab](../images/oklab-3d.png)
-
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklab color space.</figcaption>
-</figure>
-
-
-A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
-chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
-
-_[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
-</div>
-
-??? abstract "ColorAide Details"
-
-    **Channel Aliases:**
-    : 
-        Channels | Aliases
-        -------- | -------
-        `l`      | `lightness`
-        `a`      |
-        `b`      |
-
-    **Inputs:**
-    : 
-        As Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-        `#!css-color color()` function format using the custom name `#!css-color --oklab`:
-
-        ```css-color
-        color(--oklab l a b / a)  // Color function
-        ```
-
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-        space name is always used:
-
-        ```py
-        Color("oklab", [0, 0, 0], 1)
-        ```
-
-    **Output:**
-    : 
-        The string representation of the color object and the default string output use the
-        `#!css-color color(--oklab l a b / a)` form.
-
-        ```playground
-        Color("oklab", [0, 0, 0], 1)
-        Color("oklab", [0, 0, 0], 1).to_string()
-        ```
-
-## Oklch
-
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
-
-    **Name:** `oklch`
-
-    **White Point:** D65
-
-    **Coordinates:**
-
-    Name | Range
-    ---- | -----
-    l    | [0, 1]^\*^
-    c    | [0, 0.323]^\*^
-    h    | [0, 360)
-
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
-
-<figure markdown="1">
-
-![Oklch](../images/oklch-3d.png)
-
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklch color space.</figcaption>
-</figure>
-
-
-Oklch is the cylindrical form of [Oklab](#oklab).
-
-_[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
-</div>
-
-??? abstract "ColorAide Details"
-
-    **Channel Aliases:**
-    : 
-        Channels | Aliases
-        -------- | -------
-        `l`      | `lightness`
-        `u`      |
-        `v`      |
-
-    **Inputs**
-    : 
-
-        As Oklch is not currently supported in the CSS spec, the parsed input and string output formats use the
-        `#!css-color color()` function format using the custom name `#!css-color --oklch`:
-
-        ```css-color
-        color(--oklch l c h / a)  // Color function
-        ```
-
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-        space name is always used:
-
-        ```py
-        Color("oklch", [0, 0, 0], 1)
-        ```
-
-        The string representation of the color object and the default string output use the
-        `#!css-color color(--oklch l c h / a)` form.
-
-        ```playground
-        Color("oklch", [0, 0, 0], 1)
-        Color("oklch", [0, 0, 0], 1).to_string()
         ```
 
 ## Jzazbz

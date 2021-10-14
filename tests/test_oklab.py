@@ -10,12 +10,12 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_input_raw(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color("oklab", [1, 0.5, 0.5]), Color('color(--oklab 100% 0.5 0.5)'))
+        self.assertColorEqual(Color("oklab", [1, 0.5, 0.5]), Color('oklab(100% 0.5 0.5)'))
 
     def test_color_class(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color(Color("oklab", [1, 0.5, 0.5])), Color('color(--oklab 100% 0.5 0.5)'))
+        self.assertColorEqual(Color(Color("oklab", [1, 0.5, 0.5])), Color('oklab(100% 0.5 0.5)'))
 
     def test_color(self):
         """Test color input/output format."""
@@ -31,52 +31,121 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "color(--oklab 100% 0.2 -0.3 / 50%)"
         self.assertEqual(Color(color).to_string(**args), 'color(--oklab 1 0.2 -0.3 / 0.5)')
 
+    def test_comma(self):
+        """Test comma input and comma output format."""
+
+        args = {"comma": True}
+
+        color = "oklab(20%, 0.1, -0.3)"
+        lab = Color(color)
+        self.assertEqual(color, lab.to_string(**args))
+
+        color = "oklab(20%, 0.1, -0.3, 1)"
+        lab = Color(color)
+        self.assertEqual("oklab(20%, 0.1, -0.3)", lab.to_string(**args))
+
+        color = "oklab(20%, 0.1, -0.30, 0.2)"
+        lab = Color(color)
+        self.assertEqual("oklab(20%, 0.1, -0.3, 0.2)", lab.to_string(**args))
+
+    def test_space(self):
+        """Test space input and space output format."""
+
+        args = {}
+
+        color = "oklab(20% 0.1 -0.3)"
+        lab = Color(color)
+        self.assertEqual(color, lab.to_string(**args))
+
+        color = "oklab(20% 0.1 -0.3 / 1)"
+        lab = Color(color)
+        self.assertEqual("oklab(20% 0.1 -0.3)", lab.to_string(**args))
+
+        color = "oklab(20% 0.1 -0.3 / 0.2)"
+        lab = Color(color)
+        self.assertEqual(color, lab.to_string(**args))
+
+    def test_percent(self):
+        """Test that percents work properly."""
+
+        args = {"comma": True}
+
+        color = "oklab(20%, 0.1, -0.3, 100%)"
+        lab = Color(color)
+        self.assertEqual("oklab(20%, 0.1, -0.3)", lab.to_string(**args))
+
+        color = "oklab(20%, 0.1, -0.3, 20%)"
+        lab = Color(color)
+        self.assertEqual("oklab(20%, 0.1, -0.3, 0.2)", lab.to_string(**args))
+
+        args["comma"] = False
+
+        color = "oklab(20% 0.1 -0.3 / 100%)"
+        lab = Color(color)
+        self.assertEqual("oklab(20% 0.1 -0.3)", lab.to_string(**args))
+
+        color = "oklab(20% 0.1 -0.3 / 20%)"
+        lab = Color(color)
+        self.assertEqual("oklab(20% 0.1 -0.3 / 0.2)", lab.to_string(**args))
+
     def test_no_alpha(self):
         """Test no alpha."""
 
+        args = {"comma": True, "alpha": False}
+
+        color = "oklab(100%, 0.2, -0.3, 0.5)"
+        oklab = Color(color)
+        self.assertEqual("oklab(100%, 0.2, -0.3)", oklab.to_string(**args))
+
         args = {"alpha": False}
 
-        color = "color(--oklab 1 0.2 -0.3 / 0.5)"
+        color = "oklab(100% 0.2 -0.3 / 0.5)"
         oklab = Color(color)
-        self.assertEqual("color(--oklab 1 0.2 -0.3)", oklab.to_string(**args))
+        self.assertEqual("oklab(100% 0.2 -0.3)", oklab.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
+        args = {"comma": True, "alpha": True}
+
+        color = "oklab(100%, 0.2, -0.3, 100%)"
+        oklab = Color(color)
+        self.assertEqual("oklab(100%, 0.2, -0.3, 1)", oklab.to_string(**args))
+
         args = {"alpha": True}
 
-        color = "color(--oklab 1 0.2 -0.3 / 100%)"
+        color = "oklab(100% 0.2 -0.3 / 100%)"
         oklab = Color(color)
-        self.assertEqual("color(--oklab 1 0.2 -0.3 / 1)", oklab.to_string(**args))
+        self.assertEqual("oklab(100% 0.2 -0.3 / 1)", oklab.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
 
         color = 'color(--oklab 0.123456 0.123456 -0.123456)'
-        self.assertEqual(Color(color).to_string(), 'color(--oklab 0.12346 0.12346 -0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--oklab 0.123 0.123 -0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--oklab 0 0 0)')
+        self.assertEqual(Color(color).to_string(), 'oklab(12.346% 0.12346 -0.12346)')
+        self.assertEqual(Color(color).to_string(precision=3), 'oklab(12.3% 0.123 -0.123)')
+        self.assertEqual(Color(color).to_string(precision=0), 'oklab(12% 0 0)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'color(--oklab 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 -0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
+            'oklab(12.3455999999999992411403582082130014896392822265625% 0.12345599999999999629718416827017790637910366058349609 -0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
         )
 
     def test_fit(self):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--oklab 2 0.6 -0.6)').to_string(),
-            'color(--oklab 2 0.6 -0.6)'
+            Color('oklab(200% 0.6 -0.6)').to_string(),
+            'oklab(200% 0.6 -0.6)'
         )
 
         self.assertEqual(
-            Color('color(--oklab 2 0.6 -0.6)').to_string(fit="clip"),
-            'color(--oklab 2 0.6 -0.6)'
+            Color('oklab(200% 0.6 -0.6)').to_string(fit="clip"),
+            'oklab(200% 0.6 -0.6)'
         )
 
         self.assertEqual(
-            Color('color(--oklab 2 0.6 -0.6)').to_string(fit=False),
-            'color(--oklab 2 0.6 -0.6)'
+            Color('oklab(200% 0.6 -0.6)').to_string(fit=False),
+            'oklab(200% 0.6 -0.6)'
         )
 
 
