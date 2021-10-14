@@ -3,6 +3,12 @@
 ## 0.4.0 (Development)
 
 - **NEW**: Add ∆E~ok~ which is just simple Euclidean distance in the Oklab color space.
+- **NEW**: Allow users to override the `#!py Color()` class's default distance options via `Color.DELTA_E_OPTS`. These
+  preferences are only applied when the default delta E method is used via `Color.DELTA_E`, and it is only used when a
+  user does not explicitly set the `method` when calling `#!py3 delta_e()`. If a user explicitly defines the `method`
+  the method's inherent defaults will be used, not the preferences specified by the `#!py Color()` class. When a user
+  does not specify the `method`, `#!py Color()` class's defaults are assumed, and any method specific parameters
+  specified by the user will be merged with the class's default.
 
 ## 0.3.0
 

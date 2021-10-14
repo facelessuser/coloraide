@@ -40,6 +40,11 @@ class Distance:
         color = self._handle_color_input(color)
         if method is None:
             method = self.DELTA_E
+            if self.DELTA_E_OPTS:
+                kwds = kwargs
+                kwargs = self.DELTA_E_OPTS.copy()
+                if kwds:
+                    kwargs.update(kwds)
 
         algorithm = method.lower()
 

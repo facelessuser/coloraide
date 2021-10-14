@@ -75,9 +75,10 @@ class BaseColor(abc.ABCMeta):
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CS_MAP = dict(cls.CS_MAP)
-            cls.DE_MAP = dict(cls.DE_MAP)
-            cls.FIT_MAP = dict(cls.FIT_MAP)
+            cls.CS_MAP = cls.CS_MAP.copy()
+            cls.DE_MAP = cls.DE_MAP.copy()
+            cls.FIT_MAP = cls.FIT_MAP.copy()
+            cls.DELTA_E_OPTS = cls.DELTA_E_OPTS.copy()
 
 
 class Color(
@@ -98,6 +99,7 @@ class Color(
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
+    DELTA_E_OPTS = {}
     CHROMATIC_ADAPTATION = 'bradford'
 
     def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
