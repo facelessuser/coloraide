@@ -35,6 +35,7 @@ Delta\ E                                 | Name            | Parameters
 [∆E~z~][dez]\ (Jzazbz)                   | `jz`            |
 [∆E~99o~][de99o]\ (DIN99o)               | `99o`           |
 [∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab"`
+∆E~ok~                                   | `ok`            | `scalar=1`
 
 ∆E methods are also accessible via methods `delta_e_<name>`, where `<name>` is a name from the above table.
 

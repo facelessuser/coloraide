@@ -14,7 +14,7 @@ class DECMC(DeltaE):
         return "cmc"
 
     @staticmethod
-    def distance(color, sample, l=2, c=1):
+    def distance(color, sample, l=2, c=1, **kwargs):
         """
         Delta E CMC.
 
