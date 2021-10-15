@@ -122,10 +122,10 @@ Color("#663399").to_string(names=True)
 ## Comma Format
 
 In CSS, there are a number of color spaces that allow a comma format: `srgb` and `hsl`. ColorAide allows these to be
-read in and to be output in their legacy comma format. Even though `lch`, `lab`, and `hwb` do not have a comma format,
-they are allowed to be read in with commas and can be specified to output with comma format. The one format that
-ColorAide will not allow commas on is `color()`. `color()` is the common serialization format that ColorAide uses and
-it is strict about its format.
+read in and to be output in their legacy comma format. Even though `lch`, `lab`, `oklab`, `oklch`, and `hwb` do not have
+a comma format, they are allowed to be read in with commas and can be specified to output with comma format. The one
+format that ColorAide will not allow commas on is `color()`. `color()` is the common serialization format that ColorAide
+uses and it is strict about its format.
 
 If we want commas, we can force the comma syntax by setting `comma` to `#!py3 True`. This can alter some color space
 output in other subtle ways. As the comma format is the old legacy approach, when sRGB has commas enabled, it will use

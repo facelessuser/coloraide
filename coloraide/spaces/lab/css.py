@@ -8,7 +8,6 @@ from ... import util
 class Lab(base.Lab):
     """Lab class."""
 
-    DEF_VALUE = "lab(0% 0 0 / 1)"
     START = re.compile(r'(?i)\blab\(')
     MATCH = re.compile(
         r"""(?xi)

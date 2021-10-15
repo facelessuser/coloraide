@@ -1,17 +1,17 @@
-"""Lch class."""
+"""Oklch class."""
 import re
 from . import base
 from ...spaces import _parse
 from ... import util
 
 
-class Lch(base.Lch):
-    """Lch class."""
+class Oklch(base.Oklch):
+    """Oklch class."""
 
-    START = re.compile(r'(?i)\blch\(')
+    START = re.compile(r'(?i)\boklch\(')
     MATCH = re.compile(
         r"""(?xi)
-        \blch\(\s*
+        \boklch\(\s*
         (?:
             # Space separated format
             {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
@@ -42,17 +42,17 @@ class Lch(base.Lch):
             coords = util.no_nan(coords)
 
         if alpha:
-            template = "lch({}, {}, {}, {})" if options.get("comma") else "lch({} {} {} / {})"
+            template = "oklch({}, {}, {}, {})" if options.get("comma") else "oklch({} {} {} / {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
+                util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),
                 util.fmt_float(coords[2], precision),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "lch({}, {}, {})" if options.get("comma") else "lch({} {} {})"
+            template = "oklch({}, {}, {})" if options.get("comma") else "oklch({} {} {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
+                util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),
                 util.fmt_float(coords[2], precision)
             )
@@ -62,7 +62,7 @@ class Lch(base.Lch):
         """Translate channel string."""
 
         if channel == 0:
-            return _parse.norm_percent_channel(value)
+            return _parse.norm_percent_channel(value) / 100
         elif channel == 1:
             return _parse.norm_float(value)
         elif channel == 2:
@@ -74,7 +74,7 @@ class Lch(base.Lch):
     def split_channels(cls, color):
         """Split channels."""
 
-        start = 4
+        start = 6
         channels = []
         alpha = 1.0
         for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):

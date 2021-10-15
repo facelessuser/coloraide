@@ -11,7 +11,6 @@ RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.for
 class SRGB(base.SRGB):
     """SRGB class."""
 
-    DEF_VALUE = "rgb(0 0 0 / 1)"
     START = re.compile(r'(?i)\brgba?\(')
     MATCH = re.compile(
         r"""(?xi)
