@@ -78,7 +78,6 @@ class BaseColor(abc.ABCMeta):
             cls.CS_MAP = cls.CS_MAP.copy()
             cls.DE_MAP = cls.DE_MAP.copy()
             cls.FIT_MAP = cls.FIT_MAP.copy()
-            cls.DELTA_E_OPTS = cls.DELTA_E_OPTS.copy()
 
 
 class Color(
@@ -99,7 +98,6 @@ class Color(
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
-    DELTA_E_OPTS = util.DEF_DELTA_E_OPTS.copy()
     CHROMATIC_ADAPTATION = 'bradford'
 
     def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):

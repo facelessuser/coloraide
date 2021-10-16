@@ -1460,60 +1460,6 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             55.79977
         )
 
-    def test_override_delta_e_options(self):
-        """Test delta e option overrides."""
-
-        class Color2(Color):
-            """Color."""
-
-            DELTA_E = "ok"
-            DELTA_E_OPTS = {
-                'scalar': 100
-            }
-
-        self.assertNotEqual(
-            Color('red').delta_e("blue"),
-            Color2('red').delta_e("blue")
-        )
-
-        self.assertEqual(
-            Color2('red').delta_e("blue"),
-            Color('red').delta_e_ok("blue") * 100
-        )
-
-    def test_override_delta_e_options_not_used(self):
-        """Test delta e option overrides do not get used."""
-
-        class Color2(Color):
-            """Color."""
-
-            DELTA_E = "ok"
-            DELTA_E_OPTS = {
-                'scalar': 100
-            }
-
-        self.assertEqual(
-            Color2('red').delta_e("blue", method="ok"),
-            Color('red').delta_e_ok("blue")
-        )
-
-    def test_override_delta_e_options_merged(self):
-        """Test delta e option overrides get merged."""
-
-        class Color2(Color):
-            """Color."""
-
-            DELTA_E = "cmc"
-            DELTA_E_OPTS = {
-                "l": 1,
-                "c": 2
-            }
-
-        self.assertEqual(
-            Color2('red').delta_e("blue", c=1),
-            Color('red').delta_e_cmc("blue", l=1, c=1)
-        )
-
     def test_plugin_registration_space(self):
         """Test plugin registration of `Space`."""
 

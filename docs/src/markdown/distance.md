@@ -18,7 +18,8 @@ The `delta_e` function gives access to various ∆E implementations.
 
 If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) which uses a simple Euclidean distancing
 algorithm on the CIELAB color space. It is fast, but not as accurate as some algorithms as CIELAB is not actually as
-perceptually uniform as it was thought when CIELAB was developed.
+perceptually uniform as it was thought when CIELAB was developed. ∆E~00~ is actually a much better ∆E method for CIELAB,
+but it is slower.
 
 ```playground
 Color("red").delta_e("blue")
@@ -52,8 +53,3 @@ Delta\ E                                 | Name            | Parameters
 Color("red").delta_e_jz("blue")
 Color("red").delta_e_hyab("blue")
 ```
-
-If `delta_e` is specified with no `method` the default method, as defined by `Color.DELTA_E`, will be used along with
-any default options as set per `Color.DELTA_E_OPTS`. When using the default, as defined by `Color.DELTA_E`, optional
-parameters that the user specifies will be merged with the defaults of `Color.DELTA_E_OPTS`. On the other hand, if a
-user explicitly defines `method` the default parameters as shown below are above are assumed.

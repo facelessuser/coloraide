@@ -16,7 +16,6 @@ DEF_HUE_ADJ = "shorter"
 DEF_DISTANCE_SPACE = "lab"
 DEF_FIT = "lch-chroma"
 DEF_DELTA_E = "76"
-DEF_DELTA_E_OPTS = {}
 
 ERR_MAP_MSG = """
     To add or remove items from this mapping, please subclass the
