@@ -250,7 +250,6 @@ Properties             | Description
 ---------------------- | -----------
 `FIT`                  | The default gamut mapping method used by the [`Color`](#color) object.
 `DELTA_E`              | The default ∆E algorithm used for gamut distancing called both internally for things like interpolation [`steps`](./interpolation.md#steps) or when [`delta_e()`](./distance.md#delta-e) is called without a an explicit method.
-`DELTA_E_OPTS`         | A dictionary of default keyword options to use when the default `DELTA_E` is used. If the `method` is explicitly set when calling [`delta_e()`](./distance.md#delta-e), the default options will not be used, but if `method` is not set, any ∆E specific parameters the user specifies will be merged with the defaults as defined by `DELTA_E_OPS`.
 `PRECISION`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
 
