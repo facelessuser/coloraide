@@ -50,7 +50,7 @@ nav:
 
 markdown_extensions:
   - markdown.extensions.toc:
-      slugify: !!python/name:pymdownx.slugs.uslugify
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
   - markdown.extensions.admonition:
   - markdown.extensions.smarty:
@@ -133,5 +133,5 @@ plugins:
   - search
   - git-revision-date-localized
   - mkdocs_pymdownx_material_extras
-  # - minify:
-  #     minify_html: true
+  - minify:
+      minify_html: true
