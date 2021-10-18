@@ -475,7 +475,7 @@ class Interpolate:
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        if not self._is_color(color) and not isinstance(color, (str, Piecewise)):
+        if not self._is_color(color) and not isinstance(color, (str, Piecewise, Mapping)):
             raise TypeError("Unexpected type '{}'".format(type(color)))
         color = self.interpolate(color, **interpolate_args)(percent)
         return self.mutate(color) if in_place else color

@@ -150,7 +150,7 @@ class Color(
             if not filters or space in filters:
                 cs = self.CS_MAP[space]
                 coords = [color[name] for name in cs.CHANNEL_NAMES[:-1]]
-                alpha = color['alpha']
+                alpha = color.get('alpha', 1)
                 obj = cs(coords, alpha)
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
@@ -264,6 +264,8 @@ class Color(
         if self._is_color(color):
             return self.new(color) if not self._is_this_color(color) else color
         elif isinstance(color, str):
+            return self.new(color)
+        elif isinstance(color, Mapping):
             return self.new(color)
         raise TypeError("Unexpected type '{}'".format(type(color)))
 

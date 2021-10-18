@@ -37,7 +37,8 @@ Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
 Since colors can be exported to a simple dictionary, which can be useful if serializing to JSON, the Color object will
-also accept this dictionary as an input.
+also accept this dictionary as an input. `space` and all relevant color channels must be specified, `alpha` is optional
+and will be assumed `1` if omitted. Default channel names must currently be used (no aliases).
 
 ```playground
 d = Color('red').to_dict()

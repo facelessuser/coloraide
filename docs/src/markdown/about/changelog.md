@@ -6,6 +6,10 @@
 - **NEW**: Add ∆E~ok~ which is just simple Euclidean distance in the Oklab color space.
 - **NEW**: Officially support Python 3.10.
 - **NEW**: Slightly more accurate Oklab matrix calculation.
+- **NEW**: Exported dictionary form can now be used as a normal color input in functions like `contrast`, `interpolate`,
+  etc.
+- **NEW**: Color objects will accept a dictionary mapping when `alpha` is not specified. When this occurs, `alpha` is
+  assumed to be `1`.
 - **FIX**: Fix an object compare issue.
 
 ## 0.3.0

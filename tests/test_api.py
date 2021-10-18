@@ -110,7 +110,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test bad input when it is done indirectly through a method."""
 
         with self.assertRaises(TypeError):
-            Color("red").contrast({'dict': True})
+            Color("red").contrast(3)
 
     def test_bad_sytnax_input(self):
         """Test bad string syntax input."""
