@@ -258,16 +258,14 @@ class Color(
 
         self._space = space
 
-    def _handle_color_input(self, color, sequence=False):
+    def _handle_color_input(self, color):
         """Handle color input."""
 
-        if isinstance(color, str) or (self._is_color(color) and not self._is_this_color(color)):
-            color = self.new(color)
-        elif sequence and isinstance(color, Sequence):
-            color = [self._handle_color_input(c) for c in color]
-        elif not self._is_color(color):
-            raise TypeError("Unexpected type '{}'".format(type(color)))
-        return color
+        if self._is_color(color):
+            return self.new(color) if not self._is_this_color(color) else color
+        elif isinstance(color, str):
+            return self.new(color)
+        raise TypeError("Unexpected type '{}'".format(type(color)))
 
     def space(self):
         """The current color space."""

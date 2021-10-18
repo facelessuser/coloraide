@@ -86,16 +86,16 @@ class Compose:
     def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
         """Blend colors using the specified blend mode."""
 
-        backdrop = self._handle_color_input(backdrop, sequence=True)
+        if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
+            backdrop = [self._handle_color_input(c) for c in backdrop]
+        else:
+            backdrop = [self._handle_color_input(backdrop)]
 
         # If we are doing non-separable, we are converting to a special space that
         # can only be done from sRGB, so we have to force sRGB anyway.
         non_seperable = blend_modes.is_non_seperable(blend)
         space = 'srgb' if space is None or non_seperable else space.lower()
         outspace = self.space() if out_space is None else out_space.lower()
-
-        if not isinstance(backdrop, Sequence):
-            backdrop = [backdrop]
 
         if len(backdrop) == 0:
             return self.convert(outspace)
