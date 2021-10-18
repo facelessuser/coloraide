@@ -5,6 +5,7 @@
 - **NEW**: Add the official CSS formats for Oklab and Oklch: `oklab()` and `oklch()`.
 - **NEW**: Add ∆E~ok~ which is just simple Euclidean distance in the Oklab color space.
 - **NEW**: Officially support Python 3.10.
+- **NEW**: Slightly more accurate Oklab matrix calculation.
 - **FIX**: Fix an object compare issue.
 
 ## 0.3.0
