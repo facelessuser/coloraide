@@ -118,6 +118,7 @@ class Color(
         """Compare equal."""
 
         return (
+            type(other) == type(self) and
             other.space() == self.space() and
             util.cmp_coords(other.coords(), self.coords()) and
             util.cmp_coords(other.alpha, self.alpha)
@@ -127,15 +128,23 @@ class Color(
         """Parse the color."""
 
         obj = None
-        if data is not None:
-            filters = set(filters) if filters is not None else set()
-            for space, space_class in self.CS_MAP.items():
-                s = color.lower()
-                if space == s and (not filters or s in filters):
-                    if len(data) < space_class.NUM_COLOR_CHANNELS:
-                        data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
-                    obj = space_class(data[:space_class.NUM_COLOR_CHANNELS], alpha)
-                    return obj
+        if isinstance(color, str):
+            if data is not None:
+                for space, space_class in self.CS_MAP.items():
+                    s = color.lower()
+                    if space == s and (not filters or s in filters):
+                        if len(data) < space_class.NUM_COLOR_CHANNELS:
+                            data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
+                        obj = space_class(data[:space_class.NUM_COLOR_CHANNELS], alpha)
+                        break
+            else:
+                m = self._match(color, fullmatch=True, filters=filters)
+                if m is None:
+                    raise ValueError("'{}' is not a valid color".format(color))
+                obj = m.color
+        elif isinstance(color, Color):
+            if not filters or color.space() in filters:
+                obj = self.CS_MAP[color.space()](color._space)
         elif isinstance(color, Mapping):
             space = color['space']
             if not filters or space in filters:
@@ -143,15 +152,9 @@ class Color(
                 coords = [color[name] for name in cs.CHANNEL_NAMES[:-1]]
                 alpha = color['alpha']
                 obj = cs(coords, alpha)
-                return obj
-        elif isinstance(color, Color):
-            if not filters or color.space() in filters:
-                obj = self.CS_MAP[color.space()](color._space)
         else:
-            m = self._match(color, fullmatch=True, filters=filters)
-            if m is None:
-                raise ValueError("'{}' is not a valid color".format(color))
-            obj = m.color
+            raise TypeError("'{}' is an unrecognized type".format(type(color)))
+
         if obj is None:
             raise ValueError("Could not process the provided color")
         return obj
