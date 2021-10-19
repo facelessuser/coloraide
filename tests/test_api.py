@@ -410,6 +410,15 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c1 is not c3)
         self.assertEqual(c1.compose(c2), Color('color(srgb 0.5 0.5 0.5)'))
 
+    def test_compose_dict(self):
+        """Test compositing with a mapping."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        self.assertEqual(
+            c1.compose("yellow"),
+            c1.compose({"space": "srgb", "r": 1, "g": 1, "b": 0})
+        )
+
     def test_compose_blend_multi(self):
         """Test compose blend with multiple colors."""
 
@@ -498,6 +507,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
         self.assertEqual(c1.compose(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+
+    def test_contrast_dict(self):
+        """Test contrast with a dictionary mapping."""
+
+        self.assertEqual(
+            Color('white').contrast('blue'),
+            Color('white').contrast({"space": "srgb", "r": 0, "g": 0, "b": 1})
+        )
 
     def test_contrast_one(self):
         """Test contrast of one."""
@@ -682,6 +699,15 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').mix('blue'), Color("rgb(192.99 -29.503 136.17)"))
         self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(226.89 -24.304 79.188)"))
         self.assertColorEqual(Color('red').mix('blue', 0.0), Color("rgb(255 0 0)"))
+
+    def test_mix_dict(self):
+        """Test mixing with a mapping."""
+
+        c1 = Color('blue')
+        self.assertEqual(
+            c1.mix("yellow"),
+            c1.mix({"space": "srgb", "r": 1, "g": 1, "b": 0})
+        )
 
     def test_bad_mix_input(self):
         """Test bad mix input."""
