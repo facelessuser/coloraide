@@ -42,8 +42,6 @@ class SRGB(base.SRGB):
         """.format(**_parse.COLOR_PARTS)
     )
 
-    HEX_MATCH = re.compile(r"(?i)#(?:({hex}{{6}})({hex}{{2}})?|({hex}{{3}})({hex})?)\b".format(**_parse.COLOR_PARTS))
-
     def to_string(
         self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
     ):
@@ -56,11 +54,12 @@ class SRGB(base.SRGB):
         if options.get("color"):
             return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
 
-        # Handle hex and color names
-        value = ''
         a = util.no_nan(self.alpha) if not none else self.alpha
         alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
         compress = options.get("compress", False)
+
+        # Handle hex and color names
+        value = ''
         if options.get("hex") or options.get("names"):
             h = self._get_hex(parent, options, alpha=alpha, precision=precision, fit=fit)
             if options.get("hex"):
@@ -105,6 +104,7 @@ class SRGB(base.SRGB):
                     fmt(coords[1] * factor, precision),
                     fmt(coords[2] * factor, precision),
                 )
+
         return value
 
     def _get_hex(self, parent, options, *, alpha=False, precision=None, fit=None):
@@ -164,16 +164,15 @@ class SRGB(base.SRGB):
                     alpha = cls.translate_channel(-1, c)
             return cls.null_adjust(channels, alpha)
         else:
-            m = cls.HEX_MATCH.match(color)
-            assert(m is not None)
-            if m.group(1):
+            length = len(color)
+            if length in (7, 9):
                 return cls.null_adjust(
                     (
                         cls.translate_channel(0, "#" + color[1:3]),
                         cls.translate_channel(1, "#" + color[3:5]),
                         cls.translate_channel(2, "#" + color[5:7])
                     ),
-                    cls.translate_channel(-1, "#" + m.group(2)) if m.group(2) else 1.0
+                    cls.translate_channel(-1, "#" + color[7:9]) if length == 9 else 1.0
                 )
             else:
                 return cls.null_adjust(
@@ -182,7 +181,7 @@ class SRGB(base.SRGB):
                         cls.translate_channel(1, "#" + color[2] * 2),
                         cls.translate_channel(2, "#" + color[3] * 2)
                     ),
-                    cls.translate_channel(-1, "#" + m.group(4) * 2) if m.group(4) else 1.0
+                    cls.translate_channel(-1, "#" + color[4] * 2) if length == 5 else 1.0
                 )
 
     @classmethod
@@ -194,10 +193,9 @@ class SRGB(base.SRGB):
             return channels, end
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            if not string[start:start + 5].lower().startswith(('#', 'rgb(', 'rgba(')):
-                string = color_names.name2hex(string[m.start(0):m.end(0)])
-                if string is not None:
-                    return cls.split_channels(string), m.end(0)
-            else:
-                return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
+            string = string[m.start(0):m.end(0)].lower()
+            if not string.startswith(('#', 'rgb')):
+                string = color_names.name2hex(string)
+            if string is not None:
+                return cls.split_channels(string), m.end(0)
         return None, None
