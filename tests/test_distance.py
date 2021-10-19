@@ -1,8 +1,16 @@
 """Test distance methods."""
-from coloraide import Color
+from coloraide import Color as ColorOrig
+from coloraide.color.distance.delta_e_ok import DEOK
 from . import util
 import pytest
 import unittest
+
+
+class Color(ColorOrig):
+    """Color class with Delta E OK."""
+
+
+Color.register(DEOK)
 
 
 class TestDistance(util.ColorAsserts):

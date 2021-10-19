@@ -26,8 +26,8 @@ from ..spaces.prophoto_rgb import ProPhotoRGB
 from ..spaces.rec2020 import Rec2020
 from ..spaces.xyz import XYZ
 from ..spaces.xyz_d50 import XYZD50
-from ..spaces.oklab.css import Oklab
-from ..spaces.oklch.css import Oklch
+from ..spaces.oklab.base import Oklab
+from ..spaces.oklch.base import Oklch
 from ..spaces.jzazbz import Jzazbz
 from ..spaces.jzczhz import JzCzhz
 from ..spaces.ictcp import ICtCp
@@ -48,12 +48,11 @@ from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
 from .distance.delta_e_hyab import DEHyAB
-from .distance.delta_e_ok import DEOK
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
 
 SUPPORTED_DE = (
-    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB, DEOK
+    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB
 )
 
 SUPPORTED_SPACES = (

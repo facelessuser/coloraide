@@ -95,4 +95,4 @@ class Oklab(base.Oklab):
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
-        return None, None
+        return None, None  # pragma: no cover
