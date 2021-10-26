@@ -13,21 +13,24 @@ def main():
     """Main."""
 
     parser = argparse.ArgumentParser(
-        prog='calc_range_srgb.py', description='Calculate srgb range in the given color.'
+        prog='calc_range_srgb.py', description='Calculate RGB range in the given color.'
     )
     # Flag arguments
     parser.add_argument(
-        '--color', '-c', action='store', default='', help="The color whose range relative to sRGB will be calculated."
+        '--color', '-c', action='store', default='', help="The color whose range relative to RGB will be calculated."
     )
     parser.add_argument(
         '--rgb', '-r', action='store', default='srgb', help="The RGB space which the color will be sized against."
     )
+    parser.add_argument(
+        '--res', '-s', type=int, default=100, help="Resolution to use when calculating range, default is 100."
+    )
     args = parser.parse_args()
 
-    return run(args.color, args.rgb)
+    return run(args.color, args.rgb, args.res)
 
 
-def run(target, rgb):
+def run(target, rgb, res):
     """Run."""
 
     max_x = float('-inf')
@@ -41,8 +44,8 @@ def run(target, rgb):
     x = y = z = 0
     color = Color(rgb, [0, 0, 0])
     while True:
-        color.update(rgb, [x / 255, y / 255, z / 255])
-        print('\rCurrent: {}'.format(color.to_string(hex=True)), end="")
+        color.update(rgb, [x / res, y / res, z / res])
+        print('\rCurrent: {}'.format(color.to_string(color=True)), end="")
         cx, cy, cz = color.convert(target).coords()
         if cx < min_x:
             min_x = cx
@@ -57,12 +60,12 @@ def run(target, rgb):
         if cz > max_z:
             max_z = cz
 
-        if x == y == z == 255:
+        if x == y == z == res:
             break
-        elif y == z == 255:
+        elif y == z == res:
             x += 1
             y = z = 0
-        elif z == 255:
+        elif z == res:
             y += 1
             z = 0
         else:
