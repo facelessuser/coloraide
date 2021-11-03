@@ -59,9 +59,15 @@ const args = yargs(hideBin(process.argv))
 const config = {
   files: {
     scss: "./docs/src/scss/**/*.scss",
-    css: ["./docs/theme/assets/coloraide-extras/*.css", "./docs/theme/assets/coloraide-extras/*.css.map"],
+    css: [
+      "./docs/theme/assets/coloraide-extras/*.css",
+      "./docs/theme/assets/coloraide-extras/*.css.map"
+    ],
     jsSrc: "./docs/src/js/**/*.js",
-    js: ["./docs/theme/assets/coloraide-extras/*.js", "./docs/theme/assets/coloraide-extras/*.js.map"],
+    js: [
+      "./docs/theme/assets/coloraide-extras/*.js",
+      "./docs/theme/assets/coloraide-extras/*.js.map"
+    ],
     gulp: "gulpfile.babel.js",
     mkdocsSrc: "./docs/src/mkdocs.yml"
   },
@@ -134,30 +140,30 @@ const rollupjs = (sources, options) => {
     pluginModules.push(outputManifest.default({fileName: "manifest-js.json", isMerge: options.merge}))
   }
 
+  let p = Promise.resolve()
   for (let i = 0; i < sources.length; i++) {
     const src = sources[i]
 
-    rollup({
-      input: src,
-      plugins: pluginModules
-    }).then(bundle => {
-      bundle.write({
-        dir: options.dest,
-        format: "iife",
-        entryFileNames: (options.revision) ? "[name]-[hash].js" : "[name].js",
-        chunkFileNames: (options.revision) ? "[name]-[hash].js" : "[name].js",
-        sourcemap: options.sourcemap,
-        plugins: [
-          getBabelOutputPlugin({allowAllFormats: true, presets: ["@babel/preset-env"]})
-        ]
+    p = p.then(() => {
+      return rollup({
+        input: src,
+        plugins: pluginModules
+      }).then(bundle => {
+        bundle.write({
+          dir: options.dest,
+          format: "iife",
+          entryFileNames: (options.revision) ? "[name]-[hash].js" : "[name].js",
+          chunkFileNames: (options.revision) ? "[name]-[hash].js" : "[name].js",
+          sourcemap: options.sourcemap,
+          plugins: [
+            getBabelOutputPlugin({allowAllFormats: true, presets: ["@babel/preset-env"]})
+          ]
+        })
       })
     })
   }
 
-  // Just return something so gulp knows we finished.
-  // We could return one of the `r`ollup` instances, since they are compatible,
-  // but we don't do anything whith them anyways.
-  return gulp.src(sources)
+  return p
 }
 
 // ------------------------------
@@ -255,11 +261,13 @@ gulp.task("scss:clean", () => {
 })
 
 gulp.task("js:build:rollup", () => {
-  gulp.src(`${config.folders.src}/manifest-js.json`, {allowEmpty: true})
+  gulp.src(`${config.folders.theme}/manifest-js.json`, {allowEmpty: true})
     .pipe(vinylPaths(del))
 
   return rollupjs(
-    [`${config.folders.src}/js/extra-notebook.js`],
+    [
+      `${config.folders.src}/js/extra-notebook.js`
+    ],
     {
       dest: `${config.folders.theme}`,
       minify: config.compress.enabled,
