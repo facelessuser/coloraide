@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/strings/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -526,6 +526,8 @@
       </a>
       
         
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -774,6 +776,8 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -1134,10 +1138,10 @@ fallback to whatever the other options dictate. Simply enable <code>names</code>
 </div>
 <h2 id="comma-format">Comma Format<a class="headerlink" href="#comma-format" title="Permanent link"></a></h2>
 <p>In CSS, there are a number of color spaces that allow a comma format: <code>srgb</code> and <code>hsl</code>. ColorAide allows these to be
-read in and to be output in their legacy comma format. Even though <code>lch</code>, <code>lab</code>, and <code>hwb</code> do not have a comma format,
-they are allowed to be read in with commas and can be specified to output with comma format. The one format that
-ColorAide will not allow commas on is <code>color()</code>. <code>color()</code> is the common serialization format that ColorAide uses and
-it is strict about its format.</p>
+read in and to be output in their legacy comma format. Even though <code>lch</code>, <code>lab</code>, <code>oklab</code>, <code>oklch</code>, and <code>hwb</code> do not have
+a comma format, they are allowed to be read in with commas and can be specified to output with comma format. The one
+format that ColorAide will not allow commas on is <code>color()</code>. <code>color()</code> is the common serialization format that ColorAide
+uses and it is strict about its format.</p>
 <p>If we want commas, we can force the comma syntax by setting <code>comma</code> to <code class="highlight"><span class="kc">True</span></code>. This can alter some color space
 output in other subtle ways. As the comma format is the old legacy approach, when sRGB has commas enabled, it will use
 <code>rgba</code> instead of the <code>rgb</code>. If using the default space syntax, <code>rgb</code> is always used, even when the color has
@@ -1167,7 +1171,7 @@ transparency.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 30, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 14, 2021</span>
       
     
   </small>
@@ -1301,14 +1305,14 @@ transparency.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../assets/javascripts/bundle.b1047164.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-c6478989.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       

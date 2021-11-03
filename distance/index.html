@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/distance/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -470,6 +470,8 @@
       </a>
       
         
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -767,6 +769,8 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -836,18 +840,19 @@ Color("red").distance("blue", space="lab")</textarea>
 </div>
 <h2 id="delta-e">Delta E<a class="headerlink" href="#delta-e" title="Permanent link"></a></h2>
 <p>The <code>delta_e</code> function gives access to various ∆E implementations.</p>
+<p>If no <code>method</code> is specified, the default implementation is ∆E<sup>*</sup><sub>ab</sub> (CIE76) which uses a simple Euclidean distancing
+algorithm on the CIELAB color space. It is fast, but not as accurate as some algorithms as CIELAB is not actually as
+perceptually uniform as it was thought when CIELAB was developed. ∆E<sub>00</sub> is actually a much better ∆E method for CIELAB,
+but it is slower.</p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
 <span class="go">184.0190486209969</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;2000&quot;</span><span class="p">)</span>
-<span class="go">55.799773390197785</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">Color("red").delta_e("blue")
-Color("red").delta_e("blue", method="2000")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">Color("red").delta_e("blue")</textarea>
 </form>
 </div>
 
@@ -856,9 +861,27 @@ Color("red").delta_e("blue", method="2000")</textarea>
 <button id="__playground-run_1" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>The general <code>delta_e</code> function can be used to specify any supported ∆E method. Optional parameters can be passed in if
-desired. See table below for supported methods, names, and parameters. Follow relevant links to read the specs or find
-our more about a given ∆E method.</p>
+<p>When <code>method</code> is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E<sub>00</sub> which is a
+more complex, slower algorithm that accounts for the color spaces weakness in perceptually uniformity.</p>
+<div class="playground" id="__playground_2">
+<div class="playground-results" id="__playground-results_2">
+<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;2000&quot;</span><span class="p">)</span>
+<span class="go">55.79977339019779</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_2">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">Color("red").delta_e("blue", method="2000")</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_2" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_2" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>Below are all the supported ∆E methods. Follow relevant links to read the specs or find our more about a given ∆E
+method.</p>
 <table>
 <thead>
 <tr>
@@ -911,35 +934,26 @@ our more about a given ∆E method.</p>
 </tbody>
 </table>
 <p>∆E methods are also accessible via methods <code>delta_e_&lt;name&gt;</code>, where <code>&lt;name&gt;</code> is a name from the above table.</p>
-<div class="playground" id="__playground_2">
-<div class="playground-results" id="__playground-results_2">
+<div class="playground" id="__playground_3">
+<div class="playground-results" id="__playground-results_3">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e_jz</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
 <span class="go">0.339603884201645</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e_hyab</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
 <span class="go">207.07305826980567</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_2">
+<div class="playground-code hidden" id="__playground-code_3">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_2" spellcheck="false">Color("red").delta_e_jz("blue")
+<textarea class="playground-inputs" id="__playground-inputs_3" spellcheck="false">Color("red").delta_e_jz("blue")
 Color("red").delta_e_hyab("blue")</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_2" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_2" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_3" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_3" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>If no name is specified, the default implementation is ∆E<sup>*</sup><sub>ab</sub> (CIE76). Originally, when the CIELAB color space was
-created, it was thought that it was more perceptually uniform than it actually was. At first, the distance algorithm was
-a simple euclidean implementation (∆E<sup>*</sup> 1976), but over time it has been tweaked to make corrections to account for
-the fact that it is not perfectly uniform. This gave rise to all of the various ∆E<sup>*</sup> methods above. There are areas
-and industries that still use many of these for different reasons.</p>
-<p>Additionally, there are other implementations that use different color spaces, such as ∆E<sub>itp</sub> which uses ICtCp or ∆E<sub>z</sub>
-which uses Jzazbz.</p>
-<p>Also, there are some general methods such as ∆E<sub>HyAB</sub>. HyAB is designed to work with Lab-ish colors (CIELAB, CIELUV,
-DIN99o, etc.).</p>
                 
                   
                     
@@ -948,7 +962,7 @@ DIN99o, etc.).</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 19, 2021</span>
       
     
   </small>
@@ -1082,14 +1096,14 @@ DIN99o, etc.).</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../assets/javascripts/bundle.b1047164.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-c6478989.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       

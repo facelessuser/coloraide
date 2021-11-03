@@ -14,7 +14,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/colors/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -574,6 +574,8 @@
       </a>
       
         
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -765,6 +767,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#oklab" class="md-nav__link">
+    Oklab
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oklch" class="md-nav__link">
+    Oklch
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cieluv" class="md-nav__link">
     CIELUV
   </a>
@@ -815,20 +831,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oklab" class="md-nav__link">
-    Oklab
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oklch" class="md-nav__link">
-    Oklch
-  </a>
   
 </li>
       
@@ -1033,6 +1035,8 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -1224,6 +1228,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#oklab" class="md-nav__link">
+    Oklab
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oklch" class="md-nav__link">
+    Oklch
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cieluv" class="md-nav__link">
     CIELUV
   </a>
@@ -1274,20 +1292,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oklab" class="md-nav__link">
-    Oklab
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oklch" class="md-nav__link">
-    Oklch
-  </a>
   
 </li>
       
@@ -2169,7 +2173,7 @@ space name is always used:</p>
 <dt><strong>Output:</strong></dt>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--hwb</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">w</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
-form, but the default string output will be the <code class="highlight"><span class="nf">hsl</span><span class="g">(</span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+form, but the default string output will be the <code class="highlight"><span class="nf">hwb</span><span class="g">(</span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
 <div class="playground" id="__playground_23">
 <div class="playground-results" id="__playground-results_23">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hwb(0 0% 10000%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="hwb(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hwb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -2714,7 +2718,7 @@ space name is always used:</p>
 <dt><strong>Output:</strong></dt>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
-form, but the default string output will be the <code class="highlight"><span class="nf">hsl</span><span class="g">(</span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+form, but the default string output will be the <code class="highlight"><span class="nf">lab</span><span class="g">(</span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
 <div class="playground" id="__playground_28">
 <div class="playground-results" id="__playground-results_28">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="lab(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -2930,7 +2934,7 @@ space name is always used:</p>
 <dt><strong>Output:</strong></dt>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
-form, but the default string output will be the <code class="highlight"><span class="nf">hsl</span><span class="g">(</span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+form, but the default string output will be the <code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
 <div class="playground" id="__playground_30">
 <div class="playground-results" id="__playground-results_30">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="lch(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -3058,6 +3062,221 @@ Color("lch-d65", [0, 0, 0], 1).to_string()</textarea>
 </dd>
 </dl>
 </details>
+<h2 id="oklab">Oklab<a class="headerlink" href="#oklab" title="Permanent link"></a></h2>
+<div class="info-container">
+<div class="admonition info inline end">
+<p class="admonition-title">Properties</p>
+<p><strong>Name:</strong> <code>oklab</code></p>
+<p><strong>White Point:</strong> D65</p>
+<p><strong>Coordinates:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>l</td>
+<td>[0, 1]<sup>*</sup></td>
+</tr>
+<tr>
+<td>a</td>
+<td>[-0.234, 0.276]<sup>*</sup></td>
+</tr>
+<tr>
+<td>b</td>
+<td>[-0.312, 0.198]<sup>*</sup></td>
+</tr>
+</tbody>
+</table>
+<p><sup>*</sup> ≈ range in relation to sRGB rounded to 3 decimal places.</p>
+</div>
+<figure>
+<p><img alt="Oklab" src="../images/oklab-3d.png" /></p>
+<figcaption>
+<p>Approximation<sup id="fnref11:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the Oklab color space.</p>
+</figcaption>
+</figure>
+<p>A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
+chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.</p>
+<p><em><a href="https://bottosson.github.io/posts/oklab/">Learn about Oklab</a></em></p>
+</div>
+<details class="abstract"><summary>ColorAide Details</summary><dl>
+<dt><strong>Channel Aliases:</strong></dt>
+<dd>
+<table>
+<thead>
+<tr>
+<th>Channels</th>
+<th>Aliases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l</code></td>
+<td><code>lightness</code></td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>Inputs:</strong></dt>
+<dd>
+<p>Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
+<code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function format using the custom name <code class="highlight"><span class="kc">--oklab</span><span class="w"></span></code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nf">color</span><span class="g">(</span><span class="kc">--oklab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w">  </span><span class="c1">// Color function</span><span class="w"></span>
+</code></pre></div>
+<p>!!! tip "CSS adding Oklab":
+    It seems CSS will be adding Oklab, but we've held off on exposing the official CSS syntax to see there will
+    be any changes in regards to scaling channels, etc.</p>
+<p>When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+space name is always used:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</dd>
+<dt><strong>Output:</strong></dt>
+<dd>
+<p>The string representation of the color object and the default string output use the
+<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+<div class="playground" id="__playground_32">
+<div class="playground-results" id="__playground-results_32">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">color(--oklab 0 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">color(--oklab 0 0 0)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_32">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_32" spellcheck="false">Color("oklab", [0, 0, 0], 1)
+Color("oklab", [0, 0, 0], 1).to_string()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_32" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_32" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_32" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_32" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+</dd>
+</dl>
+</details>
+<h2 id="oklch">Oklch<a class="headerlink" href="#oklch" title="Permanent link"></a></h2>
+<div class="info-container">
+<div class="admonition info inline end">
+<p class="admonition-title">Properties</p>
+<p><strong>Name:</strong> <code>oklch</code></p>
+<p><strong>White Point:</strong> D65</p>
+<p><strong>Coordinates:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>l</td>
+<td>[0, 1]<sup>*</sup></td>
+</tr>
+<tr>
+<td>c</td>
+<td>[0, 0.323]<sup>*</sup></td>
+</tr>
+<tr>
+<td>h</td>
+<td>[0, 360)</td>
+</tr>
+</tbody>
+</table>
+<p><sup>*</sup> ≈ range in relation to sRGB rounded to 3 decimal places.</p>
+</div>
+<figure>
+<p><img alt="Oklch" src="../images/oklch-3d.png" /></p>
+<figcaption>
+<p>Approximation<sup id="fnref10:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the Oklch color space.</p>
+</figcaption>
+</figure>
+<p>Oklch is the cylindrical form of <a href="#oklab">Oklab</a>.</p>
+<p><em><a href="https://bottosson.github.io/posts/oklab/">Learn about Oklch</a></em></p>
+</div>
+<details class="abstract"><summary>ColorAide Details</summary><dl>
+<dt><strong>Channel Aliases:</strong></dt>
+<dd>
+<table>
+<thead>
+<tr>
+<th>Channels</th>
+<th>Aliases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l</code></td>
+<td><code>lightness</code></td>
+</tr>
+<tr>
+<td><code>u</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>Inputs</strong></dt>
+<dd>
+<p>Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
+<code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function format using the custom name <code class="highlight"><span class="kc">--oklch</span><span class="w"></span></code>:</p>
+<p>!!! tip "CSS adding Oklch":
+    It seems CSS will be adding Oklab, but we've held off on exposing the official CSS syntax to see there will
+    be any changes in regards to scaling channels, etc.</p>
+<div class="highlight"><pre><span></span><code><span class="nf">color</span><span class="g">(</span><span class="kc">--oklch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w">  </span><span class="c1">// Color function</span><span class="w"></span>
+</code></pre></div>
+<p>When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+space name is always used:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</dd>
+<dt><strong>Output:</strong></dt>
+<dd>
+<p>The string representation of the color object and the default string output use the
+<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+<div class="playground" id="__playground_33">
+<div class="playground-results" id="__playground-results_33">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">color(--oklch 0 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">color(--oklch 0 0 0)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_33">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_33" spellcheck="false">Color("oklch", [0, 0, 0], 1)
+Color("oklch", [0, 0, 0], 1).to_string()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_33" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_33" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_33" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_33" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+</dd>
+</dl>
+</details>
 <h2 id="cieluv">CIELUV<a class="headerlink" href="#cieluv" title="Permanent link"></a></h2>
 <p>CIELUV is similar to CIELAB as they were both developed in 1976 as perceptually uniform color spaces, both are derived
 from the color experiments in 1931 that brought us the XYZ color space, and neither are truly perceptually uniform.</p>
@@ -3100,7 +3319,7 @@ suited in additive color applications such as display colorimetry (monitors, TVs
 <figure>
 <p><img alt="CIELUV 3D" src="../images/luv-3d.png" /></p>
 <figcaption>
-<p>Approximation<sup id="fnref11:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELUV D50 color space.</p>
+<p>Approximation<sup id="fnref9:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELUV D50 color space.</p>
 </figcaption>
 </figure>
 <p>CIELUV, is a color space adopted by the CIE in 1976, as a simple-to-compute transformation of the 1931 CIE XYZ color
@@ -3148,25 +3367,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--luv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">u</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_32">
-<div class="playground-results" id="__playground-results_32">
+<div class="playground" id="__playground_34">
+<div class="playground-results" id="__playground-results_34">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--luv 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--luv 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--luv 0% 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--luv 0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_32">
+<div class="playground-code hidden" id="__playground-code_34">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_32" spellcheck="false">Color("luv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_34" spellcheck="false">Color("luv", [0, 0, 0], 1)
 Color("luv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_32" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_32" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_32" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_32" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_34" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_34" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_34" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_34" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3205,7 +3424,7 @@ Color("luv", [0, 0, 0], 1).to_string()</textarea>
 <figure>
 <p><img alt="CIELUV 3D" src="../images/luv-d65-3d.png" /></p>
 <figcaption>
-<p>Approximation<sup id="fnref10:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELUV D65 color space.</p>
+<p>Approximation<sup id="fnref8:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELUV D65 color space.</p>
 </figcaption>
 </figure>
 <p>CIELUV D65 is the same as <a href="#cieluv-d50">CIELUV</a> except it uses a D65 white point.</p>
@@ -3252,25 +3471,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--luv-d65</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">u</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_33">
-<div class="playground-results" id="__playground-results_33">
+<div class="playground" id="__playground_35">
+<div class="playground-results" id="__playground-results_35">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--luv-d65 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--luv-d65 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--luv-d65 0% 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--luv-d65 0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_33">
+<div class="playground-code hidden" id="__playground-code_35">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_33" spellcheck="false">Color("luv-d65", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_35" spellcheck="false">Color("luv-d65", [0, 0, 0], 1)
 Color("luv-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_33" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_33" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_33" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_33" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_35" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_35" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_35" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_35" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3313,7 +3532,7 @@ just how the colors are manipulated. CIELCH<sub>uv</sub>, like CIELUV, is availa
 <figure>
 <p><img alt="CIELCH~uv~" src="../images/lchuv-3d.png" /></p>
 <figcaption>
-<p>Approximation<sup id="fnref9:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELCH<sub>uv</sub> D50 color space.</p>
+<p>Approximation<sup id="fnref7:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELCH<sub>uv</sub> D50 color space.</p>
 </figcaption>
 </figure>
 <p>CIELCH<sub>uv</sub> D50 is the polar form of <a href="#cieluv-d50">CIELUV D50</a>. The shape is identical, but manipulation of the colors is
@@ -3361,25 +3580,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lchuv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_34">
-<div class="playground-results" id="__playground-results_34">
+<div class="playground" id="__playground_36">
+<div class="playground-results" id="__playground-results_36">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lchuv 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lchuv 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lchuv 0% 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lchuv 0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_34">
+<div class="playground-code hidden" id="__playground-code_36">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_34" spellcheck="false">Color("lchuv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_36" spellcheck="false">Color("lchuv", [0, 0, 0], 1)
 Color("lchuv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_34" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_34" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_34" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_34" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_36" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_36" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_36" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_36" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3418,7 +3637,7 @@ Color("lchuv", [0, 0, 0], 1).to_string()</textarea>
 <figure>
 <p><img alt="CIELCH~uv~" src="../images/lchuv-d65-3d.png" /></p>
 <figcaption>
-<p>Approximation<sup id="fnref8:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELCH<sub>uv</sub> D65 color space.</p>
+<p>Approximation<sup id="fnref6:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the CIELCH<sub>uv</sub> D65 color space.</p>
 </figcaption>
 </figure>
 <p>CIELCH<sub>uv</sub> D65 is the polar form of <a href="#cieluv-d65">CIELUV D65</a>. The shape is identical, but manipulation of the colors is
@@ -3466,224 +3685,18 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lchuv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_35">
-<div class="playground-results" id="__playground-results_35">
+<div class="playground" id="__playground_37">
+<div class="playground-results" id="__playground-results_37">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lchuv-d65 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lchuv-d65 0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lchuv-d65 0% 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lchuv-d65 0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_35">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_35" spellcheck="false">Color("lchuv-d65", [0, 0, 0], 1)
-Color("lchuv-d65", [0, 0, 0], 1).to_string()</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_35" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_35" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_35" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_35" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-</dd>
-</dl>
-</details>
-<h2 id="oklab">Oklab<a class="headerlink" href="#oklab" title="Permanent link"></a></h2>
-<div class="info-container">
-<div class="admonition info inline end">
-<p class="admonition-title">Properties</p>
-<p><strong>Name:</strong> <code>oklab</code></p>
-<p><strong>White Point:</strong> D65</p>
-<p><strong>Coordinates:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Range</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>l</td>
-<td>[0, 1]<sup>*</sup></td>
-</tr>
-<tr>
-<td>a</td>
-<td>[-0.234, 0.276]<sup>*</sup></td>
-</tr>
-<tr>
-<td>b</td>
-<td>[-0.312, 0.198]<sup>*</sup></td>
-</tr>
-</tbody>
-</table>
-<p><sup>*</sup> ≈ range in relation to sRGB rounded to 3 decimal places.</p>
-</div>
-<figure>
-<p><img alt="Oklab" src="../images/oklab-3d.png" /></p>
-<figcaption>
-<p>Approximation<sup id="fnref7:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the Oklab color space.</p>
-</figcaption>
-</figure>
-<p>A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
-chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.</p>
-<p><em><a href="https://bottosson.github.io/posts/oklab/">Learn about Oklab</a></em></p>
-</div>
-<details class="abstract"><summary>ColorAide Details</summary><dl>
-<dt><strong>Channel Aliases:</strong></dt>
-<dd>
-<table>
-<thead>
-<tr>
-<th>Channels</th>
-<th>Aliases</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>l</code></td>
-<td><code>lightness</code></td>
-</tr>
-<tr>
-<td><code>a</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>b</code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</dd>
-<dt><strong>Inputs:</strong></dt>
-<dd>
-<p>As Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-<code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function format using the custom name <code class="highlight"><span class="kc">--oklab</span><span class="w"></span></code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nf">color</span><span class="g">(</span><span class="kc">--oklab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w">  </span><span class="c1">// Color function</span><span class="w"></span>
-</code></pre></div>
-<p>When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-space name is always used:</p>
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-</code></pre></div>
-</dd>
-<dt><strong>Output:</strong></dt>
-<dd>
-<p>The string representation of the color object and the default string output use the
-<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_36">
-<div class="playground-results" id="__playground-results_36">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">color(--oklab 0 0 0 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">color(--oklab 0 0 0)</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_36">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_36" spellcheck="false">Color("oklab", [0, 0, 0], 1)
-Color("oklab", [0, 0, 0], 1).to_string()</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_36" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_36" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_36" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_36" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-</dd>
-</dl>
-</details>
-<h2 id="oklch">Oklch<a class="headerlink" href="#oklch" title="Permanent link"></a></h2>
-<div class="info-container">
-<div class="admonition info inline end">
-<p class="admonition-title">Properties</p>
-<p><strong>Name:</strong> <code>oklch</code></p>
-<p><strong>White Point:</strong> D65</p>
-<p><strong>Coordinates:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Range</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>l</td>
-<td>[0, 1]<sup>*</sup></td>
-</tr>
-<tr>
-<td>c</td>
-<td>[0, 0.323]<sup>*</sup></td>
-</tr>
-<tr>
-<td>h</td>
-<td>[0, 360)</td>
-</tr>
-</tbody>
-</table>
-<p><sup>*</sup> ≈ range in relation to sRGB rounded to 3 decimal places.</p>
-</div>
-<figure>
-<p><img alt="Oklch" src="../images/oklch-3d.png" /></p>
-<figcaption>
-<p>Approximation<sup id="fnref6:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of the sRGB gamut represented within the Oklch color space.</p>
-</figcaption>
-</figure>
-<p>Oklch is the cylindrical form of <a href="#oklab">Oklab</a>.</p>
-<p><em><a href="https://bottosson.github.io/posts/oklab/">Learn about Oklch</a></em></p>
-</div>
-<details class="abstract"><summary>ColorAide Details</summary><dl>
-<dt><strong>Channel Aliases:</strong></dt>
-<dd>
-<table>
-<thead>
-<tr>
-<th>Channels</th>
-<th>Aliases</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>l</code></td>
-<td><code>lightness</code></td>
-</tr>
-<tr>
-<td><code>u</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>v</code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</dd>
-<dt><strong>Inputs</strong></dt>
-<dd>
-<p>As Oklch is not currently supported in the CSS spec, the parsed input and string output formats use the
-<code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function format using the custom name <code class="highlight"><span class="kc">--oklch</span><span class="w"></span></code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nf">color</span><span class="g">(</span><span class="kc">--oklch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w">  </span><span class="c1">// Color function</span><span class="w"></span>
-</code></pre></div>
-<p>When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-space name is always used:</p>
-<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-</code></pre></div>
-<p>The string representation of the color object and the default string output use the
-<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_37">
-<div class="playground-results" id="__playground-results_37">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">color(--oklch 0 0 0 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">color(--oklch 0 0 0)</span>
-</code></pre></div></div>
-</div>
 <div class="playground-code hidden" id="__playground-code_37">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_37" spellcheck="false">Color("oklch", [0, 0, 0], 1)
-Color("oklch", [0, 0, 0], 1).to_string()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_37" spellcheck="false">Color("lchuv-d65", [0, 0, 0], 1)
+Color("lchuv-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
@@ -4251,7 +4264,7 @@ account, this approach gives a fairly good approximation of the shape of the sRG
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 12, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 19, 2021</span>
       
     
   </small>
@@ -4385,14 +4398,14 @@ account, this approach gives a fairly good approximation of the shape of the sRG
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../assets/javascripts/bundle.b1047164.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-c6478989.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       
