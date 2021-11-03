@@ -50,7 +50,7 @@ nav:
 
 markdown_extensions:
   - markdown.extensions.toc:
-      slugify: !!python/name:pymdownx.slugs.uslugify
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
   - markdown.extensions.admonition:
   - markdown.extensions.smarty:

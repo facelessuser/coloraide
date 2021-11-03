@@ -120,7 +120,7 @@ extra_css:
   - assets/coloraide-extras/extra-ccd229caf0.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-4bef75da.js
+  - assets/coloraide-extras/extra-notebook-676219cd.js
 
 extra:
   social:
@@ -133,5 +133,5 @@ plugins:
   - search
   - git-revision-date-localized
   - mkdocs_pymdownx_material_extras
-  - minify:
-      minify_html: true
+  # - minify:
+  #     minify_html: true
