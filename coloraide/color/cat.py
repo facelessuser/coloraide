@@ -1,6 +1,6 @@
 """Chromatic adaptation transforms."""
-from ... import util
-from ... spaces import WHITES
+from .. import util
+from .. spaces import WHITES
 from functools import lru_cache
 
 # Conversion matrices

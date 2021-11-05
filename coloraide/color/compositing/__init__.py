@@ -3,7 +3,6 @@ Compositing and RGB blend modes.
 
 https://www.w3.org/TR/compositing/
 """
-from collections.abc import Sequence
 from . import porter_duff
 from . import blend_modes
 from ... import util
@@ -78,39 +77,3 @@ def compose(color1, color2, blend, operator, non_seperable):
             i += 1
 
     return color1.update(color1.space(), coords, cra)
-
-
-class Compose:
-    """Handle compositing."""
-
-    def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
-        """Blend colors using the specified blend mode."""
-
-        if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
-            backdrop = [self._handle_color_input(c) for c in backdrop]
-        else:
-            backdrop = [self._handle_color_input(backdrop)]
-
-        # If we are doing non-separable, we are converting to a special space that
-        # can only be done from sRGB, so we have to force sRGB anyway.
-        non_seperable = blend_modes.is_non_seperable(blend)
-        space = 'srgb' if space is None or non_seperable else space.lower()
-        outspace = self.space() if out_space is None else out_space.lower()
-
-        if len(backdrop) == 0:
-            return self.convert(outspace)
-
-        if len(backdrop) > 1:
-            dest = backdrop[-1].convert(space, fit=True)
-            for x in range(len(backdrop) - 2, -1, -1):
-                src = backdrop[x].convert(space, fit=True)
-                dest = compose(src, dest, blend, operator, non_seperable)
-        else:
-            dest = backdrop[0].convert(space, fit=True)
-
-        src = self.convert(space, fit=True)
-        dest = compose(src, dest, blend, operator, non_seperable)
-
-        return (
-            self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
-        ).normalize()

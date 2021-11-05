@@ -2,15 +2,14 @@
 from collections.abc import Sequence, Mapping
 import abc
 import functools
+from . import cat
 from . import distance
 from . import convert
 from . import gamut
 from . import compositing
 from . import interpolate
-from . import contrast
-from . import match
 from .. import util
-from ..spaces import Space
+from ..spaces import Space, Cylindrical
 from ..spaces.hsv import HSV
 from ..spaces.srgb.css import SRGB
 from ..spaces.srgb_linear import SRGBLinear
@@ -67,6 +66,24 @@ SUPPORTED_FIT = (
 )
 
 
+class ColorMatch:
+    """Color match object."""
+
+    def __init__(self, color, start, end):
+        """Initialize."""
+
+        self.color = color
+        self.start = start
+        self.end = end
+
+    def __str__(self):  # pragma: no cover
+        """String."""
+
+        return "ColorMatch(color={!r}, start={}, end={})".format(self.color, self.start, self.end)
+
+    __repr__ = __str__
+
+
 class BaseColor(abc.ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
@@ -79,16 +96,7 @@ class BaseColor(abc.ABCMeta):
             cls.FIT_MAP = cls.FIT_MAP.copy()
 
 
-class Color(
-    convert.Convert,
-    gamut.Gamut,
-    compositing.Compose,
-    interpolate.Interpolate,
-    distance.Distance,
-    contrast.Contrast,
-    match.Match,
-    metaclass=BaseColor
-):
+class Color(metaclass=BaseColor):
     """Color class object which provides access and manipulation of color spaces."""
 
     CS_MAP = {}
@@ -156,6 +164,34 @@ class Color(
 
         if obj is None:
             raise ValueError("Could not process the provided color")
+        return obj
+
+    @classmethod
+    def _match(cls, string, start=0, fullmatch=False, filters=None):
+        """
+        Match a color in a buffer and return a color object.
+
+        This must return the color space, not the Color object.
+        """
+
+        filters = set(filters) if filters is not None else set()
+
+        for space, space_class in cls.CS_MAP.items():
+            if filters and space not in filters:
+                continue
+            value, match_end = space_class.match(string, start, fullmatch)
+            if value is not None:
+                color = space_class(*value)
+                return ColorMatch(color, start, match_end)
+        return None
+
+    @classmethod
+    def match(cls, string, start=0, fullmatch=False, *, filters=None):
+        """Match color."""
+
+        obj = cls._match(string, start, fullmatch, filters=filters)
+        if obj is not None:
+            obj.color = cls(obj.color.space(), obj.color.coords(), obj.color.alpha)
         return obj
 
     @classmethod
@@ -292,6 +328,44 @@ class Color(
 
         return self.new(self.space(), self.coords(), self.alpha)
 
+    def chromatic_adaptation(self, w1, w2, xyz):
+        """Apply chromatic adaption to XYZ coordinates."""
+
+        method = self.CHROMATIC_ADAPTATION
+        return cat.chromatic_adaptation(w1, w2, xyz, method=method)
+
+    def convert(self, space, *, fit=False, in_place=False):
+        """Convert to color space."""
+
+        space = space.lower()
+
+        if fit:
+            method = None if not isinstance(fit, str) else fit
+            if not self.in_gamut(space, tolerance=0.0):
+                converted = self.convert(space, in_place=in_place)
+                return converted.fit(space, method=method, in_place=True)
+
+        coords = convert.convert(self, space)
+
+        return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
+
+    def mutate(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+        """Mutate the current color to a new color."""
+
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._attach(c)
+        return self
+
+    def update(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+        """Update the existing color space with the provided color."""
+
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        space = self.space()
+        self._attach(c)
+        if c.space() != space:
+            self.convert(space, in_place=True)
+        return self
+
     def to_string(self, **kwargs):
         """To string."""
 
@@ -329,6 +403,241 @@ class Color(
         xyz = self.convert('xyz')
         xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
         return util.xyz_to_xyY(xyz, self._space.white())[:2]
+
+    def clip(self, space=None, *, in_place=False):
+        """Clip the color channels."""
+
+        if space is None:
+            space = self.space()
+
+        this = self.clone() if not in_place else self
+
+        # Convert to desired space
+        c = self.convert(space)
+
+        # If we are perfectly in gamut, don't waste time clipping.
+        if c.in_gamut(tolerance=0.0):
+            if isinstance(c._space, Cylindrical):
+                name = c._space.hue_name()
+                c.set(name, util.constrain_hue(c.get(name)))
+        else:
+            c._space._coords = gamut.clip_channels(c)
+        c.normalize()
+
+        # Adjust "this" color
+        return this.update(c)
+
+    def fit(self, space=None, *, method=None, in_place=False):
+        """Fit the gamut using the provided method."""
+
+        # Dedicated clip method.
+        if method == 'clip' or (method is None and self.FIT == "clip"):
+            return self.clip(space, in_place=in_place)
+
+        if space is None:
+            space = self.space()
+
+        if method is None:
+            method = self.FIT
+
+        this = self.clone() if not in_place else self
+
+        # Select appropriate mapping algorithm
+        if method in self.FIT_MAP:
+            func = self.FIT_MAP[method]
+        else:
+            # Unknown fit method
+            raise ValueError("'{}' gamut mapping is not currently supported".format(method))
+
+        # Convert to desired space
+        c = self.convert(space)
+
+        # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
+        # If out of gamut, apply mapping/clipping/etc.
+        if c.in_gamut(tolerance=0.0):
+            if isinstance(c._space, Cylindrical):
+                name = c._space.hue_name()
+                c.set(name, util.constrain_hue(c.get(name)))
+        else:
+            c._space._coords = func(c)
+        c.normalize()
+
+        # Adjust "this" color
+        return this.update(c)
+
+    def in_gamut(self, space=None, *, tolerance=util.DEF_FIT_TOLERANCE):
+        """Check if current color is in gamut."""
+
+        space = space.lower() if space is not None else self.space()
+
+        # Check gamut in the provided space
+        if space is not None and space != self.space():
+            c = self.convert(space)
+            return c.in_gamut(tolerance=tolerance)
+
+        # Check the color space specified for gamut checking.
+        # If it proves to be in gamut, we will then test if the current
+        # space is constrained properly.
+        if self._space.GAMUT_CHECK is not None:
+            c = self.convert(self._space.GAMUT_CHECK)
+            if not c.in_gamut(tolerance=tolerance):
+                return False
+
+        return gamut.verify(self, tolerance)
+
+    def mask(self, channel, *, invert=False, in_place=False):
+        """Mask color channels."""
+
+        this = self if in_place else self.clone()
+        aliases = self._space.CHANNEL_ALIASES
+        masks = set(
+            [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
+        )
+        for name in self._space.CHANNEL_NAMES:
+            if (not invert and name in masks) or (invert and name not in masks):
+                this.set(name, util.NaN)
+        return this
+
+    def steps(self, color, *, steps=2, max_steps=1000, max_delta_e=0, **interpolate_args):
+        """
+        Discrete steps.
+
+        This is built upon the interpolate function, and will return a list of
+        colors containing a minimum of colors equal to `steps` or steps as specified
+        derived from the `max_delta_e` parameter (whichever is greatest).
+
+        Number of colors can be capped with `max_steps`.
+
+        Default delta E method used is delta E 76.
+        """
+
+        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e)
+
+    def mix(self, color, percent=util.DEF_MIX, *, in_place=False, **interpolate_args):
+        """
+        Mix colors using interpolation.
+
+        This uses the interpolate method to find the center point between the two colors.
+        The basic mixing logic is outlined in the CSS level 5 draft.
+        """
+
+        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+        color = self.interpolate(color, **interpolate_args)(percent)
+        return self.mutate(color) if in_place else color
+
+    def interpolate(
+        self, color, *, space="lab", out_space=None, stop=0, progress=None, hue=util.DEF_HUE_ADJ, premultiplied=False
+    ):
+        """
+        Return an interpolation function.
+
+        The function will return an interpolation function that accepts a value (which should
+        be in the range of [0..1] and will return a color based on that value.
+
+        While we use NaNs to mask off channels when doing the interpolation, we do not allow
+        arbitrary specification of NaNs by the user, they must specify channels via `adjust`
+        if they which to target specific channels for mixing. Null hues become NaNs before
+        mixing occurs.
+        """
+
+        space = space.lower()
+        out_space = self.space() if out_space is None else out_space.lower()
+
+        # A piecewise object was provided, so treat it as such,
+        # or we've changed the stop of the base color, so run it through piecewise.
+        if (
+            isinstance(color, interpolate.Piecewise) or
+            (stop != 0 and (isinstance(color, str) or self._is_color(color)))
+        ):
+            color = [color]
+
+        if not isinstance(color, str) and isinstance(color, Sequence):
+            # We have a sequence, so use piecewise interpolation
+            return interpolate.color_piecewise_lerp(
+                [interpolate.Piecewise(self, stop=stop)] + list(color),
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
+            )
+        else:
+            # We have a sequence, so use piecewise interpolation
+            return interpolate.color_lerp(
+                self,
+                color,
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
+            )
+
+    def compose(self, backdrop, *, blend=None, operator=None, space=None, out_space=None, in_place=False):
+        """Blend colors using the specified blend mode."""
+
+        if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
+            backdrop = [self._handle_color_input(c) for c in backdrop]
+        else:
+            backdrop = [self._handle_color_input(backdrop)]
+
+        # If we are doing non-separable, we are converting to a special space that
+        # can only be done from sRGB, so we have to force sRGB anyway.
+        non_seperable = compositing.blend_modes.is_non_seperable(blend)
+        space = 'srgb' if space is None or non_seperable else space.lower()
+        outspace = self.space() if out_space is None else out_space.lower()
+
+        if len(backdrop) == 0:
+            return self.convert(outspace)
+
+        if len(backdrop) > 1:
+            dest = backdrop[-1].convert(space, fit=True)
+            for x in range(len(backdrop) - 2, -1, -1):
+                src = backdrop[x].convert(space, fit=True)
+                dest = compositing.compose(src, dest, blend, operator, non_seperable)
+        else:
+            dest = backdrop[0].convert(space, fit=True)
+
+        src = self.convert(space, fit=True)
+        dest = compositing.compose(src, dest, blend, operator, non_seperable)
+
+        return (
+            self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
+        ).normalize()
+
+    def delta_e(self, color, *, method=None, **kwargs):
+        """Delta E distance."""
+
+        color = self._handle_color_input(color)
+        if method is None:
+            method = self.DELTA_E
+
+        algorithm = method.lower()
+
+        try:
+            return self.DE_MAP[algorithm](self, color, **kwargs)
+        except KeyError:
+            raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
+
+    def distance(self, color, *, space="lab"):
+        """Delta."""
+
+        color = self._handle_color_input(color)
+        return distance.distance_euclidean(self, color, space=space)
+
+    def luminance(self):
+        """Get color's luminance."""
+
+        return self.convert("xyz").y
+
+    def contrast(self, color):
+        """Compare the contrast ratio of this color and the provided color."""
+
+        color = self._handle_color_input(color)
+        lum1 = self.luminance()
+        lum2 = color.luminance()
+        return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
 
     def get(self, name):
         """Get channel."""
