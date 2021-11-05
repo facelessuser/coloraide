@@ -28,11 +28,16 @@ from ..oklab.base import Oklab
 from ... import util
 import re
 import math
+from ...util import Vector, MutableVector
+from typing import Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 ACHROMATIC_THRESHOLD = 0.000002
 
 
-def oklab_to_oklch(oklab):
+def oklab_to_oklch(oklab: Vector) -> MutableVector:
     """Oklab to Oklch."""
 
     l, a, b = oklab
@@ -48,7 +53,7 @@ def oklab_to_oklch(oklab):
     return [l, c, util.constrain_hue(h)]
 
 
-def oklch_to_oklab(oklch):
+def oklch_to_oklab(oklch: Vector) -> MutableVector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
@@ -59,11 +64,11 @@ def oklch_to_oklab(oklch):
     if c < 0.0:
         c = 0.0
 
-    return (
+    return [
         l,
         c * math.cos(math.radians(h)),
         c * math.sin(math.radians(h))
-    )
+    ]
 
 
 class Oklch(Lchish, Space):
@@ -87,43 +92,43 @@ class Oklch(Lchish, Space):
     )
 
     @property
-    def l(self):
+    def l(self) -> float:
         """Lightness."""
 
         return self._coords[0]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def c(self):
+    def c(self) -> float:
         """Chroma."""
 
         return self._coords[1]
 
     @c.setter
-    def c(self, value):
+    def c(self, value: float) -> None:
         """chroma."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def h(self):
+    def h(self) -> float:
         """Hue."""
 
         return self._coords[2]
 
     @h.setter
-    def h(self, value):
+    def h(self, value: float) -> None:
         """Shift the hue."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
         if coords[1] < ACHROMATIC_THRESHOLD:
@@ -132,25 +137,25 @@ class Oklch(Lchish, Space):
         return coords, alpha
 
     @classmethod
-    def _to_oklab(cls, parent, oklch):
+    def _to_oklab(cls, parent: 'Color', oklch: Vector) -> MutableVector:
         """To Lab."""
 
         return oklch_to_oklab(oklch)
 
     @classmethod
-    def _from_oklab(cls, parent, oklab):
+    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """To Lab."""
 
         return oklab_to_oklch(oklab)
 
     @classmethod
-    def _to_xyz(cls, parent, oklch):
+    def _to_xyz(cls, parent: 'Color', oklch: Vector) -> MutableVector:
         """To XYZ."""
 
         return Oklab._to_xyz(parent, cls._to_oklab(parent, oklch))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

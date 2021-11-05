@@ -8,6 +8,11 @@ from .xyz import XYZ
 from .lab.base import LabBase, lab_to_xyz, xyz_to_lab
 import re
 import math
+from ..util import Vector, MutableVector
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 KE = 1
 KCH = 1
@@ -34,7 +39,7 @@ C3 = 0.075
 C4 = 0.0435
 
 
-def lab_to_din99o(lab):
+def lab_to_din99o(lab: Vector) -> MutableVector:
     """XYZ to Din99o."""
 
     l, a, b = lab
@@ -42,7 +47,7 @@ def lab_to_din99o(lab):
     l99o = C1 * math.copysign(math.log(abs(val)), val) / KE
 
     if a == 0 and b == 0:
-        a99o = b99o = 0
+        a99o = b99o = 0.0
     else:
         eo = a * math.cos(RADS) + b * math.sin(RADS)
         fo = FACTOR * (b * math.cos(RADS) - a * math.sin(RADS))
@@ -57,7 +62,7 @@ def lab_to_din99o(lab):
     return [l99o, a99o, b99o]
 
 
-def din99o_lab_to_lch(lab):
+def din99o_lab_to_lch(lab: Vector) -> MutableVector:
     """
     Convert Din99o Lab to Lch.
 
@@ -71,7 +76,7 @@ def din99o_lab_to_lch(lab):
     return [l99o, c99o, h99o]
 
 
-def din99o_to_lab(din99o):
+def din99o_to_lab(din99o: Vector) -> MutableVector:
     """Din99o to XYZ."""
 
     l99o, c99o, h99o = din99o_lab_to_lch(din99o)
@@ -99,13 +104,13 @@ class Din99o(LabBase):
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent, lab):
+    def _to_xyz(cls, parent: 'Color', lab: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lab_to_xyz(din99o_to_lab(lab), cls.white()))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return lab_to_din99o(xyz_to_lab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.white()))

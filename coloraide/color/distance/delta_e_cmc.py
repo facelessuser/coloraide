@@ -2,27 +2,37 @@
 from ..distance import DeltaE
 import math
 from ... import util
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
 class DECMC(DeltaE):
     """Delta E CMC class."""
 
     @staticmethod
-    def name():
+    def name() -> str:
         """Name of method."""
 
         return "cmc"
 
     @staticmethod
-    def distance(color, sample, l=2, c=1, **kwargs):
+    def distance(
+        color: 'Color',
+        sample: 'Color',
+        l: float = 2,
+        c: float = 1,
+        **kwargs: Any
+    ) -> float:
         """
         Delta E CMC.
 
         http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
         """
 
-        l1, a1, b1 = util.no_nan(color.convert("lab").coords())
-        l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
+        l1, a1, b1 = util.no_nans(color.convert("lab").coords())
+        l2, a2, b2 = util.no_nans(sample.convert("lab").coords())
 
         # Equation (3)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

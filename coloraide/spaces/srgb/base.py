@@ -2,8 +2,13 @@
 from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, OptionalPercent
 from ..xyz import XYZ
 from ... import util
+from ...util import Vector, MutableVector
 import re
 import math
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 RGB_TO_XYZ = [
     [0.4123907992659593, 0.357584339383878, 0.18048078840183432],
@@ -18,23 +23,23 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_srgb_to_xyz(rgb):
+def lin_srgb_to_xyz(rgb: Vector) -> MutableVector:
     """
     Convert an array of linear-light sRGB values to CIE XYZ using sRGB's own white.
 
     D65 (no chromatic adaptation)
     """
 
-    return util.dot(RGB_TO_XYZ, rgb)
+    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
 
 
-def xyz_to_lin_srgb(xyz):
+def xyz_to_lin_srgb(xyz: Vector) -> MutableVector:
     """Convert XYZ to linear-light sRGB."""
 
-    return util.dot(XYZ_TO_RGB, xyz)
+    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
 
 
-def lin_srgb(rgb):
+def lin_srgb(rgb: Vector) -> MutableVector:
     """
     Convert an array of sRGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -52,7 +57,7 @@ def lin_srgb(rgb):
     return result
 
 
-def gam_srgb(rgb):
+def gam_srgb(rgb: Vector) -> MutableVector:
     """
     Convert an array of linear-light sRGB values in the range 0.0-1.0 to gamma corrected form.
 
@@ -93,49 +98,49 @@ class SRGB(Space):
     )
 
     @property
-    def r(self):
+    def r(self) -> float:
         """Adjust red."""
 
         return self._coords[0]
 
     @r.setter
-    def r(self, value):
+    def r(self, value: float) -> None:
         """Adjust red."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def g(self):
+    def g(self) -> float:
         """Adjust green."""
 
         return self._coords[1]
 
     @g.setter
-    def g(self, value):
+    def g(self, value: float) -> None:
         """Adjust green."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def b(self):
+    def b(self) -> float:
         """Adjust blue."""
 
         return self._coords[2]
 
     @b.setter
-    def b(self, value):
+    def b(self, value: float) -> None:
         """Adjust blue."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent, rgb):
+    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
         """SRGB to XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_srgb_to_xyz(lin_srgb(rgb)))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """XYZ to SRGB."""
 
         return gam_srgb(xyz_to_lin_srgb(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))

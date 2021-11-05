@@ -5,11 +5,16 @@ from .din99o import Din99o
 from .. import util
 import math
 import re
+from ..util import Vector, MutableVector
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
 
-def lch_to_lab(lch):
+def lch_to_lab(lch: Vector) -> MutableVector:
     """Din99o Lch to lab."""
 
     l, c, h = lch
@@ -27,7 +32,7 @@ def lch_to_lab(lch):
     ]
 
 
-def lab_to_lch(lab):
+def lab_to_lch(lab: Vector) -> MutableVector:
     """Din99o Lab to Lch."""
 
     l, a, b = lab
@@ -51,25 +56,25 @@ class Din99oLch(LchBase):
     WHITE = "D65"
 
     @classmethod
-    def _to_din99o(cls, parent, lch):
+    def _to_din99o(cls, parent: 'Color', lch: Vector) -> MutableVector:
         """To Lab."""
 
         return lch_to_lab(lch)
 
     @classmethod
-    def _from_din99o(cls, parent, lab):
+    def _from_din99o(cls, parent: 'Color', lab: Vector) -> MutableVector:
         """To Lab."""
 
         return lab_to_lch(lab)
 
     @classmethod
-    def _to_xyz(cls, parent, lch):
+    def _to_xyz(cls, parent: 'Color', lch: Vector) -> MutableVector:
         """To XYZ."""
 
         return Din99o._to_xyz(parent, cls._to_din99o(parent, lch))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_din99o(parent, Din99o._from_xyz(parent, xyz))

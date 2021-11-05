@@ -1,9 +1,18 @@
 """Utilities."""
-import copy
 import math
 import numbers
 import warnings
 from functools import wraps
+from typing import Optional, Sequence, List, Union, Any, Callable, Mapping, cast, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .color import Color
+
+Vector = Sequence[float]
+Matrix = Sequence[Sequence[float]]
+MutableVector = List[float]
+MutableMatrix = List[List[float]]
+ColorInput = Union['Color', str, Mapping[str, Any]]
 
 NaN = float('nan')
 INF = float('inf')
@@ -49,14 +58,14 @@ C2 = 2413 / 128
 C3 = 2392 / 128
 
 
-def xy_to_xyz(xy, Y=1):
+def xy_to_xyz(xy: Vector, Y: float = 1) -> MutableVector:
     """Convert `xyY` to `xyz`."""
 
     x, y = xy
     return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (1 - x - y) * Y / y]
 
 
-def xyz_to_uv(xyz):
+def xyz_to_uv(xyz: Vector) -> MutableVector:
     """XYZ to UV."""
 
     x, y, z = xyz
@@ -67,10 +76,10 @@ def xyz_to_uv(xyz):
     else:
         u = v = 0
 
-    return u, v
+    return [u, v]
 
 
-def uv_to_xy(uv):
+def uv_to_xy(uv: Vector) -> MutableVector:
     """XYZ to UV."""
 
     u, v = uv
@@ -81,10 +90,10 @@ def uv_to_xy(uv):
     else:
         x = y = 0
 
-    return x, y
+    return [x, y]
 
 
-def xy_to_uv_1960(xy):
+def xy_to_uv_1960(xy: Vector) -> MutableVector:
     """XYZ to UV."""
 
     x, y = xy
@@ -95,10 +104,10 @@ def xy_to_uv_1960(xy):
     else:
         u = v = 0
 
-    return u, v
+    return [u, v]
 
 
-def uv_1960_to_xy(uv):
+def uv_1960_to_xy(uv: Vector) -> MutableVector:
     """XYZ to UV."""
 
     u, v = uv
@@ -109,10 +118,10 @@ def uv_1960_to_xy(uv):
     else:
         x = y = 0
 
-    return x, y
+    return [x, y]
 
 
-def xyz_to_xyY(xyz, white):
+def xyz_to_xyY(xyz: Vector, white: Vector) -> MutableVector:
     """XYZ to `xyY`."""
 
     x, y, z = xyz
@@ -120,7 +129,14 @@ def xyz_to_xyY(xyz, white):
     return [white[0], white[1], y] if d == 0 else [x / d, y / d, y]
 
 
-def pq_st2084_inverse_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):
+def pq_st2084_inverse_eotf(
+    values: Vector,
+    c1: float = C1,
+    c2: float = C2,
+    c3: float = C3,
+    m1: float = M1,
+    m2: float = M2
+) -> MutableVector:
     """Perceptual quantizer (SMPTE ST 2084) - inverse EOTF."""
 
     adjusted = []
@@ -131,7 +147,14 @@ def pq_st2084_inverse_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):
     return adjusted
 
 
-def pq_st2084_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):
+def pq_st2084_eotf(
+    values: Vector,
+    c1: float = C1,
+    c2: float = C2,
+    c3: float = C3,
+    m1: float = M1,
+    m2: float = M2
+) -> MutableVector:
     """Perceptual quantizer (SMPTE ST 2084) - EOTF."""
 
     im1 = 1 / m1
@@ -145,184 +168,196 @@ def pq_st2084_eotf(values, c1=C1, c2=C2, c3=C3, m1=M1, m2=M2):
     return adjusted
 
 
-def xyz_d65_to_absxyzd65(xyzd65):
+def xyz_d65_to_absxyzd65(xyzd65: Vector) -> MutableVector:
     """XYZ D65 to Absolute XYZ D65."""
 
     return [max(c * YW, 0) for c in xyzd65]
 
 
-def absxyzd65_to_xyz_d65(absxyzd65):
+def absxyzd65_to_xyz_d65(absxyzd65: Vector) -> MutableVector:
     """Absolute XYZ D65 XYZ D65."""
 
     return [max(c / YW, 0) for c in absxyzd65]
 
 
-def npow(base, exp):
+def npow(base: float, exp: float) -> float:
     """Perform `pow` with a negative number."""
 
     return math.copysign(abs(base) ** exp, base)
 
 
-def constrain_hue(hue):
+def constrain_hue(hue: float) -> float:
     """Constrain hue to 0 - 360."""
 
     return hue % 360 if not is_nan(hue) else hue
 
 
-def is_number(value):
+def is_number(value: Any) -> bool:
     """Check if value is a number."""
 
     return isinstance(value, numbers.Number)
 
 
-def is_nan(value):
+def is_nan(value: float) -> bool:
     """Check if value is "not a number"."""
 
     return math.isnan(value)
 
 
-def no_nan(value, default=0.0):
+def no_nans(value: Vector, default: float = 0.0) -> MutableVector:
+    """Ensure there are no `NaN` values in a sequence."""
+
+    return [(default if is_nan(x) else x) for x in value]
+
+
+def no_nan(value: float, default: float = 0.0) -> float:
     """Convert list of numbers or single number to valid numbers."""
 
-    if is_number(value):
-        return default if is_nan(value) else value
-    else:
-        return [(default if is_nan(x) else x) for x in value]
+    return default if is_nan(value) else value
 
 
-def cmp_coords(c1, c2):
+def cmp_coords(c1: Vector, c2: Vector) -> bool:
     """Compare coordinates."""
 
-    if is_number(c1):
-        return (math.isnan(c1) and math.isnan(c2)) or c1 == c2
-    elif len(c1) != len(c2):
+    if len(c1) != len(c2):
         return False
     else:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def dot(a, b):
+def dot(a: Union[float, Vector, Matrix], b: Union[float, Vector, Matrix]) -> Union[float, MutableVector, MutableMatrix]:
     """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
 
     is_a_num = is_number(a)
     is_b_num = is_number(b)
-    is_a_vec = not is_a_num and is_number(a[0])
-    is_b_vec = not is_b_num and is_number(b[0])
+    is_a_vec = not is_a_num and is_number(cast(Union[Vector, Matrix], a)[0])
+    is_b_vec = not is_b_num and is_number(cast(Union[Vector, Matrix], b)[0])
     is_a_mat = not is_a_num and not is_a_vec
     is_b_mat = not is_b_num and not is_b_vec
 
     if is_a_num or is_b_num:
         # Trying to dot a number with a vector or a matrix, so just multiply
-        value = multiply(a, b)
+        return multiply(cast(float, a), cast(float, b))
     elif is_a_vec and is_b_vec:
         # Dot product of two vectors
-        value = sum([x * y for x, y in zip(a, b)])
+        return sum([x * y for x, y in zip(cast(Vector, a), cast(Vector, b))])
     elif is_a_mat and is_b_vec:
         # Dot product of matrix and a vector
-        value = [sum([x * y for x, y in zip(row, b)]) for row in a]
+        return [sum([x * y for x, y in zip(row, cast(Vector, b))]) for row in cast(Matrix, a)]
     elif is_a_vec and is_b_mat:
         # Dot product of vector and a matrix
-        value = [sum([x * y for x, y in zip(a, col)]) for col in zip(*b)]
+        return [sum([x * y for x, y in zip(cast(Vector, a), col)]) for col in zip(*cast(Matrix, b))]
     else:
         # Dot product of two matrices
-        value = [[sum(x * y for x, y in zip(row, col)) for col in zip(*b)] for row in a]
+        return cast(
+            MutableMatrix,
+            [[sum(x * y for x, y in zip(row, col)) for col in zip(*cast(Matrix, b))] for row in cast(Matrix, a)]
+        )
 
-    return value
 
-
-def multiply(a, b):
+def multiply(
+    a: Union[float, Vector, Matrix],
+    b: Union[float, Vector, Matrix]
+) -> Union[float, MutableVector, MutableMatrix]:
     """Multiply simple numbers, vectors, and 2D matrices."""
 
     is_a_num = is_number(a)
     is_b_num = is_number(b)
-    is_a_vec = not is_a_num and is_number(a[0])
-    is_b_vec = not is_b_num and is_number(b[0])
+    is_a_vec = not is_a_num and is_number(cast(Union[Vector, Matrix], a)[0])
+    is_b_vec = not is_b_num and is_number(cast(Union[Vector, Matrix], b)[0])
     is_a_mat = not is_a_num and not is_a_vec
     is_b_mat = not is_b_num and not is_b_vec
 
     if is_a_num and is_b_num:
         # Multiply two numbers
-        value = a * b
+        return cast(float, a) * cast(float, b)
     elif is_a_num and not is_b_num:
         # Multiply a number and vector/matrix
-        value = [multiply(a, i) for i in b]
+        return cast(MutableVector, [multiply(cast(float, a), i) for i in cast(Union[Vector, Matrix], b)])
     elif is_b_num and not is_a_num:
         # Multiply a vector/matrix and number
-        value = [multiply(i, b) for i in a]
+        return cast(MutableVector, [multiply(i, cast(float, b)) for i in cast(Union[Vector, Matrix], a)])
     elif is_a_vec and is_b_vec:
         # Multiply two vectors
-        value = [x * y for x, y in zip(a, b)]
+        return cast(MutableVector, [x * y for x, y in zip(cast(Vector, a), cast(Vector, b))])
     elif is_a_mat and is_b_vec:
         # Multiply matrix and a vector
-        value = [[x * y for x, y in zip(row, b)] for row in a]
+        return cast(MutableMatrix, [[x * y for x, y in zip(row, cast(Vector, b))] for row in cast(Matrix, a)])
     elif is_a_vec and is_b_mat:
         # Multiply vector and a matrix
-        value = [[x * y for x, y in zip(row, a)] for row in b]
+        return cast(MutableMatrix, [[x * y for x, y in zip(row, cast(Vector, a))] for row in cast(Matrix, b)])
     else:
         # Multiply two matrices
-        value = [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+        return cast(
+            MutableMatrix,
+            [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
+        )
 
-    return value
 
-
-def divide(a, b):
+def divide(
+    a: Union[float, Vector, Matrix],
+    b: Union[float, Vector, Matrix]
+) -> Union[float, MutableVector, MutableMatrix]:
     """Divide simple numbers, vectors, and 2D matrices."""
 
-    is_a_num = isinstance(a, numbers.Number)
-    is_b_num = isinstance(b, numbers.Number)
-    is_a_vec = not is_a_num and isinstance(a[0], numbers.Number)
-    is_b_vec = not is_b_num and isinstance(b[0], numbers.Number)
+    is_a_num = is_number(a)
+    is_b_num = is_number(b)
+    is_a_vec = not is_a_num and is_number(cast(Union[Vector, Matrix], a)[0])
+    is_b_vec = not is_b_num and is_number(cast(Union[Vector, Matrix], b)[0])
     is_a_mat = not is_a_num and not is_a_vec
     is_b_mat = not is_b_num and not is_b_vec
 
     if is_a_num and is_b_num:
         # Divide two numbers
-        value = a / b
+        return cast(float, a) / cast(float, b)
     elif is_a_num and not is_b_num:
         # Divide a number and vector/matrix
-        value = [divide(a, i) for i in b]
+        return cast(MutableVector, [divide(cast(float, a), i) for i in cast(Union[Vector, Matrix], b)])
     elif is_b_num and not is_a_num:
         # Divide a vector/matrix and number
-        value = [divide(i, b) for i in a]
+        return cast(MutableVector, [divide(i, cast(float, b)) for i in cast(Union[Vector, Matrix], a)])
     elif is_a_vec and is_b_vec:
         # Divide two vectors
-        value = [x / y for x, y in zip(a, b)]
+        return cast(MutableVector, [x / y for x, y in zip(cast(Vector, a), cast(Vector, b))])
     elif is_a_mat and is_b_vec:
         # Divide matrix and a vector
-        value = [[x / y for x, y in zip(row, b)] for row in a]
+        return cast(MutableMatrix, [[x / y for x, y in zip(row, cast(Vector, b))] for row in cast(Matrix, a)])
     elif is_a_vec and is_b_mat:
         # Divide vector and a matrix
-        value = [[x / y for x, y in zip(row, a)] for row in b]
+        return cast(MutableMatrix, [[x / y for x, y in zip(row, cast(Vector, a))] for row in cast(Matrix, b)])
     else:
         # Divide two matrices
-        value = [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(a, b)]
+        return cast(
+            MutableMatrix,
+            [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
+        )
 
-    return value
 
-
-def diag(v, k=0):
+def diag(v: Union[Vector, Matrix], k: int = 0) -> Union[MutableVector, MutableMatrix]:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
 
-    is_vector = isinstance(v[0], numbers.Number)
     size = len(v)
-    d = []
 
-    if is_vector:
-        # Create a diagonal matrix with the provided values
-        for i, value in enumerate(v):
-            # Check that the matrix is square, we .cannot invert the matrix if it is not
-            d.append([0] * i + [value] + [0] * (size - i - 1))
+    if isinstance(v[0], numbers.Number):
+        m = []  # type: MutableMatrix
+        # Create a diagonal matrix with the provided vector
+        for i, value in enumerate(cast(Vector, v)):
+            m.append(([0.0] * i) + [value] + ([0.0] * (size - i - 1)))
+        return m
     else:  # pragma: no cover
-        for r in v:
+        d = []  # type: MutableVector
+        for r in cast(Matrix, v):
+            # Check that the matrix is square
             if len(r) != size:
                 raise ValueError('Matrix must be a n x n matrix')
+            # Return just the specified diagonal vector
             if 0 <= k < size:
                 d.append(r[k])
             k += 1
-    return d
+        return d
 
 
-def inv(matrix):
+def inv(matrix: Matrix) -> MutableMatrix:
     """
     Invert the matrix.
 
@@ -360,15 +395,15 @@ def inv(matrix):
 
     size = len(matrix)
     indices = list(range(size))
-    m = copy.deepcopy(matrix)
+    m = [list(x) for x in matrix]
 
     # Ensure we have a square matrix
     for r in m:
         if len(r) != size:  # pragma: no cover
             raise ValueError('Matrix must be a n x n matrix')
 
-    # Create an identity matrix of the same size as our provided matrix
-    im = diag([1] * size)
+    # Create an identity matrix of the same size as our provided vector
+    im = cast(List[List[float]], diag([1] * size))
 
     # Iterating through each row, we will scale each row by it's "focus diagonal".
     # Then using the scaled row, we will adjust the other rows.
@@ -408,13 +443,13 @@ def inv(matrix):
     return im
 
 
-def cbrt(n):
+def cbrt(n: float) -> float:
     """Calculate cube root."""
 
     return nth_root(n, 3)
 
 
-def nth_root(n, p):
+def nth_root(n: float, p: float) -> float:
     """Calculate nth root."""
 
     if p == 0:  # pragma: no cover
@@ -427,20 +462,20 @@ def nth_root(n, p):
     return math.copysign(abs(n) ** (p ** -1), n)
 
 
-def clamp(value, mn=None, mx=None):
+def clamp(value: float, mn: Optional[float] = None, mx: Optional[float] = None) -> float:
     """Clamp the value to the the given minimum and maximum."""
 
-    if mn is None and mx is None:
-        return value
-    elif mn is None:
-        return min(value, mx)
-    elif mx is None:
-        return max(value, mn)
-    else:
+    if mn is not None and mx is not None:
         return max(min(value, mx), mn)
+    elif mn is not None:
+        return max(value, mn)
+    elif mx is not None:
+        return min(value, mx)
+    else:
+        return value
 
 
-def fmt_float(f, p=0):
+def fmt_float(f: float, p: int = 0) -> str:
     """
     Set float precision and trim precision zeros.
 
@@ -457,7 +492,7 @@ def fmt_float(f, p=0):
     return string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
 
 
-def fmt_percent(f, p=0):
+def fmt_percent(f: float, p: int = 0) -> str:
     """Get percent."""
 
     if not is_nan(f):
@@ -467,7 +502,7 @@ def fmt_percent(f, p=0):
     return value
 
 
-def adjust_precision(f, p=0):
+def adjust_precision(f: float, p: int = 0) -> float:
     """Adjust precision."""
 
     if p == -1:
@@ -482,14 +517,14 @@ def adjust_precision(f, p=0):
         return round_half_up(whole if digits >= p else f, p - digits)
 
 
-def round_half_up(n, scale=0):
+def round_half_up(n: float, scale: int = 0) -> float:
     """Round half up."""
 
-    mult = 10 ** scale
+    mult = 10.0 ** scale
     return math.floor(n * mult + 0.5) / mult
 
 
-def deprecated(message, stacklevel=2):  # pragma: no cover
+def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover
     """
     Raise a `DeprecationWarning` when wrapped function/method is called.
 
@@ -500,11 +535,11 @@ def deprecated(message, stacklevel=2):  # pragma: no cover
             pass
     """
 
-    def _wrapper(func):
+    def _wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def _deprecated_func(*args, **kwargs):
+        def _deprecated_func(*args: Any, **kwargs: Any) -> Any:
             warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
+                f"'{func.__name__}' is deprecated. {message}",
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
@@ -513,7 +548,7 @@ def deprecated(message, stacklevel=2):  # pragma: no cover
     return _wrapper
 
 
-def warn_deprecated(message, stacklevel=2):  # pragma: no cover
+def warn_deprecated(message: str, stacklevel: int = 2) -> None:  # pragma: no cover
     """Warn deprecated."""
 
     warnings.warn(

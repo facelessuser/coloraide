@@ -4,11 +4,16 @@ from ..lab.base import Lab
 from ... import util
 import re
 import math
+from ...util import Vector, MutableVector
+from typing import Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
 
-def lab_to_lch(lab):
+def lab_to_lch(lab: Vector) -> MutableVector:
     """Lab to Lch."""
 
     l, a, b = lab
@@ -25,7 +30,7 @@ def lab_to_lch(lab):
     return test
 
 
-def lch_to_lab(lch):
+def lch_to_lab(lch: Vector) -> MutableVector:
     """Lch to Lab."""
 
     l, c, h = lch
@@ -36,11 +41,11 @@ def lch_to_lab(lch):
     if c < 0.0:
         c = 0.0
 
-    return (
+    return [
         l,
         c * math.cos(math.radians(h)),
         c * math.sin(math.radians(h))
-    )
+    ]
 
 
 class LchBase(Lchish, Space):
@@ -64,43 +69,43 @@ class LchBase(Lchish, Space):
     )
 
     @property
-    def l(self):
+    def l(self) -> float:
         """Lightness."""
 
         return self._coords[0]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def c(self):
+    def c(self) -> float:
         """Chroma."""
 
         return self._coords[1]
 
     @c.setter
-    def c(self, value):
+    def c(self, value: float) -> None:
         """chroma."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def h(self):
+    def h(self) -> float:
         """Hue."""
 
         return self._coords[2]
 
     @h.setter
-    def h(self, value):
+    def h(self, value: float) -> None:
         """Shift the hue."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
         if coords[1] < ACHROMATIC_THRESHOLD:
@@ -117,25 +122,25 @@ class Lch(LchBase):
     WHITE = "D50"
 
     @classmethod
-    def _to_lab(cls, parent, lch):
+    def _to_lab(cls, parent: 'Color', lch: Vector) -> MutableVector:
         """To Lab."""
 
         return lch_to_lab(lch)
 
     @classmethod
-    def _from_lab(cls, parent, lab):
+    def _from_lab(cls, parent: 'Color', lab: Vector) -> MutableVector:
         """To Lab."""
 
         return lab_to_lch(lab)
 
     @classmethod
-    def _to_xyz(cls, parent, lch):
+    def _to_xyz(cls, parent: 'Color', lch: Vector) -> MutableVector:
         """To XYZ."""
 
         return Lab._to_xyz(parent, cls._to_lab(parent, lch))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_lab(parent, Lab._from_xyz(parent, xyz))

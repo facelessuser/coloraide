@@ -2,6 +2,10 @@
 import math
 from ... import util
 from ..distance import DeltaE
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 G_CONST = 25 ** 7
 
@@ -10,13 +14,20 @@ class DE2000(DeltaE):
     """Delta E 2000 class."""
 
     @staticmethod
-    def name():
+    def name() -> str:
         """Name of method."""
 
         return "2000"
 
     @staticmethod
-    def distance(color, sample, kl=1, kc=1, kh=1, **kwargs):
+    def distance(
+        color: 'Color',
+        sample: 'Color',
+        kl: float = 1,
+        kc: float = 1,
+        kh: float = 1,
+        **kwargs: Any
+    ) -> float:
         """
         Calculate distance doing a direct translation of the algorithm from the CIE Delta E 2000 paper.
 
@@ -26,8 +37,8 @@ class DE2000(DeltaE):
         http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
         """
 
-        l1, a1, b1 = util.no_nan(color.convert("lab").coords())
-        l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
+        l1, a1, b1 = util.no_nans(color.convert("lab").coords())
+        l2, a2, b2 = util.no_nans(sample.convert("lab").coords())
 
         # Equation (2)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

@@ -27,17 +27,17 @@ COLOR_PARTS = {
 }
 
 
-def norm_float(string):
+def norm_float(string: str) -> float:
     """Normalize a float value."""
 
     if string == "none":
-        string = util.NaN
+        return util.NaN
     elif string.lower().endswith(('e-', 'e+', 'e')):
         string += '0'
     return float(string)
 
 
-def norm_hex_channel(string):
+def norm_hex_channel(string: str) -> float:
     """Normalize the hex string to a form we can handle."""
 
     if string.startswith('#'):
@@ -47,49 +47,49 @@ def norm_hex_channel(string):
         raise ValueError("Unexpected value '{}'".format(string))
 
 
-def norm_percent_channel(value, scale=False):
+def norm_percent_channel(string: str, scale: bool = False) -> float:
     """Normalize percent channel."""
 
-    if value == 'none':
-        return norm_float(value)
-    elif value.endswith('%'):
-        value = norm_float(value[:-1])
+    if string == 'none':
+        return norm_float(string)
+    elif string.endswith('%'):
+        value = norm_float(string[:-1])
         return value / 100.0 if scale else value
     else:  # pragma: no cover
         # Should only occur internally if we are doing something wrong.
-        raise ValueError("Unexpected value '{}'".format(value))
+        raise ValueError("Unexpected value '{}'".format(string))
 
 
-def norm_color_channel(value, scale=True):
+def norm_color_channel(string: str, scale: bool = True) -> float:
     """Normalize percent channel."""
 
-    if value.endswith('%'):
-        value = norm_float(value[:-1])
+    if string.endswith('%'):
+        value = norm_float(string[:-1])
         return value / 100.0 if scale else value
     else:
-        return norm_float(value)
+        return norm_float(string)
 
 
-def norm_rgb_channel(value):
+def norm_rgb_channel(string: str) -> float:
     """Normalize RGB channel."""
 
-    if value.endswith("%"):
-        return norm_percent_channel(value, True)
+    if string.endswith("%"):
+        return norm_percent_channel(string, True)
     else:
-        return norm_float(value) * RGB_CHANNEL_SCALE
+        return norm_float(string) * RGB_CHANNEL_SCALE
 
 
-def norm_alpha_channel(value):
+def norm_alpha_channel(string: str) -> float:
     """Normalize alpha channel."""
 
-    if value.endswith("%"):
-        value = norm_percent_channel(value, True)
+    if string.endswith("%"):
+        value = norm_percent_channel(string, True)
     else:
-        value = norm_float(value)
+        value = norm_float(string)
     return util.clamp(value, 0.0, 1.0)
 
 
-def norm_angle_channel(angle):
+def norm_angle_channel(angle: str) -> float:
     """Normalize angle units."""
 
     if angle.endswith('turn'):

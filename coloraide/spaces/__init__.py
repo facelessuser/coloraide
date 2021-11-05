@@ -1,7 +1,12 @@
 """Color base."""
 from abc import ABCMeta
 from .. import util
+from ..util import Vector, MutableVector
 from . import _parse
+from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, cast, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 # Technically this form can handle any number of channels as long as any
 # extra are thrown away. We only support 6 currently. If we ever support
@@ -45,25 +50,27 @@ class OptionalPercent(float):
     """Optional percent type."""
 
 
-class GamutBound(tuple):
+class GamutBound(Tuple[float]):
     """Bounded gamut value."""
 
 
-class GamutUnbound(tuple):
+class GamutUnbound(Tuple[float]):
     """Unbounded gamut value."""
 
 
 class Cylindrical:
     """Cylindrical space."""
 
+    CHANNEL_NAMES: Tuple[str, ...]
+
     @classmethod
-    def hue_name(cls):
+    def hue_name(cls) -> str:
         """Hue channel name."""
 
         return "h"
 
     @classmethod
-    def hue_index(cls):  # pragma: no cover
+    def hue_index(cls) -> int:  # pragma: no cover
         """Get hue index."""
 
         return cls.CHANNEL_NAMES.index(cls.hue_name())
@@ -72,14 +79,16 @@ class Cylindrical:
 class Labish:
     """Lab-ish color spaces."""
 
+    CHANNEL_NAMES: Tuple[str, ...]
+
     @classmethod
-    def labish_names(cls):
+    def labish_names(cls) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
         return cls.CHANNEL_NAMES[:3]
 
     @classmethod
-    def labish_indexes(cls):  # pragma: no cover
+    def labish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.labish_names()
@@ -89,14 +98,16 @@ class Labish:
 class Lchish(Cylindrical):
     """Lch-ish color spaces."""
 
+    CHANNEL_NAMES: Tuple[str, ...]
+
     @classmethod
-    def lchish_names(cls):  # pragma: no cover
+    def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
         return cls.CHANNEL_NAMES[:3]
 
     @classmethod
-    def lchish_indexes(cls):  # pragma: no cover
+    def lchish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.lchish_names()
@@ -106,7 +117,9 @@ class Lchish(Cylindrical):
 class BaseSpace(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
-    def __init__(cls, name, bases, clsdict):
+    CHANNEL_ALIASES: Dict[str, str]
+
+    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
@@ -121,19 +134,19 @@ class Space(
     # Color space name
     SPACE = ""
     # Serialized name
-    SERIALIZE = None
+    SERIALIZE: Optional[Tuple[str, ...]] = None
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
-    CHANNEL_NAMES = ("alpha",)
+    CHANNEL_NAMES: Tuple[str, ...] = ("alpha",)
     # Channel aliases
-    CHANNEL_ALIASES = {}
+    CHANNEL_ALIASES: Dict[str, str] = {}
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
-    DEFAULT_MATCH = ""
+    DEFAULT_MATCH: Optional[Pattern[str]] = None
     # Match pattern variable for classes to override so we can also
     # maintain the default and other alternatives.
-    MATCH = ""
+    MATCH: Optional[Pattern[str]] = None
     # Should this color also be checked in a different color space? Only when set to a string (specifying a color space)
     # will the default gamut checking also check the specified space as well as the current.
     #
@@ -142,11 +155,13 @@ class Space(
     #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
     #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
     #   space, the values can be greatly out of specification (looking at you HSL).
-    GAMUT_CHECK = None
+    GAMUT_CHECK: Optional[str] = None
+    # Range of channels
+    RANGE: Tuple[Tuple[float, ...], ...] = tuple()
     # White point
     WHITE = "D50"
 
-    def __init__(self, color, alpha=None):
+    def __init__(self, color: Union['Space', Vector], alpha: Optional[float] = None) -> None:
         """Initialize."""
 
         self._alpha = util.NaN
@@ -156,7 +171,7 @@ class Space(
             for index, channel in enumerate(color.coords()):
                 self.set(self.CHANNEL_NAMES[index], channel)
             self.alpha = color.alpha
-        elif isinstance(color, (list, tuple)):
+        elif isinstance(color, Sequence):
             if len(color) != self.NUM_COLOR_CHANNELS:  # pragma: no cover
                 # Only likely to happen with direct usage internally.
                 raise ValueError(
@@ -169,7 +184,7 @@ class Space(
             # Only likely to happen with direct usage internally.
             raise TypeError("Unexpected type '{}' received".format(type(color)))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation."""
 
         gamut = self.RANGE
@@ -186,49 +201,49 @@ class Space(
 
     __str__ = __repr__
 
-    def _handle_input(self, value):
+    def _handle_input(self, value: float) -> float:
         """Handle numerical input."""
 
         if not util.is_number(value):
             raise TypeError("Value should be a number not type '{}'".format(type(value)))
-        return float(value) if not util.is_nan(value) else value
+        return float(value)
 
-    def coords(self):
+    def coords(self) -> MutableVector:
         """Coordinates."""
 
         return self._coords[:]
 
     @classmethod
-    def space(cls):
+    def space(cls) -> str:
         """Get the color space."""
 
         return cls.SPACE
 
     @classmethod
-    def _serialize(cls):
+    def _serialize(cls) -> Tuple[str, ...]:
         """Get the serialized name."""
 
         return (cls.space(),) if cls.SERIALIZE is None else cls.SERIALIZE
 
     @classmethod
-    def white(cls):
+    def white(cls) -> MutableVector:
         """Get the white color for this color space."""
 
-        return WHITES[cls.WHITE]
+        return list(WHITES[cls.WHITE])
 
     @property
-    def alpha(self):
+    def alpha(self) -> float:
         """Alpha channel."""
 
         return self._alpha
 
     @alpha.setter
-    def alpha(self, value):
+    def alpha(self, value: float) -> None:
         """Adjust alpha."""
 
         self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
 
-    def set(self, name, value):  # noqa: A003
+    def set(self, name: str, value: float) -> 'Space':  # noqa: A003
         """Set the given channel."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
@@ -238,17 +253,24 @@ class Space(
         setattr(self, name, value)
         return self
 
-    def get(self, name):
+    def get(self, name: str) -> float:
         """Get the given channel's value."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
-        return getattr(self, name)
+        return cast(float, getattr(self, name))
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
-    ):
+        self,
+        parent: 'Color',
+        *,
+        alpha: Optional[bool] = None,
+        precision: Optional[int] = None,
+        fit: Union[bool, str] = True,
+        none: bool = False,
+        **kwargs: Any
+    ) -> str:
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
         if precision is None:
@@ -260,7 +282,7 @@ class Space(
         method = None if not isinstance(fit, str) else fit
         coords = parent.fit(method=method).coords() if fit else self.coords()
         if not none:
-            coords = util.no_nan(coords)
+            coords = util.no_nans(coords)
         gamut = self.RANGE
         template = "color({} {} / {})" if alpha else "color({} {})"
 
@@ -277,16 +299,21 @@ class Space(
             return template.format(self._serialize()[0], ' '.join(values))
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
         return coords, alpha
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=True):
+    def match(
+        cls,
+        string: str,
+        start: int = 0,
+        fullmatch: bool = True
+    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
         """Match a color by string."""
 
-        m = cls.DEFAULT_MATCH.match(string, start)
+        m = cast(Pattern[str], cls.DEFAULT_MATCH).match(string, start)
         if (
             m is not None and
             (

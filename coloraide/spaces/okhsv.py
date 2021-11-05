@@ -27,20 +27,25 @@ SOFTWARE.
 """
 from ..spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
 from .. import util
-from .oklab.base import Oklab
-from .okhsl import oklab_to_linear_srgb, toe, toe_inv, find_cusp, to_st
+from .oklab.base import Oklab, oklab_to_linear_srgb
+from .okhsl import toe, toe_inv, find_cusp, to_st
 import re
 import math
+from ..util import Vector, MutableVector
+from typing import Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 
-def okhsv_to_oklab(hsv):
+def okhsv_to_oklab(hsv: Vector) -> MutableVector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
     h = util.no_nan(h) / 360.0
 
     l = toe_inv(v)
-    a = b = 0
+    a = b = 0.0
 
     if l != 0 and s != 0:
         a_ = math.cos(2.0 * math.pi * h)
@@ -81,14 +86,14 @@ def okhsv_to_oklab(hsv):
     return [l, a, b]
 
 
-def oklab_to_okhsv(lab):
+def oklab_to_okhsv(lab: Vector) -> MutableVector:
     """Oklab to Okhsv."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     l = lab[0]
 
     h = util.NaN
-    s = 0
+    s = 0.0
     v = toe(l)
 
     if c != 0 and l != 0 and l != 1:
@@ -152,43 +157,43 @@ class Okhsv(Cylindrical, Space):
     )
 
     @property
-    def h(self):
+    def h(self) -> float:
         """Hue channel."""
 
         return self._coords[0]
 
     @h.setter
-    def h(self, value):
+    def h(self, value: float) -> None:
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def s(self):
+    def s(self) -> float:
         """Saturation channel."""
 
         return self._coords[1]
 
     @s.setter
-    def s(self, value):
+    def s(self, value: float) -> None:
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def v(self):
+    def v(self) -> float:
         """Value channel."""
 
         return self._coords[2]
 
     @v.setter
-    def v(self, value):
+    def v(self, value: float) -> None:
         """Set value channel."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
         if coords[1] == 0:
@@ -196,49 +201,49 @@ class Okhsv(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, okhsv):
+    def _to_srgb(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
         """To sRGB."""
 
         return Oklab._to_srgb(parent, cls._to_oklab(parent, okhsv))
 
     @classmethod
-    def _from_srgb(cls, parent, srgb):
+    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
         """From sRGB."""
 
         return cls._from_oklab(parent, Oklab._from_srgb(parent, srgb))
 
     @classmethod
-    def _to_srgb_linear(cls, parent, okhsv):
+    def _to_srgb_linear(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
         """To sRGB Linear."""
 
         return Oklab._to_srgb_linear(parent, cls._to_oklab(parent, okhsv))
 
     @classmethod
-    def _from_srgb_linear(cls, parent, srgbl):
+    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
         """From SRGB Linear."""
 
         return cls._from_oklab(parent, Oklab._from_srgb_linear(parent, srgbl))
 
     @classmethod
-    def _to_oklab(cls, parent, okhsv):
+    def _to_oklab(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
         """To Oklab."""
 
         return okhsv_to_oklab(okhsv)
 
     @classmethod
-    def _from_oklab(cls, parent, oklab):
+    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """From Oklab."""
 
         return oklab_to_okhsv(oklab)
 
     @classmethod
-    def _to_xyz(cls, parent, okhsv):
+    def _to_xyz(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
         """To XYZ."""
 
         return Oklab._to_xyz(parent, cls._to_oklab(parent, okhsv))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

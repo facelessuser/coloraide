@@ -1,18 +1,24 @@
 """Gamut handling."""
 from ... import util
+from ...util import MutableVector
 from ... spaces import Angle, GamutBound
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
-def clip_channels(color):
+def clip_channels(color: 'Color') -> MutableVector:
     """Clip channels."""
 
-    channels = util.no_nan(color.coords())
+    channels = util.no_nans(color.coords())
     gamut = color._space.RANGE
     fit = []
 
     for i, value in enumerate(channels):
-        a, b = gamut[i]
+        a = gamut[i][0]  # type: Optional[float]
+        b = gamut[i][1]  # type: Optional[float]
         is_bound = isinstance(gamut[i], GamutBound)
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
@@ -24,20 +30,20 @@ def clip_channels(color):
         if not is_bound:  # pragma: no cover
             # Will not execute unless we have a space that defines some coordinates
             # as bound and others as not. We do not currently have such spaces.
-            a = None
-            b = None
+            a = b = None
 
         # Fit value in bounds.
         fit.append(util.clamp(value, a, b))
     return fit
 
 
-def verify(color, tolerance):
+def verify(color: 'Color', tolerance: float) -> bool:
     """Verify the values are in bound."""
 
-    channels = util.no_nan(color.coords())
+    channels = util.no_nans(color.coords())
     for i, value in enumerate(channels):
-        a, b = color._space.RANGE[i]
+        a = color._space.RANGE[i][0]  # type: Optional[float]
+        b = color._space.RANGE[i][1]  # type: Optional[float]
         is_bound = isinstance(color._space.RANGE[i], GamutBound)
 
         # Angles will wrap, so no sense checking them
@@ -46,8 +52,7 @@ def verify(color, tolerance):
 
         # These parameters are unbounded
         if not is_bound:
-            a = None
-            b = None
+            a = b = None
 
         # Check if bounded values are in bounds
         if (a is not None and value < (a - tolerance)) or (b is not None and value > (b + tolerance)):
@@ -60,10 +65,10 @@ class Fit(ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def name():
+    def name() -> str:
         """Get name of method."""
 
     @staticmethod
     @abstractmethod
-    def distance(color):
+    def fit(color: 'Color') -> MutableVector:
         """Get coordinates of the new gamut mapped color."""

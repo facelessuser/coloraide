@@ -5,6 +5,8 @@ A simple name to hex and hex to name map of CSS3 colors.
 
 http://www.w3.org/TR/SVG/types.html#ColorKeywords
 """
+from typing import Optional
+
 name2hex_map = {
     'aliceblue': '#f0f8ff',
     'antiquewhite': '#faebd7',
@@ -162,13 +164,13 @@ name2hex_map = {
 hex2name_map = dict([(v, k) for k, v in name2hex_map.items()])
 
 
-def hex2name(value):
+def hex2name(value: str) -> Optional[str]:
     """Convert CSS hex to webcolor name."""
 
     return hex2name_map.get(value.lower(), None)
 
 
-def name2hex(name):
+def name2hex(name: str) -> Optional[str]:
     """Convert CSS hex to webcolor name."""
 
     return name2hex_map.get(name.lower(), None)

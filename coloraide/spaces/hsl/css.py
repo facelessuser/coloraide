@@ -3,6 +3,11 @@ import re
 from . import base
 from ...spaces import _parse
 from ... import util
+from ...util import MutableVector
+from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
 class HSL(base.HSL):
@@ -24,8 +29,15 @@ class HSL(base.HSL):
     )
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
-    ):
+        self,
+        parent: 'Color',
+        *,
+        alpha: Optional[bool] = None,
+        precision: Optional[int] = None,
+        fit: Union[str, bool] = True,
+        none: bool = False,
+        **kwargs: Any
+    ) -> str:
         """Convert to CSS."""
 
         options = kwargs
@@ -40,7 +52,7 @@ class HSL(base.HSL):
         method = None if not isinstance(fit, str) else fit
         coords = parent.fit(method=method).coords() if fit else self.coords()
         if not none:
-            coords = util.no_nan(coords)
+            coords = util.no_nans(coords)
 
         if alpha:
             template = "hsla({}, {}, {}, {})" if options.get("comma") else "hsl({} {} {} / {})"
@@ -59,7 +71,7 @@ class HSL(base.HSL):
             )
 
     @classmethod
-    def translate_channel(cls, channel, value):
+    def translate_channel(cls, channel: int, value: str) -> float:
         """Translate channel."""
 
         if channel == 0:
@@ -68,9 +80,11 @@ class HSL(base.HSL):
             return _parse.norm_percent_channel(value, True)
         elif channel == -1:
             return _parse.norm_alpha_channel(value)
+        else:  # pragma: no cover
+            raise ValueError('{} is not a valid channel index'.format(channel))
 
     @classmethod
-    def split_channels(cls, color):
+    def split_channels(cls, color: str) -> Tuple[MutableVector, float]:
         """Split channels."""
 
         start = 5 if color[:4].lower() == 'hsla' else 4
@@ -85,7 +99,12 @@ class HSL(base.HSL):
         return cls.null_adjust(channels, alpha)
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=True):
+    def match(
+        cls,
+        string: str,
+        start: int = 0,
+        fullmatch: bool = True
+    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
         """Match a CSS color string."""
 
         channels, end = super().match(string, start, fullmatch)

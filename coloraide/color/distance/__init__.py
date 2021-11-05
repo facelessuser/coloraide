@@ -2,17 +2,21 @@
 from abc import ABCMeta, abstractmethod
 from ... import util
 import math
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
-def distance_euclidean(color, sample, space="lab"):
+def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> float:
     """
     Euclidean distance.
 
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    coords1 = util.no_nan(color.convert(space).coords())
-    coords2 = util.no_nan(sample.convert(space).coords())
+    coords1 = util.no_nans(color.convert(space).coords())
+    coords2 = util.no_nans(sample.convert(space).coords())
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 
@@ -22,10 +26,10 @@ class DeltaE(ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def name():
+    def name() -> str:
         """Get name of method."""
 
     @staticmethod
     @abstractmethod
-    def distance(color, sample, **kwargs):
+    def distance(color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """Get distance between color and sample."""

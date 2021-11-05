@@ -31,6 +31,11 @@ from .. import util
 import re
 import math
 import sys
+from ..util import Vector, MutableVector
+from typing import Tuple, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 FLT_MAX = sys.float_info.max
 
@@ -39,26 +44,26 @@ K_2 = 0.03
 K_3 = (1.0 + K_1) / (1.0 + K_2)
 
 
-def toe(x):
+def toe(x: float) -> float:
     """Toe function for L_r."""
 
     return 0.5 * (K_3 * x - K_1 + math.sqrt((K_3 * x - K_1) * (K_3 * x - K_1) + 4 * K_2 * K_3 * x))
 
 
-def toe_inv(x):
+def toe_inv(x: float) -> float:
     """Inverse toe function for L_r."""
 
     return (x ** 2 + K_1 * x) / (K_3 * (x + K_2))
 
 
-def to_st(cusp):
+def to_st(cusp: Vector) -> Vector:
     """To ST."""
 
     l, c = cusp
-    return c / l, c / (1 - l)
+    return [c / l, c / (1 - l)]
 
 
-def get_st_mid(a, b):
+def get_st_mid(a: float, b: float) -> Vector:
     """
     Returns a smooth approximation of the location of the cusp.
 
@@ -92,10 +97,10 @@ def get_st_mid(a, b):
         )
     )
 
-    return s, t
+    return [s, t]
 
 
-def find_cusp(a, b):
+def find_cusp(a: float, b: float) -> Vector:
     """
     Finds L_cusp and C_cusp for a given hue.
 
@@ -110,10 +115,17 @@ def find_cusp(a, b):
     l_cusp = util.nth_root(1.0 / max(max(r, g), b), 3)
     c_cusp = l_cusp * s_cusp
 
-    return l_cusp, c_cusp
+    return [l_cusp, c_cusp]
 
 
-def find_gamut_intersection(a, b, l1, c1, l0, cusp=None):
+def find_gamut_intersection(
+    a: float,
+    b: float,
+    l1: float,
+    c1: float,
+    l0: float,
+    cusp: Optional[Vector] = None
+) -> float:
     """
     Finds intersection of the line.
 
@@ -202,7 +214,7 @@ def find_gamut_intersection(a, b, l1, c1, l0, cusp=None):
     return t
 
 
-def get_cs(lab):
+def get_cs(lab: Vector) -> Vector:
     """Get Cs."""
 
     l, a, b = lab
@@ -230,10 +242,10 @@ def get_cs(lab):
     # Use a soft minimum function, instead of a sharp triangle shape to get a smooth value for chroma.
     c_0 = math.sqrt(1.0 / (1.0 / (c_a ** 2) + 1.0 / (c_b ** 2)))
 
-    return c_0, c_mid, c_max
+    return [c_0, c_mid, c_max]
 
 
-def compute_max_saturation(a, b):
+def compute_max_saturation(a: float, b: float) -> float:
     """
     Finds the maximum saturation possible for a given hue that fits in sRGB.
 
@@ -314,14 +326,14 @@ def compute_max_saturation(a, b):
     return sat
 
 
-def okhsl_to_oklab(hsl):
+def okhsl_to_oklab(hsl: Vector) -> MutableVector:
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
     h = util.no_nan(h) / 360.0
 
     L = toe_inv(l)
-    a = b = 0
+    a = b = 0.0
 
     if L != 0 and L != 1 and s != 0:
         a_ = math.cos(2.0 * math.pi * h)
@@ -341,7 +353,7 @@ def okhsl_to_oklab(hsl):
 
         if s < mid:
             t = mid_inv * s
-            k_0 = 0
+            k_0 = 0.0
             k_1 = mid * c_0
             k_2 = (1.0 - k_1 / c_mid)
 
@@ -359,14 +371,14 @@ def okhsl_to_oklab(hsl):
     return [L, a, b]
 
 
-def oklab_to_okhsl(lab):
+def oklab_to_okhsl(lab: Vector) -> MutableVector:
     """Oklab to Okhsl."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
 
     h = util.NaN
     L = lab[0]
-    s = 0
+    s = 0.0
 
     if c != 0 and L != 0:
         a_ = lab[1] / c
@@ -426,43 +438,43 @@ class Okhsl(Cylindrical, Space):
     )
 
     @property
-    def h(self):
+    def h(self) -> float:
         """Hue channel."""
 
         return self._coords[0]
 
     @h.setter
-    def h(self, value):
+    def h(self, value: float) -> None:
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def s(self):
+    def s(self) -> float:
         """Saturation channel."""
 
         return self._coords[1]
 
     @s.setter
-    def s(self, value):
+    def s(self, value: float) -> None:
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def l(self):
+    def l(self) -> float:
         """Lightness channel."""
 
         return self._coords[2]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Set lightness channel."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
         if coords[1] == 0:
@@ -470,49 +482,49 @@ class Okhsl(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, okhsl):
+    def _to_srgb(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
         """To sRGB."""
 
         return Oklab._to_srgb(parent, cls._to_oklab(parent, okhsl))
 
     @classmethod
-    def _from_srgb(cls, parent, srgb):
+    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
         """From sRGB."""
 
         return cls._from_oklab(parent, Oklab._from_srgb(parent, srgb))
 
     @classmethod
-    def _to_srgb_linear(cls, parent, okhsl):
+    def _to_srgb_linear(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
         """To sRGB Linear."""
 
         return Oklab._to_srgb_linear(parent, cls._to_oklab(parent, okhsl))
 
     @classmethod
-    def _from_srgb_linear(cls, parent, srgbl):
+    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
         """From SRGB Linear."""
 
         return cls._from_oklab(parent, Oklab._from_srgb_linear(parent, srgbl))
 
     @classmethod
-    def _to_oklab(cls, parent, okhsl):
+    def _to_oklab(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
         """To Oklab."""
 
         return okhsl_to_oklab(okhsl)
 
     @classmethod
-    def _from_oklab(cls, parent, oklab):
+    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """From Oklab."""
 
         return oklab_to_okhsl(oklab)
 
     @classmethod
-    def _to_xyz(cls, parent, okhsl):
+    def _to_xyz(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
         """To XYZ."""
 
         return Oklab._to_xyz(parent, cls._to_oklab(parent, okhsl))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

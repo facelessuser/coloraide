@@ -1,8 +1,13 @@
 """Convert the color."""
 from .. import util
+from ..util import Vector
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 
-def convert(color, space):
+def convert(color: 'Color', space: str) -> Vector:
     """Convert the color coordinates to the specified space."""
 
     if color.space() != space:
@@ -16,7 +21,7 @@ def convert(color, space):
         # See if there is a direct conversion route
         func = None
         # Don't send NaNs
-        coords = util.no_nan(color.coords())
+        coords = util.no_nans(color.coords())
         if hasattr(color._space, convert_to):
             func = getattr(color._space, convert_to)
             coords = func(color, coords)

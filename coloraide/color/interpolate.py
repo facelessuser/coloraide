@@ -15,24 +15,28 @@ License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/packa
 """
 import math
 from abc import ABCMeta, abstractmethod
-from collections.abc import Sequence, Mapping, Callable
 from collections import namedtuple
 from .. import util
 from ..spaces import Cylindrical, Angle
+from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
+from ..util import Vector, ColorInput
+
+if TYPE_CHECKING:
+    from ..color import Color
 
 
 class Lerp:
     """Linear interpolation."""
 
-    def __init__(self, progress):
+    def __init__(self, progress: Optional[Callable[..., float]]) -> None:
         """Initialize."""
 
         self.progress = progress
 
-    def __call__(self, a, b, t):
+    def __call__(self, a: float, b: float, t: float) -> float:
         """Interpolate with period."""
 
-        return a + (b - a) * (t if not isinstance(self.progress, Callable) else self.progress(t))
+        return a + (b - a) * (t if self.progress is None else self.progress(t))
 
 
 class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'premultiplied'])):
@@ -40,7 +44,14 @@ class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'pr
 
     __slots__ = ()
 
-    def __new__(cls, color, stop=None, progress=None, hue=util.DEF_HUE_ADJ, premultiplied=False):
+    def __new__(
+        cls,
+        color: ColorInput,
+        stop: Optional[float] = None,
+        progress: Optional[Callable[..., float]] = None,
+        hue: str = util.DEF_HUE_ADJ,
+        premultiplied: bool = False
+    ) -> 'Piecewise':
         """Initialize."""
 
         return super().__new__(cls, color, stop, progress, hue, premultiplied)
@@ -50,18 +61,18 @@ class Interpolator(metaclass=ABCMeta):
     """Interpolator."""
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize."""
 
     @abstractmethod
-    def __call__(self, p):
+    def get_delta(self) -> Any:
+        """Get the delta."""
+
+    @abstractmethod
+    def __call__(self, p: float) -> 'Color':
         """Call the interpolator."""
 
-    @abstractmethod
-    def get_delta(self):
-        """Initialize."""
-
-    def steps(self, steps=2, max_steps=1000, max_delta_e=0):
+    def steps(self, steps: int = 2, max_steps: int = 1000, max_delta_e: float = 0) -> List['Color']:
         """Steps."""
 
         return color_steps(self, steps, max_steps, max_delta_e)
@@ -70,7 +81,17 @@ class Interpolator(metaclass=ABCMeta):
 class InterpolateSingle(Interpolator):
     """Interpolate a single range of two colors."""
 
-    def __init__(self, channels1, channels2, names, create, progress, space, outspace, premultiplied):
+    def __init__(
+        self,
+        channels1: Vector,
+        channels2: Vector,
+        names: Sequence[str],
+        create: Type['Color'],
+        progress: Optional[Callable[..., float]],
+        space: str,
+        outspace: str,
+        premultiplied: bool
+    ) -> None:
         """Initialize."""
 
         self.names = names
@@ -82,12 +103,12 @@ class InterpolateSingle(Interpolator):
         self.outspace = outspace
         self.premultiplied = premultiplied
 
-    def get_delta(self):
+    def get_delta(self) -> float:
         """Get the delta."""
 
         return self.create(self.space, self.channels1).delta_e(self.create(self.space, self.channels2))
 
-    def __call__(self, p):
+    def __call__(self, p: float) -> 'Color':
         """Run through the coordinates and run the interpolation on them."""
 
         channels = []
@@ -121,7 +142,7 @@ class InterpolateSingle(Interpolator):
 class InterpolatePiecewise(Interpolator):
     """Interpolate multiple ranges of colors."""
 
-    def __init__(self, stops, interpolators):
+    def __init__(self, stops: Dict[int, float], interpolators: List[InterpolateSingle]):
         """Initialize."""
 
         self.start = stops[0]
@@ -129,12 +150,12 @@ class InterpolatePiecewise(Interpolator):
         self.stops = stops
         self.interpolators = interpolators
 
-    def get_delta(self):
+    def get_delta(self) -> Vector:
         """Get the delta total."""
 
         return [i.get_delta() for i in self.interpolators]
 
-    def __call__(self, p):
+    def __call__(self, p: float) -> 'Color':
         """Interpolate."""
 
         percent = p
@@ -156,8 +177,12 @@ class InterpolatePiecewise(Interpolator):
                     return interpolator(p2)
                 last = stop
 
+            # We shouldn't ever hit this, but provided for typing.
+            # If we do hit this, it would be a bug.
+            raise RuntimeError('Iterpolation could not be found for {}'.format(percent))  # pragma: no cover
 
-def calc_stops(stops, count):
+
+def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
     """Calculate stops."""
 
     # Ensure the first stop is set to zero if not explicitly set
@@ -222,7 +247,7 @@ def calc_stops(stops, count):
     return final
 
 
-def postdivide(color):
+def postdivide(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
     if color.alpha >= 1.0:
@@ -243,7 +268,7 @@ def postdivide(color):
     color._space._coords = coords
 
 
-def premultiply(color):
+def premultiply(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
     if color.alpha >= 1.0:
@@ -264,14 +289,14 @@ def premultiply(color):
     color._space._coords = coords
 
 
-def adjust_hues(color1, color2, hue):
+def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     """Adjust hues."""
 
     hue = hue.lower()
     if hue == "specified":
         return
 
-    name = color1._space.hue_name()
+    name = cast(Cylindrical, color1._space).hue_name()
     c1 = color1.get(name)
     c2 = color2.get(name)
 
@@ -310,7 +335,12 @@ def adjust_hues(color1, color2, hue):
     color2.set(name, c2)
 
 
-def color_steps(interpolator, steps=2, max_steps=1000, max_delta_e=0):
+def color_steps(
+    interpolator: Interpolator,
+    steps: int = 2,
+    max_steps: int = 1000,
+    max_delta_e: float = 0
+) -> List['Color']:
     """Color steps."""
 
     if max_delta_e <= 0:
@@ -320,8 +350,7 @@ def color_steps(interpolator, steps=2, max_steps=1000, max_delta_e=0):
         deltas = interpolator.get_delta()
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
-        actual_steps = sum([d / max_delta_e for d in deltas])
-        actual_steps = max(steps, math.ceil(actual_steps) + 1)
+        actual_steps = max(steps, math.ceil(sum([d / max_delta_e for d in deltas])) + 1)
 
     if max_steps is not None:
         actual_steps = min(actual_steps, max_steps)
@@ -340,29 +369,40 @@ def color_steps(interpolator, steps=2, max_steps=1000, max_delta_e=0):
     # We inject between every stop to ensure the midpoint does not shift.
     if max_delta_e > 0:
         # Initial check to see if we need to insert more stops
-        m_delta = 0
+        m_delta = 0.0
         for i, entry in enumerate(ret):
             if i == 0:
                 continue
-            m_delta = max(m_delta, entry['color'].delta_e(ret[i - 1]['color']))
+            m_delta = max(m_delta, cast('Color', entry['color']).delta_e(cast('Color', ret[i - 1]['color'])))
 
         while m_delta > max_delta_e:
             # Inject stops while measuring again to see if it was sufficient
-            m_delta = 0
+            m_delta = 0.0
             i = 1
             while i < len(ret) and len(ret) < max_steps:
                 prev = ret[i - 1]
                 cur = ret[i]
-                p = (cur['p'] + prev['p']) / 2
+                p = (cast(float, cur['p']) + cast(float, prev['p'])) / 2
                 color = interpolator(p)
-                m_delta = max(m_delta, color.delta_e(prev['color']), color.delta_e(cur['color']))
+                m_delta = max(
+                    m_delta,
+                    color.delta_e(cast('Color', prev['color'])),
+                    color.delta_e(cast('Color', cur['color']))
+                )
                 ret.insert(i, {'p': p, 'color': color})
                 i += 2
 
-    return [i['color'] for i in ret]
+    return [cast('Color', i['color']) for i in ret]
 
 
-def color_piecewise_lerp(pw, space, out_space, progress, hue, premultiplied):
+def color_piecewise_lerp(
+    pw: List[Union[ColorInput, Piecewise]],
+    space: str,
+    out_space: str,
+    progress: Optional[Callable[..., float]],
+    hue: str,
+    premultiplied: bool
+) -> InterpolatePiecewise:
     """Piecewise Interpolation."""
 
     # Ensure we have something we can interpolate with
@@ -382,9 +422,9 @@ def color_piecewise_lerp(pw, space, out_space, progress, hue, premultiplied):
 
     # Construct piecewise interpolation object
     color_map = []
-    current = pw[0].color
+    current = cast(Piecewise, pw[0]).color
     for i in range(1, count):
-        p = pw[i]
+        p = cast(Piecewise, pw[i])
         color = current._handle_color_input(p.color)
 
         color_map.append(
@@ -402,7 +442,15 @@ def color_piecewise_lerp(pw, space, out_space, progress, hue, premultiplied):
     return InterpolatePiecewise(stops, color_map)
 
 
-def color_lerp(color1, color2, space, out_space, progress, hue, premultiplied):
+def color_lerp(
+    color1: 'Color',
+    color2: ColorInput,
+    space: str,
+    out_space: str,
+    progress: Optional[Callable[..., float]],
+    hue: str,
+    premultiplied: bool
+) -> InterpolateSingle:
     """Color interpolation."""
 
     # Convert to the color space and ensure the color fits inside

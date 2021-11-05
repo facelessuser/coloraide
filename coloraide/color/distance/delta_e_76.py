@@ -1,18 +1,22 @@
 """Delta E 76."""
 from ..distance import DeltaE, distance_euclidean
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ...color import Color
 
 
 class DE76(DeltaE):
     """Delta E 76 class."""
 
     @staticmethod
-    def name():
+    def name() -> str:
         """Name of method."""
 
         return "76"
 
     @staticmethod
-    def distance(color, sample, **kwargs):
+    def distance(color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """
         Delta E 1976 color distance formula.
 
