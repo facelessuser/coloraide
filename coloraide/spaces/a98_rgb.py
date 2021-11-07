@@ -7,7 +7,7 @@ import re
 from ..util import Vector, MutableVector
 from typing import cast, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 RGB_TO_XYZ = [

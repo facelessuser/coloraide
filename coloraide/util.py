@@ -5,7 +5,7 @@ import warnings
 from functools import wraps
 from typing import Optional, Sequence, List, Union, Any, Callable, Mapping, cast, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 Vector = Sequence[float]

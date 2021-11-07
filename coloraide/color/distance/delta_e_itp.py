@@ -8,7 +8,7 @@ import math
 from ... import util
 from typing import TYPE_CHECKING, Any
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 

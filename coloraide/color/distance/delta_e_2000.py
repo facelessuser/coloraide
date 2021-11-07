@@ -4,7 +4,7 @@ from ... import util
 from ..distance import DeltaE
 from typing import TYPE_CHECKING, Any
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 G_CONST = 25 ** 7

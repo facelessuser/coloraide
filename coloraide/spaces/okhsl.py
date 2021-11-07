@@ -34,7 +34,7 @@ import sys
 from ..util import Vector, MutableVector
 from typing import Tuple, Optional, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 FLT_MAX = sys.float_info.max

@@ -21,7 +21,7 @@ from ..spaces import Cylindrical, Angle
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
 from ..util import Vector, ColorInput
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 

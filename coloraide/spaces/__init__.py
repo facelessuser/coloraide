@@ -5,7 +5,7 @@ from ..util import Vector, MutableVector
 from . import _parse
 from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, NamedTuple, cast, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 # Technically this form can handle any number of channels as long as any

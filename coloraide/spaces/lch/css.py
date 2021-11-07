@@ -6,7 +6,7 @@ from ... import util
 from ...util import MutableVector
 from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 

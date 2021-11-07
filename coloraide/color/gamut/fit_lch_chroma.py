@@ -3,7 +3,7 @@ from ..gamut import Fit
 from ...util import MutableVector
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 EPSILON = 0.001

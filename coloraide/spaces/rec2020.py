@@ -8,7 +8,7 @@ import math
 from ..util import Vector, MutableVector
 from typing import cast, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 ALPHA = 1.09929682680944

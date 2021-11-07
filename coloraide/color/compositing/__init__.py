@@ -10,7 +10,7 @@ from ...util import MutableVector
 from ...spaces import GamutBound
 from typing import Tuple, Optional, Union, Callable, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 

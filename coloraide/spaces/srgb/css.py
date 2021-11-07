@@ -7,7 +7,7 @@ from ... import util
 from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
 from ...util import MutableVector
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**_parse.COLOR_PARTS))

@@ -10,7 +10,7 @@ import re
 from ..util import Vector, MutableVector
 from typing import cast, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 # All PQ Values are equivalent to defaults as stated in link below:

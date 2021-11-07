@@ -5,7 +5,7 @@ from ... spaces import Angle, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 

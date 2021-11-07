@@ -7,7 +7,7 @@ import math
 from ..util import Vector, MutableVector
 from typing import Tuple, TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 ACHROMATIC_THRESHOLD = 0.0000000002

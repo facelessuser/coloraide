@@ -5,7 +5,7 @@ from typing import Tuple
 from ..util import Vector, MutableVector
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
