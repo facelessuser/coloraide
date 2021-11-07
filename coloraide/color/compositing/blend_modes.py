@@ -206,5 +206,6 @@ def get_non_seperable_blender(blend: str) -> Callable[[Vector, Vector], Vector]:
             Callable[[Vector, Vector], Vector],
             globals()['blend_non_seperable_{}'.format(blend.replace('-', '_'))]
         )
-    except KeyError:
+    except KeyError:  # pragma: no cover
+        # The way we use this function, we will never hit this as we've verified the method before calling
         raise ValueError("'{}' is not a recognized non seperable blend mode".format(blend))
