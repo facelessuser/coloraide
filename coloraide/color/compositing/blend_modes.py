@@ -163,24 +163,24 @@ def blend_soft_light(cb: float, cs: float) -> float:
         return cb + (2 * cs - 1) * (d - cb)
 
 
-def blend_non_seperable_hue(cb: Vector, cs: Vector) -> MutableVector:
+def non_seperable_blend_hue(cb: Vector, cs: Vector) -> MutableVector:
     """Blend mode 'hue'."""
 
     return set_lum(set_sat(cs, sat(cb)), lum(cb))
 
 
-def blend_non_seperable_saturation(cb: Vector, cs: Vector) -> MutableVector:
+def non_seperable_blend_saturation(cb: Vector, cs: Vector) -> MutableVector:
     """Blend mode 'saturation'."""
 
     return set_lum(set_sat(cb, sat(cs)), lum(cb))
 
 
-def blend_non_seperable_luminosity(cb: Vector, cs: Vector) -> MutableVector:
+def non_seperable_blend_luminosity(cb: Vector, cs: Vector) -> MutableVector:
     """Blend mode 'luminosity'."""
     return set_lum(cb, lum(cs))
 
 
-def blend_non_seperable_color(cb: Vector, cs: Vector) -> MutableVector:
+def non_seperable_blend_color(cb: Vector, cs: Vector) -> MutableVector:
     """Blend mode 'color'."""
 
     return set_lum(cs, lum(cb))
@@ -204,7 +204,7 @@ def get_non_seperable_blender(blend: str) -> Callable[[Vector, Vector], Vector]:
     try:
         return cast(
             Callable[[Vector, Vector], Vector],
-            globals()['blend_non_seperable_{}'.format(blend.replace('-', '_'))]
+            globals()['non_seperable_blend_{}'.format(blend.replace('-', '_'))]
         )
     except KeyError:  # pragma: no cover
         # The way we use this function, we will never hit this as we've verified the method before calling
