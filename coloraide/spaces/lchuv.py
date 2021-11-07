@@ -62,9 +62,9 @@ class Lchuv(Lchish, Space):
     WHITE = "D50"
 
     RANGE = (
-        GamutUnbound([Percent(0), Percent(100.0)]),
-        GamutUnbound([0.0, 176.0]),
-        GamutUnbound([Angle(0.0), Angle(360.0)]),
+        GamutUnbound(Percent(0), Percent(100.0)),
+        GamutUnbound(0.0, 176.0),
+        GamutUnbound(Angle(0.0), Angle(360.0)),
     )
 
     @property

@@ -86,9 +86,9 @@ class Oklch(Lchish, Space):
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
-        GamutUnbound([0.0, 1.0]),
-        GamutUnbound([Angle(0.0), Angle(360.0)]),
+        GamutUnbound(OptionalPercent(0), OptionalPercent(1)),
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(Angle(0.0), Angle(360.0)),
     )
 
     @property

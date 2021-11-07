@@ -432,9 +432,9 @@ class Okhsl(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
 
     RANGE = (
-        GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
+        GamutBound(Angle(0.0), Angle(360.0)),
+        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
+        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0))
     )
 
     @property

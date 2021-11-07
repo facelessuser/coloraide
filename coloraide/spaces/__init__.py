@@ -3,7 +3,7 @@ from abc import ABCMeta
 from .. import util
 from ..util import Vector, MutableVector
 from . import _parse
-from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, cast, TYPE_CHECKING
+from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, NamedTuple, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..color import Color
@@ -50,11 +50,18 @@ class OptionalPercent(float):
     """Optional percent type."""
 
 
-class GamutBound(Tuple[float]):
+class Bounds(NamedTuple):
+    """Color bounds."""
+
+    upper: float
+    lower: float
+
+
+class GamutBound(Bounds):
     """Bounded gamut value."""
 
 
-class GamutUnbound(Tuple[float]):
+class GamutUnbound(Bounds):
     """Unbounded gamut value."""
 
 

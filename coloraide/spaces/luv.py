@@ -69,9 +69,9 @@ class Luv(Labish, Space):
     WHITE = "D50"
 
     RANGE = (
-        GamutUnbound([Percent(0), Percent(100.0)]),
-        GamutUnbound([-175.0, 175.0]),
-        GamutUnbound([-175.0, 175.0])
+        GamutUnbound(Percent(0), Percent(100.0)),
+        GamutUnbound(-175.0, 175.0),
+        GamutUnbound(-175.0, 175.0)
     )
 
     @property

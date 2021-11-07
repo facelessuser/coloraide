@@ -19,9 +19,9 @@ class XYZ(Space):
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([0.0, 1.0]),
-        GamutUnbound([0.0, 1.0]),
-        GamutUnbound([0.0, 1.0])
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(0.0, 1.0)
     )
 
     @property

@@ -128,9 +128,9 @@ class Oklab(Labish, Space):
     WHITE = "D65"
 
     RANGE = (
-        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
-        GamutUnbound([-0.5, 0.5]),
-        GamutUnbound([-0.5, 0.5])
+        GamutUnbound(OptionalPercent(0), OptionalPercent(1)),
+        GamutUnbound(-0.5, 0.5),
+        GamutUnbound(-0.5, 0.5)
     )
 
     @property

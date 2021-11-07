@@ -92,9 +92,9 @@ class SRGB(Space):
     WHITE = "D65"
 
     RANGE = (
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
+        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
+        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
+        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0))
     )
 
     @property
