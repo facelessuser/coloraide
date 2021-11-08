@@ -258,7 +258,7 @@ def postdivide(color: 'Color') -> None:
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i][0]
+        a = gamut[i].lower
 
         # Wrap the angle
         if isinstance(a, Angle):
@@ -279,7 +279,7 @@ def premultiply(color: 'Color') -> None:
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i][0]
+        a = gamut[i].lower
 
         # Wrap the angle
         if isinstance(a, Angle):

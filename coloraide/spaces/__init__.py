@@ -164,7 +164,7 @@ class Space(
     #   space, the values can be greatly out of specification (looking at you HSL).
     GAMUT_CHECK: Optional[str] = None
     # Range of channels
-    RANGE: Tuple[Tuple[float, ...], ...] = tuple()
+    RANGE: Tuple[Bounds, ...] = tuple()
     # White point
     WHITE = "D50"
 
