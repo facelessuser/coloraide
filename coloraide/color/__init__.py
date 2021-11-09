@@ -376,8 +376,7 @@ class Color(metaclass=BaseColor):
     def chromatic_adaptation(self, w1: str, w2: str, xyz: Vector) -> MutableVector:
         """Apply chromatic adaption to XYZ coordinates."""
 
-        method = self.CHROMATIC_ADAPTATION
-        return cat.chromatic_adaptation(w1, w2, xyz, method=method)
+        return cat.chromatic_adaptation(w1, w2, xyz, method=self.CHROMATIC_ADAPTATION)
 
     def convert(self, space: str, *, fit: bool = False, in_place: bool = False) -> 'Color':
         """Convert to color space."""
@@ -676,28 +675,11 @@ class Color(metaclass=BaseColor):
         else:
             bcolor = [self._handle_color_input(backdrop)]
 
-        # If we are doing non-separable, we are converting to a special space that
-        # can only be done from sRGB, so we have to force sRGB anyway.
-        non_seperable = compositing.blend_modes.is_non_seperable(blend)
-        space = 'srgb' if space is None or non_seperable else space.lower()
+        color = compositing.compose(self, bcolor, blend, operator, space)
+
         outspace = self.space() if out_space is None else out_space.lower()
-
-        if len(bcolor) == 0:
-            return self.convert(outspace)
-
-        if len(bcolor) > 1:
-            dest = bcolor[-1].convert(space, fit=True)
-            for x in range(len(bcolor) - 2, -1, -1):
-                src = bcolor[x].convert(space, fit=True)
-                dest = compositing.compose(src, dest, blend, operator, non_seperable)
-        else:
-            dest = bcolor[0].convert(space, fit=True)
-
-        src = self.convert(space, fit=True)
-        dest = compositing.compose(src, dest, blend, operator, non_seperable)
-
         return (
-            self.mutate(dest.convert(outspace)) if in_place else dest.convert(outspace)
+            self.mutate(color.convert(outspace)) if in_place else color.convert(outspace)
         ).normalize()
 
     def delta_e(

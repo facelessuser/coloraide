@@ -8,7 +8,7 @@ from . import blend_modes
 from ... import util
 from ...util import MutableVector
 from ...spaces import GamutBound, Bounds
-from typing import Optional, Union, Callable, TYPE_CHECKING
+from typing import Optional, Union, Callable, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
@@ -32,14 +32,14 @@ def clip_channel(coord: float, bounds: Bounds) -> float:
     return util.clamp(coord, a, b)
 
 
-def compose(
+def apply_compositing(
     color1: 'Color',
     color2: 'Color',
     blend: Union[str, bool],
     operator: Union[str, bool],
     non_seperable: bool
 ) -> 'Color':
-    """Blend colors using the specified blend mode."""
+    """Perform the actual blending."""
 
     # Get the color coordinates
     csa = util.no_nan(color1.alpha)
@@ -91,3 +91,33 @@ def compose(
             i += 1
 
     return color1.update(color1.space(), coords, cra)
+
+
+def compose(
+    color: 'Color',
+    backdrop: List['Color'],
+    blend: Union[str, bool] = True,
+    operator: Union[str, bool] = True,
+    space: Optional[str] = None
+) -> 'Color':
+    """Blend colors using the specified blend mode."""
+
+    # If we are doing non-separable, we are converting to a special space that
+    # can only be done from sRGB, so we have to force sRGB anyway.
+    non_seperable = blend_modes.is_non_seperable(blend)
+    space = 'srgb' if space is None or non_seperable else space.lower()
+
+    if not backdrop:
+        return color
+
+    if len(backdrop) > 1:
+        dest = backdrop[-1].convert(space, fit=True)
+        for x in range(len(backdrop) - 2, -1, -1):
+            src = backdrop[x].convert(space, fit=True)
+            dest = apply_compositing(src, dest, blend, operator, non_seperable)
+    else:
+        dest = backdrop[0].convert(space, fit=True)
+
+    src = color.convert(space, fit=True)
+
+    return apply_compositing(src, dest, blend, operator, non_seperable)
