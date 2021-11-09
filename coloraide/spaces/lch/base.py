@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
 from ..lab.base import Lab
 from ... import util
 import re
@@ -58,14 +58,14 @@ class LchBase(Lchish, Space):
         "hue": "h"
     }
 
-    RANGE = (
+    BOUNDS = (
         # I think chroma, specifically should be clamped.
         # Some libraries don't to prevent rounding issues. We should only get
         # negative chroma via direct user input, but when translating to
         # Lab, this will be corrected.
-        GamutUnbound(Percent(0.0), Percent(100.0)),
+        GamutUnbound(0.0, 100.0, FLG_PERCENT),
         GamutUnbound(0.0, 100.0),
-        GamutUnbound(Angle(0.0), Angle(360.0)),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 
     @property

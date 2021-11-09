@@ -1,5 +1,5 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish
 from ..xyz import XYZ
 from ... import util
 import re
@@ -73,8 +73,8 @@ class LabBase(Labish, Space):
         "lightness": "l"
     }
 
-    RANGE = (
-        GamutUnbound(Percent(0), Percent(100.0)),  # Technically we could/should clamp the zero side.
+    BOUNDS = (
+        GamutUnbound(0.0, 100.0, FLG_PERCENT),  # Technically we could/should clamp the zero side.
         GamutUnbound(-160, 160),  # No limit, but we could impose one +/-160?
         GamutUnbound(-160, 160)  # No limit, but we could impose one +/-160?
     )

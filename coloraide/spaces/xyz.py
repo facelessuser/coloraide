@@ -1,9 +1,8 @@
 """XYZ D65 class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
 import re
-from typing import Tuple
 from ..util import Vector, MutableVector
-from typing import TYPE_CHECKING
+from typing import Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -18,7 +17,7 @@ class XYZ(Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
+    BOUNDS = (
         GamutUnbound(0.0, 1.0),
         GamutUnbound(0.0, 1.0),
         GamutUnbound(0.0, 1.0)

@@ -3,7 +3,7 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, WHITES, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES, Labish
 from .lab.base import KAPPA, EPSILON, KE
 from .xyz import XYZ
 from .. import util
@@ -68,8 +68,8 @@ class Luv(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
-    RANGE = (
-        GamutUnbound(Percent(0), Percent(100.0)),
+    BOUNDS = (
+        GamutUnbound(0.0, 100.0, FLG_PERCENT),
         GamutUnbound(-175.0, 175.0),
         GamutUnbound(-175.0, 175.0)
     )

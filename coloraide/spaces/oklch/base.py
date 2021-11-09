@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, OptionalPercent
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
 from ..oklab.base import Oklab
 from ... import util
 import re
@@ -85,10 +85,10 @@ class Oklch(Lchish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
-        GamutUnbound(OptionalPercent(0), OptionalPercent(1)),
+    BOUNDS = (
+        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 1.0),
-        GamutUnbound(Angle(0.0), Angle(360.0)),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 
     @property

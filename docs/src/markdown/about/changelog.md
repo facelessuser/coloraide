@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0
+
+- **NEW**: Add type annotations and refactor code to better accommodate the type annotations. Public API not really
+  affected, but a bit of the internals have changed.
+
 ## 0.4.0
 
 - **NEW**: Officially support Python 3.10.

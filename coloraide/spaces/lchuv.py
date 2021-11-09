@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, Percent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
 from .luv import Luv
 from .. import util
 import re
@@ -61,10 +61,10 @@ class Lchuv(Lchish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
-    RANGE = (
-        GamutUnbound(Percent(0), Percent(100.0)),
+    BOUNDS = (
+        GamutUnbound(0, 100.0, FLG_PERCENT),
         GamutUnbound(0.0, 176.0),
-        GamutUnbound(Angle(0.0), Angle(360.0)),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 
     @property

@@ -1,7 +1,7 @@
 """Gamut handling."""
 from ... import util
 from ...util import MutableVector
-from ... spaces import Angle, GamutBound
+from ... spaces import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
@@ -13,16 +13,16 @@ def clip_channels(color: 'Color') -> MutableVector:
     """Clip channels."""
 
     channels = util.no_nans(color.coords())
-    gamut = color._space.RANGE
     fit = []
 
     for i, value in enumerate(channels):
-        a = gamut[i][0]  # type: Optional[float]
-        b = gamut[i][1]  # type: Optional[float]
-        is_bound = isinstance(gamut[i], GamutBound)
+        bounds = color._space.BOUNDS[i]
+        a = bounds.lower  # type: Optional[float]
+        b = bounds.upper  # type: Optional[float]
+        is_bound = isinstance(bounds, GamutBound)
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
-        if isinstance(a, Angle) and isinstance(b, Angle):
+        if bounds.flags & FLG_ANGLE:
             fit.append(value % 360.0)
             continue
 
@@ -42,12 +42,13 @@ def verify(color: 'Color', tolerance: float) -> bool:
 
     channels = util.no_nans(color.coords())
     for i, value in enumerate(channels):
-        a = color._space.RANGE[i][0]  # type: Optional[float]
-        b = color._space.RANGE[i][1]  # type: Optional[float]
-        is_bound = isinstance(color._space.RANGE[i], GamutBound)
+        bounds = color._space.BOUNDS[i]
+        a = bounds.lower  # type: Optional[float]
+        b = bounds.upper  # type: Optional[float]
+        is_bound = isinstance(bounds, GamutBound)
 
         # Angles will wrap, so no sense checking them
-        if isinstance(a, Angle):
+        if bounds.flags & FLG_ANGLE:
             continue
 
         # These parameters are unbounded

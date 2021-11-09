@@ -1,5 +1,5 @@
 """SRGB color class."""
-from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, OptionalPercent
+from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT
 from ..xyz import XYZ
 from ... import util
 from ...util import Vector, MutableVector
@@ -91,10 +91,10 @@ class SRGB(Space):
     }
     WHITE = "D65"
 
-    RANGE = (
-        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
-        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
-        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0))
+    BOUNDS = (
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
     )
 
     @property

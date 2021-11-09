@@ -17,7 +17,7 @@ import math
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from .. import util
-from ..spaces import Cylindrical, Angle
+from ..spaces import Cylindrical, FLG_ANGLE
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
 from ..util import Vector, ColorInput
 
@@ -254,14 +254,12 @@ def postdivide(color: 'Color') -> None:
         return
 
     channels = color.coords()
-    gamut = color._space.RANGE
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i].lower
 
         # Wrap the angle
-        if isinstance(a, Angle):
+        if color._space.BOUNDS[i].flags & FLG_ANGLE:
             coords.append(value)
             continue
         coords.append(value / alpha if alpha != 0 else value)
@@ -275,14 +273,12 @@ def premultiply(color: 'Color') -> None:
         return
 
     channels = color.coords()
-    gamut = color._space.RANGE
     alpha = color.alpha
     coords = []
     for i, value in enumerate(channels):
-        a = gamut[i].lower
 
         # Wrap the angle
-        if isinstance(a, Angle):
+        if color._space.BOUNDS[i].flags & FLG_ANGLE:
             coords.append(value)
             continue
         coords.append(value * alpha)

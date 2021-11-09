@@ -7,19 +7,19 @@ from . import porter_duff
 from . import blend_modes
 from ... import util
 from ...util import MutableVector
-from ...spaces import GamutBound
-from typing import Tuple, Optional, Union, Callable, TYPE_CHECKING
+from ...spaces import GamutBound, Bounds
+from typing import Optional, Union, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 
-def clip_channel(coord: float, gamut: Tuple[float, ...]) -> float:
+def clip_channel(coord: float, bounds: Bounds) -> float:
     """Clipping channel."""
 
-    a = gamut[0]  # type: Optional[float]
-    b = gamut[1]  # type: Optional[float]
-    is_bound = isinstance(gamut, GamutBound)
+    a = bounds.lower  # type: Optional[float]
+    b = bounds.upper  # type: Optional[float]
+    is_bound = isinstance(bounds, GamutBound)
 
     # These parameters are unbounded
     if not is_bound:  # pragma: no cover
@@ -58,7 +58,7 @@ def compose(
         cra = compositor.ao()
 
     # Perform compositing
-    gamut = color1._space.RANGE
+    bounds = color1._space.BOUNDS
     coords = []  # type: MutableVector
     if isinstance(blend, str) and non_seperable:
         # Setup blend mode.
@@ -70,7 +70,7 @@ def compose(
         blended = ns_blender(coords2, coords1) if ns_blender is not None else coords1
         for cb, cr in zip(coords2, blended):
             cr = (1 - cba) * cr + cba * cr if ns_blender is not None else cr
-            cr = clip_channel(cr, gamut[i])
+            cr = clip_channel(cr, bounds[i])
             coords.append(compositor.co(cb, cr) if compositor is not None else cr)
             i += 1
     else:
@@ -86,7 +86,7 @@ def compose(
         i = 0
         for cb, cs in zip(coords2, coords1):
             cr = (1 - cba) * cs + cba * blender(cb, cs) if blender is not None else cs
-            cr = clip_channel(cr, gamut[i])
+            cr = clip_channel(cr, bounds[i])
             coords.append(compositor.co(cb, cr) if compositor is not None else cr)
             i += 1
 

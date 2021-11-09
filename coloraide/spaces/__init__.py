@@ -3,7 +3,7 @@ from abc import ABCMeta
 from .. import util
 from ..util import Vector, MutableVector
 from . import _parse
-from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, NamedTuple, cast, TYPE_CHECKING
+from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, NamedTuple, Any, List, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -37,24 +37,17 @@ WHITES = {
     "F11": (0.38050, 0.37690)
 }
 
-
-class Angle(float):
-    """Angle type."""
-
-
-class Percent(float):
-    """Percent type."""
-
-
-class OptionalPercent(float):
-    """Optional percent type."""
+FLG_ANGLE = 0x1
+FLG_PERCENT = 0x2
+FLG_OPT_PERCENT = 0x4
 
 
 class Bounds(NamedTuple):
     """Color bounds."""
 
-    upper: float
     lower: float
+    upper: float
+    flags: int = 0
 
 
 class GamutBound(Bounds):
@@ -141,7 +134,7 @@ class Space(
     # Color space name
     SPACE = ""
     # Serialized name
-    SERIALIZE: Optional[Tuple[str, ...]] = None
+    SERIALIZE: Tuple[str, ...] = tuple()
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
@@ -163,8 +156,8 @@ class Space(
     #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
     #   space, the values can be greatly out of specification (looking at you HSL).
     GAMUT_CHECK: Optional[str] = None
-    # Range of channels
-    RANGE: Tuple[Bounds, ...] = tuple()
+    # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
+    BOUNDS: Tuple[Bounds, ...] = tuple()
     # White point
     WHITE = "D50"
 
@@ -194,10 +187,10 @@ class Space(
     def __repr__(self) -> str:
         """Representation."""
 
-        gamut = self.RANGE
+        gamut = self.BOUNDS
         values = []
         for i, coord in enumerate(self.coords()):
-            fmt = util.fmt_percent if isinstance(gamut[i][0], Percent) else util.fmt_float
+            fmt = util.fmt_percent if gamut[i].flags & FLG_PERCENT else util.fmt_float
             values.append(fmt(coord, util.DEF_PREC))
 
         return 'color({} {} / {})'.format(
@@ -230,7 +223,7 @@ class Space(
     def _serialize(cls) -> Tuple[str, ...]:
         """Get the serialized name."""
 
-        return (cls.space(),) if cls.SERIALIZE is None else cls.SERIALIZE
+        return (cls.space(),) if not cls.SERIALIZE else cls.SERIALIZE
 
     @classmethod
     def white(cls) -> MutableVector:
@@ -290,12 +283,12 @@ class Space(
         coords = parent.fit(method=method).coords() if fit else self.coords()
         if not none:
             coords = util.no_nans(coords)
-        gamut = self.RANGE
+        gamut = self.BOUNDS
         template = "color({} {} / {})" if alpha else "color({} {})"
 
         values = []
         for i, coord in enumerate(coords):
-            fmt = util.fmt_percent if isinstance(gamut[i][0], Percent) else util.fmt_float
+            fmt = util.fmt_percent if gamut[i].flags & FLG_PERCENT else util.fmt_float
             values.append(fmt(coord, precision))
 
         if alpha:
@@ -340,7 +333,7 @@ class Space(
                 if c and i < cls.NUM_COLOR_CHANNELS:
                     c = c.lower()
                     # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                    is_percent = isinstance(cls.RANGE[i][0], Percent)
+                    is_percent = cls.BOUNDS[i].flags & FLG_PERCENT
 
                     # Don't bother restricting anything yet. CSS doesn't have any defined
                     # spaces that use percentages and only percentages anymore.
@@ -348,7 +341,7 @@ class Space(
                     # Custom spaces can restrict colors further, if desired, but we do not
                     # desire to restrict further unless forced.
                     # ```
-                    # is_optional_percent = isinstance(cls.RANGE[i][0], OptionalPercent)
+                    # is_optional_percent = isinstance(cls.BOUNDS[i][0], OptionalPercent)
                     # is_none = c == 'none'
                     # has_percent = c.endswith('%')
                     #

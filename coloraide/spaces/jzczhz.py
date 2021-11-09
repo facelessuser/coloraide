@@ -3,7 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, Angle, OptionalPercent
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
 from .jzazbz import Jzazbz
 from .. import util
 import re
@@ -69,10 +69,10 @@ class JzCzhz(Lchish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
-        GamutUnbound(OptionalPercent(0), OptionalPercent(1)),
+    BOUNDS = (
+        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 1.0),
-        GamutUnbound(Angle(0.0), Angle(360.0)),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 
     @property

@@ -1,5 +1,5 @@
 """HSL class."""
-from ...spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
+from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from ..srgb.base import SRGB
 from ... import util
 import re
@@ -71,10 +71,10 @@ class HSL(Cylindrical, Space):
     WHITE = "D65"
     GAMUT_CHECK = "srgb"
 
-    RANGE = (
-        GamutBound(Angle(0.0), Angle(360.0)),
-        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0)),
-        GamutBound(OptionalPercent(0.0), OptionalPercent(1.0))
+    BOUNDS = (
+        GamutBound(0.0, 360.0, FLG_ANGLE),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
     )
 
     @property
