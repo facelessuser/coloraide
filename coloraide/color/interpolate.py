@@ -404,7 +404,7 @@ def color_piecewise_lerp(
     # Ensure we have something we can interpolate with
     count = len(pw)
     if count == 1:
-        pw = [pw[0], pw[0]]
+        pw.append(pw[0])
         count += 1
 
     # Calculate stops

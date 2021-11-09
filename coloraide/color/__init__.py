@@ -1,6 +1,5 @@
 """Colors."""
 import abc
-import itertools
 import functools
 from . import cat
 from . import distance
@@ -639,8 +638,10 @@ class Color(metaclass=BaseColor):
 
         if not isinstance(color, str) and isinstance(color, Sequence):
             # We have a sequence, so use piecewise interpolation
+            colors = list(color)
+            colors.insert(0, interpolate.Piecewise(self, stop=stop))
             return interpolate.color_piecewise_lerp(
-                list(itertools.chain([interpolate.Piecewise(self, stop=stop)], color)),
+                colors,
                 space,
                 out_space,
                 progress,
