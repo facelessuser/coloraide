@@ -3,7 +3,7 @@ from abc import ABCMeta
 from .. import util
 from ..util import Vector, MutableVector
 from . import _parse
-from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, NamedTuple, Any, List, cast, TYPE_CHECKING
+from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -42,12 +42,35 @@ FLG_PERCENT = 0x2
 FLG_OPT_PERCENT = 0x4
 
 
-class Bounds(NamedTuple):
-    """Color bounds."""
+class Bounds:
+    """Immutable."""
 
-    lower: float
-    upper: float
-    flags: int = 0
+    __slots__ = ('lower', 'upper', 'flags')
+
+    def __init__(self, lower: float, upper: float, flags: int = 0) -> None:
+        """Initialize."""
+
+        self.lower = lower
+        self.upper = upper
+        self.flags = flags
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Prevent mutability."""
+
+        if not hasattr(self, name) and name in self.__slots__:
+            super().__setattr__(name, value)
+            return
+
+        raise AttributeError("'{}' is immutable".format(self.__class__.__name__))  # pragma: no cover
+
+    def __repr__(self) -> str:  # pragma: no cover
+        """Representation."""
+
+        return "{}({})".format(
+            self.__class__.__name__, ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__])
+        )
+
+    __str__ = __repr__
 
 
 class GamutBound(Bounds):
@@ -61,8 +84,6 @@ class GamutUnbound(Bounds):
 class Cylindrical:
     """Cylindrical space."""
 
-    CHANNEL_NAMES: Tuple[str, ...]
-
     @classmethod
     def hue_name(cls) -> str:
         """Hue channel name."""
@@ -73,57 +94,51 @@ class Cylindrical:
     def hue_index(cls) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cls.CHANNEL_NAMES.index(cls.hue_name())
+        return cast(Type['Space'], cls).CHANNEL_NAMES.index(cls.hue_name())
 
 
 class Labish:
     """Lab-ish color spaces."""
 
-    CHANNEL_NAMES: Tuple[str, ...]
-
     @classmethod
     def labish_names(cls) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cls.CHANNEL_NAMES[:3]
+        return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
 
     @classmethod
     def labish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.labish_names()
-        return [cls.CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
 
 
 class Lchish(Cylindrical):
     """Lch-ish color spaces."""
 
-    CHANNEL_NAMES: Tuple[str, ...]
-
     @classmethod
     def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return cls.CHANNEL_NAMES[:3]
+        return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
 
     @classmethod
     def lchish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.lchish_names()
-        return [cls.CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
 
 
 class BaseSpace(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
-    CHANNEL_ALIASES: Dict[str, str]
-
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()
+            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: Dict[str, str]
 
 
 class Space(
@@ -134,19 +149,19 @@ class Space(
     # Color space name
     SPACE = ""
     # Serialized name
-    SERIALIZE: Tuple[str, ...] = tuple()
+    SERIALIZE = tuple()  # type: Tuple[str, ...]
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
-    CHANNEL_NAMES: Tuple[str, ...] = ("alpha",)
+    CHANNEL_NAMES = ("alpha",)  # type: Tuple[str, ...]
     # Channel aliases
-    CHANNEL_ALIASES: Dict[str, str] = {}
+    CHANNEL_ALIASES = {}  # type: Dict[str, str]
     # For matching the default form of `color(space coords+ / alpha)`.
     # Classes should define this if they want to use the default match.
-    DEFAULT_MATCH: Optional[Pattern[str]] = None
+    DEFAULT_MATCH = None  # type: Optional[Pattern[str]]
     # Match pattern variable for classes to override so we can also
     # maintain the default and other alternatives.
-    MATCH: Optional[Pattern[str]] = None
+    MATCH = None  # type: Optional[Pattern[str]]
     # Should this color also be checked in a different color space? Only when set to a string (specifying a color space)
     # will the default gamut checking also check the specified space as well as the current.
     #
@@ -155,9 +170,9 @@ class Space(
     #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
     #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
     #   space, the values can be greatly out of specification (looking at you HSL).
-    GAMUT_CHECK: Optional[str] = None
+    GAMUT_CHECK = None  # type: Optional[str]
     # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
-    BOUNDS: Tuple[Bounds, ...] = tuple()
+    BOUNDS = tuple()  # type: Tuple[Bounds, ...]
     # White point
     WHITE = "D50"
 

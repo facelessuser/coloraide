@@ -1,5 +1,6 @@
 """Colors."""
 import abc
+import itertools
 import functools
 from . import cat
 from . import distance
@@ -100,9 +101,9 @@ class BaseColor(abc.ABCMeta):
 class Color(metaclass=BaseColor):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP: Dict[str, Type[Space]] = {}
-    DE_MAP: Dict[str, Type[DeltaE]] = {}
-    FIT_MAP: Dict[str, Type[Fit]] = {}
+    CS_MAP = {}  # type: Dict[str, Type[Space]]
+    DE_MAP = {}  # type: Dict[str, Type[DeltaE]]
+    FIT_MAP = {}  # type: Dict[str, Type[Fit]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
@@ -639,7 +640,7 @@ class Color(metaclass=BaseColor):
         if not isinstance(color, str) and isinstance(color, Sequence):
             # We have a sequence, so use piecewise interpolation
             return interpolate.color_piecewise_lerp(
-                [interpolate.Piecewise(self, stop=stop), *color],
+                list(itertools.chain([interpolate.Piecewise(self, stop=stop)], color)),
                 space,
                 out_space,
                 progress,

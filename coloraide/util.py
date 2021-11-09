@@ -539,7 +539,7 @@ def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # prag
         @wraps(func)
         def _deprecated_func(*args: Any, **kwargs: Any) -> Any:
             warnings.warn(
-                f"'{func.__name__}' is deprecated. {message}",
+                "'{}' is deprecated. {}".format(func.__name__, message),
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )
