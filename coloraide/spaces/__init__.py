@@ -356,7 +356,7 @@ class Space(
                     # Custom spaces can restrict colors further, if desired, but we do not
                     # desire to restrict further unless forced.
                     # ```
-                    # is_optional_percent = isinstance(cls.BOUNDS[i][0], OptionalPercent)
+                    # is_optional_percent = cls.BOUNDS[i].flags & FLG_OPT_PERCENT
                     # is_none = c == 'none'
                     # has_percent = c.endswith('%')
                     #
