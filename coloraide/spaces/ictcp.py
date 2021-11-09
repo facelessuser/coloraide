@@ -3,10 +3,15 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
 from .xyz import XYZ
 from .. import util
 import re
+from ..util import Vector, MutableVector
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -48,36 +53,36 @@ ictcp_to_lms_p_mi = [
 ]
 
 
-def ictcp_to_xyz_d65(ictcp):
+def ictcp_to_xyz_d65(ictcp: Vector) -> MutableVector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
-    pqlms = util.dot(ictcp_to_lms_p_mi, ictcp)
+    pqlms = cast(MutableVector, util.dot(ictcp_to_lms_p_mi, ictcp))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms)
 
     # Convert back to absolute XYZ D65
-    absxyz = util.dot(lms_to_xyz_mi, lms)
+    absxyz = cast(MutableVector, util.dot(lms_to_xyz_mi, lms))
 
     # Convert back to normal XYZ D65
     return util.absxyzd65_to_xyz_d65(absxyz)
 
 
-def xyz_d65_to_ictcp(xyzd65):
+def xyz_d65_to_ictcp(xyzd65: Vector) -> MutableVector:
     """From XYZ to ICtCp."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
     absxyz = util.xyz_d65_to_absxyzd65(xyzd65)
 
     # Convert to LMS
-    lms = util.dot(xyz_to_lms_m, absxyz)
+    lms = cast(MutableVector, util.dot(xyz_to_lms_m, absxyz))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms)
 
     # Calculate Izazbz
-    return util.dot(lms_p_to_ictcp_m, pqlms)
+    return cast(MutableVector, util.dot(lms_p_to_ictcp_m, pqlms))
 
 
 class ICtCp(Labish, Space):
@@ -89,56 +94,56 @@ class ICtCp(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
-        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
-        GamutUnbound([-0.5, 0.5]),
-        GamutUnbound([-0.5, 0.5])
+    BOUNDS = (
+        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(-0.5, 0.5),
+        GamutUnbound(-0.5, 0.5)
     )
 
     @property
-    def i(self):
+    def i(self) -> float:
         """`I` channel."""
 
         return self._coords[0]
 
     @i.setter
-    def i(self, value):
+    def i(self, value: float) -> None:
         """Set `I` channel."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def ct(self):
+    def ct(self) -> float:
         """`Ct` axis."""
 
         return self._coords[1]
 
     @ct.setter
-    def ct(self, value):
+    def ct(self, value: float) -> None:
         """`Ct` axis."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def cp(self):
+    def cp(self) -> float:
         """`Cp` axis."""
 
         return self._coords[2]
 
     @cp.setter
-    def cp(self, value):
+    def cp(self, value: float) -> None:
         """Set `Cp` axis."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent, ictcp):
+    def _to_xyz(cls, parent: 'Color', ictcp: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, ictcp_to_xyz_d65(ictcp))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return xyz_d65_to_ictcp(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))

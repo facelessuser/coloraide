@@ -2,27 +2,38 @@
 from ..distance import DeltaE
 import math
 from ... import util
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ...color import Color
 
 
 class DE94(DeltaE):
     """Delta E 94 class."""
 
     @staticmethod
-    def name():
+    def name() -> str:
         """Name of method."""
 
         return "94"
 
     @staticmethod
-    def distance(color, sample, kl=1, k1=0.045, k2=0.015, **kwargs):
+    def distance(
+        color: 'Color',
+        sample: 'Color',
+        kl: float = 1,
+        k1: float = 0.045,
+        k2: float = 0.015,
+        **kwargs: Any
+    ) -> float:
         """
         Delta E 1994 color distance formula.
 
         http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
         """
 
-        l1, a1, b1 = util.no_nan(color.convert("lab").coords())
-        l2, a2, b2 = util.no_nan(sample.convert("lab").coords())
+        l1, a1, b1 = util.no_nans(color.convert("lab").coords())
+        l2, a2, b2 = util.no_nans(sample.convert("lab").coords())
 
         # Equation (5)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

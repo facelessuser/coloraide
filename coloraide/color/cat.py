@@ -1,7 +1,9 @@
 """Chromatic adaptation transforms."""
-from ... import util
-from ... spaces import WHITES
+from .. import util
+from ..util import Matrix, MutableMatrix, Vector, MutableVector
+from .. spaces import WHITES
 from functools import lru_cache
+from typing import Tuple, Dict, cast
 
 # Conversion matrices
 CATS = {
@@ -57,11 +59,15 @@ CATS = {
         [0.650173, 1.204414, 0.048952],
         [-0.051461, -0.045854, -0.953127]
     ]
-}
+}  # type: Dict[str, Matrix]
 
 
 @lru_cache(maxsize=20)
-def calc_adaptation_matrices(w1, w2, method='bradford'):
+def calc_adaptation_matrices(
+    w1: str,
+    w2: str,
+    method: str = 'bradford'
+) -> Tuple[MutableMatrix, MutableMatrix]:
     """
     Get the von Kries based adaptation matrix based on the method and illuminants.
 
@@ -90,13 +96,13 @@ def calc_adaptation_matrices(w1, w2, method='bradford'):
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
-    m2 = util.diag(util.divide(first, second))
+    m2 = util.diag(cast(Vector, util.divide(cast(Vector, first), cast(Vector, second))))
     adapt = util.dot(mi, util.dot(m2, m))
 
-    return adapt, util.inv(adapt)
+    return cast(MutableMatrix, adapt), util.inv(cast(Matrix, adapt))
 
 
-def get_adaptation_matrix(w1, w2, method):
+def get_adaptation_matrix(w1: str, w2: str, method: str) -> MutableMatrix:
     """
     Get the appropriate matrix for chromatic adaptation.
 
@@ -110,12 +116,12 @@ def get_adaptation_matrix(w1, w2, method):
     return mi if a != w2 else m
 
 
-def chromatic_adaptation(w1, w2, xyz, method='bradford'):
+def chromatic_adaptation(w1: str, w2: str, xyz: Vector, method: str = 'bradford') -> MutableVector:
     """Chromatic adaptation."""
 
     if w1 == w2:
         # No adaptation is needed if the white points are identical.
-        return xyz
+        return list(xyz)
     else:
         # Get the appropriate chromatic adaptation matrix and apply.
-        return util.dot(get_adaptation_matrix(w1, w2, method), xyz)
+        return cast(MutableVector, util.dot(get_adaptation_matrix(w1, w2, method), xyz))

@@ -1,11 +1,16 @@
 """HSL class."""
-from ...spaces import OptionalPercent, Space, RE_DEFAULT_MATCH, Angle, GamutBound, Cylindrical
+from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from ..srgb.base import SRGB
 from ... import util
 import re
+from ...util import Vector, MutableVector
+from typing import Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ...color import Color
 
 
-def srgb_to_hsl(rgb):
+def srgb_to_hsl(rgb: Vector) -> MutableVector:
     """SRGB to HSL."""
 
     r, g, b = rgb
@@ -31,7 +36,7 @@ def srgb_to_hsl(rgb):
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_srgb(hsl):
+def hsl_to_srgb(hsl: Vector) -> MutableVector:
     """
     HSL to RGB.
 
@@ -42,7 +47,7 @@ def hsl_to_srgb(hsl):
     h = util.no_nan(h)
     h = h % 360
 
-    def f(n):
+    def f(n: int) -> float:
         """Calculate the channels."""
         k = (n + h / 30) % 12
         a = s * min(l, 1 - l)
@@ -66,50 +71,50 @@ class HSL(Cylindrical, Space):
     WHITE = "D65"
     GAMUT_CHECK = "srgb"
 
-    RANGE = (
-        GamutBound([Angle(0.0), Angle(360.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)]),
-        GamutBound([OptionalPercent(0.0), OptionalPercent(1.0)])
+    BOUNDS = (
+        GamutBound(0.0, 360.0, FLG_ANGLE),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
     )
 
     @property
-    def h(self):
+    def h(self) -> float:
         """Hue channel."""
 
         return self._coords[0]
 
     @h.setter
-    def h(self, value):
+    def h(self, value: float) -> None:
         """Shift the hue."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def s(self):
+    def s(self) -> float:
         """Saturation channel."""
 
         return self._coords[1]
 
     @s.setter
-    def s(self, value):
+    def s(self, value: float) -> None:
         """Saturate or unsaturate the color by the given factor."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def l(self):
+    def l(self) -> float:
         """Lightness channel."""
 
         return self._coords[2]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Set lightness channel."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def null_adjust(cls, coords, alpha):
+    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
         if coords[1] == 0:
@@ -118,25 +123,25 @@ class HSL(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent, hsl):
+    def _to_srgb(cls, parent: 'Color', hsl: Vector) -> MutableVector:
         """To sRGB."""
 
         return hsl_to_srgb(hsl)
 
     @classmethod
-    def _from_srgb(cls, parent, rgb):
+    def _from_srgb(cls, parent: 'Color', rgb: Vector) -> MutableVector:
         """From sRGB."""
 
         return srgb_to_hsl(rgb)
 
     @classmethod
-    def _to_xyz(cls, parent, hsl):
+    def _to_xyz(cls, parent: 'Color', hsl: Vector) -> MutableVector:
         """To XYZ."""
 
         return SRGB._to_xyz(parent, cls._to_srgb(parent, hsl))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))

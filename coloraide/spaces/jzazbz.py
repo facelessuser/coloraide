@@ -3,10 +3,15 @@ Jzazbz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
 from .xyz import XYZ
 from .. import util
 import re
+from ..util import Vector, MutableVector
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
 
 B = 1.15
 G = 0.66
@@ -55,7 +60,7 @@ izazbz_to_lms_p_mi = [
 ]
 
 
-def jzazbz_to_xyz_d65(jzazbz):
+def jzazbz_to_xyz_d65(jzazbz: Vector) -> MutableVector:
     """From Jzazbz to XYZ."""
 
     jz, az, bz = jzazbz
@@ -64,13 +69,13 @@ def jzazbz_to_xyz_d65(jzazbz):
     iz = (jz + D0) / (1 + D - D * (jz + D0))
 
     # Convert to LMS prime
-    pqlms = util.dot(izazbz_to_lms_p_mi, [iz, az, bz])
+    pqlms = cast(MutableVector, util.dot(izazbz_to_lms_p_mi, [iz, az, bz]))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms, m2=M2)
 
     # Convert back to absolute XYZ D65
-    xm, ym, za = util.dot(lms_to_xyz_mi, lms)
+    xm, ym, za = cast(MutableVector, util.dot(lms_to_xyz_mi, lms))
     xa = (xm + ((B - 1) * za)) / B
     ya = (ym + ((G - 1) * xa)) / G
 
@@ -78,7 +83,7 @@ def jzazbz_to_xyz_d65(jzazbz):
     return util.absxyzd65_to_xyz_d65([xa, ya, za])
 
 
-def xyz_d65_to_jzazbz(xyzd65):
+def xyz_d65_to_jzazbz(xyzd65: Vector) -> MutableVector:
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
@@ -87,17 +92,17 @@ def xyz_d65_to_jzazbz(xyzd65):
     ym = (G * ya) - ((G - 1) * xa)
 
     # Convert to LMS
-    lms = util.dot(xyz_to_lms_m, [xm, ym, za])
+    lms = cast(MutableVector, util.dot(xyz_to_lms_m, [xm, ym, za]))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
 
     # Calculate Izazbz
-    iz, az, bz = util.dot(lms_p_to_izazbz_m, pqlms)
+    iz, az, bz = cast(MutableVector, util.dot(lms_p_to_izazbz_m, pqlms))
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0
-    return jz, az, bz
+    return [jz, az, bz]
 
 
 class Jzazbz(Labish, Space):
@@ -114,56 +119,56 @@ class Jzazbz(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
-        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
-        GamutUnbound([-0.5, 0.5]),
-        GamutUnbound([-0.5, 0.5])
+    BOUNDS = (
+        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(-0.5, 0.5),
+        GamutUnbound(-0.5, 0.5)
     )
 
     @property
-    def jz(self):
+    def jz(self) -> float:
         """Jz channel."""
 
         return self._coords[0]
 
     @jz.setter
-    def jz(self, value):
+    def jz(self, value: float) -> None:
         """Set jz channel."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def az(self):
+    def az(self) -> float:
         """Az axis."""
 
         return self._coords[1]
 
     @az.setter
-    def az(self, value):
+    def az(self, value: float) -> None:
         """Az axis."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def bz(self):
+    def bz(self) -> float:
         """Bz axis."""
 
         return self._coords[2]
 
     @bz.setter
-    def bz(self, value):
+    def bz(self, value: float) -> None:
         """Set bz axis."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent, jzazbz):
+    def _to_xyz(cls, parent: 'Color', jzazbz: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, jzazbz_to_xyz_d65(jzazbz))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return xyz_d65_to_jzazbz(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))

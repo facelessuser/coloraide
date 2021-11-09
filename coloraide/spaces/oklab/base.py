@@ -25,11 +25,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, OptionalPercent, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
 from ..srgb_linear import SRGBLinear
 from ..xyz import XYZ
 from ... import util
 import re
+from ...util import Vector, MutableVector
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ...color import Color
 
 # sRGB Linear to LMS
 SRGBL_TO_LMS = [
@@ -74,28 +79,40 @@ LMS_TO_XYZD65 = [
 ]
 
 
-def oklab_to_linear_srgb(lab):
+def oklab_to_linear_srgb(lab: Vector) -> MutableVector:
     """Convert from Oklab to linear sRGB."""
 
-    return util.dot(LMS_TO_SRGBL, [c ** 3 for c in util.dot(OKLAB_TO_LMS3, lab)])
+    return cast(
+        MutableVector,
+        util.dot(LMS_TO_SRGBL, [c ** 3 for c in cast(MutableVector, util.dot(OKLAB_TO_LMS3, lab))])
+    )
 
 
-def linear_srgb_to_oklab(rgb):
+def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:
     """Linear sRGB to Oklab."""
 
-    return util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in util.dot(SRGBL_TO_LMS, rgb)])
+    return cast(
+        MutableVector,
+        util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in cast(MutableVector, util.dot(SRGBL_TO_LMS, rgb))])
+    )
 
 
-def oklab_to_xyz_d65(lab):
+def oklab_to_xyz_d65(lab: Vector) -> MutableVector:
     """Convert from Oklab to XYZ D65."""
 
-    return util.dot(LMS_TO_XYZD65, [c ** 3 for c in util.dot(OKLAB_TO_LMS3, lab)])
+    return cast(
+        MutableVector,
+        util.dot(LMS_TO_XYZD65, [c ** 3 for c in cast(MutableVector, util.dot(OKLAB_TO_LMS3, lab))])
+    )
 
 
-def xyz_d65_to_oklab(xyz):
+def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
     """XYZ D65 to Oklab."""
 
-    return util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in util.dot(XYZD65_TO_LMS, xyz)])
+    return cast(
+        MutableVector,
+        util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in cast(MutableVector, util.dot(XYZD65_TO_LMS, xyz))])
+    )
 
 
 class Oklab(Labish, Space):
@@ -110,80 +127,80 @@ class Oklab(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
-    RANGE = (
-        GamutUnbound([OptionalPercent(0), OptionalPercent(1)]),
-        GamutUnbound([-0.5, 0.5]),
-        GamutUnbound([-0.5, 0.5])
+    BOUNDS = (
+        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(-0.5, 0.5),
+        GamutUnbound(-0.5, 0.5)
     )
 
     @property
-    def l(self):
+    def l(self) -> float:
         """L channel."""
 
         return self._coords[0]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def a(self):
+    def a(self) -> float:
         """A channel."""
 
         return self._coords[1]
 
     @a.setter
-    def a(self, value):
+    def a(self, value: float) -> None:
         """A axis."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def b(self):
+    def b(self) -> float:
         """B channel."""
 
         return self._coords[2]
 
     @b.setter
-    def b(self, value):
+    def b(self, value: float) -> None:
         """B axis."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_srgb(cls, parent, oklab):
+    def _to_srgb(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """To sRGB."""
 
         return SRGBLinear._to_srgb(parent, cls._to_srgb_linear(parent, oklab))
 
     @classmethod
-    def _from_srgb(cls, parent, srgb):
+    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
         """From sRGB."""
 
         return cls._from_srgb_linear(parent, SRGBLinear._from_srgb(parent, srgb))
 
     @classmethod
-    def _to_srgb_linear(cls, parent, oklab):
+    def _to_srgb_linear(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """To sRGB Linear."""
 
         return oklab_to_linear_srgb(oklab)
 
     @classmethod
-    def _from_srgb_linear(cls, parent, srgbl):
+    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
         """From SRGB Linear."""
 
         return linear_srgb_to_oklab(srgbl)
 
     @classmethod
-    def _to_xyz(cls, parent, oklab):
+    def _to_xyz(cls, parent: 'Color', oklab: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, oklab_to_xyz_d65(oklab))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return xyz_d65_to_oklab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))

@@ -3,14 +3,19 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Percent, WHITES, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES, Labish
 from .lab.base import KAPPA, EPSILON, KE
 from .xyz import XYZ
 from .. import util
 import re
+from ..util import Vector, MutableVector
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
 
 
-def xyz_to_luv(xyz, white):
+def xyz_to_luv(xyz: Vector, white: str) -> MutableVector:
     """XYZ to Luv."""
 
     u, v = util.xyz_to_uv(xyz)
@@ -27,7 +32,7 @@ def xyz_to_luv(xyz, white):
     ]
 
 
-def luv_to_xyz(luv, white):
+def luv_to_xyz(luv: Vector, white: str) -> MutableVector:
     """Luv to XYZ."""
 
     l, u, v = luv
@@ -63,56 +68,56 @@ class Luv(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
-    RANGE = (
-        GamutUnbound([Percent(0), Percent(100.0)]),
-        GamutUnbound([-175.0, 175.0]),
-        GamutUnbound([-175.0, 175.0])
+    BOUNDS = (
+        GamutUnbound(0.0, 100.0, FLG_PERCENT),
+        GamutUnbound(-175.0, 175.0),
+        GamutUnbound(-175.0, 175.0)
     )
 
     @property
-    def l(self):
+    def l(self) -> float:
         """L channel."""
 
         return self._coords[0]
 
     @l.setter
-    def l(self, value):
+    def l(self, value: float) -> None:
         """Get true luminance."""
 
         self._coords[0] = self._handle_input(value)
 
     @property
-    def u(self):
+    def u(self) -> float:
         """U channel."""
 
         return self._coords[1]
 
     @u.setter
-    def u(self, value):
+    def u(self, value: float) -> None:
         """U axis."""
 
         self._coords[1] = self._handle_input(value)
 
     @property
-    def v(self):
+    def v(self) -> float:
         """V channel."""
 
         return self._coords[2]
 
     @v.setter
-    def v(self, value):
+    def v(self, value: float) -> None:
         """V axis."""
 
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent, luv):
+    def _to_xyz(cls, parent: 'Color', luv: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, luv_to_xyz(luv, cls.WHITE))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return xyz_to_luv(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.WHITE)

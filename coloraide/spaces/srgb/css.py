@@ -4,6 +4,11 @@ from . import color_names
 from . import base
 from .. import _parse
 from ... import util
+from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
+from ...util import MutableVector
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ...color import Color
 
 RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**_parse.COLOR_PARTS))
 
@@ -43,8 +48,15 @@ class SRGB(base.SRGB):
     )
 
     def to_string(
-        self, parent, *, alpha=None, precision=None, fit=True, none=False, **kwargs
-    ):
+        self,
+        parent: 'Color',
+        *,
+        alpha: Optional[bool] = None,
+        precision: Optional[int] = None,
+        fit: Union[bool, str] = True,
+        none: bool = False,
+        **kwargs: Any
+    ) -> str:
         """Convert to CSS."""
 
         if precision is None:
@@ -61,7 +73,7 @@ class SRGB(base.SRGB):
         # Handle hex and color names
         value = ''
         if options.get("hex") or options.get("names"):
-            h = self._get_hex(parent, options, alpha=alpha, precision=precision, fit=fit)
+            h = self._get_hex(parent, upper=options.get("upper", False), alpha=alpha, fit=fit)
             if options.get("hex"):
                 value = h
                 if compress:
@@ -82,11 +94,11 @@ class SRGB(base.SRGB):
             percent = options.get("percent", False)
             comma = options.get("comma", False)
             factor = 100.0 if percent else 255.0
-            method = None if not isinstance(fit, str) else fit
 
+            method = None if not isinstance(fit, str) else fit
             coords = parent.fit(method=method).coords() if fit else self.coords()
             if not none:
-                coords = util.no_nan(coords)
+                coords = util.no_nans(coords)
 
             fmt = util.fmt_percent if percent else util.fmt_float
             if alpha:
@@ -107,15 +119,21 @@ class SRGB(base.SRGB):
 
         return value
 
-    def _get_hex(self, parent, options, *, alpha=False, precision=None, fit=None):
+    def _get_hex(
+        self,
+        parent: 'Color',
+        *,
+        upper: bool = False,
+        alpha: bool = False,
+        fit: Union[str, bool] = True
+    ) -> str:
         """Get the hex `RGB` value."""
 
-        hex_upper = options.get("upper", False)
         method = None if not isinstance(fit, str) else fit
-        coords = util.no_nan(parent.fit(method=method).coords())
+        coords = util.no_nans(parent.fit(method=method).coords())
 
         template = "#{:02x}{:02x}{:02x}{:02x}" if alpha else "#{:02x}{:02x}{:02x}"
-        if hex_upper:
+        if upper:
             template = template.upper()
 
         if alpha:
@@ -134,7 +152,7 @@ class SRGB(base.SRGB):
         return value
 
     @classmethod
-    def translate_channel(cls, channel, value):
+    def translate_channel(cls, channel: int, value: str) -> float:
         """Translate channel string."""
 
         if channel in (0, 1, 2):
@@ -147,9 +165,11 @@ class SRGB(base.SRGB):
                 return _parse.norm_hex_channel(value)
             else:
                 return _parse.norm_alpha_channel(value)
+        else:  # pragma: no cover
+            raise ValueError('{} is not a valid channel index'.format(channel))
 
     @classmethod
-    def split_channels(cls, color):
+    def split_channels(cls, color: str) -> Tuple[MutableVector, float]:
         """Split channels."""
 
         if color[:3].lower().startswith('rgb'):
@@ -167,25 +187,30 @@ class SRGB(base.SRGB):
             length = len(color)
             if length in (7, 9):
                 return cls.null_adjust(
-                    (
+                    [
                         cls.translate_channel(0, "#" + color[1:3]),
                         cls.translate_channel(1, "#" + color[3:5]),
                         cls.translate_channel(2, "#" + color[5:7])
-                    ),
+                    ],
                     cls.translate_channel(-1, "#" + color[7:9]) if length == 9 else 1.0
                 )
             else:
                 return cls.null_adjust(
-                    (
+                    [
                         cls.translate_channel(0, "#" + color[1] * 2),
                         cls.translate_channel(1, "#" + color[2] * 2),
                         cls.translate_channel(2, "#" + color[3] * 2)
-                    ),
+                    ],
                     cls.translate_channel(-1, "#" + color[4] * 2) if length == 5 else 1.0
                 )
 
     @classmethod
-    def match(cls, string, start=0, fullmatch=True):
+    def match(
+        cls,
+        string: str,
+        start: int = 0,
+        fullmatch: bool = True
+    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
         """Match a CSS color string."""
 
         channels, end = super().match(string, start, fullmatch)
@@ -195,7 +220,10 @@ class SRGB(base.SRGB):
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             string = string[m.start(0):m.end(0)].lower()
             if not string.startswith(('#', 'rgb')):
-                string = color_names.name2hex(string)
-            if string is not None:
+                value = color_names.name2hex(string)
+                if value is not None:
+                    return cls.split_channels(value), m.end(0)
+            else:
                 return cls.split_channels(string), m.end(0)
+
         return None, None

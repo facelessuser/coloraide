@@ -1,16 +1,16 @@
 """Colors."""
-from collections.abc import Sequence, Mapping
 import abc
+import itertools
 import functools
+from . import cat
 from . import distance
 from . import convert
 from . import gamut
 from . import compositing
 from . import interpolate
-from . import contrast
-from . import match
 from .. import util
-from ..spaces import Space
+from ..util import Vector, MutableVector, ColorInput
+from ..spaces import Space, Cylindrical
 from ..spaces.hsv import HSV
 from ..spaces.srgb.css import SRGB
 from ..spaces.srgb_linear import SRGBLinear
@@ -50,6 +50,7 @@ from .distance.delta_e_z import DEZ
 from .distance.delta_e_hyab import DEHyAB
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
+from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
     DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB
@@ -67,63 +68,87 @@ SUPPORTED_FIT = (
 )
 
 
+class ColorMatch:
+    """Color match object."""
+
+    def __init__(self, color: 'Color', start: int, end: int) -> None:
+        """Initialize."""
+
+        self.color = color
+        self.start = start
+        self.end = end
+
+    def __str__(self) -> str:  # pragma: no cover
+        """String."""
+
+        return "ColorMatch(color={!r}, start={}, end={})".format(self.color, self.start, self.end)
+
+    __repr__ = __str__
+
+
 class BaseColor(abc.ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
-    def __init__(cls, name, bases, clsdict):
+    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CS_MAP = cls.CS_MAP.copy()
-            cls.DE_MAP = cls.DE_MAP.copy()
-            cls.FIT_MAP = cls.FIT_MAP.copy()
+            cls.CS_MAP = cls.CS_MAP.copy()  # type: Dict[str, Type[Space]]
+            cls.DE_MAP = cls.DE_MAP.copy()  # type: Dict[str, Type[DeltaE]]
+            cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Type[Fit]]
 
 
-class Color(
-    convert.Convert,
-    gamut.Gamut,
-    compositing.Compose,
-    interpolate.Interpolate,
-    distance.Distance,
-    contrast.Contrast,
-    match.Match,
-    metaclass=BaseColor
-):
+class Color(metaclass=BaseColor):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP = {}
-    DE_MAP = {}
-    FIT_MAP = {}
+    CS_MAP = {}  # type: Dict[str, Type[Space]]
+    DE_MAP = {}  # type: Dict[str, Type[DeltaE]]
+    FIT_MAP = {}  # type: Dict[str, Type[Fit]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     DELTA_E = util.DEF_DELTA_E
     CHROMATIC_ADAPTATION = 'bradford'
 
-    def __init__(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+    def __init__(
+        self,
+        color: ColorInput,
+        data: Optional[Vector] = None,
+        alpha: float = util.DEF_ALPHA,
+        *,
+        filters: Optional[Sequence[str]] = None,
+        **kwargs: Any
+    ) -> None:
         """Initialize."""
 
         self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
 
-    def __dir__(self):
+    def __dir__(self) -> Sequence[str]:
         """Get attributes for `dir()`."""
 
-        attr = super().__dir__()
+        attr = cast(List['str'], super().__dir__())
         attr.extend(self._space.CHANNEL_NAMES)
         attr.extend(list(self._space.CHANNEL_ALIASES.keys()))
         attr.extend(['delta_e_{}'.format(name) for name in self.DE_MAP.keys()])
         return attr
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         """Compare equal."""
 
         return (
             type(other) == type(self) and
             other.space() == self.space() and
-            util.cmp_coords(other.coords(), self.coords()) and
-            util.cmp_coords(other.alpha, self.alpha)
+            util.cmp_coords(other.coords() + [other.alpha], self.coords() + [self.alpha])
         )
 
-    def _parse(self, color, data=None, alpha=util.DEF_ALPHA, filters=None, **kwargs):
+    def _parse(
+        self,
+        color: ColorInput,
+        data: Optional[Vector] = None,
+        alpha: float = util.DEF_ALPHA,
+        *,
+        filters: Optional[Sequence[str]] = None,
+        **kwargs: Any
+    ) -> Space:
         """Parse the color."""
 
         obj = None
@@ -140,7 +165,7 @@ class Color(
                 m = self._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
-                obj = m.color
+                obj = m[0]
         elif isinstance(color, Color):
             if not filters or color.space() in filters:
                 obj = self.CS_MAP[color.space()](color._space)
@@ -159,12 +184,59 @@ class Color(
         return obj
 
     @classmethod
-    def register(cls, plugin, overwrite=False):
+    def _match(
+        cls,
+        string: str,
+        start: int = 0,
+        fullmatch: bool = False,
+        filters: Optional[Sequence[str]] = None
+    ) -> Optional[Tuple['Space', int, int]]:
+        """
+        Match a color in a buffer and return a color object.
+
+        This must return the color space, not the Color object.
+        """
+
+        filter_set = set(filters) if filters is not None else set()  # type: Set[str]
+
+        for space, space_class in cls.CS_MAP.items():
+            if filter_set and space not in filter_set:
+                continue
+            value, match_end = space_class.match(string, start, fullmatch)
+            if value is not None:
+                color = space_class(*value)
+                return color, start, cast(int, match_end)
+        return None
+
+    @classmethod
+    def match(
+        cls,
+        string: str,
+        start: int = 0,
+        fullmatch: bool = False,
+        *,
+        filters: Optional[Sequence[str]] = None
+    ) -> Optional[ColorMatch]:
+        """Match color."""
+
+        obj = cls._match(string, start, fullmatch, filters=filters)
+        if obj is not None:
+            color = obj[0]
+            return ColorMatch(cls(color.space(), color.coords(), color.alpha), obj[1], obj[2])
+        return None
+
+    @classmethod
+    def register(
+        cls,
+        plugin: Union[Type[Fit], Type[DeltaE], Type[Space], Sequence[Any]],
+        overwrite: bool = False
+    ) -> None:
         """Register the hook."""
 
         if not isinstance(plugin, Sequence):
             plugin = [plugin]
 
+        mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
         for p in plugin:
             if issubclass(p, Space):
                 name = p.space()
@@ -172,11 +244,11 @@ class Color(
                 mapping = cls.CS_MAP
             elif issubclass(p, DeltaE):
                 name = p.name()
-                value = p.distance
+                value = p
                 mapping = cls.DE_MAP
             elif issubclass(p, Fit):
                 name = p.name()
-                value = p.fit
+                value = p
                 mapping = cls.FIT_MAP
                 if name == 'clip':
                     raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
@@ -189,12 +261,13 @@ class Color(
                 raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
 
     @classmethod
-    def deregister(cls, plugin, silent=False):
+    def deregister(cls, plugin: Union[str, Sequence[str]], silent: bool = False) -> None:
         """Deregister a plugin by name of specified plugin type."""
 
         if isinstance(plugin, str):
             plugin = [plugin]
 
+        mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
         for p in plugin:
             if p == '*':
                 cls.CS_MAP.clear()
@@ -203,7 +276,6 @@ class Color(
                 return
 
             ptype, name = p.split(':', 1)
-            mapping = None
             if ptype == 'space':
                 mapping = cls.CS_MAP
             elif ptype == "delta-e":
@@ -222,63 +294,73 @@ class Color(
             elif not silent:
                 raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
 
-    def to_dict(self):
+    def to_dict(self) -> Mapping[str, Any]:
         """Return color as a data object."""
 
-        data = {'space': self.space()}
+        data = {'space': self.space()}  # type: Dict[str, Any]
         coords = self.coords() + [self.alpha]
         for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
             data[name] = coords[i]
         return data
 
-    def normalize(self):
+    def normalize(self) -> 'Color':
         """Normalize the color."""
 
         coords, alpha = self._space.null_adjust(self.coords(), self.alpha)
         return self.mutate(self.space(), coords, alpha)
 
-    def is_nan(self, name):
+    def is_nan(self, name: str) -> bool:
         """Check if channel is NaN."""
 
         return util.is_nan(self.get(name))
 
-    def _is_this_color(self, obj):
+    def _is_this_color(self, obj: Any) -> bool:
         """Test if the input is "this" Color, not a subclass."""
 
         return type(obj) is type(self)
 
-    def _is_color(self, obj):
+    def _is_color(self, obj: Any) -> bool:
         """Test if the input is a Color."""
 
         return isinstance(obj, Color)
 
-    def _attach(self, space):
+    def _attach(self, space: Space) -> None:
         """Attach the this objects convert space to the color."""
 
         self._space = space
 
-    def _handle_color_input(self, color):
+    def _handle_color_input(self, color: ColorInput) -> 'Color':
         """Handle color input."""
 
-        if self._is_color(color):
-            return self.new(color) if not self._is_this_color(color) else color
-        elif isinstance(color, str):
+        if (
+            isinstance(color, str) or
+            isinstance(color, Mapping) or
+            (self._is_color(color) and not self._is_this_color(color))
+        ):
             return self.new(color)
-        elif isinstance(color, Mapping):
-            return self.new(color)
-        raise TypeError("Unexpected type '{}'".format(type(color)))
+        elif not self._is_color(color):
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+        return color
 
-    def space(self):
+    def space(self) -> str:
         """The current color space."""
 
         return self._space.space()
 
-    def coords(self):
+    def coords(self) -> MutableVector:
         """Coordinates."""
 
         return self._space.coords()
 
-    def new(self, color, data=None, alpha=util.DEF_ALPHA, *, filters=None, **kwargs):
+    def new(
+        self,
+        color: ColorInput,
+        data: Optional[Vector] = None,
+        alpha: float = util.DEF_ALPHA,
+        *,
+        filters: Optional[Sequence[str]] = None,
+        **kwargs: Any
+    ) -> 'Color':
         """
         Create new color object.
 
@@ -287,50 +369,360 @@ class Color(
 
         return type(self)(color, data, alpha, filters=filters, **kwargs)
 
-    def clone(self):
+    def clone(self) -> 'Color':
         """Clone."""
 
         return self.new(self.space(), self.coords(), self.alpha)
 
-    def to_string(self, **kwargs):
+    def chromatic_adaptation(self, w1: str, w2: str, xyz: Vector) -> MutableVector:
+        """Apply chromatic adaption to XYZ coordinates."""
+
+        return cat.chromatic_adaptation(w1, w2, xyz, method=self.CHROMATIC_ADAPTATION)
+
+    def convert(self, space: str, *, fit: bool = False, in_place: bool = False) -> 'Color':
+        """Convert to color space."""
+
+        space = space.lower()
+
+        if fit:
+            method = None if not isinstance(fit, str) else fit
+            if not self.in_gamut(space, tolerance=0.0):
+                converted = self.convert(space, in_place=in_place)
+                return converted.fit(space, method=method, in_place=True)
+
+        coords = convert.convert(self, space)
+
+        return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
+
+    def mutate(
+        self,
+        color: ColorInput,
+        data: Optional[Vector] = None,
+        alpha: float = util.DEF_ALPHA,
+        *,
+        filters: Optional[Sequence[str]] = None,
+        **kwargs: Any
+    ) -> 'Color':
+        """Mutate the current color to a new color."""
+
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._attach(c)
+        return self
+
+    def update(
+        self,
+        color: Union['Color', str, Mapping[str, Any]],
+        data: Optional[Vector] = None,
+        alpha: float = util.DEF_ALPHA,
+        *,
+        filters: Optional[Sequence[str]] = None,
+        **kwargs: Any
+    ) -> 'Color':
+        """Update the existing color space with the provided color."""
+
+        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        space = self.space()
+        self._attach(c)
+        if c.space() != space:
+            self.convert(space, in_place=True)
+        return self
+
+    def to_string(self, **kwargs: Any) -> str:
         """To string."""
 
         return self._space.to_string(self, **kwargs)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Representation."""
 
         return repr(self._space)
 
     __str__ = __repr__
 
-    def white(self):
+    def white(self) -> MutableVector:
         """Get the white point."""
 
         return util.xy_to_xyz(self._space.white())
 
-    def uv(self, mode='1976'):
+    def uv(self, mode: str = '1976') -> MutableVector:
         """Convert to `xy`."""
 
         uv = None
         if mode == '1976':
             xyz = self.convert('xyz')
-            xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
-            uv = util.xyz_to_uv(xyz)
+            coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+            uv = util.xyz_to_uv(coords)
         elif mode == '1960':
             uv = util.xy_to_uv_1960(self.xy())
         else:
             raise ValueError("'mode' must be either '1960' or '1976' (default), not '{}'".format(mode))
         return uv
 
-    def xy(self):
+    def xy(self) -> MutableVector:
         """Convert to `xy`."""
 
         xyz = self.convert('xyz')
-        xyz = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
-        return util.xyz_to_xyY(xyz, self._space.white())[:2]
+        coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+        return util.xyz_to_xyY(coords, self._space.white())[:2]
 
-    def get(self, name):
+    def clip(self, space: Optional[str] = None, *, in_place: bool = False) -> 'Color':
+        """Clip the color channels."""
+
+        if space is None:
+            space = self.space()
+
+        this = self.clone() if not in_place else self
+
+        # Convert to desired space
+        c = self.convert(space)
+
+        # If we are perfectly in gamut, don't waste time clipping.
+        if c.in_gamut(tolerance=0.0):
+            if isinstance(c._space, Cylindrical):
+                name = c._space.hue_name()
+                c.set(name, util.constrain_hue(c.get(name)))
+        else:
+            c._space._coords = gamut.clip_channels(c)
+        c.normalize()
+
+        # Adjust "this" color
+        return this.update(c)
+
+    def fit(self, space: Optional[str] = None, *, method: Optional[str] = None, in_place: bool = False) -> 'Color':
+        """Fit the gamut using the provided method."""
+
+        # Dedicated clip method.
+        if method == 'clip' or (method is None and self.FIT == "clip"):
+            return self.clip(space, in_place=in_place)
+
+        if space is None:
+            space = self.space()
+
+        if method is None:
+            method = self.FIT
+
+        this = self.clone() if not in_place else self
+
+        # Select appropriate mapping algorithm
+        if method in self.FIT_MAP:
+            func = self.FIT_MAP[method].fit
+        else:
+            # Unknown fit method
+            raise ValueError("'{}' gamut mapping is not currently supported".format(method))
+
+        # Convert to desired space
+        c = self.convert(space)
+
+        # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
+        # If out of gamut, apply mapping/clipping/etc.
+        if c.in_gamut(tolerance=0.0):
+            if isinstance(c._space, Cylindrical):
+                name = c._space.hue_name()
+                c.set(name, util.constrain_hue(c.get(name)))
+        else:
+            # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
+            c._space._coords = func(c)
+        c.normalize()
+
+        # Adjust "this" color
+        return this.update(c)
+
+    def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
+        """Check if current color is in gamut."""
+
+        space = space.lower() if space is not None else self.space()
+
+        # Check gamut in the provided space
+        if space is not None and space != self.space():
+            c = self.convert(space)
+            return c.in_gamut(tolerance=tolerance)
+
+        # Check the color space specified for gamut checking.
+        # If it proves to be in gamut, we will then test if the current
+        # space is constrained properly.
+        if self._space.GAMUT_CHECK is not None:
+            c = self.convert(self._space.GAMUT_CHECK)
+            if not c.in_gamut(tolerance=tolerance):
+                return False
+
+        return gamut.verify(self, tolerance)
+
+    def mask(self, channel: Union[str, Sequence[str]], *, invert: bool = False, in_place: bool = False) -> 'Color':
+        """Mask color channels."""
+
+        this = self if in_place else self.clone()
+        aliases = self._space.CHANNEL_ALIASES
+        masks = set(
+            [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
+        )
+        for name in self._space.CHANNEL_NAMES:
+            if (not invert and name in masks) or (invert and name not in masks):
+                this.set(name, util.NaN)
+        return this
+
+    def steps(
+        self,
+        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        *,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        **interpolate_args: Any
+    ) -> List['Color']:
+        """
+        Discrete steps.
+
+        This is built upon the interpolate function, and will return a list of
+        colors containing a minimum of colors equal to `steps` or steps as specified
+        derived from the `max_delta_e` parameter (whichever is greatest).
+
+        Number of colors can be capped with `max_steps`.
+
+        Default delta E method used is delta E 76.
+        """
+
+        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e)
+
+    def mix(
+        self,
+        color: ColorInput,
+        percent: float = util.DEF_MIX,
+        *,
+        in_place: bool = False,
+        **interpolate_args: Any
+    ) -> 'Color':
+        """
+        Mix colors using interpolation.
+
+        This uses the interpolate method to find the center point between the two colors.
+        The basic mixing logic is outlined in the CSS level 5 draft.
+        """
+
+        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+        mixed = self.interpolate(color, **interpolate_args)(percent)
+        return self.mutate(mixed) if in_place else mixed
+
+    def interpolate(
+        self,
+        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        *,
+        space: str = "lab",
+        out_space: Optional[str] = None,
+        stop: float = 0,
+        progress: Optional[Callable[..., float]] = None,
+        hue: str = util.DEF_HUE_ADJ,
+        premultiplied: bool = False
+    ) -> interpolate.Interpolator:
+        """
+        Return an interpolation function.
+
+        The function will return an interpolation function that accepts a value (which should
+        be in the range of [0..1] and will return a color based on that value.
+
+        While we use NaNs to mask off channels when doing the interpolation, we do not allow
+        arbitrary specification of NaNs by the user, they must specify channels via `adjust`
+        if they which to target specific channels for mixing. Null hues become NaNs before
+        mixing occurs.
+        """
+
+        space = space.lower()
+        out_space = self.space() if out_space is None else out_space.lower()
+
+        # A piecewise object was provided, so treat it as such,
+        # or we've changed the stop of the base color, so run it through piecewise.
+        if (
+            isinstance(color, interpolate.Piecewise) or
+            (stop != 0 and (isinstance(color, (str, Mapping)) or self._is_color(color)))
+        ):
+            color = cast(Sequence[Union['Color', str, Mapping[str, Any], interpolate.Piecewise]], [color])
+
+        if not isinstance(color, str) and isinstance(color, Sequence):
+            # We have a sequence, so use piecewise interpolation
+            return interpolate.color_piecewise_lerp(
+                list(itertools.chain([interpolate.Piecewise(self, stop=stop)], color)),
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
+            )
+        else:
+            # We have a sequence, so use piecewise interpolation
+            return interpolate.color_lerp(
+                self,
+                color,
+                space,
+                out_space,
+                progress,
+                hue,
+                premultiplied
+            )
+
+    def compose(
+        self,
+        backdrop: Union[ColorInput, Sequence[ColorInput]],
+        *,
+        blend: Union[str, bool] = True,
+        operator: Union[str, bool] = True,
+        space: Optional[str] = None,
+        out_space: Optional[str] = None,
+        in_place: bool = False
+    ) -> 'Color':
+        """Blend colors using the specified blend mode."""
+
+        if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
+            bcolor = [self._handle_color_input(c) for c in backdrop]
+        else:
+            bcolor = [self._handle_color_input(backdrop)]
+
+        color = compositing.compose(self, bcolor, blend, operator, space)
+
+        outspace = self.space() if out_space is None else out_space.lower()
+        return (
+            self.mutate(color.convert(outspace)) if in_place else color.convert(outspace)
+        ).normalize()
+
+    def delta_e(
+        self,
+        color: ColorInput,
+        *,
+        method: Optional[str] = None,
+        **kwargs: Any
+    ) -> float:
+        """Delta E distance."""
+
+        color = self._handle_color_input(color)
+        if method is None:
+            method = self.DELTA_E
+
+        algorithm = method.lower()
+
+        try:
+            return self.DE_MAP[algorithm].distance(self, color, **kwargs)
+        except KeyError:
+            raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
+
+    def distance(self, color: ColorInput, *, space: str = "lab") -> float:
+        """Delta."""
+
+        color = self._handle_color_input(color)
+        return distance.distance_euclidean(self, color, space=space)
+
+    def luminance(self) -> float:
+        """Get color's luminance."""
+
+        return cast(float, self.convert("xyz").y)
+
+    def contrast(self, color: ColorInput) -> float:
+        """Compare the contrast ratio of this color and the provided color."""
+
+        color = self._handle_color_input(color)
+        lum1 = self.luminance()
+        lum2 = color.luminance()
+        return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
+
+    def get(self, name: str) -> float:
         """Get channel."""
 
         # Handle space.attribute
@@ -343,7 +735,7 @@ class Color(
 
         return self._space.get(name)
 
-    def set(self, name, value):  # noqa: A003
+    def set(self, name: str, value: Union[float, Callable[..., float]]) -> 'Color':  # noqa: A003
         """Set channel."""
 
         # Handle space.attribute
@@ -362,7 +754,7 @@ class Color(
             self._space.set(name, value)
         return self
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         """Get attribute."""
 
         if name.startswith('delta_e_'):
@@ -382,7 +774,7 @@ class Color(
 
         return super().__getattribute__(name)
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         """Set attribute."""
 
         try:

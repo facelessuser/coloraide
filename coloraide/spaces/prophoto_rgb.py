@@ -4,6 +4,11 @@ from .srgb.base import SRGB
 from .xyz import XYZ
 from .. import util
 import re
+from ..util import Vector, MutableVector
+from typing import cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
 
 ET = 1 / 512
 ET2 = 16 / 512
@@ -21,7 +26,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_prophoto_to_xyz(rgb):
+def lin_prophoto_to_xyz(rgb: Vector) -> MutableVector:
     """
     Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.D50.
 
@@ -29,16 +34,16 @@ def lin_prophoto_to_xyz(rgb):
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return util.dot(RGB_TO_XYZ, rgb)
+    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
 
 
-def xyz_to_lin_prophoto(xyz):
+def xyz_to_lin_prophoto(xyz: Vector) -> MutableVector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
-    return util.dot(XYZ_TO_RGB, xyz)
+    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
 
 
-def lin_prophoto(rgb):
+def lin_prophoto(rgb: Vector) -> MutableVector:
     """
     Convert an array of prophoto-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -57,7 +62,7 @@ def lin_prophoto(rgb):
     return result
 
 
-def gam_prophoto(rgb):
+def gam_prophoto(rgb: Vector) -> MutableVector:
     """
     Convert an array of linear-light prophoto-rgb  in the range 0.0-1.0 to gamma corrected form.
 
@@ -84,13 +89,13 @@ class ProPhotoRGB(SRGB):
     WHITE = "D50"
 
     @classmethod
-    def _to_xyz(cls, parent, rgb):
+    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
         """To XYZ."""
 
         return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_prophoto_to_xyz(lin_prophoto(rgb)))
 
     @classmethod
-    def _from_xyz(cls, parent, xyz):
+    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
         """From XYZ."""
 
         return gam_prophoto(xyz_to_lin_prophoto(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))

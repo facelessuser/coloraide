@@ -5,3 +5,10 @@ requires = [
 ]
 
 build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+files = [
+    "coloraide"
+]
+strict = true
+show_error_codes = true
