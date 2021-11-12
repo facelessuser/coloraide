@@ -4,14 +4,10 @@ ICtCp class.
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
-from .xyz import XYZ
 from .. import util
 import re
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -137,13 +133,13 @@ class ICtCp(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', ictcp: Vector) -> MutableVector:
+    def to_base(cls, ictcp: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, ictcp_to_xyz_d65(ictcp))
+        return ictcp_to_xyz_d65(ictcp)
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return xyz_d65_to_ictcp(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return xyz_d65_to_ictcp(xyz)

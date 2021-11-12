@@ -1,14 +1,10 @@
 """Pro Photo RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB
-from .xyz import XYZ
 from .. import util
 import re
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 ET = 1 / 512
 ET2 = 16 / 512
@@ -84,18 +80,19 @@ def gam_prophoto(rgb: Vector) -> MutableVector:
 class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
+    BASE = "xyz"
     SPACE = "prophoto-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D50"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
+    def to_base(cls, rgb: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_prophoto_to_xyz(lin_prophoto(rgb)))
+        return lin_prophoto_to_xyz(lin_prophoto(rgb))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return gam_prophoto(xyz_to_lin_prophoto(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
+        return gam_prophoto(xyz_to_lin_prophoto(xyz))

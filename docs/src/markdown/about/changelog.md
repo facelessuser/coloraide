@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0
+
+- **NEW**: Update spaces such that they provide a single conversion point which simplifies color space API and
+  centralizes all conversion logic allowing us to pull chromatic adaptation out of spaces.
+
 ## 0.5.0
 
 - **NEW**: Add type annotations and refactor code to better accommodate the type annotations. Public API not really

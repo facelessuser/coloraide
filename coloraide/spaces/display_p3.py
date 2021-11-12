@@ -1,14 +1,10 @@
 """Display-p3 color class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB, lin_srgb, gam_srgb
-from .xyz import XYZ
 from .. import util
 import re
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 RGB_TO_XYZ = [
     [4.8657094864821610e-01, 2.6566769316909306e-01, 1.9821728523436244e-01],
@@ -55,18 +51,19 @@ def gam_p3(rgb: Vector) -> MutableVector:
 class DisplayP3(SRGB):
     """Display-p3 class."""
 
+    BASE = "xyz"
     SPACE = "display-p3"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
+    def to_base(cls, rgb: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_p3_to_xyz(lin_p3(rgb)))
+        return lin_p3_to_xyz(lin_p3(rgb))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return gam_p3(xyz_to_lin_p3(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
+        return gam_p3(xyz_to_lin_p3(xyz))

@@ -1,5 +1,5 @@
 """Color base."""
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 from .. import util
 from ..util import Vector, MutableVector
 from . import _parse
@@ -146,6 +146,7 @@ class Space(
 ):
     """Base color space object."""
 
+    BASE = "xyz"  # type: str
     # Color space name
     SPACE = ""
     # Serialized name
@@ -275,6 +276,16 @@ class Space(
         if name not in self.CHANNEL_NAMES:
             raise ValueError("'{}' is an invalid channel name".format(name))
         return cast(float, getattr(self, name))
+
+    @classmethod
+    @abstractmethod
+    def to_base(cls, color: Vector) -> MutableVector:  # pragma: no cover
+        """To XYZ."""
+
+    @classmethod
+    @abstractmethod
+    def from_base(cls, color: Vector) -> MutableVector:  # pragma: no cover
+        """From XYZ."""
 
     def to_string(
         self,

@@ -2,10 +2,7 @@
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
 import re
 from ..util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Tuple
 
 
 class XYZ(Space):
@@ -60,13 +57,13 @@ class XYZ(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def to_base(cls, xyz: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, xyz)
+        return list(xyz)
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)
+        return list(xyz)

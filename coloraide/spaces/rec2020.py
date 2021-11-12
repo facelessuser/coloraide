@@ -1,15 +1,11 @@
 """Rec 2020 color class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB
-from .xyz import XYZ
 from .. import util
 import re
 import math
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 ALPHA = 1.09929682680944
 BETA = 0.018053968510807
@@ -84,18 +80,19 @@ def xyz_to_lin_2020(xyz: Vector) -> MutableVector:
 class Rec2020(SRGB):
     """Rec 2020 class."""
 
+    BASE = "xyz"
     SPACE = "rec2020"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
+    def to_base(cls, rgb: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_2020_to_xyz(lin_2020(rgb)))
+        return lin_2020_to_xyz(lin_2020(rgb))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return gam_2020(xyz_to_lin_2020(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
+        return gam_2020(xyz_to_lin_2020(xyz))

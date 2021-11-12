@@ -1,14 +1,10 @@
 """LCH class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
-from .luv import Luv
 from .. import util
 import re
 import math
 from ..util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
@@ -50,6 +46,7 @@ def lchuv_to_luv(lchuv: Vector) -> MutableVector:
 class Lchuv(Lchish, Space):
     """Lch(uv) class."""
 
+    BASE = "luv"
     SPACE = "lchuv"
     SERIALIZE = ("--lchuv",)
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
@@ -112,25 +109,13 @@ class Lchuv(Lchish, Space):
         return coords, alpha
 
     @classmethod
-    def _to_luv(cls, parent: 'Color', lchuv: Vector) -> MutableVector:
+    def to_base(cls, lchuv: Vector) -> MutableVector:
         """To Luv."""
 
         return lchuv_to_luv(lchuv)
 
     @classmethod
-    def _from_luv(cls, parent: 'Color', luv: Vector) -> MutableVector:
+    def from_base(cls, luv: Vector) -> MutableVector:
         """To Luv."""
 
         return luv_to_lchuv(luv)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', lchuv: Vector) -> MutableVector:
-        """To XYZ."""
-
-        return Luv._to_xyz(parent, cls._to_luv(parent, lchuv))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_luv(parent, Luv._from_xyz(parent, xyz))

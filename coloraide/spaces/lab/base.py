@@ -1,13 +1,9 @@
 """Lab class."""
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish
-from ..xyz import XYZ
 from ... import util
 import re
 from ...util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 EPSILON3 = 6 / 29  # Cube root of EPSILON
@@ -125,13 +121,13 @@ class Lab(LabBase):
     WHITE = "D50"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', lab: Vector) -> MutableVector:
+    def to_base(cls, lab: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lab_to_xyz(lab, cls.white()))
+        return lab_to_xyz(lab, cls.white())
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return xyz_to_lab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.white())
+        return xyz_to_lab(xyz, cls.white())

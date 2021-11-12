@@ -1,14 +1,10 @@
 """A98 RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB
-from .xyz import XYZ
 from .. import util
 import re
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 RGB_TO_XYZ = [
     [0.5766690429101304, 0.18555823790654635, 0.18822864623499475],
@@ -57,18 +53,19 @@ def gam_a98rgb(rgb: Vector) -> MutableVector:
 class A98RGB(SRGB):
     """A98 RGB class."""
 
+    BASE = "xyz"
     SPACE = "a98-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
+    def to_base(cls, rgb: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_a98rgb_to_xyz(lin_a98rgb(rgb)))
+        return lin_a98rgb_to_xyz(lin_a98rgb(rgb))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return gam_a98rgb(xyz_to_lin_a98rgb(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
+        return gam_a98rgb(xyz_to_lin_a98rgb(xyz))

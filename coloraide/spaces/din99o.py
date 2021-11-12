@@ -4,15 +4,10 @@ Din99o class.
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
 from ..spaces import RE_DEFAULT_MATCH
-from .xyz import XYZ
 from .lab.base import LabBase, lab_to_xyz, xyz_to_lab
 import re
 import math
 from ..util import Vector, MutableVector
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
 
 KE = 1
 KCH = 1
@@ -104,13 +99,13 @@ class Din99o(LabBase):
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', lab: Vector) -> MutableVector:
+    def to_base(cls, lab: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lab_to_xyz(din99o_to_lab(lab), cls.white()))
+        return lab_to_xyz(din99o_to_lab(lab), cls.white())
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return lab_to_din99o(xyz_to_lab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.white()))
+        return lab_to_din99o(xyz_to_lab(xyz, cls.white()))

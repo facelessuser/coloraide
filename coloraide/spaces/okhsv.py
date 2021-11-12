@@ -27,15 +27,12 @@ SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from .. import util
-from .oklab.base import Oklab, oklab_to_linear_srgb
+from .oklab.base import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import re
 import math
 from ..util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Tuple
 
 
 def okhsv_to_oklab(hsv: Vector) -> MutableVector:
@@ -138,6 +135,7 @@ def oklab_to_okhsv(lab: Vector) -> MutableVector:
 class Okhsv(Cylindrical, Space):
     """Okhsv class."""
 
+    BASE = "oklab"
     SPACE = "okhsv"
     SERIALIZE = ("--okhsv",)
     CHANNEL_NAMES = ("h", "s", "v", "alpha")
@@ -201,49 +199,13 @@ class Okhsv(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
-        """To sRGB."""
-
-        return Oklab._to_srgb(parent, cls._to_oklab(parent, okhsv))
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
-        """From sRGB."""
-
-        return cls._from_oklab(parent, Oklab._from_srgb(parent, srgb))
-
-    @classmethod
-    def _to_srgb_linear(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
-        """To sRGB Linear."""
-
-        return Oklab._to_srgb_linear(parent, cls._to_oklab(parent, okhsv))
-
-    @classmethod
-    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
-        """From SRGB Linear."""
-
-        return cls._from_oklab(parent, Oklab._from_srgb_linear(parent, srgbl))
-
-    @classmethod
-    def _to_oklab(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
+    def to_base(cls, okhsv: Vector) -> MutableVector:
         """To Oklab."""
 
         return okhsv_to_oklab(okhsv)
 
     @classmethod
-    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
+    def from_base(cls, oklab: Vector) -> MutableVector:
         """From Oklab."""
 
         return oklab_to_okhsv(oklab)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', okhsv: Vector) -> MutableVector:
-        """To XYZ."""
-
-        return Oklab._to_xyz(parent, cls._to_oklab(parent, okhsv))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

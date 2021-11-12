@@ -1,14 +1,10 @@
 """Lch class."""
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
-from ..lab.base import Lab
 from ... import util
 import re
 import math
 from ...util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
@@ -116,31 +112,20 @@ class LchBase(Lchish, Space):
 class Lch(LchBase):
     """Lch class."""
 
+    BASE = "lab"
     SPACE = "lch"
     SERIALIZE = ("--lch",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
 
     @classmethod
-    def _to_lab(cls, parent: 'Color', lch: Vector) -> MutableVector:
+    def to_base(cls, lch: Vector) -> MutableVector:
         """To Lab."""
 
         return lch_to_lab(lch)
 
     @classmethod
-    def _from_lab(cls, parent: 'Color', lab: Vector) -> MutableVector:
+    def from_base(cls, lab: Vector) -> MutableVector:
         """To Lab."""
 
         return lab_to_lch(lab)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', lch: Vector) -> MutableVector:
-        """To XYZ."""
-
-        return Lab._to_xyz(parent, cls._to_lab(parent, lch))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_lab(parent, Lab._from_xyz(parent, xyz))

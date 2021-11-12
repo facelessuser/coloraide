@@ -4,14 +4,10 @@ Jzazbz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
-from .xyz import XYZ
 from .. import util
 import re
 from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import cast
 
 B = 1.15
 G = 0.66
@@ -162,13 +158,13 @@ class Jzazbz(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', jzazbz: Vector) -> MutableVector:
+    def to_base(cls, jzazbz: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, jzazbz_to_xyz_d65(jzazbz))
+        return jzazbz_to_xyz_d65(jzazbz)
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return xyz_d65_to_jzazbz(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return xyz_d65_to_jzazbz(xyz)
