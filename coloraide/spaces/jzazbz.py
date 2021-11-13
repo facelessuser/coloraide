@@ -6,7 +6,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
 from .. import util
 import re
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 from typing import cast
 
 B = 1.15
@@ -56,7 +56,7 @@ izazbz_to_lms_p_mi = [
 ]
 
 
-def jzazbz_to_xyz_d65(jzazbz: Vector) -> MutableVector:
+def jzazbz_to_xyz_d65(jzazbz: MutableVector) -> MutableVector:
     """From Jzazbz to XYZ."""
 
     jz, az, bz = jzazbz
@@ -79,7 +79,7 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> MutableVector:
     return util.absxyzd65_to_xyz_d65([xa, ya, za])
 
 
-def xyz_d65_to_jzazbz(xyzd65: Vector) -> MutableVector:
+def xyz_d65_to_jzazbz(xyzd65: MutableVector) -> MutableVector:
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
@@ -104,6 +104,7 @@ def xyz_d65_to_jzazbz(xyzd65: Vector) -> MutableVector:
 class Jzazbz(Labish, Space):
     """Jzazbz class."""
 
+    BASE = "xyz"
     SPACE = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNEL_NAMES = ("jz", "az", "bz", "alpha")
@@ -158,13 +159,13 @@ class Jzazbz(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def to_base(cls, jzazbz: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from Jzazbz."""
 
-        return jzazbz_to_xyz_d65(jzazbz)
+        return jzazbz_to_xyz_d65(coords)
 
     @classmethod
-    def from_base(cls, xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to Jzazbz."""
 
-        return xyz_d65_to_jzazbz(xyz)
+        return xyz_d65_to_jzazbz(coords)

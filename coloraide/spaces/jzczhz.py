@@ -7,13 +7,13 @@ from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, F
 from .. import util
 import re
 import math
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0003
 
 
-def jzazbz_to_jzczhz(jzazbz: Vector) -> MutableVector:
+def jzazbz_to_jzczhz(jzazbz: MutableVector) -> MutableVector:
     """Jzazbz to JzCzhz."""
 
     jz, az, bz = jzazbz
@@ -29,7 +29,7 @@ def jzazbz_to_jzczhz(jzazbz: Vector) -> MutableVector:
     return [jz, cz, util.constrain_hue(hz)]
 
 
-def jzczhz_to_jzazbz(jzczhz: Vector) -> MutableVector:
+def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
@@ -124,13 +124,13 @@ class JzCzhz(Lchish, Space):
         return "hz"
 
     @classmethod
-    def to_base(cls, jzczhz: Vector) -> MutableVector:
-        """To Jzazbz."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To Jzazbz from JzCzhz."""
 
-        return jzczhz_to_jzazbz(jzczhz)
+        return jzczhz_to_jzazbz(coords)
 
     @classmethod
-    def from_base(cls, jzazbz: Vector) -> MutableVector:
-        """From Jzazbz."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From Jzazbz to JzCzhz."""
 
-        return jzazbz_to_jzczhz(jzazbz)
+        return jzazbz_to_jzczhz(coords)

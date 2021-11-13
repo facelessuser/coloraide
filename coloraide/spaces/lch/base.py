@@ -3,13 +3,13 @@ from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, 
 from ... import util
 import re
 import math
-from ...util import Vector, MutableVector
+from ...util import MutableVector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
 
-def lab_to_lch(lab: Vector) -> MutableVector:
+def lab_to_lch(lab: MutableVector) -> MutableVector:
     """Lab to Lch."""
 
     l, a, b = lab
@@ -26,7 +26,7 @@ def lab_to_lch(lab: Vector) -> MutableVector:
     return test
 
 
-def lch_to_lab(lch: Vector) -> MutableVector:
+def lch_to_lab(lch: MutableVector) -> MutableVector:
     """Lch to Lab."""
 
     l, c, h = lch
@@ -44,16 +44,20 @@ def lch_to_lab(lch: Vector) -> MutableVector:
     ]
 
 
-class LchBase(Lchish, Space):
+class Lch(Lchish, Space):
     """Lch class."""
 
+    BASE = "lab"
+    SPACE = "lch"
+    SERIALIZE = ("--lch",)
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",
         "hue": "h"
     }
-
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
+    WHITE = "D50"
     BOUNDS = (
         # I think chroma, specifically should be clamped.
         # Some libraries don't to prevent rounding issues. We should only get
@@ -108,24 +112,14 @@ class LchBase(Lchish, Space):
             coords[2] = util.NaN
         return coords, alpha
 
+    @classmethod
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To Lab from Lch."""
 
-class Lch(LchBase):
-    """Lch class."""
-
-    BASE = "lab"
-    SPACE = "lch"
-    SERIALIZE = ("--lch",)
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+        return lch_to_lab(coords)
 
     @classmethod
-    def to_base(cls, lch: Vector) -> MutableVector:
-        """To Lab."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From Lab to Lch."""
 
-        return lch_to_lab(lch)
-
-    @classmethod
-    def from_base(cls, lab: Vector) -> MutableVector:
-        """To Lab."""
-
-        return lab_to_lch(lab)
+        return lab_to_lch(coords)

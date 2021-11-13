@@ -2,11 +2,11 @@
 from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from .. import util
 import re
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 from typing import Tuple
 
 
-def hsv_to_hsl(hsv: Vector) -> MutableVector:
+def hsv_to_hsl(hsv: MutableVector) -> MutableVector:
     """
     HSV to HSL.
 
@@ -23,7 +23,7 @@ def hsv_to_hsl(hsv: Vector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_hsv(hsl: Vector) -> MutableVector:
+def hsl_to_hsv(hsl: MutableVector) -> MutableVector:
     """
     HSL to HSV.
 
@@ -109,13 +109,13 @@ class HSV(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def to_base(cls, hsv: Vector) -> MutableVector:
-        """To HSL."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To HSL from HSV."""
 
-        return hsv_to_hsl(hsv)
+        return hsv_to_hsl(coords)
 
     @classmethod
-    def from_base(cls, hsl: Vector) -> MutableVector:
-        """From HSL."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From HSL to HSV."""
 
-        return hsl_to_hsv(hsl)
+        return hsl_to_hsv(coords)

@@ -7,6 +7,7 @@ import re
 class XYZD50(XYZ):
     """XYZ D50 class."""
 
+    BASE = "xyz"
     SPACE = "xyz-d50"
     SERIALIZE = ("xyz-d50",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))

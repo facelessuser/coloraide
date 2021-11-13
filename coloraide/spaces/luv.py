@@ -7,10 +7,10 @@ from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES,
 from .lab.base import KAPPA, EPSILON, KE
 from .. import util
 import re
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 
 
-def xyz_to_luv(xyz: Vector, white: str) -> MutableVector:
+def xyz_to_luv(xyz: MutableVector, white: str) -> MutableVector:
     """XYZ to Luv."""
 
     u, v = util.xyz_to_uv(xyz)
@@ -27,7 +27,7 @@ def xyz_to_luv(xyz: Vector, white: str) -> MutableVector:
     ]
 
 
-def luv_to_xyz(luv: Vector, white: str) -> MutableVector:
+def luv_to_xyz(luv: MutableVector, white: str) -> MutableVector:
     """Luv to XYZ."""
 
     l, u, v = luv
@@ -52,8 +52,9 @@ def luv_to_xyz(luv: Vector, white: str) -> MutableVector:
 
 
 class Luv(Labish, Space):
-    """Oklab class."""
+    """Luv class."""
 
+    BASE = "xyz"
     SPACE = "luv"
     SERIALIZE = ("--luv",)
     CHANNEL_NAMES = ("l", "u", "v", "alpha")
@@ -106,13 +107,13 @@ class Luv(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def to_base(cls, luv: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from Luv."""
 
-        return luv_to_xyz(luv, cls.WHITE)
+        return luv_to_xyz(coords, cls.WHITE)
 
     @classmethod
-    def from_base(cls, xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to Luv."""
 
-        return xyz_to_luv(xyz, cls.WHITE)
+        return xyz_to_luv(coords, cls.WHITE)

@@ -1,12 +1,12 @@
 """SRGB color class."""
 from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT
 from ... import util
-from ...util import Vector, MutableVector
+from ...util import MutableVector
 import re
 import math
 
 
-def lin_srgb(rgb: Vector) -> MutableVector:
+def lin_srgb(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of sRGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -24,7 +24,7 @@ def lin_srgb(rgb: Vector) -> MutableVector:
     return result
 
 
-def gam_srgb(rgb: Vector) -> MutableVector:
+def gam_srgb(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of linear-light sRGB values in the range 0.0-1.0 to gamma corrected form.
 
@@ -102,13 +102,13 @@ class SRGB(Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def from_base(cls, rgb: Vector) -> MutableVector:
-        """Linear sRGB to sRGB."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From sRGB Linear to sRGB."""
 
-        return gam_srgb(rgb)
+        return gam_srgb(coords)
 
     @classmethod
-    def to_base(cls, rgb: Vector) -> MutableVector:
-        """sRGB to linear sRGB."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To sRGB Linear from sRGB."""
 
-        return lin_srgb(rgb)
+        return lin_srgb(coords)

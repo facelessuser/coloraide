@@ -2,11 +2,11 @@
 from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from ... import util
 import re
-from ...util import Vector, MutableVector
+from ...util import MutableVector
 from typing import Tuple
 
 
-def hwb_to_hsv(hwb: Vector) -> MutableVector:
+def hwb_to_hsv(hwb: MutableVector) -> MutableVector:
     """HWB to HSV."""
 
     h, w, b = hwb
@@ -21,7 +21,7 @@ def hwb_to_hsv(hwb: Vector) -> MutableVector:
     return [h, s, v]
 
 
-def hsv_to_hwb(hsv: Vector) -> MutableVector:
+def hsv_to_hwb(hsv: MutableVector) -> MutableVector:
     """HSV to HWB."""
 
     h, s, v = hsv
@@ -99,13 +99,13 @@ class HWB(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def to_base(cls, hwb: Vector) -> MutableVector:
-        """To HSV."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To HSV from HWB."""
 
-        return hwb_to_hsv(hwb)
+        return hwb_to_hsv(coords)
 
     @classmethod
-    def from_base(cls, hsv: Vector) -> MutableVector:
-        """From HSV."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From HSV to HWB."""
 
-        return hsv_to_hwb(hsv)
+        return hsv_to_hwb(coords)

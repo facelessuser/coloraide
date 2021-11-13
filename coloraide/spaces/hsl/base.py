@@ -2,11 +2,11 @@
 from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from ... import util
 import re
-from ...util import Vector, MutableVector
+from ...util import MutableVector
 from typing import Tuple
 
 
-def srgb_to_hsl(rgb: Vector) -> MutableVector:
+def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
     """SRGB to HSL."""
 
     r, g, b = rgb
@@ -32,7 +32,7 @@ def srgb_to_hsl(rgb: Vector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_srgb(hsl: Vector) -> MutableVector:
+def hsl_to_srgb(hsl: MutableVector) -> MutableVector:
     """
     HSL to RGB.
 
@@ -120,13 +120,13 @@ class HSL(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def to_base(cls, hsl: Vector) -> MutableVector:
-        """To sRGB."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To sRGB from HSL."""
 
-        return hsl_to_srgb(hsl)
+        return hsl_to_srgb(coords)
 
     @classmethod
-    def from_base(cls, rgb: Vector) -> MutableVector:
-        """From sRGB."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From sRGB to HSL."""
 
-        return srgb_to_hsl(rgb)
+        return srgb_to_hsl(coords)

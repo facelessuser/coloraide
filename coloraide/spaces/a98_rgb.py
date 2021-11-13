@@ -3,7 +3,7 @@ from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB
 from .. import util
 import re
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 from typing import cast
 
 RGB_TO_XYZ = [
@@ -19,7 +19,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_a98rgb_to_xyz(rgb: Vector) -> MutableVector:
+def lin_a98rgb_to_xyz(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of linear-light a98-rgb values to CIE XYZ using D50.D65.
 
@@ -32,19 +32,19 @@ def lin_a98rgb_to_xyz(rgb: Vector) -> MutableVector:
     return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
 
 
-def xyz_to_lin_a98rgb(xyz: Vector) -> MutableVector:
+def xyz_to_lin_a98rgb(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light a98-rgb."""
 
     return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
 
 
-def lin_a98rgb(rgb: Vector) -> MutableVector:
+def lin_a98rgb(rgb: MutableVector) -> MutableVector:
     """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
     return [util.npow(val, 563 / 256) for val in rgb]
 
 
-def gam_a98rgb(rgb: Vector) -> MutableVector:
+def gam_a98rgb(rgb: MutableVector) -> MutableVector:
     """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
 
     return [util.npow(val, 256 / 563) for val in rgb]
@@ -59,13 +59,13 @@ class A98RGB(SRGB):
     WHITE = "D65"
 
     @classmethod
-    def to_base(cls, rgb: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from A98 RGB."""
 
-        return lin_a98rgb_to_xyz(lin_a98rgb(rgb))
+        return lin_a98rgb_to_xyz(lin_a98rgb(coords))
 
     @classmethod
-    def from_base(cls, xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to A98 RGB."""
 
-        return gam_a98rgb(xyz_to_lin_a98rgb(xyz))
+        return gam_a98rgb(xyz_to_lin_a98rgb(coords))

@@ -146,7 +146,7 @@ class Space(
 ):
     """Base color space object."""
 
-    BASE = "xyz"  # type: str
+    BASE = ""  # type: str
     # Color space name
     SPACE = ""
     # Serialized name
@@ -279,13 +279,13 @@ class Space(
 
     @classmethod
     @abstractmethod
-    def to_base(cls, color: Vector) -> MutableVector:  # pragma: no cover
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+        """To base color."""
 
     @classmethod
     @abstractmethod
-    def from_base(cls, color: Vector) -> MutableVector:  # pragma: no cover
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+        """From base color."""
 
     def to_string(
         self,

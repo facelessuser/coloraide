@@ -31,7 +31,7 @@ from .. import util
 import re
 import math
 import sys
-from ..util import Vector, MutableVector
+from ..util import MutableVector
 from typing import Tuple, Optional
 
 FLT_MAX = sys.float_info.max
@@ -53,14 +53,14 @@ def toe_inv(x: float) -> float:
     return (x ** 2 + K_1 * x) / (K_3 * (x + K_2))
 
 
-def to_st(cusp: Vector) -> Vector:
+def to_st(cusp: MutableVector) -> MutableVector:
     """To ST."""
 
     l, c = cusp
     return [c / l, c / (1 - l)]
 
 
-def get_st_mid(a: float, b: float) -> Vector:
+def get_st_mid(a: float, b: float) -> MutableVector:
     """
     Returns a smooth approximation of the location of the cusp.
 
@@ -97,7 +97,7 @@ def get_st_mid(a: float, b: float) -> Vector:
     return [s, t]
 
 
-def find_cusp(a: float, b: float) -> Vector:
+def find_cusp(a: float, b: float) -> MutableVector:
     """
     Finds L_cusp and C_cusp for a given hue.
 
@@ -121,7 +121,7 @@ def find_gamut_intersection(
     l1: float,
     c1: float,
     l0: float,
-    cusp: Optional[Vector] = None
+    cusp: Optional[MutableVector] = None
 ) -> float:
     """
     Finds intersection of the line.
@@ -211,7 +211,7 @@ def find_gamut_intersection(
     return t
 
 
-def get_cs(lab: Vector) -> Vector:
+def get_cs(lab: MutableVector) -> MutableVector:
     """Get Cs."""
 
     l, a, b = lab
@@ -323,7 +323,7 @@ def compute_max_saturation(a: float, b: float) -> float:
     return sat
 
 
-def okhsl_to_oklab(hsl: Vector) -> MutableVector:
+def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
@@ -368,7 +368,7 @@ def okhsl_to_oklab(hsl: Vector) -> MutableVector:
     return [L, a, b]
 
 
-def oklab_to_okhsl(lab: Vector) -> MutableVector:
+def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
     """Oklab to Okhsl."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
@@ -480,13 +480,13 @@ class Okhsl(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def to_base(cls, okhsl: Vector) -> MutableVector:
-        """To Oklab."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To Oklab from Okhsl."""
 
-        return okhsl_to_oklab(okhsl)
+        return okhsl_to_oklab(coords)
 
     @classmethod
-    def from_base(cls, oklab: Vector) -> MutableVector:
-        """From Oklab."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From Oklab to Okhsl."""
 
-        return oklab_to_okhsl(oklab)
+        return oklab_to_okhsl(coords)
