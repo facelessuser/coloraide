@@ -108,6 +108,16 @@ class Color(metaclass=BaseColor):
     DELTA_E = util.DEF_DELTA_E
     CHROMATIC_ADAPTATION = 'bradford'
 
+    # It is highly unlikely that a user would ever need to override this, but
+    # just in case, it is exposed, but undocumented.
+    #
+    # This is meant to prevent infinite loops in the event that a user registers
+    # poorly crafted color spaces with circular convert linkage or somehow doesn't
+    # resolve to XYZ. 10 is a generous size as our current largest iteration chain
+    # is 6, and increasing that past 10 seems highly unlikely:
+    #    XYZ -> sRGB Linear -> sRGB -> HSL -> HSV -> HWB
+    _MAX_CONVERT_ITERATIONS = 10
+
     def __init__(
         self,
         color: ColorInput,

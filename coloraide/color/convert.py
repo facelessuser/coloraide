@@ -6,11 +6,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-# If a set of poorly created color spaces have been registered that create a loop or
-# cannot be converted to an XYZ base, conversion chains could grow to an infinite size.
-# Provide an arbitrary, worse case limit to prevent a deadlock and inevitable crash.
-MAX_CHAIN_SIZE = 10
-
 
 def convert(color: 'Color', space: str) -> Vector:
     """Convert the color coordinates to the specified space."""
@@ -33,7 +28,7 @@ def convert(color: 'Color', space: str) -> Vector:
             temp = color.CS_MAP[temp.BASE]
 
             count += 1
-            if count == MAX_CHAIN_SIZE:  # pragma: no cover
+            if count == color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
                 raise RuntimeError(
                     'Conversion chain reached max size of {} and has terminated to avoid an infinite loop'.format(
                         count
@@ -58,7 +53,7 @@ def convert(color: 'Color', space: str) -> Vector:
                 current = base_space
 
                 count += 1
-                if count == MAX_CHAIN_SIZE:  # pragma: no cover
+                if count == color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
                     raise RuntimeError(
                         'Conversions reached max iteration of {} and has terminated to avoid an infinite loop'.format(
                             count
