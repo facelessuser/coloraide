@@ -6,6 +6,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
+# XYZ is the absolute base, meaning that XYZ is the final base in any conversion chain.
+# This is a design expectation regardless of whether someone assigns a different base to XYZ or not.
+ABSOLUTE_BASE = 'xyz'
+
 
 def convert(color: 'Color', space: str) -> Vector:
     """Convert the color coordinates to the specified space."""
@@ -21,14 +25,14 @@ def convert(color: 'Color', space: str) -> Vector:
         from_color = []
         from_color_index = {}
         name = ''
-        while name != 'xyz':
+        while name != ABSOLUTE_BASE:
             from_color.append(temp)
-            name = temp.space()
+            name = temp.SPACE
             from_color_index[name] = count
             temp = color.CS_MAP[temp.BASE]
 
             count += 1
-            if count == color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
+            if count > color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
                 raise RuntimeError(
                     'Conversion chain reached max size of {} and has terminated to avoid an infinite loop'.format(
                         count
@@ -38,22 +42,22 @@ def convert(color: 'Color', space: str) -> Vector:
         # Start converting coordinates until we either match a space in the conversion chain or bottom out at XYZ
         coords = util.no_nans(color.coords())
         current = type(color._space)
-        if current.space() != 'xyz':
+        if current.SPACE != ABSOLUTE_BASE:
             count = 0
-            while current.space() not in from_color_index:
+            while current.SPACE not in from_color_index:
                 # Convert to color's base
                 base_space = color.CS_MAP[current.BASE]
                 coords = current.to_base(coords)
 
                 # Convert to XYZ, make sure we chromatically adapt to the appropriate white point
-                if base_space.space() == 'xyz':
+                if base_space.SPACE == ABSOLUTE_BASE:
                     coords = color.chromatic_adaptation(current.WHITE, base_space.WHITE, coords)
 
                 # Get next color in the chain
                 current = base_space
 
                 count += 1
-                if count == color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
+                if count > color._MAX_CONVERT_ITERATIONS:  # pragma: no cover
                     raise RuntimeError(
                         'Conversions reached max iteration of {} and has terminated to avoid an infinite loop'.format(
                             count
@@ -62,11 +66,11 @@ def convert(color: 'Color', space: str) -> Vector:
 
         # If we still do not match start converting from the point in the conversion chain
         # where are current color resides
-        if current.space() != space:
-            start = from_color_index[current.space()] - 1
+        if current.SPACE != space:
+            start = from_color_index[current.SPACE] - 1
 
             # Convert from XYZ, make sure we chromatically adapt from the appropriate white point
-            if current.space() == 'xyz':
+            if current.SPACE == ABSOLUTE_BASE:
                 coords = color.chromatic_adaptation(current.WHITE, from_color[start].WHITE, coords)
 
             for index in range(start, -1, -1):
