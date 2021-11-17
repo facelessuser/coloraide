@@ -1,6 +1,6 @@
 """Display-p3 color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb.base import SRGB, lin_srgb, gam_srgb
+from .srgb import SRGB, lin_srgb, gam_srgb
 from .. import util
 import re
 from ..util import MutableVector

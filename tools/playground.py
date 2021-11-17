@@ -8,7 +8,7 @@ Any inline code blocks with `color` as the language will be evaluated as a simpl
 """
 import coloraide
 from coloraide import Color, NaN, Piecewise
-from coloraide.color.interpolate import Interpolator
+from coloraide.interpolate import Interpolator
 from pymdownx import superfences
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence

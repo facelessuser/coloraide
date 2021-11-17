@@ -1,7 +1,7 @@
 """Chromatic adaptation transforms."""
-from .. import util
-from ..util import Matrix, MutableMatrix, Vector, MutableVector
-from .. spaces import WHITES
+from . import util
+from .util import Matrix, MutableMatrix, Vector, MutableVector
+from . spaces import WHITES
 from functools import lru_cache
 from typing import Tuple, Dict, cast
 

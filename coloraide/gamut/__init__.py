@@ -1,12 +1,12 @@
 """Gamut handling."""
-from ... import util
-from ...util import MutableVector
-from ... spaces import FLG_ANGLE, GamutBound
+from .. import util
+from ..util import MutableVector
+from ..spaces import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+    from ..color import Color
 
 
 def clip_channels(color: 'Color') -> MutableVector:

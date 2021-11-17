@@ -4,7 +4,7 @@ Luv class.
 https://en.wikipedia.org/wiki/CIELUV
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES, Labish
-from .lab.base import KAPPA, EPSILON, KE
+from .lab import KAPPA, EPSILON, KE
 from .. import util
 import re
 from ..util import MutableVector

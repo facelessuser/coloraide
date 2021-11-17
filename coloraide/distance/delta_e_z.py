@@ -5,11 +5,11 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..distance import DeltaE
 import math
-from ... import util
+from .. import util
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+    from ..color import Color
 
 
 class DEZ(DeltaE):

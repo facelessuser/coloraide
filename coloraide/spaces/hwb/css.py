@@ -1,7 +1,7 @@
 """HWB class."""
 import re
-from . import base
-from ...spaces import _parse
+from .. import hwb as base
+from ... import parse
 from ... import util
 from ...util import MutableVector
 from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
@@ -25,7 +25,7 @@ class HWB(base.HWB):
             {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
         )
         \s*\)
-        """.format(**_parse.COLOR_PARTS)
+        """.format(**parse.COLOR_PARTS)
     )
 
     def to_string(
@@ -75,11 +75,11 @@ class HWB(base.HWB):
         """Translate channel string."""
 
         if channel == 0:
-            return _parse.norm_angle_channel(value)
+            return parse.norm_angle_channel(value)
         elif channel in (1, 2):
-            return _parse.norm_percent_channel(value, True)
+            return parse.norm_percent_channel(value, True)
         elif channel == -1:
-            return _parse.norm_alpha_channel(value)
+            return parse.norm_alpha_channel(value)
         else:  # pragma: no cover
             raise ValueError('{} is not a valid channel index'.format(channel))
 
@@ -90,7 +90,7 @@ class HWB(base.HWB):
         start = 4
         channels = []
         alpha = 1.0
-        for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+        for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
             c = c.lower()
             if i <= 2:
                 channels.append(cls.translate_channel(i, c))

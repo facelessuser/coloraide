@@ -1,6 +1,6 @@
 """Din99o Lch class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .lch.base import Lch
+from .lch import Lch
 from .. import util
 import math
 import re

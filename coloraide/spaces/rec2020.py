@@ -1,6 +1,6 @@
 """Rec 2020 color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb.base import SRGB
+from .srgb import SRGB
 from .. import util
 import re
 import math

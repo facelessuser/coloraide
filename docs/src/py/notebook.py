@@ -79,7 +79,7 @@ def get_colors(result):
     """Get color from results."""
 
     from coloraide import Color
-    from coloraide.color.interpolate import Interpolator
+    from coloraide.interpolate import Interpolator
 
     colors = []
     if isinstance(result, Color):

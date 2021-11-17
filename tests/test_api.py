@@ -1519,7 +1519,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_plugin_registration_delta_e(self):
         """Test plugin registration of `DeltaE`."""
 
-        from coloraide.color.distance import delta_e_z
+        from coloraide.distance import delta_e_z
 
         expected = Color('red').delta_e_jz('green')
 
@@ -1541,7 +1541,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_plugin_registration_fit(self):
         """Test plugin registration of `Fit`."""
 
-        from coloraide.color.gamut import fit_lch_chroma
+        from coloraide.gamut import fit_lch_chroma
 
         expected = Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string()
 
@@ -1584,7 +1584,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_reserved_registration_fit(self):
         """Test override registration of reserved fit method."""
 
-        from coloraide.color.gamut import Fit
+        from coloraide.gamut import Fit
 
         class Custom(Color):
             pass
@@ -1614,7 +1614,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_bad_registration_star(self):
         """Test bad registration type."""
 
-        from coloraide.color.distance import DeltaE
+        from coloraide.distance import DeltaE
 
         class Custom(Color):
             pass

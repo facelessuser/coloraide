@@ -1,12 +1,12 @@
 """HyAB distance."""
 from ..distance import DeltaE
 import math
-from ... import util
-from ...spaces import Labish
+from .. import util
+from ..spaces import Labish
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+    from ..color import Color
 
 
 class DEHyAB(DeltaE):

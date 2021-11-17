@@ -1,11 +1,11 @@
 """Distance and Delta E."""
 from abc import ABCMeta, abstractmethod
-from ... import util
+from .. import util
 import math
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+    from ..color import Color
 
 
 def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> float:

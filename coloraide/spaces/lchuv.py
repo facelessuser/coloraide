@@ -1,6 +1,6 @@
 """LCH class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_PERCENT
-from .lch.base import Lch, ACHROMATIC_THRESHOLD
+from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import re
 import math

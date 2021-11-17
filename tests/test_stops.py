@@ -1,5 +1,5 @@
 """Test API."""
-from coloraide.color.interpolate import calc_stops
+from coloraide.interpolate import calc_stops
 import pytest
 
 

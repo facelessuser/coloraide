@@ -1,6 +1,6 @@
 """Lab D65 class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .lab.base import Lab
+from .lab import Lab
 import re
 
 

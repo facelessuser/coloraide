@@ -1,6 +1,6 @@
 """SRGB Linear color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb.base import SRGB
+from .srgb import SRGB
 import re
 from ..util import MutableVector
 from typing import cast

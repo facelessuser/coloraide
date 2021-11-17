@@ -1,6 +1,6 @@
 """Lch D65 class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .lch.base import Lch
+from .lch import Lch
 import re
 
 

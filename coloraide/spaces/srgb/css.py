@@ -1,8 +1,8 @@
 """SRGB color class."""
 import re
 from . import color_names
-from . import base
-from .. import _parse
+from .. import srgb as base
+from ... import parse
 from ... import util
 from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
 from ...util import MutableVector
@@ -10,7 +10,7 @@ from ...util import MutableVector
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
-RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**_parse.COLOR_PARTS))
+RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**parse.COLOR_PARTS))
 
 
 class SRGB(base.SRGB):
@@ -44,7 +44,7 @@ class SRGB(base.SRGB):
             # Names
             \b(?<!\#)[a-z]{{3,}}(?!\()\b
         )
-        """.format(**_parse.COLOR_PARTS)
+        """.format(**parse.COLOR_PARTS)
     )
 
     def to_string(
@@ -157,14 +157,14 @@ class SRGB(base.SRGB):
 
         if channel in (0, 1, 2):
             if value.startswith('#'):
-                return _parse.norm_hex_channel(value)
+                return parse.norm_hex_channel(value)
             else:
-                return _parse.norm_rgb_channel(value)
+                return parse.norm_rgb_channel(value)
         elif channel == -1:
             if value.startswith('#'):
-                return _parse.norm_hex_channel(value)
+                return parse.norm_hex_channel(value)
             else:
-                return _parse.norm_alpha_channel(value)
+                return parse.norm_alpha_channel(value)
         else:  # pragma: no cover
             raise ValueError('{} is not a valid channel index'.format(channel))
 
@@ -176,7 +176,7 @@ class SRGB(base.SRGB):
             start = 5 if color[:4].lower().startswith('rgba') else 4
             channels = []
             alpha = 1.0
-            for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
+            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(color[start:-1].strip()), 0):
                 c = c.lower()
                 if i <= 2:
                     channels.append(cls.translate_channel(i, c))

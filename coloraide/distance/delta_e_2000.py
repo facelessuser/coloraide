@@ -1,11 +1,11 @@
 """Delta E 2000."""
 import math
-from ... import util
+from .. import util
 from ..distance import DeltaE
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+    from ..color import Color
 
 G_CONST = 25 ** 7
 

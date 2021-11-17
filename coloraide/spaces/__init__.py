@@ -2,7 +2,7 @@
 from abc import ABCMeta, abstractmethod
 from .. import util
 from ..util import Vector, MutableVector
-from . import _parse
+from .. import parse
 from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -17,7 +17,7 @@ color\(\s*
 ((?:{percent}|{float})(?:{space}(?:{percent}|{float})){{{{,{{channels:d}}}}}}(?:{slash}(?:{percent}|{float}))?)
 \s*\)
 """.format(
-    **_parse.COLOR_PARTS
+    **parse.COLOR_PARTS
 )
 
 
@@ -334,14 +334,14 @@ class Space(
         ):
 
             # Break channels up into a list
-            split = _parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
+            split = parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
 
             # Get alpha channel
-            alpha = _parse.norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
+            alpha = parse.norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
 
             # Parse color channels
             channels = []
-            for i, c in enumerate(_parse.RE_CHAN_SPLIT.split(split[0]), 0):
+            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < cls.NUM_COLOR_CHANNELS:
                     c = c.lower()
                     # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
@@ -366,7 +366,7 @@ class Space(
                     #         return None, None
                     # ```
 
-                    channels.append(_parse.norm_color_channel(c, not is_percent))
+                    channels.append(parse.norm_color_channel(c, not is_percent))
 
             # Missing channels are filled with `NaN`
             if len(channels) < cls.NUM_COLOR_CHANNELS:

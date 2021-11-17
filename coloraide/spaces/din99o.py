@@ -4,7 +4,7 @@ Din99o class.
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
 from ..spaces import RE_DEFAULT_MATCH
-from .lab.base import Lab
+from .lab import Lab
 import re
 import math
 from ..util import MutableVector

@@ -27,7 +27,7 @@ SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
 from .. import util
-from .oklab.base import oklab_to_linear_srgb
+from .oklab import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import re
 import math

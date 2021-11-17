@@ -2,7 +2,7 @@
 import math
 from operator import itemgetter
 from typing import Any, Callable, cast
-from ...util import Vector, MutableVector
+from ..util import Vector, MutableVector
 
 
 def is_non_seperable(mode: Any) -> bool:

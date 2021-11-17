@@ -1,10 +1,10 @@
 """Convert the color."""
-from .. import util
-from ..util import Vector
+from . import util
+from .util import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+    from .color import Color
 
 # XYZ is the absolute base, meaning that XYZ is the final base in any conversion chain.
 # This is a design expectation regardless of whether someone assigns a different base to XYZ or not.
