@@ -4,20 +4,16 @@ JzCzhz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
-from .jzazbz import Jzazbz
 from .. import util
 import re
 import math
-from ..util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
+from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0003
 
 
-def jzazbz_to_jzczhz(jzazbz: Vector) -> MutableVector:
+def jzazbz_to_jzczhz(jzazbz: MutableVector) -> MutableVector:
     """Jzazbz to JzCzhz."""
 
     jz, az, bz = jzazbz
@@ -33,7 +29,7 @@ def jzazbz_to_jzczhz(jzazbz: Vector) -> MutableVector:
     return [jz, cz, util.constrain_hue(hz)]
 
 
-def jzczhz_to_jzazbz(jzczhz: Vector) -> MutableVector:
+def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
@@ -58,6 +54,7 @@ class JzCzhz(Lchish, Space):
     https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
     """
 
+    BASE = "jzazbz"
     SPACE = "jzczhz"
     SERIALIZE = ("--jzczhz",)
     CHANNEL_NAMES = ("jz", "cz", "hz", "alpha")
@@ -127,25 +124,13 @@ class JzCzhz(Lchish, Space):
         return "hz"
 
     @classmethod
-    def _to_jzazbz(cls, parent: 'Color', jzczhz: Vector) -> MutableVector:
-        """To Jzazbz."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To Jzazbz from JzCzhz."""
 
-        return jzczhz_to_jzazbz(jzczhz)
-
-    @classmethod
-    def _from_jzazbz(cls, parent: 'Color', jzazbz: Vector) -> MutableVector:
-        """From Jzazbz."""
-
-        return jzazbz_to_jzczhz(jzazbz)
+        return jzczhz_to_jzazbz(coords)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', jzczhz: Vector) -> MutableVector:
-        """To XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From Jzazbz to JzCzhz."""
 
-        return Jzazbz._to_xyz(parent, cls._to_jzazbz(parent, jzczhz))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_jzazbz(parent, Jzazbz._from_xyz(parent, xyz))
+        return jzazbz_to_jzczhz(coords)

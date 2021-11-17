@@ -1,5 +1,5 @@
 """Color base."""
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 from .. import util
 from ..util import Vector, MutableVector
 from . import _parse
@@ -146,6 +146,7 @@ class Space(
 ):
     """Base color space object."""
 
+    BASE = ""  # type: str
     # Color space name
     SPACE = ""
     # Serialized name
@@ -184,7 +185,7 @@ class Space(
 
         if isinstance(color, Space):
             for index, channel in enumerate(color.coords()):
-                self.set(self.CHANNEL_NAMES[index], channel)
+                setattr(self, self.CHANNEL_NAMES[index], channel)
             self.alpha = color.alpha
         elif isinstance(color, Sequence):
             if len(color) != self.NUM_COLOR_CHANNELS:  # pragma: no cover
@@ -193,7 +194,7 @@ class Space(
                     "A list of channel values should be at a minimum of {}.".format(self.NUM_COLOR_CHANNELS)
                 )
             for index in range(self.NUM_COLOR_CHANNELS):
-                self.set(self.CHANNEL_NAMES[index], color[index])
+                setattr(self, self.CHANNEL_NAMES[index], color[index])
             self.alpha = 1.0 if alpha is None else alpha
         else:  # pragma: no cover
             # Only likely to happen with direct usage internally.
@@ -229,16 +230,10 @@ class Space(
         return self._coords[:]
 
     @classmethod
-    def space(cls) -> str:
-        """Get the color space."""
-
-        return cls.SPACE
-
-    @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
         """Get the serialized name."""
 
-        return (cls.space(),) if not cls.SERIALIZE else cls.SERIALIZE
+        return (cls.SPACE,) if not cls.SERIALIZE else cls.SERIALIZE
 
     @classmethod
     def white(cls) -> MutableVector:
@@ -263,7 +258,7 @@ class Space(
 
         name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES:
-            raise ValueError("'{}' is an invalid channel name".format(name))
+            raise AttributeError("'{}' is an invalid channel name".format(name))
 
         setattr(self, name, value)
         return self
@@ -273,8 +268,18 @@ class Space(
 
         name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES:
-            raise ValueError("'{}' is an invalid channel name".format(name))
+            raise AttributeError("'{}' is an invalid channel name".format(name))
         return cast(float, getattr(self, name))
+
+    @classmethod
+    @abstractmethod
+    def to_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+        """To base color."""
+
+    @classmethod
+    @abstractmethod
+    def from_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+        """From base color."""
 
     def to_string(
         self,

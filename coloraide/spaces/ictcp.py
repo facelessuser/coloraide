@@ -4,14 +4,10 @@ ICtCp class.
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
-from .xyz import XYZ
 from .. import util
 import re
-from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
+from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -53,7 +49,7 @@ ictcp_to_lms_p_mi = [
 ]
 
 
-def ictcp_to_xyz_d65(ictcp: Vector) -> MutableVector:
+def ictcp_to_xyz_d65(ictcp: MutableVector) -> MutableVector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
@@ -69,7 +65,7 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> MutableVector:
     return util.absxyzd65_to_xyz_d65(absxyz)
 
 
-def xyz_d65_to_ictcp(xyzd65: Vector) -> MutableVector:
+def xyz_d65_to_ictcp(xyzd65: MutableVector) -> MutableVector:
     """From XYZ to ICtCp."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
@@ -88,6 +84,7 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> MutableVector:
 class ICtCp(Labish, Space):
     """ICtCp class."""
 
+    BASE = "xyz"
     SPACE = "ictcp"
     SERIALIZE = ("--ictcp",)
     CHANNEL_NAMES = ("i", "ct", "cp", "alpha")
@@ -137,13 +134,13 @@ class ICtCp(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', ictcp: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from ICtCp."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, ictcp_to_xyz_d65(ictcp))
+        return ictcp_to_xyz_d65(coords)
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to ICtCp."""
 
-        return xyz_d65_to_ictcp(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return xyz_d65_to_ictcp(coords)

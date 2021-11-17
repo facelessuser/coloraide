@@ -1,13 +1,9 @@
 """Lab class."""
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish
-from ..xyz import XYZ
 from ... import util
 import re
 from ...util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 EPSILON3 = 6 / 29  # Cube root of EPSILON
@@ -15,7 +11,7 @@ KAPPA = 24389 / 27
 KE = 8  # KAPPA * EPSILON = 8
 
 
-def lab_to_xyz(lab: Vector, white: Vector) -> MutableVector:
+def lab_to_xyz(lab: MutableVector, white: Vector) -> MutableVector:
     """
     Convert Lab to D50-adapted XYZ.
 
@@ -43,7 +39,7 @@ def lab_to_xyz(lab: Vector, white: Vector) -> MutableVector:
     return cast(MutableVector, util.multiply(xyz, util.xy_to_xyz(white)))
 
 
-def xyz_to_lab(xyz: Vector, white: Vector) -> MutableVector:
+def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
     """
     Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard.
 
@@ -65,14 +61,18 @@ def xyz_to_lab(xyz: Vector, white: Vector) -> MutableVector:
     ]
 
 
-class LabBase(Labish, Space):
+class Lab(Labish, Space):
     """Lab class."""
 
+    BASE = "xyz"
+    SPACE = "lab"
+    SERIALIZE = ("--lab",)
     CHANNEL_NAMES = ("l", "a", "b", "alpha")
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
-
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
+    WHITE = "D50"
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),  # Technically we could/should clamp the zero side.
         GamutUnbound(-160, 160),  # No limit, but we could impose one +/-160?
@@ -115,23 +115,14 @@ class LabBase(Labish, Space):
 
         self._coords[2] = self._handle_input(value)
 
+    @classmethod
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from Lab."""
 
-class Lab(LabBase):
-    """Lab class."""
-
-    SPACE = "lab"
-    SERIALIZE = ("--lab",)
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+        return lab_to_xyz(coords, cls.white())
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', lab: Vector) -> MutableVector:
-        """To XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to Lab."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lab_to_xyz(lab, cls.white()))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return xyz_to_lab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.white())
+        return xyz_to_lab(coords, cls.white())

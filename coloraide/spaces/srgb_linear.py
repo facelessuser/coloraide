@@ -1,43 +1,58 @@
 """SRGB Linear color class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .srgb.base import SRGB, lin_srgb_to_xyz, xyz_to_lin_srgb, lin_srgb, gam_srgb
-from .xyz import XYZ
+from .srgb.base import SRGB
 import re
-from ..util import Vector, MutableVector
-from typing import TYPE_CHECKING
+from ..util import MutableVector
+from typing import cast
+from ..import util
 
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+
+RGB_TO_XYZ = [
+    [0.4123907992659593, 0.357584339383878, 0.18048078840183432],
+    [0.21263900587151024, 0.715168678767756, 0.07219231536073373],
+    [0.01933081871559182, 0.11919477979462598, 0.9505321522496608]
+]
+
+XYZ_TO_RGB = [
+    [3.2409699419045226, -1.537383177570094, -0.49861076029300355],
+    [-0.9692436362808796, 1.8759675015077202, 0.04155505740717562],
+    [0.055630079696993635, -0.2039769588889765, 1.0569715142428784]
+]
+
+
+def lin_srgb_to_xyz(rgb: MutableVector) -> MutableVector:
+    """
+    Convert an array of linear-light sRGB values to CIE XYZ using sRGB's own white.
+
+    D65 (no chromatic adaptation)
+    """
+
+    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+
+
+def xyz_to_lin_srgb(xyz: MutableVector) -> MutableVector:
+    """Convert XYZ to linear-light sRGB."""
+
+    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
 
 
 class SRGBLinear(SRGB):
     """SRGB linear."""
 
+    BASE = 'xyz'
     SPACE = "srgb-linear"
     SERIALIZE = ("--srgb-linear",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
     @classmethod
-    def _to_srgb(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """Linear sRGB to sRGB."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from SRGB Linear."""
 
-        return gam_srgb(rgb)
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """sRGB to linear sRGB."""
-
-        return lin_srgb(rgb)
+        return lin_srgb_to_xyz(coords)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """SRGB Linear to XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to SRGB Linear."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_srgb_to_xyz(rgb))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """XYZ to SRGB Linear."""
-
-        return xyz_to_lin_srgb(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return xyz_to_lin_srgb(coords)

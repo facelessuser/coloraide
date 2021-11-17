@@ -273,8 +273,16 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             c1.get("bad")
+
+    def test_bad_property(self):
+        """Test bad property."""
+
+        c1 = Color('orange')
+
+        with self.assertRaises(AttributeError):
+            c1.bad
 
     def test_get_bad_chain(self):
         """Test bad get."""
@@ -310,7 +318,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             c1.set("bad", 0.5)
 
     def test_set_bad_chain(self):

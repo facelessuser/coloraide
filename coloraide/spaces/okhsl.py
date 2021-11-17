@@ -26,16 +26,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
-from .oklab.base import Oklab, oklab_to_linear_srgb
+from .oklab.base import oklab_to_linear_srgb
 from .. import util
 import re
 import math
 import sys
-from ..util import Vector, MutableVector
-from typing import Tuple, Optional, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
+from typing import Tuple, Optional
 
 FLT_MAX = sys.float_info.max
 
@@ -56,14 +53,14 @@ def toe_inv(x: float) -> float:
     return (x ** 2 + K_1 * x) / (K_3 * (x + K_2))
 
 
-def to_st(cusp: Vector) -> Vector:
+def to_st(cusp: MutableVector) -> MutableVector:
     """To ST."""
 
     l, c = cusp
     return [c / l, c / (1 - l)]
 
 
-def get_st_mid(a: float, b: float) -> Vector:
+def get_st_mid(a: float, b: float) -> MutableVector:
     """
     Returns a smooth approximation of the location of the cusp.
 
@@ -100,7 +97,7 @@ def get_st_mid(a: float, b: float) -> Vector:
     return [s, t]
 
 
-def find_cusp(a: float, b: float) -> Vector:
+def find_cusp(a: float, b: float) -> MutableVector:
     """
     Finds L_cusp and C_cusp for a given hue.
 
@@ -124,7 +121,7 @@ def find_gamut_intersection(
     l1: float,
     c1: float,
     l0: float,
-    cusp: Optional[Vector] = None
+    cusp: Optional[MutableVector] = None
 ) -> float:
     """
     Finds intersection of the line.
@@ -214,7 +211,7 @@ def find_gamut_intersection(
     return t
 
 
-def get_cs(lab: Vector) -> Vector:
+def get_cs(lab: MutableVector) -> MutableVector:
     """Get Cs."""
 
     l, a, b = lab
@@ -326,7 +323,7 @@ def compute_max_saturation(a: float, b: float) -> float:
     return sat
 
 
-def okhsl_to_oklab(hsl: Vector) -> MutableVector:
+def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
@@ -371,7 +368,7 @@ def okhsl_to_oklab(hsl: Vector) -> MutableVector:
     return [L, a, b]
 
 
-def oklab_to_okhsl(lab: Vector) -> MutableVector:
+def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
     """Oklab to Okhsl."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
@@ -419,6 +416,7 @@ def oklab_to_okhsl(lab: Vector) -> MutableVector:
 class Okhsl(Cylindrical, Space):
     """HSL class."""
 
+    BASE = "oklab"
     SPACE = "okhsl"
     SERIALIZE = ("--okhsl",)
     CHANNEL_NAMES = ("h", "s", "l", "alpha")
@@ -482,49 +480,13 @@ class Okhsl(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
-        """To sRGB."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To Oklab from Okhsl."""
 
-        return Oklab._to_srgb(parent, cls._to_oklab(parent, okhsl))
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
-        """From sRGB."""
-
-        return cls._from_oklab(parent, Oklab._from_srgb(parent, srgb))
+        return okhsl_to_oklab(coords)
 
     @classmethod
-    def _to_srgb_linear(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
-        """To sRGB Linear."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From Oklab to Okhsl."""
 
-        return Oklab._to_srgb_linear(parent, cls._to_oklab(parent, okhsl))
-
-    @classmethod
-    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
-        """From SRGB Linear."""
-
-        return cls._from_oklab(parent, Oklab._from_srgb_linear(parent, srgbl))
-
-    @classmethod
-    def _to_oklab(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
-        """To Oklab."""
-
-        return okhsl_to_oklab(okhsl)
-
-    @classmethod
-    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
-        """From Oklab."""
-
-        return oklab_to_okhsl(oklab)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', okhsl: Vector) -> MutableVector:
-        """To XYZ."""
-
-        return Oklab._to_xyz(parent, cls._to_oklab(parent, okhsl))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))
+        return oklab_to_okhsl(coords)

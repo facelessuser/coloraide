@@ -1,17 +1,12 @@
 """HSV class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
-from .srgb.base import SRGB
-from .hsl.base import HSL
 from .. import util
 import re
-from ..util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
+from typing import Tuple
 
 
-def hsv_to_hsl(hsv: Vector) -> MutableVector:
+def hsv_to_hsl(hsv: MutableVector) -> MutableVector:
     """
     HSV to HSL.
 
@@ -28,7 +23,7 @@ def hsv_to_hsl(hsv: Vector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_hsv(hsl: Vector) -> MutableVector:
+def hsl_to_hsv(hsl: MutableVector) -> MutableVector:
     """
     HSL to HSV.
 
@@ -49,6 +44,7 @@ def hsl_to_hsv(hsl: Vector) -> MutableVector:
 class HSV(Cylindrical, Space):
     """HSL class."""
 
+    BASE = "hsl"
     SPACE = "hsv"
     SERIALIZE = ("--hsv",)
     CHANNEL_NAMES = ("h", "s", "v", "alpha")
@@ -113,37 +109,13 @@ class HSV(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', hsv: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To HSL from HSV."""
 
-        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsv))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
+        return hsv_to_hsl(coords)
 
     @classmethod
-    def _to_hsl(cls, parent: 'Color', hsv: Vector) -> MutableVector:
-        """To HSL."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From HSL to HSV."""
 
-        return hsv_to_hsl(hsv)
-
-    @classmethod
-    def _from_hsl(cls, parent: 'Color', hsl: Vector) -> MutableVector:
-        """From HSL."""
-
-        return hsl_to_hsv(hsl)
-
-    @classmethod
-    def _to_srgb(cls, parent: 'Color', hsv: Vector) -> MutableVector:
-        """To sRGB."""
-
-        return HSL._to_srgb(parent, cls._to_hsl(parent, hsv))
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """From sRGB."""
-
-        return cls._from_hsl(parent, HSL._from_srgb(parent, rgb))
+        return hsl_to_hsv(coords)

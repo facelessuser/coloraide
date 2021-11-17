@@ -1,16 +1,12 @@
 """HSL class."""
 from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
-from ..srgb.base import SRGB
 from ... import util
 import re
-from ...util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from ...util import MutableVector
+from typing import Tuple
 
 
-def srgb_to_hsl(rgb: Vector) -> MutableVector:
+def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
     """SRGB to HSL."""
 
     r, g, b = rgb
@@ -36,7 +32,7 @@ def srgb_to_hsl(rgb: Vector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_srgb(hsl: Vector) -> MutableVector:
+def hsl_to_srgb(hsl: MutableVector) -> MutableVector:
     """
     HSL to RGB.
 
@@ -59,6 +55,7 @@ def hsl_to_srgb(hsl: Vector) -> MutableVector:
 class HSL(Cylindrical, Space):
     """HSL class."""
 
+    BASE = "srgb"
     SPACE = "hsl"
     SERIALIZE = ("--hsl",)
     CHANNEL_NAMES = ("h", "s", "l", "alpha")
@@ -123,25 +120,13 @@ class HSL(Cylindrical, Space):
         return coords, alpha
 
     @classmethod
-    def _to_srgb(cls, parent: 'Color', hsl: Vector) -> MutableVector:
-        """To sRGB."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To sRGB from HSL."""
 
-        return hsl_to_srgb(hsl)
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """From sRGB."""
-
-        return srgb_to_hsl(rgb)
+        return hsl_to_srgb(coords)
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', hsl: Vector) -> MutableVector:
-        """To XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From sRGB to HSL."""
 
-        return SRGB._to_xyz(parent, cls._to_srgb(parent, hsl))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_srgb(parent, SRGB._from_xyz(parent, xyz))
+        return srgb_to_hsl(coords)

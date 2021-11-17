@@ -4,15 +4,10 @@ Din99o class.
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
 from ..spaces import RE_DEFAULT_MATCH
-from .xyz import XYZ
-from .lab.base import LabBase, lab_to_xyz, xyz_to_lab
+from .lab.base import Lab
 import re
 import math
-from ..util import Vector, MutableVector
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
 
 KE = 1
 KCH = 1
@@ -39,7 +34,7 @@ C3 = 0.075
 C4 = 0.0435
 
 
-def lab_to_din99o(lab: Vector) -> MutableVector:
+def lab_to_din99o(lab: MutableVector) -> MutableVector:
     """XYZ to Din99o."""
 
     l, a, b = lab
@@ -62,7 +57,7 @@ def lab_to_din99o(lab: Vector) -> MutableVector:
     return [l99o, a99o, b99o]
 
 
-def din99o_lab_to_lch(lab: Vector) -> MutableVector:
+def din99o_lab_to_lch(lab: MutableVector) -> MutableVector:
     """
     Convert Din99o Lab to Lch.
 
@@ -76,7 +71,7 @@ def din99o_lab_to_lch(lab: Vector) -> MutableVector:
     return [l99o, c99o, h99o]
 
 
-def din99o_to_lab(din99o: Vector) -> MutableVector:
+def din99o_to_lab(din99o: MutableVector) -> MutableVector:
     """Din99o to XYZ."""
 
     l99o, c99o, h99o = din99o_lab_to_lch(din99o)
@@ -95,7 +90,7 @@ def din99o_to_lab(din99o: Vector) -> MutableVector:
     ]
 
 
-class Din99o(LabBase):
+class Din99o(Lab):
     """Din99o class."""
 
     SPACE = "din99o"
@@ -104,13 +99,13 @@ class Din99o(LabBase):
     WHITE = "D65"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', lab: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from Din99o."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lab_to_xyz(din99o_to_lab(lab), cls.white()))
+        return super().to_base(din99o_to_lab(coords))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to Din99o."""
 
-        return lab_to_din99o(xyz_to_lab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz), cls.white()))
+        return lab_to_din99o(super().from_base(coords))

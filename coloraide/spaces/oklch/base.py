@@ -24,15 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
-from ..oklab.base import Oklab
 from ... import util
 import re
 import math
 from ...util import Vector, MutableVector
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.000002
 
@@ -74,6 +70,7 @@ def oklch_to_oklab(oklch: Vector) -> MutableVector:
 class Oklch(Lchish, Space):
     """Oklch class."""
 
+    BASE = "oklab"
     SPACE = "oklch"
     SERIALIZE = ("--oklch",)
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
@@ -137,25 +134,13 @@ class Oklch(Lchish, Space):
         return coords, alpha
 
     @classmethod
-    def _to_oklab(cls, parent: 'Color', oklch: Vector) -> MutableVector:
+    def to_base(cls, oklch: Vector) -> MutableVector:
         """To Lab."""
 
         return oklch_to_oklab(oklch)
 
     @classmethod
-    def _from_oklab(cls, parent: 'Color', oklab: Vector) -> MutableVector:
+    def from_base(cls, oklab: Vector) -> MutableVector:
         """To Lab."""
 
         return oklab_to_oklch(oklab)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', oklch: Vector) -> MutableVector:
-        """To XYZ."""
-
-        return Oklab._to_xyz(parent, cls._to_oklab(parent, oklch))
-
-    @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
-
-        return cls._from_oklab(parent, Oklab._from_xyz(parent, xyz))

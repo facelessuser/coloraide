@@ -1,14 +1,10 @@
 """Pro Photo RGB color class."""
 from ..spaces import RE_DEFAULT_MATCH
 from .srgb.base import SRGB
-from .xyz import XYZ
 from .. import util
 import re
-from ..util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from ..util import MutableVector
+from typing import cast
 
 ET = 1 / 512
 ET2 = 16 / 512
@@ -26,7 +22,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_prophoto_to_xyz(rgb: Vector) -> MutableVector:
+def lin_prophoto_to_xyz(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.D50.
 
@@ -37,13 +33,13 @@ def lin_prophoto_to_xyz(rgb: Vector) -> MutableVector:
     return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
 
 
-def xyz_to_lin_prophoto(xyz: Vector) -> MutableVector:
+def xyz_to_lin_prophoto(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
     return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
 
 
-def lin_prophoto(rgb: Vector) -> MutableVector:
+def lin_prophoto(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of prophoto-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -62,7 +58,7 @@ def lin_prophoto(rgb: Vector) -> MutableVector:
     return result
 
 
-def gam_prophoto(rgb: Vector) -> MutableVector:
+def gam_prophoto(rgb: MutableVector) -> MutableVector:
     """
     Convert an array of linear-light prophoto-rgb  in the range 0.0-1.0 to gamma corrected form.
 
@@ -84,18 +80,19 @@ def gam_prophoto(rgb: Vector) -> MutableVector:
 class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
+    BASE = "xyz"
     SPACE = "prophoto-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
     WHITE = "D50"
 
     @classmethod
-    def _to_xyz(cls, parent: 'Color', rgb: Vector) -> MutableVector:
-        """To XYZ."""
+    def to_base(cls, coords: MutableVector) -> MutableVector:
+        """To XYZ from Pro Photo RGB."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, lin_prophoto_to_xyz(lin_prophoto(rgb)))
+        return lin_prophoto_to_xyz(lin_prophoto(coords))
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
-        """From XYZ."""
+    def from_base(cls, coords: MutableVector) -> MutableVector:
+        """From XYZ to Pro Photo RGB."""
 
-        return gam_prophoto(xyz_to_lin_prophoto(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz)))
+        return gam_prophoto(xyz_to_lin_prophoto(coords))

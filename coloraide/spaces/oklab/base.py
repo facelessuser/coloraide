@@ -26,15 +26,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
-from ..srgb_linear import SRGBLinear
-from ..xyz import XYZ
 from ... import util
 import re
 from ...util import Vector, MutableVector
-from typing import cast, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ...color import Color
+from typing import cast
 
 # sRGB Linear to LMS
 SRGBL_TO_LMS = [
@@ -88,7 +83,7 @@ def oklab_to_linear_srgb(lab: Vector) -> MutableVector:
     )
 
 
-def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:
+def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:  # pragma: no cover
     """Linear sRGB to Oklab."""
 
     return cast(
@@ -118,6 +113,7 @@ def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
 class Oklab(Labish, Space):
     """Oklab class."""
 
+    BASE = "xyz"
     SPACE = "oklab"
     SERIALIZE = ("--oklab",)
     CHANNEL_NAMES = ("l", "a", "b", "alpha")
@@ -170,37 +166,13 @@ class Oklab(Labish, Space):
         self._coords[2] = self._handle_input(value)
 
     @classmethod
-    def _to_srgb(cls, parent: 'Color', oklab: Vector) -> MutableVector:
-        """To sRGB."""
-
-        return SRGBLinear._to_srgb(parent, cls._to_srgb_linear(parent, oklab))
-
-    @classmethod
-    def _from_srgb(cls, parent: 'Color', srgb: Vector) -> MutableVector:
-        """From sRGB."""
-
-        return cls._from_srgb_linear(parent, SRGBLinear._from_srgb(parent, srgb))
-
-    @classmethod
-    def _to_srgb_linear(cls, parent: 'Color', oklab: Vector) -> MutableVector:
-        """To sRGB Linear."""
-
-        return oklab_to_linear_srgb(oklab)
-
-    @classmethod
-    def _from_srgb_linear(cls, parent: 'Color', srgbl: Vector) -> MutableVector:
-        """From SRGB Linear."""
-
-        return linear_srgb_to_oklab(srgbl)
-
-    @classmethod
-    def _to_xyz(cls, parent: 'Color', oklab: Vector) -> MutableVector:
+    def to_base(cls, oklab: Vector) -> MutableVector:
         """To XYZ."""
 
-        return parent.chromatic_adaptation(cls.WHITE, XYZ.WHITE, oklab_to_xyz_d65(oklab))
+        return oklab_to_xyz_d65(oklab)
 
     @classmethod
-    def _from_xyz(cls, parent: 'Color', xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: Vector) -> MutableVector:
         """From XYZ."""
 
-        return xyz_d65_to_oklab(parent.chromatic_adaptation(XYZ.WHITE, cls.WHITE, xyz))
+        return xyz_d65_to_oklab(xyz)

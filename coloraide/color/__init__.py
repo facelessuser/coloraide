@@ -108,6 +108,16 @@ class Color(metaclass=BaseColor):
     DELTA_E = util.DEF_DELTA_E
     CHROMATIC_ADAPTATION = 'bradford'
 
+    # It is highly unlikely that a user would ever need to override this, but
+    # just in case, it is exposed, but undocumented.
+    #
+    # This is meant to prevent infinite loops in the event that a user registers
+    # poorly crafted color spaces with circular convert linkage or somehow doesn't
+    # resolve to XYZ. 10 is a generous size as our current largest iteration chain
+    # is 6, and increasing that past 10 seems highly unlikely:
+    #    XYZ -> sRGB Linear -> sRGB -> HSL -> HSV -> HWB
+    _MAX_CONVERT_ITERATIONS = 10
+
     def __init__(
         self,
         color: ColorInput,
@@ -221,7 +231,7 @@ class Color(metaclass=BaseColor):
         obj = cls._match(string, start, fullmatch, filters=filters)
         if obj is not None:
             color = obj[0]
-            return ColorMatch(cls(color.space(), color.coords(), color.alpha), obj[1], obj[2])
+            return ColorMatch(cls(color.SPACE, color.coords(), color.alpha), obj[1], obj[2])
         return None
 
     @classmethod
@@ -238,7 +248,7 @@ class Color(metaclass=BaseColor):
         mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
         for p in plugin:
             if issubclass(p, Space):
-                name = p.space()
+                name = p.SPACE
                 value = p
                 mapping = cls.CS_MAP
             elif issubclass(p, DeltaE):
@@ -344,7 +354,7 @@ class Color(metaclass=BaseColor):
     def space(self) -> str:
         """The current color space."""
 
-        return self._space.space()
+        return self._space.SPACE
 
     def coords(self) -> MutableVector:
         """Coordinates."""
@@ -422,7 +432,7 @@ class Color(metaclass=BaseColor):
         c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
         space = self.space()
         self._attach(c)
-        if c.space() != space:
+        if c.SPACE != space:
             self.convert(space, in_place=True)
         return self
 
@@ -749,10 +759,8 @@ class Color(metaclass=BaseColor):
             return self.update(obj)
 
         # Handle a function that modifies the value or a direct value
-        if callable(value):
-            self.set(name, value(self.get(name)))
-        else:
-            self._space.set(name, value)
+        self._space.set(name, value(self._space.get(name)) if callable(value) else value)
+
         return self
 
     def __getattr__(self, name: str) -> Any:
@@ -761,18 +769,16 @@ class Color(metaclass=BaseColor):
         if name.startswith('delta_e_'):
             de = name[8:]
             if de in self.DE_MAP:
-                return functools.partial(getattr(self, 'delta_e'), method=de)
+                return functools.partial(self.delta_e, method=de)
 
         # Don't test `_space` as it is used to get Space channel attributes.
         elif name != "_space":
-            # Get channel names
-            result = getattr(self, "_space")
-            if result is not None:
-                # If requested attribute is a channel name, return the attribute from the Space instance.
-                name = result.CHANNEL_ALIASES.get(name, name)
-                if name in result.CHANNEL_NAMES:
-                    return getattr(result, name)
+            try:
+                return self._space.get(name)
+            except AttributeError:
+                pass
 
+        # Get attributes from Color class.
         return super().__getattribute__(name)
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -780,10 +786,8 @@ class Color(metaclass=BaseColor):
 
         try:
             # See if we need to set the space specific channel attributes.
-            name = self._space.CHANNEL_ALIASES.get(name, name)
-            if name in self._space.CHANNEL_NAMES:
-                setattr(self._space, name, value)
-                return
+            self._space.set(name, value)
+            return
         except AttributeError:
             pass
         # Set all attributes on the Color class.
