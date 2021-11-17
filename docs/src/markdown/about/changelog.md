@@ -4,6 +4,7 @@
 
 - **NEW**: Update spaces such that they provide a single conversion point which simplifies color space API and
   centralizes all conversion logic allowing us to pull chromatic adaptation out of spaces.
+- **NEW**: `color()` output format never uses percent when serializing, but will optionally accept percent as input.
 
 ## 0.5.0
 

@@ -203,11 +203,7 @@ class Space(
     def __repr__(self) -> str:
         """Representation."""
 
-        gamut = self.BOUNDS
-        values = []
-        for i, coord in enumerate(self.coords()):
-            fmt = util.fmt_percent if gamut[i].flags & FLG_PERCENT else util.fmt_float
-            values.append(fmt(coord, util.DEF_PREC))
+        values = [util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]
 
         return 'color({} {} / {})'.format(
             self._serialize()[0],
@@ -303,14 +299,10 @@ class Space(
         coords = parent.fit(method=method).coords() if fit else self.coords()
         if not none:
             coords = util.no_nans(coords)
-        gamut = self.BOUNDS
+
+        values = [util.fmt_float(coord, precision) for coord in coords]
+
         template = "color({} {} / {})" if alpha else "color({} {})"
-
-        values = []
-        for i, coord in enumerate(coords):
-            fmt = util.fmt_percent if gamut[i].flags & FLG_PERCENT else util.fmt_float
-            values.append(fmt(coord, precision))
-
         if alpha:
             return template.format(
                 self._serialize()[0], ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC))

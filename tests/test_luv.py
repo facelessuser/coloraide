@@ -23,49 +23,49 @@ class TestLuvInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"color": True}
         color = "color(--luv 20% 10 -30)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20% 10 -30)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20 10 -30)')
 
         color = "color(--luv 20% 10 -30 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20% 10 -30 / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20 10 -30 / 0.5)')
 
         color = "color(--luv 20% 10 -30 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20% 10 -30 / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--luv 20 10 -30 / 0.5)')
 
     def test_percent(self):
         """Test that percents work properly."""
 
         color = "color(--luv 20% 10 -30 / 100%)"
         luv = Color(color)
-        self.assertEqual("color(--luv 20% 10 -30)", luv.to_string())
+        self.assertEqual("color(--luv 20 10 -30)", luv.to_string())
 
         color = "color(--luv 20% 10 -30 / 20%)"
         luv = Color(color)
-        self.assertEqual("color(--luv 20% 10 -30 / 0.2)", luv.to_string())
+        self.assertEqual("color(--luv 20 10 -30 / 0.2)", luv.to_string())
 
     def test_no_alpha(self):
         """Test no alpha."""
 
         color = "color(--luv 20% 10 -30 / 0.2)"
         luv = Color(color)
-        self.assertEqual("color(--luv 20% 10 -30)", luv.to_string(alpha=False))
+        self.assertEqual("color(--luv 20 10 -30)", luv.to_string(alpha=False))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
         color = "color(--luv 20% 10 -30 / 1)"
         luv = Color(color)
-        self.assertEqual("color(--luv 20% 10 -30 / 1)", luv.to_string(alpha=True))
+        self.assertEqual("color(--luv 20 10 -30 / 1)", luv.to_string(alpha=True))
 
     def test_precision(self):
         """Test precision."""
 
         color = 'color(--luv 20.1234567% 10.1234567 -30.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--luv 20.123% 10.123 -30.123)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--luv 20.1% 10.1 -30.1)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--luv 20% 10 -30)')
+        self.assertEqual(Color(color).to_string(), 'color(--luv 20.123 10.123 -30.123)')
+        self.assertEqual(Color(color).to_string(precision=3), 'color(--luv 20.1 10.1 -30.1)')
+        self.assertEqual(Color(color).to_string(precision=0), 'color(--luv 20 10 -30)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'color(--luv 20.12345669999999842048055143095552921295166015625% 10.1234567000000001968373908312059938907623291015625 -30.12345669999999842048055143095552921295166015625)'  # noqa:  E501
+            'color(--luv 20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 -30.12345669999999842048055143095552921295166015625)'  # noqa:  E501
         )
 
     def test_fit(self):
@@ -73,17 +73,17 @@ class TestLuvInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--luv -20% 180 -180)').to_string(),
-            'color(--luv -20% 180 -180)'
+            'color(--luv -20 180 -180)'
         )
 
         self.assertEqual(
             Color('color(--luv -20% 180 -180)').to_string(fit="clip"),
-            'color(--luv -20% 180 -180)'
+            'color(--luv -20 180 -180)'
         )
 
         self.assertEqual(
             Color('color(--luv -20% 180 -180)').to_string(fit=False),
-            'color(--luv -20% 180 -180)'
+            'color(--luv -20 180 -180)'
         )
 
 

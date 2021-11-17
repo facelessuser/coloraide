@@ -542,7 +542,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_repr_percent(self):
         """Test string percent representation."""
 
-        self.assertEqual(str(Color('white').convert('lab')), 'color(--lab 100% 0 0 / 1)')
+        self.assertEqual(str(Color('white').convert('lab')), 'color(--lab 100 0 0 / 1)')
 
     def test_in_gamut(self):
         """Test in gamut check."""

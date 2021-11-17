@@ -23,13 +23,13 @@ class TestLabInputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"color": True}
         color = "color(--lab 20% 10 -30)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20% 10 -30)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30)')
 
         color = "color(--lab 20% 10 -30 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20% 10 -30 / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30 / 0.5)')
 
         color = "color(--lab 20% 10 -30 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20% 10 -30 / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30 / 0.5)')
 
     def test_comma(self):
         """Test comma input and comma output format."""

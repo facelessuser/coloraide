@@ -24,51 +24,51 @@ class TestDIN99oLCHInputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(--din99o-lch 20% 10 130)"
         din99o = Color(color)
-        self.assertEqual(color, din99o.to_string(**args))
+        self.assertEqual('color(--din99o-lch 20 10 130)', din99o.to_string(**args))
 
         color = "color(--din99o-lch 20% 10 130 / 1)"
         din99o = Color(color)
-        self.assertEqual("color(--din99o-lch 20% 10 130)", din99o.to_string(**args))
+        self.assertEqual("color(--din99o-lch 20 10 130)", din99o.to_string(**args))
 
         color = "color(--din99o-lch 20% 10 130 / 0.2)"
         din99o = Color(color)
-        self.assertEqual(color, din99o.to_string(**args))
+        self.assertEqual("color(--din99o-lch 20 10 130 / 0.2)", din99o.to_string(**args))
 
     def test_percent(self):
         """Test that percents work properly."""
 
         color = "color(--din99o-lch 20% 10 130 / 100%)"
         din99o = Color(color)
-        self.assertEqual("color(--din99o-lch 20% 10 130)", din99o.to_string())
+        self.assertEqual("color(--din99o-lch 20 10 130)", din99o.to_string())
 
         color = "color(--din99o-lch 20% 10 130 / 20%)"
         din99o = Color(color)
-        self.assertEqual("color(--din99o-lch 20% 10 130 / 0.2)", din99o.to_string())
+        self.assertEqual("color(--din99o-lch 20 10 130 / 0.2)", din99o.to_string())
 
     def test_no_alpha(self):
         """Test no alpha."""
 
         color = "color(--din99o-lch 20% 10 130 / 0.2)"
         din99o = Color(color)
-        self.assertEqual("color(--din99o-lch 20% 10 130)", din99o.to_string(alpha=False))
+        self.assertEqual("color(--din99o-lch 20 10 130)", din99o.to_string(alpha=False))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
         color = "color(--din99o-lch 20% 10 130 / 1)"
         din99o = Color(color)
-        self.assertEqual("color(--din99o-lch 20% 10 130 / 1)", din99o.to_string(alpha=True))
+        self.assertEqual("color(--din99o-lch 20 10 130 / 1)", din99o.to_string(alpha=True))
 
     def test_precision(self):
         """Test precision."""
 
         color = 'color(--din99o-lch 20.1234567% 10.1234567 130.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--din99o-lch 20.123% 10.123 130.12)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--din99o-lch 20.1% 10.1 130)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--din99o-lch 20% 10 130)')
+        self.assertEqual(Color(color).to_string(), 'color(--din99o-lch 20.123 10.123 130.12)')
+        self.assertEqual(Color(color).to_string(precision=3), 'color(--din99o-lch 20.1 10.1 130)')
+        self.assertEqual(Color(color).to_string(precision=0), 'color(--din99o-lch 20 10 130)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'color(--din99o-lch 20.12345669999999842048055143095552921295166015625% 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
+            'color(--din99o-lch 20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
         )
 
     def test_fit(self):
@@ -76,17 +76,17 @@ class TestDIN99oLCHInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--din99o-lch 20% 200 120)').to_string(),
-            'color(--din99o-lch 20% 200 120)'
+            'color(--din99o-lch 20 200 120)'
         )
 
         self.assertEqual(
             Color('color(--din99o-lch 20% 200 120)').to_string(fit="clip"),
-            'color(--din99o-lch 20% 200 120)'
+            'color(--din99o-lch 20 200 120)'
         )
 
         self.assertEqual(
             Color('color(--din99o-lch 20% 200 120)').to_string(fit=False),
-            'color(--din99o-lch 20% 200 120)'
+            'color(--din99o-lch 20 200 120)'
         )
 
 
