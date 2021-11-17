@@ -80,7 +80,7 @@ def gam_prophoto(rgb: MutableVector) -> MutableVector:
 class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d50"
     NAME = "prophoto-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D50"

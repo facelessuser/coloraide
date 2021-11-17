@@ -93,6 +93,7 @@ def din99o_to_lab(din99o: MutableVector) -> MutableVector:
 class Din99o(Lab):
     """Din99o class."""
 
+    BASE = 'xyz'
     NAME = "din99o"
     SERIALIZE = ("--din99o",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))

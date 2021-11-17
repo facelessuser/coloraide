@@ -64,7 +64,7 @@ def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
 class Lab(Labish, Space):
     """Lab class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d50"
     NAME = "lab"
     SERIALIZE = ("--lab",)
     CHANNEL_NAMES = ("l", "a", "b", "alpha")
@@ -117,12 +117,12 @@ class Lab(Labish, Space):
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:
-        """To XYZ from Lab."""
+        """To XYZ D50 from Lab."""
 
         return lab_to_xyz(coords, cls.white())
 
     @classmethod
     def from_base(cls, coords: MutableVector) -> MutableVector:
-        """From XYZ to Lab."""
+        """From XYZ D50 to Lab."""
 
         return xyz_to_lab(coords, cls.white())

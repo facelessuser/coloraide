@@ -54,7 +54,7 @@ def luv_to_xyz(luv: MutableVector, white: str) -> MutableVector:
 class Luv(Labish, Space):
     """Luv class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d50"
     NAME = "luv"
     SERIALIZE = ("--luv",)
     CHANNEL_NAMES = ("l", "u", "v", "alpha")
@@ -108,12 +108,12 @@ class Luv(Labish, Space):
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:
-        """To XYZ from Luv."""
+        """To XYZ D50 from Luv."""
 
         return luv_to_xyz(coords, cls.WHITE)
 
     @classmethod
     def from_base(cls, coords: MutableVector) -> MutableVector:
-        """From XYZ to Luv."""
+        """From XYZ D50 to Luv."""
 
         return xyz_to_luv(coords, cls.WHITE)
