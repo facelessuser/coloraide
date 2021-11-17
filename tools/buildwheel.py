@@ -4,6 +4,7 @@ import subprocess
 import os
 import urllib.request
 import glob
+import shutil
 
 urls = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
@@ -57,6 +58,10 @@ if __name__ == "__main__":
     for file in glob.glob(output + '*.whl'):
         if file not in externals.keys():
             os.remove(file)
+
+    # Clean up build directory
+    if os.path.exists('build'):
+        shutil.rmtree('build')
 
     # Build `coloraide` wheel
     if build_coloraide():

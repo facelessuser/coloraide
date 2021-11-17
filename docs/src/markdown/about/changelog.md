@@ -7,6 +7,8 @@
 - **NEW**: `color()` output format never uses percent when serializing, but will optionally accept percent as input.
 - **NEW**: Slight refactor of color space, delta E, and gamut mapping plugins. All now specify there name via the
   property `NAME` instead of methods `space()` for color spaces and `name()` for other plugins.
+- **NEW**: Restructure source structure by flattening out some directories and better organizing source files. This
+  changes some import paths.
 
 ## 0.5.0
 
