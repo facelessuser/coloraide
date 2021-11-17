@@ -56,7 +56,7 @@ class HSL(Cylindrical, Space):
     """HSL class."""
 
     BASE = "srgb"
-    SPACE = "hsl"
+    NAME = "hsl"
     SERIALIZE = ("--hsl",)
     CHANNEL_NAMES = ("h", "s", "l", "alpha")
     CHANNEL_ALIASES = {

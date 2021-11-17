@@ -64,10 +64,7 @@ def verify(color: 'Color', tolerance: float) -> bool:
 class Fit(ABCMeta):
     """Fit plugin class."""
 
-    @staticmethod
-    @abstractmethod
-    def name() -> str:
-        """Get name of method."""
+    NAME = ''
 
     @staticmethod
     @abstractmethod

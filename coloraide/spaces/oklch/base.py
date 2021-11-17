@@ -71,7 +71,7 @@ class Oklch(Lchish, Space):
     """Oklch class."""
 
     BASE = "oklab"
-    SPACE = "oklch"
+    NAME = "oklch"
     SERIALIZE = ("--oklch",)
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
     CHANNEL_ALIASES = {

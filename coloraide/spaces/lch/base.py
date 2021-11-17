@@ -48,7 +48,7 @@ class Lch(Lchish, Space):
     """Lch class."""
 
     BASE = "lab"
-    SPACE = "lch"
+    NAME = "lch"
     SERIALIZE = ("--lch",)
     CHANNEL_NAMES = ("l", "c", "h", "alpha")
     CHANNEL_ALIASES = {

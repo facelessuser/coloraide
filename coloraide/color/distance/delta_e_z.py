@@ -15,11 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class DEZ(DeltaE):
     """Delta E z class."""
 
-    @staticmethod
-    def name() -> str:
-        """Name of method."""
-
-        return "jz"
+    NAME = "jz"
 
     @staticmethod
     def distance(color: 'Color', sample: 'Color', **kwargs: Any) -> float:

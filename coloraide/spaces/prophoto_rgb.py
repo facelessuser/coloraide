@@ -81,8 +81,8 @@ class ProPhotoRGB(SRGB):
     """Pro Photo RGB class."""
 
     BASE = "xyz"
-    SPACE = "prophoto-rgb"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
+    NAME = "prophoto-rgb"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D50"
 
     @classmethod

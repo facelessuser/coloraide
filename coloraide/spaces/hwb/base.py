@@ -36,7 +36,7 @@ class HWB(Cylindrical, Space):
     """HWB class."""
 
     BASE = "hsv"
-    SPACE = "hwb"
+    NAME = "hwb"
     SERIALIZE = ("--hwb",)
     CHANNEL_NAMES = ("h", "w", "b", "alpha")
     CHANNEL_ALIASES = {

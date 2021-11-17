@@ -13,11 +13,7 @@ G_CONST = 25 ** 7
 class DE2000(DeltaE):
     """Delta E 2000 class."""
 
-    @staticmethod
-    def name() -> str:
-        """Name of method."""
-
-        return "2000"
+    NAME = "2000"
 
     @staticmethod
     def distance(

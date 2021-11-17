@@ -55,7 +55,7 @@ class Luv(Labish, Space):
     """Luv class."""
 
     BASE = "xyz"
-    SPACE = "luv"
+    NAME = "luv"
     SERIALIZE = ("--luv",)
     CHANNEL_NAMES = ("l", "u", "v", "alpha")
     CHANNEL_ALIASES = {

@@ -1590,9 +1590,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         class CustomFit(Fit):
-            @staticmethod
-            def name():
-                return 'clip'
+            NAME = 'clip'
 
             @staticmethod
             def fit(color):
@@ -1622,9 +1620,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         class CustomDE(DeltaE):
-            @staticmethod
-            def name():
-                return '*'
+            NAME = '*'
 
             @staticmethod
             def distance(color, sample, **kwargs):

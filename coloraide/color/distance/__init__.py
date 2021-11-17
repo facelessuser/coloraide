@@ -24,10 +24,7 @@ def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> f
 class DeltaE(ABCMeta):
     """Delta E plugin class."""
 
-    @staticmethod
-    @abstractmethod
-    def name() -> str:
-        """Get name of method."""
+    NAME = ''
 
     @staticmethod
     @abstractmethod

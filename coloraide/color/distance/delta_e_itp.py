@@ -15,11 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class DEITP(DeltaE):
     """Delta E ITP class."""
 
-    @staticmethod
-    def name() -> str:
-        """Name of method."""
-
-        return "itp"
+    NAME = "itp"
 
     @staticmethod
     def distance(color: 'Color', sample: 'Color', scalar: float = 720, **kwargs: Any) -> float:

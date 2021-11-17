@@ -27,7 +27,7 @@ def convert(color: 'Color', space: str) -> Vector:
         name = ''
         while name != ABSOLUTE_BASE:
             from_color.append(temp)
-            name = temp.SPACE
+            name = temp.NAME
             from_color_index[name] = count
             temp = color.CS_MAP[temp.BASE]
 
@@ -42,15 +42,15 @@ def convert(color: 'Color', space: str) -> Vector:
         # Start converting coordinates until we either match a space in the conversion chain or bottom out at XYZ
         coords = util.no_nans(color.coords())
         current = type(color._space)
-        if current.SPACE != ABSOLUTE_BASE:
+        if current.NAME != ABSOLUTE_BASE:
             count = 0
-            while current.SPACE not in from_color_index:
+            while current.NAME not in from_color_index:
                 # Convert to color's base
                 base_space = color.CS_MAP[current.BASE]
                 coords = current.to_base(coords)
 
                 # Convert to XYZ, make sure we chromatically adapt to the appropriate white point
-                if base_space.SPACE == ABSOLUTE_BASE:
+                if base_space.NAME == ABSOLUTE_BASE:
                     coords = color.chromatic_adaptation(current.WHITE, base_space.WHITE, coords)
 
                 # Get next color in the chain
@@ -66,11 +66,11 @@ def convert(color: 'Color', space: str) -> Vector:
 
         # If we still do not match start converting from the point in the conversion chain
         # where are current color resides
-        if current.SPACE != space:
-            start = from_color_index[current.SPACE] - 1
+        if current.NAME != space:
+            start = from_color_index[current.NAME] - 1
 
             # Convert from XYZ, make sure we chromatically adapt from the appropriate white point
-            if current.SPACE == ABSOLUTE_BASE:
+            if current.NAME == ABSOLUTE_BASE:
                 coords = color.chromatic_adaptation(current.WHITE, from_color[start].WHITE, coords)
 
             for index in range(start, -1, -1):

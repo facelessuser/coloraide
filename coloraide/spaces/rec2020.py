@@ -81,8 +81,8 @@ class Rec2020(SRGB):
     """Rec 2020 class."""
 
     BASE = "xyz"
-    SPACE = "rec2020"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
+    NAME = "rec2020"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"
 
     @classmethod

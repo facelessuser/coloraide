@@ -105,7 +105,7 @@ class Jzazbz(Labish, Space):
     """Jzazbz class."""
 
     BASE = "xyz"
-    SPACE = "jzazbz"
+    NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNEL_NAMES = ("jz", "az", "bz", "alpha")
     CHANNEL_ALIASES = {

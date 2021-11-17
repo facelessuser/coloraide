@@ -12,11 +12,7 @@ EPSILON = 0.001
 class LchChroma(Fit):
     """Lch chroma gamut mapping class."""
 
-    @staticmethod
-    def name() -> str:
-        """Get plugin name."""
-
-        return "lch-chroma"
+    NAME = "lch-chroma"
 
     @staticmethod
     def fit(color: 'Color') -> MutableVector:

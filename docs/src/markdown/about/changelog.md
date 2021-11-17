@@ -5,6 +5,8 @@
 - **NEW**: Update spaces such that they provide a single conversion point which simplifies color space API and
   centralizes all conversion logic allowing us to pull chromatic adaptation out of spaces.
 - **NEW**: `color()` output format never uses percent when serializing, but will optionally accept percent as input.
+- **NEW**: Slight refactor of color space, delta E, and gamut mapping plugins. All now specify there name via the
+  property `NAME` instead of methods `space()` for color spaces and `name()` for other plugins.
 
 ## 0.5.0
 

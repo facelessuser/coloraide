@@ -114,7 +114,7 @@ class Oklab(Labish, Space):
     """Oklab class."""
 
     BASE = "xyz"
-    SPACE = "oklab"
+    NAME = "oklab"
     SERIALIZE = ("--oklab",)
     CHANNEL_NAMES = ("l", "a", "b", "alpha")
     CHANNEL_ALIASES = {

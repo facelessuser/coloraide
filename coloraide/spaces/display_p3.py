@@ -52,8 +52,8 @@ class DisplayP3(SRGB):
     """Display-p3 class."""
 
     BASE = "xyz"
-    SPACE = "display-p3"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
+    NAME = "display-p3"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"
 
     @classmethod

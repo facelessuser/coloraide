@@ -45,7 +45,7 @@ class HSV(Cylindrical, Space):
     """HSL class."""
 
     BASE = "hsl"
-    SPACE = "hsv"
+    NAME = "hsv"
     SERIALIZE = ("--hsv",)
     CHANNEL_NAMES = ("h", "s", "v", "alpha")
     CHANNEL_ALIASES = {

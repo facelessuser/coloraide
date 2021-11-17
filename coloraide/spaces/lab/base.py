@@ -65,7 +65,7 @@ class Lab(Labish, Space):
     """Lab class."""
 
     BASE = "xyz"
-    SPACE = "lab"
+    NAME = "lab"
     SERIALIZE = ("--lab",)
     CHANNEL_NAMES = ("l", "a", "b", "alpha")
     CHANNEL_ALIASES = {

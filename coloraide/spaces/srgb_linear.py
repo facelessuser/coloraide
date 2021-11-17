@@ -40,7 +40,7 @@ class SRGBLinear(SRGB):
     """SRGB linear."""
 
     BASE = 'xyz'
-    SPACE = "srgb-linear"
+    NAME = "srgb-linear"
     SERIALIZE = ("--srgb-linear",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"

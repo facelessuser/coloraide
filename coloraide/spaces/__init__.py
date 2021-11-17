@@ -148,7 +148,7 @@ class Space(
 
     BASE = ""  # type: str
     # Color space name
-    SPACE = ""
+    NAME = ""
     # Serialized name
     SERIALIZE = tuple()  # type: Tuple[str, ...]
     # Number of channels
@@ -229,7 +229,7 @@ class Space(
     def _serialize(cls) -> Tuple[str, ...]:
         """Get the serialized name."""
 
-        return (cls.SPACE,) if not cls.SERIALIZE else cls.SERIALIZE
+        return (cls.NAME,) if not cls.SERIALIZE else cls.SERIALIZE
 
     @classmethod
     def white(cls) -> MutableVector:

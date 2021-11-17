@@ -54,8 +54,8 @@ class A98RGB(SRGB):
     """A98 RGB class."""
 
     BASE = "xyz"
-    SPACE = "a98-rgb"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=SPACE, channels=3))
+    NAME = "a98-rgb"
+    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"
 
     @classmethod

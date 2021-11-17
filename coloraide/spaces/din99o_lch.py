@@ -46,7 +46,7 @@ class Din99oLch(Lch):
     """Din99o Lch class."""
 
     BASE = 'din99o'
-    SPACE = "din99o-lch"
+    NAME = "din99o-lch"
     SERIALIZE = ("--din99o-lch",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"

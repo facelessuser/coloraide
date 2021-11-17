@@ -12,11 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class DEHyAB(DeltaE):
     """Delta E HyAB class."""
 
-    @staticmethod
-    def name() -> str:
-        """Name of method."""
-
-        return "hyab"
+    NAME = "hyab"
 
     @staticmethod
     def distance(color: 'Color', sample: 'Color', space: str = "lab", **kwargs: Any) -> float:

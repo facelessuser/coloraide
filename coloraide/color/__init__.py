@@ -231,7 +231,7 @@ class Color(metaclass=BaseColor):
         obj = cls._match(string, start, fullmatch, filters=filters)
         if obj is not None:
             color = obj[0]
-            return ColorMatch(cls(color.SPACE, color.coords(), color.alpha), obj[1], obj[2])
+            return ColorMatch(cls(color.NAME, color.coords(), color.alpha), obj[1], obj[2])
         return None
 
     @classmethod
@@ -248,15 +248,15 @@ class Color(metaclass=BaseColor):
         mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
         for p in plugin:
             if issubclass(p, Space):
-                name = p.SPACE
+                name = p.NAME
                 value = p
                 mapping = cls.CS_MAP
             elif issubclass(p, DeltaE):
-                name = p.name()
+                name = p.NAME
                 value = p
                 mapping = cls.DE_MAP
             elif issubclass(p, Fit):
-                name = p.name()
+                name = p.NAME
                 value = p
                 mapping = cls.FIT_MAP
                 if name == 'clip':
@@ -354,7 +354,7 @@ class Color(metaclass=BaseColor):
     def space(self) -> str:
         """The current color space."""
 
-        return self._space.SPACE
+        return self._space.NAME
 
     def coords(self) -> MutableVector:
         """Coordinates."""
@@ -432,7 +432,7 @@ class Color(metaclass=BaseColor):
         c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
         space = self.space()
         self._attach(c)
-        if c.SPACE != space:
+        if c.NAME != space:
             self.convert(space, in_place=True)
         return self
 
