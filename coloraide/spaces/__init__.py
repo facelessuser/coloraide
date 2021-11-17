@@ -8,9 +8,10 @@ from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, c
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-# Technically this form can handle any number of channels as long as any
-# extra are thrown away. We only support 6 currently. If we ever support
-# colors with more channels, we can bump this.
+# Technically, this form could handle any number of channels as long as any extra
+# are thrown away. Currently, each space only allows exact, expected channels.
+# In the future, we could allow colors to accept more and throw away extras
+# like the CSS specification requires.
 RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
 (?:({{color_space}})\s+)?
