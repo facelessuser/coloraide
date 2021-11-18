@@ -67,7 +67,7 @@ class Lab(Labish, Space):
     BASE = "xyz-d50"
     NAME = "lab"
     SERIALIZE = ("--lab",)
-    CHANNEL_NAMES = ("l", "a", "b", "alpha")
+    CHANNEL_NAMES = ("l", "a", "b")
     CHANNEL_ALIASES = {
         "lightness": "l"
     }

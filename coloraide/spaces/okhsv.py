@@ -138,7 +138,7 @@ class Okhsv(Cylindrical, Space):
     BASE = "oklab"
     NAME = "okhsv"
     SERIALIZE = ("--okhsv",)
-    CHANNEL_NAMES = ("h", "s", "v", "alpha")
+    CHANNEL_NAMES = ("h", "s", "v")
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",

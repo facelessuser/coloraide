@@ -9,6 +9,7 @@
   property `NAME` instead of methods `space()` for color spaces and `name()` for other plugins.
 - **NEW**: Restructure source structure by flattening out some directories and better organizing source files. This
   changes some import paths.
+- **NEW**: Color spaces do not specify `alpha` in `CHANNEL_NAMES` as the `alpha` name cannot be changed.
 
 ## 0.5.0
 

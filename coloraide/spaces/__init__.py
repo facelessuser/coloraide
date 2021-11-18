@@ -105,7 +105,7 @@ class Labish:
     def labish_names(cls) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
+        return cast(Type['Space'], cls).CHANNEL_NAMES
 
     @classmethod
     def labish_indexes(cls) -> List[int]:  # pragma: no cover
@@ -122,7 +122,7 @@ class Lchish(Cylindrical):
     def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
+        return cast(Type['Space'], cls).CHANNEL_NAMES
 
     @classmethod
     def lchish_indexes(cls) -> List[int]:  # pragma: no cover
@@ -155,7 +155,7 @@ class Space(
     # Number of channels
     NUM_COLOR_CHANNELS = 3
     # Channel names
-    CHANNEL_NAMES = ("alpha",)  # type: Tuple[str, ...]
+    CHANNEL_NAMES = tuple()  # type: Tuple[str, ...]
     # Channel aliases
     CHANNEL_ALIASES = {}  # type: Dict[str, str]
     # For matching the default form of `color(space coords+ / alpha)`.
@@ -254,7 +254,7 @@ class Space(
         """Set the given channel."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self.CHANNEL_NAMES:
+        if name not in self.CHANNEL_NAMES and name != 'alpha':
             raise AttributeError("'{}' is an invalid channel name".format(name))
 
         setattr(self, name, value)
@@ -264,7 +264,7 @@ class Space(
         """Get the given channel's value."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self.CHANNEL_NAMES:
+        if name not in self.CHANNEL_NAMES and name != 'alpha':
             raise AttributeError("'{}' is an invalid channel name".format(name))
         return cast(float, getattr(self, name))
 

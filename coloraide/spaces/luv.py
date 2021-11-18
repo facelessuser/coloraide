@@ -57,7 +57,7 @@ class Luv(Labish, Space):
     BASE = "xyz-d50"
     NAME = "luv"
     SERIALIZE = ("--luv",)
-    CHANNEL_NAMES = ("l", "u", "v", "alpha")
+    CHANNEL_NAMES = ("l", "u", "v")
     CHANNEL_ALIASES = {
         "lightness": "l"
     }

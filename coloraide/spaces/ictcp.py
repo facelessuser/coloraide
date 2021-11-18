@@ -87,7 +87,7 @@ class ICtCp(Labish, Space):
     BASE = "xyz"
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
-    CHANNEL_NAMES = ("i", "ct", "cp", "alpha")
+    CHANNEL_NAMES = ("i", "ct", "cp")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 

@@ -73,7 +73,7 @@ class Oklch(Lchish, Space):
     BASE = "oklab"
     NAME = "oklch"
     SERIALIZE = ("--oklch",)
-    CHANNEL_NAMES = ("l", "c", "h", "alpha")
+    CHANNEL_NAMES = ("l", "c", "h")
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",

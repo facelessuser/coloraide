@@ -51,7 +51,7 @@ class SRGB(Space):
     # gamut changes. This is mainly for a better user experience. Colors will still be
     # mapped/clipped in the current space, unless specified otherwise.
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
-    CHANNEL_NAMES = ("r", "g", "b", "alpha")
+    CHANNEL_NAMES = ("r", "g", "b")
     CHANNEL_ALIASES = {
         "red": 'r',
         "green": 'g',

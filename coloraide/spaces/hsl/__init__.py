@@ -58,7 +58,7 @@ class HSL(Cylindrical, Space):
     BASE = "srgb"
     NAME = "hsl"
     SERIALIZE = ("--hsl",)
-    CHANNEL_NAMES = ("h", "s", "l", "alpha")
+    CHANNEL_NAMES = ("h", "s", "l")
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",

@@ -57,7 +57,7 @@ class JzCzhz(Lchish, Space):
     BASE = "jzazbz"
     NAME = "jzczhz"
     SERIALIZE = ("--jzczhz",)
-    CHANNEL_NAMES = ("jz", "cz", "hz", "alpha")
+    CHANNEL_NAMES = ("jz", "cz", "hz")
     CHANNEL_ALIASES = {
         "lightness": "jz",
         "chroma": "cz",

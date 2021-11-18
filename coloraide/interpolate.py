@@ -480,7 +480,7 @@ def color_lerp(
     channels2.append(color2.alpha)
 
     return InterpolateSingle(
-        names=color1._space.CHANNEL_NAMES,
+        names=color1._space.CHANNEL_NAMES + ('alpha',),
         channels1=channels1,
         channels2=channels2,
         create=type(color1),

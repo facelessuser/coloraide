@@ -50,7 +50,7 @@ class Lch(Lchish, Space):
     BASE = "lab"
     NAME = "lch"
     SERIALIZE = ("--lch",)
-    CHANNEL_NAMES = ("l", "c", "h", "alpha")
+    CHANNEL_NAMES = ("l", "c", "h")
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",

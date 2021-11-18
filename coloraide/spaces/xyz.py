@@ -11,7 +11,7 @@ class XYZ(Space):
     BASE = "xyz"
     NAME = "xyz"
     SERIALIZE = ("xyz", "xyz-d65")  # type: Tuple[str, ...]
-    CHANNEL_NAMES = ("x", "y", "z", "alpha")
+    CHANNEL_NAMES = ("x", "y", "z")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 

@@ -419,7 +419,7 @@ class Okhsl(Cylindrical, Space):
     BASE = "oklab"
     NAME = "okhsl"
     SERIALIZE = ("--okhsl",)
-    CHANNEL_NAMES = ("h", "s", "l", "alpha")
+    CHANNEL_NAMES = ("h", "s", "l")
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",

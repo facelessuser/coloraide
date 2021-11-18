@@ -136,6 +136,7 @@ class Color(metaclass=BaseColor):
 
         attr = cast(List['str'], super().__dir__())
         attr.extend(self._space.CHANNEL_NAMES)
+        attr.extend('alpha')
         attr.extend(list(self._space.CHANNEL_ALIASES.keys()))
         attr.extend(['delta_e_{}'.format(name) for name in self.DE_MAP.keys()])
         return attr
@@ -182,7 +183,7 @@ class Color(metaclass=BaseColor):
             space = color['space']
             if not filters or space in filters:
                 cs = self.CS_MAP[space]
-                coords = [color[name] for name in cs.CHANNEL_NAMES[:-1]]
+                coords = [color[name] for name in cs.CHANNEL_NAMES]
                 alpha = color.get('alpha', 1)
                 obj = cs(coords, alpha)
         else:
@@ -307,9 +308,10 @@ class Color(metaclass=BaseColor):
         """Return color as a data object."""
 
         data = {'space': self.space()}  # type: Dict[str, Any]
-        coords = self.coords() + [self.alpha]
+        coords = self.coords()
         for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
             data[name] = coords[i]
+        data['alpha'] = self.alpha
         return data
 
     def normalize(self) -> 'Color':
@@ -564,7 +566,7 @@ class Color(metaclass=BaseColor):
         masks = set(
             [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
         )
-        for name in self._space.CHANNEL_NAMES:
+        for name in (self._space.CHANNEL_NAMES + ('alpha',)):
             if (not invert and name in masks) or (invert and name not in masks):
                 this.set(name, util.NaN)
         return this
