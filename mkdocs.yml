@@ -42,6 +42,8 @@ nav:
       - Supported Colors: colors/index.md
   - API:
       - Color API: api/index.md
+  - Plugins:
+      - ColorAide Plugins: plugins/index.md
   - Playground: playground.md
   - About:
       - Contributing &amp; Support: about/contributing.md

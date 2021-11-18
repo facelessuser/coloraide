@@ -61,7 +61,9 @@ Kries
 LCHuv
 LMS
 Lab
+Labish
 Lch
+Lchish
 Lilley
 Luv
 MERCHANTABILITY
@@ -146,6 +148,7 @@ subclassing
 sublicense
 subsamplings
 subtractive
+suclassing
 th
 un
 uncomment
