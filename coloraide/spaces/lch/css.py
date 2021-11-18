@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Lch(base.Lch):
     """Lch class."""
 
-    START = re.compile(r'(?i)\blch\(')
     MATCH = re.compile(
         r"""(?xi)
         \blch\(\s*

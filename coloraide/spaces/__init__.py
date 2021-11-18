@@ -152,8 +152,6 @@ class Space(
     NAME = ""
     # Serialized name
     SERIALIZE = tuple()  # type: Tuple[str, ...]
-    # Number of channels
-    NUM_COLOR_CHANNELS = 3
     # Channel names
     CHANNEL_NAMES = tuple()  # type: Tuple[str, ...]
     # Channel aliases
@@ -181,20 +179,21 @@ class Space(
     def __init__(self, color: Union['Space', Vector], alpha: Optional[float] = None) -> None:
         """Initialize."""
 
+        num_channels = len(self.CHANNEL_NAMES)
         self._alpha = util.NaN
-        self._coords = [util.NaN] * self.NUM_COLOR_CHANNELS
+        self._coords = [util.NaN] * num_channels
 
         if isinstance(color, Space):
             for index, channel in enumerate(color.coords()):
                 setattr(self, self.CHANNEL_NAMES[index], channel)
             self.alpha = color.alpha
         elif isinstance(color, Sequence):
-            if len(color) != self.NUM_COLOR_CHANNELS:  # pragma: no cover
+            if len(color) != num_channels:  # pragma: no cover
                 # Only likely to happen with direct usage internally.
                 raise ValueError(
-                    "A list of channel values should be at a minimum of {}.".format(self.NUM_COLOR_CHANNELS)
+                    "A list of channel values should be at a minimum of {}.".format(num_channels)
                 )
-            for index in range(self.NUM_COLOR_CHANNELS):
+            for index in range(num_channels):
                 setattr(self, self.CHANNEL_NAMES[index], color[index])
             self.alpha = 1.0 if alpha is None else alpha
         else:  # pragma: no cover
@@ -335,6 +334,7 @@ class Space(
         ):
 
             # Break channels up into a list
+            num_channels = len(cls.CHANNEL_NAMES)
             split = parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
 
             # Get alpha channel
@@ -343,7 +343,7 @@ class Space(
             # Parse color channels
             channels = []
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-                if c and i < cls.NUM_COLOR_CHANNELS:
+                if c and i < num_channels:
                     c = c.lower()
                     # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
                     is_percent = cls.BOUNDS[i].flags & FLG_PERCENT
@@ -370,8 +370,8 @@ class Space(
                     channels.append(parse.norm_color_channel(c, not is_percent))
 
             # Missing channels are filled with `NaN`
-            if len(channels) < cls.NUM_COLOR_CHANNELS:
-                diff = cls.NUM_COLOR_CHANNELS - len(channels)
+            if len(channels) < num_channels:
+                diff = num_channels - len(channels)
                 channels.extend([util.NaN] * diff)
 
             # Apply null adjustments (null hues) if applicable

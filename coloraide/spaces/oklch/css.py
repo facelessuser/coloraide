@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Oklch(base.Oklch):
     """Oklch class."""
 
-    START = re.compile(r'(?i)\boklch\(')
     MATCH = re.compile(
         r"""(?xi)
         \boklch\(\s*

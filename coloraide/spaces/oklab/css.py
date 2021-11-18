@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Oklab(base.Oklab):
     """Oklab class."""
 
-    START = re.compile(r'(?i)\boklab\(')
     MATCH = re.compile(
         r"""(?xi)
         (?:

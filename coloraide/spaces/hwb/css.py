@@ -14,7 +14,6 @@ class HWB(base.HWB):
     """HWB class."""
 
     DEF_VALUE = "hwb(0 0% 0% / 1)"
-    START = re.compile(r'(?i)\bhwb\(')
     MATCH = re.compile(
         r"""(?xi)
         \bhwb\(\s*

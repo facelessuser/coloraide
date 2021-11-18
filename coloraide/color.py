@@ -167,9 +167,10 @@ class Color(metaclass=BaseColor):
                 for space, space_class in self.CS_MAP.items():
                     s = color.lower()
                     if space == s and (not filters or s in filters):
-                        if len(data) < space_class.NUM_COLOR_CHANNELS:
-                            data = list(data) + [util.NaN] * (space_class.NUM_COLOR_CHANNELS - len(data))
-                        obj = space_class(data[:space_class.NUM_COLOR_CHANNELS], alpha)
+                        num_channels = len(space_class.CHANNEL_NAMES)
+                        if len(data) < num_channels:
+                            data = list(data) + [util.NaN] * (num_channels - len(data))
+                        obj = space_class(data[:num_channels], alpha)
                         break
             else:
                 m = self._match(color, fullmatch=True, filters=filters)

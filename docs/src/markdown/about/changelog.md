@@ -10,6 +10,7 @@
 - **NEW**: Restructure source structure by flattening out some directories and better organizing source files. This
   changes some import paths.
 - **NEW**: Color spaces do not specify `alpha` in `CHANNEL_NAMES` as the `alpha` name cannot be changed.
+- **NEW**: Color space objects do not need a constant to track number of color channels.
 
 ## 0.5.0
 

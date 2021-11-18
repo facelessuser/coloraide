@@ -14,7 +14,6 @@ class HSL(base.HSL):
     """HSL class."""
 
     DEF_VALUE = "hsl(0 0% 0% / 1)"
-    START = re.compile(r'(?i)\bhsla?\(')
     MATCH = re.compile(
         r"""(?xi)
         \bhsla?\(\s*

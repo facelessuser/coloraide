@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Lab(base.Lab):
     """Lab class."""
 
-    START = re.compile(r'(?i)\blab\(')
     MATCH = re.compile(
         r"""(?xi)
         (?:
