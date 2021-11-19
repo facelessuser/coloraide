@@ -275,6 +275,22 @@
   
 
 
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../plugins/" class="md-tabs__link">
+        Plugins
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
   <li class="md-tabs__item">
     <a href="../../playground/" class="md-tabs__link">
       Playground
@@ -622,6 +638,54 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Plugins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugins" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Plugins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/" class="md-nav__link">
+        ColorAide Plugins
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../playground/" class="md-nav__link">
         Playground
@@ -643,18 +707,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_6">
           About
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="About" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
+        <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           About
         </label>
@@ -713,6 +777,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#060" class="md-nav__link">
+    0.6.0
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#050" class="md-nav__link">
@@ -806,6 +877,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#060" class="md-nav__link">
+    0.6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#050" class="md-nav__link">
     0.5.0
   </a>
@@ -855,6 +933,18 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Update spaces such that they provide a single conversion point which simplifies color space API and
+  centralizes all conversion logic allowing us to pull chromatic adaptation out of spaces.</li>
+<li><strong>NEW</strong>: <code>color()</code> output format never uses percent when serializing, but will optionally accept percent as input.</li>
+<li><strong>NEW</strong>: Slight refactor of color space, delta E, and gamut mapping plugins. All now specify there name via the
+  property <code>NAME</code> instead of methods <code>space()</code> for color spaces and <code>name()</code> for other plugins.</li>
+<li><strong>NEW</strong>: Restructure source structure by flattening out some directories and better organizing source files. This
+  changes some import paths.</li>
+<li><strong>NEW</strong>: Color spaces do not specify <code>alpha</code> in <code>CHANNEL_NAMES</code> as the <code>alpha</code> name cannot be changed.</li>
+<li><strong>NEW</strong>: Color space objects do not need a constant to track number of color channels.</li>
+</ul>
 <h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add type annotations and refactor code to better accommodate the type annotations. Public API not really
@@ -930,7 +1020,7 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 9, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 18, 2021</span>
       
     
   </small>
@@ -1071,7 +1161,7 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../../assets/coloraide-extras/extra-notebook-5d6cbdf3.js"></script>
+        <script src="../../assets/coloraide-extras/extra-notebook-6ab1684b.js"></script>
       
         <script src="../../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       

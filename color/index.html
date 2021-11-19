@@ -277,6 +277,22 @@
   
 
 
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../plugins/" class="md-tabs__link">
+        Plugins
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
   <li class="md-tabs__item">
     <a href="../playground/" class="md-tabs__link">
       Playground
@@ -728,6 +744,54 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Plugins
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Plugins" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Plugins
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plugins/" class="md-nav__link">
+        ColorAide Plugins
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
     <li class="md-nav__item">
       <a href="../playground/" class="md-nav__link">
         Playground
@@ -747,18 +811,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_6">
           About
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="About" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
+        <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
           About
         </label>
@@ -1206,7 +1270,7 @@ raw data points.</p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 80% 50 130 / 1)</span>
+<span class="go">color(--lch 80 50 130 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
@@ -1229,7 +1293,7 @@ we could simply call the <code>convert</code> method with the desired color spac
 <div class="playground" id="__playground_15">
 <div class="playground-results" id="__playground-results_15">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(97.607% -15.75 93.394)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span>
-<span class="go">color(--lab 97.607% -15.75 93.394 / 1)</span>
+<span class="go">color(--lab 97.607 -15.75 93.394 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_15">
@@ -1471,10 +1535,9 @@ Color2('rgb(128.12345 0 128.12345)').to_string()</textarea>
 <p>If you wanted a more lightweight <a href="#color"><code>Color</code></a> object, you could deregister color spaces you don't need. Keep in
 mind that some color spaces are essential, like XYZ D65 which is used in many color conversions. Removing some colors
 could also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is
-used when doing which is used for delta E 2000 distancing or CIELCH which is used in the the LCH Chroma gamut mapping.</p>
-<p>While we do not currently have an in depth guide on plugins or go into the relationships of which spaces are required
-for which functionality, we will speak briefly on how to register new ones and deregister existing ones. For those
-interested in writhing a plugin, for now, the source code is the best way to learn.</p>
+used for delta E 2000 color distancing or CIELCH which is used in the the LCH Chroma gamut mapping.</p>
+<p>While we will not go into creating plugins here, we will go over how to register new plugins and deregister existing
+plugins. To learn more about creating plugins, checkout the <a href="../plugins/">plugin documentation</a>.</p>
 <p>Registration is performed by the <code>register</code> method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
 a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If <code>overwrite</code> set
@@ -1549,7 +1612,7 @@ to explicitly define allowed plugins and exclude any unknown new ones that may b
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 18, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 18, 2021</span>
       
     
   </small>
@@ -1690,7 +1753,7 @@ to explicitly define allowed plugins and exclude any unknown new ones that may b
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-5d6cbdf3.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-6ab1684b.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       
