@@ -104,13 +104,13 @@ class Lch(base.Lch):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
+    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a CSS color string."""
 
-        channels, end = super().match(string, start, fullmatch)
-        if channels is not None:
-            return channels, end
+        match = super().match(string, start, fullmatch)
+        if match is not None:
+            return match
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             return cls.split_channels(string[m.start(0):m.end(0)]), m.end(0)
-        return None, None
+        return None

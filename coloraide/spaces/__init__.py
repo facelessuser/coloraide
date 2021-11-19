@@ -322,7 +322,7 @@ class Space(
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
+    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a color by string."""
 
         m = cast(Pattern[str], cls.DEFAULT_MATCH).match(string, start)
@@ -377,4 +377,4 @@ class Space(
             # Apply null adjustments (null hues) if applicable
             return cls.null_adjust(channels, alpha), m.end(0)
 
-        return None, None
+        return None

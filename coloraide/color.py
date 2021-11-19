@@ -213,10 +213,10 @@ class Color(metaclass=BaseColor):
         for space, space_class in cls.CS_MAP.items():
             if filter_set and space not in filter_set:
                 continue
-            value, match_end = space_class.match(string, start, fullmatch)
-            if value is not None:
-                color = space_class(*value)
-                return color, start, cast(int, match_end)
+            m = space_class.match(string, start, fullmatch)
+            if m is not None:
+                color = space_class(*m[0])
+                return color, start, m[1]
         return None
 
     @classmethod
@@ -230,10 +230,10 @@ class Color(metaclass=BaseColor):
     ) -> Optional[ColorMatch]:
         """Match color."""
 
-        obj = cls._match(string, start, fullmatch, filters=filters)
-        if obj is not None:
-            color = obj[0]
-            return ColorMatch(cls(color.NAME, color.coords(), color.alpha), obj[1], obj[2])
+        m = cls._match(string, start, fullmatch, filters=filters)
+        if m is not None:
+            color = m[0]
+            return ColorMatch(cls(color.NAME, color.coords(), color.alpha), m[1], m[2])
         return None
 
     @classmethod

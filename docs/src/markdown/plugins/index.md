@@ -334,7 +334,7 @@ While we won't go into the specific parsing logic, the general top-level logic c
 of useful pattern expressions are found in `#!py3 coloraide.parse` which we reuse in our CSS pattern via
 `#!py3 parse.COLOR_PARTS`. Also, notice that `#!py3 match()` is expected to return two things: a tuple containing the
 color channel coordinates and alpha and the end position (`#!py3 ([r, g, b], a), end`). If the match fails, it simply
-returns `#!py3 None` for both.
+returns `#!py3 None`.
 
 
 ```py
@@ -375,7 +375,7 @@ class SRGB(base.SRGB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Tuple[Optional[Tuple[MutableVector, float]], Optional[int]]:
+    ) -> Optional[Tuple[Tuple[MutableVector, float], Optional[int]]]:
         """Match a CSS color string."""
 
         channels, end = super().match(string, start, fullmatch)
@@ -391,7 +391,7 @@ class SRGB(base.SRGB):
             else:
                 return cls.split_channels(string), m.end(0)
 
-        return None, None
+        return None
 ```
 
 Additional output formats are specified by overriding the `#!py3 to_string()` function. We ensure that it accepts all
