@@ -80,6 +80,70 @@ _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
         Color("srgb", [0, 0, 0], 1).to_string()
         ```
 
+### sRGB Linear
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `srgb-linear`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![sRGB](../images/srgb-linear.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- sRGB Linear Chromaticities</figcaption>
+</figure>
+
+The sRGB Linear space is the same as [sRGB](#srgb) *except* that the transfer function is linear-light (there is no gamma-encoding).
+
+_[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+        Parsed input and string output formats support all valid CSS forms:
+
+        ```css-color
+        color(srgb-linear r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("srgb-linear", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(srgb-linear r g b / a)` form.
+
+        ```playground
+        Color("srgb-linear", [0, 0, 0], 1)
+        Color("srgb-linear", [0, 0, 0], 1).to_string()
+        ```
+
 ### Display P3
 
 <div class="info-container" markdown="1">
