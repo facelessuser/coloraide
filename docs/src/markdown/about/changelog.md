@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- **NEW**: Formally expose `srgb-linear` as a valid color space.
+
 ## 0.6.0
 
 - **NEW**: Update spaces such that they provide a single conversion point which simplifies color space API and
