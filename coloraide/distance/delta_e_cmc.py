@@ -13,8 +13,9 @@ class DECMC(DeltaE):
 
     NAME = "cmc"
 
-    @staticmethod
+    @classmethod
     def distance(
+        cls,
         color: 'Color',
         sample: 'Color',
         l: float = 2,

@@ -17,8 +17,8 @@ class DEITP(DeltaE):
 
     NAME = "itp"
 
-    @staticmethod
-    def distance(color: 'Color', sample: 'Color', scalar: float = 720, **kwargs: Any) -> float:
+    @classmethod
+    def distance(cls, color: 'Color', sample: 'Color', scalar: float = 720, **kwargs: Any) -> float:
         """Delta E ITP color distance formula."""
 
         i1, t1, p1 = util.no_nans(color.convert('ictcp').coords())

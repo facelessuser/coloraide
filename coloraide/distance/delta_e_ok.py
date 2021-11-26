@@ -1,18 +1,19 @@
 """Delta E OK."""
-from ..distance import DeltaE, distance_euclidean
+from .delta_e_76 import DE76
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-class DEOK(DeltaE):
+class DEOK(DE76):
     """Delta E OK class."""
 
     NAME = "ok"
+    SPACE = "oklab"
 
-    @staticmethod
-    def distance(color: 'Color', sample: 'Color', scalar: float = 1, **kwargs: Any) -> float:
+    @classmethod
+    def distance(cls, color: 'Color', sample: 'Color', scalar: float = 1, **kwargs: Any) -> float:
         """
         Delta E OK color distance formula.
 
@@ -20,4 +21,4 @@ class DEOK(DeltaE):
         """
 
         # Equation (1)
-        return scalar * distance_euclidean(color, sample, space="oklab")
+        return scalar * super().distance(color, sample)

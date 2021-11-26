@@ -66,7 +66,7 @@ class Fit(ABCMeta):
 
     NAME = ''
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def fit(color: 'Color') -> MutableVector:
+    def fit(cls, color: 'Color') -> MutableVector:
         """Get coordinates of the new gamut mapped color."""

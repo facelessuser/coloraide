@@ -7,16 +7,17 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-G_CONST = 25 ** 7
-
 
 class DE2000(DeltaE):
     """Delta E 2000 class."""
 
     NAME = "2000"
 
-    @staticmethod
+    G_CONST = 25 ** 7
+
+    @classmethod
     def distance(
+        cls,
         color: 'Color',
         sample: 'Color',
         kl: float = 1,
@@ -45,7 +46,7 @@ class DE2000(DeltaE):
 
         # Equation (4)
         c7 = cm ** 7
-        g = 0.5 * (1 - math.sqrt(c7 / (c7 + G_CONST)))
+        g = 0.5 * (1 - math.sqrt(c7 / (c7 + cls.G_CONST)))
 
         # Equation (5)
         ap1 = (1 + g) * a1
@@ -114,7 +115,7 @@ class DE2000(DeltaE):
 
         # Equation (17)
         cpm7 = cpm ** 7
-        rc = 2 * math.sqrt(cpm7 / (cpm7 + G_CONST))
+        rc = 2 * math.sqrt(cpm7 / (cpm7 + cls.G_CONST))
 
         # Equation (18)
         l_temp = (lpm - 50) ** 2

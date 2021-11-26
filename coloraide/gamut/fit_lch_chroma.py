@@ -6,16 +6,21 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-EPSILON = 0.001
-
 
 class LchChroma(Fit):
     """Lch chroma gamut mapping class."""
 
     NAME = "lch-chroma"
 
-    @staticmethod
-    def fit(color: 'Color') -> MutableVector:
+    EPSILON = 0.001
+    DE = "2000"
+    SPACE = "lch"
+    SPACE_COORDINATE = "{}.chroma".format(SPACE)
+    LIMIT = 2
+    SCALE = 1
+
+    @classmethod
+    def fit(cls, color: 'Color') -> MutableVector:
         """
         Gamut mapping via chroma Lch.
 
@@ -38,18 +43,18 @@ class LchChroma(Fit):
 
         # If flooring chroma doesn't work, just clip the floored color
         # because there is no optimal compression.
-        floor = color.clone().set('lch.chroma', 0)
+        floor = color.clone().set(cls.SPACE_COORDINATE, 0)
         if not floor.in_gamut(tolerance=0):
             return floor.clip().coords()
 
         # If we are already below the JND, just clip as we will gain no
         # noticeable difference moving forward.
         clipped = color.clip()
-        if color.delta_e(clipped, method="2000") < 2:
+        if color.delta_e(clipped, method=cls.DE) * cls.SCALE < cls.LIMIT:
             return clipped.coords()
 
         # Convert to CIELCH and set our boundaries
-        mapcolor = color.convert("lch")
+        mapcolor = color.convert(cls.SPACE)
         low = 0.0
         high = mapcolor.chroma
 
@@ -57,13 +62,13 @@ class LchChroma(Fit):
         # This helps preserve the other attributes of the color.
         # Each time we compare the compressed color to it's clipped form
         # to see how close we are. A delta less than 2 is our target.
-        while (high - low) > EPSILON:
+        while (high - low) > cls.EPSILON:
             delta = mapcolor.delta_e(
                 mapcolor.clip(space),
-                method="2000"
-            )
+                method=cls.DE
+            ) * cls.SCALE
 
-            if (delta - 2) < EPSILON:
+            if (delta - cls.LIMIT) < cls.EPSILON:
                 low = mapcolor.chroma
             else:
                 high = mapcolor.chroma

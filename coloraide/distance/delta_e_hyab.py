@@ -14,8 +14,8 @@ class DEHyAB(DeltaE):
 
     NAME = "hyab"
 
-    @staticmethod
-    def distance(color: 'Color', sample: 'Color', space: str = "lab", **kwargs: Any) -> float:
+    @classmethod
+    def distance(cls, color: 'Color', sample: 'Color', space: str = "lab", **kwargs: Any) -> float:
         """
         HyAB distance for Lab-ish spaces.
 

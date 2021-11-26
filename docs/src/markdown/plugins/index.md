@@ -23,9 +23,9 @@ class DeltaE(ABCMeta):
 
     NAME = ''
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def distance(color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """Get distance between color and sample."""
 ```
 
@@ -50,9 +50,9 @@ class Fit(ABCMeta):
 
     NAME = ''
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def fit(color: 'Color') -> MutableVector:
+    def fit(cls, color: 'Color') -> MutableVector:
         """Get coordinates of the new gamut mapped color."""
 ```
 

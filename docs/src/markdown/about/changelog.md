@@ -3,6 +3,8 @@
 ## 0.7.0
 
 - **NEW**: Formally expose `srgb-linear` as a valid color space.
+- **NEW**: Distance plugins and gamut mapping plugins uses `classmethod` instead of `staticmethod`. This allows for
+  inheritance from other classes and the override of plugin options included as class members.
 
 ## 0.6.0
 

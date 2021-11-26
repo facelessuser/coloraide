@@ -13,8 +13,9 @@ class DE94(DeltaE):
 
     NAME = "94"
 
-    @staticmethod
+    @classmethod
     def distance(
+        cls,
         color: 'Color',
         sample: 'Color',
         kl: float = 1,
