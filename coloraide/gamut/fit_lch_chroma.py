@@ -16,7 +16,7 @@ class LchChroma(Fit):
     DE = "2000"
     SPACE = "lch"
     SPACE_COORDINATE = "{}.chroma".format(SPACE)
-    LIMIT = 2
+    LIMIT = 2.0
 
     @classmethod
     def fit(cls, color: 'Color') -> MutableVector:
