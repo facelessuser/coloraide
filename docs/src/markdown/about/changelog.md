@@ -5,6 +5,9 @@
 - **NEW**: Formally expose `srgb-linear` as a valid color space.
 - **NEW**: Distance plugins and gamut mapping plugins uses `classmethod` instead of `staticmethod`. This allows for
   inheritance from other classes and the override of plugin options included as class members.
+- **NEW**: Tweak Lch chroma gamut mapping threshold.
+- **FIX**: Issue where it is possible, when generating steps, to cause a shift in midpoint of colors if exceeding the
+  maximum steps. Ensure that no stops are injected if injecting a stop between every color would exceed the max steps.
 
 ## 0.6.0
 

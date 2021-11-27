@@ -346,6 +346,7 @@ def color_steps(
         deltas = interpolator.get_delta()
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
+        # Make a very rough guess of required steps.
         actual_steps = max(steps, math.ceil(sum([d / max_delta_e for d in deltas])) + 1)
 
     if max_steps is not None:
@@ -360,7 +361,7 @@ def color_steps(
             p = i * step
             ret.append({'p': p, 'color': interpolator(p)})
 
-    # Iterate over all the stops inserting stops in between if all colors
+    # Iterate over all the stops inserting stops in between all colors
     # if we have any two colors with a max delta greater than what was requested.
     # We inject between every stop to ensure the midpoint does not shift.
     if max_delta_e > 0:
@@ -371,11 +372,14 @@ def color_steps(
                 continue
             m_delta = max(m_delta, cast('Color', entry['color']).delta_e(cast('Color', ret[i - 1]['color'])))
 
-        while m_delta > max_delta_e:
+        # If we currently have delta over our limit inject more stops.
+        # If inserting between every color would push us over the max_steps, halt.
+        count = len(ret)
+        while m_delta > max_delta_e and (count * 2 - 1 <= max_steps):
             # Inject stops while measuring again to see if it was sufficient
             m_delta = 0.0
             i = 1
-            while i < len(ret) and len(ret) < max_steps:
+            while i < len(ret):
                 prev = ret[i - 1]
                 cur = ret[i]
                 p = (cast(float, cur['p']) + cast(float, prev['p'])) / 2

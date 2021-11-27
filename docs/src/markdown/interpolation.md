@@ -230,7 +230,9 @@ Color("display-p3", [0, 1, 0]).steps(
 ```
 
 `max_steps` can be used to limit the results of `max_delta_e`. Obviously, this affects the Delta E between the colors
-inversely.
+inversely. It should be noted that steps are injected equally between every color when satisfying a max Delta E limit in
+order to avoid shifting the midpoint. In some cases, in order to satisfy both the `max_delta_e` and the `max_steps`
+requirement, the number of steps may even be clipped such that they are less than the `max_steps` limit.
 
 ```playground
 Color("display-p3", [0, 1, 0]).steps(
@@ -243,7 +245,7 @@ Color("display-p3", [0, 1, 0]).steps(
 ```
 
 When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
-if the required steps is greater than the calculated maximum Delta E.
+if the required steps is greater than the calculated steps via the maximum Delta E limit.
 
 ```playground
 Color("display-p3", [0, 1, 0]).steps(
