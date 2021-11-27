@@ -12,12 +12,11 @@ class LchChroma(Fit):
 
     NAME = "lch-chroma"
 
-    EPSILON = 0.001
+    EPSILON = 0.01
     DE = "2000"
     SPACE = "lch"
     SPACE_COORDINATE = "{}.chroma".format(SPACE)
     LIMIT = 2
-    SCALE = 1
 
     @classmethod
     def fit(cls, color: 'Color') -> MutableVector:
@@ -50,7 +49,7 @@ class LchChroma(Fit):
         # If we are already below the JND, just clip as we will gain no
         # noticeable difference moving forward.
         clipped = color.clip()
-        if color.delta_e(clipped, method=cls.DE) * cls.SCALE < cls.LIMIT:
+        if color.delta_e(clipped, method=cls.DE) < cls.LIMIT:
             return clipped.coords()
 
         # Convert to CIELCH and set our boundaries
@@ -66,7 +65,7 @@ class LchChroma(Fit):
             delta = mapcolor.delta_e(
                 mapcolor.clip(space),
                 method=cls.DE
-            ) * cls.SCALE
+            )
 
             if (delta - cls.LIMIT) < cls.EPSILON:
                 low = mapcolor.chroma

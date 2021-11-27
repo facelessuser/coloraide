@@ -66,7 +66,7 @@ class TestHSVInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--hsv 20 1.5 0.75)').to_string(),
-            'color(--hsv 40.492 1 0.50529)'
+            'color(--hsv 40.493 1 0.50535)'
         )
 
         self.assertEqual(
