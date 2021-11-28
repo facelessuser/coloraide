@@ -347,7 +347,7 @@ def color_steps(
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
         # Make a very rough guess of required steps.
-        actual_steps = max(steps, math.ceil(sum([d / max_delta_e for d in deltas])) + 1)
+        actual_steps = max(steps, sum([math.ceil(d / max_delta_e) + 1 for d in deltas]))
 
     if max_steps is not None:
         actual_steps = min(actual_steps, max_steps)
