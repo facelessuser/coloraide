@@ -1015,9 +1015,9 @@ plugins, and users can create their own as well.</p>
 
     <span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="nd">@staticmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get distance between color and sample.&quot;&quot;&quot;</span>
 </code></pre></div>
 <p>The plugin should provide a unique <code>NAME</code> and the distancing logic under <code class="highlight"><span class="n">distance</span><span class="p">()</span></code> where <code>color</code> is the current
@@ -1034,9 +1034,9 @@ gamut. All default gamut mapping methods provided by ColorAide are provided via 
 
     <span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="nd">@staticmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MutableVector</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="s1">&#39;Color&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MutableVector</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get coordinates of the new gamut mapped color.&quot;&quot;&quot;</span>
 </code></pre></div>
 <p>The plugin should provide a unique <code>NAME</code> and the fitting/mapping logic under <code class="highlight"><span class="n">fit</span><span class="p">()</span></code>. The return should be a list
@@ -1262,8 +1262,8 @@ or determine the index of a specific channel types. Occasionally, these methods 
 space.</p>
 <p>Below, we can see that both <code>jzazbz</code> identify as Lab-ish spaces. If we just care about accessing the equivalent of Lab
 lightness on these spaces, we can simply can generically access them with the following logic.</p>
-<div class="playground" id="__playground_43">
-<div class="playground-results" id="__playground-results_43">
+<div class="playground" id="__playground_44">
+<div class="playground-results" id="__playground-results_44">
 <div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="color(--jzazbz 0.13438 0.11789 0.11188 / 1)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch out-of-gamut" title="color(--ictcp 0.42785 -0.11574 0.2788 / 1)"><span class="swatch-color" style="--swatch-stops: rgb(255 0.01028 0.00472) 50%, rgb(255 0.01028 0.00472) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide.spaces</span> <span class="kn">import</span> <span class="n">Labish</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jzazbz</span> <span class="o">=</span> <span class="n">srgb</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;jzazbz&#39;</span><span class="p">)</span>
@@ -1283,9 +1283,9 @@ lightness on these spaces, we can simply can generically access them with the fo
 <span class="go">value:  0.4278524836087273</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_43">
+<div class="playground-code hidden" id="__playground-code_44">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_43" spellcheck="false">from coloraide.spaces import Labish
+<textarea class="playground-inputs" id="__playground-inputs_44" spellcheck="false">from coloraide.spaces import Labish
 srgb = Color('red')
 jzazbz = srgb.convert('jzazbz')
 ictcp = srgb.convert('ictcp')
@@ -1299,10 +1299,10 @@ for c in (srgb, jzazbz, ictcp):
 </form>
 </div>
 
-<button id="__playground-edit_43" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_43" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_43" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_43" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_44" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_44" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_44" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_44" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>It should be noted that just because a color space identifies in a specific, generic category, it doesn't mean it is
 precisely that thing. For instance, the color space CIELAB is clearly a Lab-ish space, or more precisely, it is a Lab
@@ -1467,7 +1467,7 @@ color space.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 19, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 26, 2021</span>
       
     
   </small>
@@ -1608,7 +1608,7 @@ color space.</p>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-6ab1684b.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-75184e8f.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       

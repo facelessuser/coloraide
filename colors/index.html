@@ -621,6 +621,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#srgb-linear" class="md-nav__link">
+    sRGB Linear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#display-p3" class="md-nav__link">
     Display P3
   </a>
@@ -1130,6 +1137,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#srgb-linear" class="md-nav__link">
+    sRGB Linear
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#display-p3" class="md-nav__link">
     Display P3
   </a>
@@ -1524,6 +1538,108 @@ Color("srgb", [0, 0, 0], 1).to_string()</textarea>
 </dd>
 </dl>
 </details>
+<h3 id="srgb-linear">sRGB Linear<a class="headerlink" href="#srgb-linear" title="Permanent link"></a></h3>
+<div class="info-container">
+<div class="admonition info inline end">
+<p class="admonition-title">Properties</p>
+<p><strong>Name:</strong> <code>srgb-linear</code></p>
+<p><strong>White Point:</strong> D65</p>
+<p><strong>Coordinates:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r</td>
+<td>[0, 1]</td>
+</tr>
+<tr>
+<td>g</td>
+<td>[0, 1]</td>
+</tr>
+<tr>
+<td>b</td>
+<td>[0, 1]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure>
+<p><img alt="sRGB" src="../images/srgb-linear.png" /></p>
+<figcaption>CIE 1931 xy Chromaticity -- sRGB Linear Chromaticities</figcaption>
+</figure>
+<p>The sRGB Linear space is the same as <a href="#srgb">sRGB</a> <em>except</em> that the transfer function is linear-light (there is no gamma-encoding).</p>
+<p><em><a href="https://en.wikipedia.org/wiki/SRGB">Learn about sRGB</a></em></p>
+</div>
+<details class="abstract">
+<summary>ColorAide Details</summary>
+<dl>
+<dt><strong>Channel Aliases:</strong></dt>
+<dd>
+<table>
+<thead>
+<tr>
+<th>Channels</th>
+<th>Aliases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r</code></td>
+<td><code>red</code></td>
+</tr>
+<tr>
+<td><code>g</code></td>
+<td><code>green</code></td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td><code>blue</code></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>Inputs:</strong></dt>
+<dd>
+<p>Parsed input and string output formats support all valid CSS forms:</p>
+<div class="highlight"><pre><span></span><code><span class="nf">color</span><span class="g">(</span><span class="kc">srgb-linear</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w">  </span><span class="c1">// Color function</span><span class="w"></span>
+</code></pre></div>
+<p>When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+space name is always used:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;srgb-linear&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</dd>
+<dt><strong>Output:</strong></dt>
+<dd>
+<p>The string representation of the color object and the default string output will be in the
+<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">srgb-linear</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
+<div class="playground" id="__playground_17">
+<div class="playground-results" id="__playground-results_17">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(srgb-linear 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(srgb-linear 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;srgb-linear&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">color(srgb-linear 0 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;srgb-linear&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">color(srgb-linear 0 0 0)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_17">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_17" spellcheck="false">Color("srgb-linear", [0, 0, 0], 1)
+Color("srgb-linear", [0, 0, 0], 1).to_string()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_17" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_17" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_17" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_17" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+</dd>
+</dl>
+</details>
 <h3 id="display-p3">Display P3<a class="headerlink" href="#display-p3" title="Permanent link"></a></h3>
 <div class="info-container">
 <div class="admonition info inline end">
@@ -1605,25 +1721,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">display-p3</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_17">
-<div class="playground-results" id="__playground-results_17">
+<div class="playground" id="__playground_18">
+<div class="playground-results" id="__playground-results_18">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(display-p3 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(display-p3 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;display-p3&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(display-p3 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;display-p3&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(display-p3 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_17">
+<div class="playground-code hidden" id="__playground-code_18">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_17" spellcheck="false">Color("display-p3", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_18" spellcheck="false">Color("display-p3", [0, 0, 0], 1)
 Color("display-p3", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_17" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_17" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_17" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_17" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_18" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_18" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_18" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_18" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -1711,25 +1827,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">a98-rgb</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_18">
-<div class="playground-results" id="__playground-results_18">
+<div class="playground" id="__playground_19">
+<div class="playground-results" id="__playground-results_19">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(a98-rgb 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(a98-rgb 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;a98-rgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(a98-rgb 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;a98-rgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(a98-rgb 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_18">
+<div class="playground-code hidden" id="__playground-code_19">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_18" spellcheck="false">Color("a98-rgb", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_19" spellcheck="false">Color("a98-rgb", [0, 0, 0], 1)
 Color("a98-rgb", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_18" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_18" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_18" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_18" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_19" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_19" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_19" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_19" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -1817,25 +1933,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">rec2020</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_19">
-<div class="playground-results" id="__playground-results_19">
+<div class="playground" id="__playground_20">
+<div class="playground-results" id="__playground-results_20">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(rec2020 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(rec2020 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rec2020&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(rec2020 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rec2020&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(rec2020 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_19">
+<div class="playground-code hidden" id="__playground-code_20">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_19" spellcheck="false">Color("rec2020", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_20" spellcheck="false">Color("rec2020", [0, 0, 0], 1)
 Color("rec2020", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_19" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_19" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_19" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_19" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_20" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_20" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_20" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_20" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -1920,25 +2036,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">prophoto-rgb</span><span class="w"> </span><span class="kc">r</span><span class="w"> </span><span class="kc">g</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_20">
-<div class="playground-results" id="__playground-results_20">
+<div class="playground" id="__playground_21">
+<div class="playground-results" id="__playground-results_21">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(prophoto-rgb 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(prophoto-rgb 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;prophoto-rgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(prophoto-rgb 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;prophoto-rgb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(prophoto-rgb 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_20">
+<div class="playground-code hidden" id="__playground-code_21">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_20" spellcheck="false">Color("prophoto-rgb", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_21" spellcheck="false">Color("prophoto-rgb", [0, 0, 0], 1)
 Color("prophoto-rgb", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_20" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_20" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_20" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_20" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_21" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_21" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_21" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_21" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2035,25 +2151,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and default string output will always use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">hsv</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_21">
-<div class="playground-results" id="__playground-results_21">
+<div class="playground" id="__playground_22">
+<div class="playground-results" id="__playground-results_22">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--hsv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--hsv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--hsv 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--hsv 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_21">
+<div class="playground-code hidden" id="__playground-code_22">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_21" spellcheck="false">Color("hsv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_22" spellcheck="false">Color("hsv", [0, 0, 0], 1)
 Color("hsv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_21" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_21" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_21" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_21" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_22" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_22" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_22" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_22" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2145,25 +2261,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--hsl</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
 form, but the default string output will be the <code class="highlight"><span class="nf">hsl</span><span class="g">(</span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_22">
-<div class="playground-results" id="__playground-results_22">
+<div class="playground" id="__playground_23">
+<div class="playground-results" id="__playground-results_23">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 0%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="hsl(0 0% 0%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--hsl 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">hsl(0 0% 0%)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_22">
+<div class="playground-code hidden" id="__playground-code_23">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_22" spellcheck="false">Color("hsl", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_23" spellcheck="false">Color("hsl", [0, 0, 0], 1)
 Color("hsl", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_22" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_22" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_22" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_22" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_23" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_23" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_23" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_23" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2254,25 +2370,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--hwb</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">w</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
 form, but the default string output will be the <code class="highlight"><span class="nf">hwb</span><span class="g">(</span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_23">
-<div class="playground-results" id="__playground-results_23">
+<div class="playground" id="__playground_24">
+<div class="playground-results" id="__playground-results_24">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hwb(0 0% 10000%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="hwb(0 0% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hwb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--hwb 0 0 100 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hwb&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">hwb(0 0% 100%)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_23">
+<div class="playground-code hidden" id="__playground-code_24">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_23" spellcheck="false">Color("hwb", [0, 0, 100], 1)
+<textarea class="playground-inputs" id="__playground-inputs_24" spellcheck="false">Color("hwb", [0, 0, 100], 1)
 Color("hwb", [0, 0, 100], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_23" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_23" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_23" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_23" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_24" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_24" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_24" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_24" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2358,25 +2474,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--okhsv</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_24">
-<div class="playground-results" id="__playground-results_24">
+<div class="playground" id="__playground_25">
+<div class="playground-results" id="__playground-results_25">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--okhsv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--okhsv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;okhsv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--okhsv 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;okhsv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--okhsv 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_24">
+<div class="playground-code hidden" id="__playground-code_25">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_24" spellcheck="false">Color("okhsv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_25" spellcheck="false">Color("okhsv", [0, 0, 0], 1)
 Color("okhsv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_24" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_24" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_24" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_24" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_25" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_25" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_25" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_25" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2463,25 +2579,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--okhsl</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="kc">s</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_25">
-<div class="playground-results" id="__playground-results_25">
+<div class="playground" id="__playground_26">
+<div class="playground-results" id="__playground-results_26">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--okhsl 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--okhsl 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;okhsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--okhsl 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;okhsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--okhsl 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_25">
+<div class="playground-code hidden" id="__playground-code_26">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_25" spellcheck="false">Color("okhsl", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_26" spellcheck="false">Color("okhsl", [0, 0, 0], 1)
 Color("okhsl", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_25" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_25" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_25" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_25" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_26" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_26" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_26" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_26" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2588,25 +2704,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the 
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">xyz</span><span class="w"> </span><span class="kc">x</span><span class="w"> </span><span class="kc">y</span><span class="w"> </span><span class="kc">z</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_26">
-<div class="playground-results" id="__playground-results_26">
+<div class="playground" id="__playground_27">
+<div class="playground-results" id="__playground-results_27">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(xyz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(xyz 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(xyz 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_26">
+<div class="playground-code hidden" id="__playground-code_27">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_26" spellcheck="false">Color("xyz", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_27" spellcheck="false">Color("xyz", [0, 0, 0], 1)
 Color("xyz", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_26" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_26" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_26" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_26" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_27" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_27" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_27" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_27" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2693,25 +2809,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output will be in the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">xyz</span><span class="w"> </span><span class="kc">x</span><span class="w"> </span><span class="kc">y</span><span class="w"> </span><span class="kc">z</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_27">
-<div class="playground-results" id="__playground-results_27">
+<div class="playground" id="__playground_28">
+<div class="playground-results" id="__playground-results_28">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(xyz-d50 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(xyz-d50 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;xyz-d50&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(xyz-d50 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;xyz-d50&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(xyz-d50 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_27">
+<div class="playground-code hidden" id="__playground-code_28">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_27" spellcheck="false">Color("xyz-d50", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_28" spellcheck="false">Color("xyz-d50", [0, 0, 0], 1)
 Color("xyz-d50", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_27" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_27" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_27" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_27" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_28" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_28" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_28" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_28" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2809,25 +2925,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
 form, but the default string output will be the <code class="highlight"><span class="nf">lab</span><span class="g">(</span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_28">
-<div class="playground-results" id="__playground-results_28">
+<div class="playground" id="__playground_29">
+<div class="playground-results" id="__playground-results_29">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="lab(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lab 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">lab(0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_28">
+<div class="playground-code hidden" id="__playground-code_29">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_28" spellcheck="false">Color("lab", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_29" spellcheck="false">Color("lab", [0, 0, 0], 1)
 Color("lab", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_28" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_28" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_28" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_28" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_29" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_29" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_29" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_29" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -2915,25 +3031,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lab-d65</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_29">
-<div class="playground-results" id="__playground-results_29">
+<div class="playground" id="__playground_30">
+<div class="playground-results" id="__playground-results_30">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lab-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lab-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lab-d65 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lab-d65 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_29">
+<div class="playground-code hidden" id="__playground-code_30">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_29" spellcheck="false">Color("lab-d65", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_30" spellcheck="false">Color("lab-d65", [0, 0, 0], 1)
 Color("lab-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_29" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_29" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_29" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_29" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_30" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_30" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_30" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_30" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3029,25 +3145,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object will always default to the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code>
 form, but the default string output will be the <code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_30">
-<div class="playground-results" id="__playground-results_30">
+<div class="playground" id="__playground_31">
+<div class="playground-results" id="__playground-results_31">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="lch(0% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lch 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">lch(0% 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_30">
+<div class="playground-code hidden" id="__playground-code_31">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_30" spellcheck="false">Color("lch", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_31" spellcheck="false">Color("lch", [0, 0, 0], 1)
 Color("lch", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_30" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_30" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_30" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_30" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_31" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_31" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_31" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_31" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3135,25 +3251,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lch-d65</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_31">
-<div class="playground-results" id="__playground-results_31">
+<div class="playground" id="__playground_32">
+<div class="playground-results" id="__playground-results_32">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lch-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lch-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lch-d65 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lch-d65 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_31">
+<div class="playground-code hidden" id="__playground-code_32">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_31" spellcheck="false">Color("lch-d65", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_32" spellcheck="false">Color("lch-d65", [0, 0, 0], 1)
 Color("lch-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_31" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_31" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_31" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_31" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_32" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_32" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_32" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_32" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3245,25 +3361,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklab</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">a</span><span class="w"> </span><span class="kc">b</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_32">
-<div class="playground-results" id="__playground-results_32">
+<div class="playground" id="__playground_33">
+<div class="playground-results" id="__playground-results_33">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklab 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--oklab 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklab&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--oklab 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_32">
+<div class="playground-code hidden" id="__playground-code_33">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_32" spellcheck="false">Color("oklab", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_33" spellcheck="false">Color("oklab", [0, 0, 0], 1)
 Color("oklab", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_32" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_32" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_32" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_32" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_33" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_33" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_33" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_33" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3354,25 +3470,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--oklch</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_33">
-<div class="playground-results" id="__playground-results_33">
+<div class="playground" id="__playground_34">
+<div class="playground-results" id="__playground-results_34">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--oklch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--oklch 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;oklch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--oklch 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_33">
+<div class="playground-code hidden" id="__playground-code_34">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_33" spellcheck="false">Color("oklch", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_34" spellcheck="false">Color("oklch", [0, 0, 0], 1)
 Color("oklch", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_33" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_33" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_33" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_33" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_34" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_34" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_34" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_34" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3469,25 +3585,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--luv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">u</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_34">
-<div class="playground-results" id="__playground-results_34">
+<div class="playground" id="__playground_35">
+<div class="playground-results" id="__playground-results_35">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--luv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--luv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--luv 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--luv 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_34">
+<div class="playground-code hidden" id="__playground-code_35">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_34" spellcheck="false">Color("luv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_35" spellcheck="false">Color("luv", [0, 0, 0], 1)
 Color("luv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_34" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_34" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_34" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_34" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_35" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_35" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_35" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_35" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3575,25 +3691,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--luv-d65</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">u</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_35">
-<div class="playground-results" id="__playground-results_35">
+<div class="playground" id="__playground_36">
+<div class="playground-results" id="__playground-results_36">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--luv-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--luv-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--luv-d65 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;luv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--luv-d65 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_35">
+<div class="playground-code hidden" id="__playground-code_36">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_35" spellcheck="false">Color("luv-d65", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_36" spellcheck="false">Color("luv-d65", [0, 0, 0], 1)
 Color("luv-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_35" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_35" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_35" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_35" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_36" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_36" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_36" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_36" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3686,25 +3802,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lchuv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_36">
-<div class="playground-results" id="__playground-results_36">
+<div class="playground" id="__playground_37">
+<div class="playground-results" id="__playground-results_37">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lchuv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lchuv 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lchuv 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lchuv 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_36">
+<div class="playground-code hidden" id="__playground-code_37">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_36" spellcheck="false">Color("lchuv", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_37" spellcheck="false">Color("lchuv", [0, 0, 0], 1)
 Color("lchuv", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_36" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_36" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_36" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_36" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_37" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_37" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_37" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_37" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3793,25 +3909,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--lchuv</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">c</span><span class="w"> </span><span class="kc">h</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_37">
-<div class="playground-results" id="__playground-results_37">
+<div class="playground" id="__playground_38">
+<div class="playground-results" id="__playground-results_38">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--lchuv-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--lchuv-d65 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--lchuv-d65 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lchuv-d65&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--lchuv-d65 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_37">
+<div class="playground-code hidden" id="__playground-code_38">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_37" spellcheck="false">Color("lchuv-d65", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_38" spellcheck="false">Color("lchuv-d65", [0, 0, 0], 1)
 Color("lchuv-d65", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_37" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_37" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_37" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_37" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_38" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_38" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_38" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_38" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -3906,25 +4022,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--jzazbz</span><span class="w"> </span><span class="kc">jz</span><span class="w"> </span><span class="kc">az</span><span class="w"> </span><span class="kc">bz</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_38">
-<div class="playground-results" id="__playground-results_38">
+<div class="playground" id="__playground_39">
+<div class="playground-results" id="__playground-results_39">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--jzazbz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--jzazbz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;jzazbz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--jzazbz 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;jzazbz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--jzazbz 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_38">
+<div class="playground-code hidden" id="__playground-code_39">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_38" spellcheck="false">Color("jzazbz", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_39" spellcheck="false">Color("jzazbz", [0, 0, 0], 1)
 Color("jzazbz", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_38" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_38" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_38" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_38" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_39" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_39" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_39" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_39" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -4012,25 +4128,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--jzczhz</span><span class="w"> </span><span class="kc">jz</span><span class="w"> </span><span class="kc">cz</span><span class="w"> </span><span class="kc">hz</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_39">
-<div class="playground-results" id="__playground-results_39">
+<div class="playground" id="__playground_40">
+<div class="playground-results" id="__playground-results_40">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--jzczhz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--jzczhz 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;jzczhz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--jzczhz 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;jzczhz&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--jzczhz 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_39">
+<div class="playground-code hidden" id="__playground-code_40">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_39" spellcheck="false">Color("jzczhz", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_40" spellcheck="false">Color("jzczhz", [0, 0, 0], 1)
 Color("jzczhz", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_39" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_39" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_39" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_39" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_40" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_40" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_40" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_40" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -4121,25 +4237,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--ictcp</span><span class="w"> </span><span class="kc">i</span><span class="w"> </span><span class="kc">ct</span><span class="w"> </span><span class="kc">cp</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_40">
-<div class="playground-results" id="__playground-results_40">
+<div class="playground" id="__playground_41">
+<div class="playground-results" id="__playground-results_41">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--ictcp 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--ictcp 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;ictcp&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--ictcp 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;ictcp&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--ictcp 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_40">
+<div class="playground-code hidden" id="__playground-code_41">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_40" spellcheck="false">Color("ictcp", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_41" spellcheck="false">Color("ictcp", [0, 0, 0], 1)
 Color("ictcp", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_40" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_40" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_40" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_40" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_41" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_41" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_41" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_41" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -4231,25 +4347,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--din99o</span><span class="w"> </span><span class="kc">l</span><span class="w"> </span><span class="kc">u</span><span class="w"> </span><span class="kc">v</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_41">
-<div class="playground-results" id="__playground-results_41">
+<div class="playground" id="__playground_42">
+<div class="playground-results" id="__playground-results_42">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--din99o 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--din99o 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;din99o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--din99o 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;din99o&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--din99o 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_41">
+<div class="playground-code hidden" id="__playground-code_42">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_41" spellcheck="false">Color("din99o", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_42" spellcheck="false">Color("din99o", [0, 0, 0], 1)
 Color("din99o", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_41" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_41" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_41" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_41" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_42" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_42" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_42" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_42" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -4337,25 +4453,25 @@ space name is always used:</p>
 <dd>
 <p>The string representation of the color object and the default string output use the
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">--din99o-lch</span><span class="w"> </span><span class="kc">jz</span><span class="w"> </span><span class="kc">cz</span><span class="w"> </span><span class="kc">hz</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">a</span><span class="g">)</span><span class="w"></span></code> form.</p>
-<div class="playground" id="__playground_42">
-<div class="playground-results" id="__playground-results_42">
+<div class="playground" id="__playground_43">
+<div class="playground-results" id="__playground-results_43">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="color(--din99o-lch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span> <span class="swatch" title="color(--din99o-lch 0 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 0) 50%, rgb(0 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;din99o-lch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="go">color(--din99o-lch 0 0 0 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;din99o-lch&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
 <span class="go">color(--din99o-lch 0 0 0)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_42">
+<div class="playground-code hidden" id="__playground-code_43">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_42" spellcheck="false">Color("din99o-lch", [0, 0, 0], 1)
+<textarea class="playground-inputs" id="__playground-inputs_43" spellcheck="false">Color("din99o-lch", [0, 0, 0], 1)
 Color("din99o-lch", [0, 0, 0], 1).to_string()</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_42" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_42" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_42" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_42" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_43" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_43" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_43" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_43" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 </dd>
 </dl>
@@ -4382,7 +4498,7 @@ account, this approach gives a fairly good approximation of the shape of the sRG
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 19, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 20, 2021</span>
       
     
   </small>
@@ -4523,7 +4639,7 @@ account, this approach gives a fairly good approximation of the shape of the sRG
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-6ab1684b.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-75184e8f.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       

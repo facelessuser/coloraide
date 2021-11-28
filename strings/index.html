@@ -990,7 +990,7 @@ particularly helpful except to look at the raw decimal number.</p>
 doing and the values you are working in.</p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
-<div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(80 200 300)"><span class="swatch-color" style="--swatch-stops: rgb(132.18 197.13 255) 50%, rgb(132.18 197.13 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(80 200 300)"><span class="swatch-color" style="--swatch-stops: rgb(132.13 197.13 255) 50%, rgb(132.13 197.13 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30.3456</span><span class="si">% 75%</span><span class="s2"> 100%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="go">rgb(80 200 300)</span>
 </code></pre></div></div>
 </div>
@@ -1012,8 +1012,8 @@ doing and the values you are working in.</p>
   hex, are always fitted (regardless of the this setting) as they must fit into the gamut or they cannot be translated.</p>
 <div class="playground" id="__playground_5">
 <div class="playground-results" id="__playground-results_5">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(106.26 255 58.974)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span> <span class="swatch out-of-gamut" title="rgb(76.5 267.75 0)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">rgb(106.26 255 58.974)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(105.83 255 58.42)"><span class="swatch-color" style="--swatch-stops: rgb(105.83 255 58.42) 50%, rgb(105.83 255 58.42) 50%"></span></span> <span class="swatch out-of-gamut" title="rgb(76.5 267.75 0)"><span class="swatch-color" style="--swatch-stops: rgb(105.83 255 58.42) 50%, rgb(105.83 255 58.42) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">rgb(105.83 255 58.42)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">rgb(76.5 267.75 0)</span>
 </code></pre></div></div>
@@ -1033,8 +1033,8 @@ Color("rgb(30% 105% 0%)").to_string(fit=False)</textarea>
 <p>Additionally, we can choose a different fitting method by passing <code>fit</code> the name of the method we would like.</p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(106.26 255 58.974)"><span class="swatch-color" style="--swatch-stops: rgb(106.26 255 58.974) 50%, rgb(106.26 255 58.974) 50%"></span></span> <span class="swatch" title="rgb(76.5 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 255 0) 50%, rgb(76.5 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">rgb(106.26 255 58.974)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(105.83 255 58.42)"><span class="swatch-color" style="--swatch-stops: rgb(105.83 255 58.42) 50%, rgb(105.83 255 58.42) 50%"></span></span> <span class="swatch" title="rgb(76.5 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(76.5 255 0) 50%, rgb(76.5 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="go">rgb(105.83 255 58.42)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;rgb(30</span><span class="si">% 105%</span><span class="s2"> 0%)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
 <span class="go">rgb(76.5 255 0)</span>
 </code></pre></div></div>
@@ -1376,7 +1376,7 @@ transparency.</p>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-6ab1684b.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-75184e8f.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-dbc1c732.js"></script>
       
