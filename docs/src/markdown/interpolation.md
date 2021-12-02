@@ -263,7 +263,7 @@ Delta E 2000 is far more accurate, it is a much more expensive operation.
 
 ## Piecewise Interpolation
 
-The [`interploate`](#interpolating) and [`steps`](#steps) method allows for piecewise interpolation across multiple
+The [`interploate`](#interpolating) and [`steps`](#steps) methods allow for piecewise interpolation across multiple
 color ranges. Anytime, multiple colors are provided via a list, the piecewise logic will be applied to the various
 segments.
 
@@ -271,18 +271,37 @@ segments.
 Color('red').interpolate(['white', 'black', 'blue'])
 ```
 
-The interpolation between each pair of colors defaults to using the options provided via the `interpolate` parameters,
-but you can change them for a given range by using the [`Piecewise`](./api/index.md#piecewise) object. For instance, we
-could apply an easing between just the `#!color white` and `#!color black`. Notice that `Piecewise` is applied to the
-second color in the range, and the options will only apply to the interpolation of that color and the color immediately
-before it.
+When interpolating between two colors, we showed that you can control the transition by setting easing functions to
+the `progress` parameter or control hue interpolation with the `hue` parameter. For piecewise interpolation, when
+`progress`, `hue`, or `premultiplied` are set via the function parameters, that will be the defaults used between all
+the provided colors, but you can also setup specific interpolation configurations between any two colors by using the
+[`Piecewise`](./api/index.md#piecewise) object. For instance, in the example below, we can apply an easing between just
+the `#!color white` and `#!color black` colors. Notice that we wrap `#!color black` in a `Piecewise` object so that the
+easing function is applied to `#!color black` and the color immediately before it (`#!color white`).
 
 ```playground
 Color('red').interpolate(['white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'])
 ```
 
-Additionally, you can set color stops using the `stop` parameter. To set the `stop` on the base color, simply set the
-`stop` parameter in the [`interploate`](#interpolating) method.
+Additionally, you can set color stops using the `Piecewise` object's `stop` parameter. This will ensure that the given
+color is interpolated at 100% at that percentage of the total interpolation. In the example below, we specify that in
+the entire gradient that at 75% the color will be `#!color green`.
+
+```playground
+Color('orange').interpolate([Piecewise('green', 0.75), 'blue'])
+```
+
+As the base color cannot be wrapped in a `Piecewise` object, the `steps` and `interpolation` method provide a `stop`
+parameter that specifically sets a stop for the base color. In the example below, we specify that the base color's stop
+will be at 75%, but since the base is always the first color, what it really means is that the color will remain as the
+base color until 75% and then begin the transition to the next color. In this case, the gradient remains
+`#!color orange` until it reaches 75% and then transitions to `#!color green` completing the full transition at 100%.
+
+```playground
+Color('orange').interpolate('green', stop=0.75)
+```
+
+And when we put it all together:
 
 ```playground
 Color('red').interpolate([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4)
