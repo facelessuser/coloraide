@@ -539,7 +539,7 @@ def cie_diagram(
                     xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
                 px.append(r[0])
                 py.append(r[1])
-                srgb.update('xyz', xyz, opacity)
+                srgb.update('xyz-d65', xyz, opacity)
                 m = max(srgb.coords())
                 srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb.coords()], srgb.alpha)
                 c.append(srgb.to_string(hex=True, fit="clip"))

@@ -11,7 +11,7 @@ import re
 class LuvD65(Luv):
     """Oklab class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "luv-d65"
     SERIALIZE = ("--luv-d65",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))

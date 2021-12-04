@@ -84,7 +84,7 @@ def xyz_d65_to_ictcp(xyzd65: MutableVector) -> MutableVector:
 class ICtCp(Labish, Space):
     """ICtCp class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
     CHANNEL_NAMES = ("i", "ct", "cp")

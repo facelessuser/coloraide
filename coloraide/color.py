@@ -461,7 +461,7 @@ class Color(metaclass=BaseColor):
 
         uv = None
         if mode == '1976':
-            xyz = self.convert('xyz')
+            xyz = self.convert('xyz-d65')
             coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
             uv = util.xyz_to_uv(coords)
         elif mode == '1960':
@@ -473,7 +473,7 @@ class Color(metaclass=BaseColor):
     def xy(self) -> MutableVector:
         """Convert to `xy`."""
 
-        xyz = self.convert('xyz')
+        xyz = self.convert('xyz-d65')
         coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
         return util.xyz_to_xyY(coords, self._space.white())[:2]
 
@@ -726,7 +726,7 @@ class Color(metaclass=BaseColor):
     def luminance(self) -> float:
         """Get color's luminance."""
 
-        return cast(float, self.convert("xyz").y)
+        return cast(float, self.convert("xyz-d65").y)
 
     def contrast(self, color: ColorInput) -> float:
         """Compare the contrast ratio of this color and the provided color."""

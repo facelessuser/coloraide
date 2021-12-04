@@ -80,7 +80,7 @@ def xyz_to_lin_2020(xyz: MutableVector) -> MutableVector:
 class Rec2020(SRGB):
     """Rec 2020 class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "rec2020"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"

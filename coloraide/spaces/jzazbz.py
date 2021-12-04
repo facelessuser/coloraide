@@ -104,7 +104,7 @@ def xyz_d65_to_jzazbz(xyzd65: MutableVector) -> MutableVector:
 class Jzazbz(Labish, Space):
     """Jzazbz class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNEL_NAMES = ("jz", "az", "bz")

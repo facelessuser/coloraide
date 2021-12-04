@@ -113,7 +113,7 @@ def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
 class Oklab(Labish, Space):
     """Oklab class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "oklab"
     SERIALIZE = ("--oklab",)
     CHANNEL_NAMES = ("l", "a", "b")

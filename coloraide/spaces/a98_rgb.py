@@ -53,7 +53,7 @@ def gam_a98rgb(rgb: MutableVector) -> MutableVector:
 class A98RGB(SRGB):
     """A98 RGB class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "a98-rgb"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"

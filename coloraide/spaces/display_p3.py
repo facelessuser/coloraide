@@ -51,7 +51,7 @@ def gam_p3(rgb: MutableVector) -> MutableVector:
 class DisplayP3(SRGB):
     """Display-p3 class."""
 
-    BASE = "xyz"
+    BASE = "xyz-d65"
     NAME = "display-p3"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = "D65"

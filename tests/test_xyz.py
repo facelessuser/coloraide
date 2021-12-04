@@ -10,12 +10,12 @@ class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
     def test_input_raw(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color("xyz", [1, 1, 1]), Color('color(xyz 1 1 1)'))
+        self.assertColorEqual(Color("xyz-d65", [1, 1, 1]), Color('color(xyz 1 1 1)'))
 
     def test_color_class(self):
         """Test raw input."""
 
-        self.assertColorEqual(Color(Color("xyz", [1, 1, 1])), Color('color(xyz 1 1 1)'))
+        self.assertColorEqual(Color(Color("xyz-d65", [1, 1, 1])), Color('color(xyz 1 1 1)'))
 
     def test_color(self):
         """Test color input/output format."""

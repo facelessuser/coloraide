@@ -8,7 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # XYZ is the absolute base, meaning that XYZ is the final base in any conversion chain.
 # This is a design expectation regardless of whether someone assigns a different base to XYZ or not.
-ABSOLUTE_BASE = 'xyz'
+ABSOLUTE_BASE = 'xyz-d65'
 
 
 def convert(color: 'Color', space: str) -> Vector:
