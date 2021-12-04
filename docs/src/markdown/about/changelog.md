@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0
+
+- **FIX**: Per the CSS specification, ensure XYZ D65 color space serializes as `xyz-d65` instead of the alias `xyz`.
+
 ## 0.7.0
 
 - **NEW**: Formally expose `srgb-linear` as a valid color space.

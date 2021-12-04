@@ -23,10 +23,10 @@ class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
         args = {"color": True}
         color = "color(xyz 0.3 1 0.5)"
 
-        self.assertEqual(Color(color).to_string(**args), 'color(xyz 0.3 1 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(xyz-d65 0.3 1 0.5)')
 
         color = "color(xyz 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(xyz 0.3 1 0.5 / 0.5)')
+        self.assertEqual(Color(color).to_string(**args), 'color(xyz-d65 0.3 1 0.5 / 0.5)')
 
     def test_no_alpha(self):
         """Test no alpha."""
@@ -35,7 +35,7 @@ class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(xyz 0.3 1 0.5 / 0.2)"
         xyzd65 = Color(color)
-        self.assertEqual("color(xyz 0.3 1 0.5)", xyzd65.to_string(**args))
+        self.assertEqual("color(xyz-d65 0.3 1 0.5)", xyzd65.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
@@ -44,18 +44,18 @@ class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(xyz 0.3 1 0.5 / 100%)"
         xyzd65 = Color(color)
-        self.assertEqual("color(xyz 0.3 1 0.5 / 1)", xyzd65.to_string(**args))
+        self.assertEqual("color(xyz-d65 0.3 1 0.5 / 1)", xyzd65.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
 
         color = 'color(xyz 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(xyz 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(xyz 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(xyz 0 0 0)')
+        self.assertEqual(Color(color).to_string(), 'color(xyz-d65 0.12346 0.12346 0.12346)')
+        self.assertEqual(Color(color).to_string(precision=3), 'color(xyz-d65 0.123 0.123 0.123)')
+        self.assertEqual(Color(color).to_string(precision=0), 'color(xyz-d65 0 0 0)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'color(xyz 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
+            'color(xyz-d65 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
         )
 
     def test_fit(self):
@@ -63,17 +63,17 @@ class TestXYZD65InputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(xyz 2 -1 0)').to_string(),
-            'color(xyz 2 -1 0)'
+            'color(xyz-d65 2 -1 0)'
         )
 
         self.assertEqual(
             Color('color(xyz 2 -1 0)').to_string(fit="clip"),
-            'color(xyz 2 -1 0)'
+            'color(xyz-d65 2 -1 0)'
         )
 
         self.assertEqual(
             Color('color(xyz 2 -1 0)').to_string(fit=False),
-            'color(xyz 2 -1 0)'
+            'color(xyz-d65 2 -1 0)'
         )
 
 

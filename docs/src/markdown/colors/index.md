@@ -859,7 +859,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
     **Output:**
     : 
         The string representation of the color object and the default string output will be in the 
-        `#!css-color color(xyz x y z / a)` form.
+        `#!css-color color(xyz-d65 x y z / a)` form.
 
         ```playground
         Color("xyz", [0, 0, 0], 1)
