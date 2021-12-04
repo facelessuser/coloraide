@@ -1,6 +1,6 @@
 """XYZ class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .xyz import XYZ
+from .xyz_d65 import XYZ
 import re
 
 

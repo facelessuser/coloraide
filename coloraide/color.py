@@ -23,7 +23,7 @@ from .spaces.display_p3 import DisplayP3
 from .spaces.a98_rgb import A98RGB
 from .spaces.prophoto_rgb import ProPhotoRGB
 from .spaces.rec2020 import Rec2020
-from .spaces.xyz import XYZ
+from .spaces.xyz_d65 import XYZ
 from .spaces.xyz_d50 import XYZD50
 from .spaces.oklab import Oklab
 from .spaces.oklch import Oklch
