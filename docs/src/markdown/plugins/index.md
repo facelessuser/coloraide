@@ -74,26 +74,27 @@ space, there are a couple things that must be defined. Using XYZ as an example, 
 
 !!! tip "Chromatic Adaptation"
     Color spaces do **not** perform chromatic adaptation. That is handled by the `Color` object. Color spaces should
-    never change the white point, but simply provided the appropriate `BASE` linkage so that the color can resolve
-    eventually to XYZ. Chromatic adaptation should occur on transitions from XYZ to to XYZ color classes with different
-    white points, e.g., `xyz` to `xyz-d50`.
+    never change the white point, but simply provide the appropriate `BASE` linkage so that the color can resolve
+    eventually to XYZ D65. Non D65 XYZ color spaces should all have `xyz-d65` as their base. Chromatic adaptation should
+    automatically occur on transitions between two XYZ spaces with different white points white points, e.g., `xyz-d65`
+    to `xyz-d50`.
 
 ```py
-class XYZ(Space):
+class XYZD65(Space):
     """XYZ D65 class."""
 
     # A base color though which a color is converted through.
     # XYZ is our absolute base, so it doesn't have a real base,
     # but something like HSL might have a base color of `srgb`.
-    BASE = "xyz"
+    BASE = "xyz-d65"
 
     # The name of the color space.
-    NAME = "xyz"
+    NAME = "xyz-d65"
 
     # One or more accepted identifiers that are allowed for the `color(space ...)` format.
     # For this this specific color space, both `color(xyz x y z / a)` and `color(xyz-d65 x y z / a)` are accepted.
     # As `xyz` is listed first, `xyz` is the default used when printing in this format.
-    SERIALIZE = ("xyz", "xyz-d65")
+    SERIALIZE = ("xyz-d65", "xyz")
 
     # Channel names for non-alpha channels listed in order of how they are stored.
     CHANNEL_NAMES = ("x", "y", "z")

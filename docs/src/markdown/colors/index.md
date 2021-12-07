@@ -798,7 +798,7 @@ can be represented with other white points as well. CSS actually allows using ei
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `xyz`
+    **Name:** `xyz-d65`
 
     **White Point:** D65
 
@@ -841,8 +841,8 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Inputs:**
     : 
-        Parsed input and string output formats use the `#!css-color color()` format with either `#!css-color xyz` or
-        `#!css-color xyz-d65`.
+        Parsed input and string output formats use the `#!css-color color()` format with either `#!css-color xyz-d65`
+        or `#!css-color xyz` as the identifier with the latter being an alias of the former.
 
         ```css-color
         color(xyz x y z / a)      // Color function
@@ -862,8 +862,8 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
         `#!css-color color(xyz-d65 x y z / a)` form.
 
         ```playground
-        Color("xyz", [0, 0, 0], 1)
-        Color("xyz", [0, 0, 0], 1).to_string()
+        Color("xyz-d65", [0, 0, 0], 1)
+        Color("xyz-d65", [0, 0, 0], 1).to_string()
         ```
 
 ### XYZ D50

@@ -27,7 +27,7 @@ described under different illuminants.
 
 ```playground
 d50 = Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz')
+d65 = d50.convert('xyz-d65')
 d50, d65
 ```
 
@@ -40,7 +40,7 @@ coordinates we wish to transform:
 
 ```playground
 from coloraide.color.convert import cat
-Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz').coords()
+Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
 cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], method='bradford')
 ```
 
@@ -56,7 +56,7 @@ class Custom(Color):
     CHROMATIC_ADAPTATION = 'cat02'
 
 d50 = Custom('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
-d65 = d50.convert('xyz')
+d65 = d50.convert('xyz-d65')
 d50, d65
 ```
 
