@@ -1,11 +1,11 @@
 """XYZ D65 class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
 import re
-from ..util import MutableVector
-from typing import Tuple
+from ..util import Vector, MutableVector, warn_deprecated
+from typing import Tuple, Union, Optional
 
 
-class XYZ(Space):
+class XYZD65(Space):
     """XYZ D65 class."""
 
     BASE = "xyz-d65"

@@ -1,10 +1,10 @@
 """XYZ class."""
 from ..spaces import RE_DEFAULT_MATCH
-from .xyz_d65 import XYZ
+from .xyz_d65 import XYZD65
 import re
 
 
-class XYZD50(XYZ):
+class XYZD50(XYZD65):
     """XYZ D50 class."""
 
     BASE = "xyz-d65"

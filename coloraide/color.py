@@ -23,7 +23,7 @@ from .spaces.display_p3 import DisplayP3
 from .spaces.a98_rgb import A98RGB
 from .spaces.prophoto_rgb import ProPhotoRGB
 from .spaces.rec2020 import Rec2020
-from .spaces.xyz_d65 import XYZ
+from .spaces.xyz_d65 import XYZD65, XYZ
 from .spaces.xyz_d50 import XYZD50
 from .spaces.oklab import Oklab
 from .spaces.oklch import Oklch
@@ -57,7 +57,7 @@ SUPPORTED_DE = (
 
 SUPPORTED_SPACES = (
     HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZ, XYZD50,
+    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZD65, XYZD50, XYZ,
     Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Din99oLch, Luv, Lchuv,
     LuvD65, LchuvD65, Okhsl, Okhsv
 )
