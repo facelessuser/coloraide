@@ -2,7 +2,36 @@
 
 ## 0.8.0
 
-- **FIX**: Per the CSS specification, ensure XYZ D65 color space serializes as `xyz-d65` instead of the alias `xyz`.
+!!! warning "Breaking Change"
+    The use of `xyz` as the color space name has been changed in favor of `xyz-d65`. This better matches the CSS
+    specification. As we are still in a prerelease state, we have not provided any backwards compatibility.
+
+    CSS color input strings in the form `#!css-color color(xyz x y z)` will continue to be accepted as CSS will allow
+    both the `xyz` and the `xyz-d65` identifier, but output serialization will prefer the
+    `#!css-color color(xyz-d65 x y z)` form as using `xyz` is an alias for `xyz-d65`.
+
+    Again, this this breaking change only affects operations where the color space "name" is used in the API to specify
+    usage of a specific color space in order to create a color, convert, mutate, interpolate, etc.
+
+    ```python
+    Color('red').convert('xyz')      # Bad
+    Color('red').convert('xyz-d65')  # Okay
+
+    Color('xyz' [0, 0, 0])      # Bad
+    Color('xyz-d65' [0, 0, 0])  # Okay
+
+    Color('red').interpolate('green', space='xyz')      # Bad
+    Color('red').interpolate('green', space='xyz-d65')  # Okay
+
+    # No changes to CSS inputs
+    Color('color(xyz 0 0 0)')      # Okay
+    Color('color(xyz-d65 0 0 0)')  # Okay
+    ```
+
+- **NEW**: XYZ D65 space will now be known as `xyz-d65`, not `xyz`. Per the CSS specification, we also ensure XYZ D65
+  color space serializes as `xyz-d65` instead of the alias `xyz`. CSS input string format will still accept the `xyz`
+  name as this is defined in the CSS specification as an alias for `xyz-d65`, but when serializing a color to a string,
+  the `xyz-d65` will be used as the preferred form.
 
 ## 0.7.0
 
