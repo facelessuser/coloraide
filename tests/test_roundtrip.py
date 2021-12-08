@@ -2,6 +2,8 @@
 from coloraide import Color
 import pytest
 
+SPACES = Color.CS_MAP.keys()
+
 
 class TestRoundTrip:
     """
@@ -34,7 +36,7 @@ class TestRoundTrip:
         """Cycle through all the other colors and convert to them and back and check the results."""
 
         c1 = Color(color).convert(space)
-        for space in c1.CS_MAP.keys():
+        for space in SPACES:
             # Print the color space to easily identify which color space broke.
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
@@ -48,7 +50,8 @@ class TestRoundTrip:
                 print(space + ': ', str2, c2.coords())
                 assert str1 == str2
 
-    @pytest.mark.parametrize('space', list(Color.CS_MAP.keys()))
+    # Skip the deprecatd alias of `xyz` as it is already covered by `xyz-d65`.
+    @pytest.mark.parametrize('space', SPACES)
     def test_round_trip(self, space):
         """Test round trip."""
 
