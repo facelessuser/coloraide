@@ -1,7 +1,5 @@
 [run]
 omit=
-    coloraide/gamut/fit_oklch_chroma.py
 
 [report]
 omit=
-    coloraide/gamut/fit_oklch_chroma.py

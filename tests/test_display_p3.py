@@ -66,7 +66,7 @@ class TestDisplayP3InputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(display-p3 2 -1 0)').to_string(),
-            'color(display-p3 1 0.60334 0.48049)'
+            'color(display-p3 1 0.74471 0.77334)'
         )
 
         self.assertEqual(

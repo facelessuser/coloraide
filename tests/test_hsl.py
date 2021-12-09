@@ -168,7 +168,7 @@ class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--hsl 20 150% 75%)').to_string(),
-            'hsl(19.892 100% 76.494%)'
+            'hsl(19.319 100% 77.154%)'
         )
 
         self.assertEqual(

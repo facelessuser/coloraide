@@ -47,12 +47,14 @@ from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
 from .distance.delta_e_hyab import DEHyAB
+from .distance.delta_e_ok import DEOK
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
+from .gamut.fit_oklch_chroma import OklchChroma
 from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
-    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB
+    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB, DEOK
 )
 
 SUPPORTED_SPACES = (
@@ -63,7 +65,7 @@ SUPPORTED_SPACES = (
 )
 
 SUPPORTED_FIT = (
-    LchChroma,
+    LchChroma, OklchChroma
 )
 
 

@@ -23,7 +23,7 @@ DEF_ALPHA = 1.0
 DEF_MIX = 0.5
 DEF_HUE_ADJ = "shorter"
 DEF_DISTANCE_SPACE = "lab"
-DEF_FIT = "lch-chroma"
+DEF_FIT = "oklch-chroma"
 DEF_DELTA_E = "76"
 
 ERR_MAP_MSG = """

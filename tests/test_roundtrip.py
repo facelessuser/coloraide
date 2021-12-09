@@ -50,7 +50,6 @@ class TestRoundTrip:
                 print(space + ': ', str2, c2.coords())
                 assert str1 == str2
 
-    # Skip the deprecatd alias of `xyz` as it is already covered by `xyz-d65`.
     @pytest.mark.parametrize('space', SPACES)
     def test_round_trip(self, space):
         """Test round trip."""

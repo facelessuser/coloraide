@@ -126,12 +126,13 @@ in the gamut.
 ## Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-There are various different ways to gamut map a color into a smaller gamut. Currently, ColorAide provides two methods:
-naive clipping, and LCH Chroma.
+There are various different ways to gamut map a color into a smaller gamut. Currently, ColorAide provides three methods:
 
-The recommended approach (and the default for ColorAide) is to use LCH Chroma. This method compresses the chroma while
-in the CIELCH color space mostly keeping the other attributes intact. There is a little more to it than that, but that
-is essentially the basic concept.
+Method         | Description
+-------------- | -----------
+`clip`         | Simple, naive clipping.
+`oklch-chroma` | Two stage mapping that uses a combination of chroma compression and clipping. Chroma compression is done in the Oklch color space and is what is currently specified in the [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch). This is the default method used.
+`lch-chroma`   | This is like `oklch-chroma` but is done with CIELCH. This is what ColorAide originally used before `oklch-chroma`. Hue preservation is not as good, but has been left in for those who prefer this legacy method.
 
 In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but when we
 convert the color to sRGB, we find that the color is out of gamut. So, using the `fit` method, we can actually transform
@@ -170,14 +171,14 @@ Color("lch(100% 50 75)").fit("srgb", method='clip')
 
 If we wanted to change the default "fitting" to `clip`, we can also just use a
 [class override](./color.md#override-default-settings). Doing this will cause the class to default to `clip` any time a
-color needs to be mapped. Though, you can still use chroma compression by specifying `lch-chroma` for the `method`.
+color needs to be mapped. Though, you can still use chroma compression by specifying `oklch-chroma` for the `method`.
 
 ```playground
 class Custom(Color):
     FIT = 'clip'
 
 Custom("lch(100% 50 75)").convert('srgb').fit()
-Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')
+Custom("lch(100% 50 75)").convert('srgb').fit(method='oklch-chroma')
 ```
 
 It is important to note that when using fit, there is no tolerance, so even if `in_gamut` allowed enough tolerance to

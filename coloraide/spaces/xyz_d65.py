@@ -1,8 +1,8 @@
 """XYZ D65 class."""
 from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
 import re
-from ..util import Vector, MutableVector, warn_deprecated
-from typing import Tuple, Union, Optional
+from ..util import MutableVector
+from typing import Tuple
 
 
 class XYZD65(Space):

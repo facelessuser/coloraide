@@ -521,12 +521,17 @@ Description
 
     Available methods:
 
-    Name             | Input
-    ---------------- | -----
-    CIE76            | `76`
-    CIE94            | `94`
-    CIEDE2000        | `2000`
-    CMC\ l:c\ (1984) | `cmc`
+    Name                                     | Input           | Parameters
+    ---------------------------------------- | --------------- | --------------------
+    [∆E^\*^~ab~][de76]\ (CIE76)              | `76`            |
+    [∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | `cmc`           | `l=2, c=1`
+    [∆E^\*^~94~][de94]\ (CIE94)              | `94`            | `kl=1, k1=0.045, k2=0.015`
+    [∆E^\*^~00~ ][de2000]\ (CIEDE2000)       | `2000`          | `kl=1, kc=1, kh=1`
+    [∆E~itp~][deitp]\ (ICtCp)                | `itp`           | `scalar=720`
+    [∆E~z~][dez]\ (Jzazbz)                   | `jz`            |
+    [∆E~99o~][de99o]\ (DIN99o)               | `99o`           |
+    [∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab"`
+    ∆E~ok~                                   | `ok`            | `scalar=1`
 
 Parameters
 : 
@@ -842,23 +847,24 @@ Description
 : 
     Fits color to the current or specified color gamut.
 
-    By default, `lch-chroma` gamut mapping is used. This is essentially an approach that holds lightness and hue
-    constant in the CIELCH color space while reducing chroma until the color is in gamut. Clipping is done at each step
+    By default, `oklch-chroma` gamut mapping is used. This is essentially an approach that holds lightness and hue
+    constant in the Oklch color space while reducing chroma until the color is in gamut. Clipping is done at each step
     of the way and the color distance measured to see how close our color is to the intended color.
 
     The supported gamut mapping methods are:
 
-    Name       | Input
-    ---------- | -----
-    LCH Chroma | `lch-chroma`
-    Clipping   | `clip`
+    Name         | Input
+    ------------ | -----
+    Clipping     | `clip`
+    Oklch Chroma | `oklch-chroma`
+    LCH Chroma   | `lch-chroma`
 
 Parameters
 : 
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
     `space`    | `#!py3 None`       | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
-    `method`   | `#!py3 None`       | String that specifies which gamut mapping method to use. If `#!py3 None`, `lch-chroma` will be used.
+    `method`   | `#!py3 None`       | String that specifies which gamut mapping method to use. If `#!py3 None`, `oklch-chroma` will be used.
     `in_place` | `#!py3 False`      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
