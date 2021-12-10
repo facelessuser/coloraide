@@ -13,6 +13,18 @@ class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(Color("okhsl", [20, 1, 0.75]), Color('color(--okhsl 20 1 0.75)'))
 
+    def test_conversion(self):
+        """
+        Test a particular area of the conversion algorithm to ensure complete coverage.
+
+        Exercises part where chroma is less than calculated mid chroma.
+        """
+
+        self.assertEqual(
+            Color('color(--oklab 0.5 0.1 0)').convert('okhsl').to_string(),
+            'color(--okhsl 0 0.49656 0.42114)'
+        )
+
     def test_color_class(self):
         """Test raw input."""
 
@@ -65,11 +77,6 @@ class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(
             Color('color(--okhsl 50 40% 110%)').to_string(),
             'color(--okhsl 0 0 1)'
-        )
-
-        self.assertEqual(
-            Color('color(--okhsl 50 -10% 70%)').to_string(),
-            'color(--okhsl 0 0 0.7)'
         )
 
         self.assertEqual(
