@@ -28,7 +28,7 @@ def needs_lchuv_workaround(color):
     it all gets treated as black which is in gamut for almost any color.
     """
 
-    return color.space() == 'lchuv' and color.l == 0 and not color.normalize().is_nan('hue')
+    return color.space().startswith('lchuv') and color.l == 0 and not color.normalize().is_nan('hue')
 
 
 def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500, dark=False, title=""):
