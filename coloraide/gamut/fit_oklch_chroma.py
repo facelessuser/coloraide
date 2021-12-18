@@ -1,7 +1,7 @@
 """Fit by compressing chroma in Oklch."""
 from ..gamut import Fit
 from ..util import MutableVector
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -19,7 +19,7 @@ class OklchChroma(Fit):
     SPACE_COORDINATE = "{}.chroma".format(SPACE)
 
     @classmethod
-    def fit(cls, color: 'Color') -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs: Any) -> MutableVector:
         """
         Gamut mapping via Oklch chroma.
 

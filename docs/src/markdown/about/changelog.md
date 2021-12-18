@@ -28,6 +28,9 @@
     Color('color(xyz-d65 0 0 0)')  # Okay
     ```
 
+- **NEW**: Custom fit plugin's `fit` method now allows additional `kwargs` in its signature. The API will accept
+  `kwargs` allowing a custom fit plugin to have configurable parameters. None of the current built-in plugins provide
+  additional parameters, but this is provided in case it is found useful in the future.
 - **NEW**: XYZ D65 space will now be known as `xyz-d65`, not `xyz`. Per the CSS specification, we also ensure XYZ D65
   color space serializes as `xyz-d65` instead of the alias `xyz`. CSS input string format will still accept the `xyz`
   name as this is defined in the CSS specification as an alias for `xyz-d65`, but when serializing a color to a string,

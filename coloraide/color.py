@@ -502,7 +502,14 @@ class Color(metaclass=BaseColor):
         # Adjust "this" color
         return this.update(c)
 
-    def fit(self, space: Optional[str] = None, *, method: Optional[str] = None, in_place: bool = False) -> 'Color':
+    def fit(
+        self,
+        space: Optional[str] = None,
+        *,
+        method: Optional[str] = None,
+        in_place: bool = False,
+        **kwargs: Any
+    ) -> 'Color':
         """Fit the gamut using the provided method."""
 
         # Dedicated clip method.
@@ -535,7 +542,7 @@ class Color(metaclass=BaseColor):
                 c.set(name, util.constrain_hue(c.get(name)))
         else:
             # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
-            c._space._coords = func(c)
+            c._space._coords = func(c, **kwargs)
         c.normalize()
 
         # Adjust "this" color

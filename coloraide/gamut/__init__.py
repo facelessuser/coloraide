@@ -3,7 +3,7 @@ from .. import util
 from ..util import MutableVector
 from ..spaces import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -68,5 +68,5 @@ class Fit(ABCMeta):
 
     @classmethod
     @abstractmethod
-    def fit(cls, color: 'Color') -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs: Any) -> MutableVector:
         """Get coordinates of the new gamut mapped color."""

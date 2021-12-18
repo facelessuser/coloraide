@@ -52,7 +52,7 @@ class Fit(ABCMeta):
 
     @classmethod
     @abstractmethod
-    def fit(cls, color: 'Color') -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs) -> MutableVector:
         """Get coordinates of the new gamut mapped color."""
 ```
 

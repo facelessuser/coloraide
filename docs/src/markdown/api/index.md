@@ -839,7 +839,8 @@ def fit(
     space=None,
     *,
     method=None,
-    in_place=False
+    in_place=False,
+    **kwargs
 ):
 ```
 
@@ -861,6 +862,9 @@ Description
 
 Parameters
 : 
+    Some methods could have additional parameters to configure the behavior, these would be done through `**kwargs`.
+    None of built-in gamut mapping methods currently have additional parameters.
+
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
     `space`    | `#!py3 None`       | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
