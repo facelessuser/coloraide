@@ -10,8 +10,8 @@
     both the `xyz` and the `xyz-d65` identifier, but output serialization will prefer the
     `#!css-color color(xyz-d65 x y z)` form as using `xyz` is an alias for `xyz-d65`.
 
-    Again, this this breaking change only affects operations where the color space "name" is used in the API to specify
-    usage of a specific color space in order to create a color, convert, mutate, interpolate, etc.
+    Again, this breaking change only affects operations where the color space "name" is used in the API to specify usage
+    of a specific color space in order to create a color, convert, mutate, interpolate, etc.
 
     ```python
     Color('red').convert('xyz')      # Bad
