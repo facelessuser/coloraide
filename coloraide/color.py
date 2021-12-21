@@ -393,7 +393,7 @@ class Color(metaclass=BaseColor):
 
         return cat.chromatic_adaptation(w1, w2, xyz, method=self.CHROMATIC_ADAPTATION)
 
-    def convert(self, space: str, *, fit: bool = False, in_place: bool = False) -> 'Color':
+    def convert(self, space: str, *, fit: Union[bool, str] = False, in_place: bool = False) -> 'Color':
         """Convert to color space."""
 
         space = space.lower()

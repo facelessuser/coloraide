@@ -33,8 +33,8 @@
   additional parameters, but this is provided in case it is found useful in the future.
 - **NEW**: XYZ D65 space will now be known as `xyz-d65`, not `xyz`. Per the CSS specification, we also ensure XYZ D65
   color space serializes as `xyz-d65` instead of the alias `xyz`. CSS input string format will still accept the `xyz`
-  name as this is defined in the CSS specification as an alias for `xyz-d65`, but when serializing a color to a string,
-  the `xyz-d65` will be used as the preferred form.
+  identifier as this is defined in the CSS specification as an alias for `xyz-d65`, but when serializing a color to a
+  string, the `xyz-d65` will be used as the preferred form.
 - **NEW**: By default, gamut mapping is done with `oklch-chroma` which matches the current CSS specification. If
   desired, the old way (`lch-chroma`) can manually be specified or set as the default by subclassing `Color` and setting
   `FIT` to `lch-chroma`.

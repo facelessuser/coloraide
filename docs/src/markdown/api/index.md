@@ -315,7 +315,7 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `space`    |               | A string representing the desired final color space.
-    `fit`      | `#!py3 False` | Boolean specifying whether the current color should be gamut mapped into the final, desired color space.
+    `fit`      | `#!py3 False` | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used.
     `in_place` | `#!py3 False` | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
 
 Return
