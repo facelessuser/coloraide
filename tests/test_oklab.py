@@ -1,15 +1,7 @@
 """Test Oklab library."""
 import unittest
 from . import util
-from coloraide import Color as ColorOrig
-from coloraide.spaces.oklab.css import Oklab
-
-
-class Color(ColorOrig):
-    """Utilize Oklab CSS (currently) experimental."""
-
-
-Color.register(Oklab, overwrite=True)
+from coloraide import Color as Color
 
 
 class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
