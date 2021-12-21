@@ -38,6 +38,7 @@
 - **NEW**: By default, gamut mapping is done with `oklch-chroma` which matches the current CSS specification. If
   desired, the old way (`lch-chroma`) can manually be specified or set as the default by subclassing `Color` and setting
   `FIT` to `lch-chroma`.
+- **FIX**: Ensure the `convert` method's `fit` parameter is typed appropriately and is documented correctly.
 
 ## 0.7.0
 
