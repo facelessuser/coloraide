@@ -1,4 +1,4 @@
-mkdocs_pymdownx_material_extras==1.5.4
+mkdocs_pymdownx_material_extras==1.5.6
 git+https://github.com/facelessuser/pymdown-lexers.git
 mkdocs-git-revision-date-localized-plugin
 mkdocs-minify-plugin
