@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+- **NEW**: Expose default interpolation space as a class variable that can be controlled when creating a custom class
+  via class inheritance.
+
 ## 0.8.0
 
 !!! warning "Breaking Change"

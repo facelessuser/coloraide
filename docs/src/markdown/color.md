@@ -250,6 +250,7 @@ Color2('rgb(128.12345 0 128.12345)').to_string()
 Properties             | Description
 ---------------------- | -----------
 `FIT`                  | The default gamut mapping method used by the [`Color`](#color) object.
+`INTERPOLATE`          | The default color space used for interpolation. Currently `lab` by default.
 `DELTA_E`              | The default ∆E algorithm used for gamut distancing called both internally for things like interpolation [`steps`](./interpolation.md#steps) or when [`delta_e()`](./distance.md#delta-e) is called without a an explicit method.
 `PRECISION`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.

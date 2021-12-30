@@ -1,6 +1,7 @@
 """Test API."""
 import unittest
 from coloraide import Color, NaN, Piecewise
+from coloraide import util as cutil
 from . import util
 import math
 
@@ -1474,6 +1475,23 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(
             Color2('color(srgb 2 -1 0)').fit().to_string(),
             'rgb(255 0 0)'
+        )
+
+    def test_override_interpolate(self):
+        """Test interpolation override."""
+
+        class Color2(Color):
+            """Color."""
+
+            INTERPOLATE = "din99o"
+
+        self.assertEqual(
+            Color('red').mix('green').to_string(),
+            Color('red').mix('green', space=cutil.DEF_INTERPOLATE).to_string()
+        )
+        self.assertEqual(
+            Color2('red').mix('green').to_string(),
+            Color2('red').mix('green', space='din99o').to_string()
         )
 
     def test_override_delta_e(self):
