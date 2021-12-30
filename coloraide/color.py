@@ -107,6 +107,7 @@ class Color(metaclass=BaseColor):
     FIT_MAP = {}  # type: Dict[str, Type[Fit]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
+    INTERPOLATE = util.DEF_INTERPOLATE
     DELTA_E = util.DEF_DELTA_E
     CHROMATIC_ADAPTATION = 'bradford'
 
@@ -628,7 +629,7 @@ class Color(metaclass=BaseColor):
         self,
         color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
         *,
-        space: str = "lab",
+        space: Optional[str] = None,
         out_space: Optional[str] = None,
         stop: float = 0,
         progress: Optional[Callable[..., float]] = None,
@@ -647,7 +648,7 @@ class Color(metaclass=BaseColor):
         mixing occurs.
         """
 
-        space = space.lower()
+        space = (space if space is not None else self.INTERPOLATE).lower()
         out_space = self.space() if out_space is None else out_space.lower()
 
         # A piecewise object was provided, so treat it as such,
