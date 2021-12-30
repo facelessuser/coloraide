@@ -65,17 +65,24 @@ class Interpolator(metaclass=ABCMeta):
         """Initialize."""
 
     @abstractmethod
-    def get_delta(self) -> Any:
+    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> Any:
         """Get the delta."""
 
     @abstractmethod
     def __call__(self, p: float) -> 'Color':
         """Call the interpolator."""
 
-    def steps(self, steps: int = 2, max_steps: int = 1000, max_delta_e: float = 0) -> List['Color']:
+    def steps(
+        self,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: Optional[str] = None,
+        delta_e_args: Optional[Mapping[str, Any]] = None
+    ) -> List['Color']:
         """Steps."""
 
-        return color_steps(self, steps, max_steps, max_delta_e)
+        return color_steps(self, steps, max_steps, max_delta_e, delta_e, delta_e_args)
 
 
 class InterpolateSingle(Interpolator):
@@ -103,10 +110,14 @@ class InterpolateSingle(Interpolator):
         self.outspace = outspace
         self.premultiplied = premultiplied
 
-    def get_delta(self) -> float:
+    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> float:
         """Get the delta."""
 
-        return self.create(self.space, self.channels1).delta_e(self.create(self.space, self.channels2))
+        return self.create(self.space, self.channels1).delta_e(
+            self.create(self.space, self.channels2),
+            method=method,
+            **delta_e_args
+        )
 
     def __call__(self, p: float) -> 'Color':
         """Run through the coordinates and run the interpolation on them."""
@@ -150,10 +161,10 @@ class InterpolatePiecewise(Interpolator):
         self.stops = stops
         self.interpolators = interpolators
 
-    def get_delta(self) -> Vector:
+    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> Vector:
         """Get the delta total."""
 
-        return [i.get_delta() for i in self.interpolators]
+        return [i.get_delta(method, delta_e_args) for i in self.interpolators]
 
     def __call__(self, p: float) -> 'Color':
         """Interpolate."""
@@ -335,15 +346,21 @@ def color_steps(
     interpolator: Interpolator,
     steps: int = 2,
     max_steps: int = 1000,
-    max_delta_e: float = 0
+    max_delta_e: float = 0,
+    delta_e: Optional[str] = None,
+    delta_e_args: Optional[Mapping[str, Any]] = None
 ) -> List['Color']:
     """Color steps."""
+
+    if delta_e_args is None:
+        delta_e_args = {}
 
     if max_delta_e <= 0:
         actual_steps = steps
     else:
         actual_steps = 0
-        deltas = interpolator.get_delta()
+        deltas = interpolator.get_delta(delta_e, delta_e_args)
+        print(deltas)
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
         # Make a very rough guess of required steps.
@@ -370,7 +387,14 @@ def color_steps(
         for i, entry in enumerate(ret):
             if i == 0:
                 continue
-            m_delta = max(m_delta, cast('Color', entry['color']).delta_e(cast('Color', ret[i - 1]['color'])))
+            m_delta = max(
+                m_delta,
+                cast('Color', entry['color']).delta_e(
+                    cast('Color', ret[i - 1]['color']),
+                    method=delta_e,
+                    **delta_e_args
+                )
+            )
 
         # If we currently have delta over our limit inject more stops.
         # If inserting between every color would push us over the max_steps, halt.
@@ -386,8 +410,8 @@ def color_steps(
                 color = interpolator(p)
                 m_delta = max(
                     m_delta,
-                    color.delta_e(cast('Color', prev['color'])),
-                    color.delta_e(cast('Color', cur['color']))
+                    color.delta_e(cast('Color', prev['color']), method=delta_e, **delta_e_args),
+                    color.delta_e(cast('Color', cur['color']), method=delta_e, **delta_e_args)
                 )
                 ret.insert(i, {'p': p, 'color': color})
                 i += 2
