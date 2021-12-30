@@ -129,7 +129,11 @@ def execute(cmd):
     # Build AST tree
     src = cmd.strip()
     lines = src.split('\n')
-    tree = ast.parse(src)
+    try:
+        tree = ast.parse(src)
+    except Exception:
+        import traceback
+        return '{}'.format(traceback.format_exc()), colors
 
     for node in tree.body:
         result = None
