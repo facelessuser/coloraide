@@ -45,12 +45,6 @@ class OklchChroma(Fit):
 
         space = color.space()
 
-        # If flooring chroma doesn't work, just clip the floored color
-        # because there is no optimal compression.
-        floor = color.clone().set(cls.SPACE_COORDINATE, 0)
-        if not floor.in_gamut(tolerance=0):
-            return floor.clip().coords()
-
         # If we are already below the JND, just clip as we will gain no
         # noticeable difference moving forward.
         clipped = color.clip()

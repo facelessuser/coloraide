@@ -4,6 +4,8 @@
 
 - **NEW**: Expose default interpolation space as a class variable that can be controlled when creating a custom class
   via class inheritance.
+- **FIX**: Remove some incorrect code from the gamut mapping algorithm that would shortcut the mapping to reduce chroma
+  to zero.
 
 ## 0.8.0
 
