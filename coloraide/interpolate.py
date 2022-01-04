@@ -65,7 +65,7 @@ class Interpolator(metaclass=ABCMeta):
         """Initialize."""
 
     @abstractmethod
-    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> Any:
+    def get_delta(self, method: Optional[str]) -> Any:
         """Get the delta."""
 
     @abstractmethod
@@ -77,12 +77,11 @@ class Interpolator(metaclass=ABCMeta):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
-        delta_e: Optional[str] = None,
-        delta_e_args: Optional[Mapping[str, Any]] = None
+        delta_e: Optional[str] = None
     ) -> List['Color']:
         """Steps."""
 
-        return color_steps(self, steps, max_steps, max_delta_e, delta_e, delta_e_args)
+        return color_steps(self, steps, max_steps, max_delta_e, delta_e)
 
 
 class InterpolateSingle(Interpolator):
@@ -110,13 +109,12 @@ class InterpolateSingle(Interpolator):
         self.outspace = outspace
         self.premultiplied = premultiplied
 
-    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> float:
+    def get_delta(self, method: Optional[str]) -> float:
         """Get the delta."""
 
         return self.create(self.space, self.channels1).delta_e(
             self.create(self.space, self.channels2),
-            method=method,
-            **delta_e_args
+            method=method
         )
 
     def __call__(self, p: float) -> 'Color':
@@ -161,10 +159,10 @@ class InterpolatePiecewise(Interpolator):
         self.stops = stops
         self.interpolators = interpolators
 
-    def get_delta(self, method: Optional[str], delta_e_args: Mapping[str, Any]) -> Vector:
+    def get_delta(self, method: Optional[str]) -> Vector:
         """Get the delta total."""
 
-        return [i.get_delta(method, delta_e_args) for i in self.interpolators]
+        return [i.get_delta(method) for i in self.interpolators]
 
     def __call__(self, p: float) -> 'Color':
         """Interpolate."""
@@ -347,19 +345,15 @@ def color_steps(
     steps: int = 2,
     max_steps: int = 1000,
     max_delta_e: float = 0,
-    delta_e: Optional[str] = None,
-    delta_e_args: Optional[Mapping[str, Any]] = None
+    delta_e: Optional[str] = None
 ) -> List['Color']:
     """Color steps."""
-
-    if delta_e_args is None:
-        delta_e_args = {}
 
     if max_delta_e <= 0:
         actual_steps = steps
     else:
         actual_steps = 0
-        deltas = interpolator.get_delta(delta_e, delta_e_args)
+        deltas = interpolator.get_delta(delta_e)
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
         # Make a very rough guess of required steps.
@@ -390,8 +384,7 @@ def color_steps(
                 m_delta,
                 cast('Color', entry['color']).delta_e(
                     cast('Color', ret[i - 1]['color']),
-                    method=delta_e,
-                    **delta_e_args
+                    method=delta_e
                 )
             )
 
@@ -409,8 +402,8 @@ def color_steps(
                 color = interpolator(p)
                 m_delta = max(
                     m_delta,
-                    color.delta_e(cast('Color', prev['color']), method=delta_e, **delta_e_args),
-                    color.delta_e(cast('Color', cur['color']), method=delta_e, **delta_e_args)
+                    color.delta_e(cast('Color', prev['color']), method=delta_e),
+                    color.delta_e(cast('Color', cur['color']), method=delta_e)
                 )
                 ret.insert(i, {'p': p, 'color': color})
                 i += 2

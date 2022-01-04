@@ -261,19 +261,31 @@ Color("display-p3", [0, 1, 0]).steps(
 `steps` uses the color class's default ∆E method to calculate max ∆E, the current default ∆E being ∆E^\*^~ab~. While
 using something like ∆E^\*^~00~ is far more accurate, it is a much more expensive operation. If desired, the class's
 default ∆E can be changed via subclassing the color object and and changing `DELTA_E` class variable or by manually
-specifying the method via the `delta_e` parameter (optionally `delta_e_args` can be used to set ∆E specific parameters
-if any are available).
+specifying the method via the `delta_e` parameter.
 
-```playground
-Color("display-p3", [0, 1, 0]).steps(
-    "red",
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10,
-    delta_e="2000",
-    steps=50
-)
-```
+
+=== "∆E^\*^~ab~."
+    ```playground
+    Color("display-p3", [0, 1, 0]).steps(
+        "red",
+        space="lch",
+        out_space="srgb",
+        max_delta_e=10,
+        delta_e="76"
+    )
+    ```
+
+=== "∆E^\*^~00~"
+    ```playground
+    Color("display-p3", [0, 1, 0]).steps(
+        "red",
+        space="lch",
+        out_space="srgb",
+        max_delta_e=10,
+        delta_e="2000",
+        steps=50
+    )
+    ```
 
 ## Piecewise Interpolation
 
