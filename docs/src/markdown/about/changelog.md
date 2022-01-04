@@ -4,9 +4,9 @@
 
 - **NEW**: Expose default interpolation space as a class variable that can be controlled when creating a custom class
   via class inheritance.
-- **NEW**: Colors can now directly configure the ∆E method that is used when interpolating color steps and using
-  `max_delta_e` via the new `delta_e` argument. If `delta_e` parameter is omitted, the color object's default ∆E method
-  will be used.
+- **NEW**: Colors can now directly specify the ∆E method that is used when interpolating color steps and using
+  `max_delta_e` via the new `delta_e` argument. If the `delta_e` parameter is omitted, the color object's default ∆E
+  method will be used.
 - **FIX**: Remove some incorrect code from the gamut mapping algorithm that would shortcut the mapping to reduce chroma
   to zero.
 
