@@ -376,11 +376,7 @@ class Color(metaclass=BaseColor):
         filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> 'Color':
-        """
-        Create new color object.
-
-        TODO: maybe allow `currentcolor` here? It would basically clone the current object.
-        """
+        """Create new color object."""
 
         return type(self)(color, data, alpha, filters=filters, **kwargs)
 
@@ -589,6 +585,7 @@ class Color(metaclass=BaseColor):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
+        delta_e: Optional[str] = None,
         **interpolate_args: Any
     ) -> List['Color']:
         """
@@ -603,7 +600,7 @@ class Color(metaclass=BaseColor):
         Default delta E method used is delta E 76.
         """
 
-        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e)
+        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
 
     def mix(
         self,

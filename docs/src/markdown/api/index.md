@@ -637,6 +637,7 @@ def steps(
     steps=2,
     max_steps=1000,
     max_delta_e=0,
+    delta_e=None,
     **interpolate_args
 ):
 ```
@@ -646,7 +647,8 @@ Description
     Creates an `interpolate` function and iterates through it with user defined step parameters to produce discrete
     color steps. Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e`
     is provided, the distance between each stop will be cut in half until there are no colors with a distance greater
-    than the specified `max_delta_e`.
+    than the specified `max_delta_e`. The default ∆E method is used by default, but it can be changed with the `delta_e`
+    parameter.
 
     If more than one color is provided, the steps will be returned from the interpolations between all the provided
     colors.
@@ -661,6 +663,7 @@ Parameters
     `steps`                    | `#!py3 2`                          | Minimum number of steps.
     `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
     `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `delta_e`                  | `#!py3 None`                       | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
     `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return
