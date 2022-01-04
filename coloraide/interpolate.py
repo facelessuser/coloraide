@@ -360,7 +360,6 @@ def color_steps(
     else:
         actual_steps = 0
         deltas = interpolator.get_delta(delta_e, delta_e_args)
-        print(deltas)
         if not isinstance(deltas, Sequence):
             deltas = [deltas]
         # Make a very rough guess of required steps.

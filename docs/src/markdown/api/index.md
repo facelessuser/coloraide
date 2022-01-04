@@ -637,6 +637,8 @@ def steps(
     steps=2,
     max_steps=1000,
     max_delta_e=0,
+    delta_e=None,
+    delta_e_args=None,
     **interpolate_args
 ):
 ```
@@ -661,6 +663,8 @@ Parameters
     `steps`                    | `#!py3 2`                          | Minimum number of steps.
     `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
     `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `delta_e`                  | `#!py3 None`                       | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `delta_e_args`             | `#!py3 None`                       | A dictionary of parameter names and values to pass to the current ∆E method being used.
     `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return

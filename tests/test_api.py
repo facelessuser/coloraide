@@ -1258,6 +1258,39 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
                 continue
             self.assertTrue(color.delta_e(colors[index - 1]) <= 3)
 
+    def test_steps_custom_delta_e(self):
+        """Test a custom delta E input."""
+
+        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=10, delta_e='99o')
+        for index, color in enumerate(colors, 0):
+            if not index:
+                continue
+            self.assertTrue(color.delta_e(colors[index - 1]) <= 10)
+
+        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=3, delta_e='99o')
+        for index, color in enumerate(colors, 0):
+            if not index:
+                continue
+            self.assertTrue(color.delta_e(colors[index - 1]) <= 3)
+
+    def test_steps_custom_delta_compare(self):
+        """Test a custom delta E input."""
+
+        colors1 = len(Color('orange').steps('red', space="srgb", max_delta_e=0.2, delta_e='76'))
+        colors2 = len(Color('orange').steps('red', space="srgb", max_delta_e=0.2, delta_e='ok'))
+
+        self.assertNotEqual(colors1, colors2)
+
+    def test_steps_custom_delta_args(self):
+        """Test a custom delta E input."""
+
+        colors1 = len(Color('orange').steps('red', space="srgb", max_delta_e=0.2, delta_e='ok'))
+        colors2 = len(
+            Color('orange').steps('red', space="srgb", max_delta_e=20, delta_e='ok', delta_e_args={'scalar': 100})
+        )
+
+        self.assertEqual(colors1, colors2)
+
     def test_steps_empty_list(self):
         """Test steps with empty list."""
 
