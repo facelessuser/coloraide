@@ -481,8 +481,9 @@ def color_lerp(
     """Color interpolation."""
 
     # Convert to the color space and ensure the color fits inside
-    color1 = color1.convert(space, fit=True)
-    color2 = color1._handle_color_input(color2).convert(space, fit=True)
+    fit = not color1.CS_MAP[space].EXTENDED_RANGE
+    color1 = color1.convert(space, fit=fit)
+    color2 = color1._handle_color_input(color2).convert(space, fit=fit)
 
     # Adjust hues if we have two valid hues
     if isinstance(color1._space, Cylindrical):
