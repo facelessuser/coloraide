@@ -121,7 +121,7 @@ markdown_extensions:
 extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
-  - https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js
+  - https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 
 extra:
