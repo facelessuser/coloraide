@@ -1136,6 +1136,16 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color('rgb(191.25 0 63.75 / 0.5)')
         )
 
+    def test_interpolate_premultiplied_alpha_none(self):
+        """Test premultiplied alpha when alphas are none."""
+
+        self.assertColorEqual(
+            Color('color(srgb 0 0 0 / none)').interpolate(
+                'color(srgb 0 1 0 / none)', space="srgb", premultiplied=True
+            )(0.5),
+            Color('rgb(0 0 0 / 0)')
+        )
+
     def test_interpolate_premultiplied_no_alpha(self):
         """Test premultiplied alpha."""
 
