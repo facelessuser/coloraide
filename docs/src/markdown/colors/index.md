@@ -1276,10 +1276,6 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
         color(--oklab l a b / a)  // Color function
         ```
 
-        !!! tip "CSS adding Oklab":
-            It seems CSS will be adding Oklab, but we've held off on exposing the official CSS syntax to see there will
-            be any changes in regards to scaling channels, etc.
-
         When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
         space name is always used:
 
@@ -1336,8 +1332,8 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
         Channels | Aliases
         -------- | -------
         `l`      | `lightness`
-        `u`      |
-        `v`      |
+        `c`      | `chroma`
+        `h`      | `hue`
 
     **Inputs**
     : 
@@ -1345,26 +1341,15 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
         Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
         `#!css-color color()` function format using the custom name `#!css-color --oklch`:
 
-        !!! tip "CSS adding Oklch":
-            It seems CSS will be adding Oklab, but we've held off on exposing the official CSS syntax to see there will
-            be any changes in regards to scaling channels, etc.
-
         ```css-color
         oklch(l c h / a)          // Oklch function
         color(--oklch l c h / a)  // Color function
         ```
 
-        The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
-        form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
-
-        ```py
-        Color("oklch", [0, 0, 0], 1)
-        ```
-
     **Output:**
     : 
-        The string representation of the color object and the default string output use the
-        `#!css-color color(--oklch l c h / a)` form.
+        The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
+        form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
 
         ```playground
         Color("oklch", [0, 0, 0], 1)
