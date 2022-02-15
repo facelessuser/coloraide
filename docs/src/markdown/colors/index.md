@@ -172,7 +172,7 @@ Display P3 is a combination of the DCI-P3 color gamut with the D65 white point t
 curve. It originated from the DCI-P3 color gamut's implementation in digital cinema projectors, as this standard offers
 more vibrant greens and reds than the traditional [sRGB](#srgb) color gamut.
 
-_[Learn about Display P3](https://en.wikipedia.org/wiki/DCI-P3#Display_P3)_
+_[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
 </div>
 
 ??? abstract "ColorAide Details"

@@ -1,6 +1,6 @@
 """Fit by compressing chroma in Oklch."""
 from ..gamut import Fit
-from ..util import MutableVector
+from ..util import MutableVector, NaN
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -17,61 +17,61 @@ class OklchChroma(Fit):
     DE = "ok"
     SPACE = "oklch"
     SPACE_COORDINATE = "{}.chroma".format(SPACE)
+    MIN_LIGHTNESS = 0
+    MAX_LIGHTNESS = 1
 
     @classmethod
     def fit(cls, color: 'Color', **kwargs: Any) -> MutableVector:
         """
         Gamut mapping via Oklch chroma.
 
-        Algorithm originally came from https://colorjs.io/docs/gamut-mapping.html.
-        Some things have been optimized and fixed though to better perform as intended.
+        Algorithm based on https://www.w3.org/TR/css-color-4/#binsearch.
 
-        Algorithm is not also defined in the CSS specification: https://drafts.csswg.org/css-color/#binsearch.
-
-        The idea is to hold hue and lightness constant and decrease chroma until
-        color comes under gamut.
-
-        We'll use a binary search and at after each stage, we will clip the color
-        and compare the distance of the two colors (clipped and current color via binary search).
-        If the distance is less than the `JND`, we will return the color.
-
-        The basic idea is preserve lightness and hue as much as possible and find the closest color that
-        is in gamut.
-
-        ---
-        Original Authors: Lea Verou, Chris Lilley
-        License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
+        One difference is that we omit the step that clips the color and compares the
+        clipped color to the chroma compressed color. Instead, we allow the low and high
+        chroma bounds to converge. While diffing the clipped color with the chroma compressed
+        color is marginally faster, occasionally you will get worse mappings, not hugely worse,
+        but at times noticeable to decent eyes. We currently eat the minimal performance decrease
+        to provide better mappings.
         """
 
         space = color.space()
-
-        # If we are already below the JND, just clip as we will gain no
-        # noticeable difference moving forward.
-        clipped = color.clip()
-        if color.delta_e(clipped, method=cls.DE) < cls.LIMIT:
-            return clipped.coords()
-
-        # Convert to CIELCH and set our boundaries
         mapcolor = color.convert(cls.SPACE)
+        lightness = mapcolor.lightness
+
+        # If we are really close (in gamut with tolerance), skip gamut mapping and just clip
+        if mapcolor.in_gamut(space):
+            return color.clip(in_place=True).coords()
+
+        # Return white or black if lightness is out of range
+        if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
+            mapcolor.chroma = 0
+            mapcolor.hue = NaN
+            return color.update(mapcolor).clip(in_place=True).coords()
+
+        # Set initial chroma boundaries
         low = 0.0
         high = mapcolor.chroma
 
         # Adjust chroma (using binary search).
         # This helps preserve the other attributes of the color.
-        # Each time we compare the compressed color to it's clipped form
-        # to see how close we are. A delta less than 2 is our target.
+        # Compress chroma until we are are right on the edge of being in gamut.
         while (high - low) > cls.EPSILON:
-            delta = mapcolor.delta_e(
-                mapcolor.clip(space),
-                method=cls.DE
-            )
-
-            if (delta - cls.LIMIT) < cls.EPSILON:
+            if mapcolor.in_gamut(space, tolerance=0):
                 low = mapcolor.chroma
             else:
+                # CSS level 4 suggests comparing the chroma compressed color to the
+                # clipped color here with delta E `ok` and kicking out if below the JND,
+                # but the gained performance is small and the mapped color, in some
+                # cases, can be a bit more off, at times even noticeable.
+                # ```
+                # color.update(mapcolor).clip(in_place=True)
+                # if mapcolor.delta_e(color, method=cls.DE) < cls.LIMIT:
+                #     break
+                # ```
                 high = mapcolor.chroma
 
             mapcolor.chroma = (high + low) * 0.5
 
         # Update and clip off noise
-        return color.update(mapcolor).clip(space, in_place=True).coords()
+        return color.update(mapcolor).clip(in_place=True).coords()

@@ -1502,7 +1502,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').fit().to_string(),
-            'rgb(255 153.82 169.83)'
+            'rgb(255 161.96 173.91)'
         )
 
         self.assertEqual(

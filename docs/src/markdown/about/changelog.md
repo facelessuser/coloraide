@@ -2,6 +2,7 @@
 
 ## 0.9.0
 
+- **NEW**: Improved, faster gamut mapping algorithm. Aligns closer to the suggested CSS level 4 SDR gamut mapping. 
 - **NEW**: Expose default interpolation space as a class variable that can be controlled when creating a custom class
   via class inheritance.
 - **NEW**: Colors can now directly specify the ∆E method that is used when interpolating color steps and using
