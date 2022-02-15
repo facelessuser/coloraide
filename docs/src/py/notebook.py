@@ -22,6 +22,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 HtmlFormatter = find_formatter_class('html')
 
+WEBSPACE = "srgb"
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
 
 RE_COLOR_START = re.compile(
@@ -229,8 +230,8 @@ def _color_command_console(colors):
             style = "--swatch-stops: "
             stops = []
             for color in item:
-                color.fit("srgb", in_place=True)
-                stops.append(color.convert("srgb").to_string())
+                color.fit(WEBSPACE, in_place=True)
+                stops.append(color.convert(WEBSPACE).to_string())
             if not stops:
                 stops.extend(['transparent'] * 2)
             if len(stops) == 1:
@@ -243,10 +244,10 @@ def _color_command_console(colors):
             bar = True
             base_classes = "swatch"
             for color in item:
-                if not color.color.in_gamut('srgb'):
+                if not color.color.in_gamut(WEBSPACE):
                     base_classes += " out-of-gamut"
-                color.color.fit('srgb', in_place=True)
-                srgb = color.color.convert('srgb')
+                color.color.fit(WEBSPACE, in_place=True)
+                srgb = color.color.convert(WEBSPACE)
                 value1 = srgb.to_string(alpha=False)
                 value2 = srgb.to_string()
                 style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
@@ -331,21 +332,21 @@ def color_formatter(src="", language="", class_name=None, md=""):
             color = Color(result.strip())
         el = Etree.Element('span')
         stops = []
-        if not color.in_gamut("srgb"):
-            color.fit("srgb", in_place=True)
+        if not color.in_gamut(WEBSPACE):
+            color.fit(WEBSPACE, in_place=True)
             attributes = {'class': "swatch out-of-gamut", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
             if color.alpha < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+                stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
         else:
             attributes = {'class': "swatch", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert("srgb").to_string(hex=True, alpha=False))
+            stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
             if color.alpha < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert("srgb").to_string(hex=True) + ' 50%')
+                stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
 
         if not stops:
             stops.extend(['transparent'] * 2)
