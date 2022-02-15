@@ -136,7 +136,7 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(--hwb 20 0% -55%)').to_string(),
-            'hwb(14.271 82.776% 0%)'
+            'hwb(14.248 86.61% 0.00015%)'
         )
 
         self.assertEqual(
