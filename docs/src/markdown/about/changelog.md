@@ -39,6 +39,7 @@
     Color('color(xyz-d65 0 0 0)')  # Okay
     ```
 
+- **NEW**: Add the official CSS syntax `oklab()` and `oklch()` for the Oklab and Oklch color spaces respectively.
 - **NEW**: Custom fit plugin's `fit` method now allows additional `kwargs` in its signature. The API will accept
   `kwargs` allowing a custom fit plugin to have configurable parameters. None of the current built-in plugins provide
   additional parameters, but this is provided in case it is found useful in the future.

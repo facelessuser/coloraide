@@ -1272,6 +1272,7 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
         `#!css-color color()` function format using the custom name `#!css-color --oklab`:
 
         ```css-color
+        oklab(l a b / a)          // Oklab function
         color(--oklab l a b / a)  // Color function
         ```
 
@@ -1288,8 +1289,8 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
     **Output:**
     : 
-        The string representation of the color object and the default string output use the
-        `#!css-color color(--oklab l a b / a)` form.
+        The string representation of the color object will always default to the `#!css-color color(--oklab l a b / a)`
+        form, but the default string output will be the `#!css-color oklab(l a b / a)` form.
 
         ```playground
         Color("oklab", [0, 0, 0], 1)
@@ -1349,11 +1350,12 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
             be any changes in regards to scaling channels, etc.
 
         ```css-color
+        oklch(l c h / a)          // Oklch function
         color(--oklch l c h / a)  // Color function
         ```
 
-        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
-        space name is always used:
+        The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
+        form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
 
         ```py
         Color("oklch", [0, 0, 0], 1)
