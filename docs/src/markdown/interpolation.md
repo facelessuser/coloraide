@@ -6,11 +6,14 @@ The `interpolate` method allows a user to create an interpolation function. This
 gradient colors, or whatever is needed. This function is used to drive all the features under the interpolation
 umbrella.
 
-A returned interpolation function accepts an input between 0 - 1, if values are provided out of this range, the color
-will be extrapolated and the results may be surprising.
+A returned interpolation function accepts an input between 0 - 1, if values are provided outside of this range, the
+colors will be extrapolated and the results may be surprising.
 
-In this example, we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)` (color
-previews are fit to the sRGB gamut). We then step through values of `0.1`, `0.2`, `0.3`, etc.
+By default, colors are interpolated in the perceptually uniform Oklab color space, though any supported color space can
+be used instead. This also applies to all methods that use interpolation, such as [steps](#steps), [mix](#mixing), etc.
+
+As an example, below we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)`. We then
+step through values of `0.1`, `0.2`, `0.3`, etc.
 
 ```playground
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
@@ -172,9 +175,9 @@ As an example, if we had the color `#!color red` and the color
 Color("red").mix(Color("blue"))
 ```
 
-The `mix` method will mix the two colors in the CIELAB color space by default. If needed, a different color space can be
-specified with the `space` parameter. Notice below that this creates a different color. The results of mixing in a
-different color space may be more desirable as color mixing may be more natural.
+As with all interpolation based functions, if needed, a different color space can be specified with the `space`
+parameter. Notice below that this creates a different color. The results of mixing in a different color space may be
+more desirable as color mixing may be more natural.
 
 ```playground
 Color("red").mix(Color("blue"), space="lch")

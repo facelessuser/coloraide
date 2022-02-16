@@ -704,9 +704,9 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         """Test interpolation via mixing."""
 
         self.assertColorEqual(Color('red').mix('blue', 1), Color("rgb(0 0 255)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("rgb(144.85 -24.864 194.36)"))
-        self.assertColorEqual(Color('red').mix('blue'), Color("rgb(192.99 -29.503 136.17)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(226.89 -24.304 79.188)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("rgb(80.686 71.104 209.56)"))
+        self.assertColorEqual(Color('red').mix('blue'), Color("rgb(140.36 83.033 162.31)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(197.88 73.02 108.95)"))
         self.assertColorEqual(Color('red').mix('blue', 0.0), Color("rgb(255 0 0)"))
 
     def test_mix_dict(self):
@@ -1038,7 +1038,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('red').interpolate(Color('blue').set('alpha', 0), progress={'alpha': lambda t: t ** 3})(0.5),
-            Color('rgb(192.99 -29.503 136.17 / 0.875)')
+            Color('rgb(140.36 83.033 162.31 / 0.875)')
         )
 
     def test_interpolate_channel_all(self):
@@ -1091,8 +1091,8 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(func(0), Color('white'))
         self.assertColorEqual(func(0.5), Color('red'))
         self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(245.77 273.68 281.72)'))
-        self.assertColorEqual(func(1.1), Color('rgb(-31.539 -12.726 -3.1313)'))
+        self.assertColorEqual(func(-0.1), Color('rgb(248.66 273.11 277.36)'))
+        self.assertColorEqual(func(1.1), Color('rgb(-3.2946 0 0)'))
 
     def test_interpolate_out_space(self):
         """Test interpolation."""
