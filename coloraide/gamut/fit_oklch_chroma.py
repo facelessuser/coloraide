@@ -39,10 +39,6 @@ class OklchChroma(Fit):
         mapcolor = color.convert(cls.SPACE)
         lightness = mapcolor.lightness
 
-        # If we are really close (in gamut with tolerance), skip gamut mapping and just clip
-        if mapcolor.in_gamut(space):
-            return color.clip(in_place=True).coords()
-
         # Return white or black if lightness is out of range
         if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
             mapcolor.chroma = 0
