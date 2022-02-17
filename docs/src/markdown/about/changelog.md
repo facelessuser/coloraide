@@ -2,14 +2,21 @@
 
 ## 0.9.0
 
+!!! warning "Breaking Change"
+    Custom gamut mapping plugins no longer return coordinates and require the method to update the passed in color.
+
 - **NEW**: Improved, faster gamut mapping algorithm.
-- **NEW**: FIT plugins (gamut mapping) no longer return coordinates but should modify the color passed in. 
+- **NEW**: FIT plugins (gamut mapping) no longer return coordinates but should modify the color passed in.
 - **NEW**: Expose default interpolation space as a class variable that can be controlled when creating a custom class
   via class inheritance.
 - **NEW**: Colors can now directly specify the ∆E method that is used when interpolating color steps and using
   `max_delta_e` via the new `delta_e` argument. If the `delta_e` parameter is omitted, the color object's default ∆E
   method will be used.
 - **NEW**: Oklab is now the default interpolation color space.
+- **NEW**: Interpolation will now avoid fitting colors that are out of gamut unless the color space cannot represent
+  out of gamut colors. Currently, all of the RGB colors (`srgb`, `display-p3`, etc.) all support extended ranges, but
+  the HSL, HWB, and HSV color models for `srgb` (including spaces such as `okhsl` and `okhsv`) do not support extended
+  ranges and will still be gamut mapped.
 - **FIX**: Remove some incorrect code from the gamut mapping algorithm that would shortcut the mapping to reduce chroma
   to zero.
 

@@ -59,6 +59,7 @@ class SRGB(Space):
     }
     WHITE = "D65"
 
+    EXTENDED_RANGE = True
     BOUNDS = (
         GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
         GamutBound(0.0, 1.0, FLG_OPT_PERCENT),

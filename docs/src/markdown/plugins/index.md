@@ -141,6 +141,12 @@ class XYZD65(Space):
     #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
     #   space, the values can be greatly out of specification (looking at you HSL).
     GAMUT_CHECK = None
+    # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
+    # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
+    # interpolated, the colors will usually be gamut mapped, but if the interpolation space happens to support extended
+    # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
+    # space.
+    EXTENDED_RANGE = False
 
     ############################
     # Getters and setters for non-alpha properties
