@@ -1,6 +1,5 @@
 """Gamut handling."""
 from .. import util
-from ..util import MutableVector
 from ..spaces import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional, Any
@@ -9,7 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def clip_channels(color: 'Color') -> MutableVector:
+def clip_channels(color: 'Color') -> None:
     """Clip channels."""
 
     channels = util.no_nans(color.coords())
@@ -34,7 +33,7 @@ def clip_channels(color: 'Color') -> MutableVector:
 
         # Fit value in bounds.
         fit.append(util.clamp(value, a, b))
-    return fit
+    color.update(color.space(), fit, color.alpha)
 
 
 def verify(color: 'Color', tolerance: float) -> bool:
@@ -68,5 +67,5 @@ class Fit(ABCMeta):
 
     @classmethod
     @abstractmethod
-    def fit(cls, color: 'Color', **kwargs: Any) -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""

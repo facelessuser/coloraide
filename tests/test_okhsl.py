@@ -35,11 +35,11 @@ class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(--okhsl 20 100% 75% / 100%)"
         okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 0.99941 0.75)", okhsl.to_string())
+        self.assertEqual("color(--okhsl 20 1 0.75)", okhsl.to_string())
 
         color = "color(--okhsl 20 1 0.75 / 20%)"
         okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 0.99941 0.75 / 0.2)", okhsl.to_string())
+        self.assertEqual("color(--okhsl 20 1 0.75 / 0.2)", okhsl.to_string())
 
     def test_no_alpha(self):
         """Test no alpha."""
@@ -48,7 +48,7 @@ class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(--okhsl 20 100% 75% / 0.2)"
         okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 0.99941 0.75)", okhsl.to_string(**args))
+        self.assertEqual("color(--okhsl 20 1 0.75)", okhsl.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
@@ -57,7 +57,7 @@ class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(--okhsl 20 100% 75% / 1)"
         okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 0.99941 0.75 / 1)", okhsl.to_string(**args))
+        self.assertEqual("color(--okhsl 20 1 0.75 / 1)", okhsl.to_string(**args))
 
     def test_precision(self):
         """Test precision."""

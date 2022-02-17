@@ -135,18 +135,11 @@ Method         | Description
 `lch-chroma`   | This is like `oklch-chroma` but is done with CIELCH. This is what ColorAide originally used before `oklch-chroma`. Hue preservation is not as good. This method may be removed at some future point as it does not hold the hue as well as Oklch.
 
 !!! note "CSS Level 4 Gamut Mapping"
-    `oklch-chroma` is the same algorithm as specified in the
-    [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) except that we do not perform the JND
-    check using ∆E~ok~.
-
-    This specific step is meant to shortcut out of the binary search algorithm when a given out of
-    gamut, chroma compressed color is within "just noticeable distance" from the clipped form of the same color. While
-    this step makes the algorithm slightly faster, it comes at the cost of some colors not quite mapping as well.
-
-    We found the actual performance increase to not be that significant and the decrease in mapping accuracy to some
-    times be visibly noticeable. For that reason, we do not currently perform this step and opt for more accuracy over
-    the very slight performance increase.
-
+    We do currently use the algorithm as defined in the [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
+    This is because the current algorithm, as defined, has some issues that create gradients that are not smooth.
+    We currently feel the algorithm we are using does a better job as it creates smooth gradients without odd
+    discontinuities. If/when the CSS Level 4 specification is updated to address such concerns, we may align more
+    closely.
 
 In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but when we
 convert the color to sRGB, we find that the color is out of gamut. So, using the `fit` method, we can actually transform

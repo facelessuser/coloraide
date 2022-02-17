@@ -1,6 +1,6 @@
 """Fit by compressing chroma in Oklch."""
-from ..gamut import Fit
-from ..util import MutableVector, NaN
+from ..gamut import Fit, clip_channels
+from ..util import NaN
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -21,53 +21,50 @@ class OklchChroma(Fit):
     MAX_LIGHTNESS = 1
 
     @classmethod
-    def fit(cls, color: 'Color', **kwargs: Any) -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs: Any) -> None:
         """
-        Gamut mapping via Oklch chroma.
+        Algorithm originally came from https://colorjs.io/docs/gamut-mapping.html.
 
-        Algorithm based on https://www.w3.org/TR/css-color-4/#binsearch.
+        Some things have been optimized and fixed though to better perform as intended.
 
-        One difference is that we omit the step that clips the color and compares the
-        clipped color to the chroma compressed color. Instead, we allow the low and high
-        chroma bounds to converge. While diffing the clipped color with the chroma compressed
-        color is marginally faster, occasionally you will get worse mappings, not hugely worse,
-        but at times noticeable to decent eyes. We currently eat the minimal performance decrease
-        to provide better mappings.
+        Algorithm basically uses a combination of chroma compression which helps to keep hue constant
+        and color distancing to clip the color with minimal changes to other channels.
+
+        We do not use the algorithm as defined in the CSS specification: https://drafts.csswg.org/css-color/#binsearch.
+        This is because the current algorithm, as defined, has some issues that create gradients that are not smooth.
+
+        ---
+        Original Authors: Lea Verou, Chris Lilley
+        License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json).
         """
 
-        space = color.space()
+        # Convert to CIELCH and set our boundaries
         mapcolor = color.convert(cls.SPACE)
-        lightness = mapcolor.lightness
 
         # Return white or black if lightness is out of range
+        lightness = mapcolor.lightness
         if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
             mapcolor.chroma = 0
             mapcolor.hue = NaN
-            return color.update(mapcolor).clip(in_place=True).coords()
+            clip_channels(color.update(mapcolor))
+            return
 
-        # Set initial chroma boundaries
         low = 0.0
         high = mapcolor.chroma
+        clip_channels(color.update(mapcolor))
 
-        # Adjust chroma (using binary search).
-        # This helps preserve the other attributes of the color.
-        # Compress chroma until we are are right on the edge of being in gamut.
-        while (high - low) > cls.EPSILON:
-            if mapcolor.in_gamut(space, tolerance=0):
-                low = mapcolor.chroma
-            else:
-                # CSS level 4 suggests comparing the chroma compressed color to the
-                # clipped color here with delta E `ok` and kicking out if below the JND,
-                # but the gained performance is small and the mapped color, in some
-                # cases, can be a bit more off, at times even noticeable.
-                # ```
-                # color.update(mapcolor).clip(in_place=True)
-                # if mapcolor.delta_e(color, method=cls.DE) < cls.LIMIT:
-                #     break
-                # ```
-                high = mapcolor.chroma
+        # If we are really close, skip gamut mapping and return the clipped value.
+        if mapcolor.delta_e(color, method=cls.DE) >= cls.LIMIT:
+            # Adjust chroma (using binary search).
+            # This helps preserve the other attributes of the color.
+            # Each time we compare the compressed color to it's clipped form
+            # to see how close we are. A delta less than JND is our lower bound
+            # and a value higher our upper. Continue until bounds converge.
+            while (high - low) > cls.EPSILON:
+                if mapcolor.delta_e(color, method=cls.DE) < cls.LIMIT:
+                    low = mapcolor.chroma
+                else:
+                    high = mapcolor.chroma
 
-            mapcolor.chroma = (high + low) * 0.5
-
-        # Update and clip off noise
-        return color.update(mapcolor).clip(in_place=True).coords()
+                mapcolor.chroma = (high + low) * 0.5
+                clip_channels(color.update(mapcolor))

@@ -66,7 +66,7 @@ class TestProPhotoRGBInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(prophoto-rgb 2 -1 0)').to_string(),
-            'color(prophoto-rgb 1 0.42558 0.57017)'
+            'color(prophoto-rgb 1 0.38166 0.5562)'
         )
 
         self.assertEqual(
