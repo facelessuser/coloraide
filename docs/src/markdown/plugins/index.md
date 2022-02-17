@@ -52,12 +52,12 @@ class Fit(ABCMeta):
 
     @classmethod
     @abstractmethod
-    def fit(cls, color: 'Color', **kwargs) -> MutableVector:
+    def fit(cls, color: 'Color', **kwargs) -> None:
         """Get coordinates of the new gamut mapped color."""
 ```
 
-The plugin should provide a unique `NAME` and the fitting/mapping logic under `#!py3 fit()`. The return should be a list
-of coordinates for the provided color object's space.
+The plugin should provide a unique `NAME` and the fitting/mapping logic under `#!py3 fit()`. The method does not return
+anything and should modify the `color` directly to be in gamut.
 
 ## Color Space
 

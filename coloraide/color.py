@@ -493,7 +493,7 @@ class Color(metaclass=BaseColor):
                 name = c._space.hue_name()
                 c.set(name, util.constrain_hue(c.get(name)))
         else:
-            c._space._coords = gamut.clip_channels(c)
+            gamut.clip_channels(c)
         c.normalize()
 
         # Adjust "this" color
@@ -539,7 +539,7 @@ class Color(metaclass=BaseColor):
                 c.set(name, util.constrain_hue(c.get(name)))
         else:
             # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
-            c._space._coords = func(c, **kwargs)
+            func(c, **kwargs)
         c.normalize()
 
         # Adjust "this" color
