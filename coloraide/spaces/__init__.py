@@ -342,14 +342,9 @@ class Space(
 
             # Parse color channels
             channels = []
-            flags = FLG_PERCENT | FLG_OPT_PERCENT
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < num_channels:
-                    bounds = cls.BOUNDS[i]
-                    # Not sure how to handle angles yet,
-                    # so they will be treated with the default value of 1
-                    scale = bounds.upper if bounds.flags & flags else 1
-                    channels.append(parse.norm_color_channel(c.lower(), scale))
+                    channels.append(parse.norm_color_channel(c.lower(), cls.BOUNDS[i].upper))
 
             # Apply null adjustments (null hues) if applicable
             return (channels, alpha), m.end(0)
