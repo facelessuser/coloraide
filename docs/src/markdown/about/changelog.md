@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- **FIX**: Fix an issue where when attempting to generate steps some ∆E distance apart, the maximum step range was not
+  respected and could result in large hangs.
+
 ## 0.9.0
 
 !!! warning "Breaking Change"
