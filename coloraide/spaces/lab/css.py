@@ -19,7 +19,7 @@ class Lab(base.Lab):
             \blab\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))?
+                (?:{percent}|{float})(?:{space}(?:{percent}|{float})){{2}}(?:{slash}(?:{percent}|{float}))?
             )
             \s*\)
         )
@@ -72,10 +72,8 @@ class Lab(base.Lab):
     def translate_channel(cls, channel: int, value: str) -> float:
         """Translate channel string."""
 
-        if channel == 0:
-            return parse.norm_percent_channel(value)
-        elif channel in (1, 2):
-            return parse.norm_float(value)
+        if channel in (0, 1, 2):
+            return parse.norm_color_channel(value, cls.BOUNDS[channel].upper)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
         else:  # pragma: no cover

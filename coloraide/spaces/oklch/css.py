@@ -18,7 +18,7 @@ class Oklch(base.Oklch):
         \boklch\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -70,10 +70,8 @@ class Oklch(base.Oklch):
     def translate_channel(cls, channel: int, value: str) -> float:
         """Translate channel string."""
 
-        if channel == 0:
-            return parse.norm_percent_channel(value) / 100
-        elif channel == 1:
-            return parse.norm_float(value)
+        if channel in (0, 1):
+            return parse.norm_color_channel(value, cls.BOUNDS[channel].upper)
         elif channel == 2:
             return parse.norm_angle_channel(value)
         elif channel == -1:

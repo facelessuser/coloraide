@@ -73,7 +73,7 @@ class HWB(base.HWB):
         if channel == 0:
             return parse.norm_angle_channel(value)
         elif channel in (1, 2):
-            return parse.norm_percent_channel(value, True)
+            return parse.norm_percent_channel(value, cls.BOUNDS[channel].upper)
         elif channel == -1:
             return parse.norm_alpha_channel(value)
         else:  # pragma: no cover

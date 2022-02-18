@@ -1,5 +1,5 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, FLG_OPT_PERCENT, Labish
 from ... import util
 import re
 from ...util import Vector, MutableVector
@@ -75,8 +75,8 @@ class Lab(Labish, Space):
     WHITE = "D50"
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
-        GamutUnbound(-160, 160),
-        GamutUnbound(-160, 160)
+        GamutUnbound(-125, 125, FLG_OPT_PERCENT),
+        GamutUnbound(-125, 125, FLG_OPT_PERCENT)
     )
 
     @property

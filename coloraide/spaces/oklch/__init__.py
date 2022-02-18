@@ -79,7 +79,7 @@ class Oklch(Lchish, Space):
 
     BOUNDS = (
         GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 1.0),
+        GamutUnbound(0.0, 0.4, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

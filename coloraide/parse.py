@@ -50,25 +50,24 @@ def norm_hex_channel(string: str) -> float:
         raise ValueError("Unexpected value '{}'".format(string))
 
 
-def norm_percent_channel(string: str, scale: bool = False) -> float:
+def norm_percent_channel(string: str, scale: float = 100) -> float:
     """Normalize percent channel."""
 
     if string == 'none':
         return norm_float(string)
     elif string.endswith('%'):
         value = norm_float(string[:-1])
-        return value / 100.0 if scale else value
+        return value * scale * 0.01 if scale != 100 else value
     else:  # pragma: no cover
         # Should only occur internally if we are doing something wrong.
         raise ValueError("Unexpected value '{}'".format(string))
 
 
-def norm_color_channel(string: str, scale: bool = True) -> float:
+def norm_color_channel(string: str, scale: float = 1) -> float:
     """Normalize percent channel."""
 
     if string.endswith('%'):
-        value = norm_float(string[:-1])
-        return value / 100.0 if scale else value
+        return norm_percent_channel(string, scale)
     else:
         return norm_float(string)
 

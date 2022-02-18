@@ -18,7 +18,7 @@ class Lch(base.Lch):
         \blch\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))?
+            (?:(?:{percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -70,10 +70,8 @@ class Lch(base.Lch):
     def translate_channel(cls, channel: int, value: str) -> float:
         """Translate channel string."""
 
-        if channel == 0:
-            return parse.norm_percent_channel(value)
-        elif channel == 1:
-            return parse.norm_float(value)
+        if channel in (0, 1):
+            return parse.norm_color_channel(value, cls.BOUNDS[channel].upper)
         elif channel == 2:
             return parse.norm_angle_channel(value)
         elif channel == -1:

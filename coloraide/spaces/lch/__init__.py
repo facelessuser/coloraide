@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from ... import util
 import re
 import math
@@ -55,7 +55,7 @@ class Lch(Lchish, Space):
     WHITE = "D50"
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
-        GamutUnbound(0.0, 100.0),
+        GamutUnbound(0.0, 150.0, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

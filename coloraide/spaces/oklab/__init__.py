@@ -125,8 +125,8 @@ class Oklab(Labish, Space):
 
     BOUNDS = (
         GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
+        GamutUnbound(-0.4, 0.4, FLG_OPT_PERCENT),
+        GamutUnbound(-0.4, 0.4, FLG_OPT_PERCENT)
     )
 
     @property
