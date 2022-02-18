@@ -1,5 +1,5 @@
 """Din99o Lch class."""
-from ..spaces import RE_DEFAULT_MATCH
+from ..spaces import RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .lch import Lch
 from .. import util
 import math
@@ -45,6 +45,12 @@ class Lch99o(Lch):
     SERIALIZE = ("--lch99o",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
+
+    BOUNDS = (
+        GamutUnbound(0, 100.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 60.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
+    )
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

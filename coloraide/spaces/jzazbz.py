@@ -118,8 +118,8 @@ class Jzazbz(Labish, Space):
 
     BOUNDS = (
         GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
+        GamutUnbound(-0.5, 0.5, FLG_OPT_PERCENT),
+        GamutUnbound(-0.5, 0.5, FLG_OPT_PERCENT)
     )
 
     @property

@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_PERCENT
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import re
@@ -46,8 +46,8 @@ class Lchuv(Lch, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0, 100.0, FLG_PERCENT),
-        GamutUnbound(0.0, 176.0),
+        GamutUnbound(0, 100.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 215.0, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

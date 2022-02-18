@@ -66,8 +66,8 @@ class Luv(Labish, Space):
 
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
-        GamutUnbound(-175.0, 175.0),
-        GamutUnbound(-175.0, 175.0)
+        GamutUnbound(-215.0, 215.0),
+        GamutUnbound(-215.0, 215.0)
     )
 
     @property
