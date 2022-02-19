@@ -131,15 +131,14 @@ There are various different ways to gamut map a color into a smaller gamut. Curr
 Method         | Description
 -------------- | -----------
 `clip`         | Simple, naive clipping.
-`oklch-chroma` | Compress chroma in the Oklch color space to bring a color in gamut. This is the default method used.
-`lch-chroma`   | This is like `oklch-chroma` but is done with CIELCH. This is what ColorAide originally used before `oklch-chroma`. Hue preservation is not as good. This method may be removed at some future point as it does not hold the hue as well as Oklch.
+`lch-chroma`   | Uses chroma reduction in the CIELCH color space to bring a color into gamut. This is the default method used.
+`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental.
 
 !!! note "CSS Level 4 Gamut Mapping"
-    We do currently use the algorithm as defined in the [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
-    This is because the current algorithm, as defined, has some issues that create gradients that are not smooth.
-    We currently feel the algorithm we are using does a better job as it creates smooth gradients without odd
-    discontinuities. If/when the CSS Level 4 specification is updated to address such concerns, we may align more
-    closely.
+    We do not currently use the algorithm as defined in the [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
+    This is because the current algorithm, as defined, has some issues that create gradients that are not smooth and
+    can create unexpected colors in some situations. If/when the CSS Level 4 specification is updated to address such
+    concerns, we may align more closely.
 
 In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but when we
 convert the color to sRGB, we find that the color is out of gamut. So, using the `fit` method, we can actually transform
@@ -178,14 +177,14 @@ Color("lch(100% 50 75)").fit("srgb", method='clip')
 
 If we wanted to change the default "fitting" to `clip`, we can also just use a
 [class override](./color.md#override-default-settings). Doing this will cause the class to default to `clip` any time a
-color needs to be mapped. Though, you can still use chroma compression by specifying `oklch-chroma` for the `method`.
+color needs to be mapped. Though, you can still use chroma compression by specifying `lch-chroma` for the `method`.
 
 ```playground
 class Custom(Color):
     FIT = 'clip'
 
 Custom("lch(100% 50 75)").convert('srgb').fit()
-Custom("lch(100% 50 75)").convert('srgb').fit(method='oklch-chroma')
+Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')
 ```
 
 It is important to note that when using fit, there is no tolerance, so even if `in_gamut` allowed enough tolerance to

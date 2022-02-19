@@ -2,6 +2,8 @@
 
 ## 0.10.0
 
+- **NEW**: Switch back to using CIELCH for gamut mapping (`lch-chroma`). There are still some edge cases that make
+  `oklch-chroma` less desirable.
 - **FIX**: Fix an issue where when attempting to generate steps some ∆E distance apart, the maximum step range was not
   respected and could result in large hangs.
 
