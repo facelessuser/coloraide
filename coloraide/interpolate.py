@@ -390,8 +390,7 @@ def color_steps(
 
         # If we currently have delta over our limit inject more stops.
         # If inserting between every color would push us over the max_steps, halt.
-        count = len(ret)
-        while m_delta > max_delta_e and (count * 2 - 1 <= max_steps):
+        while m_delta > max_delta_e and (len(ret) * 2 - 1 <= max_steps):
             # Inject stops while measuring again to see if it was sufficient
             m_delta = 0.0
             i = 1
