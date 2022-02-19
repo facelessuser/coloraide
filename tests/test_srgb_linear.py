@@ -66,7 +66,7 @@ class TestSRGBLinearInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb-linear 2 0 0)').to_string(),
-            'color(srgb-linear 1 0.29816 0.22913)'
+            'color(srgb-linear 1 0.26331 0.14651)'
         )
 
         self.assertEqual(
