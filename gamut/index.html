@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/gamut/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.11">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.50e68009.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -883,6 +883,7 @@
   
                 
 
+
 <h1 id="gamut-mapping">Gamut Mapping<a class="headerlink" href="#gamut-mapping" title="Permanent link"></a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
 <p>Many color spaces have limits to the colors they can accurately represent. This is the color gamut. The bounds represent
@@ -894,7 +895,7 @@ mapping.</p>
 <h2 id="checking-gamut">Checking Gamut<a class="headerlink" href="#checking-gamut" title="Permanent link"></a></h2>
 <p>When dealing with colors, it can be important to know whether a color is within its own gamut. The <code>in_gamut</code> function
 allows for comparing the current color's specified values against the color space's gamut.</p>
-<p>Let's assume we have a color <span><span class="swatch out-of-gamut" title="rgb(30% 105% 0%)"><span class="swatch-color" style="--swatch-stops: #72ff54,#72ff54;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">30</span><span class="k">%</span><span class="w"> </span><span class="m">105</span><span class="k">%</span><span class="w"> </span><span class="m">0</span><span class="k">%</span><span class="g">)</span><span class="w"></span></code></span>. The color is out of gamut due to the green channel exceeding
+<p>Let's assume we have a color <span><span class="swatch out-of-gamut" title="rgb(30% 105% 0%)"><span class="swatch-color" style="--swatch-stops: #6aff3b,#6aff3b;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">30</span><span class="k">%</span><span class="w"> </span><span class="m">105</span><span class="k">%</span><span class="w"> </span><span class="m">0</span><span class="k">%</span><span class="g">)</span><span class="w"></span></code></span>. The color is out of gamut due to the green channel exceeding
 the channel's limit of <code class="highlight"><span class="mi">100</span><span class="o">%</span></code>. When we execute <code>in_gamut</code>, we can see that the color is not in its own gamut.</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
@@ -1148,36 +1149,35 @@ There are various different ways to gamut map a color into a smaller gamut. Curr
 <td>Simple, naive clipping.</td>
 </tr>
 <tr>
-<td><code>oklch-chroma</code></td>
-<td>Compress chroma in the Oklch color space to bring a color in gamut. This is the default method used.</td>
+<td><code>lch-chroma</code></td>
+<td>Uses chroma reduction in the CIELCH color space to bring a color into gamut. This is the default method used.</td>
 </tr>
 <tr>
-<td><code>lch-chroma</code></td>
-<td>This is like <code>oklch-chroma</code> but is done with CIELCH. This is what ColorAide originally used before <code>oklch-chroma</code>. Hue preservation is not as good. This method may be removed at some future point as it does not hold the hue as well as Oklch.</td>
+<td><code>oklch-chroma</code></td>
+<td>Like <code>lch-chroma</code>, but uses the Oklch color space instead. Currently experimental.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">CSS Level 4 Gamut Mapping</p>
-<p>We do currently use the algorithm as defined in the <a href="https://drafts.csswg.org/css-color/#binsearch">CSS Level 4 specification</a>.
-This is because the current algorithm, as defined, has some issues that create gradients that are not smooth.
-We currently feel the algorithm we are using does a better job as it creates smooth gradients without odd
-discontinuities. If/when the CSS Level 4 specification is updated to address such concerns, we may align more
-closely.</p>
+<p>We do not currently use the algorithm as defined in the <a href="https://drafts.csswg.org/css-color/#binsearch">CSS Level 4 specification</a>.
+This is because the current algorithm, as defined, has some issues that create gradients that are not smooth and
+can create unexpected colors in some situations. If/when the CSS Level 4 specification is updated to address such
+concerns, we may align more closely.</p>
 </div>
-<p>In this example, we will take the color <span><span class="swatch out-of-gamut" title="lch(100% 50 75)"><span class="swatch-color" style="--swatch-stops: #fffce4,#fffce4;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">100</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">75</span><span class="g">)</span><span class="w"></span></code></span>. CIELCH's gamut is technically unbounded, but when we
+<p>In this example, we will take the color <span><span class="swatch out-of-gamut" title="lch(100% 50 75)"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">100</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">75</span><span class="g">)</span><span class="w"></span></code></span>. CIELCH's gamut is technically unbounded, but when we
 convert the color to sRGB, we find that the color is out of gamut. So, using the <code>fit</code> method, we can actually transform
 the color to one that fits in the sRGB space and gives a color that represents the intent of the larger color as best we
 can. As the color's lightness is so high, when fitting, we essentially end up with <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span>.</p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 252.36 227.72)"><span class="swatch-color" style="--swatch-stops: rgb(255 252.36 227.72) 50%, rgb(255 252.36 227.72) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
 <span class="go">[1.1833386979489748, 0.9589979721391798, 0.6278282254203291]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="go">color(srgb 1 0.98965 0.89301 / 1)</span>
+<span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_9">
@@ -1203,10 +1203,10 @@ go.</p>
 results. We now end up with a very yellow-ish color.</p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(98.809% 12.362 99.898)"><span class="swatch-color" style="--swatch-stops: rgb(255 252.36 227.72) 50%, rgb(255 252.36 227.72) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
 <span class="go">color(--lch 95.816 42.313 96.903 / 1)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 98.809 12.362 99.898 / 1)</span>
+<span class="go">color(--lch 100 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
@@ -1244,16 +1244,16 @@ always use <code>clip</code>.</p>
 </div>
 <p>If we wanted to change the default "fitting" to <code>clip</code>, we can also just use a
 <a href="../color/#override-default-settings">class override</a>. Doing this will cause the class to default to <code>clip</code> any time a
-color needs to be mapped. Though, you can still use chroma compression by specifying <code>oklch-chroma</code> for the <code>method</code>.</p>
+color needs to be mapped. Though, you can still use chroma compression by specifying <code>lch-chroma</code> for the <code>method</code>.</p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 252.36 227.72)"><span class="swatch-color" style="--swatch-stops: rgb(255 252.36 227.72) 50%, rgb(255 252.36 227.72) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">FIT</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
 <span class="gp">... </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 <span class="go">color(srgb 1 0.959 0.62783 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;oklch-chroma&#39;</span><span class="p">)</span>
-<span class="go">color(srgb 1 0.98965 0.89301 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Custom</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;lch-chroma&#39;</span><span class="p">)</span>
+<span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
@@ -1262,7 +1262,7 @@ color needs to be mapped. Though, you can still use chroma compression by specif
     FIT = 'clip'
 
 Custom("lch(100% 50 75)").convert('srgb').fit()
-Custom("lch(100% 50 75)").convert('srgb').fit(method='oklch-chroma')</textarea>
+Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')</textarea>
 </form>
 </div>
 
@@ -1282,7 +1282,7 @@ consider a color within the gamut, calling <code>fit</code> will fit any color t
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
 <span class="go">[1.0000000000000002, 0.9999999999999997, 0.9999999999999997]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 0.9999999632010245, 1.0]</span>
+<span class="go">[1.0, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
@@ -1303,8 +1303,8 @@ srgb.fit().coords()</textarea>
 <p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(98.809% 12.362 99.898)"><span class="swatch-color" style="--swatch-stops: rgb(255 252.36 227.72) 50%, rgb(255 252.36 227.72) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="go">color(--lch 98.809 12.362 99.898 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
+<span class="go">color(--lch 100 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
@@ -1326,9 +1326,9 @@ mainly mentioned as fitting in one color space and round tripping back may not g
 <div class="playground" id="__playground_15">
 <div class="playground-results" id="__playground-results_15">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 0.9896454448081283, 0.893014011099903]</span>
+<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.9999999999999999, 0.9896454448081283, 0.8930140110999031]</span>
+<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_15">
@@ -1351,7 +1351,7 @@ work directly in that space opposed to the indirect fitting of a color in a diff
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 17, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 19, 2022</span>
       
     
   </small>
@@ -1477,14 +1477,14 @@ work directly in that space opposed to the indirect fitting of a color in a diff
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.092fa1f6.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a9542cf.min.js"></script>
+      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-8732391e.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       

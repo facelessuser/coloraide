@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/about/changelog/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.11">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.50e68009.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -773,6 +773,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0100" class="md-nav__link">
+    0.10.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#090" class="md-nav__link">
     0.9.0
   </a>
@@ -891,6 +898,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0100" class="md-nav__link">
+    0.10.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#090" class="md-nav__link">
     0.9.0
   </a>
@@ -967,7 +981,15 @@
   
                 
 
+
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="0100">0.10.0<a class="headerlink" href="#0100" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Switch back to using CIELCH for gamut mapping (<code>lch-chroma</code>). There are still some edge cases that make
+  <code>oklch-chroma</code> less desirable.</li>
+<li><strong>FIX</strong>: Fix an issue where when attempting to generate steps some ∆E distance apart, the maximum step range was not
+  respected and could result in large hangs.</li>
+</ul>
 <h2 id="090">0.9.0<a class="headerlink" href="#090" title="Permanent link"></a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Breaking Change</p>
@@ -1121,7 +1143,7 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 11, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 19, 2022</span>
       
     
   </small>
@@ -1247,14 +1269,14 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.092fa1f6.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5a9542cf.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8aa65030.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../../assets/coloraide-extras/extra-notebook-8732391e.js"></script>
+        <script src="../../assets/coloraide-extras/extra-notebook.js"></script>
       
         <script src="../../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       
