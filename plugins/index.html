@@ -1314,16 +1314,16 @@ not lightness which is similar but not precisely the same thing.</p>
 <p>By default, all color spaces are defined using the generic <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="err">...</span><span class="g">)</span><span class="w"></span></code> format. The <code>DEFAULT_MATCH</code> is
 specifically used so that a color can retain this match behavior and specify additional matching via <code>MATCH</code>.</p>
 <p><code>MATCH</code> can be used to define an assortment of color match formats. Simply define a compiled regular expression pattern
-for <code>MATCH</code> and add your logic to the <code class="highlight"><span class="k">match</span><span class="p">()</span></code> method. If it is desired to also allow
+for <code>MATCH</code> and add your logic to the <code class="highlight"><span class="n">match</span><span class="p">()</span></code> method. If it is desired to also allow
 <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="err">...</span><span class="g">)</span><span class="w"></span></code> matching, you can call the base match with <code class="highlight"><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">match</span><span class="p">()</span></code>.</p>
 <p>For instance, let's consider the default sRGB space. Out of the box, ColorAide provides CSS input formats such as hex
 color codes, named colors, and <code class="highlight"><span class="nf">rgb</span><span class="g">()</span><span class="w"></span></code> formats in addition to the default <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="err">...</span><span class="g">)</span><span class="w"></span></code>
 format. To do this, it simply provides the additional input formats as a regular expression pattern assigned to <code>MATCH</code>
 and overrides <code>match()</code>.  As we still support the <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="err">...</span><span class="g">)</span><span class="w"></span></code> input, we also call into the base
-space's <code class="highlight"><span class="k">match</span><span class="p">()</span></code>.</p>
+space's <code class="highlight"><span class="n">match</span><span class="p">()</span></code>.</p>
 <p>While we won't go into the specific parsing logic, the general top-level logic can be seen below. Notice that a number
 of useful pattern expressions are found in <code class="highlight"><span class="n">coloraide</span><span class="o">.</span><span class="n">parse</span></code> which we reuse in our CSS pattern via
-<code class="highlight"><span class="n">parse</span><span class="o">.</span><span class="n">COLOR_PARTS</span></code>. Also, notice that <code class="highlight"><span class="k">match</span><span class="p">()</span></code> is expected to return two things: a tuple containing the
+<code class="highlight"><span class="n">parse</span><span class="o">.</span><span class="n">COLOR_PARTS</span></code>. Also, notice that <code class="highlight"><span class="n">match</span><span class="p">()</span></code> is expected to return two things: a tuple containing the
 color channel coordinates and alpha and the end position (<code class="highlight"><span class="p">([</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="n">a</span><span class="p">),</span> <span class="n">end</span></code>). If the match fails, it simply
 returns <code class="highlight"><span class="kc">None</span></code>.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SRGB</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">SRGB</span><span class="p">):</span>
@@ -1599,7 +1599,7 @@ color space.</p>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       
