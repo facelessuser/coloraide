@@ -16,7 +16,6 @@ class OklchChroma(Fit):
     LIMIT = 0.02
     DE = "ok"
     SPACE = "oklch"
-    SPACE_COORDINATE = "{}.chroma".format(SPACE)
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 1
 

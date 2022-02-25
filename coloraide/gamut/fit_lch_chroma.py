@@ -11,5 +11,4 @@ class LchChroma(OklchChroma):
     LIMIT = 2.0
     DE = "2000"
     SPACE = "lch"
-    SPACE_COORDINATE = "{}.chroma".format(SPACE)
     MAX_LIGHTNESS = 100
