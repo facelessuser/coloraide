@@ -347,15 +347,12 @@ class Color(metaclass=BaseColor):
     def _handle_color_input(self, color: ColorInput) -> 'Color':
         """Handle color input."""
 
-        if (
-            isinstance(color, str) or
-            isinstance(color, Mapping) or
-            (self._is_color(color) and not self._is_this_color(color))
-        ):
+        if isinstance(color, (str, Mapping)):
             return self.new(color)
-        elif not self._is_color(color):
+        elif self._is_color(color):
+            return color if self._is_this_color(color) else self.new(color)
+        else:
             raise TypeError("Unexpected type '{}'".format(type(color)))
-        return color
 
     def space(self) -> str:
         """The current color space."""
@@ -482,8 +479,6 @@ class Color(metaclass=BaseColor):
         if space is None:
             space = self.space()
 
-        this = self.clone() if not in_place else self
-
         # Convert to desired space
         c = self.convert(space)
 
@@ -497,7 +492,7 @@ class Color(metaclass=BaseColor):
         c.normalize()
 
         # Adjust "this" color
-        return this.update(c)
+        return self.update(c) if in_place else c
 
     def fit(
         self,
@@ -518,8 +513,6 @@ class Color(metaclass=BaseColor):
 
         if method is None:
             method = self.FIT
-
-        this = self.clone() if not in_place else self
 
         # Select appropriate mapping algorithm
         if method in self.FIT_MAP:
@@ -543,7 +536,7 @@ class Color(metaclass=BaseColor):
         c.normalize()
 
         # Adjust "this" color
-        return this.update(c)
+        return self.update(c) if in_place else c
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
