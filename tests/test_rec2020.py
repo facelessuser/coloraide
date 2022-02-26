@@ -66,7 +66,7 @@ class TestRec2020InputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(rec2020 2 -1 0)').to_string(),
-            'color(rec2020 1 0.51313 0.38209)'
+            'color(rec2020 1 0.51431 0.38338)'
         )
 
         self.assertEqual(

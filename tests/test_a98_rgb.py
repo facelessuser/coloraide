@@ -66,7 +66,7 @@ class TestA98RGBInputOutput(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(a98-rgb 2 -1 0)').to_string(),
-            'color(a98-rgb 1 0.84447 0.82443)'
+            'color(a98-rgb 1 0.84528 0.82542)'
         )
 
         self.assertEqual(
