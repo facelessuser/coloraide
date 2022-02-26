@@ -492,7 +492,7 @@ class Color(metaclass=BaseColor):
         c.normalize()
 
         # Adjust "this" color
-        return self.update(c) if in_place else c
+        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
 
     def fit(
         self,
@@ -536,7 +536,7 @@ class Color(metaclass=BaseColor):
         c.normalize()
 
         # Adjust "this" color
-        return self.update(c) if in_place else c
+        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
