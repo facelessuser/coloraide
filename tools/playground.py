@@ -54,6 +54,10 @@ class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
 
 
+class ColorRow():
+    """Force a new color row."""
+
+
 def _escape(txt):
     """Basic HTML escaping."""
 
@@ -82,6 +86,8 @@ def get_colors(result):
         colors.append(ColorTuple(result.to_string(fit=False), result))
     elif isinstance(result, Interpolator):
         colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
+    elif isinstance(result, ColorRow):
+        colors = result
     elif isinstance(result, str):
         try:
             colors.append(ColorTuple(result, Color(result)))
@@ -114,7 +120,7 @@ def find_colors(text):
 def execute(cmd):
     """Execute color commands."""
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise}
+    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise, 'ColorRow': ColorRow}
     console = ''
     colors = []
 
@@ -210,7 +216,12 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
         bar = False
         values = []
         for item in colors:
-            if isinstance(item, ColorInterpolate):
+            if isinstance(item, ColorRow):
+                if bar:
+                    el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                    values = []
+                bar = False
+            elif isinstance(item, ColorInterpolate):
                 if bar:
                     el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
                     values = []
