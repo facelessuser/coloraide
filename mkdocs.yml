@@ -122,7 +122,7 @@ extra_css:
   - assets/coloraide-extras/extra-ccd229caf0.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-b654ba6d.js
+  - assets/coloraide-extras/extra-notebook-08766937.js
 
 extra:
   social:
