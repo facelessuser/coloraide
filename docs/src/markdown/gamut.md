@@ -126,19 +126,29 @@ in the gamut.
 ## Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-There are various different ways to gamut map a color into a smaller gamut. Currently, ColorAide provides three methods:
+There are various different ways to gamut map a color into a smaller gamut. While there are certainly many different
+approaches to gamut mapping, ColorAide currently provides only three:
 
 Method         | Description
 -------------- | -----------
 `clip`         | Simple, naive clipping.
-`lch-chroma`   | Uses chroma reduction in the CIELCH color space to bring a color into gamut. This is the default method used.
-`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental.
+`lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCH color space to bring a color into gamut. This is the default method used.
+`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental and closer to the current proposed [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
 
 !!! note "CSS Level 4 Gamut Mapping"
-    We do not currently use the algorithm as defined in the [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
-    This is because the current algorithm, as defined, has some issues that create gradients that are not smooth and
-    can create unexpected colors in some situations. If/when the CSS Level 4 specification is updated to address such
-    concerns, we may align more closely.
+    The current [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) describes the suggested gamut
+    mapping algorithm as a combination of chroma reduction and MINDE. While our approach is actually very similar, it
+    does differ a little. The CSS algorithm:
+
+    1. Currently uses Oklch which we've found to be problematic in some circumstances.
+    2. Is quicker to settle on a mapped color, but comes at the cost of sometimes reducing chroma too aggressively.
+
+    We've currently replaced Oklch with CIELCH which avoids some of the issues found with Oklch. We also have adjusted
+    the algorithm to be less aggressive in regards to chroma reduction at the cost of some performance.
+
+    The CSS Level 4 algorithm is very new and likely to go through some revisions to address some of the issues. When
+    the algorithm becomes more stable we may align more closely or at the very least provide the official CSS approach
+    as an option.
 
 In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but when we
 convert the color to sRGB, we find that the color is out of gamut. So, using the `fit` method, we can actually transform
@@ -153,10 +163,10 @@ rgb.fit()
 ```
 
 If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
-it simply truncates any color channels whose values are too big. While gamut mapping via chroma compression can give
-better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to match how
-browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be the way to
-go.
+it simply truncates any color channels whose values are too big. While gamut mapping via chroma reduction and MINDE can
+give better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to
+match how browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be
+the way to go.
 
 Clipping can simply be done using the `clip` method. Notice the difference when compared to the previous fitting
 results. We now end up with a very yellow-ish color.
@@ -177,7 +187,8 @@ Color("lch(100% 50 75)").fit("srgb", method='clip')
 
 If we wanted to change the default "fitting" to `clip`, we can also just use a
 [class override](./color.md#override-default-settings). Doing this will cause the class to default to `clip` any time a
-color needs to be mapped. Though, you can still use chroma compression by specifying `lch-chroma` for the `method`.
+color needs to be mapped. Though, you can still use the chroma reduction/MINDE approach by specifying `lch-chroma` for
+the `method`.
 
 ```playground
 class Custom(Color):
