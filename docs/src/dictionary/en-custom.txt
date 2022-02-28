@@ -67,6 +67,7 @@ Lchish
 Lilley
 Luv
 MERCHANTABILITY
+MINDE
 MacAdam
 Matcher
 MkDocs
