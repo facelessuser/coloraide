@@ -31,23 +31,6 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "color(--oklab 100% 0.2 -0.3 / 50%)"
         self.assertEqual(Color(color).to_string(**args), 'color(--oklab 1 0.2 -0.3 / 0.5)')
 
-    def test_comma(self):
-        """Test comma input and comma output format."""
-
-        args = {"comma": True}
-
-        color = "oklab(20%, 0.1, -0.3)"
-        lab = Color(color)
-        self.assertEqual(color, lab.to_string(**args))
-
-        color = "oklab(20%, 0.1, -0.3, 1)"
-        lab = Color(color)
-        self.assertEqual("oklab(20%, 0.1, -0.3)", lab.to_string(**args))
-
-        color = "oklab(20%, 0.1, -0.30, 0.2)"
-        lab = Color(color)
-        self.assertEqual("oklab(20%, 0.1, -0.3, 0.2)", lab.to_string(**args))
-
     def test_space(self):
         """Test space input and space output format."""
 
@@ -68,17 +51,7 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {"comma": True}
-
-        color = "oklab(20%, 0.1, -0.3, 100%)"
-        lab = Color(color)
-        self.assertEqual("oklab(20%, 0.1, -0.3)", lab.to_string(**args))
-
-        color = "oklab(20%, 0.1, -0.3, 20%)"
-        lab = Color(color)
-        self.assertEqual("oklab(20%, 0.1, -0.3, 0.2)", lab.to_string(**args))
-
-        args["comma"] = False
+        args = {}
 
         color = "oklab(20% 0.1 -0.3 / 100%)"
         lab = Color(color)
@@ -91,12 +64,6 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_no_alpha(self):
         """Test no alpha."""
 
-        args = {"comma": True, "alpha": False}
-
-        color = "oklab(100%, 0.2, -0.3, 0.5)"
-        oklab = Color(color)
-        self.assertEqual("oklab(100%, 0.2, -0.3)", oklab.to_string(**args))
-
         args = {"alpha": False}
 
         color = "oklab(100% 0.2 -0.3 / 0.5)"
@@ -105,12 +72,6 @@ class TestOklabInputOutput(util.ColorAsserts, unittest.TestCase):
 
     def test_force_alpha(self):
         """Test force alpha."""
-
-        args = {"comma": True, "alpha": True}
-
-        color = "oklab(100%, 0.2, -0.3, 100%)"
-        oklab = Color(color)
-        self.assertEqual("oklab(100%, 0.2, -0.3, 1)", oklab.to_string(**args))
 
         args = {"alpha": True}
 
