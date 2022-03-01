@@ -382,11 +382,6 @@ class Color(metaclass=BaseColor):
 
         return self.new(self.space(), self.coords(), self.alpha)
 
-    def chromatic_adaptation(self, w1: str, w2: str, xyz: Vector) -> MutableVector:
-        """Apply chromatic adaption to XYZ coordinates."""
-
-        return cat.chromatic_adaptation(w1, w2, xyz, method=self.CHROMATIC_ADAPTATION)
-
     def convert(self, space: str, *, fit: Union[bool, str] = False, in_place: bool = False) -> 'Color':
         """Convert to color space."""
 
@@ -458,7 +453,12 @@ class Color(metaclass=BaseColor):
         uv = None
         if mode == '1976':
             xyz = self.convert('xyz-d65')
-            coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+            coords = cat.chromatic_adaptation(
+                xyz._space.WHITE,
+                self._space.WHITE,
+                xyz.coords(),
+                self.CHROMATIC_ADAPTATION
+            )
             uv = util.xyz_to_uv(coords)
         elif mode == '1960':
             uv = util.xy_to_uv_1960(self.xy())
@@ -470,7 +470,12 @@ class Color(metaclass=BaseColor):
         """Convert to `xy`."""
 
         xyz = self.convert('xyz-d65')
-        coords = self.chromatic_adaptation(xyz._space.WHITE, self._space.WHITE, xyz.coords())
+        coords = cat.chromatic_adaptation(
+            xyz._space.WHITE,
+            self._space.WHITE,
+            xyz.coords(),
+            self.CHROMATIC_ADAPTATION
+        )
         return util.xyz_to_xyY(coords, self._space.white())[:2]
 
     def clip(self, space: Optional[str] = None, *, in_place: bool = False) -> 'Color':
