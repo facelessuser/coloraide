@@ -6,6 +6,7 @@
   similar.
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
   support comma string formats.
+- **NEW**: Officially drop Python 3.6 support.
 
 ## 0.10.0
 
