@@ -39,8 +39,6 @@ WHITES = {
 }
 
 FLG_ANGLE = 0x1
-FLG_PERCENT = 0x2
-FLG_OPT_PERCENT = 0x4
 
 
 class Bounds:

@@ -1,5 +1,5 @@
 """Lab D65 class."""
-from ..spaces import RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, FLG_OPT_PERCENT
+from ..spaces import RE_DEFAULT_MATCH, GamutUnbound
 from .lab import Lab
 import re
 
@@ -14,7 +14,7 @@ class LabD65(Lab):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),  # Technically we could/should clamp the zero side.
-        GamutUnbound(-130, 130, FLG_OPT_PERCENT),
-        GamutUnbound(-130, 130, FLG_OPT_PERCENT)
+        GamutUnbound(0.0, 100.0),  # Technically we could/should clamp the zero side.
+        GamutUnbound(-130, 130),
+        GamutUnbound(-130, 130)
     )

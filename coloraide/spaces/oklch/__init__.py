@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE
 from ... import util
 import re
 import math
@@ -78,8 +78,8 @@ class Oklch(Lchish, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 0.4, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(0.0, 0.4),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

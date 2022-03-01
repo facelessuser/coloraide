@@ -1,5 +1,5 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, FLG_OPT_PERCENT, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Labish
 from ... import util
 import re
 from ...util import Vector, MutableVector
@@ -74,9 +74,9 @@ class Lab(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),
-        GamutUnbound(-125, 125, FLG_OPT_PERCENT),
-        GamutUnbound(-125, 125, FLG_OPT_PERCENT)
+        GamutUnbound(0.0, 100.0),
+        GamutUnbound(-125, 125),
+        GamutUnbound(-125, 125)
     )
 
     @property

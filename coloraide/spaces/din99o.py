@@ -3,7 +3,7 @@ Din99o class.
 
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
-from ..spaces import RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, FLG_OPT_PERCENT
+from ..spaces import RE_DEFAULT_MATCH, GamutUnbound
 from .lab import Lab
 import re
 import math
@@ -100,9 +100,9 @@ class Din99o(Lab):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),  # Technically we could/should clamp the zero side.
-        GamutUnbound(-55, 55, FLG_OPT_PERCENT),
-        GamutUnbound(-55, 55, FLG_OPT_PERCENT)
+        GamutUnbound(0.0, 100.0),  # Technically we could/should clamp the zero side.
+        GamutUnbound(-55, 55),
+        GamutUnbound(-55, 55)
     )
 
     @classmethod

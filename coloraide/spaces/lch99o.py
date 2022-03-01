@@ -1,5 +1,5 @@
 """Din99o Lch class."""
-from ..spaces import RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..spaces import RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE
 from .lch import Lch
 from .. import util
 import math
@@ -47,8 +47,8 @@ class Lch99o(Lch):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 60.0, FLG_OPT_PERCENT),
+        GamutUnbound(0, 100.0),
+        GamutUnbound(0.0, 60.0),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

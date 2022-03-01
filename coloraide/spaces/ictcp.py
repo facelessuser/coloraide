@@ -3,7 +3,7 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Labish
 from .. import util
 import re
 from ..util import MutableVector
@@ -92,9 +92,9 @@ class ICtCp(Labish, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5, FLG_OPT_PERCENT)
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(-0.5, 0.5),
+        GamutUnbound(-0.5, 0.5)
     )
 
     @property

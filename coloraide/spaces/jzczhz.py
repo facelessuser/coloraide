@@ -3,7 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE
 from .. import util
 import re
 import math
@@ -62,8 +62,8 @@ class JzCzhz(Lchish, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(0.0, 1.0),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

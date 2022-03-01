@@ -25,7 +25,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Labish
 from ... import util
 import re
 from ...util import Vector, MutableVector
@@ -124,9 +124,9 @@ class Oklab(Labish, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.4, 0.4, FLG_OPT_PERCENT),
-        GamutUnbound(-0.4, 0.4, FLG_OPT_PERCENT)
+        GamutUnbound(0.0, 1.0),
+        GamutUnbound(-0.4, 0.4),
+        GamutUnbound(-0.4, 0.4)
     )
 
     @property

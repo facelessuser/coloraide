@@ -3,7 +3,7 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, WHITES, Labish
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 import re
@@ -65,7 +65,7 @@ class Luv(Labish, Space):
     WHITE = "D65"
 
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),
+        GamutUnbound(0.0, 100.0),
         GamutUnbound(-215.0, 215.0),
         GamutUnbound(-215.0, 215.0)
     )

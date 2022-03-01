@@ -1,5 +1,5 @@
 """SRGB color class."""
-from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT
+from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound
 from ... import util
 from ...util import MutableVector
 import re
@@ -61,9 +61,9 @@ class SRGB(Space):
 
     EXTENDED_RANGE = True
     BOUNDS = (
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
+        GamutBound(0.0, 1.0),
+        GamutBound(0.0, 1.0),
+        GamutBound(0.0, 1.0)
     )
 
     @property
