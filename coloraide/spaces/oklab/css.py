@@ -19,9 +19,7 @@ class Oklab(base.Oklab):
             \bOklab\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))? |
-                # comma separated format
-                {percent}{comma}{float}{comma}{float}(?:{comma}(?:{percent}|{float}))?
+                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))?
             )
             \s*\)
         )
@@ -55,7 +53,7 @@ class Oklab(base.Oklab):
             coords = util.no_nans(coords)
 
         if alpha:
-            template = "oklab({}, {}, {}, {})" if options.get("comma") else "oklab({} {} {} / {})"
+            template = "oklab({} {} {} / {})"
             return template.format(
                 util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),
@@ -63,7 +61,7 @@ class Oklab(base.Oklab):
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "oklab({}, {}, {})" if options.get("comma") else "oklab({} {} {})"
+            template = "oklab({} {} {})"
             return template.format(
                 util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),

@@ -40,23 +40,6 @@ class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "color(--oklch 90% 0.5 270 / 50%)"
         self.assertEqual(Color(color).to_string(**args), 'color(--oklch 0.9 0.5 270 / 0.5)')
 
-    def test_comma(self):
-        """Test comma input and comma output format."""
-
-        args = {"comma": True}
-
-        color = "oklch(20%, 0.1, 130)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-        color = "oklch(20%, 0.1, 130, 1)"
-        lch = Color(color)
-        self.assertEqual("oklch(20%, 0.1, 130)", lch.to_string(**args))
-
-        color = "oklch(20%, 0.1, 130, 0.2)"
-        lch = Color(color)
-        self.assertEqual("oklch(20%, 0.1, 130, 0.2)", lch.to_string(**args))
-
     def test_space(self):
         """Test space input and space output format."""
 
@@ -77,17 +60,7 @@ class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {"comma": True}
-
-        color = "oklch(20%, 0.1, 130, 100%)"
-        lch = Color(color)
-        self.assertEqual("oklch(20%, 0.1, 130)", lch.to_string(**args))
-
-        color = "oklch(20%, 0.1, 130, 20%)"
-        lch = Color(color)
-        self.assertEqual("oklch(20%, 0.1, 130, 0.2)", lch.to_string(**args))
-
-        args["comma"] = False
+        args = {}
 
         color = "oklch(20% 0.1 130 / 100%)"
         lch = Color(color)

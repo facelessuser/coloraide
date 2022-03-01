@@ -18,9 +18,7 @@ class Oklch(base.Oklch):
         \boklch\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
-            # comma separated format
-            {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -53,7 +51,7 @@ class Oklch(base.Oklch):
             coords = util.no_nans(coords)
 
         if alpha:
-            template = "oklch({}, {}, {}, {})" if options.get("comma") else "oklch({} {} {} / {})"
+            template = "oklch({} {} {} / {})"
             return template.format(
                 util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),
@@ -61,7 +59,7 @@ class Oklch(base.Oklch):
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "oklch({}, {}, {})" if options.get("comma") else "oklch({} {} {})"
+            template = "oklch({} {} {})"
             return template.format(
                 util.fmt_percent(coords[0] * 100, precision),
                 util.fmt_float(coords[1], precision),

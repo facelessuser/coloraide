@@ -32,23 +32,6 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "color(--hwb 20 10% 75% / 50%)"
         self.assertEqual(Color(color).to_string(**args), 'color(--hwb 20 0.1 0.75 / 0.5)')
 
-    def test_comma(self):
-        """Test comma input and comma output format."""
-
-        args = {"comma": True}
-
-        color = "hwb(20, 10%, 75%)"
-        hwb = Color(color)
-        self.assertEqual(color, hwb.to_string(**args))
-
-        color = "hwb(20, 10%, 75%, 1)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%)", hwb.to_string(**args))
-
-        color = "hwb(20, 10%, 75%, 0.2)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%, 0.2)", hwb.to_string(**args))
-
     def test_space(self):
         """Test space input and space output format."""
 
@@ -69,17 +52,7 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {"comma": True}
-
-        color = "hwb(20, 10%, 75%, 100%)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%)", hwb.to_string(**args))
-
-        color = "hwb(20, 10%, 75%, 20%)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%, 0.2)", hwb.to_string(**args))
-
-        args["comma"] = False
+        args = {}
 
         color = "hwb(20 10% 75% / 100%)"
         hwb = Color(color)
@@ -92,13 +65,7 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_no_alpha(self):
         """Test no alpha."""
 
-        args = {"comma": True, "alpha": False}
-
-        color = "hwb(20, 10%, 75%, 0.2)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%)", hwb.to_string(**args))
-
-        args["comma"] = False
+        args = {"alpha": False}
 
         color = "hwb(20 10% 75% / 0.2)"
         hwb = Color(color)
@@ -107,13 +74,7 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_force_alpha(self):
         """Test force alpha."""
 
-        args = {"comma": True, "alpha": True}
-
-        color = "hwb(20, 10%, 75%, 1)"
-        hwb = Color(color)
-        self.assertEqual("hwb(20, 10%, 75%, 1)", hwb.to_string(**args))
-
-        args["comma"] = False
+        args = {"alpha": True}
 
         color = "hwb(20 10% 75% / 1)"
         hwb = Color(color)
@@ -152,19 +113,19 @@ class TestHWBInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_hue_inputs(self):
         """Test hue inputs."""
 
-        color = "hwb(90deg, 50%, 20%)"
+        color = "hwb(90deg 50% 20%)"
         hwb = Color(color)
         self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
 
-        color = "hwb({:f}rad, 50%, 20%)".format(math.radians(90))
+        color = "hwb({:f}rad 50% 20%)".format(math.radians(90))
         hwb = Color(color)
         self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
 
-        color = "hwb(100grad, 50%, 20%)"
+        color = "hwb(100grad 50% 20%)"
         hwb = Color(color)
         self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
 
-        color = "hwb(0.25turn, 50%, 20%)"
+        color = "hwb(0.25turn 50% 20%)"
         hwb = Color(color)
         self.assertEqual("hwb(90 50% 20%)", hwb.to_string())
 

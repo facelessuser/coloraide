@@ -4,6 +4,8 @@
 
 - **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
   similar.
+- **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
+  support comma string formats.
 
 ## 0.10.0
 

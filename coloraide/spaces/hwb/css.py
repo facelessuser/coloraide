@@ -13,15 +13,12 @@ if TYPE_CHECKING:  # pragma: no cover
 class HWB(base.HWB):
     """HWB class."""
 
-    DEF_VALUE = "hwb(0 0% 0% / 1)"
     MATCH = re.compile(
         r"""(?xi)
         \bhwb\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |
-            # comma separated format
-            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
+            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -54,7 +51,7 @@ class HWB(base.HWB):
             coords = util.no_nans(coords)
 
         if alpha:
-            template = "hwb({}, {}, {}, {})" if options.get("comma") else "hwb({} {} {} / {})"
+            template = "hwb({} {} {} / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_percent(coords[1] * 100, precision),
@@ -62,7 +59,7 @@ class HWB(base.HWB):
                 util.fmt_float(self.alpha, max(util.DEF_PREC, precision))
             )
         else:
-            template = "hwb({}, {}, {})" if options.get("comma") else "hwb({} {} {})"
+            template = "hwb({} {} {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_percent(coords[1] * 100, precision),

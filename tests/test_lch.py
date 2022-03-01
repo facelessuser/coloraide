@@ -32,23 +32,6 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
         color = "color(--lch 20% 10 130 / 50%)"
         self.assertEqual(Color(color).to_string(**args), 'color(--lch 20 10 130 / 0.5)')
 
-    def test_comma(self):
-        """Test comma input and comma output format."""
-
-        args = {"comma": True}
-
-        color = "lch(20%, 10, 130)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-        color = "lch(20%, 10, 130, 1)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130)", lch.to_string(**args))
-
-        color = "lch(20%, 10, 130, 0.2)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130, 0.2)", lch.to_string(**args))
-
     def test_space(self):
         """Test space input and space output format."""
 
@@ -69,17 +52,7 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {"comma": True}
-
-        color = "lch(20%, 10, 130, 100%)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130)", lch.to_string(**args))
-
-        color = "lch(20%, 10, 130, 20%)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130, 0.2)", lch.to_string(**args))
-
-        args["comma"] = False
+        args = {}
 
         color = "lch(20% 10 130 / 100%)"
         lch = Color(color)
@@ -92,13 +65,7 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_no_alpha(self):
         """Test no alpha."""
 
-        args = {"comma": True, "alpha": False}
-
-        color = "lch(20%, 10, 130, 0.2)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130)", lch.to_string(**args))
-
-        args["comma"] = False
+        args = {"alpha": False}
 
         color = "lch(20% 10 130 / 0.2)"
         lch = Color(color)
@@ -107,13 +74,7 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_force_alpha(self):
         """Test force alpha."""
 
-        args = {"comma": True, "alpha": True}
-
-        color = "lch(20%, 10, 130, 1)"
-        lch = Color(color)
-        self.assertEqual("lch(20%, 10, 130, 1)", lch.to_string(**args))
-
-        args["comma"] = False
+        args = {"alpha": True}
 
         color = "lch(20% 10 130 / 1)"
         lch = Color(color)
@@ -152,19 +113,19 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
     def test_hue_inputs(self):
         """Test hue inputs."""
 
-        color = "lch(90%, 50, 90deg)"
+        color = "lch(90% 50 90deg)"
         lch = Color(color)
         self.assertEqual("lch(90% 50 90)", lch.to_string())
 
-        color = "lch(90%, 50, {:f}rad)".format(math.radians(90))
+        color = "lch(90% 50 {:f}rad)".format(math.radians(90))
         lch = Color(color)
         self.assertEqual("lch(90% 50 90)", lch.to_string())
 
-        color = "lch(90%, 50, 100grad)"
+        color = "lch(90% 50 100grad)"
         lch = Color(color)
         self.assertEqual("lch(90% 50 90)", lch.to_string())
 
-        color = "lch(90%, 50, 0.25turn)"
+        color = "lch(90% 50 0.25turn)"
         lch = Color(color)
         self.assertEqual("lch(90% 50 90)", lch.to_string())
 

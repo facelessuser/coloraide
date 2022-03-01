@@ -18,9 +18,7 @@ class Lch(base.Lch):
         \blch\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))? |
-            # comma separated format
-            {percent}{comma}{float}{comma}{angle}(?:{comma}(?:{percent}|{float}))?
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -53,7 +51,7 @@ class Lch(base.Lch):
             coords = util.no_nans(coords)
 
         if alpha:
-            template = "lch({}, {}, {}, {})" if options.get("comma") else "lch({} {} {} / {})"
+            template = "lch({} {} {} / {})"
             return template.format(
                 util.fmt_percent(coords[0], precision),
                 util.fmt_float(coords[1], precision),
@@ -61,7 +59,7 @@ class Lch(base.Lch):
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "lch({}, {}, {})" if options.get("comma") else "lch({} {} {})"
+            template = "lch({} {} {})"
             return template.format(
                 util.fmt_percent(coords[0], precision),
                 util.fmt_float(coords[1], precision),
