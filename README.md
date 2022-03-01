@@ -8,7 +8,11 @@
 
 # ColorAide
 
-This is still a work in progress.
+**This is still a work in progress.**
+
+While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease state. This simply means
+the API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
+color syntax and behavior to be decided by the CSS Working Group.
 
 ## Overview
 

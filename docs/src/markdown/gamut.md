@@ -2,13 +2,14 @@
 
 ## Overview
 
-Many color spaces have limits to the colors they can accurately represent. This is the color gamut. The bounds represent
-the limits to which a color space can represent a color. Some color spaces are theoretically unbounded, but past a
-point, the eye can't see them.
+Many color spaces are designed in such a way that they can only represent colors accurately within a specific range.
+This range in which a color can accurately be represented is known as the color gamut. Some color spaces are
+theoretically unbounded, but past a point, the eye can't see them anyways.
 
-When moving from a large color space like CIELAB to a small color space like sRGB, many CIELAB colors will not fit
-without mapping the color to one that does fit. This "fitting" of the color from one gamut into another is called gamut
-mapping.
+CIELAB is a color space that has no real defined. When translating a color from such a large color space as CIELAB to a
+small color space like sRGB, there are many colors that simply cannot be represented within the space. In order to
+visually represent a color outside of the gamut, a suitable color within the gamut must be selected to be shown in its
+place. This selecting of a suitable replacement is called gamut mapping.
 
 ## Checking Gamut
 
@@ -22,9 +23,9 @@ the channel's limit of `#!py3 100%`. When we execute `in_gamut`, we can see that
 Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
-On the other hand, some colors do not have a limit, only suggested limits for usability. CIELAB does not really have
-bounds as it is formulated in such a way that it can represent any color, even if they are not visible. When we check a
-CIELAB color, we will find that it is always in gamut.
+On the other hand, some color spaces do not have a limit. CIELAB is one such color space. Sometimes limits will be
+placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELAB
+color, we will find that it is always considered in gamut.
 
 ```playground
 Color("lab(200% -20 40 / 1)").in_gamut()
@@ -40,10 +41,12 @@ narrow gamut of sRGB.
 Color("lab(200% -20 40 / 1)").in_gamut('srgb')
 ```
 
+### Tolerance
+
 Generally, ColorAide does not round off values in order to guarantee the best possible values for round tripping, but
-due to [limitations of floating-point arithmetic][floating-point], there can be edge cases where colors don't round trip
-perfectly. By default, `in_gamut` allows for a tolerance of `#!py3 0.000075` to account for such cases where a color
-is "close enough". If desired, this "tolerance" can be adjusted.
+due to [limitations of floating-point arithmetic][floating-point] and precision of conversion algorithms, there can be
+edge cases where colors don't round trip perfectly. By default, `in_gamut` allows for a tolerance of `#!py3 0.000075` to
+account for such cases where a color is "close enough". If desired, this "tolerance" can be adjusted.
 
 Let's consider CIELAB. The sRGB round trip through CIELAB for `#!color white` does not perfectly convert back to the
 original color. We can see that when using a tolerance of zero, the color is considered out of gamut. Depending on what
@@ -70,35 +73,29 @@ Color('hsl(0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 ```
 
-HWB is a little funny as values over 100% for whiteness and blackness are normalized, but the results are technically
-correct as the value will convert to an sRGB value perfectly in gamut.
+But when we are not using a strict threshold, and we check one of these models **only** using the sRGB gamut, there are
+some cases where these cylindrical colors can exhibit coordinates wildly outside of the model's range but still very
+close to the sRGB gamut.
 
-```playground
-Color('hwb(0 100% 0%)').in_gamut('srgb', tolerance=0)
-Color('hwb(0 100.05% 0%)').in_gamut('srgb', tolerance=0)
-Color('hwb(0 100.05% 0%)').convert('srgb').coords()
-```
-
-But when using a tolerance check in a Cartesian model while in a cylindrical model, we can end up with some surprising
-results. In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL
-we can see wildly large saturation. There isn't anything technically wrong with this value as saturation and hue are
-essentially meaningless when lightness is `#!py3 100%`, but this may be undesirable to a user.
+In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL,
+we can see wildly large saturation.
 
 ```playground
 hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
-hsl
+hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
 ```
 
-For this reason, if passing in `hsl`, `hsv`, or `hwb` as gamut inputs, the tolerance is also compared not only against
-the Cartesian coordinates, but also the cylindrical coordinates. In this way, we are still checking that the colors are
-in the sRGB gamut, but the tolerance is now relative to the constraints of the cylindrical color model.
+There is actually no inherent color gamut for the HSL, HSV, and HWB model as any RGB color space could be represented
+in one of these cylindrical models. One could easily map the Display P3 color space to one of these cylindrical modes
+creating an HSL Display P3 color, but the models do have constraints to ensure sane color coordinates that make sense.
 
-There is no HSL, HSV, and HWB gamuts as these are just alternative models for RGB based colors. One could easily map the
-Display P3 color space, which has a different gamut, to one of these models.
+For this reason, gamut checks in the HSL, HSV, or HWB models apply tolerance checks on the color's coordinates in the
+sRGB color space **and** the respective cylindrical model ensuring we have coordinates that are inside the color's
+actual gamut and that they are sanely within the cylindrical model's constraints as well.
 
-We can see below that now the gamut check will fail. If the color is an HSL color, we do not have to specify `hsl`, as
-it will be the default for that color space, but we specify it below just for illustration.
+So, when using HSL as the gamut check, we can see that it ensures the color is not only within the sRGB gamut, but that
+its coordinates are also sanely within the model's constraints.
 
 ```playground
 hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
@@ -106,28 +103,32 @@ hsl
 hsl.in_gamut('hsl')
 ```
 
-We can also see that the tolerance is now relative to the color model:
-
-```playground
-hsl = Color('hsl(140 100.000002% 0%)')
-hsl.convert('srgb').coords()
-hsl.in_gamut('hsl')
-```
-
-But don't worry, the tolerance constraint above isn't _solely_ based on the HSL coordinates. If the color deviates past
-the threshold for sRGB **or** HSL, the gamut will yield `#!py3 False`. It is simply an extra check added that ensures
-the tolerance is compared against both the Cartesian coordinates and the cylindrical coordinates to ensure that we are
-working with sane values.
+Essentially, this forces a tighter constraint to ensure the colors represented in one of these cylindrical space aren't
+wildly out of the model's range even if they are technically close to being in gamut.
 
 If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
 problem, `srgb` can always be specified. `#!py3 tolerance=0` can always be used to constrain the check to values exactly
 in the gamut.
 
+Additionally, there may be other color spaces that play a little loose with the gamut during their conversion. For
+instance, Okhsv, an HSV model built off of Oklab, has a conversion back to sRGB that is simply not as precise as HSL or
+HSV to sRGB. There is nothing actually wrong with our implementation of the conversion algorithm, as it matches the
+behavior of the official implementation, the algorithm just isn't concerned with exactly translating the colors
+perfectly within the sRGB gamut. Simply clipping the color can clean it up nicely, and if desired, we can always tweak
+the tolerance.
+
+```playground
+okhsv = Color('color(--okhsv 20 100% 75% / 1)')
+okhsv.in_gamut()
+okhsv.convert('srgb')
+okhsv.in_gamut(tolerance=0.0005)
+```
+
 ## Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-There are various different ways to gamut map a color into a smaller gamut. While there are certainly many different
-approaches to gamut mapping, ColorAide currently provides only three:
+While there are various different ways to gamut map a color into a smaller gamut, ColorAide currently provides only
+three:
 
 Method         | Description
 -------------- | -----------
@@ -147,13 +148,14 @@ Method         | Description
     the algorithm to be less aggressive in regards to chroma reduction at the cost of some performance.
 
     The CSS Level 4 algorithm is very new and likely to go through some revisions to address some of the issues. When
-    the algorithm becomes more stable we may align more closely or at the very least provide the official CSS approach
+    the algorithm becomes more stable, we may align more closely or at the very least provide the official CSS approach
     as an option.
 
-In this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut is technically unbounded, but when we
-convert the color to sRGB, we find that the color is out of gamut. So, using the `fit` method, we can actually transform
-the color to one that fits in the sRGB space and gives a color that represents the intent of the larger color as best we
-can. As the color's lightness is so high, when fitting, we essentially end up with `#!color white`.
+In order to demonstrate gamut mapping, in this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut
+is technically unbounded, but when we convert the color to sRGB, we find that the color is out of gamut. So, using the
+`fit` method, we can actually transform the color to one that fits in the sRGB space and gives a color that represents
+the intent of the larger color as best we can. As the color's lightness is so high, when fitting, we essentially end up
+with `#!color white`.
 
 ```playground
 rgb = Color("lch(100% 50 75)").convert('srgb')
@@ -199,7 +201,7 @@ Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')
 ```
 
 It is important to note that when using fit, there is no tolerance, so even if `in_gamut` allowed enough tolerance to
-consider a color within the gamut, calling `fit` will fit any color that is not exactly in gamut.
+consider a color within the gamut, calling `fit` will adjust it such that it fits without tolerance.
 
 ```playground
 lab = Color('lab(100% 0 0)')

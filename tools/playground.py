@@ -85,7 +85,7 @@ def get_colors(result):
     if isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(fit=False), result))
     elif isinstance(result, Interpolator):
-        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=4))
+        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=3))
     elif isinstance(result, ColorRow):
         colors = result
     elif isinstance(result, str):

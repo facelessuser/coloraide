@@ -1,8 +1,8 @@
 # Setup
 
 !!! warning "Currently a Prerelease"
-    While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease. This simply means the
-    API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
+    While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease state. This simply means
+    the API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
     color syntax and behavior to be decided by the CSS Working Group.
 
 ## Overview
@@ -19,11 +19,13 @@ c.coords()
 c.to_string()
 ```
 
-ColorAide was designed to be fairly easy library to pick up and start using. The idea was to have a simple interface to
-specify any color, and once you have that color, you can convert it to any color you wish, manipulate it, mix it with
-other colors, and then optionally get the color data or output into CSS strings. If desired, color spaces can be
-overridden to output strings in other string formats or simply use the raw color data to manually construct the desired
-output, but the primary focus was providing output in the familiar CSS output.
+ColorAide was designed to be a fairly easy library to pick up and start using. The idea was to have a simple interface
+to specify any color, and once you have that color, you can convert it to any color you wish, manipulate it, mix it with
+other colors, and then optionally serialize into CSS strings.
+
+While CSS is the primary focus for string parsing and serialization, ColorAide is also flexible and color space classes
+can be subclassed to create spaces that can accept non-CSS string inputs or serialize to non-CSS strings. Additionally,
+the raw color data can be used in any way the user sees fit: perform calculations, construct their own output, etc.
 
 There are many color libraries out there, and if you happen to be looking for a library that is more for scientific
 work, then maybe a library like [Colour Science](https://github.com/colour-science/colour) is more appropriate. That is

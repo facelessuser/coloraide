@@ -16,14 +16,16 @@ Color("#00ff00")
 Color("rgb(0 0 255 / 1)")
 ```
 
-In general, each color space can be recognized using valid CSS syntax as specified in the CSS level 4 spec.
-Additionally, all colors are recognized using the CSS color function (`#!css-color color(space coord ... / alpha)`),
-even if the color is not defined in the CSS color spec or supported in the spec in this way. While the
-`#!css-color color()` function in CSS does not explicitly support color spaces with angular channels (hues), it has been
-adapted to support cylindrical colors, and is generally used as a generic input and default output for string
-representation of colors. Colors not found in the CSS spec are usually done as custom names with the `--` prefix. Check
-the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS identifier name as the
-CSS identifier may not always match the color space name as specified in ColorAide.
+In general, each color space can be recognized using valid CSS syntax as specified in the CSS Level 4 spec, but
+ColorAide also allows the use of colors not specified by the CSS spec. To bridge the gap with syntax, ColorAide allows
+all colors, whether in the CSS spec or not, to be recognized using the CSS color function
+(`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently specified to
+use the `#!css-color color()` function, we still allow it.
+
+Essentially, we've adopted the `#!css-color color()` function as the universal way in which to serialize colors. If the
+CSS spec does not formally recognize a color in this form, the color identifier will use the two dashes as a prefix
+(`--color-id`). Check the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS
+identifier name as the CSS identifier may not always match the color space name as specified in ColorAide.
 
 ```playground
 Color('color(--hsl 130 40% 75% / 0.5)')
@@ -36,9 +38,10 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
-Since colors can be exported to a simple dictionary, which can be useful if serializing to JSON, the Color object will
-also accept this dictionary as an input. `space` and all relevant color channels must be specified, `alpha` is optional
-and will be assumed `1` if omitted. Default channel names must currently be used (no aliases).
+Colors can also be exported to and receive input from a simple dictionaries. These can be useful when serializing to
+JSON or various other reasons. The `space` key and all relevant color channels must be specified when constructing a
+color object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted. Default
+channel names must currently be used (no aliases).
 
 ```playground
 d = Color('red').to_dict()
@@ -80,8 +83,8 @@ color1.new("blue")
 ```
 
 If desired, all creation method can be configured to also filter out color spaces that we are not interested in by using
-the `filter` parameter and specifying only the color spaces we do care about. Valid colors will then be constrained only
-to those spaces in the list.
+the `filter` parameter and specifying only the color spaces we do care about. Valid input colors will then be
+constrained only to those spaces in the list.
 
 ```playground
 try:
@@ -105,8 +108,8 @@ c1.clone()
 
 ## Updating
 
-A color can be "updated" using another color object. When an update occurs, the current color space is updated with the
-data from the second color, but the color space does not change. It is basically the equivalent of converting the second
+A color can be "updated" using another color object. When an update occurs, the current color space is updated from the
+data of the second color, but the color space does not change. It is basically the equivalent of converting the second
 color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
 are identical to the `new` method, so we can use a color object, a color string, or even raw data points.
 
@@ -188,7 +191,7 @@ all potential colors on every character is not really efficient. Additionally, s
 context that is not available to the to the match function. If such behavior is desired, what is recommended would
 be to apply this with some logic to find potential places in the buffer to test, and only test those places.
 
-In this example, we construct a regex to find places within the buffer that potentially has a valid color, but we also
+In this example, we construct a regex to find places within the buffer that potentially have a valid color, but we also
 try and filter out cases that are unfavorable by providing additional context. As we are interested in matching full
 colors in HTML or CSS, we don't want to match hex in HTML entities or color names that are part of color variables
 (`#!css var(--color-red)`).
@@ -226,10 +229,10 @@ for m in RE_COLOR_START.finditer(text):
 
 ## Custom Color Classes
 
-In general, it is always recommended to subclass the [`Color`](#color) object when setting up a custom preferences or
-adding and removing plugins. This prevents modifying the base class which may affect other libraries relying on the
+In general, it is always recommended to subclass the [`Color`](#color) object when setting up custom preferences or
+adding or removing plugins. This prevents modifying the base class which may affect other libraries relying on the 
 module. When [`Color`](#color) is subclassed, it is safe to then update global overrides or register and deregister
-plugins without worry of affecting the base class.
+plugins without the worry of affecting the base class.
 
 ### Override Default Settings
 
@@ -269,9 +272,9 @@ plugins. To learn more about creating plugins, checkout the [plugin documentatio
 
 Registration is performed by the `register` method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
-a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If `overwrite` set
-to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place of
-the existing plugin.
+a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If `overwrite` is
+set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
+of the existing plugin.
 
 Here we just overwrite the existing Jzazbz color space plugin with itself again.
 
@@ -297,5 +300,5 @@ except ValueError:
 ```
 
 Use of `*` with `deregister` will remove all plugins. Use of `category:*` will remove all plugins of that category.
-This is in case a user wishes to build up a color classes plugins from scratch. This may be useful if there is a desire
-to explicitly define allowed plugins and exclude any unknown new ones that may become available.
+This is in case a user wishes to build up a color class's plugins from scratch. This may be useful if there is a desire
+to explicitly define allowed plugins and exclude any unknown, new ones that may become available.

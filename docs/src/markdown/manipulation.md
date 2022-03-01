@@ -98,9 +98,9 @@ using [floating-point arithmetic][floating-point], etc.
 In the end, while the HSL color with high saturation seems a bit unexpected, it is actually pretty close to the intended
 value once you realize that the nearly 100% lightness dominates the result and makes the saturation and hue values
 insignificant. For this reason, it makes a lot of sense that the sRGB coordinates are still so close. Also, HSL just
-doesn't represent out of gamut colors as well as sRGB does. HSL was designed mainly to show colors from a square, RGB
-coordinate system. Anything outside of the RGB range will not be as meaningful, but the values will convert back to sane
-values in another space in most cases.
+doesn't represent out of gamut colors as well as sRGB does. HSL was designed mainly to show colors from an RGB
+coordinate system. Anything outside of the RGB range will not be represented in an intuitive way, but the values will
+convert back to sane values in another space in most cases.
 
 ## Undefined Values
 
@@ -115,8 +115,8 @@ chroma or saturation.
     color.coords()
     ```
 
-2. With using the `#!css-color color()` function syntax, if a channel is not explicitly defined, it will be considered
-undefined.
+2. When using the `#!css-color color()` function syntax, if a channel is not explicitly defined, it will be considered
+undefined as well, the exception is that `alpha` is usually assumed to be `1` unless explicitly defined.
 
     ```playground
     Color('color(srgb 1)').coords()
@@ -127,8 +127,8 @@ done in raw color data by directly passing `#!py3 float('nan')` -- the provided 
 for `#!py3 float('nan')`.
 
     One may question why such a thing would ever be desired, but this can be quite useful when interpolating as
-    undefined channels will not be interpolated. To learn more about interpolation, you can read more about it in
-    [Interpolation](./interpolation.md).
+    undefined channels will not be interpolated. Checkout the [Interpolation](./interpolation.md) section in the
+    documentation to learn more.
 
 
     ```playground
@@ -140,8 +140,8 @@ for `#!py3 float('nan')`.
     color.coords()
     ```
 
-3. Lastly, a user can use the `mask` method. `mask` is useful as it is an easy way to quickly mask multiple channels.
-Additionally, by default, it returns a clone leaving the original untouched.
+3. Lastly, a user can use the `mask` method that masks a given channel `none`. `mask` is useful as it is an easy way to
+quickly mask multiple channels. Additionally, by default, it returns a clone leaving the original untouched.
 
     ```playground
     Color('white').coords()
@@ -167,19 +167,21 @@ Additionally, by default, it returns a clone leaving the original untouched.
 As previously mentioned, a color channel can be undefined for a number of reasons. And in cases such as interpolation,
 undefined values can even be useful. On the other hand, sometimes an undefined value may need to be handled special.
 
-Undefined values are represented as the float value `NaN`. And since `NaN` values are not numbers hence the name "not a
-number", they don't quite work the same as normal numbers. They cannot be added, multiplied, or take part in any real
-math operations. As a matter of fact, they are infectious and cause the result of any math operation performed with them
-to yield `NaN`.
+Undefined values are represented as the float value `NaN`. And since `NaN` values are not numbers -- hence the name "not
+a number" -- they don't quite work the same as normal numbers. They don't contribute math operations like add, multiply,
+divide, instead any math operation performed with a `NaN` will simply yield `NaN`. `NaN` values are essentially
+infectious.
+
+At first glance, the behavior of `NaN` values can seem confusing, but it is actually pretty intuitive. If we define a
+color with an undefined channel, and try to add to that value, what should we get? In reality, if the value is
+undefined, how could we possibly add to it? The only sane answer is to return `NaN` again.
 
 ```playground
 color = Color('color(srgb 1 none 1)')
-green = color.g
-new_green = green + 0.5
-print(new_green)
+color.g + 0.5
 ```
 
-Because a `NaN` may cause unexpected results, it can be useful to check if a hue (or any channel) is `NaN` before
+Because a `NaN` may cause surprising results, it can be useful to check if a hue (or any channel) is `NaN` before
 applying certain operations, especially if the color potentially came from an unknown source. To make checking for
 `NaN`s easy, the convenience function `is_nan` has been made available. You can simply give `is_nan` the property you
 wish to check, and it will return either `#!py3 True` or `#!py3 False`.

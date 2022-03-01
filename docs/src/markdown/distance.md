@@ -17,16 +17,16 @@ Color("red").distance("blue", space="lab")
 The `delta_e` function gives access to various ∆E implementations.
 
 If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) which uses a simple Euclidean distancing
-algorithm on the CIELAB color space. It is fast, but not as accurate as some algorithms as CIELAB is not actually as
-perceptually uniform as it was thought when CIELAB was developed. ∆E~00~ is actually a much better ∆E method for CIELAB,
-but it is slower.
+algorithm on the CIELAB color space. It is fast, but not as accurate as later iterations of the algorithm as CIELAB is
+not actually as perceptually uniform as it was thought when CIELAB was originally developed.
 
 ```playground
 Color("red").delta_e("blue")
 ```
 
 When `method` is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E~00~ which is a
-more complex, slower algorithm that accounts for the color spaces weakness in perceptually uniformity.
+more complex that accounts for the color spaces weakness in perceptually uniformity. It does come at the cost of being
+a little slower.
 
 ```playground
 Color("red").delta_e("blue", method="2000")

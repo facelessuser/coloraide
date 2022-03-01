@@ -17,7 +17,7 @@ overlap. Conceptually, the colors in the source element (top layer) are blended 
 
 There are various blend modes, the most common is the `normal` blend mode which is the default blending mode for
 browsers when a layer is placed over another layer. The `normal` mode simply returns the top layer's color when two are
-overlaid. Some weighting of colors can occur if the top layer is semi-transparent.
+overlaid.
 
 <span class="isolate blend-normal dual">
   <span class="circle circle-1"></span>
@@ -35,24 +35,25 @@ But there are many blend modes that could be used, all of which yield different 
 When composing, the blend mode can be controlled separately in ColorAide. Here, we again use the `multiply` example
 and replicate it in ColorAide.
 
-!!! note "Display Differences"
-    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-    and Display P3 so that the examples can be compared on different displays. Which of the below matches your browser?
-
-<span class="isolate blend-multiply dual">
-  <span class="circle circle-1"></span>
-  <span class="circle circle-2"></span>
-</span>
-
 === "Display P3"
     ```playground
-    Color('#07c7ed').compose('#fc3d99', blend='multiply', space="display-p3")
+    c1 = Color('#07c7ed')
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, blend='multiply', space="display-p3")
     ```
 
 === "sRGB"
     ```playground
-    Color('#07c7ed').compose('#fc3d99', blend='multiply', space="srgb")
+    c1 = Color('#07c7ed')
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, blend='multiply', space="srgb")
     ```
+
+!!! note "Display Differences"
+    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+    and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
 You can even blend multiple colors. Simply send in a list, and the colors will be blended from right to left with the
 right most color being on the bottom of the stack, and the base color being on the very top.
@@ -104,15 +105,6 @@ will use the demonstration above and replicate the result in the example below. 
 `#!color Color('#07c7ed').set('alpha', 0.5)` and the backdrop color to `#!color #fc3d99` and run it through the
 `compose` method.
 
-!!! note "Display Differences"
-    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-    and Display P3 so that the examples can be compared on different displays. Which of the below matches your browser?
-
-<span class="isolate blend-normal dual">
-  <span class="circle circle-1"></span>
-  <span class="circle circle-2" style="opacity: 0.5"></span>
-</span>
-
 === "Display P3"
     ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="display-p3")
@@ -122,6 +114,10 @@ will use the demonstration above and replicate the result in the example below. 
     ```playground
     Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="srgb")
     ```
+
+!!! note "Display Differences"
+    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+    and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
 While the average user will be content with the default alpha compositing, Porter Duff offers many other configurations.
 If desired, we can change the Porter Duff operator used and apply different composite logic. For instance, in this case

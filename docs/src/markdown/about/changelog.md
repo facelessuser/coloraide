@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0
+
+- **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
+  similar.
+
 ## 0.10.0
 
 - **NEW**: Switch back to using CIELCH for gamut mapping (`lch-chroma`). There are still some edge cases that make
