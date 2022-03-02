@@ -121,6 +121,16 @@ transparency.
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 ```
 
+### Percent
+
+sRGB, CIELAB, CIELCH, Oklab, and Oklch can receive and output colors with optional percents for certain channels. This
+will output those channels in the range of [0%,100%] instead of their usual numeric value.
+
+```playground
+Color("rebeccapurple").to_string(percent=True)
+Color("rebeccapurple").convert('lab').to_string(percent=True)
+```
+
 ## sRGB Specific Options
 
 These options are currently specific to the sRGB color space.
@@ -150,15 +160,6 @@ hex color if possible.
 ```playground
 Color("#11223388").to_string(hex=True)
 Color("#11223388").to_string(hex=True, compress=True)
-```
-
-### Percent
-
-sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
-instead of using the range [0,255].
-
-```playground
-Color("rebeccapurple").to_string(percent=True)
 ```
 
 ### Names

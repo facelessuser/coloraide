@@ -50,19 +50,20 @@ class Oklch(base.Oklch):
         if not none:
             coords = util.no_nans(coords)
 
+        percent = options.get("percent", False)
         if alpha:
             template = "oklch({} {} {} / {})"
             return template.format(
-                util.fmt_percent(coords[0] * 100, precision),
-                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
                 util.fmt_float(coords[2], precision),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
             template = "oklch({} {} {})"
             return template.format(
-                util.fmt_percent(coords[0] * 100, precision),
-                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
                 util.fmt_float(coords[2], precision)
             )
 

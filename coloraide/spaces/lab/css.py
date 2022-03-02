@@ -19,7 +19,8 @@ class Lab(base.Lab):
             \blab\(\s*
             (?:
                 # Space separated format
-                (?:{percent}|{float})(?:{space}(?:{percent}|{float})){{2}}(?:{slash}(?:{percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -52,20 +53,21 @@ class Lab(base.Lab):
         if not none:
             coords = util.no_nans(coords)
 
+        percent = options.get("percent", False)
         if alpha:
             template = "lab({} {} {} / {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
-                util.fmt_float(coords[1], precision),
-                util.fmt_float(coords[2], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper if percent else 0),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
             template = "lab({} {} {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
-                util.fmt_float(coords[1], precision),
-                util.fmt_float(coords[2], precision)
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper if percent else 0)
             )
 
     @classmethod

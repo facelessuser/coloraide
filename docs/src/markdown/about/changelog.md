@@ -70,6 +70,10 @@
   similar.
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
   support comma string formats.
+- **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
+  and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
+  number by default instead. Optionally, these forms can force a percentage output with via the `to_string` method when
+  using the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
 - **NEW**: Officially drop Python 3.6 support.
 - **FIX**: Do not assume user defined, powerless hues as undefined. If they are defined by the user, they should be
   respected, even if they have no effect on the current color. This helps to ensure interpolations acts in an

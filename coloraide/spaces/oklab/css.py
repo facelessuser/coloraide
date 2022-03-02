@@ -19,7 +19,8 @@ class Oklab(base.Oklab):
             \bOklab\(\s*
             (?:
                 # Space separated format
-                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -52,20 +53,21 @@ class Oklab(base.Oklab):
         if not none:
             coords = util.no_nans(coords)
 
+        percent = options.get("percent", False)
         if alpha:
             template = "oklab({} {} {} / {})"
             return template.format(
-                util.fmt_percent(coords[0] * 100, precision),
-                util.fmt_float(coords[1], precision),
-                util.fmt_float(coords[2], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper if percent else 0),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
             template = "oklab({} {} {})"
             return template.format(
-                util.fmt_percent(coords[0] * 100, precision),
-                util.fmt_float(coords[1], precision),
-                util.fmt_float(coords[2], precision)
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper if percent else 0)
             )
 
     @classmethod

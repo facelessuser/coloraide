@@ -482,7 +482,7 @@ def clamp(value: float, mn: Optional[float] = None, mx: Optional[float] = None) 
         return value
 
 
-def fmt_float(f: float, p: int = 0) -> str:
+def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
@@ -494,19 +494,10 @@ def fmt_float(f: float, p: int = 0) -> str:
     if is_nan(f):
         return "none"
 
-    value = adjust_precision(f, p)
+    value = adjust_precision(f / (percent * 0.01) if percent else f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
-    return string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
-
-
-def fmt_percent(f: float, p: int = 0) -> str:
-    """Get percent."""
-
-    if not is_nan(f):
-        value = '{}%'.format(fmt_float(f, p))
-    else:
-        value = 'none'
-    return value
+    s = string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
+    return '{}%'.format(s) if percent else s
 
 
 def adjust_precision(f: float, p: int = 0) -> float:

@@ -47,7 +47,7 @@ class Lchuv(Lch, Space):
 
     BOUNDS = (
         GamutUnbound(0, 100.0),
-        GamutUnbound(0.0, 215.0),
+        GamutUnbound(0.0, 220.0),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 

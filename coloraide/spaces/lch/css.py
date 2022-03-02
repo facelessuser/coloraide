@@ -18,7 +18,7 @@ class Lch(base.Lch):
         \blch\(\s*
         (?:
             # Space separated format
-            (?:(?:{percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -50,19 +50,20 @@ class Lch(base.Lch):
         if not none:
             coords = util.no_nans(coords)
 
+        percent = options.get("percent", False)
         if alpha:
             template = "lch({} {} {} / {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
-                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
                 util.fmt_float(coords[2], precision),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
             template = "lch({} {} {})"
             return template.format(
-                util.fmt_percent(coords[0], precision),
-                util.fmt_float(coords[1], precision),
+                util.fmt_float(coords[0], precision, self.BOUNDS[0].upper if percent else 0),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper if percent else 0),
                 util.fmt_float(coords[2], precision)
             )
 

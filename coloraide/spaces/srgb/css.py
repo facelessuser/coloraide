@@ -92,28 +92,27 @@ class SRGB(base.SRGB):
         if not value:
             percent = options.get("percent", False)
             comma = options.get("comma", False)
-            factor = 100.0 if percent else 255.0
 
             method = None if not isinstance(fit, str) else fit
             coords = parent.fit(method=method).coords() if fit else self.coords()
             if comma or not none:
                 coords = util.no_nans(coords)
 
-            fmt = util.fmt_percent if percent else util.fmt_float
+            factor = 1 if percent else 255
             if alpha:
                 template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
                 value = template.format(
-                    fmt(coords[0] * factor, precision),
-                    fmt(coords[1] * factor, precision),
-                    fmt(coords[2] * factor, precision),
+                    util.fmt_float(coords[0] * factor, precision, self.BOUNDS[0].upper if percent else 0),
+                    util.fmt_float(coords[1] * factor, precision, self.BOUNDS[1].upper if percent else 0),
+                    util.fmt_float(coords[2] * factor, precision, self.BOUNDS[2].upper if percent else 0),
                     util.fmt_float(a, max(util.DEF_PREC, precision))
                 )
             else:
                 template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
                 value = template.format(
-                    fmt(coords[0] * factor, precision),
-                    fmt(coords[1] * factor, precision),
-                    fmt(coords[2] * factor, precision),
+                    util.fmt_float(coords[0] * factor, precision, self.BOUNDS[0].upper if percent else 0),
+                    util.fmt_float(coords[1] * factor, precision, self.BOUNDS[1].upper if percent else 0),
+                    util.fmt_float(coords[2] * factor, precision, self.BOUNDS[2].upper if percent else 0)
                 )
 
         return value

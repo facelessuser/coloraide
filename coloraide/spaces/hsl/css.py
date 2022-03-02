@@ -13,15 +13,14 @@ if TYPE_CHECKING:  # pragma: no cover
 class HSL(base.HSL):
     """HSL class."""
 
-    DEF_VALUE = "hsl(0 0% 0% / 1)"
     MATCH = re.compile(
         r"""(?xi)
         \bhsla?\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))? |
+            {angle}(?:{space}{percent}){{2}}(?:{slash}(?:{strict_percent}|{float}))? |
             # comma separated format
-            {strict_angle}{comma}{strict_percent}{comma}{strict_percent}(?:{comma}(?:{strict_percent}|{strict_float}))?
+            {strict_angle}(?:{comma}{strict_percent}){{2}}(?:{comma}(?:{strict_percent}|{strict_float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -58,16 +57,16 @@ class HSL(base.HSL):
             template = "hsla({}, {}, {}, {})" if comma else "hsl({} {} {} / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
-                util.fmt_percent(coords[1] * 100, precision),
-                util.fmt_percent(coords[2] * 100, precision),
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper),
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
             template = "hsl({}, {}, {})" if comma else "hsl({} {} {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
-                util.fmt_percent(coords[1] * 100, precision),
-                util.fmt_percent(coords[2] * 100, precision)
+                util.fmt_float(coords[1], precision, self.BOUNDS[1].upper),
+                util.fmt_float(coords[2], precision, self.BOUNDS[2].upper)
             )
 
     @classmethod
