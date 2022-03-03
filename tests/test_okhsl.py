@@ -135,8 +135,26 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('okhsl', [NaN, 0.5, 1], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('color(--okhsl 120 0% 75% / 1)')
+        c = Color('color(--okhsl none 0% 75% / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_sat(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--okhsl 270 0% 0.75 / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_max_light(self):
+        """Test maximum lightness."""
+
+        c = Color('color(--okhsl 270 20% 100% / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_light(self):
+        """Test minimum lightness."""
+
+        c = Color('color(--okhsl 270 20% 0% / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))

@@ -94,7 +94,7 @@ class Lab(base.Lab):
                 channels.append(cls.translate_channel(i, c))
             else:
                 alpha = cls.translate_channel(-1, c)
-        return cls.null_adjust(channels, alpha)
+        return channels, alpha
 
     @classmethod
     def match(

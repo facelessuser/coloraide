@@ -142,10 +142,7 @@ class InterpolateSingle(Interpolator):
         color = self.create(self.space, channels[:-1], channels[-1])
         if self.premultiplied:
             postdivide(color)
-        if self.outspace != color.space():
-            return color.convert(self.outspace, in_place=True)
-        else:
-            return color.normalize()
+        return color.convert(self.outspace, in_place=True) if self.outspace != color.space() else color
 
 
 class InterpolatePiecewise(Interpolator):

@@ -125,10 +125,16 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('hsv', [NaN, 0.5, 0.75], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('color(--hsv 120 0% 0.75 / 1)')
+        c = Color('color(--hsv none 0% 0.75 / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_sat(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--hsv 270 0% 0.75 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_to_hsl(self):

@@ -40,12 +40,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('hsl(30 none none)').coords(), [30, NaN, NaN])
 
     def test_normalize(self):
-        """Test normalize."""
+        """
+        Test normalize.
 
-        c1 = Color("hsl", [30, 0, 30])
-        self.assertFalse(c1.is_nan('hue'))
-        c1.normalize()
-        self.assertTrue(c1.is_nan('hue'))
+        Should do nothing on a non-hue color.
+        """
+
+        self.assertColorEqual(Color('white').normalize(), Color('white'))
+        self.assertColorNotEqual(Color('hsl(270 0% 50%)').normalize(), Color('hsl(270 0% 50%)'))
 
     def test_color_dict(self):
         """Color dictionaries."""

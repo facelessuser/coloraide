@@ -212,16 +212,17 @@ class XYZD65(Space):
 ```
 
 In addition to the above methods, some color spaces, such as cylindrical spaces, have some additional logic that
-determines when a `hue` is undefined. At key points, the function `null_adjust` is executed to normalize the channels
-and set `hue` to an undefined value when appropriate. In the case of such color spaces, it may be necessary to define
-`null_adjust` as well. Below is an example from HSL that sets `hue` to undefined when `saturation` is `#!py3 0`.
+determines when a `hue` is undefined. This function provides access to this logic in case `normalize` is called from the
+the `Color` object. In the case of such color spaces, it may be necessary to define
+`null_adjust` as well. Below is an example from HSL that sets `hue` to undefined when `saturation` is `#!py3 0` or
+`lightness` is equal to `#!py3 0` or `#!py3 1`.
 
 ```py
     @classmethod
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        if coords[1] == 0:
+        if coords[1] == 0 or coords[2] in (0, 1):
             coords[0] = util.NaN
 
         return coords, alpha

@@ -135,10 +135,10 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('lchuv-d65', [90, 50, NaN], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('color(--lchuv-d65 90% 0 120 / 1)')
+        c = Color('color(--lchuv-d65 90% 0 none / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_near_zero_null(self):
@@ -149,7 +149,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('color(--lchuv-d65 90% 0.000000000009 120 / 1)')
+        c = Color('color(--lchuv-d65 90% 0.000000000009 120 / 1)').convert('luv-d65').convert('lchuv-d65')
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_luv(self):
@@ -159,6 +159,12 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c2 = c1.convert('lchuv-d65')
         self.assertColorEqual(c2, Color('color(--lchuv-d65 90% 0 0)'))
         self.assertTrue(c2.is_nan('hue'))
+
+    def test_null_normalization_min_chroma(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--lchuv-d65 90% 0 120 / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to LCHuv with a null hue."""

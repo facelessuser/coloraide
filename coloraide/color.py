@@ -494,7 +494,6 @@ class Color(metaclass=BaseColor):
                 c.set(name, util.constrain_hue(c.get(name)))
         else:
             gamut.clip_channels(c)
-        c.normalize()
 
         # Adjust "this" color
         return self.update(c) if in_place else c.convert(self.space(), in_place=True)
@@ -538,7 +537,6 @@ class Color(metaclass=BaseColor):
         else:
             # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
             func(c, **kwargs)
-        c.normalize()
 
         # Adjust "this" color
         return self.update(c) if in_place else c.convert(self.space(), in_place=True)
@@ -698,9 +696,8 @@ class Color(metaclass=BaseColor):
         color = compositing.compose(self, bcolor, blend, operator, space)
 
         outspace = self.space() if out_space is None else out_space.lower()
-        return (
-            self.mutate(color.convert(outspace)) if in_place else color.convert(outspace)
-        ).normalize()
+        color.convert(outspace, in_place=True)
+        return self.mutate(color) if in_place else color
 
     def delta_e(
         self,

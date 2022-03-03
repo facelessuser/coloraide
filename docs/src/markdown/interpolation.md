@@ -345,15 +345,22 @@ Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], s
 ## Undefined/Null/NaN Handling {#null-handling}
 
 Color spaces that have hue coordinates often have rules about when the hue is considered relevant. For instance, in the
-HSL color space, if saturation is zero, the hue is considered null. This is because the color is "without color" or
-achromatic; therefore, it has no hue, or the hue is undefined.
+HSL color space, if saturation is zero, the hue is essentially powerless. This is because the color is "without color"
+or achromatic; therefore, the hue can have no affect on the actual color.
+
+ColorAide will generally respect the values a user provides, so if an achromatic HSL color is given a hue of 270
+degrees, ColorAide will accept it, but the hue will not affect the color in any meaningful way. During conversion
+though, if an achromatic color is converted to the HSL color space, the resultant color will have a hue that is noted as
+undefined. This is simply because there is no good hue for achromatic colors as they play no part in the color. One
+could consider any hue correct or all hues as incorrect. Instead, colors will be returned with an value that represents
+that the hue is missing or undefined, or maybe better worded, could not be defined.
 
 Many libraries, like [d3-color](https://github.com/d3/d3-color), [chroma.js](https://gka.github.io/chroma.js/), and
 [color.js](https://github.com/LeaVerou/color.js), represent null hues with `NaN` (not a number). This is usually done
 to make color interpolation easier. Some, like d3-color, are a bit more liberal with `NaN` and will target special cases
 that are above and beyond the normal rules to help ensure good interpolation. For instance, they not only mark hue
-undefined on HSL colors when saturation is zero, but also when lightness is zero or one hundred (essentially appearing
-black or white). In fact, they'll mark saturation as `NaN` when lightness indicates "black" or "white".
+undefined on HSL colors when saturation is zero, but they'll mark saturation as `NaN` when lightness indicates "black"
+or "white".
 
 ColorAide also uses `NaN`, or in Python `#!py3 float('nan')`, to represent undefined channels. In certain situations,
 when a hue is deemed undefined, the hue value will be set to `coloraide.NaN`, which is just a constant containing

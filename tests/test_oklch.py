@@ -164,10 +164,10 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('oklch', [0.9, 50, NaN], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('color(--oklch 90% 0 120 / 1)')
+        c = Color('color(--oklch 90% 0 none / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_near_zero_null(self):
@@ -178,7 +178,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('color(--oklch 90% 0.0000009 120 / 1)')
+        c = Color('color(--oklch 90% 0.0000009 120 / 1)').convert('srgb').convert('oklch')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_chroma(self):
+        """Test minimum saturation."""
+
+        c = Color('oklch(90% 0 120 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_oklab(self):
