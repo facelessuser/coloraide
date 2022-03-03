@@ -104,14 +104,20 @@ convert back to sane values in another space in most cases.
 
 ## Undefined Values
 
-Colors in general can sometimes have undefined channels. This can happen in a number of ways.
+Colors in general can sometimes have undefined channels. This can actually happen in a number of ways. In all current
+cases, it refers to hues in achromatic situations.
 
 1. Channels can naturally be undefined under certain situations as defined by the color space. For instance, spaces
-with hues will have undefined hues when the color is achromatic. This can happen in scenarios where colors have no
-chroma or saturation.
+with hues will have powerless hues when the color is achromatic. This can occur if saturation or chroma is zero, or
+when a color has no lightness, etc.
+
+    Normally, if a hue is defined manually defined on an achromatic color they are considered defined even if the
+    defined value is powerless, but during the conversion process, the algorithm won't know what to assign a hue. One
+    could argue `0`, but that is actually a red hue, and achromatic colors are not inherently red. In the end, no hue
+    is actually satisfactory, so an undefined hue is applied.
 
     ```playground
-    color = Color('hsl(30 0% 40%)')
+    color = Color('white').convert('hsl')
     color.coords()
     ```
 
@@ -140,8 +146,8 @@ for `#!py3 float('nan')`.
     color.coords()
     ```
 
-3. Lastly, a user can use the `mask` method that masks a given channel `none`. `mask` is useful as it is an easy way to
-quickly mask multiple channels. Additionally, by default, it returns a clone leaving the original untouched.
+3. Lastly, a user can use the `mask` method which is a quick way to one or multiple channels as undefined.
+Additionally, it returns a clone leaving the original untouched by default.
 
     ```playground
     Color('white').coords()

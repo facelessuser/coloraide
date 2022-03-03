@@ -38,32 +38,16 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
-Colors can also be exported to and receive input from a simple dictionaries. These can be useful when serializing to
-JSON or various other reasons. The `space` key and all relevant color channels must be specified when constructing a
-color object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted. Default
-channel names must currently be used (no aliases).
+Colors can also be exported to and receive input from simple dictionaries. These can be useful when serializing to JSON
+or various other reasons. The `space` key and all relevant color channels must be specified when constructing a color
+object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted. Default channel
+names must currently be used (no aliases).
 
 ```playground
 d = Color('red').to_dict()
 print(d)
 Color(d)
 ```
-
-!!! note "Normalizing Undefined Channels"
-
-    Normally, when ColorAide processes a color via CSS input or returns a color via compositing, interpolation, gamut
-    fitting, etc., it will normalize undefined hues. Certain color spaces will consider a hue undefined in certain
-    cases, such as when a HSL color has a saturation of zero. Raw inputs via the dict method or the color space and list
-    method will not be normalized in such cases. Raw inputs are accepted as is. This is because they are treated as
-    manual inputs, or purposeful inputs from the user, so their values are respected and left unchanged.
-
-    If at any time, it is desired to force channel normalization after a manual input, just run `normalize`:
-
-    ```playground
-    Color("hsl(130 0% 50%)")
-    Color("hsl", [130, 0, 0.5])
-    Color("hsl", [130, 0, 0.5]).normalize()
-    ```
 
 If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
 
@@ -151,6 +135,27 @@ we could simply call the `convert` method with the desired color space.
 ```playground
 Color('yellow').convert("lab")
 ```
+
+!!! note "Normalizing Undefined Channels"
+
+    Some color spaces have channels which in certain scenarios are considered powerless. For instance, when an HSL color
+    is achromatic (gray-scale) due to having saturation of zero, the hue channel is powerless. This is because the hue
+    value can contribute in no meaningful way.
+
+    As an example, during the conversion process from any color to HSL, if the resultant HSL color has a saturation of
+    `#!py3 0` or a lightness of `#!py3 0` or `#!py3 1`, the hue will be marked as missing. This really only happens
+    automatically during conversion as the algorithm has no way to know what the hue should be as all hues are
+    technically wrong even if they do not affect the color.
+
+    If desired, this same logic can be forced on a color via the `normalize` method as there may be reasons for a user
+    to want to do this, whether it is for interpolation or other reasons. Checkout the [Interpolation](./interpolation.md)
+    section in the documentation to learn more.
+
+    ```playground
+    Color("hsl(130 0% 50%)")
+    Color("hsl(130 0% 50%)").convert('srgb').convert('hsl')
+    Color("hsl(130 0% 50%)").normalize()
+    ```
 
 ## Color Matching
 

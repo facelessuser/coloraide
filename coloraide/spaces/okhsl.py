@@ -377,7 +377,7 @@ def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
     L = lab[0]
     s = 0.0
 
-    if c != 0 and L != 0:
+    if c != 0 and L not in (0, 1):
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -475,7 +475,7 @@ class Okhsl(Cylindrical, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        if coords[1] == 0:
+        if coords[1] == 0 or coords[2] in (0, 1):
             coords[0] = util.NaN
         return coords, alpha
 

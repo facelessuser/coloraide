@@ -175,10 +175,16 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('hwb', [NaN, 0.1, 0.2], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('hwb(120 100% 0% / 1)')
+        c = Color('hwb(none 100% 0% / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_max_white_black(self):
+        """Test maximum lightness."""
+
+        c = Color('hwb(270 20% 100% / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_to_hsv(self):

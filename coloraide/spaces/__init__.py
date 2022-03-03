@@ -381,6 +381,6 @@ class Space(
                 channels.extend([util.NaN] * diff)
 
             # Apply null adjustments (null hues) if applicable
-            return cls.null_adjust(channels, alpha), m.end(0)
+            return (channels, alpha), m.end(0)
 
         return None

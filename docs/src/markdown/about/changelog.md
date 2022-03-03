@@ -7,6 +7,10 @@
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
   support comma string formats.
 - **NEW**: Officially drop Python 3.6 support.
+- **FIX**: Do not assume user defined, powerless hues as undefined. If they are defined by the user, they should be
+  respected, even if they have no effect on the current color. This helps to ensure interpolations acts in an
+  unsurprising way. If a user manually specifies the channel with `none`, then it will be considered undefined, or if
+  the color goes through a conversion to a space that cannot pick an appropriate hue, they will also be undefined.
 
 ## 0.10.0
 

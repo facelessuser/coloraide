@@ -95,7 +95,7 @@ class HSL(base.HSL):
                 channels.append(cls.translate_channel(i, c))
             elif i == 3:
                 alpha = cls.translate_channel(-1, c)
-        return cls.null_adjust(channels, alpha)
+        return channels, alpha
 
     @classmethod
     def match(

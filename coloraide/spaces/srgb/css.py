@@ -181,11 +181,11 @@ class SRGB(base.SRGB):
                     channels.append(cls.translate_channel(i, c))
                 elif i == 3:
                     alpha = cls.translate_channel(-1, c)
-            return cls.null_adjust(channels, alpha)
+            return channels, alpha
         else:
             length = len(color)
             if length in (7, 9):
-                return cls.null_adjust(
+                return (
                     [
                         cls.translate_channel(0, "#" + color[1:3]),
                         cls.translate_channel(1, "#" + color[3:5]),
@@ -194,7 +194,7 @@ class SRGB(base.SRGB):
                     cls.translate_channel(-1, "#" + color[7:9]) if length == 9 else 1.0
                 )
             else:
-                return cls.null_adjust(
+                return (
                     [
                         cls.translate_channel(0, "#" + color[1] * 2),
                         cls.translate_channel(1, "#" + color[2] * 2),

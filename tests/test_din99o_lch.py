@@ -135,10 +135,10 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('din99o-lch', [90, 50, NaN], 1)
         self.assertTrue(c.is_nan('hue'))
 
-    def test_auto_null(self):
-        """Test auto null."""
+    def test_none_input(self):
+        """Test `none` null."""
 
-        c = Color('color(--din99o-lch 90% 0 120 / 1)')
+        c = Color('color(--din99o-lch 90% 0 none / 1)')
         self.assertTrue(c.is_nan('hue'))
 
     def test_near_zero_null(self):
@@ -149,7 +149,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('color(--din99o-lch 90% 0.000000000009 120 / 1)')
+        c = Color('color(--din99o-lch 90% 0.000000000009 120 / 1)').convert('din99o').convert('din99o-lch')
         self.assertTrue(c.is_nan('hue'))
 
     def test_from_din99o(self):
