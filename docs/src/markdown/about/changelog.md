@@ -2,6 +2,42 @@
 
 ## 0.11.0
 
+!!! warning "Breaking Changes"
+
+    1. Prior to 0.11.0, if you specified a cylindrical space directly, ColorAide would normalize undefined hues the same
+       way that the conversion algorithm did. In the below case, saturation is zero, so the hue was declared undefined.
+
+        ```py
+        >>> Color('hsl(270 0% 50%)')
+        color(--hsl none 0 0.5 / 1)
+        ```
+
+        We should not have been doing this, and it made some cases of interpolation a bit confusing. It is no longer
+        done as the hues are in fact specified by the user, even if they are powerless in relation to contribution to
+        the rendered color. When a cylindrical color is converted or if a user declares the channel as undefined with
+        `none` or some other way, then the channel will be declared undefined, because in these cases, they truly are.
+
+        ```py
+        >>> Color('white').convert('hsl')
+        color(--hsl none 0 1 / 1)
+        >>> Color('color(--hsl none 0 0.5)')
+        color(--hsl none 0 0.5)
+        ```
+
+        If you are working directly in a cylindrical color space and ever wish to force the normalization of color hues
+        as undefined when the color meets the usual requirements as specified by the color space's current rules, just
+        call `normalize` on the color and it will apply the same logic that occurs during the conversion process.
+
+        ```py
+        >>> Color('hsl(270 0% 50%)').normalize()
+        color(--hsl none 0 0.5 / 1)
+        ```
+    2. If you relied on commas in CSS forms that did not support them, this behavior is no longer allowed. It was
+       thought that CSS may consider allowing comma formats in formats like `hwb()`, etc., and it was considered, but
+       ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
+       this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
+       as the default anymore.
+
 - **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
   similar.
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
@@ -21,7 +57,7 @@
 
 ## 0.9.0
 
-!!! warning "Breaking Change"
+!!! warning "Breaking Changes"
     Custom gamut mapping plugins no longer return coordinates and require the method to update the passed in color.
 
 - **NEW**: Improved, faster gamut mapping algorithm.
@@ -41,7 +77,7 @@
 
 ## 0.8.0
 
-!!! warning "Breaking Change"
+!!! warning "Breaking Changes"
     The use of `xyz` as the color space name has been changed in favor of `xyz-d65`. This better matches the CSS
     specification. As we are still in a prerelease state, we have not provided any backwards compatibility.
 
@@ -119,7 +155,7 @@
 
 ## 0.3.0
 
-!!! warning "Breaking Change"
+!!! warning "Breaking Changes"
     XYZ changes below will cause breakage as `xyz` now refers to XYZ with D65 instead of D50. Also, CSS identifiers
     changed per the recent specification change.
 

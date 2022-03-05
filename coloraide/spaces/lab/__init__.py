@@ -74,9 +74,9 @@ class Lab(Labish, Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D50"
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),  # Technically we could/should clamp the zero side.
-        GamutUnbound(-160, 160),  # No limit, but we could impose one +/-160?
-        GamutUnbound(-160, 160)  # No limit, but we could impose one +/-160?
+        GamutUnbound(0.0, 100.0, FLG_PERCENT),
+        GamutUnbound(-160, 160),
+        GamutUnbound(-160, 160)
     )
 
     @property
