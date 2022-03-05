@@ -13,7 +13,7 @@
         ```
 
         We should not have been doing this, and it made some cases of interpolation a bit confusing. It is no longer
-        done as the hues are in fact specified by the user, even if they are powerless in relation to contribution to
+        done as the hues are in fact specified by the user, even if they are powerless in relation to contributing to
         the rendered color. When a cylindrical color is converted or if a user declares the channel as undefined with
         `none` or some other way, then the channel will be declared undefined, because in these cases, they truly are.
 
