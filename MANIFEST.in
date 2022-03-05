@@ -1,5 +1,5 @@
 recursive-include coloraide *.py
-recursive-include tests *.py
+recursive-include tests *.py *.json
 recursive-include tools *.py *.sh
 recursive-include requirements *.txt
 recursive-include docs/src/markdown *.md *.png *.gif *.html *.txt

@@ -50,7 +50,7 @@ setup(
     author='Isaac Muse',
     author_email='Isaac.Muse@gmail.com',
     url='https://github.com/facelessuser/coloraide',
-    packages=find_packages(exclude=['tests', 'tools', 'docs*']),
+    packages=find_packages(exclude=['tests*', 'tools', 'docs*']),
     install_requires=get_requirements("requirements/project.txt"),
     license='MIT License',
     classifiers=[

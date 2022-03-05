@@ -773,6 +773,73 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
         Color("okhsl", [0, 0, 0], 1).to_string()
         ```
 
+### HSLuv
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hsluv`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    s    | [0, 100]
+    l    | [0, 100]
+
+<figure markdown="1">
+
+![HSLuv 3D](../images/hsluv-3d.png)
+
+<figcaption>HSLuv color space in 3D</figcaption>
+</figure>
+
+HSLuv is a human-friendly alternative to HSL. It was formerly known as "HUSL" and is a variation of the
+[CIELCH~uv~](#cielchuv) color space, where the chroma component is replaced by a saturation component which allows you
+to span all the available chroma as a percentage. HSLuv is constrained to the sRGB gamut.
+
+_[Learn about HSLuv](https://www.hsluv.org/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `h`         | `hue`
+        `s`         | `saturation`
+        `l`         | `lightness`
+
+    **Inputs:**
+    : 
+        HSLuv is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --hsluv`:
+
+        ```css-color
+        color(--hsluv h s l / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("hsluv", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--hsluv h s l / a)` form.
+
+        ```playground
+        Color("hsluv", [0, 0, 0], 1)
+        Color("hsluv", [0, 0, 0], 1).to_string()
+        ```
+
 ## XYZ
 
 The 1931 CIE XYZ color space encompasses all colors that are visible to a person with average eyesight. It also contains
