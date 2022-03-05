@@ -23,7 +23,7 @@ class TestDistance(util.ColorAsserts):
         [
             ('red', 'orange', 'lab', 75.3815),
             ('red', 'orange', 'lab-d65', 79.0759),
-            ('red', 'orange', 'luv', 125.1829),
+            ('red', 'orange', 'luv', 128.225),
             ('red', 'orange', 'din99o', 45.6156),
             ('red', 'orange', 'oklab', 0.3367),
             ('red', 'orange', 'jzazbz', 0.1224),

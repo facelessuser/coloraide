@@ -48,7 +48,7 @@ class Lchuv(Lch, Space):
     NAME = "lchuv"
     SERIALIZE = ("--lchuv",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+    WHITE = "D65"
 
     BOUNDS = (
         GamutUnbound(0, 100.0, FLG_PERCENT),

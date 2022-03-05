@@ -54,7 +54,7 @@ def luv_to_xyz(luv: MutableVector, white: str) -> MutableVector:
 class Luv(Labish, Space):
     """Luv class."""
 
-    BASE = "xyz-d50"
+    BASE = "xyz-d65"
     NAME = "luv"
     SERIALIZE = ("--luv",)
     CHANNEL_NAMES = ("l", "u", "v")
@@ -62,7 +62,7 @@ class Luv(Labish, Space):
         "lightness": "l"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+    WHITE = "D65"
 
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
