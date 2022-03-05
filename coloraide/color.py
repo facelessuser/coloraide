@@ -166,6 +166,7 @@ class Color(metaclass=BaseColor):
 
         obj = None
         if isinstance(color, str):
+            # Parse a color space name and coordinates
             if data is not None:
                 for space, space_class in self.CS_MAP.items():
                     s = color.lower()
@@ -175,15 +176,18 @@ class Color(metaclass=BaseColor):
                             data = list(data) + [util.NaN] * (num_channels - len(data))
                         obj = space_class(data[:num_channels], alpha)
                         break
+            # Parse a CSS string
             else:
                 m = self._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
                 obj = m[0]
         elif isinstance(color, Color):
+            # Handle a color instance
             if not filters or color.space() in filters:
                 obj = self.CS_MAP[color.space()](color._space)
         elif isinstance(color, Mapping):
+            # Handle a color dictionary
             space = color['space']
             if not filters or space in filters:
                 cs = self.CS_MAP[space]
