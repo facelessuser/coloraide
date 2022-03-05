@@ -37,7 +37,15 @@
        ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
        this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
        as the default anymore.
+    3. The D65 form of Luv and LCHuv is now the only supported Luv based color spaces by default now. D50 Luv and LCHuv
+       have been dropped and `luv` and `lchuv` now refers to the D65 version. In most places, the D65 is the most common
+       used white space as most monitors are calibrated for this white point. The only reason CIELAB and CIELCH are D50
+       by default is that CSS requires it. Anyone interested in using Luv with a different white point can easily
+       subclass the current Luv and create a new plugin color space that uses the new white point.
 
+- **NEW**: ColorAide now only ships with the D65 version Luv and LCHuv as D65, in most places is the expected white
+  space. Now, the identifier `luv` and `lchuv` will refer to the D65 version of the respective color spaces. D50
+  variants are no longer available by default.
 - **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
   similar.
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer

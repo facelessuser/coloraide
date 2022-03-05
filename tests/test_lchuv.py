@@ -4,7 +4,7 @@ from . import util
 from coloraide import Color, NaN
 
 
-class TestLCHuvInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestLCHuvD65InputOutput(util.ColorAsserts, unittest.TestCase):
     """Test LCHuv."""
 
     def test_input_raw(self):
@@ -24,7 +24,7 @@ class TestLCHuvInputOutput(util.ColorAsserts, unittest.TestCase):
 
         color = "color(--lchuv 20% 10 130)"
         lchuv = Color(color)
-        self.assertEqual('color(--lchuv 20 10 130)', lchuv.to_string(**args))
+        self.assertEqual("color(--lchuv 20 10 130)", lchuv.to_string(**args))
 
         color = "color(--lchuv 20% 10 130 / 1)"
         lchuv = Color(color)
@@ -90,7 +90,7 @@ class TestLCHuvInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestLCHuvProperties(util.ColorAsserts, unittest.TestCase):
+class TestLCHuvD65Properties(util.ColorAsserts, unittest.TestCase):
     """Test LCHuv."""
 
     def test_lightness(self):
@@ -152,12 +152,6 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('color(--lchuv 90% 0.000000000009 120 / 1)').convert('luv').convert('lchuv')
         self.assertTrue(c.is_nan('hue'))
 
-    def test_null_normalization_min_chroma(self):
-        """Test minimum saturation."""
-
-        c = Color('color(--lchuv 90% 0 120 / 1)').normalize()
-        self.assertTrue(c.is_nan('hue'))
-
     def test_from_luv(self):
         """Test null from Luv conversion."""
 
@@ -165,6 +159,12 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c2 = c1.convert('lchuv')
         self.assertColorEqual(c2, Color('color(--lchuv 90% 0 0)'))
         self.assertTrue(c2.is_nan('hue'))
+
+    def test_null_normalization_min_chroma(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--lchuv 90% 0 120 / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to LCHuv with a null hue."""
