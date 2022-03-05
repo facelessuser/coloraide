@@ -308,13 +308,12 @@ class Space(
 
         values = [util.fmt_float(coord, precision) for coord in coords]
 
-        template = "color({} {} / {})" if alpha else "color({} {})"
         if alpha:
-            return template.format(
+            return "color({} {} / {})".format(
                 self._serialize()[0], ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC))
             )
         else:
-            return template.format(self._serialize()[0], ' '.join(values))
+            return "color({} {})".format(self._serialize()[0], ' '.join(values))
 
     @classmethod
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
