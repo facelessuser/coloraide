@@ -46,6 +46,7 @@
 - **NEW**: ColorAide now only ships with the D65 version Luv and LCHuv as D65, in most places is the expected white
   space. Now, the identifier `luv` and `lchuv` will refer to the D65 version of the respective color spaces. D50
   variants are no longer available by default.
+- **NEW**: Add the HSLuv color space.
 - **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
   similar.
 - **NEW**: Be more strict with CSS inputs and outputs. `hwb()`, `lab()`, `lch()`, `oklab()`, and `oklch()` no longer
