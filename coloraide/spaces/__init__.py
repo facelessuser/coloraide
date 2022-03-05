@@ -350,10 +350,9 @@ class Space(
             channels = []
             for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
                 if c and i < num_channels:
-                    c = c.lower()
                     # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
                     is_percent = cls.BOUNDS[i].flags & FLG_PERCENT
-                    channels.append(parse.norm_color_channel(c, not is_percent))
+                    channels.append(parse.norm_color_channel(c.lower(), not is_percent))
 
             # Missing channels are filled with `NaN`
             if len(channels) < num_channels:
