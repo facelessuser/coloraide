@@ -1853,7 +1853,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
-    **Name:** `din99o-lch`
+    **Name:** `lch99o`
 
     **White Point:** D65
 
@@ -1869,7 +1869,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
 <figure markdown="1">
 
-![DIN99o Lch](../images/din99o-lch-3d.png)
+![DIN99o Lch](../images/lch99o-3d.png)
 
 <figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the DIN99o Lch color space.</figcaption>
 </figure>
@@ -1892,27 +1892,27 @@ _[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
     **Inputs:**
     : 
         As DIN99o Lch is not currently supported in the CSS spec, the parsed input and string output formats use the
-        `#!css-color color()` function format using the custom name `#!css-color --din99o-lch`:
+        `#!css-color color()` function format using the custom name `#!css-color --lch99o`:
 
         ```css-color
-        color(--din99o-lch jz cz hz / a)  // Color function
+        color(--lch99o jz cz hz / a)  // Color function
         ```
 
         When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
         space name is always used:
 
         ```py
-        Color("din99o-lch", [0, 0, 0], 1)
+        Color("lch99o", [0, 0, 0], 1)
         ```
 
     **Output:**
     : 
         The string representation of the color object and the default string output use the
-        `#!css-color color(--din99o-lch jz cz hz / a)` form.
+        `#!css-color color(--lch99o jz cz hz / a)` form.
 
         ```playground
-        Color("din99o-lch", [0, 0, 0], 1)
-        Color("din99o-lch", [0, 0, 0], 1).to_string()
+        Color("lch99o", [0, 0, 0], 1)
+        Color("lch99o", [0, 0, 0], 1).to_string()
         ```
 
 [^1]: For the purposes of speed, 3D models are calculated by taking points on the outer shell of the sRGB gamut and
