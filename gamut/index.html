@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/gamut/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -40,8 +40,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -521,6 +522,19 @@
     Checking Gamut
   </a>
   
+    <nav class="md-nav" aria-label="Checking Gamut">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tolerance" class="md-nav__link">
+    Tolerance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -860,6 +874,19 @@
     Checking Gamut
   </a>
   
+    <nav class="md-nav" aria-label="Checking Gamut">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tolerance" class="md-nav__link">
+    Tolerance
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -886,16 +913,17 @@
 
 <h1 id="gamut-mapping">Gamut Mapping<a class="headerlink" href="#gamut-mapping" title="Permanent link"></a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
-<p>Many color spaces have limits to the colors they can accurately represent. This is the color gamut. The bounds represent
-the limits to which a color space can represent a color. Some color spaces are theoretically unbounded, but past a
-point, the eye can't see them.</p>
-<p>When moving from a large color space like CIELAB to a small color space like sRGB, many CIELAB colors will not fit
-without mapping the color to one that does fit. This "fitting" of the color from one gamut into another is called gamut
-mapping.</p>
+<p>Many color spaces are designed in such a way that they can only represent colors accurately within a specific range.
+This range in which a color can accurately be represented is known as the color gamut. Some color spaces are
+theoretically unbounded, but past a point, the eye can't see them anyways.</p>
+<p>CIELAB is a color space that has no real defined. When translating a color from such a large color space as CIELAB to a
+small color space like sRGB, there are many colors that simply cannot be represented within the space. In order to
+visually represent a color outside of the gamut, a suitable color within the gamut must be selected to be shown in its
+place. This selecting of a suitable replacement is called gamut mapping.</p>
 <h2 id="checking-gamut">Checking Gamut<a class="headerlink" href="#checking-gamut" title="Permanent link"></a></h2>
 <p>When dealing with colors, it can be important to know whether a color is within its own gamut. The <code>in_gamut</code> function
 allows for comparing the current color's specified values against the color space's gamut.</p>
-<p>Let's assume we have a color <span><span class="swatch out-of-gamut" title="rgb(30% 105% 0%)"><span class="swatch-color" style="--swatch-stops: #6aff3b,#6aff3b;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">30</span><span class="k">%</span><span class="w"> </span><span class="m">105</span><span class="k">%</span><span class="w"> </span><span class="m">0</span><span class="k">%</span><span class="g">)</span><span class="w"></span></code></span>. The color is out of gamut due to the green channel exceeding
+<p>Let's assume we have a color <span><span class="swatch out-of-gamut" title="rgb(30% 105% 0%)"><span class="swatch-color" style="--swatch-stops: #6dff3e,#6dff3e;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">30</span><span class="k">%</span><span class="w"> </span><span class="m">105</span><span class="k">%</span><span class="w"> </span><span class="m">0</span><span class="k">%</span><span class="g">)</span><span class="w"></span></code></span>. The color is out of gamut due to the green channel exceeding
 the channel's limit of <code class="highlight"><span class="mi">100</span><span class="o">%</span></code>. When we execute <code>in_gamut</code>, we can see that the color is not in its own gamut.</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
@@ -914,9 +942,9 @@ the channel's limit of <code class="highlight"><span class="mi">100</span><span 
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>On the other hand, some colors do not have a limit, only suggested limits for usability. CIELAB does not really have
-bounds as it is formulated in such a way that it can represent any color, even if they are not visible. When we check a
-CIELAB color, we will find that it is always in gamut.</p>
+<p>On the other hand, some color spaces do not have a limit. CIELAB is one such color space. Sometimes limits will be
+placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELAB
+color, we will find that it is always considered in gamut.</p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lab(200% -20 40 / 1)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
@@ -956,10 +984,11 @@ narrow gamut of sRGB.</p>
 <button id="__playground-run_2" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_2" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
+<h3 id="tolerance">Tolerance<a class="headerlink" href="#tolerance" title="Permanent link"></a></h3>
 <p>Generally, ColorAide does not round off values in order to guarantee the best possible values for round tripping, but
-due to <a href="https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations">limitations of floating-point arithmetic</a>, there can be edge cases where colors don't round trip
-perfectly. By default, <code>in_gamut</code> allows for a tolerance of <code class="highlight"><span class="mf">0.000075</span></code> to account for such cases where a color
-is "close enough". If desired, this "tolerance" can be adjusted.</p>
+due to <a href="https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations">limitations of floating-point arithmetic</a> and precision of conversion algorithms, there can be
+edge cases where colors don't round trip perfectly. By default, <code>in_gamut</code> allows for a tolerance of <code class="highlight"><span class="mf">0.000075</span></code> to
+account for such cases where a color is "close enough". If desired, this "tolerance" can be adjusted.</p>
 <p>Let's consider CIELAB. The sRGB round trip through CIELAB for <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span> does not perfectly convert back to the
 original color. We can see that when using a tolerance of zero, the color is considered out of gamut. Depending on what
 you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be desirable
@@ -1023,23 +1052,25 @@ Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)</textarea>
 <button id="__playground-run_4" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>HWB is a little funny as values over 100% for whiteness and blackness are normalized, but the results are technically
-correct as the value will convert to an sRGB value perfectly in gamut.</p>
+<p>But when we are not using a strict threshold, and we check one of these models <strong>only</strong> using the sRGB gamut, there are
+some cases where these cylindrical colors can exhibit coordinates wildly outside of the model's range but still very
+close to the sRGB gamut.</p>
+<p>In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL,
+we can see wildly large saturation.</p>
 <div class="playground" id="__playground_5">
 <div class="playground-results" id="__playground-results_5">
-<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">hsl(142.5 200.06% 100%)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100.05</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hwb(0 100.05</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 1.0, 1.0]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_5">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_5" spellcheck="false">Color('hwb(0 100% 0%)').in_gamut('srgb', tolerance=0)
-Color('hwb(0 100.05% 0%)').in_gamut('srgb', tolerance=0)
-Color('hwb(0 100.05% 0%)').convert('srgb').coords()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_5" spellcheck="false">hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
+hsl.to_string(fit=False)
+hsl.in_gamut('srgb')</textarea>
 </form>
 </div>
 
@@ -1048,24 +1079,28 @@ Color('hwb(0 100.05% 0%)').convert('srgb').coords()</textarea>
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>But when using a tolerance check in a Cartesian model while in a cylindrical model, we can end up with some surprising
-results. In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL
-we can see wildly large saturation. There isn't anything technically wrong with this value as saturation and hue are
-essentially meaningless when lightness is <code class="highlight"><span class="mi">100</span><span class="o">%</span></code>, but this may be undesirable to a user.</p>
+<p>There is actually no inherent color gamut for the HSL, HSV, and HWB model as any RGB color space could be represented
+in one of these cylindrical models. One could easily map the Display P3 color space to one of these cylindrical modes
+creating an HSL Display P3 color, but the models do have constraints to ensure sane color coordinates that make sense.</p>
+<p>For this reason, gamut checks in the HSL, HSV, or HWB models apply tolerance checks on the color's coordinates in the
+sRGB color space <strong>and</strong> the respective cylindrical model ensuring we have coordinates that are inside the color's
+actual gamut and that they are sanely within the cylindrical model's constraints as well.</p>
+<p>So, when using HSL as the gamut check, we can see that it ensures the color is not only within the sRGB gamut, but that
+its coordinates are also sanely within the model's constraints.</p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span>
 <span class="go">color(--hsl 142.5 2.0006 1 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
+<span class="go">False</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_6">
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_6" spellcheck="false">hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
 hsl
-hsl.in_gamut('srgb')</textarea>
+hsl.in_gamut('hsl')</textarea>
 </form>
 </div>
 
@@ -1074,27 +1109,34 @@ hsl.in_gamut('srgb')</textarea>
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>For this reason, if passing in <code>hsl</code>, <code>hsv</code>, or <code>hwb</code> as gamut inputs, the tolerance is also compared not only against
-the Cartesian coordinates, but also the cylindrical coordinates. In this way, we are still checking that the colors are
-in the sRGB gamut, but the tolerance is now relative to the constraints of the cylindrical color model.</p>
-<p>There is no HSL, HSV, and HWB gamuts as these are just alternative models for RGB based colors. One could easily map the
-Display P3 color space, which has a different gamut, to one of these models.</p>
-<p>We can see below that now the gamut check will fail. If the color is an HSL color, we do not have to specify <code>hsl</code>, as
-it will be the default for that color space, but we specify it below just for illustration.</p>
+<p>Essentially, this forces a tighter constraint to ensure the colors represented in one of these cylindrical space aren't
+wildly out of the model's range even if they are technically close to being in gamut.</p>
+<p>If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
+problem, <code>srgb</code> can always be specified. <code class="highlight"><span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span></code> can always be used to constrain the check to values exactly
+in the gamut.</p>
+<p>Additionally, there may be other color spaces that play a little loose with the gamut during their conversion. For
+instance, Okhsv, an HSV model built off of Oklab, has a conversion back to sRGB that is simply not as precise as HSL or
+HSV to sRGB. There is nothing actually wrong with our implementation of the conversion algorithm, as it matches the
+behavior of the official implementation, the algorithm just isn't concerned with exactly translating the colors
+perfectly within the sRGB gamut. Simply clipping the color can clean it up nicely, and if desired, we can always tweak
+the tolerance.</p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(142.5 200.06% 100%)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span>
-<span class="go">color(--hsl 142.5 2.0006 1 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch out-of-gamut" title="rgb(189.31 -0.0873 47.65)"><span class="swatch-color" style="--swatch-stops: rgb(189.31 0 47.65) 50%, rgb(189.31 0 47.65) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">okhsv</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--okhsv 20 100</span><span class="si">% 75%</span><span class="s1"> / 1)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">okhsv</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">okhsv</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
+<span class="go">color(srgb 0.74239 -0.00034 0.18686 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">okhsv</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="n">tolerance</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+<span class="go">True</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
-hsl
-hsl.in_gamut('hsl')</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">okhsv = Color('color(--okhsv 20 100% 75% / 1)')
+okhsv.in_gamut()
+okhsv.convert('srgb')
+okhsv.in_gamut(tolerance=0.0005)</textarea>
 </form>
 </div>
 
@@ -1103,39 +1145,10 @@ hsl.in_gamut('hsl')</textarea>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>We can also see that the tolerance is now relative to the color model:</p>
-<div class="playground" id="__playground_8">
-<div class="playground-results" id="__playground-results_8">
-<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(140 100.000002</span><span class="si">% 0%</span><span class="s1">)&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[0.0, 0.0, 0.0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hsl</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
-<span class="go">True</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_8">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">hsl = Color('hsl(140 100.000002% 0%)')
-hsl.convert('srgb').coords()
-hsl.in_gamut('hsl')</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_8" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_8" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-<p>But don't worry, the tolerance constraint above isn't <em>solely</em> based on the HSL coordinates. If the color deviates past
-the threshold for sRGB <strong>or</strong> HSL, the gamut will yield <code class="highlight"><span class="kc">False</span></code>. It is simply an extra check added that ensures
-the tolerance is compared against both the Cartesian coordinates and the cylindrical coordinates to ensure that we are
-working with sane values.</p>
-<p>If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
-problem, <code>srgb</code> can always be specified. <code class="highlight"><span class="n">tolerance</span><span class="o">=</span><span class="mi">0</span></code> can always be used to constrain the check to values exactly
-in the gamut.</p>
 <h2 id="mapping-colors">Mapping Colors<a class="headerlink" href="#mapping-colors" title="Permanent link"></a></h2>
 <p>Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-There are various different ways to gamut map a color into a smaller gamut. Currently, ColorAide provides three methods:</p>
+While there are various different ways to gamut map a color into a smaller gamut, ColorAide currently provides only
+three:</p>
 <table>
 <thead>
 <tr>
@@ -1150,27 +1163,36 @@ There are various different ways to gamut map a color into a smaller gamut. Curr
 </tr>
 <tr>
 <td><code>lch-chroma</code></td>
-<td>Uses chroma reduction in the CIELCH color space to bring a color into gamut. This is the default method used.</td>
+<td>Uses a combination of chroma reduction and <abbr title="minimum delta E">MINDE</abbr> in the CIELCH color space to bring a color into gamut. This is the default method used.</td>
 </tr>
 <tr>
 <td><code>oklch-chroma</code></td>
-<td>Like <code>lch-chroma</code>, but uses the Oklch color space instead. Currently experimental.</td>
+<td>Like <code>lch-chroma</code>, but uses the Oklch color space instead. Currently experimental and closer to the current proposed <a href="https://drafts.csswg.org/css-color/#binsearch">CSS Color Level 4 specification</a>.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">CSS Level 4 Gamut Mapping</p>
-<p>We do not currently use the algorithm as defined in the <a href="https://drafts.csswg.org/css-color/#binsearch">CSS Level 4 specification</a>.
-This is because the current algorithm, as defined, has some issues that create gradients that are not smooth and
-can create unexpected colors in some situations. If/when the CSS Level 4 specification is updated to address such
-concerns, we may align more closely.</p>
+<p>The current <a href="https://drafts.csswg.org/css-color/#binsearch">CSS Level 4 specification</a> describes the suggested gamut
+mapping algorithm as a combination of chroma reduction and <abbr title="minimum delta E">MINDE</abbr>. While our approach is actually very similar, it
+does differ a little. The CSS algorithm:</p>
+<ol>
+<li>Currently uses Oklch which we've found to be problematic in some circumstances.</li>
+<li>Is quicker to settle on a mapped color, but comes at the cost of sometimes reducing chroma too aggressively.</li>
+</ol>
+<p>We've currently replaced Oklch with CIELCH which avoids some of the issues found with Oklch. We also have adjusted
+the algorithm to be less aggressive in regards to chroma reduction at the cost of some performance.</p>
+<p>The CSS Level 4 algorithm is very new and likely to go through some revisions to address some of the issues. When
+the algorithm becomes more stable, we may align more closely or at the very least provide the official CSS approach
+as an option.</p>
 </div>
-<p>In this example, we will take the color <span><span class="swatch out-of-gamut" title="lch(100% 50 75)"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">100</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">75</span><span class="g">)</span><span class="w"></span></code></span>. CIELCH's gamut is technically unbounded, but when we
-convert the color to sRGB, we find that the color is out of gamut. So, using the <code>fit</code> method, we can actually transform
-the color to one that fits in the sRGB space and gives a color that represents the intent of the larger color as best we
-can. As the color's lightness is so high, when fitting, we essentially end up with <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span>.</p>
-<div class="playground" id="__playground_9">
-<div class="playground-results" id="__playground-results_9">
+<p>In order to demonstrate gamut mapping, in this example, we will take the color <span><span class="swatch out-of-gamut" title="lch(100% 50 75)"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">100</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">75</span><span class="g">)</span><span class="w"></span></code></span>. CIELCH's gamut
+is technically unbounded, but when we convert the color to sRGB, we find that the color is out of gamut. So, using the
+<code>fit</code> method, we can actually transform the color to one that fits in the sRGB space and gives a color that represents
+the intent of the larger color as best we can. As the color's lightness is so high, when fitting, we essentially end up
+with <span><span class="swatch" title="white"><span class="swatch-color" style="--swatch-stops: #ffffff,#ffffff;"></span></span><code class="highlight"><span class="kc">white</span><span class="w"></span></code></span>.</p>
+<div class="playground" id="__playground_8">
+<div class="playground-results" id="__playground-results_8">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
 <span class="go">False</span>
@@ -1180,12 +1202,39 @@ can. As the color's lightness is so high, when fitting, we essentially end up wi
 <span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_9">
+<div class="playground-code hidden" id="__playground-code_8">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">rgb = Color("lch(100% 50 75)").convert('srgb')
+<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">rgb = Color("lch(100% 50 75)").convert('srgb')
 rgb.in_gamut()
 rgb.coords()
 rgb.fit()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_8" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_8" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
+it simply truncates any color channels whose values are too big. While gamut mapping via chroma reduction and <abbr title="minimum delta E">MINDE</abbr> can
+give better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to
+match how browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be
+the way to go.</p>
+<p>Clipping can simply be done using the <code>clip</code> method. Notice the difference when compared to the previous fitting
+results. We now end up with a very yellow-ish color.</p>
+<div class="playground" id="__playground_9">
+<div class="playground-results" id="__playground-results_9">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
+<span class="go">color(--lch 95.816 42.313 96.903 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
+<span class="go">color(--lch 100 0 none / 1)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_9">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">Color("lch(100% 50 75)").clip("srgb")
+Color("lch(100% 50 75)").fit("srgb")</textarea>
 </form>
 </div>
 
@@ -1194,25 +1243,19 @@ rgb.fit()</textarea>
 <button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
-it simply truncates any color channels whose values are too big. While gamut mapping via chroma compression can give
-better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to match how
-browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be the way to
-go.</p>
-<p>Clipping can simply be done using the <code>clip</code> method. Notice the difference when compared to the previous fitting
-results. We now end up with a very yellow-ish color.</p>
+<p>Color objects could potentially install other gamut fitting methods via plugins. If more are available, you can specify
+which one to use via the <code>method</code> parameter. <code>clip</code> is a reserved method and is always available. <code>clip</code> is provided
+this way to ensure any functions, like <code>to_string</code>, that allow for specifying the gamut mapping method dynamically can
+always use <code>clip</code>.</p>
 <div class="playground" id="__playground_10">
 <div class="playground-results" id="__playground-results_10">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
 <span class="go">color(--lch 95.816 42.313 96.903 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 100 0 none / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_10">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("lch(100% 50 75)").clip("srgb")
-Color("lch(100% 50 75)").fit("srgb")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">Color("lch(100% 50 75)").fit("srgb", method='clip')</textarea>
 </form>
 </div>
 
@@ -1221,32 +1264,12 @@ Color("lch(100% 50 75)").fit("srgb")</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Color objects could potentially install other gamut fitting methods via plugins. If more are available, you can specify
-which one to use via the <code>method</code> parameter. <code>clip</code> is a reserved method and is always available. <code>clip</code> is provided
-this way to ensure any functions, like <code>to_string</code>, that allow for specifying the gamut mapping method dynamically can
-always use <code>clip</code>.</p>
-<div class="playground" id="__playground_11">
-<div class="playground-results" id="__playground-results_11">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(95.816% 42.313 96.903)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s2">&quot;srgb&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;clip&#39;</span><span class="p">)</span>
-<span class="go">color(--lch 95.816 42.313 96.903 / 1)</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_11">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("lch(100% 50 75)").fit("srgb", method='clip')</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_11" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_11" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
 <p>If we wanted to change the default "fitting" to <code>clip</code>, we can also just use a
 <a href="../color/#override-default-settings">class override</a>. Doing this will cause the class to default to <code>clip</code> any time a
-color needs to be mapped. Though, you can still use chroma compression by specifying <code>lch-chroma</code> for the <code>method</code>.</p>
-<div class="playground" id="__playground_12">
-<div class="playground-results" id="__playground-results_12">
+color needs to be mapped. Though, you can still use the chroma reduction/<abbr title="minimum delta E">MINDE</abbr> approach by specifying <code>lch-chroma</code> for
+the <code>method</code>.</p>
+<div class="playground" id="__playground_11">
+<div class="playground-results" id="__playground-results_11">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 244.54 160.1)"><span class="swatch-color" style="--swatch-stops: rgb(255 244.54 160.1) 50%, rgb(255 244.54 160.1) 50%"></span></span> <span class="swatch" title="rgb(255 255 255)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Custom</span><span class="p">(</span><span class="n">Color</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">FIT</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
 <span class="gp">... </span>
@@ -1256,9 +1279,9 @@ color needs to be mapped. Though, you can still use chroma compression by specif
 <span class="go">color(srgb 1 1 1 / 1)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_12">
+<div class="playground-code hidden" id="__playground-code_11">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">class Custom(Color):
+<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">class Custom(Color):
     FIT = 'clip'
 
 Custom("lch(100% 50 75)").convert('srgb').fit()
@@ -1266,15 +1289,15 @@ Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')</textarea>
 </form>
 </div>
 
-<button id="__playground-edit_12" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_12" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<button id="__playground-edit_11" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_11" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>It is important to note that when using fit, there is no tolerance, so even if <code>in_gamut</code> allowed enough tolerance to
-consider a color within the gamut, calling <code>fit</code> will fit any color that is not exactly in gamut.</p>
-<div class="playground" id="__playground_13">
-<div class="playground-results" id="__playground-results_13">
+consider a color within the gamut, calling <code>fit</code> will adjust it such that it fits without tolerance.</p>
+<div class="playground" id="__playground_12">
+<div class="playground-results" id="__playground-results_12">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">lab</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;lab(100% 0 0)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span> <span class="o">=</span> <span class="n">lab</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">srgb</span><span class="o">.</span><span class="n">in_gamut</span><span class="p">()</span>
@@ -1285,13 +1308,31 @@ consider a color within the gamut, calling <code>fit</code> will fit any color t
 <span class="go">[1.0, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_13">
+<div class="playground-code hidden" id="__playground-code_12">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">lab = Color('lab(100% 0 0)')
+<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">lab = Color('lab(100% 0 0)')
 srgb = lab.convert('srgb')
 srgb.in_gamut()
 srgb.coords()
 srgb.fit().coords()</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_12" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_12" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
+<div class="playground" id="__playground_13">
+<div class="playground-results" id="__playground-results_13">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
+<span class="go">color(--lch 100 0 none / 1)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_13">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("lch(100% 50 75)").fit('srgb')</textarea>
 </form>
 </div>
 
@@ -1300,16 +1341,23 @@ srgb.fit().coords()</textarea>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>And much like <a href="#gamut-checking">gamut checking</a>, we can fit a color in a different color space.</p>
+<p>When fitting in another color space, results may vary depending on what color space you are in and what color space you
+are using to fit the color. We went into great depths when discussing <a href="#gamut-checking">gamut checking</a> about how
+transform functions from one color space to another are not always exact. We also gave quite a number of examples
+showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
+mainly mentioned as fitting in one color space and round tripping back may not give exact results:</p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(100% 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 255) 50%, rgb(255 255 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span>
-<span class="go">color(--lch 100 0 none / 1)</span>
+<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
+<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("lch(100% 50 75)").fit('srgb')</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("lch(100% 50 75)").convert('srgb').fit().coords()
+Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
 </form>
 </div>
 
@@ -1317,31 +1365,6 @@ srgb.fit().coords()</textarea>
 <button id="__playground-share_14" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-<p>When fitting in another color space, results may vary depending on what color space you are in and what color space you
-are using to fit the color. We went into great depths when discussing <a href="#gamut-checking">gamut checking</a> about how
-transform functions from one color space to another are not always exact. We also gave quite a number of examples
-showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
-mainly mentioned as fitting in one color space and round tripping back may not give exact results:</p>
-<div class="playground" id="__playground_15">
-<div class="playground-results" id="__playground-results_15">
-<div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 0.9999999999999997, 0.9999999999999997]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;lch(100% 50 75)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0000000000000002, 0.9999999999999994, 0.9999999999999997]</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_15">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color("lch(100% 50 75)").convert('srgb').fit().coords()
-Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_15" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_15" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_15" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_15" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>Depending on what you are doing, and what spaces you are working in, it may make sense to fully convert to a space and
 work directly in that space opposed to the indirect fitting of a color in a different color space.</p>
@@ -1351,7 +1374,7 @@ work directly in that space opposed to the indirect fitting of a color in a diff
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 19, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 1, 2022</span>
       
     
   </small>
@@ -1480,11 +1503,11 @@ work directly in that space opposed to the indirect fitting of a color in a diff
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       

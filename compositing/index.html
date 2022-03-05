@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/compositing/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -40,8 +40,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -1381,7 +1382,7 @@ overlap. Conceptually, the colors in the source element (top layer) are blended 
 (bottom layer).</p>
 <p>There are various blend modes, the most common is the <code>normal</code> blend mode which is the default blending mode for
 browsers when a layer is placed over another layer. The <code>normal</code> mode simply returns the top layer's color when two are
-overlaid. Some weighting of colors can occur if the top layer is semi-transparent.</p>
+overlaid.</p>
 <p><span class="isolate blend-normal dual">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
@@ -1394,27 +1395,25 @@ overlaid. Some weighting of colors can occur if the top layer is semi-transparen
 </span></p>
 <p>When composing, the blend mode can be controlled separately in ColorAide. Here, we again use the <code>multiply</code> example
 and replicate it in ColorAide.</p>
-<div class="admonition note">
-<p class="admonition-title">Display Differences</p>
-<p>As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-and Display P3 so that the examples can be compared on different displays. Which of the below matches your browser?</p>
-</div>
-<p><span class="isolate blend-multiply dual">
-  <span class="circle circle-1"></span>
-  <span class="circle circle-2"></span>
-</span></p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Display P3</label><label for="__tabbed_1_2">sRGB</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(86.361 59.315 142.71)"><span class="swatch-color" style="--swatch-stops: rgb(86.361 59.315 142.71) 50%, rgb(86.361 59.315 142.71) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#07c7ed&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="s1">&#39;#fc3d99&#39;</span><span class="p">,</span> <span class="n">blend</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;display-p3&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(7 199 237)"><span class="swatch-color" style="--swatch-stops: rgb(7 199 237) 50%, rgb(7 199 237) 50%"></span></span> <span class="swatch" title="rgb(252 61 153)"><span class="swatch-color" style="--swatch-stops: rgb(252 61 153) 50%, rgb(252 61 153) 50%"></span></span> <span class="swatch" title="rgb(86.361 59.315 142.71)"><span class="swatch-color" style="--swatch-stops: rgb(86.361 59.315 142.71) 50%, rgb(86.361 59.315 142.71) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#07c7ed&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#fc3d99&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+<span class="go">(color(srgb 0.02745 0.78039 0.92941 / 1), color(srgb 0.98824 0.23922 0.6 / 1))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">blend</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;display-p3&quot;</span><span class="p">)</span>
 <span class="go">color(srgb 0.33867 0.23261 0.55966 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">Color('#07c7ed').compose('#fc3d99', blend='multiply', space="display-p3")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, blend='multiply', space="display-p3")</textarea>
 </form>
 </div>
 
@@ -1427,13 +1426,20 @@ and Display P3 so that the examples can be compared on different displays. Which
 <div class="tabbed-block">
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(6.9176 47.604 142.2)"><span class="swatch-color" style="--swatch-stops: rgb(6.9176 47.604 142.2) 50%, rgb(6.9176 47.604 142.2) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#07c7ed&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="s1">&#39;#fc3d99&#39;</span><span class="p">,</span> <span class="n">blend</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(7 199 237)"><span class="swatch-color" style="--swatch-stops: rgb(7 199 237) 50%, rgb(7 199 237) 50%"></span></span> <span class="swatch" title="rgb(252 61 153)"><span class="swatch-color" style="--swatch-stops: rgb(252 61 153) 50%, rgb(252 61 153) 50%"></span></span> <span class="swatch" title="rgb(6.9176 47.604 142.2)"><span class="swatch-color" style="--swatch-stops: rgb(6.9176 47.604 142.2) 50%, rgb(6.9176 47.604 142.2) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#07c7ed&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#fc3d99&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+<span class="go">(color(srgb 0.02745 0.78039 0.92941 / 1), color(srgb 0.98824 0.23922 0.6 / 1))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">blend</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;srgb&quot;</span><span class="p">)</span>
 <span class="go">color(srgb 0.02713 0.18668 0.55765 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_1">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">Color('#07c7ed').compose('#fc3d99', blend='multiply', space="srgb")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_1" spellcheck="false">c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, blend='multiply', space="srgb")</textarea>
 </form>
 </div>
 
@@ -1444,6 +1450,11 @@ and Display P3 so that the examples can be compared on different displays. Which
 </div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Display Differences</p>
+<p>As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?</p>
 </div>
 <p>You can even blend multiple colors. Simply send in a list, and the colors will be blended from right to left with the
 right most color being on the bottom of the stack, and the base color being on the very top.</p>
@@ -1515,15 +1526,6 @@ semi-transparent layers on top of each other.</p>
 will use the demonstration above and replicate the result in the example below. Below we set the source color to
 <span><span class="swatch" title="rgb(7 199 237 / 0.5)"><span class="swatch-color" style="--swatch-stops: #07c7ed 50%,#07c7ed80 50%;"></span></span><code class="highlight"><span class="nf">rgb</span><span class="g">(</span><span class="m">7</span><span class="w"> </span><span class="m">199</span><span class="w"> </span><span class="m">237</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="m">0</span><span class="g">.</span><span class="m">5</span><span class="g">)</span><span class="w"></span></code></span> and the backdrop color to <span><span class="swatch" title="#fc3d99"><span class="swatch-color" style="--swatch-stops: #fc3d99,#fc3d99;"></span></span><code class="highlight"><span class="k">#</span><span class="m">fc3d99</span><span class="w"></span></code></span> and run it through the
 <code>compose</code> method.</p>
-<div class="admonition note">
-<p class="admonition-title">Display Differences</p>
-<p>As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-and Display P3 so that the examples can be compared on different displays. Which of the below matches your browser?</p>
-</div>
-<p><span class="isolate blend-normal dual">
-  <span class="circle circle-1"></span>
-  <span class="circle circle-2" style="opacity: 0.5"></span>
-</span></p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Display P3</label><label for="__tabbed_3_2">sRGB</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1565,6 +1567,11 @@ and Display P3 so that the examples can be compared on different displays. Which
 </div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Display Differences</p>
+<p>As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?</p>
 </div>
 <p>While the average user will be content with the default alpha compositing, Porter Duff offers many other configurations.
 If desired, we can change the Porter Duff operator used and apply different composite logic. For instance, in this case
@@ -2242,7 +2249,7 @@ div.blend-wrap > .blend-content {
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 10, 2021</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 1, 2022</span>
       
     
   </small>
@@ -2371,11 +2378,11 @@ div.blend-wrap > .blend-content {
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       

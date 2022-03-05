@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/color/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -40,8 +40,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -1009,14 +1010,15 @@ Color("rgb(0 0 255 / 1)")</textarea>
 <button id="__playground-run_3" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_3" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>In general, each color space can be recognized using valid CSS syntax as specified in the CSS level 4 spec.
-Additionally, all colors are recognized using the CSS color function (<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="kc">coord</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">alpha</span><span class="g">)</span><span class="w"></span></code>),
-even if the color is not defined in the CSS color spec or supported in the spec in this way. While the
-<code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function in CSS does not explicitly support color spaces with angular channels (hues), it has been
-adapted to support cylindrical colors, and is generally used as a generic input and default output for string
-representation of colors. Colors not found in the CSS spec are usually done as custom names with the <code>--</code> prefix. Check
-the <a href="../colors/">documentation of the given color space</a> to discover the appropriate CSS identifier name as the
-CSS identifier may not always match the color space name as specified in ColorAide.</p>
+<p>In general, each color space can be recognized using valid CSS syntax as specified in the CSS Level 4 spec, but
+ColorAide also allows the use of colors not specified by the CSS spec. To bridge the gap with syntax, ColorAide allows
+all colors, whether in the CSS spec or not, to be recognized using the CSS color function
+(<code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">space</span><span class="w"> </span><span class="kc">coord</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="g">/</span><span class="w"> </span><span class="kc">alpha</span><span class="g">)</span><span class="w"></span></code>). Even if the color is in the CSS spec and is not currently specified to
+use the <code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function, we still allow it.</p>
+<p>Essentially, we've adopted the <code class="highlight"><span class="nf">color</span><span class="g">()</span><span class="w"></span></code> function as the universal way in which to serialize colors. If the
+CSS spec does not formally recognize a color in this form, the color identifier will use the two dashes as a prefix
+(<code>--color-id</code>). Check the <a href="../colors/">documentation of the given color space</a> to discover the appropriate CSS
+identifier name as the CSS identifier may not always match the color space name as specified in ColorAide.</p>
 <div class="playground" id="__playground_4">
 <div class="playground-results" id="__playground-results_4">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(130 40% 75% / 0.5)"><span class="swatch-color" style="--swatch-stops: rgb(165.75 216.75 174.25) 50%, rgb(165.75 216.75 174.25 / 0.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsl 130 40</span><span class="si">% 75%</span><span class="s1"> / 0.5)&#39;</span><span class="p">)</span>
@@ -1053,9 +1055,10 @@ of the actual accepted input range. For instance, RGB colors are not specified i
 <button id="__playground-run_5" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_5" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Since colors can be exported to a simple dictionary, which can be useful if serializing to JSON, the Color object will
-also accept this dictionary as an input. <code>space</code> and all relevant color channels must be specified, <code>alpha</code> is optional
-and will be assumed <code>1</code> if omitted. Default channel names must currently be used (no aliases).</p>
+<p>Colors can also be exported to and receive input from simple dictionaries. These can be useful when serializing to JSON
+or various other reasons. The <code>space</code> key and all relevant color channels must be specified when constructing a color
+object from a dictionary, <code>alpha</code> is the only optional channel and will be assumed as <code>1</code> if omitted. Default channel
+names must currently be used (no aliases).</p>
 <div class="playground" id="__playground_6">
 <div class="playground-results" id="__playground-results_6">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
@@ -1078,29 +1081,21 @@ Color(d)</textarea>
 <button id="__playground-run_6" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_6" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Normalizing Undefined Channels</p>
-<p>Normally, when ColorAide processes a color via CSS input or returns a color via compositing, interpolation, gamut
-fitting, etc., it will normalize undefined hues. Certain color spaces will consider a hue undefined in certain
-cases, such as when a HSL color has a saturation of zero. Raw inputs via the dict method or the color space and list
-method will not be normalized in such cases. Raw inputs are accepted as is. This is because they are treated as
-manual inputs, or purposeful inputs from the user, so their values are respected and left unchanged.</p>
-<p>If at any time, it is desired to force channel normalization after a manual input, just run <code>normalize</code>:</p>
+<p>If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.</p>
 <div class="playground" id="__playground_7">
 <div class="playground-results" id="__playground-results_7">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(130 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
-<span class="go">color(--hsl none 0 0.5 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="go">color(--hsl 130 0 0.5 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
-<span class="go">color(--hsl none 0 0.5 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+<span class="go">(color(srgb 1 0 0 / 1), color(srgb 1 0 0 / 1))</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_7">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">Color("hsl(130 0% 50%)")
-Color("hsl", [130, 0, 0.5])
-Color("hsl", [130, 0, 0.5]).normalize()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_7" spellcheck="false">c1 = Color('red')
+c2 = Color(c1)
+
+c1, c2</textarea>
 </form>
 </div>
 
@@ -1109,22 +1104,21 @@ Color("hsl", [130, 0, 0.5]).normalize()</textarea>
 <button id="__playground-run_7" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_7" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-</div>
-<p>If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.</p>
+<p>You can also use the <code>new</code> method to generate new colors from already instantiated color objects.</p>
 <div class="playground" id="__playground_8">
 <div class="playground-results" id="__playground-results_8">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
-<span class="go">(color(srgb 1 0 0 / 1), color(srgb 1 0 0 / 1))</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span>
+<span class="go">color(srgb 1 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 0 0 1 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_8">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">c1 = Color('red')
-c2 = Color(c1)
-
-c1, c2</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_8" spellcheck="false">color1 = Color("red")
+color1
+color1.new("blue")</textarea>
 </form>
 </div>
 
@@ -1133,34 +1127,11 @@ c1, c2</textarea>
 <button id="__playground-run_8" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_8" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>You can also use the <code>new</code> method to generate new colors from already instantiated color objects.</p>
+<p>If desired, all creation method can be configured to also filter out color spaces that we are not interested in by using
+the <code>filter</code> parameter and specifying only the color spaces we do care about. Valid input colors will then be
+constrained only to those spaces in the list.</p>
 <div class="playground" id="__playground_9">
 <div class="playground-results" id="__playground-results_9">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span>
-<span class="go">color(srgb 1 0 0 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">color1</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
-<span class="go">color(srgb 0 0 1 / 1)</span>
-</code></pre></div></div>
-</div>
-<div class="playground-code hidden" id="__playground-code_9">
-<form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">color1 = Color("red")
-color1
-color1.new("blue")</textarea>
-</form>
-</div>
-
-<button id="__playground-edit_9" class="playground-edit" title="Edit the current snippet">Edit</button>
-<button id="__playground-share_9" class="playground-share" title="Copy URL to current snippet">Share</button>
-<button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
-<button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
-</div>
-<p>If desired, all creation method can be configured to also filter out color spaces that we are not interested in by using
-the <code>filter</code> parameter and specifying only the color spaces we do care about. Valid colors will then be constrained only
-to those spaces in the list.</p>
-<div class="playground" id="__playground_10">
-<div class="playground-results" id="__playground-results_10">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(130 30% 75%)"><span class="swatch-color" style="--swatch-stops: rgb(172.13 210.38 178.5) 50%, rgb(172.13 210.38 178.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hsl&quot;</span><span class="p">])</span>
 <span class="gp">... </span><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -1171,13 +1142,38 @@ to those spaces in the list.</p>
 <span class="go">color(--hsl 130 0.3 0.75 / 1)</span>
 </code></pre></div></div>
 </div>
-<div class="playground-code hidden" id="__playground-code_10">
+<div class="playground-code hidden" id="__playground-code_9">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">try:
+<textarea class="playground-inputs" id="__playground-inputs_9" spellcheck="false">try:
     Color("red", filters=["hsl"])
 except ValueError:
     print('Not a valid color')
 Color("hsl(130 30% 75%)", filters=["hsl"])</textarea>
+</form>
+</div>
+
+<button id="__playground-edit_9" class="playground-edit" title="Edit the current snippet">Edit</button>
+<button id="__playground-share_9" class="playground-share" title="Copy URL to current snippet">Share</button>
+<button id="__playground-run_9" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
+<button id="__playground-cancel_9" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
+<h2 id="cloning">Cloning<a class="headerlink" href="#cloning" title="Permanent link"></a></h2>
+<p>The <code>clone</code> method is an easy way to duplicate the current color object.</p>
+<p>Here we clone the <span><span class="swatch" title="green"><span class="swatch-color" style="--swatch-stops: #008000,#008000;"></span></span><code class="highlight"><span class="kc">green</span><span class="w"></span></code></span> object so we have two.</p>
+<div class="playground" id="__playground_10">
+<div class="playground-results" id="__playground-results_10">
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(0 128 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 128 0) 50%, rgb(0 128 0) 50%"></span></span> <span class="swatch" title="rgb(0 128 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 128 0) 50%, rgb(0 128 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span>
+<span class="go">color(srgb 0 0.50196 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="go">color(srgb 0 0.50196 0 / 1)</span>
+</code></pre></div></div>
+</div>
+<div class="playground-code hidden" id="__playground-code_10">
+<form autocomplete="off">
+<textarea class="playground-inputs" id="__playground-inputs_10" spellcheck="false">c1 = Color("green")
+c1
+c1.clone()</textarea>
 </form>
 </div>
 
@@ -1186,23 +1182,24 @@ Color("hsl(130 30% 75%)", filters=["hsl"])</textarea>
 <button id="__playground-run_10" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_10" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<h2 id="cloning">Cloning<a class="headerlink" href="#cloning" title="Permanent link"></a></h2>
-<p>The <code>clone</code> method is an easy way to duplicate the current color object.</p>
-<p>Here we clone the <span><span class="swatch" title="green"><span class="swatch-color" style="--swatch-stops: #008000,#008000;"></span></span><code class="highlight"><span class="kc">green</span><span class="w"></span></code></span> object so we have two.</p>
+<h2 id="updating">Updating<a class="headerlink" href="#updating" title="Permanent link"></a></h2>
+<p>A color can be "updated" using another color object. When an update occurs, the current color space is updated from the
+data of the second color, but the color space does not change. It is basically the equivalent of converting the second
+color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
+are identical to the <code>new</code> method, so we can use a color object, a color string, or even raw data points.</p>
+<p>Here we update the color <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> to the color <span><span class="swatch" title="blue"><span class="swatch-color" style="--swatch-stops: #0000ff,#0000ff;"></span></span><code class="highlight"><span class="kc">blue</span><span class="w"></span></code></span>:</p>
 <div class="playground" id="__playground_11">
 <div class="playground-results" id="__playground-results_11">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(0 128 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 128 0) 50%, rgb(0 128 0) 50%"></span></span> <span class="swatch" title="rgb(0 128 0)"><span class="swatch-color" style="--swatch-stops: rgb(0 128 0) 50%, rgb(0 128 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span>
-<span class="go">color(srgb 0 0.50196 0 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c1</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
-<span class="go">color(srgb 0 0.50196 0 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 1 0 0 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">))</span>
+<span class="go">color(srgb 0 0 1 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_11">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">c1 = Color("green")
-c1
-c1.clone()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_11" spellcheck="false">Color("red")
+Color("red").update(Color("blue"))</textarea>
 </form>
 </div>
 
@@ -1211,24 +1208,16 @@ c1.clone()</textarea>
 <button id="__playground-run_11" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_11" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<h2 id="updating">Updating<a class="headerlink" href="#updating" title="Permanent link"></a></h2>
-<p>A color can be "updated" using another color object. When an update occurs, the current color space is updated with the
-data from the second color, but the color space does not change. It is basically the equivalent of converting the second
-color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
-are identical to the <code>new</code> method, so we can use a color object, a color string, or even raw data points.</p>
-<p>Here we update the color <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> to the color <span><span class="swatch" title="blue"><span class="swatch-color" style="--swatch-stops: #0000ff,#0000ff;"></span></span><code class="highlight"><span class="kc">blue</span><span class="w"></span></code></span>:</p>
+<p>Here we update the sRGB <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> with the color <span><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: #9ad67b,#9ad67b;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">80</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">130</span><span class="g">)</span><span class="w"></span></code></span>.</p>
 <div class="playground" id="__playground_12">
 <div class="playground-results" id="__playground-results_12">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 255)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 255) 50%, rgb(0 0 255) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
-<span class="go">color(srgb 1 0 0 / 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">))</span>
-<span class="go">color(srgb 0 0 1 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(154 214.15 123.41)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
+<span class="go">color(srgb 0.60392 0.8398 0.48396 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_12">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">Color("red")
-Color("red").update(Color("blue"))</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_12" spellcheck="false">Color("red").update("lch(80% 50 130)")</textarea>
 </form>
 </div>
 
@@ -1237,16 +1226,21 @@ Color("red").update(Color("blue"))</textarea>
 <button id="__playground-run_12" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_12" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>Here we update the sRGB <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> with the color <span><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: #9ad67b,#9ad67b;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">80</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">130</span><span class="g">)</span><span class="w"></span></code></span>.</p>
+<h2 id="mutating">Mutating<a class="headerlink" href="#mutating" title="Permanent link"></a></h2>
+<p>"Mutating" is similar to <a href="#updating">updating</a> except that it will update the color and the color space from another
+color. The input parameters are identical to the <code>new</code> method, so we can use a color object, a color string, or even
+raw data points.</p>
+<p>In this example, the <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> color object literally becomes the specified CIELCH color of
+<span><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: #9ad67b,#9ad67b;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">80</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">130</span><span class="g">)</span><span class="w"></span></code></span>.</p>
 <div class="playground" id="__playground_13">
 <div class="playground-results" id="__playground-results_13">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(154 214.15 123.41)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
-<span class="go">color(srgb 0.60392 0.8398 0.48396 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
+<span class="go">color(--lch 80 50 130 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_13">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("red").update("lch(80% 50 130)")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_13" spellcheck="false">Color("red").mutate("lch(80% 50 130)")</textarea>
 </form>
 </div>
 
@@ -1255,21 +1249,21 @@ Color("red").update(Color("blue"))</textarea>
 <button id="__playground-run_13" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_13" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<h2 id="mutating">Mutating<a class="headerlink" href="#mutating" title="Permanent link"></a></h2>
-<p>"Mutating" is similar to <a href="#updating">updating</a> except that it will update the color and the color space from another
-color. The input parameters are identical to the <code>new</code> method, so we can use a color object, a color string, or even
-raw data points.</p>
-<p>In this example, the <span><span class="swatch" title="red"><span class="swatch-color" style="--swatch-stops: #ff0000,#ff0000;"></span></span><code class="highlight"><span class="kc">red</span><span class="w"></span></code></span> color object literally becomes the specified CIELCH color of
-<span><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: #9ad67b,#9ad67b;"></span></span><code class="highlight"><span class="nf">lch</span><span class="g">(</span><span class="m">80</span><span class="k">%</span><span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="m">130</span><span class="g">)</span><span class="w"></span></code></span>.</p>
+<h2 id="converting">Converting<a class="headerlink" href="#converting" title="Permanent link"></a></h2>
+<p>Colors can be converted to other color spaces as needed. Converting will always return a new color unless the <code>in_place</code>
+parameter is set to <code class="highlight"><span class="kc">True</span></code>, in which case, the current color will be mutated to the new converted color and a
+reference to itself is returned.</p>
+<p>For instance, if we had a color <span><span class="swatch" title="yellow"><span class="swatch-color" style="--swatch-stops: #ffff00,#ffff00;"></span></span><code class="highlight"><span class="kc">yellow</span><span class="w"></span></code></span>, and we needed to work with it in another color space, such as CIELAB,
+we could simply call the <code>convert</code> method with the desired color space.</p>
 <div class="playground" id="__playground_14">
 <div class="playground-results" id="__playground-results_14">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lch(80% 50 130)"><span class="swatch-color" style="--swatch-stops: rgb(154 214.15 123.41) 50%, rgb(154 214.15 123.41) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="s2">&quot;lch(80% 50 130)&quot;</span><span class="p">)</span>
-<span class="go">color(--lch 80 50 130 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(97.607% -15.75 93.394)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span>
+<span class="go">color(--lab 97.607 -15.75 93.394 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_14">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color("red").mutate("lch(80% 50 130)")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_14" spellcheck="false">Color('yellow').convert("lab")</textarea>
 </form>
 </div>
 
@@ -1278,21 +1272,33 @@ raw data points.</p>
 <button id="__playground-run_14" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_14" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<h2 id="converting">Converting<a class="headerlink" href="#converting" title="Permanent link"></a></h2>
-<p>Colors can be converted to other color spaces as needed. Converting will always return a new color unless the <code>in_place</code>
-parameter is set to <code class="highlight"><span class="kc">True</span></code>, in which case, the current color will be mutated to the new converted color and a
-reference to itself is returned.</p>
-<p>For instance, if we had a color <span><span class="swatch" title="yellow"><span class="swatch-color" style="--swatch-stops: #ffff00,#ffff00;"></span></span><code class="highlight"><span class="kc">yellow</span><span class="w"></span></code></span>, and we needed to work with it in another color space, such as CIELAB,
-we could simply call the <code>convert</code> method with the desired color space.</p>
+<div class="admonition note">
+<p class="admonition-title">Normalizing Undefined Channels</p>
+<p>Some color spaces have channels which in certain scenarios are considered powerless. For instance, when an HSL color
+is achromatic (gray-scale) due to having saturation of zero, the hue channel is powerless. This is because the hue
+value can contribute in no meaningful way.</p>
+<p>As an example, during the conversion process from any color to HSL, if the resultant HSL color has a saturation of
+<code class="highlight"><span class="mi">0</span></code> or a lightness of <code class="highlight"><span class="mi">0</span></code> or <code class="highlight"><span class="mi">1</span></code>, the hue will be marked as missing. This really only happens
+automatically during conversion as the algorithm has no way to know what the hue should be as all hues are
+technically wrong even if they do not affect the color.</p>
+<p>If desired, this same logic can be forced on a color via the <code>normalize</code> method as there may be reasons for a user
+to want to do this, whether it is for interpolation or other reasons. Checkout the <a href="../interpolation/">Interpolation</a>
+section in the documentation to learn more.</p>
 <div class="playground" id="__playground_15">
 <div class="playground-results" id="__playground-results_15">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="lab(97.607% -15.75 93.394)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;lab&quot;</span><span class="p">)</span>
-<span class="go">color(--lab 97.607 -15.75 93.394 / 1)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch" title="hsl(130 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span> <span class="swatch" title="hsl(0 0% 50%)"><span class="swatch-color" style="--swatch-stops: rgb(127.5 127.5 127.5) 50%, rgb(127.5 127.5 127.5) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="go">color(--hsl 130 0 0.5 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
+<span class="go">color(--hsl none 0 0.5 / 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;hsl(130 0</span><span class="si">% 50%</span><span class="s2">)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+<span class="go">color(--hsl none 0 0.5 / 1)</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_15">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color('yellow').convert("lab")</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_15" spellcheck="false">Color("hsl(130 0% 50%)")
+Color("hsl(130 0% 50%)").convert('srgb').convert('hsl')
+Color("hsl(130 0% 50%)").normalize()</textarea>
 </form>
 </div>
 
@@ -1300,6 +1306,7 @@ we could simply call the <code>convert</code> method with the desired color spac
 <button id="__playground-share_15" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_15" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_15" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
 </div>
 <h2 id="color-matching">Color Matching<a class="headerlink" href="#color-matching" title="Permanent link"></a></h2>
 <p>As previously mentioned, the <code class="highlight"><span class="n">Color</span><span class="p">()</span></code> object can take in CSS style string inputs. The string matching logic is
@@ -1388,10 +1395,10 @@ Color.match("hsl(130 30% 75%)", filters=["hsl"])</textarea>
 all potential colors on every character is not really efficient. Additionally, some buffers way require additional
 context that is not available to the to the match function. If such behavior is desired, what is recommended would
 be to apply this with some logic to find potential places in the buffer to test, and only test those places.</p>
-<p>In this example, we construct a regex to find places within the buffer that potentially has a valid color, but we also
+<p>In this example, we construct a regex to find places within the buffer that potentially have a valid color, but we also
 try and filter out cases that are unfavorable by providing additional context. As we are interested in matching full
 colors in HTML or CSS, we don't want to match hex in HTML entities or color names that are part of color variables
-(<code class="highlight"><span class="nt">var</span><span class="o">(</span><span class="nt">--color-red</span><span class="o">)</span></code>).</p>
+(<code class="highlight"><span class="nt">var</span><span class="o">(</span><span class="nt">--color-red</span><span class="o">)</span><span class="w"></span></code>).</p>
 <div class="playground" id="__playground_20">
 <div class="playground-results" id="__playground-results_20">
 <div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span> <span class="swatch" title="rgb(255 255 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 255 0) 50%, rgb(255 255 0) 50%"></span></span> <span class="swatch" title="rgb(0 0 136)"><span class="swatch-color" style="--swatch-stops: rgb(0 0 136) 50%, rgb(0 0 136) 50%"></span></span> <span class="swatch" title="lch(75% 50 50)"><span class="swatch-color" style="--swatch-stops: rgb(253.05 160.46 115.69) 50%, rgb(253.05 160.46 115.69) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
@@ -1462,10 +1469,10 @@ for m in RE_COLOR_START.finditer(text):
 <button id="__playground-cancel_20" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <h2 id="custom-color-classes">Custom Color Classes<a class="headerlink" href="#custom-color-classes" title="Permanent link"></a></h2>
-<p>In general, it is always recommended to subclass the <a href="#color"><code>Color</code></a> object when setting up a custom preferences or
-adding and removing plugins. This prevents modifying the base class which may affect other libraries relying on the
+<p>In general, it is always recommended to subclass the <a href="#color"><code>Color</code></a> object when setting up custom preferences or
+adding or removing plugins. This prevents modifying the base class which may affect other libraries relying on the 
 module. When <a href="#color"><code>Color</code></a> is subclassed, it is safe to then update global overrides or register and deregister
-plugins without worry of affecting the base class.</p>
+plugins without the worry of affecting the base class.</p>
 <h3 id="override-default-settings">Override Default Settings<a class="headerlink" href="#override-default-settings" title="Permanent link"></a></h3>
 <p>ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
 mode, etc. All of these options can be set on demand when calling certain functions, but when not explicitly set, the
@@ -1538,9 +1545,9 @@ used for delta E 2000 color distancing or CIELCH which is used in the the LCH Ch
 plugins. To learn more about creating plugins, checkout the <a href="../plugins/">plugin documentation</a>.</p>
 <p>Registration is performed by the <code>register</code> method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
-a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If <code>overwrite</code> set
-to <code class="highlight"><span class="kc">True</span></code>, the overwrite will not fail and the new plugin will be registered with the specified name in place of
-the existing plugin.</p>
+a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If <code>overwrite</code> is
+set to <code class="highlight"><span class="kc">True</span></code>, the overwrite will not fail and the new plugin will be registered with the specified name in place
+of the existing plugin.</p>
 <p>Here we just overwrite the existing Jzazbz color space plugin with itself again.</p>
 <div class="playground" id="__playground_22">
 <div class="playground-results" id="__playground-results_22">
@@ -1600,15 +1607,15 @@ except ValueError:
 <button id="__playground-cancel_23" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>Use of <code>*</code> with <code>deregister</code> will remove all plugins. Use of <code>category:*</code> will remove all plugins of that category.
-This is in case a user wishes to build up a color classes plugins from scratch. This may be useful if there is a desire
-to explicitly define allowed plugins and exclude any unknown new ones that may become available.</p>
+This is in case a user wishes to build up a color class's plugins from scratch. This may be useful if there is a desire
+to explicitly define allowed plugins and exclude any unknown, new ones that may become available.</p>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 30, 2021</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 3, 2022</span>
       
     
   </small>
@@ -1737,11 +1744,11 @@ to explicitly define allowed plugins and exclude any unknown new ones that may b
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       

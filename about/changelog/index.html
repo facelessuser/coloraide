@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/about/changelog/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -40,8 +40,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -773,6 +774,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0110" class="md-nav__link">
+    0.11.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0100" class="md-nav__link">
     0.10.0
   </a>
@@ -898,6 +906,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#0110" class="md-nav__link">
+    0.11.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0100" class="md-nav__link">
     0.10.0
   </a>
@@ -983,6 +998,64 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="0110">0.11.0<a class="headerlink" href="#0110" title="Permanent link"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Breaking Changes</p>
+<ol>
+<li>
+<p>Prior to 0.11.0, if you specified a cylindrical space directly, ColorAide would normalize undefined hues the same
+   way that the conversion algorithm did. In the below case, saturation is zero, so the hue was declared undefined.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(270 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">color</span><span class="p">(</span><span class="o">--</span><span class="n">hsl</span> <span class="n">none</span> <span class="mi">0</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>We should not have been doing this, and it made some cases of interpolation a bit confusing. It is no longer
+done as the hues are in fact specified by the user, even if they are powerless in relation to contributing to
+the rendered color. When a cylindrical color is converted or if a user declares the channel as undefined with
+<code>none</code> or some other way, then the channel will be declared undefined, because in these cases, they truly are.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;hsl&#39;</span><span class="p">)</span>
+<span class="n">color</span><span class="p">(</span><span class="o">--</span><span class="n">hsl</span> <span class="n">none</span> <span class="mi">0</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;color(--hsl none 0 0.5)&#39;</span><span class="p">)</span>
+<span class="n">color</span><span class="p">(</span><span class="o">--</span><span class="n">hsl</span> <span class="n">none</span> <span class="mi">0</span> <span class="mf">0.5</span><span class="p">)</span>
+</code></pre></div>
+<p>If you are working directly in a cylindrical color space and ever wish to force the normalization of color hues
+as undefined when the color meets the usual requirements as specified by the color space's current rules, just
+call <code>normalize</code> on the color and it will apply the same logic that occurs during the conversion process.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;hsl(270 0</span><span class="si">% 50%</span><span class="s1">)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+<span class="n">color</span><span class="p">(</span><span class="o">--</span><span class="n">hsl</span> <span class="n">none</span> <span class="mi">0</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</li>
+<li>
+<p>If you relied on commas in CSS forms that did not support them, this behavior is no longer allowed. It was
+   thought that CSS may consider allowing comma formats in formats like <code>hwb()</code>, etc., and it was considered, but
+   ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
+   this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
+   as the default anymore.</p>
+</li>
+<li>The D65 form of Luv and LCHuv is now the only supported Luv based color spaces by default now. D50 Luv and LCHuv
+   have been dropped and <code>luv</code> and <code>lchuv</code> now refers to the D65 version. In most places, the D65 is the most common
+   used white space as most monitors are calibrated for this white point. The only reason CIELAB and CIELCH are D50
+   by default is that CSS requires it. Anyone interested in using Luv with a different white point can easily
+   subclass the current Luv and create a new plugin color space that uses the new white point.</li>
+<li>Renamed DIN99o Lch identifier to the short name of <code>lch99o</code>.</li>
+</ol>
+</div>
+<ul>
+<li><strong>NEW</strong>: ColorAide now only ships with the D65 version Luv and LCHuv as D65, in most places is the expected white
+  space. Now, the identifier <code>luv</code> and <code>lchuv</code> will refer to the D65 version of the respective color spaces. D50
+  variants are no longer available by default.</li>
+<li><strong>NEW</strong>: Add the HSLuv color space.</li>
+<li><strong>NEW</strong>: DIN99o Lch identifier was renamed from <code>din99o-lch</code> to <code>lch99o</code>. To use in CSS <code>color()</code> form, use
+  <code>--lch99o</code>.</li>
+<li><strong>NEW</strong>: Refactor chroma reduction/<abbr title="minimum delta E">MINDE</abbr> logic to cut processing time in half. Gamut mapping results remain very
+  similar.</li>
+<li><strong>NEW</strong>: Be more strict with CSS inputs and outputs. <code>hwb()</code>, <code>lab()</code>, <code>lch()</code>, <code>oklab()</code>, and <code>oklch()</code> no longer
+  support comma string formats.</li>
+<li><strong>NEW</strong>: Officially drop Python 3.6 support.</li>
+<li><strong>FIX</strong>: Do not assume user defined, powerless hues as undefined. If they are defined by the user, they should be
+  respected, even if they have no effect on the current color. This helps to ensure interpolations acts in an
+  unsurprising way. If a user manually specifies the channel with <code>none</code>, then it will be considered undefined, or if
+  the color goes through a conversion to a space that cannot pick an appropriate hue, they will also be undefined.</li>
+</ul>
 <h2 id="0100">0.10.0<a class="headerlink" href="#0100" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Switch back to using CIELCH for gamut mapping (<code>lch-chroma</code>). There are still some edge cases that make
@@ -992,7 +1065,7 @@
 </ul>
 <h2 id="090">0.9.0<a class="headerlink" href="#090" title="Permanent link"></a></h2>
 <div class="admonition warning">
-<p class="admonition-title">Breaking Change</p>
+<p class="admonition-title">Breaking Changes</p>
 <p>Custom gamut mapping plugins no longer return coordinates and require the method to update the passed in color.</p>
 </div>
 <ul>
@@ -1013,7 +1086,7 @@
 </ul>
 <h2 id="080">0.8.0<a class="headerlink" href="#080" title="Permanent link"></a></h2>
 <div class="admonition warning">
-<p class="admonition-title">Breaking Change</p>
+<p class="admonition-title">Breaking Changes</p>
 <p>The use of <code>xyz</code> as the color space name has been changed in favor of <code>xyz-d65</code>. This better matches the CSS
 specification. As we are still in a prerelease state, we have not provided any backwards compatibility.</p>
 <p>CSS color input strings in the form <code class="highlight"><span class="nf">color</span><span class="g">(</span><span class="kc">xyz</span><span class="w"> </span><span class="kc">x</span><span class="w"> </span><span class="kc">y</span><span class="w"> </span><span class="kc">z</span><span class="g">)</span><span class="w"></span></code> will continue to be accepted as CSS will allow
@@ -1088,7 +1161,7 @@ of a specific color space in order to create a color, convert, mutate, interpola
 </ul>
 <h2 id="030">0.3.0<a class="headerlink" href="#030" title="Permanent link"></a></h2>
 <div class="admonition warning">
-<p class="admonition-title">Breaking Change</p>
+<p class="admonition-title">Breaking Changes</p>
 <p>XYZ changes below will cause breakage as <code>xyz</code> now refers to XYZ with D65 instead of D50. Also, CSS identifiers
 changed per the recent specification change.</p>
 </div>
@@ -1143,7 +1216,7 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 19, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 5, 2022</span>
       
     
   </small>
@@ -1272,11 +1345,11 @@ data ranges are no longer scaled to 0 - 100, but use 0 - 1. Hue ranges have not 
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
+        <script src="../../assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
       
         <script src="../../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       

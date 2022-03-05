@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/distance/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -40,8 +40,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -899,9 +900,8 @@ Color("red").distance("blue", space="lab")</textarea>
 <h2 id="delta-e">Delta E<a class="headerlink" href="#delta-e" title="Permanent link"></a></h2>
 <p>The <code>delta_e</code> function gives access to various ∆E implementations.</p>
 <p>If no <code>method</code> is specified, the default implementation is ∆E<sup>*</sup><sub>ab</sub> (CIE76) which uses a simple Euclidean distancing
-algorithm on the CIELAB color space. It is fast, but not as accurate as some algorithms as CIELAB is not actually as
-perceptually uniform as it was thought when CIELAB was developed. ∆E<sub>00</sub> is actually a much better ∆E method for CIELAB,
-but it is slower.</p>
+algorithm on the CIELAB color space. It is fast, but not as accurate as later iterations of the algorithm as CIELAB is
+not actually as perceptually uniform as it was thought when CIELAB was originally developed.</p>
 <div class="playground" id="__playground_1">
 <div class="playground-results" id="__playground-results_1">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
@@ -920,11 +920,12 @@ but it is slower.</p>
 <button id="__playground-cancel_1" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>When <code>method</code> is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E<sub>00</sub> which is a
-more complex, slower algorithm that accounts for the color spaces weakness in perceptually uniformity.</p>
+more complex that accounts for the color spaces weakness in perceptually uniformity. It does come at the cost of being
+a little slower.</p>
 <div class="playground" id="__playground_2">
 <div class="playground-results" id="__playground-results_2">
 <div class="color-command"><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">delta_e</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;2000&quot;</span><span class="p">)</span>
-<span class="go">55.799773390197785</span>
+<span class="go">55.79977339019779</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_2">
@@ -1023,7 +1024,7 @@ Color("red").delta_e_hyab("blue")</textarea>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 9, 2021</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 1, 2022</span>
       
     
   </small>
@@ -1152,11 +1153,11 @@ Color("red").delta_e_hyab("blue")</textarea>
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="../assets/coloraide-extras/extra-notebook-678306ab.js"></script>
+        <script src="../assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
       
         <script src="../assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       
