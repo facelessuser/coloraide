@@ -42,12 +42,12 @@ def lab_to_lch(lab: MutableVector) -> MutableVector:
     return [l, c, util.constrain_hue(h)]
 
 
-class Din99oLch(Lch):
+class Lch99o(Lch):
     """Din99o Lch class."""
 
     BASE = 'din99o'
-    NAME = "din99o-lch"
-    SERIALIZE = ("--din99o-lch",)
+    NAME = "lch99o"
+    SERIALIZE = ("--lch99o",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = "D65"
 
