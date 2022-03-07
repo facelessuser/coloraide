@@ -13,15 +13,15 @@
         <link rel="canonical" href="https://facelessuser.github.io/coloraide/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.3">
     
     
       
-        <title>Setup - ColorAide Documentation</title>
+        <title>Introduction - ColorAide Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.2d9f7617.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.e8d9bf0c.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.e6a45f82.min.css">
@@ -39,7 +39,6 @@
 
     
       
-        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
@@ -75,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#setup" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Setup
+              Introduction
             
           </span>
         </div>
@@ -403,12 +402,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Setup
+          Introduction
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="." class="md-nav__link md-nav__link--active">
-        Setup
+        Introduction
       </a>
       
         
@@ -427,15 +426,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-coloraide" class="md-nav__link">
-    Using ColorAide
+  <a href="#what-is-coloraide" class="md-nav__link">
+    What is ColorAide?
   </a>
   
 </li>
@@ -443,6 +435,13 @@
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-coloraide" class="md-nav__link">
+    Using ColorAide
   </a>
   
 </li>
@@ -795,6 +794,20 @@
   
   
     <li class="md-nav__item">
+      <a href="about/acknowledgments/" class="md-nav__link">
+        Acknowledgments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="about/changelog/" class="md-nav__link">
         Changelog
       </a>
@@ -850,15 +863,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-coloraide" class="md-nav__link">
-    Using ColorAide
+  <a href="#what-is-coloraide" class="md-nav__link">
+    What is ColorAide?
   </a>
   
 </li>
@@ -866,6 +872,13 @@
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-coloraide" class="md-nav__link">
+    Using ColorAide
   </a>
   
 </li>
@@ -885,34 +898,24 @@
                 
 
 
-<h1 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link"></a></h1>
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link"></a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Currently a Prerelease</p>
 <p>While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease state. This simply means
 the API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
 color syntax and behavior to be decided by the CSS Working Group.</p>
 </div>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
-<p>ColorAide is a color library for Python with the intent to provide an easy to use interface to work with colors. While
-ColorAide is not just for CSS colors, there is a focus on supporting modern CSS color syntax as it is a format that is
-very commonly used. In addition to being able to parse almost all colors as specified in the CSS specification,
-ColorAide also supports a number of colors and formats for colors that are not in the CSS spec.</p>
+<h2 id="what-is-coloraide">What is ColorAide?<a class="headerlink" href="#what-is-coloraide" title="Permanent link"></a></h2>
+<p>ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.</p>
 <div class="playground" id="__playground_0">
 <div class="playground-results" id="__playground-results_0">
-<div class="color-command"><div class="swatch-bar"><span class="swatch" title="rgb(255 0 0)"><span class="swatch-color" style="--swatch-stops: rgb(255 0 0) 50%, rgb(255 0 0) 50%"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">coloraide</span> <span class="kn">import</span> <span class="n">Color</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">coords</span><span class="p">()</span>
-<span class="go">[1.0, 0.0, 0.0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
-<span class="go">rgb(255 0 0)</span>
+<div class="color-command"><div class="swatch-bar"><span class="swatch swatch-gradient"><span class="swatch-color" style="--swatch-stops: rgb(255 146.72 187),rgb(255 147.04 182.7),rgb(255 147.47 178.47),rgb(255 148.02 174.32),rgb(255 148.3 170.15),rgb(255 148.69 166),rgb(255 148.82 161.72),rgb(255 149.43 157.63),rgb(255 149.44 153.1),rgb(255 149.93 148.78),rgb(255 150.2 144.16),rgb(255 151.27 140.18),rgb(255 152.42 136.28),rgb(255 153.65 132.47),rgb(255 154.96 128.77),rgb(255 156.32 125.18),rgb(255 157.74 121.71),rgb(254.98 159.21 118.36),rgb(252.63 160.73 115.15),rgb(250.14 162.27 112.07),rgb(247.5 163.85 109.15),rgb(244.72 165.44 106.38),rgb(241.8 167.06 103.79),rgb(238.75 168.68 101.37),rgb(235.58 170.3 99.132),rgb(232.29 171.93 97.094),rgb(228.88 173.55 95.261),rgb(225.36 175.15 93.643),rgb(221.73 176.75 92.249),rgb(218 178.32 91.087),rgb(214.17 179.87 90.166),rgb(210.25 181.4 89.492),rgb(206.24 182.89 89.071),rgb(202.15 184.36 88.909),rgb(197.97 185.79 89.006),rgb(193.72 187.19 89.365),rgb(189.39 188.54 89.985),rgb(184.98 189.86 90.863),rgb(180.5 191.14 91.996),rgb(175.96 192.38 93.377),rgb(171.34 193.57 95.002),rgb(166.65 194.72 96.86),rgb(161.9 195.83 98.945),rgb(157.08 196.89 101.25),rgb(152.18 197.9 103.75),rgb(147.21 198.87 106.46),rgb(142.16 199.8 109.35),rgb(137.02 200.68 112.41),rgb(131.8 201.51 115.64),rgb(126.48 202.29 119.03),rgb(121.04 203.03 122.56),rgb(115.49 203.73 126.23),rgb(109.79 204.38 130.02),rgb(103.94 204.98 133.93),rgb(97.894 205.54 137.95),rgb(91.628 206.06 142.06),rgb(85.09 206.53 146.26),rgb(78.217 206.96 150.54),rgb(70.913 207.34 154.88),rgb(63.035 207.68 159.28),rgb(54.344 207.97 163.74),rgb(44.392 208.22 168.23),rgb(32.132 208.43 172.75),rgb(13.458 208.6 177.29),rgb(0 208.72 181.84),rgb(0 208.79 186.39),rgb(0 208.83 190.94),rgb(0 208.82 195.46),rgb(0 208.76 199.95),rgb(0 208.66 204.4),rgb(0 208.52 208.81),rgb(0 208.33 213.15),rgb(0 208.1 217.43),rgb(0 207.82 221.62),rgb(0 207.49 225.73),rgb(0 207.12 229.73),rgb(0 206.7 233.63),rgb(0 206.23 237.41),rgb(0 205.71 241.07),rgb(0 205.15 244.59),rgb(0 204.53 247.96),rgb(0 203.87 251.18),rgb(0 203.15 254.25),rgb(0 202.39 255),rgb(0 201.58 255),rgb(10.643 200.71 255),rgb(43.142 199.57 255),rgb(63.373 198.3 255),rgb(77.492 197.06 255),rgb(88.621 195.85 255),rgb(97.9 194.67 255),rgb(105.32 193.55 255),rgb(112.49 192.39 255),rgb(118.04 191.29 255),rgb(123.69 190.14 255),rgb(128.7 188.96 255),rgb(133.28 187.74 255),rgb(138.23 186.42 255),rgb(144.02 184.98 255),rgb(150.81 183.46 255),rgb(158.11 181.94 255),rgb(165.22 180.47 255),rgb(171.56 179.01 255),rgb(177.23 177.48 255),rgb(182.76 175.93 255),rgb(188.1 174.24 255),rgb(193.45 172.38 255),rgb(198.91 170.39 255),rgb(204.14 168.7 255),rgb(209.19 167.03 255),rgb(214.06 165.36 255),rgb(218.74 163.71 254.76),rgb(223.23 162.09 251.76),rgb(227.52 160.51 248.6),rgb(231.62 158.96 245.3),rgb(235.52 157.46 241.86),rgb(239.21 156.01 238.28),rgb(242.7 154.63 234.59),rgb(245.99 153.32 230.78),rgb(249.06 152.09 226.88),rgb(251.93 150.94 222.87),rgb(254.58 149.89 218.79),rgb(255 148.93 214.63),rgb(255 148.08 210.4),rgb(255 147.34 206.12),rgb(255 146.72 201.79),rgb(255 146.21 197.43),rgb(255 146.23 192.97),rgb(255 146.78 188.53)"></span></span></div><div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;lch(75% 50 0)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="s1">&#39;lch(75% 50 359)&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;lch&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;longer&#39;</span><span class="p">)</span>
+<span class="go">&lt;coloraide.interpolate.InterpolateSingle object at 0x121c295e0&gt;</span>
 </code></pre></div></div>
 </div>
 <div class="playground-code hidden" id="__playground-code_0">
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">from coloraide import Color
-c = Color('red')
-c.coords()
-c.to_string()</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_0" spellcheck="false">Color('lch(75% 50 0)').interpolate('lch(75% 50 359)', space='lch', hue='longer')</textarea>
 </form>
 </div>
 
@@ -921,23 +924,36 @@ c.to_string()</textarea>
 <button id="__playground-run_0" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_0" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
-<p>ColorAide was designed to be a fairly easy library to pick up and start using. The idea was to have a simple interface
-to specify any color, and once you have that color, you can convert it to any color you wish, manipulate it, mix it with
-other colors, and then optionally serialize into CSS strings.</p>
-<p>While CSS is the primary focus for string parsing and serialization, ColorAide is also flexible and color space classes
-can be subclassed to create spaces that can accept non-CSS string inputs or serialize to non-CSS strings. Additionally,
-the raw color data can be used in any way the user sees fit: perform calculations, construct their own output, etc.</p>
-<p>There are many color libraries out there, and if you happen to be looking for a library that is more for scientific
-work, then maybe a library like <a href="https://github.com/colour-science/colour">Colour Science</a> is more appropriate. That is
-not to say you cannot analyze colors, plot them into diagrams and such with ColorAide, but we do not provide tools
-geared towards such scientific endeavors, nor do we provide the shear amount of configurable options, color spaces,
-white points, etc. that may come with a library such as Colour Science.</p>
-<p>In the process of developing ColorAide, we spent a lot of time researching the CSS color spec and various color spaces.
-In the process, we inevitably stumbled upon the JavaScript library <a href="https://github.com/LeaVerou/color.js">Color.js</a> which is created/maintained by
-the co-authors of some of the recent CSS color specifications. ColorAide became heavily influenced by Color.js as it
-was useful in clarifying many points in the CSS color spec, and it adopted a very similar interface in which we were
-aiming for. While our aim was not to port that library, we did learn a lot from it and it did leave a clear impression
-on our API, though we do vary quite a bit and have gone our own way.</p>
+<p>ColorAide is a continually evolving project, but was created with a number of specific goals in mind:</p>
+<ul>
+<li>
+<p>Be generally easy to pick up for the average user.</p>
+</li>
+<li>
+<p>Support modern CSS color spaces and syntax as well as a number of popular non-CSS color spaces.</p>
+</li>
+<li>
+<p>Provide a plugin API to extend color spaces and more.</p>
+</li>
+<li>
+<p>Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.</p>
+</li>
+<li>
+<p>Allow users to configure defaults to their liking.</p>
+</li>
+</ul>
+<p>There are many color libraries out there, and ColorAide is not meant to be the <em>one</em> library to replace all other color
+libraries. In the Python community, there are a number of great libraries. Two libraries that stand out are
+<a href="https://github.com/colour-science/colour">Colour Science</a> and <a href="https://github.com/nschloe/colorio">Colorio</a>, both of which are fantastic libraries, but are definitely more
+geared towards scientific endeavors. They provide a wealth of various spaces, illuminants, access to complex color space
+visualizers, and numerous esoteric tools. If you want to learn more about colors, these are great libraries to play
+with, but can be a little more cumbersome to use for the average user.</p>
+<p>While ColorAide could certainly be used to analyze colors, it does not aim to provide scientific tools and mainly
+focuses on making color usage easy and accessible in projects using colors.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link"></a></h2>
+<p>ColorAide can be installed via Python's <code>pip</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">$ </span>pip install coloraide
+</code></pre></div>
 <h2 id="using-coloraide">Using ColorAide<a class="headerlink" href="#using-coloraide" title="Permanent link"></a></h2>
 <p>ColorAide is easy to use.</p>
 <p>You can create colors:</p>
@@ -1023,17 +1039,13 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
 <button id="__playground-cancel_4" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
 </div>
 <p>And much more!</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link"></a></h2>
-<p>ColorAide can be installed via Python's <code>pip</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="gp">$ </span>pip install coloraide
-</code></pre></div>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 1, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 7, 2022</span>
       
     
   </small>
@@ -1144,11 +1156,11 @@ Color("blue").mix("yellow", space="lch").to_string()</textarea>
     <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.top", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
     
     
-      <script src="assets/javascripts/bundle.5413a266.min.js"></script>
+      <script src="assets/javascripts/bundle.b88e97c5.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
       
-        <script src="assets/coloraide-extras/extra-notebook-1b9493c8.js"></script>
+        <script src="assets/coloraide-extras/extra-notebook-3b1af47e.js"></script>
       
         <script src="assets/pymdownx-extras/extra-loader-9e2c67b9.js"></script>
       
