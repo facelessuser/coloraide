@@ -514,7 +514,7 @@ def adjust_precision(f: float, p: int = 0) -> float:
     else:
         whole = int(f)
         digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return round_half_up(whole if digits >= p else f, p - digits)
+        return round_half_up(whole if digits > p else f, p - digits)
 
 
 def round_half_up(n: float, scale: int = 0) -> float:

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+- **FIX**: Fix precision rounding issue.
+
 ## 0.11.0
 
 !!! warning "Breaking Changes"
