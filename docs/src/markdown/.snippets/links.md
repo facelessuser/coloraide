@@ -1,4 +1,6 @@
+[colorio]: https://github.com/nschloe/colorio
 [colorjs]: https://github.com/LeaVerou/color.js
+[colour-science]: https://github.com/colour-science/colour
 [compositing-level-1]: https://www.w3.org/TR/compositing-1/
 [css-spec-convert]: https://drafts.csswg.org/css-color/#color-conversion-code
 [de76]: http://www.brucelindbloom.com/index.html?Math.html

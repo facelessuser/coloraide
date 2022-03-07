@@ -27,6 +27,7 @@ ColorAide
 ColorAide's
 ColorHelper
 Colorimetry
+Colorio
 Ctrl
 Cz
 DCI

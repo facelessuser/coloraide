@@ -28,7 +28,7 @@ theme:
 
 nav:
   - ColorAide:
-      - Setup: index.md
+      - Introduction: index.md
       - The Color Object: color.md
       - Manipulating Colors: manipulation.md
       - Color Interpolation: interpolation.md
@@ -47,6 +47,7 @@ nav:
   - Playground: playground.md
   - About:
       - Contributing &amp; Support: about/contributing.md
+      - Acknowledgments: about/acknowledgments.md
       - Changelog: about/changelog.md
       - License: about/license.md
 
@@ -122,7 +123,7 @@ extra_css:
   - assets/coloraide-extras/extra-ccd229caf0.css
 extra_javascript:
   - https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-1b9493c8.js
+  - assets/coloraide-extras/extra-notebook-3b1af47e.js
 
 extra:
   social:

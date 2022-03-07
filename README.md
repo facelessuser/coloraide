@@ -8,33 +8,17 @@
 
 # ColorAide
 
-**This is still a work in progress.**
-
-While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease state. This simply means
-the API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
-color syntax and behavior to be decided by the CSS Working Group.
+> **This is still a work in progress.**
+>
+> While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease > state. This simply means
+> the API could still be in flux to some degree. ColorAide is still technically waiting for > some issues related to CSS
+> color syntax and behavior to be decided by the CSS Working Group.
 
 ## Overview
 
-ColorAide is a color library for Python with the intent to provide an easy to use interface to work with colors. While
-ColorAide is not just for CSS colors, there is a focus on supporting modern CSS color syntax as it is a format that is
-very commonly used. In addition to being able to parse almost all colors as specified in the CSS specification,
-ColorAide also supports a number of colors and formats for colors that are not in the CSS spec.
+ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.
 
-ColorAide is built on the idea of having a general color object in which you can easily manipulate a color, convert
-between colors in different spaces, and perform color related functions: interpolation, color distancing, color
-contrast, etc.
-
-In the process of developing ColorAide, we also stumbled upon the JavaScript library [Color.js][colorjs] which is
-created/maintained by the co-authors of some of the recent CSS color specifications. This project became heavily
-influenced by Color.js as it adopted a model we were already interested in. While our aim was not to port that library
-and be a 1:1 copy of it, it provided much clarity on the CSS specification and, in the end, left a clear impression on
-our API.
-
-With ColorAide, you can specify a color, convert it to other color spaces, mix it with other colors, output it in
-different CSS formats, and much more!
-
-```py
+```playground
 >>> from coloraide import Color
 >>> c = Color("red")
 >>> c.to_string()
@@ -47,7 +31,20 @@ different CSS formats, and much more!
 'rgb(255 65.751 107.47)'
 ```
 
-[colorjs]: https://github.com/LeaVerou/color.js
+ColorAide is a continually evolving project, but was created with a number of specific goals in mind:
+
+- Be generally easy to pick up for the average user.
+
+- Support modern CSS color spaces and syntax as well as a number of popular non-CSS color spaces.
+
+- Provide a plugin API to extend color spaces and more.
+
+- Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.
+
+- Allow users to configure defaults to their liking.
+
+With ColorAide, you can specify a color, convert it to other color spaces, mix it with other colors, output it in
+different CSS formats, and much more!
 
 # Documentation
 

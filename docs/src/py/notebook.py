@@ -88,7 +88,7 @@ def get_colors(result):
 
     colors = []
     if isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(fit=False), result))
+        colors.append(ColorTuple(result.to_string(fit=False), result.clone()))
     elif isinstance(result, Interpolator):
         colors = ColorInterpolate(result.steps(steps=5, max_delta_e=3))
     elif isinstance(result, ColorRow):
@@ -101,7 +101,7 @@ def get_colors(result):
     elif isinstance(result, Sequence):
         for x in result:
             if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(fit=False), x))
+                colors.append(ColorTuple(x.to_string(fit=False), x.clone()))
             elif isinstance(x, str):
                 try:
                     colors.append(ColorTuple(x, Color(x)))
