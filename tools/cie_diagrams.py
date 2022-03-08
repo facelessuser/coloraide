@@ -292,7 +292,7 @@ def black_body_curve_xy(t):
     return xc, yc
 
 
-def black_body_curve(t, xy=False):
+def black_body_curve(t, mode='1931'):
     """
     Calculate the black body curve for `uv` coordinates.
 
@@ -301,7 +301,7 @@ def black_body_curve(t, xy=False):
 
     if t > 15000:
         x, y = black_body_curve_xy(t)
-        if xy:
+        if mode == '1931':
             return x, y
         return util.xy_to_uv_1960([x, y])
 
@@ -315,9 +315,8 @@ def black_body_curve(t, xy=False):
         (1 - 2.89741816 * (10 ** -5) * t + 1.61456053 * (10 ** -7) * (t ** 2))
     )
 
-    if xy:
+    if mode == '1931':
         return util.uv_1960_to_xy([u, v])
-
     return u, v
 
 
@@ -334,19 +333,19 @@ def cie_xy_2_deg_offsets(wavelength):
 
     offset = (0, 0)
     if wavelength == 520:
-        offset = (-5, 12)
+        offset = (-5, 10)
     elif wavelength == 510:
-        offset = (-20, 5)
+        offset = (-15, 0)
     elif wavelength == 530:
         offset = (5, 12)
     elif wavelength < 490:
-        offset = (-18, -10)
+        offset = (-15, -8)
     elif wavelength < 500:
-        offset = (-18, -5)
+        offset = (-15, -5)
     elif wavelength < 520:
-        offset = (-18, -3)
+        offset = (-15, -3)
     else:
-        offset = (18, 5)
+        offset = (15, 5)
     return offset
 
 
@@ -367,15 +366,15 @@ def cie_xy_10_deg_offsets(wavelength):
     elif wavelength == 530:
         offset = (5, 12)
     elif wavelength == 510:
-        offset = (-15, 8)
+        offset = (-15, 5)
     elif wavelength < 490:
-        offset = (-18, -10)
+        offset = (-15, -5)
     elif wavelength < 500:
-        offset = (-18, -5)
+        offset = (-15, -5)
     elif wavelength < 520:
-        offset = (-18, -3)
+        offset = (-15, -3)
     else:
-        offset = (18, 5)
+        offset = (15, 5)
     return offset
 
 
@@ -392,17 +391,21 @@ def cie_uv_2_deg_offsets(wavelength):
 
     offset = (0, 0)
     if wavelength == 500:
-        offset = (-18, -5)
+        offset = (-15, -5)
     elif wavelength == 520:
-        offset = (-5, 12)
+        offset = (-10, 8)
+    elif wavelength == 530:
+        offset = (-5, 8)
+    elif wavelength > 540:
+        offset = (3, 8)
     elif wavelength > 520:
-        offset = (0, 12)
+        offset = (0, 8)
     elif wavelength == 510:
-        offset = (-18, 8)
+        offset = (-15, 0)
     elif wavelength == 380:
         offset = (5, -15)
     elif wavelength < 510:
-        offset = (-18, -10)
+        offset = (-15, -5)
     return offset
 
 
@@ -419,17 +422,19 @@ def cie_uv_10_deg_offsets(wavelength):
 
     offset = (0, 0)
     if wavelength == 500:
-        offset = (-18, 0)
+        offset = (-15, 0)
     elif wavelength == 520:
-        offset = (-5, 12)
-    elif wavelength > 520:
-        offset = (0, 12)
+        offset = (-5, 8)
+    elif wavelength == 530:
+        offset = (-3, 8)
+    elif wavelength > 530:
+        offset = (0, 8)
     elif wavelength == 510:
         offset = (-15, 8)
     elif wavelength == 380:
         offset = (10, -15)
     elif wavelength < 510:
-        offset = (-18, -10)
+        offset = (-15, -5)
     return offset
 
 
@@ -484,13 +489,19 @@ class DiagramOptions:
             self.title = title
 
         if theme == 'light':
-            plt.style.use('seaborn-whitegrid')
-            self.default_color = "black"
-            self.locus_color = "blue"
+            plt.style.use('seaborn-darkgrid')
+            self.default_color = "#00000088"
+            self.default_colorized_color = "#00000088"
+            self.locus_label_color = "#00000088"
+            self.locus_point_color = "#00000088"
+            self.locus_line_color = "#33333388"
         elif theme == 'dark':
             plt.style.use('dark_background')
-            self.default_color = "white"
-            self.locus_color = "cyan"
+            self.default_color = "#ffffff"
+            self.default_colorized_color = "#00000088"
+            self.locus_label_color = "#ffffff88"
+            self.locus_point_color = "#ffffff"
+            self.locus_line_color = "#cccccc88"
 
 
 def cie_diagram(
@@ -506,13 +517,13 @@ def cie_diagram(
         xlabel=opt.axis_labels[0],
         ylabel=opt.axis_labels[1]
     )
-    ax.set_aspect('auto')
+    ax.set_aspect('equal')
     if axis is False:
         plt.axis('off')
     figure.add_axes(ax)
     plt.title(opt.title)
     if show_labels:
-        plt.margins(0.1)
+        plt.margins(0.15)
 
     xs = []
     ys = []
@@ -576,22 +587,40 @@ def cie_diagram(
         )
 
     # Plot spectral locus and label it
-    plt.plot(xs, ys, color=opt.default_color, marker="", linewidth=1.5, markersize=2, antialiased=True)
+    plt.plot(
+        xs,
+        ys,
+        color=opt.locus_line_color if colorize else opt.default_color,
+        marker="",
+        linewidth=1.5,
+        markersize=2,
+        antialiased=True
+    )
 
     if show_labels:
         # Label points
+        ax = []
+        ay = []
         for annotate in annotations:
             offset = opt.locus_labels(annotate[0])
+            ax.append(annotate[1][0])
+            ay.append(annotate[1][1])
             plt.annotate(
                 '{:d}'.format(annotate[0]),
                 annotate[1],
                 size=8,
-                color=opt.locus_color,
+                color=opt.locus_label_color,
                 textcoords="offset points",
                 xytext=offset,
-                arrowprops=dict(arrowstyle="-"),
                 ha='center'
             )
+        plt.scatter(
+            ax,
+            ay,
+            marker=".",
+            color=opt.locus_point_color if not colorize else opt.default_color,
+            zorder=100
+        )
 
     # Add any specified white points.
     if white_points:
@@ -616,30 +645,22 @@ def cie_diagram(
             wx,
             wy,
             marker=".",
-            color='black',
-            path_effects=[
-                path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
-                path_effects.Normal()
-            ]
+            color=opt.default_colorized_color if colorize else opt.default_color
         )
         for pt, a in zip(zip(wx, wy), annot):
             plt.annotate(
                 a,
                 pt,
                 size=8,
-                color='black',
+                color=opt.default_colorized_color if colorize else opt.default_color,
                 textcoords="offset points",
                 xytext=(15, -3),
-                path_effects=[
-                    path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
-                    path_effects.Normal()
-                ],
                 ha='center'
             )
 
     # Show the black body (Planckian locus) curve
     # Work in progress.
-    if black_body and opt.mode in ('1931', '1960'):
+    if black_body and opt.mode != '1976':
         uaxis = []
         vaxis = []
         bres = 20
@@ -647,11 +668,19 @@ def cie_diagram(
         brange = 24000
         for cct in range(0, bres + 1):
             t = cct / bres * brange + boffset
-            bu, bv = black_body_curve(t, opt.mode == '1931')
+            bu, bv = black_body_curve(t, opt.mode)
             uaxis.append(bu)
             vaxis.append(bv)
         uaxis, vaxis = get_spline(uaxis, vaxis, len(uaxis) * 4)
-        plt.plot(uaxis, vaxis, color=opt.default_color, marker="", linewidth=1, markersize=0, antialiased=True)
+        plt.plot(
+            uaxis,
+            vaxis,
+            color=opt.default_colorized_color if colorize else opt.default_color,
+            marker="",
+            linewidth=1,
+            markersize=0,
+            antialiased=True
+        )
         # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
     # Draw RGB triangles if one is specified

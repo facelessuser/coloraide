@@ -199,7 +199,7 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
     if dark:
         plt.style.use('dark_background')
     else:
-        plt.style.use('seaborn-whitegrid')
+        plt.style.use('seaborn-bright')
 
     # Setup figure and axis
     figure = plt.figure()
@@ -210,6 +210,7 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
         ylabel=names[axm[1]],
         zlabel=names[axm[2]]
     )
+
     # Turn off ticks for cylindrical hue
     if is_cyl:
         ax.xaxis.set_ticks([])

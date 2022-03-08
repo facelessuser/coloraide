@@ -36,7 +36,7 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
 
     res = resolution
     if not dark:
-        plt.style.use('seaborn-whitegrid')
+        plt.style.use('seaborn-darkgrid')
         default_color = 'black'
     else:
         plt.style.use('dark_background')
