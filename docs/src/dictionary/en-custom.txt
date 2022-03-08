@@ -87,6 +87,7 @@ Oklch
 Ottosson
 PQ
 Piecewise
+Planckian
 Premultiply
 ProPhoto
 PyPI

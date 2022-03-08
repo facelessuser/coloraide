@@ -6,6 +6,8 @@ import argparse
 import matplotlib.patheffects as path_effects
 import sys
 import os
+import numpy as np
+from scipy import interpolate
 
 sys.path.insert(0, os.getcwd())
 
@@ -239,6 +241,27 @@ labels = {
     620,
     700
 }
+
+
+def get_spline(x, y, points=100):
+    """Get spline."""
+
+    # Setup as `numpy` arrays
+    x2 = np.asarray(x, dtype=float)
+    y2 = np.asarray(y, dtype=float)
+
+    # Create a linear spaces between 0 and 1 for our curve
+    path = np.linspace(0, 1, x2.size)
+
+    # Create the position vectors using x and y coordinates
+    vec = np.vstack((x2.reshape((1, x2.size)), y2.reshape((1, y2.size))))
+
+    # Create the spline function
+    spline = interpolate.interp1d(path, vec, kind='cubic')
+
+    # Get the actual spline curve between 0 and 1 with number of points
+    x2, y2 = spline(np.linspace(np.min(path), np.max(path), points))
+    return x2.tolist(), y2.tolist()
 
 
 def black_body_curve_xy(t):
@@ -515,6 +538,8 @@ def cie_diagram(
         if k in labels:
             annotations.append((k, (x, y)))
 
+    xs, ys = get_spline(xs, ys, len(xs) * 3)
+
     # Draw the bottom purple line
     xs.append(xs[0])
     ys.append(ys[0])
@@ -612,10 +637,12 @@ def cie_diagram(
                 ha='center'
             )
 
+    # Show the black body (Planckian locus) curve
+    # Work in progress.
     if black_body and opt.mode in ('1931', '1960'):
         uaxis = []
         vaxis = []
-        bres = 100
+        bres = 20
         boffset = 1000
         brange = 24000
         for cct in range(0, bres + 1):
@@ -623,6 +650,7 @@ def cie_diagram(
             bu, bv = black_body_curve(t, opt.mode == '1931')
             uaxis.append(bu)
             vaxis.append(bv)
+        uaxis, vaxis = get_spline(uaxis, vaxis, len(uaxis) * 4)
         plt.plot(uaxis, vaxis, color=opt.default_color, marker="", linewidth=1, markersize=0, antialiased=True)
         # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
@@ -677,6 +705,7 @@ def main():
     parser.add_argument('--no-background', '-b', action='store_true', help="Disable diagram color background.")
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
+    parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     args = parser.parse_args()
 
@@ -691,7 +720,8 @@ def main():
         show_labels=not args.no_labels,
         show_legend=not args.no_legend,
         axis=not args.no_axis,
-        title=args.title
+        title=args.title,
+        black_body=args.black_body
     )
 
     if args.output:
