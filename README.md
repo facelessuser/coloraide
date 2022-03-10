@@ -18,7 +18,7 @@
 
 ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.
 
-```playground
+```python
 >>> from coloraide import Color
 >>> c = Color("red")
 >>> c.to_string()
