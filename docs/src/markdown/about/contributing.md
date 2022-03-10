@@ -1,5 +1,9 @@
 # Contributing &amp; Support
 
+There are many ways to help support this project, regardless of skills and abilities. If you enjoy this project and want
+to get involved, consider checking out one of the various ways below. Feel free to get creative, there may be other ways
+to contribute in which we have not thought of!
+
 ## Become a Sponsor :octicons-heart-fill-16:{: .heart-throb}
 
 Open source projects take time and money. Help support the project by becoming a sponsor. You can add your support at

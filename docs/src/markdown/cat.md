@@ -1,16 +1,19 @@
 # Chromatic Adaptation
 
-## Overview
-
 Chromatic adaptation is the human visual system's ability to adjust to changes in illumination in order to preserve the
 appearance of object colors. It is responsible for the stable appearance of object colors despite the wide variation of
-light which might be reflected from an object and observed by our eyes. A chromatic adaptation transform (CAT) function
-emulates this important aspect of color perception in color appearance models.
+light which might be reflected from an object and observed by our eyes. A chromatic adaptation transform (CAT) emulates
+this important aspect of color perception in color appearance models.
 
-In short, colors look different under different lighting. Viewing a color in daylight will look different than viewing
-it by candle light. Color spaces usually define a reference illuminant that clarifies the assumed lighting for the given
-space. For instance, sRGB is a color space defined with an illuminant of D65 (light in the shade - no direct sunlight -
-at noon). On the other hand, the ProPhoto RGB space uses a D50 illuminant (direct sunlight at noon).
+In short, colors look different under different lighting, and CATs are used to predict what a color should look like
+from one lighting source to another.
+
+## Illuminants
+
+Viewing a color in daylight will look different than viewing it by candle light. Color spaces usually define a reference
+illuminant that clarifies the assumed lighting for the given space. For instance, sRGB is a color space defined with an
+illuminant of D65 (light in the shade - no direct sunlight - at noon). On the other hand, the ProPhoto RGB space uses a
+D50 illuminant (direct sunlight at noon).
 
 When translating a color from one illuminant to another, it is often desirable to represent that color under the new
 illuminant such that it appears to the eye the same as it did under the original illuminant. CATs are used to predict
@@ -26,20 +29,62 @@ d65 = d50.convert('xyz-d65')
 d50, d65
 ```
 
-Under the hood, this is done using the Bradford CAT, ColorAide's default CAT. When translating from one color space to
-another, there are times when the illuminants are the same, to ensure these colors can get converted appropriately,
-accounting for the differences in illuminants, colors usually pass through an XYZ conversion specifically so that a CAT
-can be used to adapt the color to the new color space.
+These transforms are usually designed for the XYZ color space as it operates in linear light making it the ideal place
+to apply the transform. Any color that must go through a CAT to account for differences in illuminants must pass through
+the XYZ color space. More specifically, ColorAide requires the color to pass through XYZ D65 space as that will trigger
+the chromatic adaptation. For instance, if a color space such as ProPhoto is being translated to sRGB, ProPhoto will
+first be transformed to XYZ D50, then XYZ D65 which will trigger the chromatic adaptation, next to Linear sRGB, and
+lastly sRGB.
 
 So, we can actually do this manually and compare the results to what we did above. In order to do this, we need to
 provide the specified "white point" for the source color and the "white point" for the destination color along with the
-XYZ coordinates we wish to transform:
+XYZ coordinates we wish to transform. ColorAide uses the Bradford CAT by default, so we will specify that CAT for
+consistency.
 
 ```playground
 from coloraide import cat
 Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
 cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], 'bradford')
 ```
+
+ColorAide, currently defines the following illuminants, but most people are probably only concerned with D65 and D50
+which are the only illuminants used in the default color spaces provided by ColorAide.
+
+Illuminants |
+----------- |
+`A`         |
+`B`         |
+`C`         |
+`D50`       |
+`D55`       |
+`D65`       |
+`D75`       |
+`E`         |
+`F2`        |
+`F7`        |
+`F11`       |
+
+## Supported CATs
+
+There are various CATs, all varying in complexity and accuracy. We will not go through all of them and instead will
+leave that up to the user to research as needed. Suffice it to say, the Bradford CAT is currently the industry standard
+(in most cases), but there are a variety of options available, and research continues to try and improve upon CATs of
+the past to come up with better CATs for the future.
+
+Currently, ColorAide mainly supports von Kries type CATs (named after an early 20th century color scientist), or CATs
+that are similar to and/or are built upon the original von Kries CAT. We also do not currently support every known von
+Kries CAT out there, but a good number are available. In the future, support may be expanded.
+
+CAT           |
+------------- |
+`bradford`    |
+`von-kries`   |
+`xyz-scaling` |
+`sharp`       |
+`cat02`       |
+`cat16`       |
+`cmccat97`    |
+`cmccat2000`  |
 
 ## Changing the Default CAT
 
@@ -56,25 +101,3 @@ d50 = Custom('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
 d65 = d50.convert('xyz-d65')
 d50, d65
 ```
-
-## Supported CATs
-
-There are various CATs, all varying in complexity and accuracy. We will not go through all of them and instead will
-leave that up to the user to research as needed. Suffice it to say though that the Bradford CAT is currently the
-industry standard (in most cases), but there are a variety of options available, and research continues to try and
-improve upon CATs of the past to come up with a better CATs for the future.
-
-Currently, ColorAide mainly supports von Kries type CATs (named after an early 20th century color scientist), or CATs
-that are similar to and/or are built upon the original von Kries CAT. We also do not currently support every known von
-Kries CAT out there, but a good number are available. In the future, support may be expanded.
-
-CAT           |
-------------- |
-`bradford`    |
-`von-kries`   |
-`xyz-scaling` |
-`sharp`       |
-`cat02`       |
-`cat16`       |
-`cmccat97`    |
-`cmccat2000`  |

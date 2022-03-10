@@ -1,14 +1,19 @@
 # The Color Object
 
+The `Color` object is where all the magic of ColorAide happens. In order to manipulate, interpolate, or perform any
+action on a color, we must first create one. There are a number of ways to instantiate new colors. Here we will cover
+basic creating, cloning, and updating of the `Color` class object and a few other class specific topics.
+
 ## Creating Colors
 
-The `Color` object can be imported from `coloraide`.
+The `Color` object contains all the logic to create and manipulate colors. It can be imported from `coloraide`.
 
 ```py3
 from coloraide import Color
 ```
 
-Afterwards, colors can be created using various, valid CSS syntax:
+Afterwards, colors can be created using various, valid CSS syntax. Syntax includes legacy formats as defined in CSS
+Level 3, but also contains CSS Level 4!
 
 ```playground
 Color("red")
@@ -16,11 +21,14 @@ Color("#00ff00")
 Color("rgb(0 0 255 / 1)")
 ```
 
-In general, each color space can be recognized using valid CSS syntax as specified in the CSS Level 4 spec, but
-ColorAide also allows the use of colors not specified by the CSS spec. To bridge the gap with syntax, ColorAide allows
-all colors, whether in the CSS spec or not, to be recognized using the CSS color function
-(`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently specified to
-use the `#!css-color color()` function, we still allow it.
+!!! warning "Warning: CSS Level 4"
+    Though CSS Level 4 is supported, the CSS spec is not finalized and there could be some churn in relation to the
+    syntax as browsers begin to implement the spec, there may be changes.
+
+ColorAide, not only supports colors in the CSS spec, but also some other additional color spaces as well. To bridge the
+gap with syntax, ColorAide allows all colors, whether in the CSS spec or not, to be recognized using the CSS color
+function (`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently
+specified to use the `#!css-color color()` function, we still allow it.
 
 Essentially, we've adopted the `#!css-color color()` function as the universal way in which to serialize colors. If the
 CSS spec does not formally recognize a color in this form, the color identifier will use the two dashes as a prefix
@@ -66,9 +74,9 @@ color1
 color1.new("blue")
 ```
 
-If desired, all creation method can be configured to also filter out color spaces that we are not interested in by using
-the `filter` parameter and specifying only the color spaces we do care about. Valid input colors will then be
-constrained only to those spaces in the list.
+If desired, all creation methods can be have a color space filter list passed in. The filter list will prevent an input
+which specifies a color space found in our list to not be accepted. Use a filter will constrain inputs to supported
+color spaces not found in the list.
 
 ```playground
 try:
@@ -82,7 +90,7 @@ Color("hsl(130 30% 75%)", filters=["hsl"])
 
 The `clone` method is an easy way to duplicate the current color object.
 
-Here we clone the `#!color green` object so we have two.
+Here we clone the `#!color green` object, giving us two.
 
 ```playground
 c1 = Color("green")
@@ -92,8 +100,8 @@ c1.clone()
 
 ## Updating
 
-A color can be "updated" using another color object. When an update occurs, the current color space is updated from the
-data of the second color, but the color space does not change. It is basically the equivalent of converting the second
+A color can be "updated" using another color input. When an update occurs, the current color space is updated from the
+data of the second color, but the color space does not change. Using `update` is the equivalent of converting the second
 color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
 are identical to the `new` method, so we can use a color object, a color string, or even raw data points.
 
@@ -112,7 +120,7 @@ Color("red").update("lch(80% 50 130)")
 
 ## Mutating
 
-"Mutating" is similar to [updating](#updating) except that it will update the color and the color space from another
+"Mutating" is similar to [updating](#updating) except that it will update the color **and** the color space from another
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
 raw data points.
 
@@ -136,30 +144,9 @@ we could simply call the `convert` method with the desired color space.
 Color('yellow').convert("lab")
 ```
 
-!!! note "Normalizing Undefined Channels"
-
-    Some color spaces have channels which in certain scenarios are considered powerless. For instance, when an HSL color
-    is achromatic (gray-scale) due to having saturation of zero, the hue channel is powerless. This is because the hue
-    value can contribute in no meaningful way.
-
-    As an example, during the conversion process from any color to HSL, if the resultant HSL color has a saturation of
-    `#!py3 0` or a lightness of `#!py3 0` or `#!py3 1`, the hue will be marked as missing. This really only happens
-    automatically during conversion as the algorithm has no way to know what the hue should be as all hues are
-    technically wrong even if they do not affect the color.
-
-    If desired, this same logic can be forced on a color via the `normalize` method as there may be reasons for a user
-    to want to do this, whether it is for interpolation or other reasons. Checkout the [Interpolation](./interpolation.md)
-    section in the documentation to learn more.
-
-    ```playground
-    Color("hsl(130 0% 50%)")
-    Color("hsl(130 0% 50%)").convert('srgb').convert('hsl')
-    Color("hsl(130 0% 50%)").normalize()
-    ```
-
 ## Color Matching
 
-As previously mentioned, the `#!py3 Color()` object can take in CSS style string inputs. The string matching logic is
+As previously mentioned, the `#!py3 Color()` object can parse CSS style string inputs. The string matching logic is
 exposed via the `match` method. We can simply pass `match` a string, and, if the string is a valid color, a `ColorMatch`
 object will be returned. The `ColorMatch` object has a simple structure that contains the matched `color` as a `Color`
 object, and the `start` and `end` points it was located at.
@@ -176,8 +163,8 @@ Color.match("red and yellow")
 Color.match("red and yellow", fullmatch=True)
 ```
 
-We can also adjust the start position of the search. In this case, by adjusting the start position to 8
-characters later, we will match `#!color yellow` instead of `#!color red`.
+We can also adjust the start position of the search. In this case, by adjusting the start position to 8 characters
+later, we will match `#!color yellow` instead of `#!color red`.
 
 ```playground
 Color.match("red and yellow", start=8)
@@ -192,14 +179,16 @@ Color.match("hsl(130 30% 75%)", filters=["hsl"])
 ```
 
 A method to find all colors in a buffer is not currently provided as looping through all the color spaces and matching
-all potential colors on every character is not really efficient. Additionally, some buffers way require additional
-context that is not available to the to the match function. If such behavior is desired, what is recommended would
-be to apply this with some logic to find potential places in the buffer to test, and only test those places.
+all potential colors on every character is not really efficient. Additionally, some buffers may require additional
+context that is not available to the match function. If such behavior is desired, it is recommended to apply some
+additional logic to sniff out areas with high likelihood of having a color.
 
-In this example, we construct a regex to find places within the buffer that potentially have a valid color, but we also
-try and filter out cases that are unfavorable by providing additional context. As we are interested in matching full
-colors in HTML or CSS, we don't want to match hex in HTML entities or color names that are part of color variables
-(`#!css var(--color-red)`).
+In the following example, we construct a regular expression to find places within the buffer that potentially have a
+valid color. As the buffer is an HTML document we also want to incorporate some context to avoid matching HTML entities
+or color names that are part of a CSS variable.
+
+Once we've crafted our regular expression, we can search the buffer to find locations in the buffer that are likely to
+be colors. Then we can run `Color.match()` on those positions within the buffer to see if we find a valid color!
 
 ```playground
 import re
@@ -235,17 +224,15 @@ for m in RE_COLOR_START.finditer(text):
 ## Custom Color Classes
 
 In general, it is always recommended to subclass the [`Color`](#color) object when setting up custom preferences or
-adding or removing plugins. This prevents modifying the base class which may affect other libraries relying on the 
+adding or removing plugins. This prevents modifying the base class which may affect other libraries relying on the
 module. When [`Color`](#color) is subclassed, it is safe to then update global overrides or register and deregister
 plugins without the worry of affecting the base class.
 
 ### Override Default Settings
 
-ColorAide has a couple of default settings, such as the default precision for string outputs, default gamut mapping
-mode, etc. All of these options can be set on demand when calling certain functions, but when not explicitly set, the
-base class defaults are used. If needed, the defaults can be changed for an entire application or library. To do so,
-simply subclass the `Color` object and override the class defaults. The new derived class can be used throughout an
-application or library and will use the specified defaults.
+ColorAide has a number of preferences that can be altered in the `Color` class. Most of these options can be configured
+on demand when calling into a function that uses theme, but it may be useful to setup a new defaults so that the `Color`
+object behaves how you prefer.
 
 ```playground
 class Color2(Color):
@@ -255,29 +242,35 @@ Color('rgb(128.12345 0 128.12345)').to_string()
 Color2('rgb(128.12345 0 128.12345)').to_string()
 ```
 
-Properties             | Description
----------------------- | -----------
-`FIT`                  | The default gamut mapping method used by the [`Color`](#color) object.
-`INTERPOLATE`          | The default color space used for interpolation. Currently `lab` by default.
-`DELTA_E`              | The default ∆E algorithm used for gamut distancing called both internally for things like interpolation [`steps`](./interpolation.md#steps) or when [`delta_e()`](./distance.md#delta-e) is called without a an explicit method.
-`PRECISION`            | The default precision for string outputs.
-`CHROMATIC_ADAPTATION` | The default chromatic adaptation method (default is `bradford`). See [Chromatic Adaptation](./cat.md) for more information.
+Properties             | Defaults            | Description
+---------------------- | ------------------- | -----------
+`FIT`                  | `#!py "lch-chroma"` | The default gamut mapping method used by the [`Color`](#color) object.
+`INTERPOLATE`          | `#!py "oklab"`      | The default color space used for interpolation.
+`DELTA_E`              | `#!py "76"`         | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
+`PRECISION`            | `#!py 5`            | The default precision for string outputs.
+`CHROMATIC_ADAPTATION` | `#!py "bradford"`   | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
 
 ### Plugins
 
 Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.
 
-If you wanted a more lightweight [`Color`](#color) object, you could deregister color spaces you don't need. Keep in
-mind that some color spaces are essential, like XYZ D65 which is used in many color conversions. Removing some colors
-could also break functionality of certain features that are reliant on a specific color space, such as CIELAB which is
-used for delta E 2000 color distancing or CIELCH which is used in the the LCH Chroma gamut mapping.
+Some potential, useful cases: register a new color spaces not supported directly in ColorAide, test out a new ∆E
+algorithm, experiment with a potentially better gamut mapping method, tweak an existing color space to accept and
+output color strings in a new format, create a variant of a color space that uses a different white point than is
+currently supported, etc.
+
+If you wanted a more lightweight [`Color`](#color) object, you could deregister color spaces you don't need. Though,
+keep in mind that some color spaces are essential, like XYZ D65 which is used in many color conversions. Removing some
+colors could also break functionality of certain features that are reliant on a specific color space, such as CIELAB
+which is used for ∆E^\*^~2000~ color distancing or CIELCH which is used in the the LCH Chroma gamut mapping, but both
+could also be deregistered to avoid issues.
 
 While we will not go into creating plugins here, we will go over how to register new plugins and deregister existing
 plugins. To learn more about creating plugins, checkout the [plugin documentation](./plugins/index.md).
 
 Registration is performed by the `register` method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
-a plugin already registered with plugin's name (as dictated by the plugin) the operation will fail. If `overwrite` is
+a plugin already registered with the same name (as dictated by the plugin) the operation will fail. If `overwrite` is
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
 
@@ -305,5 +298,3 @@ except ValueError:
 ```
 
 Use of `*` with `deregister` will remove all plugins. Use of `category:*` will remove all plugins of that category.
-This is in case a user wishes to build up a color class's plugins from scratch. This may be useful if there is a desire
-to explicitly define allowed plugins and exclude any unknown, new ones that may become available.

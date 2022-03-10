@@ -30,7 +30,7 @@ class DeltaE(ABCMeta):
 ```
 
 The plugin should provide a unique `NAME` and the distancing logic under `#!py3 distance()` where `color` is the current
-color and `sample` is the secondary provided color: `#!py3 Color('color').delta_e('sample', method='NAME')`. The return
+color and `sample` is the secondary, provided color: `#!py3 Color('color').delta_e('sample', method='NAME')`. The return
 value should be a float indicating the distance.
 
 Additional plugin specific options can be provided via new keyword arguments.
@@ -42,7 +42,7 @@ gamut. All default gamut mapping methods provided by ColorAide are provided via 
 
 ### Plugin Class
 
-Plugins are are created by suclassing `#!py3 coloraide.gamut.Fit`.
+Plugins are are created by subclassing `#!py3 coloraide.gamut.Fit`.
 
 ```py
 class Fit(ABCMeta):
@@ -58,6 +58,10 @@ class Fit(ABCMeta):
 
 The plugin should provide a unique `NAME` and the fitting/mapping logic under `#!py3 fit()`. The method does not return
 anything and should modify the `color` directly to be in gamut.
+
+!!! warning "Reserved Name"
+    `clip` is a special, reserved name and the associated plugin cannot be overridden. Another clip plugin can be
+    written, but it cannot override the original.
 
 ## Color Space
 
@@ -75,7 +79,7 @@ space, there are a couple things that must be defined. Using XYZ as an example, 
 !!! tip "Chromatic Adaptation"
     Color spaces do **not** perform chromatic adaptation. That is handled by the `Color` object. Color spaces should
     never change the white point, but simply provide the appropriate `BASE` linkage so that the color can resolve
-    eventually to XYZ D65. Non D65 XYZ color spaces should all have `xyz-d65` as their base. Chromatic adaptation should
+    eventually to XYZ D65. Other XYZ color spaces should all have `xyz-d65` as their base. Chromatic adaptation should
     automatically occur on transitions between two XYZ spaces with different white points white points, e.g., `xyz-d65`
     to `xyz-d50`.
 
@@ -292,16 +296,17 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
             return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
     ```
 
-Mix-in classes are mainly available so that a color space can be inspected to see if it falls into a specific type of
-generic color space type to allow for some generic handling of the color. For instance, you may not care specifically
+Mix-in classes are mainly available so that a color space can be inspected to see if it falls into a specific generic
+color space type in order to allow for some generic handling of the color. For instance, you may not care specifically
 what color space you are dealing with, but you may want to extract the hue from all cylindrical spaces, or grab the
-lightness (or lightness equivalent) from all Lab-ish color spaces. The mix-in classes provide methods mainly to extract
-expected channels on color spaces that may use different names for similar channels in the specified generic category
-or determine the index of a specific channel types. Occasionally, these methods may need to be overridden for a color
-space.
+lightness (or lightness equivalent) from all Lab-ish color spaces.
 
-Below, we can see that both `jzazbz` identify as Lab-ish spaces. If we just care about accessing the equivalent of Lab
-lightness on these spaces, we can simply can generically access them with the following logic.
+The mix-in classes provide methods mainly to extract expected channels on color spaces that may use different names for
+similar channels or to determine the index of a specific channel type. Occasionally, these methods may need to be
+overridden for a color space.
+
+Below, we can see that both `jzazbz` and `ictcp` identify as Lab-ish spaces. If we just care about accessing the
+equivalent of Lab lightness on these spaces, we can simply can access them with the following logic.
 
 ```playground
 from coloraide.spaces import Labish
@@ -325,27 +330,31 @@ not lightness which is similar but not precisely the same thing.
 
 ### Adding New Input/Output Formats
 
-By default, all color spaces are defined using the generic `#!css-color color(space ...)` format. The `DEFAULT_MATCH` is
-specifically used so that a color can retain this match behavior and specify additional matching via `MATCH`.
+One common thing that may be desired is altering an existing color space to accept and output a specialized format.
+While using hex color codes or `#!css-color rgb()` formats are fairly common, there are many places were other forms
+are used to represent colors. It may be beneficial to a user working with colors in some more obscure form to repurpose
+a color space to handle different input/output formats.
 
-`MATCH` can be used to define an assortment of color match formats. Simply define a compiled regular expression pattern
-for `MATCH` and add your logic to the `#!py3 match()` method. If it is desired to also allow
-`#!css-color color(space ...)` matching, you can call the base match with `#!py3 super().match()`.
+The base of every color space is defined to accept and output the `#!css-color color(space ...)` format. To add
+additional CSS forms on top, we usually subclass the base and override the `#!py3 match()` and `#!py3 to_string()`,
+calling into `#!py3 super().match()` and `#!py3 super().to_string()` only when we'd like to match or output this the
+`#!css-color color(space ...)` format.
 
-For instance, let's consider the default sRGB space. Out of the box, ColorAide provides CSS input formats such as hex
-color codes, named colors, and `#!css-color rgb()` formats in addition to the default `#!css-color color(space ...)`
-format. To do this, it simply provides the additional input formats as a regular expression pattern assigned to `MATCH`
-and overrides `match()`.  As we still support the `#!css-color color(space ...)` input, we also call into the base
-space's `#!py3 match()`.
+For instance, let's consider the default sRGB space, which can be used as an example on how to create a specialized,
+non-CSS sRGB input/output. While we won't go into the specific parsing logic, the general top-level logic can be seen
+below.
 
-While we won't go into the specific parsing logic, the general top-level logic can be seen below. Notice that a number
-of useful pattern expressions are found in `#!py3 coloraide.parse` which we reuse in our CSS pattern via
-`#!py3 parse.COLOR_PARTS`. Also, notice that `#!py3 match()` is expected to return two things: a tuple containing the
-color channel coordinates and alpha and the end position (`#!py3 ([r, g, b], a), end`). If the match fails, it simply
-returns `#!py3 None`.
+We opt to use a regular expression pattern to match the `rgb()`, hex color codes, and color name formats. We then
+override `#!py3 match()` and call into the base match function to try and find the `#!css-color color(space ...)`
+format. If we don't get a match, we run our own custom parsing logic. Also, notice that `#!py3 match()` is expected to
+return two things: a tuple containing the color channel coordinates and alpha and the end position
+(`#!py3 ([r, g, b], a), end`). If the match fails, it simply returns `#!py3 None`.
 
 
 ```py
+from .. import srgb as base
+
+
 class SRGB(base.SRGB):
     """SRGB class."""
 
@@ -383,12 +392,15 @@ class SRGB(base.SRGB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[MutableVector, float], Optional[int]]]:
+    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a CSS color string."""
 
-        channels, end = super().match(string, start, fullmatch)
-        if channels is not None:
-            return channels, end
+        # Handle default `color(space...)` support
+        match = super().match(string, start, fullmatch)
+        if match is not None:
+            return match
+
+        # Handle `rgb(a)`, hex, and color names
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             string = string[m.start(0):m.end(0)].lower()
@@ -402,12 +414,12 @@ class SRGB(base.SRGB):
         return None
 ```
 
-Additional output formats are specified by overriding the `#!py3 to_string()` function. We ensure that it accepts all
-the default parameters (though we do not have to use them if a specific output format does not require them) and specify
-any additional keyword arguments to enable our new formats.
+Additionally, we control the output formats by overriding the `#!py3 to_string()` function. We ensure that it accepts
+all the parameters we need, in our case we accept the common parameters and later check for our special inputs in
+`kwargs`.
 
 Just like with inputs, we call the base `#!py3 to_string()` method if we wish to output the
-`#!css-color color(space ...)` format or we can omit it.
+`#!css-color color(space ...)` format and then continue on with our own logic.
 
 ```py
     def to_string(
@@ -425,60 +437,13 @@ Just like with inputs, we call the base `#!py3 to_string()` method if we wish to
         if precision is None:
             precision = parent.PRECISION
 
+        # Handle default `color(space...)` format.
         options = kwargs
         if options.get("color"):
             return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
 
-        a = util.no_nan(self.alpha) if not none else self.alpha
-        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
-        compress = options.get("compress", False)
-
-        # Handle hex and color names
-        value = ''
-        if options.get("hex") or options.get("names"):
-            h = self._get_hex(parent, upper=options.get("upper", False), alpha=alpha, fit=fit)
-            if options.get("hex"):
-                value = h
-                if compress:
-                    m = RE_COMPRESS.match(value)
-                    if m:
-                        value = m.expand(r"#\1\2\3\4") if alpha else m.expand(r"#\1\2\3")
-            if options.get("names"):
-                length = len(h) - 1
-                index = int(length / 4)
-                if length in (8, 4) and h[-index:].lower() == ("f" * index):
-                    h = h[:-index]
-                n = color_names.hex2name(h)
-                if n is not None:
-                    value = n
-
-        # Handle normal RGB function format.
-        if not value:
-            percent = options.get("percent", False)
-            comma = options.get("comma", False)
-            factor = 100.0 if percent else 255.0
-
-            method = None if not isinstance(fit, str) else fit
-            coords = parent.fit(method=method).coords() if fit else self.coords()
-            if not none:
-                coords = util.no_nans(coords)
-
-            fmt = util.fmt_percent if percent else util.fmt_float
-            if alpha:
-                template = "rgba({}, {}, {}, {})" if comma else "rgb({} {} {} / {})"
-                value = template.format(
-                    fmt(coords[0] * factor, precision),
-                    fmt(coords[1] * factor, precision),
-                    fmt(coords[2] * factor, precision),
-                    util.fmt_float(a, max(util.DEF_PREC, precision))
-                )
-            else:
-                template = "rgb({}, {}, {})" if comma else "rgb({} {} {})"
-                value = template.format(
-                    fmt(coords[0] * factor, precision),
-                    fmt(coords[1] * factor, precision),
-                    fmt(coords[2] * factor, precision),
-                )
+        # Additional logic here
+        ...
 
         return value
 ```

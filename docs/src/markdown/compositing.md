@@ -1,7 +1,5 @@
 # Compositing and Blending
 
-## Compositing
-
 Alpha compositing and blending are tied together under the umbrella of compositing. Each is just an aspect of
 the overall compositing of colors. Blend is run first, followed by alpha compositing.
 
@@ -9,15 +7,14 @@ ColorAide implements both alpha compositing and blending as described in the [Co
 specification. Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `compose` method
 uses the `normal` blend mode and the `source-over` Porter Duff operator.
 
-### Blending
+## Blending
 
 Blending is the aspect of compositing that calculates the mixing of colors where the source element and backdrop
 overlap. Conceptually, the colors in the source element (top layer) are blended in place with the backdrop
 (bottom layer).
 
 There are various blend modes, the most common is the `normal` blend mode which is the default blending mode for
-browsers when a layer is placed over another layer. The `normal` mode simply returns the top layer's color when two are
-overlaid.
+browsers. The `normal` blend mode simply returns the top layer's color when one is overlaid onto another.
 
 <span class="isolate blend-normal dual">
   <span class="circle circle-1"></span>
@@ -55,8 +52,9 @@ and replicate it in ColorAide.
     As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
     and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
-You can even blend multiple colors. Simply send in a list, and the colors will be blended from right to left with the
-right most color being on the bottom of the stack, and the base color being on the very top.
+ColorAide allows you to blend multiple colors quite easily as well. Simply send in a list, and the colors will be
+blended from right to left with the right most color being on the bottom of the stack, and the base color being on the
+very top.
 
 
 <span class="isolate blend-multiply">
@@ -67,21 +65,29 @@ right most color being on the bottom of the stack, and the base color being on t
 
 === "Display P3"
     ```playground
-    Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="display-p3")
+    c1 = Color('#07c7ed')
+    c2 = Color('#fc3d99')
+    c3 = Color('#f5d311')
+    c1, c2, c3
+    c1.compose([c2, c3], blend='multiply', space="display-p3")
     ```
 
 === "sRGB"
     ```playground
-    Color('#07c7ed').compose(['#fc3d99', '#f5d311'], blend='multiply', space="srgb")
+    c1 = Color('#07c7ed')
+    c2 = Color('#fc3d99')
+    c3 = Color('#f5d311')
+    c1, c2, c3
+    c1.compose([c2, c3], blend='multiply', space="srgb")
     ```
 
 Lastly, if for any reason, it is desired to compose with blending disabled (e.g. just run alpha compositing), then you
-can simply set `operator` to `#!py3 False`.
+can simply set `blend` to `#!py3 False`.
 
 [`multiply`](#multiply) is just one of many blend modes that are offered in ColorAide, check out
 [Blend Modes](#blend-modes) to learn about other blend modes.
 
-### Alpha Compositing
+## Alpha Compositing
 
 Alpha compositing or alpha blending is the process of combining one image with a background to create the appearance of
 partial or full transparency.
@@ -103,16 +109,22 @@ semi-transparent layers on top of each other.
 Given two colors, ColorAide can replicate this behavior and determine the resultant color by applying compositing. We
 will use the demonstration above and replicate the result in the example below. Below we set the source color to
 `#!color Color('#07c7ed').set('alpha', 0.5)` and the backdrop color to `#!color #fc3d99` and run it through the
-`compose` method.
+`compose` method. It should be noted that the default blend mode of `normal` is used in conjunction by default.
 
 === "Display P3"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="display-p3")
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, space="display-p3")
     ```
 
 === "sRGB"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', space="srgb")
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, space="srgb")
     ```
 
 !!! note "Display Differences"
@@ -131,12 +143,18 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
 
 === "Display P3"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', operator='destination-over', space="display-p3")
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, operator='destination-over', space="display-p3")
     ```
 
 === "sRGB"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose('#fc3d99', operator='destination-over', space="srgb")
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99')
+    c1, c2
+    c1.compose(c2, operator='destination-over', space="srgb")
     ```
 
 You can also apply alpha compositing to multiple layers at once. Simply send in a list, and the colors will be composed
@@ -155,20 +173,22 @@ calculate the center color where all three layers overlap.
 
 === "Display P3"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose(
-        [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
-        blend='normal',
-        space="display-p3"
-    )
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99').set('alpha', 0.5)
+    c3 = Color('#f5d311').set('alpha', 0.5)
+    bg = Color('white')
+    c1, c2, c3, bg
+    c1.compose([c2, c3, bg], blend='normal', space="display-p3")
     ```
 
 === "sRGB"
     ```playground
-    Color('#07c7ed').set('alpha', 0.5).compose(
-        [Color('#fc3d99').set('alpha', 0.5), Color('#f5d311').set('alpha', 0.5), 'white'],
-        blend='normal',
-        space="srgb"
-    )
+    c1 = Color('#07c7ed').set('alpha', 0.5)
+    c2 = Color('#fc3d99').set('alpha', 0.5)
+    c3 = Color('#f5d311').set('alpha', 0.5)
+    bg = Color('white')
+    c1, c2, c3, bg
+    c1.compose([c2, c3, bg], blend='normal', space="srgb")
     ```
 
 Lastly, if for any reason, it is desired to run compose with alpha compositing disabled (e.g. just run blending),
@@ -176,10 +196,10 @@ then you can simply set `operator` to `#!py3 False`.
 
 Check out [Compositing Operators](#compositing-operators) to learn about the many variations that are supported.
 
-### Complex Compositing
+## Complex Compositing
 
 We've covered alpha compositing and blending and have demonstrated their use with simple two color examples and 
-multi-layered examples layers, but what about different blend modes mixed with alpha compositing?
+multi-layered examples, but what about different blend modes mixed with alpha compositing?
 
 In this example, we will consider three circles, each with a unique color: `#!color #07c7ed`, `#!color #fc3d99`, and
 `#!color #f5d311`. We apply 50% transparency to all the circles and place them on a `#!color white` background. We then

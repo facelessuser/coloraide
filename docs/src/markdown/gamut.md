@@ -1,15 +1,17 @@
 # Gamut Mapping
 
-## Overview
-
 Many color spaces are designed in such a way that they can only represent colors accurately within a specific range.
 This range in which a color can accurately be represented is known as the color gamut. Some color spaces are
 theoretically unbounded, but past a point, the eye can't see them anyways.
 
-CIELAB is a color space that has no real defined. When translating a color from such a large color space as CIELAB to a
-small color space like sRGB, there are many colors that simply cannot be represented within the space. In order to
-visually represent a color outside of the gamut, a suitable color within the gamut must be selected to be shown in its
-place. This selecting of a suitable replacement is called gamut mapping.
+The sRGB color space as well defined bounds for its gamuts while CIELAB is a color space that has no real defined gamut.
+When translating a color from such a large, unbounded color space as CIELAB to a small color space like sRGB, there are
+many colors that simply cannot be represented within the smaller sRGB color space. In order to visually represent a
+color outside of the gamut, a suitable color within the gamut must be selected to be shown in its place. This selecting
+of a suitable replacement is called gamut mapping.
+
+ColorAide defines a couple methods to help identify when a color is outside the gamut bounds of a color space and to
+help find a suitable, alternative color that is within the gamut.
 
 ## Checking Gamut
 
@@ -59,10 +61,12 @@ Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut()
 Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut(tolerance=0)
 ```
 
-On the topic of tolerance, there are some spaces that inherently are based off gamuts of other spaces. For instance, the
-cylindrical spaces HSL, HSV, and HWB are just different color models for the sRGB space, so their gamut is the same as
-sRGB. So it stands to reason that simply using the sRGB gamut check for them should be sufficient, and if we are using
-strict tolerance, this would make sense:
+On the topic of tolerance, there are some color models that are alternate representations of an existing color space.
+For instance, the cylindrical spaces HSL, HSV, and HWB are just different color models for the sRGB color space. They
+are are essentially the sRGB color space, just with cylindrical coordinates that isolate certain attributes of the
+color space: saturation, whiteness, blackness, etc. So their gamut is exactly the same as the sRGB space, because they
+are the sRGB color space. So it stands to reason that simply using the sRGB gamut check for them should be sufficient,
+and if we are using strict tolerance, this would be true.
 
 ```playground
 Color('rgb(255 255 255)').in_gamut('srgb', tolerance=0)
@@ -86,16 +90,16 @@ hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
 ```
 
-There is actually no inherent color gamut for the HSL, HSV, and HWB model as any RGB color space could be represented
-in one of these cylindrical models. One could easily map the Display P3 color space to one of these cylindrical modes
-creating an HSL Display P3 color, but the models do have constraints to ensure sane color coordinates that make sense.
+This happens because these cylindrical color models do not represent colors out of gamut in a very sane way. They are
+simply not designed to extend past the color gamut. So even a slightly out of gamut sRGB color can translate to a value
+way outside the cylindrical color model's boundaries.
 
 For this reason, gamut checks in the HSL, HSV, or HWB models apply tolerance checks on the color's coordinates in the
-sRGB color space **and** the respective cylindrical model ensuring we have coordinates that are inside the color's
-actual gamut and that they are sanely within the cylindrical model's constraints as well.
+sRGB color space **and** the respective cylindrical model ensuring we have coordinates that are close to the color's
+actual gamut and reasonably close to the cylindrical model's constraints as well.
 
-So, when using HSL as the gamut check, we can see that it ensures the color is not only within the sRGB gamut, but that
-its coordinates are also sanely within the model's constraints.
+So, when using HSL as the gamut check, we can see that it ensures the color is not only very close to the sRGB gamut,
+but that it is also very close the color model's constraints.
 
 ```playground
 hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
@@ -103,19 +107,18 @@ hsl
 hsl.in_gamut('hsl')
 ```
 
-Essentially, this forces a tighter constraint to ensure the colors represented in one of these cylindrical space aren't
-wildly out of the model's range even if they are technically close to being in gamut.
-
 If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
-problem, `srgb` can always be specified. `#!py3 tolerance=0` can always be used to constrain the check to values exactly
+problem, `srgb` can always be specified. `#!py3 tolerance=0` can also be used to constrain the check to values exactly
 in the gamut.
 
-Additionally, there may be other color spaces that play a little loose with the gamut during their conversion. For
-instance, Okhsv, an HSV model built off of Oklab, has a conversion back to sRGB that is simply not as precise as HSL or
-HSV to sRGB. There is nothing actually wrong with our implementation of the conversion algorithm, as it matches the
-behavior of the official implementation, the algorithm just isn't concerned with exactly translating the colors
-perfectly within the sRGB gamut. Simply clipping the color can clean it up nicely, and if desired, we can always tweak
-the tolerance.
+When a color is precisely in gamut, HSL has a very tight conversion to and from sRGB. A color that is gamut, will remain
+in gamut throughout the conversion, forwards and backwards. Okhsl and Okhsv, on the other hand, are color models have
+a looser conversion algorithm. While the constrains mimic the traditional HSL and HSV boundaries, the edges of those
+boundaries do not always convert precisely back into the sRGB gamut.
+
+Okhsl and Okhsv are color models that more approximate the sRGB gamut, and seem to expect some clipping and/or rounding
+when going back to sRGB. Adjusting the tolerance for these color models may be sufficient until you are ready to
+finalize the color by clipping the color to remove the noise.
 
 ```playground
 okhsv = Color('color(--okhsv 20 100% 75% / 1)')
@@ -138,87 +141,76 @@ Method         | Description
 
 !!! note "CSS Level 4 Gamut Mapping"
     The current [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) describes the suggested gamut
-    mapping algorithm as a combination of chroma reduction and MINDE. While our approach is actually very similar, it
-    does differ a little. The CSS algorithm:
+    mapping algorithm as a combination of chroma reduction in the Oklch color space and MINDE.
 
-    1. Currently uses Oklch which we've found to be problematic in some circumstances.
-    2. Is quicker to settle on a mapped color, but comes at the cost of sometimes reducing chroma too aggressively.
+    ColorAide is currently using `lch-chroma` by default. Oklch is pretty new as a target for gamut mapping in CSS and
+    in general. We are currently waiting and testing to see how well it does overall before making it the default.
 
-    We've currently replaced Oklch with CIELCH which avoids some of the issues found with Oklch. We also have adjusted
-    the algorithm to be less aggressive in regards to chroma reduction at the cost of some performance.
+    The `oklch-chroma` implementation we use is really close to the CSS spec except that we have a small tweak that
+    seems to prevent aggressive chroma reduction just a little bit more.
 
-    The CSS Level 4 algorithm is very new and likely to go through some revisions to address some of the issues. When
-    the algorithm becomes more stable, we may align more closely or at the very least provide the official CSS approach
-    as an option.
+Gamut mapping occurs automatically any time a color is serialized to a string via `#!py3 to_string()` and in a few other
+specific cases, like interpolating in a color space that cannot represent out of gamut colors. With this said, gamut
+mapping can also be performed on-demand.
 
-In order to demonstrate gamut mapping, in this example, we will take the color `#!color lch(100% 50 75)`. CIELCH's gamut
-is technically unbounded, but when we convert the color to sRGB, we find that the color is out of gamut. So, using the
-`fit` method, we can actually transform the color to one that fits in the sRGB space and gives a color that represents
-the intent of the larger color as best we can. As the color's lightness is so high, when fitting, we essentially end up
-with `#!color white`.
+To gamut map a color we can call `#!py3 fit()`. We calling it, it will fit the current color in the current color space,
+but if we send in a color space, it will fit the given color in a whatever color space is specified.
 
 ```playground
-rgb = Color("lch(100% 50 75)").convert('srgb')
-rgb.in_gamut()
-rgb.coords()
-rgb.fit()
+c1 = Color('color(display-p3 1 1 0)')
+c1.in_gamut('srgb')
+c1.fit('srgb', in_place=True)
+c1.in_gamut()
 ```
 
-If desired, simple clipping can be used instead of the default gamut mapping. Clipping is a naive way to fit a color as
-it simply truncates any color channels whose values are too big. While gamut mapping via chroma reduction and MINDE can
-give better results, gamut clipping is much faster and is actually what browsers currently do. If your desire is to
-match how browsers handle out of gamut color or if you have a specific reason to favor this approach, clipping may be
-the way to go.
-
-Clipping can simply be done using the `clip` method. Notice the difference when compared to the previous fitting
-results. We now end up with a very yellow-ish color.
+We can use also specify a specific gamut mapping method, such as `clip` or `oklch-chroma`:
 
 ```playground
-Color("lch(100% 50 75)").clip("srgb")
-Color("lch(100% 50 75)").fit("srgb")
+c1 = Color('color(display-p3 1 1 0)')
+c1.in_gamut('srgb')
+c1.fit('srgb', method='clip', in_place=True)
+c1.in_gamut()
 ```
 
-Color objects could potentially install other gamut fitting methods via plugins. If more are available, you can specify
-which one to use via the `method` parameter. `clip` is a reserved method and is always available. `clip` is provided
-this way to ensure any functions, like `to_string`, that allow for specifying the gamut mapping method dynamically can
-always use `clip`.
+Clip is always available as a dedicated function called `#!py3 clip()` as well.
 
 ```playground
-Color("lch(100% 50 75)").fit("srgb", method='clip')
+c1 = Color('color(display-p3 1 1 0)')
+c1.in_gamut('srgb')
+c1.clip('srgb', in_place=True)
+c1.in_gamut()
 ```
 
-If we wanted to change the default "fitting" to `clip`, we can also just use a
-[class override](./color.md#override-default-settings). Doing this will cause the class to default to `clip` any time a
-color needs to be mapped. Though, you can still use the chroma reduction/MINDE approach by specifying `lch-chroma` for
-the `method`.
+Keep in mind that clipping has its uses, but generally, clipping can create some odd cases when being used as a gamut
+mapping method. It should be prefaced that clipping is currently how web browsers handle out of gamut colors. It is
+very quick and easy to do, but just because it is quick, it doesn't mean it is the best way to go.
+
+In order to demonstrate gamut mapping vs clipping, in this example, we will take the color
+`#!color color(display-p3 1 1 0)`. We will interpolate with it in the CIELCH color space reducing just the lightness.
+This will leave both chroma and hue intact. The Interactive playground below will gamut map everything to sRGB, but
+we'll use two different `#!py Color` objects: one that uses `lch-chroma` (the default) for gamut mapping, and one that
+uses `clip`. Notice how clipping, the bottom color set, clips these dark colors and makes them reddish.
 
 ```playground
-class Custom(Color):
+class ColorClip(Color):
     FIT = 'clip'
 
-Custom("lch(100% 50 75)").convert('srgb').fit()
-Custom("lch(100% 50 75)").convert('srgb').fit(method='lch-chroma')
-```
+# Gamut mapping in Lch
+yellow = Color('color(display-p3 1 1 0)')
+lightness_mask = Color('lch(0% none none)')
+yellow.steps(lightness_mask, steps=10, space='lch')
 
-It is important to note that when using fit, there is no tolerance, so even if `in_gamut` allowed enough tolerance to
-consider a color within the gamut, calling `fit` will adjust it such that it fits without tolerance.
+# Force a new row for next example
+ColorRow()
 
-```playground
-lab = Color('lab(100% 0 0)')
-srgb = lab.convert('srgb')
-srgb.in_gamut()
-srgb.coords()
-srgb.fit().coords()
-```
-
-And much like [gamut checking](#gamut-checking), we can fit a color in a different color space.
-
-```playground
-Color("lch(100% 50 75)").fit('srgb')
+# Clipping
+yellow = ColorClip('color(display-p3 1 1 0)')
+lightness_mask = Color('lch(0% none none)')
+yellow.steps(lightness_mask, steps=10, space='lch')
 ```
 
 When fitting in another color space, results may vary depending on what color space you are in and what color space you
-are using to fit the color. We went into great depths when discussing [gamut checking](#gamut-checking) about how
+are using to fit the color. We went into great depths when discussing [gamut checking](#gamut-checking) and about how
 transform functions from one color space to another are not always exact. We also gave quite a number of examples
 showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
 mainly mentioned as fitting in one color space and round tripping back may not give exact results:

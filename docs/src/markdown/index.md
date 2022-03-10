@@ -10,7 +10,8 @@
 ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.
 
 ```playground
-Color('lch(75% 50 0)').interpolate('lch(75% 50 359)', space='lch', hue='longer')
+from coloraide import Color
+Color('lch(70% 80 0)').steps('lch(70% 80 300)', steps=8, space='lch', hue='longer')
 ```
 
 ColorAide is a continually evolving project, but was created with a number of specific goals in mind:
@@ -42,38 +43,3 @@ ColorAide can be installed via Python's `pip`:
 ```console
 $ pip install coloraide
 ```
-
-## Using ColorAide
-
-ColorAide is easy to use.
-
-You can create colors:
-
-```playground
-from coloraide import Color
-c = Color('red')
-c.to_string()
-```
-
-Convert colors:
-
-```playground
-from coloraide import Color
-Color('red').convert('hsl').to_string()
-```
-
-Modify colors:
-
-```playground
-from coloraide import Color
-Color('red').set("lch.chroma", 30).to_string()
-```
-
-Mix colors:
-
-```playground
-from coloraide import Color
-Color("blue").mix("yellow", space="lch").to_string()
-```
-
-And much more!

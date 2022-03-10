@@ -1,5 +1,13 @@
 # Supported Colors
 
+ColorAide aims to support all the color spaces and models currently offered in modern CSS, such as sRGB, Display P3,
+CIELAB, Oklab, etc. We also try to include a number of color spaces that are not available in CSS, but are generally
+popular.
+
+It is doubtful that we'll ever include all available color spaces that exist, but ColorAide is extensible allowing for
+new color spaces and models to be added by anyone. It is also possible that in the future, we may even offer an
+additional repository with additional, optional color spaces that can be included as needed.
+
 ## RGB
 
 RGB is a color model used by a number of different color spaces. The sRGB color space is probably the one most think of

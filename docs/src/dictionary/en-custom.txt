@@ -104,6 +104,7 @@ UCS
 UHDTV
 Verou
 Von
+WCAG
 WCG
 XYZ
 YCbCr
@@ -122,6 +123,7 @@ coroutine
 cp
 cz
 deregister
+deregistered
 deregistration
 fixup
 formatter
@@ -148,6 +150,7 @@ prerelease
 prereleases
 prophoto
 quantizer
+repurpose
 rgb
 sRGB
 sRGB's
@@ -156,7 +159,6 @@ subclassing
 sublicense
 subsamplings
 subtractive
-suclassing
 th
 un
 uncomment
@@ -166,3 +168,4 @@ validator
 von
 webcolor
 xy
+xyY
