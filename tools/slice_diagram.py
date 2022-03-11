@@ -181,8 +181,9 @@ def main():
     )
 
     if args.output:
-        plt.savefig(args.output)
+        plt.savefig(args.output, dpi=200)
     else:
+        plt.gcf().set_dpi(200)
         plt.show()
 
 

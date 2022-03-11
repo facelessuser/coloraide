@@ -962,7 +962,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
 <figure markdown="1">
 
-![XYZ D50 3D](../images/xyz-3d.png)
+![XYZ D50 3D](../images/xyz-d50-3d.png)
 
 <figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the XYZ D50 color space.</figcaption>
 </figure>

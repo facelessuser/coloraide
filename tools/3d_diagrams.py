@@ -180,7 +180,7 @@ def render_srgb_cyl_space(space, resolution, factor, data, c):
         c.append(color.update(space, [c1, factor, c2]).to_string(hex=True))
 
 
-def plot_space_in_srgb(space, title="", dark=False, resolution=70):
+def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=30.0, rotate_azim=-60.0):
     """Plot the given space in sRGB."""
 
     data = [[], [], []]
@@ -237,6 +237,7 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70):
 
     # Plot the data
     ax.scatter3D(data[axm[0]], data[axm[1]], data[axm[2]], c=c, s=20 * 4)
+    ax.view_init(rotate_elev, rotate_azim)
 
 
 def main():
@@ -252,6 +253,8 @@ def main():
             "but it comes at the cost of speed."
         )
     )
+    parser.add_argument('--rotate-elev', '-e', default=30.0, type=float, help="Rotate x axis by specified angle.")
+    parser.add_argument('--rotate-azim', '-a', default=-60.0, type=float, help="Rotate y axis by specified angle.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
@@ -261,12 +264,15 @@ def main():
         args.space,
         title=args.title,
         dark=args.dark,
-        resolution=int(args.resolution)
+        resolution=int(args.resolution),
+        rotate_elev=args.rotate_elev,
+        rotate_azim=args.rotate_azim
     )
 
     if args.output:
-        plt.savefig(args.output)
+        plt.savefig(args.output, dpi=200)
     else:
+        plt.gcf().set_dpi(200)
         plt.show()
 
 

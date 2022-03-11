@@ -555,6 +555,35 @@ def cie_diagram(
     xs.append(xs[0])
     ys.append(ys[0])
 
+    # Calculate RGB triangles if one is specified
+    spaces = []
+    if rgb_spaces:
+        temp = Color('srgb', [])
+        for space, color in rgb_spaces:
+            if opt.mode == '1931':
+                red = temp.mutate(space, [1, 0, 0]).xy()
+                green = temp.mutate(space, [0, 1, 0]).xy()
+                blue = temp.mutate(space, [0, 0, 1]).xy()
+            elif opt.mode == '1976':
+                red = temp.mutate(space, [1, 0, 0]).uv()
+                green = temp.mutate(space, [0, 1, 0]).uv()
+                blue = temp.mutate(space, [0, 0, 1]).uv()
+            else:
+                red = temp.mutate(space, [1, 0, 0]).uv('1960')
+                green = temp.mutate(space, [0, 1, 0]).uv('1960')
+                blue = temp.mutate(space, [0, 0, 1]).uv('1960')
+            sx = [red[0], green[0], blue[0], red[0]]
+            sy = [red[1], green[1], blue[1], red[1]]
+            spaces.append(
+                (
+                    sx,
+                    sy,
+                    color,
+                    space,
+                    mpltpath.Path(list(zip(sx, sy)))
+                )
+            )
+
     # Generate fill colors for inside the spectral locus
     if colorize:
         px = []
@@ -573,12 +602,24 @@ def cie_diagram(
                     xyz = util.xy_to_xyz(util.uv_to_xy(r))
                 else:
                     xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
+                o = 0.01 if spaces else opacity
+                if spaces:
+                    for s in spaces:
+                        if s[-1].contains_point(r):
+                            o = 1
+                            break
                 px.append(r[0])
                 py.append(r[1])
-                srgb.update('xyz-d65', xyz, opacity)
+                srgb.update('xyz-d65', xyz, o)
                 m = max(srgb.coords())
                 srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb.coords()], srgb.alpha)
                 c.append(srgb.to_string(hex=True, fit="clip"))
+            elif spaces:
+                for s in spaces:
+                    if s[-1].contains_point(r):
+                        px.append(r[0])
+                        py.append(r[1])
+                        c.append(srgb.update('srgb', [0.5] * 3, 1).to_string(hex=True))
         plt.scatter(
             px, py,
             edgecolors=None,
@@ -599,12 +640,12 @@ def cie_diagram(
 
     if show_labels:
         # Label points
-        ax = []
-        ay = []
+        lx = []
+        ly = []
         for annotate in annotations:
             offset = opt.locus_labels(annotate[0])
-            ax.append(annotate[1][0])
-            ay.append(annotate[1][1])
+            lx.append(annotate[1][0])
+            ly.append(annotate[1][1])
             plt.annotate(
                 '{:d}'.format(annotate[0]),
                 annotate[1],
@@ -615,8 +656,8 @@ def cie_diagram(
                 ha='center'
             )
         plt.scatter(
-            ax,
-            ay,
+            lx,
+            ly,
             marker=".",
             color=opt.locus_point_color if not colorize else opt.default_color,
             zorder=100
@@ -683,35 +724,21 @@ def cie_diagram(
         )
         # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
-    # Draw RGB triangles if one is specified
-    if rgb_spaces:
-        temp = Color('srgb', [])
-        for space, color in rgb_spaces:
-            if opt.mode == '1931':
-                red = temp.mutate(space, [1, 0, 0]).xy()
-                green = temp.mutate(space, [0, 1, 0]).xy()
-                blue = temp.mutate(space, [0, 0, 1]).xy()
-            elif opt.mode == '1976':
-                red = temp.mutate(space, [1, 0, 0]).uv()
-                green = temp.mutate(space, [0, 1, 0]).uv()
-                blue = temp.mutate(space, [0, 0, 1]).uv()
-            else:
-                red = temp.mutate(space, [1, 0, 0]).uv('1960')
-                green = temp.mutate(space, [0, 1, 0]).uv('1960')
-                blue = temp.mutate(space, [0, 0, 1]).uv('1960')
-            plt.plot(
-                [red[0], green[0], blue[0], red[0]],
-                [red[1], green[1], blue[1], red[1]],
-                marker='o',
-                color=color,
-                label=space,
-                linewidth=2,
-                markersize=0,
-                path_effects=[
-                    path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
-                    path_effects.Normal()
-                ]
-            )
+    # Plot the RGB triangles
+    for item in spaces:
+        plt.plot(
+            item[0],
+            item[1],
+            marker='o',
+            color=item[2],
+            label=item[3],
+            linewidth=2,
+            markersize=0,
+            path_effects=[
+                path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
+                path_effects.Normal()
+            ]
+        )
 
     # We current only add labels when drawing RGB triangles
     if rgb_spaces and show_legend:
@@ -754,8 +781,9 @@ def main():
     )
 
     if args.output:
-        plt.savefig(args.output, bbox_inches='tight', transparent=args.transparent)
+        plt.savefig(args.output, bbox_inches='tight', transparent=args.transparent, dpi=200)
     else:
+        plt.gcf().set_dpi(200)
         plt.show()
 
 
