@@ -8,7 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class CssColor4(Fit):
-    """Uses the CSS Color Level 4 algroithm for gamut mapping: Oklch: https://www.w3.org/TR/css-color-4/#binsearch."""
+    """Uses the CSS Color Level 4 algorithm for gamut mapping: Oklch: https://www.w3.org/TR/css-color-4/#binsearch."""
 
     NAME = "css-color-4"
     LIMIT = 0.02
