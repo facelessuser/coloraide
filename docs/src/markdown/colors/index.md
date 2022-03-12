@@ -1884,7 +1884,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
 DIN99o Lch is the cylindrical form of [DIN99o](#din99o).
 
-_[Learn about DIN99 Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
+_[Learn about DIN99o Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 </div>
 
 ??? abstract "ColorAide Details"
