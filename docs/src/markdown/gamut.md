@@ -1,14 +1,20 @@
 # Gamut Mapping
 
 Many color spaces are designed in such a way that they can only represent colors accurately within a specific range.
-This range in which a color can accurately be represented is known as the color gamut. Some color spaces are
-theoretically unbounded, but past a point, the eye can't see them anyways.
+This range in which a color can accurately be represented is known as the color gamut. While some color spaces are
+theoretically unbounded, there are many that are designed with distinct ranges.
 
-The sRGB color space as well defined bounds for its gamuts while CIELAB is a color space that has no real defined gamut.
-When translating a color from such a large, unbounded color space as CIELAB to a small color space like sRGB, there are
-many colors that simply cannot be represented within the smaller sRGB color space. In order to visually represent a
-color outside of the gamut, a suitable color within the gamut must be selected to be shown in its place. This selecting
-of a suitable replacement is called gamut mapping.
+The sRGB and Display P3 color spaces are both RGB color spaces, but they actually can represent a different amount of
+colors. Display P3 has a wider gamut and allows for greener greens and redder reds, etc. In the image below, we show
+four different RGB color spaces, each with varying different gamut sizes. Display P3 contains all the colors in sRGB
+and extends it even further. Rec. 2020, another RGB color space, is even wider. ProPhoto is so wide that it contains
+colors that the human eye can't even see.
+
+![Gamut Comparison](images/gamut-compare.png)
+
+In order to visually represent a color from a wider gamut color space, such as Display P3, in a more narrow color space,
+such as sRGB, a suitable color within the more narrow color space must must be selected and be shown in its place. This
+selecting of a suitable replacement is called gamut mapping.
 
 ColorAide defines a couple methods to help identify when a color is outside the gamut bounds of a color space and to
 help find a suitable, alternative color that is within the gamut.
