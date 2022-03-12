@@ -50,6 +50,7 @@ from .distance.delta_e_ok import DEOK
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
 from .gamut.fit_oklch_chroma import OklchChroma
+from .gamut.fit_css_color_4 import CssColor4
 from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
@@ -64,7 +65,7 @@ SUPPORTED_SPACES = (
 )
 
 SUPPORTED_FIT = (
-    LchChroma, OklchChroma
+    LchChroma, OklchChroma, CssColor4
 )
 
 

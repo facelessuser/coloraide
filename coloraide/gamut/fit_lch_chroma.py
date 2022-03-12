@@ -75,14 +75,15 @@ class LchChroma(Fit):
                     de = mapcolor.delta_e(color, method=cls.DE)
                     if de < cls.LIMIT:
                         # Kick out as soon as we are close enough to the JND.
-                        # Too far below and will reduce chroma too aggressively.
+                        # Too far below and we may reduce chroma too aggressively.
                         if (cls.LIMIT - de) < cls.EPSILON:
                             break
 
                         # Our lower bound is now out of gamut, so all future searches are
                         # guaranteed to be out of gamut. Now we just want to focus on tuning
                         # chroma to get as close to the JND as possible.
-                        lower_in_gamut = False
+                        if lower_in_gamut:
+                            lower_in_gamut = False
                         low = mapcolor.chroma
                     else:
                         # We are still outside the gamut and outside the JND

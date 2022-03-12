@@ -2,6 +2,7 @@
 
 ## 0.12.0
 
+- **NEW**: Add a gamut mapping variant that matches the CSS Color Level 4 spec.
 - **FIX**: Fix precision rounding issue.
 
 ## 0.11.0

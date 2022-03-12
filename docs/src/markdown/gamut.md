@@ -130,24 +130,31 @@ okhsv.in_gamut(tolerance=0.0005)
 ## Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-While there are various different ways to gamut map a color into a smaller gamut, ColorAide currently provides only
-three:
+While there are various different ways to gamut map a color into a smaller gamut, ColorAide currently only offers a
+couple.
 
 Method         | Description
 -------------- | -----------
 `clip`         | Simple, naive clipping.
 `lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCH color space to bring a color into gamut. This is the default method used.
-`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental and closer to the current proposed [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
+`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental and is meant to be similar to `css-color-4`, but provides better results at the cost of being a little slower.
+`css-color-4`  | This is the algorithm as currently specified by the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch). It is like `oklch-chroma`, but it is faster at the cost of providing slightly inferior results.
 
 !!! note "CSS Level 4 Gamut Mapping"
-    The current [CSS Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) describes the suggested gamut
-    mapping algorithm as a combination of chroma reduction in the Oklch color space and MINDE.
+    `css-color-4` matches the CSS algorithm as described in the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
+    `oklch-chroma` is an improved version of `css-color-4`, and while not as fast as `css-color-4`, provides better
+    results. This is most evident when generating gradients as they are more smooth when using `oklch-chroma`. While
+    maybe some eyes may struggle to see the difference, some may notice some color banding.
 
-    ColorAide is currently using `lch-chroma` by default. Oklch is pretty new as a target for gamut mapping in CSS and
-    in general. We are currently waiting and testing to see how well it does overall before making it the default.
+    ```playground
+    class ColorCss(Color):
+        FIT = 'css-color-4'
+    class ColorOk(Color):
+        FIT = 'oklch-chroma'
 
-    The `oklch-chroma` implementation we use is really close to the CSS spec except that we have a small tweak that
-    seems to prevent aggressive chroma reduction just a little bit more.
+    ColorCss("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')
+    ColorOk("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')
+    ```
 
 Gamut mapping occurs automatically any time a color is serialized to a string via `#!py3 to_string()` and in a few other
 specific cases, like interpolating in a color space that cannot represent out of gamut colors. With this said, gamut
@@ -163,7 +170,7 @@ c1.fit('srgb', in_place=True)
 c1.in_gamut()
 ```
 
-We can use also specify a specific gamut mapping method, such as `clip` or `oklch-chroma`:
+We can use also specify a specific gamut mapping method, such as `clip`, `oklch-chroma`, etc.
 
 ```playground
 c1 = Color('color(display-p3 1 1 0)')

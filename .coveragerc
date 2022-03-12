@@ -1,5 +1,5 @@
 [run]
-omit=
+omit=coloraide/gamut/fit_css_color_4.py
 
 [report]
-omit=
+omit=coloraide/gamut/fit_css_color_4.py
