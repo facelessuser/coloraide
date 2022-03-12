@@ -15,6 +15,8 @@ illuminant that clarifies the assumed lighting for the given space. For instance
 illuminant of D65 (light in the shade - no direct sunlight - at noon). On the other hand, the ProPhoto RGB space uses a
 D50 illuminant (direct sunlight at noon).
 
+![White Point Compare](images/whitepoint-compare.png)
+
 When translating a color from one illuminant to another, it is often desirable to represent that color under the new
 illuminant such that it appears to the eye the same as it did under the original illuminant. CATs are used to predict
 what the new color under the new illuminant should be in order to fulfill these requirements.
