@@ -48,9 +48,15 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
     c = Color(space, [])
 
     # Parse the channel strings into actual values
-    name0, value = [c if i == 0 else float(c) for i, c in enumerate(channel0.split(":"), 0)]
-    name1, factor1, offset1 = [c if i == 0 else float(c) for i, c in enumerate(channel1.split(':'), 0)]
-    name2, factor2, offset2 = [c if i == 0 else float(c) for i, c in enumerate(channel2.split(':'), 0)]
+    name0, value = [
+        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel0.split(":"), 0)
+    ]
+    name1, factor1, offset1 = [
+        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel1.split(':'), 0)
+    ]
+    name2, factor2, offset2 = [
+        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel2.split(':'), 0)
+     ]
 
     # Get the actual indexes of the specified channels
     name0 = c._space.CHANNEL_ALIASES.get(name0, name0)
