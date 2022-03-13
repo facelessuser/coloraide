@@ -136,8 +136,56 @@ okhsv.in_gamut(tolerance=0.0005)
 ## Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
-While there are various different ways to gamut map a color into a smaller gamut, ColorAide currently only offers a
-couple.
+
+Gamut mapping in general is performed via the `#!py3 fit()` method. Doing this will cause the default gamut mapping
+to be used. If desired, a user can also specify any currently registered gamut mapping method via the `method`
+parameter.
+
+```playground
+Color('rgb(270 30 120)').fit()
+Color('rgb(270 30 120)').fit(method='clip')
+```
+
+Gamut mapping can also be used to fit colors in other gamuts, for instance, fitting a Display P3 color into an sRGB
+gamut.
+
+```playground
+c1 = Color('color(display-p3 1 1 0)')
+c1.in_gamut('srgb')
+c1.fit('srgb', in_place=True)
+c1.in_gamut()
+```
+
+!!! warning "Caveats when Mapping in Other Spaces"
+    When fitting in another color space, results may vary depending on what color space you are in and what color space
+    you are using to fit the color. We went into great depths when discussing [gamut checking](#gamut-checking) about
+    how transform functions from one color space to another are not always exact. We also gave quite a number of
+    examples showing cases in which some color spaces were more sensitive to slight deviations outside their gamut than
+    others. This is mainly mentioned as fitting in one color space and round tripping back may not give exact results:
+
+    ```playground
+    Color("lch(100% 50 75)").convert('srgb').fit().coords()
+    Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()
+    ```
+
+    While the above case is well within the threshold, depending on what you are doing, and what spaces you are working
+    in, it may make sense to fully convert to a space and work directly in that space opposed to the indirect fitting
+    of a color in a different color space.
+
+Clipping is not the default gamut mapping method, and generally not recommended to be used as such, but that doesn't
+mean it isn't useful. Clipping is still very important and can be used to trim channel noise after certain mathematical
+operations or even used in other gamut mapping algorithms if used carefully. For this reason, clip also has its own
+dedicated method for quick access: `#!py3 clip()`. It can also be applied directly to the current color space or can be
+applied on the gamuts of other color spaces just like `#!py3 fit()`.
+
+```playground
+Color('rgb(270 30 120)').clip()
+Color('color(display-p3 1 1 0)').clip('srgb')
+```
+
+There are actually many different ways to gamut map a color. Some are computationally expensive, some are quite simple,
+and many do really good in some cases and not so well in others. There is probably no perfect gamut mapping method, but
+some are better than others. ColorAide currently only offers a couple simple methods to gamut map.
 
 Method         | Description
 -------------- | -----------
@@ -146,11 +194,22 @@ Method         | Description
 `oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental and is meant to be similar to `css-color-4`, but provides better results at the cost of being a little slower.
 `css-color-4`  | This is the algorithm as currently specified by the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch). It is like `oklch-chroma`, but it is faster at the cost of providing slightly inferior results.
 
+
 !!! note "CSS Level 4 Gamut Mapping"
-    `css-color-4` matches the CSS algorithm as described in the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch).
-    `oklch-chroma` is an improved version of `css-color-4`, and while not as fast as `css-color-4`, provides better
-    results. This is most evident when generating gradients as they are more smooth when using `oklch-chroma`. While
-    maybe some eyes may struggle to see the difference, some may notice some color banding.
+    The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
+    Oklch as the gamut mapping color space and uses an algorithm very similar to what we use. But Oklch is a very new
+    color space to be used in the field of gamut mapping. While CIELCH is not perfect, its weakness are known. Oklch
+    may have quirks of its own, so usage is considered experimental and not used by default.
+
+    We currently provide `css-color-4` for CSS purists, but the spec could change as it is still not really finalized.
+    Additionally, some issues with it have been discovered which is why we currently offer both `oklch-chroma` and
+    `css-color-4`.
+
+    `css-color-4` seems to suffer from an issue that can cause color banding when doing interpolations. The way it kicks
+    out of the binary search when reducing chroma can lead to a worse case scenario were two adjacent, gamut mapped
+    colors can exaggerate their maximum color distance. This creates noticeable banding at some points. While maybe some
+    eyes may struggle to see the difference, others may notice some color banding. Below we illustrate the problem. The
+    CSS algorithm is used on top and our adjusted variant is used on the bottom.
 
     ```playground
     class ColorCss(Color):
@@ -162,47 +221,33 @@ Method         | Description
     ColorOk("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')
     ```
 
-Gamut mapping occurs automatically any time a color is serialized to a string via `#!py3 to_string()` and in a few other
-specific cases, like interpolating in a color space that cannot represent out of gamut colors. With this said, gamut
-mapping can also be performed on-demand.
+### Why Not Just Clip?
 
-To gamut map a color we can call `#!py3 fit()`. We calling it, it will fit the current color in the current color space,
-but if we send in a color space, it will fit the given color in a whatever color space is specified.
+In current web browsers, clipping is the default way in which out of gamut colors have been handled. It is fast, and has
+generally been fine as most browsers have been constrained to using sRGB. But as modern browsers begin to adopt more
+wide gamut monitors such as Display P3, and CSS grows to support an assortment of wide and ultra wide color spaces,
+representing the best intent of an out of gamut color becomes more important.
 
-```playground
-c1 = Color('color(display-p3 1 1 0)')
-c1.in_gamut('srgb')
-c1.fit('srgb', in_place=True)
-c1.in_gamut()
-```
+ColorAide uses a default gamut mapping algorithm that performs gamut mapping in the CIELCH color space using chroma
+reduction coupled with minimum ∆E (MINDE). This approach is meant to preserve enough of the important attributes of the
+out of gamut color as is possible, mostly preserving both lightness and hue, hue being the attribute that people are
+most sensitive to. MINDE is used to abandon chroma reduction and clip the color when the color is very close to being in
+gamut. MINDE also allows us to catch cases where the geometry of the color space's gamut is such that we may slip by
+higher chroma options resulting in undesirable, aggressive chroma reduction.
 
-We can use also specify a specific gamut mapping method, such as `clip`, `oklch-chroma`, etc.
+Below we have an example of using chroma reduction with MINDE. It can be noted that chroma is reduced until we are very
+close to being in gamut. The MINDE helps us catch the peak of the yellow shape as, otherwise, we would have continued
+reducing chroma until we were at a very chroma reduced, pale yellow.
 
-```playground
-c1 = Color('color(display-p3 1 1 0)')
-c1.in_gamut('srgb')
-c1.fit('srgb', method='clip', in_place=True)
-c1.in_gamut()
-```
+![Gamut Lch Chroma - yellow](images/gamut-lch-chroma-yellow.png)
 
-Clip is always available as a dedicated function called `#!py3 clip()` as well.
-
-```playground
-c1 = Color('color(display-p3 1 1 0)')
-c1.in_gamut('srgb')
-c1.clip('srgb', in_place=True)
-c1.in_gamut()
-```
-
-Keep in mind that clipping has its uses, but generally, clipping can create some odd cases when being used as a gamut
-mapping method. It should be prefaced that clipping is currently how web browsers handle out of gamut colors. It is
-very quick and easy to do, but just because it is quick, it doesn't mean it is the best way to go.
-
-In order to demonstrate gamut mapping vs clipping, in this example, we will take the color
-`#!color color(display-p3 1 1 0)`. We will interpolate with it in the CIELCH color space reducing just the lightness.
-This will leave both chroma and hue intact. The Interactive playground below will gamut map everything to sRGB, but
-we'll use two different `#!py Color` objects: one that uses `lch-chroma` (the default) for gamut mapping, and one that
-uses `clip`. Notice how clipping, the bottom color set, clips these dark colors and makes them reddish.
+One might see some cases of clipping and think it does a fine job and question why any of this complexity is necessary.
+In order to demonstrate the differences in gamut mapping vs clipping, see the example below. We start with the color
+`#!color color(display-p3 1 1 0)` and interpolate with it in the CIELCH color space reducing just the lightness. This
+will leave both chroma and hue intact. The Interactive playground below automatically gamut maps the color previews to
+sRGB, but we'll control the method being used by providing two different `#!py Color` objects: one that uses
+`lch-chroma` (the default) for gamut mapping, and one that uses `clip`. Notice how clipping, the bottom color set, clips
+these dark colors and makes them reddish. This is a very undesirable outcome.
 
 ```playground
 class ColorClip(Color):
@@ -222,16 +267,8 @@ lightness_mask = Color('lch(0% none none)')
 yellow.steps(lightness_mask, steps=10, space='lch')
 ```
 
-When fitting in another color space, results may vary depending on what color space you are in and what color space you
-are using to fit the color. We went into great depths when discussing [gamut checking](#gamut-checking) and about how
-transform functions from one color space to another are not always exact. We also gave quite a number of examples
-showing cases in which some color spaces were more sensitive to slight deviations from their gamut than others. This is
-mainly mentioned as fitting in one color space and round tripping back may not give exact results:
-
-```playground
-Color("lch(100% 50 75)").convert('srgb').fit().coords()
-Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()
-```
-
-Depending on what you are doing, and what spaces you are working in, it may make sense to fully convert to a space and
-work directly in that space opposed to the indirect fitting of a color in a different color space.
+There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is
+very useful, but if the idea is to present an in gamut color that tries to preserve as much of the intent of the
+original color as possible, other methods may be desired. There are no doubt better gamut methods available than
+ColorAide offers, and more may be added in the future, but ColorAide can also be extended using 3rd party plugins as
+well.

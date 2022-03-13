@@ -17,6 +17,7 @@ import os
 sys.path.insert(0, os.getcwd())
 
 from coloraide import Color, NaN  # noqa: E402
+from coloraide.util import fmt_float  # noqa: E402
 
 
 def needs_lchuv_workaround(color):
@@ -31,7 +32,7 @@ def needs_lchuv_workaround(color):
     return color.space().startswith('lchuv') and color.l == 0 and not color.normalize().is_nan('hue')
 
 
-def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500, dark=False, title=""):
+def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500, dark=False, title="", subtitle=''):
     """Plot a slice."""
 
     res = resolution
@@ -56,7 +57,7 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
     ]
     name2, factor2, offset2 = [
         c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel2.split(':'), 0)
-     ]
+    ]
 
     # Get the actual indexes of the specified channels
     name0 = c._space.CHANNEL_ALIASES.get(name0, name0)
@@ -137,16 +138,19 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
     ye.append(ye[0])
 
     ax = plt.axes(
-        xlabel='{}: {} - {}'.format(name1, c1_mn, c1_mx),
-        ylabel='{}: {} - {}'.format(name2, c2_mn, c2_mx)
+        xlabel='{}: {} - {}'.format(name1, fmt_float(c1_mn, 5), fmt_float(c1_mx, 5)),
+        ylabel='{}: {} - {}'.format(name2, fmt_float(c2_mn, 5), fmt_float(c2_mx, 5))
     )
     ax.set_aspect('auto')
     figure.add_axes(ax)
 
     if not title:
-        title = "A Slice of '{}' and '{}' in the {} Color Space".format(name1, name2, space)
-    title += '\n{}: {}'.format(name0, value)
-    plt.title(title)
+        title = "Plot of {} showing '{}' and '{}' with '{}' at {}".format(
+            space, name1, name2, name0, fmt_float(value, 5)
+        )
+    plt.suptitle(title)
+    if subtitle:
+        plt.title(subtitle, fontdict={'fontsize': 8})
 
     plt.plot(xe, ye, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
 
@@ -170,6 +174,9 @@ def main():
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:range:offset'.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
+    parser.add_argument(
+        '--sub-title', default='', help="Provide a subtitle, if none is provided, will show contant channel."
+    )
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
 
@@ -183,6 +190,7 @@ def main():
         gamut=args.gamut,
         resolution=int(args.resolution),
         title=args.title,
+        subtitle=args.sub_title,
         dark=args.dark
     )
 
