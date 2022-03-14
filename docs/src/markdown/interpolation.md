@@ -1,25 +1,29 @@
 # Color Interpolation
 
 Interpolation is a type of estimation that finds new data points based on the range of a discrete set of known data
-points. When used in the context of color, it is finding a color between two colors on an imaginary line that connects
-them together within their color space. These lines could be curved or straight, and sometimes they don't even have to
-pass through the points, just an approximate path that roughly follows the points. The main thing is that this line
-is calculated based on the references, in our case, colors.
+points. When used in the context of color, it is finding one or more colors that reside between any two given colors.
 
-Interpolation is often how colors are "mixed", finding a color somewhere on a line that connects two colors, or
-gradients, smoothly transitioning through all colors on a line that connects two colors. Interpolation is an extremely
-useful and power tool.
+One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
+way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
+We could then navigate up and down that line and return colors at different points to simulate mixing colors at various
+percentages or return the whole range and create a gradient.
 
-One of the most commonly used forms of interpolation is linear interpolation which describes a straight line through
-two points. ColorAide currently only implements this form of interpolation and it is the foundation for a number of
-useful methods, such as [`steps`](#steps) and [`mix`](#mixing).
+To further illustrate this point, the example below shows a slice of the Oklab color space at a lightness of 70%. On
+this 2D plane, we select two colors: `#!color oklab(70% 0.2 -0.1)` and `#!color oklab(70% 0 0.1)`. We then connect these
+two colors with a line. We can then select any point on the line to simulate the mixing of these colors. 0% would yield
+the first color, 100% would yield the second color, and 50% would yield a new color:
+`#!color Color('oklab(70% 0.2 -0.1)').interpolate('oklab(70% 0 0.1)')(0.5)`.
+
+![Interpolation Cartesian](images/interp.png)
+
+Using this simple method as a foundation, ColorAide provides a number of useful utilities to mix colors.
 
 ## Interpolating
 
-The `interpolate` method allows a user to create a linear interpolation function using two. A returned interpolation
-function accepts an input between 0 - 1 and will cause a new color between the specified colors to be returned. If a an
-input value exceeds the the range, a color will be returned that is extrapolated on the imaginary line that continues
-beyond the specified colors which may be surprising.
+The `interpolate` method allows a user to create a linear interpolation function using two or more colors. A returned
+interpolation function accepts an input between 0 - 1 and will cause a new color between the specified colors to be
+returned. If a an input value exceeds the range, a color will be returned that is extrapolated on the imaginary line
+that continues beyond the specified colors which may be surprising.
 
 By default, colors are interpolated in the perceptually uniform Oklab color space, though any supported color space can
 be used instead. This also applies to all methods that use interpolation, such as [steps](#steps), [mix](#mixing), etc.
