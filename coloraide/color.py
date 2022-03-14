@@ -132,7 +132,7 @@ class Color(metaclass=BaseColor):
     ) -> None:
         """Initialize."""
 
-        self._attach(self._parse(color, data, alpha, filters=filters, **kwargs))
+        self._space = self._parse(color, data, alpha, filters=filters, **kwargs)
 
     def __dir__(self) -> Sequence[str]:
         """Get attributes for `dir()`."""
@@ -153,8 +153,9 @@ class Color(metaclass=BaseColor):
             util.cmp_coords(other.coords() + [other.alpha], self.coords() + [self.alpha])
         )
 
+    @classmethod
     def _parse(
-        self,
+        cls,
         color: ColorInput,
         data: Optional[Vector] = None,
         alpha: float = util.DEF_ALPHA,
@@ -168,7 +169,7 @@ class Color(metaclass=BaseColor):
         if isinstance(color, str):
             # Parse a color space name and coordinates
             if data is not None:
-                for space, space_class in self.CS_MAP.items():
+                for space, space_class in cls.CS_MAP.items():
                     s = color.lower()
                     if space == s and (not filters or s in filters):
                         num_channels = len(space_class.CHANNEL_NAMES)
@@ -178,19 +179,19 @@ class Color(metaclass=BaseColor):
                         break
             # Parse a CSS string
             else:
-                m = self._match(color, fullmatch=True, filters=filters)
+                m = cls._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
                 obj = m[0]
         elif isinstance(color, Color):
             # Handle a color instance
             if not filters or color.space() in filters:
-                obj = self.CS_MAP[color.space()](color._space)
+                obj = cls.CS_MAP[color.space()](color._space)
         elif isinstance(color, Mapping):
             # Handle a color dictionary
             space = color['space']
             if not filters or space in filters:
-                cs = self.CS_MAP[space]
+                cs = cls.CS_MAP[space]
                 coords = [color[name] for name in cs.CHANNEL_NAMES]
                 alpha = color.get('alpha', 1)
                 obj = cs(coords, alpha)
@@ -244,6 +245,18 @@ class Color(metaclass=BaseColor):
         return None
 
     @classmethod
+    def _is_this_color(cls, obj: Any) -> bool:
+        """Test if the input is "this" Color, not a subclass."""
+
+        return type(obj) is cls
+
+    @classmethod
+    def _is_color(cls, obj: Any) -> bool:
+        """Test if the input is a Color."""
+
+        return isinstance(obj, cls)
+
+    @classmethod
     def register(
         cls,
         plugin: Union[Type[Fit], Type[DeltaE], Type[Space], Sequence[Any]],
@@ -257,21 +270,18 @@ class Color(metaclass=BaseColor):
         mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
         for p in plugin:
             if issubclass(p, Space):
-                name = p.NAME
-                value = p
                 mapping = cls.CS_MAP
             elif issubclass(p, DeltaE):
-                name = p.NAME
-                value = p
                 mapping = cls.DE_MAP
             elif issubclass(p, Fit):
-                name = p.NAME
-                value = p
                 mapping = cls.FIT_MAP
-                if name == 'clip':
+                if p.NAME == 'clip':
                     raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
             else:
                 raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
+
+            name = p.NAME
+            value = p
 
             if name != "*" and name not in mapping or overwrite:
                 mapping[name] = value
@@ -332,21 +342,6 @@ class Color(metaclass=BaseColor):
         """Check if channel is NaN."""
 
         return util.is_nan(self.get(name))
-
-    def _is_this_color(self, obj: Any) -> bool:
-        """Test if the input is "this" Color, not a subclass."""
-
-        return type(obj) is type(self)
-
-    def _is_color(self, obj: Any) -> bool:
-        """Test if the input is a Color."""
-
-        return isinstance(obj, Color)
-
-    def _attach(self, space: Space) -> None:
-        """Attach the this objects convert space to the color."""
-
-        self._space = space
 
     def _handle_color_input(self, color: ColorInput) -> 'Color':
         """Handle color input."""
@@ -413,7 +408,7 @@ class Color(metaclass=BaseColor):
         """Mutate the current color to a new color."""
 
         c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
-        self._attach(c)
+        self._space = c
         return self
 
     def update(
@@ -429,7 +424,7 @@ class Color(metaclass=BaseColor):
 
         c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
         space = self.space()
-        self._attach(c)
+        self._space = c
         if c.NAME != space:
             self.convert(space, in_place=True)
         return self
