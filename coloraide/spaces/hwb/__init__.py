@@ -64,7 +64,7 @@ class HWB(Cylindrical, Space):
     def h(self, value: float) -> None:
         """Shift the hue."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def w(self) -> float:
@@ -76,7 +76,7 @@ class HWB(Cylindrical, Space):
     def w(self, value: float) -> None:
         """Set whiteness channel."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def b(self) -> float:
@@ -88,7 +88,7 @@ class HWB(Cylindrical, Space):
     def b(self, value: float) -> None:
         """Set blackness channel."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:

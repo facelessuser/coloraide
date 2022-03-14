@@ -140,7 +140,7 @@ class HSLuv(Cylindrical, Space):
     def h(self, value: float) -> None:
         """Shift the hue."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def s(self) -> float:
@@ -152,7 +152,7 @@ class HSLuv(Cylindrical, Space):
     def s(self, value: float) -> None:
         """Saturate or unsaturate the color by the given factor."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def l(self) -> float:
@@ -164,7 +164,7 @@ class HSLuv(Cylindrical, Space):
     def l(self, value: float) -> None:
         """Set lightness channel."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:

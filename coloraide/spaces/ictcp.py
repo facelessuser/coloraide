@@ -107,7 +107,7 @@ class ICtCp(Labish, Space):
     def i(self, value: float) -> None:
         """Set `I` channel."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def ct(self) -> float:
@@ -119,7 +119,7 @@ class ICtCp(Labish, Space):
     def ct(self, value: float) -> None:
         """`Ct` axis."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def cp(self) -> float:
@@ -131,7 +131,7 @@ class ICtCp(Labish, Space):
     def cp(self, value: float) -> None:
         """Set `Cp` axis."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

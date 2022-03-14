@@ -80,7 +80,7 @@ class Luv(Labish, Space):
     def l(self, value: float) -> None:
         """Get true luminance."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def u(self) -> float:
@@ -92,7 +92,7 @@ class Luv(Labish, Space):
     def u(self, value: float) -> None:
         """U axis."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def v(self) -> float:
@@ -104,7 +104,7 @@ class Luv(Labish, Space):
     def v(self, value: float) -> None:
         """V axis."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

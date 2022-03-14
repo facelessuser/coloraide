@@ -200,6 +200,7 @@ class Space(
                     "A list of channel values should be at a minimum of {}.".format(num_channels)
                 )
             for index in range(num_channels):
+                util.assert_number(color[index])
                 setattr(self, self.CHANNEL_NAMES[index], color[index])
             self.alpha = 1.0 if alpha is None else alpha
         else:  # pragma: no cover
@@ -218,13 +219,6 @@ class Space(
         )
 
     __str__ = __repr__
-
-    def _handle_input(self, value: float) -> float:
-        """Handle numerical input."""
-
-        if not util.is_number(value):
-            raise TypeError("Value should be a number not type '{}'".format(type(value)))
-        return float(value)
 
     def coords(self) -> MutableVector:
         """Coordinates."""
@@ -253,7 +247,7 @@ class Space(
     def alpha(self, value: float) -> None:
         """Adjust alpha."""
 
-        self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
+        self._alpha = util.clamp(value, 0.0, 1.0)
 
     def set(self, name: str, value: float) -> None:  # noqa: A003
         """Set the given channel."""
@@ -261,6 +255,8 @@ class Space(
         name = self.CHANNEL_ALIASES.get(name, name)
         if name not in self.CHANNEL_NAMES and name != 'alpha':
             raise AttributeError("'{}' is an invalid channel name".format(name))
+
+        util.assert_number(value)
 
         setattr(self, name, value)
 

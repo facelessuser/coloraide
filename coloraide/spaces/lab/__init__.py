@@ -89,7 +89,7 @@ class Lab(Labish, Space):
     def l(self, value: float) -> None:
         """Get true luminance."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def a(self) -> float:
@@ -101,7 +101,7 @@ class Lab(Labish, Space):
     def a(self, value: float) -> None:
         """A axis."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def b(self) -> float:
@@ -113,7 +113,7 @@ class Lab(Labish, Space):
     def b(self, value: float) -> None:
         """B axis."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

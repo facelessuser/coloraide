@@ -198,6 +198,13 @@ def is_number(value: Any) -> bool:
     return isinstance(value, numbers.Number)
 
 
+def assert_number(value: float) -> float:
+    """Assert if not a number."""
+
+    if not isinstance(value, numbers.Number):
+        raise TypeError("Value should be a number, not type '{}'".format(type(value)))
+
+
 def is_nan(value: float) -> bool:
     """Check if value is "not a number"."""
 

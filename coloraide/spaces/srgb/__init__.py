@@ -76,7 +76,7 @@ class SRGB(Space):
     def r(self, value: float) -> None:
         """Adjust red."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def g(self) -> float:
@@ -88,7 +88,7 @@ class SRGB(Space):
     def g(self, value: float) -> None:
         """Adjust green."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def b(self) -> float:
@@ -100,7 +100,7 @@ class SRGB(Space):
     def b(self, value: float) -> None:
         """Adjust blue."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def from_base(cls, coords: MutableVector) -> MutableVector:

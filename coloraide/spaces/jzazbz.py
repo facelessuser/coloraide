@@ -132,7 +132,7 @@ class Jzazbz(Labish, Space):
     def jz(self, value: float) -> None:
         """Set jz channel."""
 
-        self._coords[0] = self._handle_input(value)
+        self._coords[0] = value
 
     @property
     def az(self) -> float:
@@ -144,7 +144,7 @@ class Jzazbz(Labish, Space):
     def az(self, value: float) -> None:
         """Az axis."""
 
-        self._coords[1] = self._handle_input(value)
+        self._coords[1] = value
 
     @property
     def bz(self) -> float:
@@ -156,7 +156,7 @@ class Jzazbz(Labish, Space):
     def bz(self, value: float) -> None:
         """Set bz axis."""
 
-        self._coords[2] = self._handle_input(value)
+        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:
