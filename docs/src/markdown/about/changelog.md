@@ -10,6 +10,7 @@
 - **FIX**: Minor performance improvements.
 - **FIX**: Legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` comma separated forms in CSS do not support `none`, only the
   new space separated forms do.
+- **FIX**: Ensure `py.typed` is installed with package.
 
 ## 0.12.0
 

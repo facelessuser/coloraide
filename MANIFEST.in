@@ -1,4 +1,4 @@
-recursive-include coloraide *.py
+recursive-include coloraide *.py py.typed
 recursive-include tests *.py *.json
 recursive-include tools *.py *.sh
 recursive-include requirements *.txt
