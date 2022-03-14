@@ -71,6 +71,7 @@ def main():
         constant,
         xaxis,
         yaxis,
+        gamut=args.gamut,
         resolution=int(args.resolution),
         title=title,
         subtitle=subtitle,

@@ -13,11 +13,13 @@ import matplotlib.pyplot as plt
 import argparse
 import sys
 import os
+import math
 
 sys.path.insert(0, os.getcwd())
 
 from coloraide import Color, NaN  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
+from coloraide.spaces import Cylindrical  # noqa: E402
 
 
 def needs_lchuv_workaround(color):
@@ -32,7 +34,18 @@ def needs_lchuv_workaround(color):
     return color.space().startswith('lchuv') and color.l == 0 and not color.normalize().is_nan('hue')
 
 
-def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500, dark=False, title="", subtitle=''):
+def plot_slice(
+    space,
+    channel0,
+    channel1,
+    channel2,
+    gamut='srgb',
+    resolution=500,
+    dark=False,
+    title="",
+    subtitle='',
+    polar=False
+):
     """Plot a slice."""
 
     res = resolution
@@ -66,6 +79,14 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
     index1 = c._space.CHANNEL_NAMES.index(name1)
     name2 = c._space.CHANNEL_ALIASES.get(name2, name2)
     index2 = c._space.CHANNEL_NAMES.index(name2)
+    hue_index = -1
+
+    kwargs = {}
+    if polar and isinstance(c._space, Cylindrical):
+        kwargs['projection'] = 'polar'
+        index = c._space.hue_index()
+        if index == index1:
+            hue_index = index
 
     # Arrays for data points to plot
     c_map = []
@@ -95,6 +116,9 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
 
         # Only process colors within the gamut of sRGB.
         if c.in_gamut(gamut, tolerance=0) and not needs_lchuv_workaround(c):
+            if hue_index != -1:
+                c1 = math.radians(c1)
+
             # Get the absolute min and max value plotted
             if c1 < c1_mn:
                 c1_mn = c1
@@ -128,29 +152,41 @@ def plot_slice(space, channel0, channel1, channel2, gamut='srgb', resolution=500
     xtemp = []
     ytemp = []
     for p1, edges in edge_map.items():
-        xe.append(p1)
-        ye.append(edges[0])
-        xtemp.append(p1)
-        ytemp.append(edges[1])
-    xe.extend(reversed(xtemp))
-    ye.extend(reversed(ytemp))
-    xe.append(xe[0])
-    ye.append(ye[0])
+        if hue_index == -1:
+            xe.append(p1)
+            ye.append(edges[0])
+            xtemp.append(p1)
+            ytemp.append(edges[1])
+        else:
+            xe.append(p1)
+            ye.append(edges[1])
+
+    if hue_index == -1:
+        xe.extend(reversed(xtemp))
+        ye.extend(reversed(ytemp))
+        xe.append(xe[0])
+        ye.append(ye[0])
 
     ax = plt.axes(
         xlabel='{}: {} - {}'.format(name1, fmt_float(c1_mn, 5), fmt_float(c1_mx, 5)),
-        ylabel='{}: {} - {}'.format(name2, fmt_float(c2_mn, 5), fmt_float(c2_mx, 5))
+        ylabel='{}: {} - {}'.format(name2, fmt_float(c2_mn, 5), fmt_float(c2_mx, 5)),
+        **kwargs
     )
-    ax.set_aspect('auto')
-    figure.add_axes(ax)
 
     if not title:
         title = "Plot of {} showing '{}' and '{}' with '{}' at {}".format(
             space, name1, name2, name0, fmt_float(value, 5)
         )
+
     plt.suptitle(title)
     if subtitle:
-        plt.title(subtitle, fontdict={'fontsize': 8})
+        if hue_index == -1:
+            ax.set_title(subtitle, fontdict={'fontsize': 8})
+        else:
+            ax.set_title(subtitle, fontdict={'fontsize': 8}, pad=2)
+
+    ax.set_aspect('auto' if hue_index == -1 else 'equal')
+    figure.add_axes(ax)
 
     plt.plot(xe, ye, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
 
@@ -172,6 +208,7 @@ def main():
     parser.add_argument('--constant', '-c', help="The channel to hold constant and the value to use 'name:value'.")
     parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:range:offset'.")
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:range:offset'.")
+    parser.add_argument('polar', '-p', action="store_true", help="Graph the cylindrical space in polar coordinates.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument(
@@ -191,7 +228,8 @@ def main():
         resolution=int(args.resolution),
         title=args.title,
         subtitle=args.sub_title,
-        dark=args.dark
+        dark=args.dark,
+        polar=args.polar
     )
 
     if args.output:
