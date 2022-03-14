@@ -18,7 +18,7 @@ class Oklch(base.Oklch):
         \boklch\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))?
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)

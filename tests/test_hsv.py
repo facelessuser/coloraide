@@ -36,7 +36,7 @@ class TestHSVInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {"alpha": False}
 
-        color = "color(--hsv 20 1 0.75 0.2)"
+        color = "color(--hsv 20 1 0.75 / 0.2)"
         hsv = Color(color)
         self.assertEqual("color(--hsv 20 1 0.75)", hsv.to_string(**args))
 

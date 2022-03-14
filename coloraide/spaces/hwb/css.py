@@ -18,7 +18,7 @@ class HWB(base.HWB):
         \bhwb\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))?
+            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)

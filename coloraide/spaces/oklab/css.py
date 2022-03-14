@@ -19,7 +19,7 @@ class Oklab(base.Oklab):
             \bOklab\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))?
+                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )

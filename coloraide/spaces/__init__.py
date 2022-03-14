@@ -14,8 +14,8 @@ if TYPE_CHECKING:  # pragma: no cover
 # like the CSS specification requires.
 RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
-(?:({{color_space}})\s+)?
-((?:{percent}|{float})(?:{space}(?:{percent}|{float})){{{{,{{channels:d}}}}}}(?:{slash}(?:{percent}|{float}))?)
+({{color_space}})
+((?:{space}(?:{strict_percent}|{float})){{{{{{channels:d}}}}}}(?:{slash}(?:{strict_percent}|{float}))?)
 \s*\)
 """.format(
     **parse.COLOR_PARTS
@@ -197,7 +197,7 @@ class Space(
             if len(color) != num_channels:  # pragma: no cover
                 # Only likely to happen with direct usage internally.
                 raise ValueError(
-                    "A list of channel values should be at a minimum of {}.".format(num_channels)
+                    "{} accepts a list of {} channels".format(self.NAME, num_channels)
                 )
             for index in range(num_channels):
                 util.assert_number(color[index])
@@ -347,11 +347,6 @@ class Space(
                     # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
                     is_percent = cls.BOUNDS[i].flags & FLG_PERCENT
                     channels.append(parse.norm_color_channel(c.lower(), not is_percent))
-
-            # Missing channels are filled with `NaN`
-            if len(channels) < num_channels:
-                diff = num_channels - len(channels)
-                channels.extend([util.NaN] * diff)
 
             # Apply null adjustments (null hues) if applicable
             return (channels, alpha), m.end(0)
