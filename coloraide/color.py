@@ -747,11 +747,9 @@ class Color(metaclass=BaseColor):
 
         # Handle space.attribute
         if '.' in name:
-            parts = name.split('.')
-            if len(parts) != 2:
-                raise ValueError("Could not resolve attribute '{}'".format(name))
+            parts = name.split('.', 1)
             obj = self.convert(parts[0])
-            return obj.get(parts[1])
+            return obj._space.get(parts[1])
 
         return self._space.get(name)
 
@@ -760,11 +758,9 @@ class Color(metaclass=BaseColor):
 
         # Handle space.attribute
         if '.' in name:
-            parts = name.split('.')
-            if len(parts) != 2:
-                raise ValueError("Could not resolve attribute '{}'".format(name))
+            parts = name.split('.', 1)
             obj = self.convert(parts[0])
-            obj.set(parts[1], value)
+            obj._space.set(parts[1], value)
             return self.update(obj)
 
         # Handle a function that modifies the value or a direct value

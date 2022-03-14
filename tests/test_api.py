@@ -292,7 +292,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             c1.get("hsl.hue.wrong")
 
     def test_set(self):
@@ -329,7 +329,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             c1.set("hsl.hue.wrong", 0.5)
 
     def test_set_bad_input(self):
