@@ -28,14 +28,14 @@ class SRGB(base.SRGB):
                     (?:{float}{space}){{2}}{float} |
                     # Percent form
                     (?:{percent}{space}){{2}}{percent}
-                )({slash}(?:{percent}|{float}))? |
+                )({slash}(?:{strict_percent}|{float}))? |
                 # Comma separated format
                 (?:
                     # Float form
                     (?:{float}{comma}){{2}}{float} |
                     # Percent form
                     (?:{percent}{comma}){{2}}{percent}
-                )({comma}(?:{percent}|{float}))?
+                )({comma}(?:{strict_percent}|{float}))?
             )
             \s*\) |
             # Hex syntax

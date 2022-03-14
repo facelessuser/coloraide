@@ -55,11 +55,6 @@ def oklch_to_oklab(oklch: Vector) -> MutableVector:
     l, c, h = oklch
     h = util.no_nan(h)
 
-    # If, for whatever reason (mainly direct user input),
-    # if chroma is less than zero, clamp to zero.
-    if c < 0.0:
-        c = 0.0
-
     return [
         l,
         c * math.cos(math.radians(h)),

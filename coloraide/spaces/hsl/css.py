@@ -19,9 +19,9 @@ class HSL(base.HSL):
         \bhsla?\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{percent}|{float}))? |
+            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))? |
             # comma separated format
-            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{percent}|{float}))?
+            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)

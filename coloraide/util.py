@@ -198,7 +198,7 @@ def is_number(value: Any) -> bool:
     return isinstance(value, numbers.Number)
 
 
-def assert_number(value: float) -> float:
+def assert_number(value: float) -> None:
     """Assert if not a number."""
 
     if not isinstance(value, numbers.Number):
