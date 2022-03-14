@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.0
+
+- **NEW**: Clamp lower bounds of chroma at the channel level.
+- **FIX**: Minor performance improvements.
+
 ## 0.12.0
 
 - **NEW**: Add a gamut mapping variant that matches the CSS Color Level 4 spec.

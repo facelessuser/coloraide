@@ -110,7 +110,7 @@ class Oklch(Lchish, Space):
     def c(self, value: float) -> None:
         """chroma."""
 
-        self._coords[1] = value
+        self._coords[1] = util.clamp(value, 0.0)
 
     @property
     def h(self) -> float:

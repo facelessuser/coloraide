@@ -35,11 +35,6 @@ def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     jz, cz, hz = jzczhz
     hz = util.no_nan(hz)
 
-    # If, for whatever reason (mainly direct user input),
-    # if chroma is less than zero, clamp to zero.
-    if cz < 0.0:
-        cz = 0.0
-
     return [
         jz,
         cz * math.cos(math.radians(hz)),
@@ -94,7 +89,7 @@ class JzCzhz(Lchish, Space):
     def cz(self, value: float) -> None:
         """Set chroma."""
 
-        self._coords[1] = value
+        self._coords[1] = util.clamp(value, 0.0)
 
     @property
     def hz(self) -> float:
