@@ -747,9 +747,9 @@ class Color(metaclass=BaseColor):
 
         # Handle space.attribute
         if '.' in name:
-            parts = name.split('.', 1)
-            obj = self.convert(parts[0])
-            return obj._space.get(parts[1])
+            space, channel = name.split('.', 1)
+            obj = self.convert(space)
+            return obj._space.get(channel)
 
         return self._space.get(name)
 
@@ -758,9 +758,9 @@ class Color(metaclass=BaseColor):
 
         # Handle space.attribute
         if '.' in name:
-            parts = name.split('.', 1)
-            obj = self.convert(parts[0])
-            obj._space.set(parts[1], value)
+            space, channel = name.split('.', 1)
+            obj = self.convert(space)
+            obj._space.set(channel, value(self._space.get(channel)) if callable(value) else value)
             return self.update(obj)
 
         # Handle a function that modifies the value or a direct value
