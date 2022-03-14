@@ -255,7 +255,7 @@ class Space(
 
         self._alpha = util.clamp(self._handle_input(value), 0.0, 1.0)
 
-    def set(self, name: str, value: float) -> 'Space':  # noqa: A003
+    def set(self, name: str, value: float) -> None:  # noqa: A003
         """Set the given channel."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
@@ -263,7 +263,6 @@ class Space(
             raise AttributeError("'{}' is an invalid channel name".format(name))
 
         setattr(self, name, value)
-        return self
 
     def get(self, name: str) -> float:
         """Get the given channel's value."""
