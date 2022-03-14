@@ -13,7 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class HSL(base.HSL):
     """HSL class."""
 
-    DEF_VALUE = "hsl(0 0% 0% / 1)"
     MATCH = re.compile(
         r"""(?xi)
         \bhsla?\(\s*
