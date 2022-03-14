@@ -100,6 +100,9 @@ naturally undefined. An example would be a hue when the color has saturation or 
 Color('hsl(none 0% 30%)').to_string(none=True)
 ```
 
+The one exception is that legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` forms (comma separated) do not support `none`
+per the CSS spec.
+
 ## Format Specific Options
 
 These options may occur in various color spaces depending on the CSS output format.

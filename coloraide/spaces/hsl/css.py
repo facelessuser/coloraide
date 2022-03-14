@@ -21,7 +21,7 @@ class HSL(base.HSL):
             # Space separated format
             {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))? |
             # comma separated format
-            {angle}{comma}{percent}{comma}{percent}(?:{comma}(?:{strict_percent}|{float}))?
+            {strict_angle}{comma}{strict_percent}{comma}{strict_percent}(?:{comma}(?:{strict_percent}|{strict_float}))?
         )
         \s*\)
         """.format(**parse.COLOR_PARTS)
@@ -49,12 +49,13 @@ class HSL(base.HSL):
         a = util.no_nan(self.alpha) if not none else self.alpha
         alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
         method = None if not isinstance(fit, str) else fit
+        comma = options.get("comma")
         coords = parent.fit(method=method).coords() if fit else self.coords()
-        if not none:
+        if comma or not none:
             coords = util.no_nans(coords)
 
         if alpha:
-            template = "hsla({}, {}, {}, {})" if options.get("comma") else "hsl({} {} {} / {})"
+            template = "hsla({}, {}, {}, {})" if comma else "hsl({} {} {} / {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_percent(coords[1] * 100, precision),
@@ -62,7 +63,7 @@ class HSL(base.HSL):
                 util.fmt_float(a, max(util.DEF_PREC, precision))
             )
         else:
-            template = "hsl({}, {}, {})" if options.get("comma") else "hsl({} {} {})"
+            template = "hsl({}, {}, {})" if comma else "hsl({} {} {})"
             return template.format(
                 util.fmt_float(coords[0], precision),
                 util.fmt_percent(coords[1] * 100, precision),

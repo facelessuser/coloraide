@@ -32,10 +32,10 @@ class SRGB(base.SRGB):
                 # Comma separated format
                 (?:
                     # Float form
-                    (?:{float}{comma}){{2}}{float} |
+                    (?:{strict_float}{comma}){{2}}{strict_float} |
                     # Percent form
-                    (?:{percent}{comma}){{2}}{percent}
-                )({comma}(?:{strict_percent}|{float}))?
+                    (?:{strict_percent}{comma}){{2}}{strict_percent}
+                )({comma}(?:{strict_percent}|{strict_float}))?
             )
             \s*\) |
             # Hex syntax
@@ -96,7 +96,7 @@ class SRGB(base.SRGB):
 
             method = None if not isinstance(fit, str) else fit
             coords = parent.fit(method=method).coords() if fit else self.coords()
-            if not none:
+            if comma or not none:
                 coords = util.no_nans(coords)
 
             fmt = util.fmt_percent if percent else util.fmt_float

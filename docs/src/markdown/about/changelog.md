@@ -8,6 +8,8 @@
 - **NEW**: Clamp lower bounds of chroma at the channel level.
 - **FIX**: Reduce redundancy in some CSS parsing patterns.
 - **FIX**: Minor performance improvements.
+- **FIX**: Legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` comma separated forms in CSS do not support `none`, only the
+  new space separated forms do.
 
 ## 0.12.0
 
