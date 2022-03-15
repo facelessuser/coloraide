@@ -2,6 +2,8 @@
 
 ## 0.13.0
 
+- **NEW**: Add new `closest` method that takes a list of colors and returns the one that is closet to the calling color
+  object.
 - **NEW**: CSS color syntax no longer allows for forgiving channels in `color()`. This means that when a channel other
   than alpha is omitted, that we will no longer treat them as undefined. Instead, the color will simply fail to parse.
   Raw data channels also must specify all channels.

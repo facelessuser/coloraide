@@ -62,3 +62,16 @@ Delta\ E                                 | Name            | Parameters
 Color("red").delta_e_jz("blue")
 Color("red").delta_e_hyab("blue")
 ```
+
+## Finding Closest Color
+
+ColorAide implements a simple way to find the closest color, given a list of colors, to another color. The method is
+called `closest` and takes a list of colors that are to be compared to the calling color object. The first color with
+the smallest distance between the calling color object and itself will be considered the nearest/closest color.
+
+Consider the following example. Here we provide a list of colors to compare against `#!color red`. After comparing all
+the colors, the closest ends up being `#!color maroon`.
+
+```playground
+Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'])
+```

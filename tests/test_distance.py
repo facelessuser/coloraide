@@ -492,7 +492,7 @@ class TestDistance(util.ColorAsserts):
         )
 
 
-class TestDistanceSpecifcCases(util.ColorAsserts, unittest.TestCase):
+class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
     """Test distance specific cases."""
 
     def test_delta_e_alternate_calls(self):
@@ -516,3 +516,35 @@ class TestDistanceSpecifcCases(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('orange', method="hyab", space="lch")
+
+
+class TestClosest(util.ColorAsserts, unittest.TestCase):
+    """Test closest implementation."""
+
+    def test_closest(self):
+        """Test closest."""
+
+        self.assertColorEqual(
+            Color('red').closest(['pink', 'green', 'blue', 'orange', 'purple', 'maroon']),
+            Color('maroon')
+        )
+
+    def test_method(self):
+        """Test with different methods."""
+
+        self.assertColorEqual(
+            Color('aqua').closest(['pink', 'green', 'blue', 'orange', 'purple', 'maroon'], method='2000'),
+            Color('green')
+        )
+
+    def test_bad_method(self):
+        """Test bad method."""
+
+        with self.assertRaises(ValueError):
+            Color('red').closest(['blue'], method='bad')
+
+    def test_no_colors(self):
+        """Test empty list."""
+
+        with self.assertRaises(ValueError):
+            Color('red').closest([])

@@ -721,8 +721,18 @@ class Color(metaclass=BaseColor):
     def distance(self, color: ColorInput, *, space: str = "lab") -> float:
         """Delta."""
 
-        color = self._handle_color_input(color)
-        return distance.distance_euclidean(self, color, space=space)
+        return distance.distance_euclidean(self, self._handle_color_input(color), space=space)
+
+    def closest(
+        self,
+        colors: Sequence[ColorInput],
+        *,
+        method: Optional[str] = None,
+        **kwargs: Any
+    ) -> 'Color':
+        """Find the closest color to the current base color."""
+
+        return distance.closest(self, colors, method=method, **kwargs)
 
     def luminance(self) -> float:
         """Get color's luminance."""
