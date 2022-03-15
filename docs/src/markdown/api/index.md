@@ -539,10 +539,40 @@ Parameters
     ---------- | ------------ | -----------
     `color`    |              | A color string or [`Color`](#color) object representing a color.
     `method`   | `#!py3 None` | String that specifies the method to use. If `#!py3 None`, the default will be used.
+    `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
 
 Return
 : 
     Returns a float indicating the delta E distance between the two colors.
+
+## `color.closest` {#closest}
+
+```py3
+def closest(
+    self,
+    colors,
+    *,
+    method=None,
+    **kwargs
+):
+```
+
+Description
+: 
+    Given a list of colors, calculates the closest color to the calling color object.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `colors`   |              | A list of color strings, [`Color`](#color) object, or dictionary representing a color.
+    `method`   | `#!py3 None` | String that specifies the method of color distancing to use.
+    `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
+
+Return
+: 
+    The [`Color`](#color) that is closest to the calling color object. In the off chance that an empty list is passed in
+    `#!py3 None` will be returned.
 
 ## `color.mask` {#mask}
 
