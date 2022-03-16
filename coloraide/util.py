@@ -36,17 +36,11 @@ ERR_MAP_MSG = """
         {name} = {{**Color.{name}, **my_override_map}}
 """
 
-# Many libraries use 200, but `Colorjs.io` uses 203
-# The author explains why 203 was chosen:
+# Maximum luminance in PQ is 10,000 cd/m^2
+# Relative XYZ has Y=1 for media white
+# BT.2048 says media white Y=203 at PQ 58
 #
-#   Maximum luminance in PQ is 10,000 cd/m^2
-#   Relative XYZ has Y=1 for media white
-#   BT.2048 says media white Y=203 at PQ 58
-#
-# We will currently use 203 for now as the difference is minimal.
-# If there were a significant difference, and one clearly gave
-# better results, that would make the decision easier, but the
-# explanation above seems sufficient for now.
+# This is confirmed here: https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-BT.2408-3-2019-PDF-E.pdf
 YW = 203
 
 # PQ Constants
