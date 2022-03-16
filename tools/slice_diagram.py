@@ -208,7 +208,7 @@ def main():
     parser.add_argument('--constant', '-c', help="The channel to hold constant and the value to use 'name:value'.")
     parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:range:offset'.")
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:range:offset'.")
-    parser.add_argument('polar', '-p', action="store_true", help="Graph the cylindrical space in polar coordinates.")
+    parser.add_argument('--polar', '-p', action="store_true", help="Graph the cylindrical space in polar coordinates.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument(
