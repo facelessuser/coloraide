@@ -13,8 +13,11 @@ from scipy import interpolate
 
 sys.path.insert(0, os.getcwd())
 
+try:
+    from coloraide_extras import Color
+except ImportError:
+    from coloraide import Color
 from tools.slice_diagram import plot_slice  # noqa: E402
-from coloraide import Color  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402
 
