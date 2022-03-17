@@ -215,6 +215,7 @@ def main():
         '--sub-title', default='', help="Provide a subtitle, if none is provided, will show contant channel."
     )
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
+    parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
 
     args = parser.parse_args()
@@ -233,9 +234,9 @@ def main():
     )
 
     if args.output:
-        plt.savefig(args.output, dpi=200)
+        plt.savefig(args.output, dpi=args.dpi)
     else:
-        plt.gcf().set_dpi(200)
+        plt.gcf().set_dpi(args.dpi)
         plt.show()
 
 

@@ -258,6 +258,7 @@ def main():
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     args = parser.parse_args()
 
     plot_space_in_srgb(
@@ -270,9 +271,9 @@ def main():
     )
 
     if args.output:
-        plt.savefig(args.output, dpi=200)
+        plt.savefig(args.output, dpi=args.dpi)
     else:
-        plt.gcf().set_dpi(200)
+        plt.gcf().set_dpi(args.dpi)
         plt.show()
 
 
