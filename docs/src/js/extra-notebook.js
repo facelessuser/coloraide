@@ -298,6 +298,36 @@ ${content}
         e.stopPropagation()
       })
 
+      results.addEventListener("click", e => {
+        // Handle clicks on results and copies color from single color swatch when clicked.
+
+        const el = e.target
+        if (el.matches('span.swatch-color')) {
+          let content = ''
+          const parent = el.parentNode
+          if (!parent.matches('span.swatch-gradient')) {
+            content = parent.getAttribute('title')
+            if (window.clipboardData && window.clipboardData.setData) {
+              // Old `IE`` handling, do we really need this?
+              return window.clipboardData.setData("Text", content)
+            } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+              const textarea = document.createElement("textarea")
+              textarea.textContent = content
+              textarea.style.position = "fixed"
+              document.body.appendChild(textarea)
+              textarea.select()
+              try {
+                return document.execCommand("copy")
+              } catch (ex) {
+                return prompt("Copy to clipboard: Ctrl+C, Enter", content) // eslint-disable-line no-alert
+              } finally {
+                document.body.removeChild(textarea)
+              }
+            }
+          }
+        }
+      })
+
       buttonEdit.addEventListener("click", async() => {
         // Handle the button click: show source or execute source.
 
