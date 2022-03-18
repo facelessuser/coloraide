@@ -24,12 +24,45 @@ except ImportError:
 from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
 from coloraide.util import is_nan  # noqa: E402
 
-# Special cases
-axis_map = {}
+# Special cases for certain color spaces
+color_options = {
+    'hsluv': {'factor': 100, 'chroma': 's', 'force_top': True, 'force_bottom': True},
+    'hsl': {'chroma': 's', 'force_top': True, 'force_bottom': True},
+    'okhsl': {'chroma': 's', 'force_top': True, 'force_bottom': True},
+    'hsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True},
+    'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True},
+    'hsi': {'chroma': 's', 'lightness': 'i', 'force_bottom': True},
+    'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True}
+}
 
 
-def add_color(space, color, x, y, z, c):
-    """Add color to the provided arrays."""
+def create_custom_hsv(gamut):
+    """Create a custom color object that has access to special `hsv-gamut` space to map surface in."""
+
+    # Create custom cylindrical spaces based on the specified gamut
+    gamut_space = Color.CS_MAP[gamut]
+
+    class HSV(Color.CS_MAP['hsv']):
+        NAME = 'hsv-{}'.format(gamut)
+        BASE = 'hsl-{}'.format(gamut)
+        GAMUT_CHECK = gamut
+        WHITE = gamut_space.WHITE
+
+    class HSL(Color.CS_MAP['hsl']):
+        NAME = 'hsl-{}'.format(gamut)
+        BASE = gamut
+        GAMUT_CHECK = gamut
+        WHITE = gamut_space.WHITE
+
+    class ColorCyl(Color):
+        """Custom color."""
+
+    ColorCyl.register([HSV, HSL])
+    return ColorCyl
+
+
+def add_rect_color(space, color, x, y, z, c):
+    """Add rectangular color to the provided arrays."""
 
     coords = color.convert(space).coords()
     x.append(coords[0])
@@ -47,10 +80,9 @@ def add_cyl_color(space, color, x, y, z, c):
     """
 
     cyl = color.convert(space)
-
-    chroma = cyl.chroma
-    lightness = cyl.lightness
-    hue = cyl.hue
+    lightness = cyl.get(color_options.get(space, {}).get('lightness', 'lightness'))
+    chroma = cyl.get(color_options.get(space, {}).get('chroma', 'chroma'))
+    hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))
 
     if is_nan(hue):
         hue = 0
@@ -63,128 +95,116 @@ def add_cyl_color(space, color, x, y, z, c):
     c.append(s)
 
 
-def render_cart_space(space, resolution, data, c):
-    """Render the space with the given resolution and factor."""
-
-    x, y, z = data
-
-    # We are rendering the spaces using sRGB, so just do a shell by picking
-    # all the colors on the outside of the sRGB space. Render will be hollow.
-    color = Color('srgb', [])
-    for c1, c2 in itertools.product(
-        (x / resolution for x in range(0, resolution + 1)),
-        (x / resolution for x in range(0, resolution + 1))
-    ):
-
-        add_color(space, color.update('srgb', [0, c1, c2]), x, y, z, c)
-        add_color(space, color.update('srgb', [1, c1, c2]), x, y, z, c)
-
-        add_color(space, color.update('srgb', [c1, 0, c2]), x, y, z, c)
-        add_color(space, color.update('srgb', [c1, 1, c2]), x, y, z, c)
-
-        add_color(space, color.update('srgb', [c1, c2, 0]), x, y, z, c)
-        add_color(space, color.update('srgb', [c1, c2, 1]), x, y, z, c)
-
-
-def render_cyl_space(space, resolution, data, c):
+def render_space(space, gamut, resolution, factor, data, c):
     """
     Render the space with the given resolution and factor.
 
-    The sRGB gamut is used for the plot. The HSV space is used as it maps
-    far better to cylinder spaces. Very close to black, on some spaces the
-    models don't cover very well, so we make an additional pass using
-    Cartesian coordinates extremely close to black.
+    Any normal RGB gamut can be used, assuming it has ranges [0,1].
+    The HSV space is used as to map though as it generally maps creates
+    better color shells for most spaces.
 
-    It can be noted, we don't bother plotting anything from the bottom
-    disc of the HSV cylinder as they all resolve to pure black. It generates
-    a lot of redundant points.
+    Very close to black on some spaces the models doesn't cover quite as
+    well, so we make an additional pass at a higher resolution very close
+    to black.
+
+    There are a number of special options to handle RGB cylinder spaces.
+    Some require us to generate top and bottom caps, some require us to
+    force a max radius. This is mainly because these models are special
+    and don't quite fit generically with things like Lab, Lch, and rectangular
+    spaces.
     """
 
     x, y, z = data
+
+    ColorCyl = create_custom_hsv(gamut)
+    gamut_space = 'hsv-{}'.format(gamut)
 
     # Resolution increase in non-hue channels helps smooth out some spaces a bit more.
     res2 = int(resolution * 1.5)
 
-    color = Color('srgb', [])
-    is_labish = issubclass(Color.CS_MAP[space], Labish)
-    add = add_color if is_labish else add_cyl_color
+    color = ColorCyl('srgb', [])
+    is_cyl = issubclass(ColorCyl.CS_MAP[space], Cylindrical)
+    is_labish = issubclass(ColorCyl.CS_MAP[space], Labish)
+    is_lchish = issubclass(ColorCyl.CS_MAP[space], Lchish)
+    add = add_rect_color if not is_cyl or is_labish else add_cyl_color
+    force_max_radius = not is_lchish and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
+    force_bottom = color_options.get(space, {}).get('force_bottom', False)
+    force_top = color_options.get(space, {}).get('force_top', False)
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
-    for c1, c2 in itertools.product(
-        ((x / resolution) * 360 for x in range(0, resolution + 1)),
-        ((x / res2) for x in range(0, res2 + 1))
-    ):
-
-        # Only the top disc provides useful points, everything in the bottom just yields black.
-        add(space, color.update('hsv', [c1, c2, 1]), x, y, z, c)
-        add(space, color.update('hsv', [c1, 1, c2]), x, y, z, c)
-        add(space, color.update('hsv', [c1, 1, c2 * 0.005]), x, y, z, c)
-
-
-def render_srgb_cyl_space(space, resolution, factor, data, c):
-    """
-    Render the sRGB cylindrical space: HSL, HSV, HWB, etc.
-
-    Will render cylinder with the caps on the top and bottom.
-    """
-
-    x, y, z = data
-    factor = 100 if space in ('hsluv',) else 1
-
-    # Render the cylinder by iterating through the hues and mapping them at the farthest
-    # point from the center creating a hollow cylinder. Also, render the top and bottom disc caps.
-    color = Color("srgb", [])
     for c1, t in itertools.product(
         ((x / resolution) * 360 for x in range(0, resolution + 1)),
-        (((x / resolution) * factor, i) for i, x in enumerate(range(0, resolution + 1), 0))
+        (((x / res2), i) for i, x in enumerate(range(0, res2 + 1), 0)),
     ):
 
         # Offset the plot on every other iteration blend the rows into a mesh
         # Better looking when low resolution zoomed into higher resolution
         c2, count = t
-        if count % 2 and c1 < 360:
-            c1 += (360 / resolution) * 0.5
+        if is_cyl:
+            if count % 2 and c1 < 360:
+                c1 += (360 / resolution) * 0.5
 
-        # Top disc
-        x.append(c2 * math.sin(math.radians(c1)))
-        y.append(c2 * math.cos(math.radians(c1)))
-        z.append(factor)
-        c.append(color.update(space, [c1, c2, factor]).to_string(hex=True))
+        if not force_max_radius:
+            add(space, color.update(gamut_space, [c1, c2, 1]), x, y, z, c)
+            add(space, color.update(gamut_space, [c1, 1, c2]), x, y, z, c)
+        else:
+            # Certain color spaces, like HWB, we must force max radius as the space
+            # is constructed in a way that just doesn't translate to how we map other spaces.
+            z.append(factor * math.sin(math.radians(c1)))
+            y.append(factor * math.cos(math.radians(c1)))
+            x.append(c2)
+            c.append(color.update(space, [c1, factor, c2]).to_string(hex=True))
 
-        # Bottom disc
-        x.append(c2 * math.sin(math.radians(c1)))
-        y.append(c2 * math.cos(math.radians(c1)))
-        z.append(0)
-        c.append(color.update(space, [c1, c2, 0]).to_string(hex=True))
+        if not is_lchish and is_cyl:
+            # RGB cylinders often map max lightness to a single point instead of rendering a full cylinder
+            # top an bottom. The alternative is to map the radius with a magnitude that lessens as we approach
+            # achromatic, or just render the top and bottom of the cylinder with a disc. We've chosen the latter.
+            # Some cylinder spaces, like HSV, do not require a top.
 
-        # Cylinder portion
-        x.append(factor * math.sin(math.radians(c1)))
-        y.append(factor * math.cos(math.radians(c1)))
-        z.append(c2)
-        c.append(color.update(space, [c1, factor, c2]).to_string(hex=True))
+            if force_top:
+                # Top disc
+                z.append(c2 * factor * math.sin(math.radians(c1)))
+                y.append(c2 * factor * math.cos(math.radians(c1)))
+                x.append(factor)
+                c.append(color.update(space, [c1, c2, factor]).to_string(hex=True))
+
+            if force_bottom:
+                # Bottom disc
+                z.append(c2 * factor * math.sin(math.radians(c1)))
+                y.append(c2 * factor * math.cos(math.radians(c1)))
+                x.append(0)
+                c.append(color.update(space, [c1, c2 * factor, 0]).to_string(hex=True))
+        else:
+            # Some spaces require a higher resolution in the black region to fill in any holes
+            add(space, color.update(gamut_space, [c1, 1, c2 * 0.005]), x, y, z, c)
 
 
-def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=30.0, rotate_azim=-60.0):
+def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotate_elev=30.0, rotate_azim=-60.0):
     """Plot the given space in sRGB."""
 
     data = [[], [], []]
     c = []
 
     # Get names for
-    names = Color.CS_MAP[space].CHANNEL_NAMES
-    is_cyl = issubclass(Color.CS_MAP[space], Cylindrical)
-    is_labish = issubclass(Color.CS_MAP[space], Labish)
-    is_lchish = issubclass(Color.CS_MAP[space], Lchish)
-    is_srgb_cyl = is_cyl and not is_lchish
+    target = Color.CS_MAP[space]
+    names = target.CHANNEL_NAMES
+    is_cyl = issubclass(target, Cylindrical)
+    is_labish = issubclass(target, Labish)
+    is_lchish = issubclass(target, Lchish)
+
+    if not is_lchish and is_cyl:
+        gamut = Color.CS_MAP[space].GAMUT_CHECK
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
         axm = [1, 2, 0]
-    elif is_lchish:
+    elif is_cyl:
         axm = [2, 1, 0]
     else:
-        axm = axis_map.get(space, [0, 1, 2])
+        axm = color_options.get(space, {}).get('axis', [0, 1, 2])
+
+    factor = color_options.get(space, {}).get('factor', 1)
 
     # Select the right theme
     if dark:
@@ -208,20 +228,10 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=3
     figure.add_axes(ax)
 
     # Add title
-    plt.title(title if title else 'srgb rendered in {}'.format(space), pad=20)
+    plt.title(title if title else "'{}' Rendered in '{}'".format(gamut, space), pad=20)
 
     # Render the space
-    if is_srgb_cyl:
-        # Render a sRGB cylinder style plot
-        render_srgb_cyl_space(space, resolution, 1, data, c)
-    elif is_labish or is_cyl:
-        # Render cylindrical spaces. Lab like spaces are cylindrical,
-        # just represented in the Cartesian coordinate system.
-        render_cyl_space(space, resolution, data, c)
-    else:
-        # Render Cartesian spaces.
-        # These are rectangular spaces like RGB spaces and XYZ.
-        render_cart_space(space, resolution, data, c)
+    render_space(space, gamut, resolution, factor, data, c)
 
     # Setup the aspect ratio
     ax.set_box_aspect((1, 1, 1))
@@ -234,8 +244,20 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=3
 def main():
     """Main."""
 
-    parser = argparse.ArgumentParser(prog='3d_diagrams', description='Plot 3D sRGB in different color spaces.')
+    parser = argparse.ArgumentParser(prog='3d_diagrams', description='Plot 3D gamut in a different color spaces.')
     parser.add_argument('--space', '-s', help='Desired space.')
+    parser.add_argument(
+        '--gamut',
+        '-g',
+        default='srgb',
+        help=(
+            'Gamut space to render space in. Gamut space must be bounded and must have channels in the range [0, 1].'
+            'As only a shell is rendered for the gamut, the target space should be less than or equal to the size of '
+            'the target gamut or there will be areas that do not render. Cylindrical spaces based specifically off '
+            'an RGB gamut, such as HSL being based on sRGB, will only be done under the related gamut and will ignore '
+            'this option.'
+        )
+    )
     parser.add_argument(
         '--resolution', '-r',
         default="200",
@@ -252,8 +274,9 @@ def main():
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     args = parser.parse_args()
 
-    plot_space_in_srgb(
+    plot_gamut_in_space(
         args.space,
+        args.gamut,
         title=args.title,
         dark=args.dark,
         resolution=int(args.resolution),
