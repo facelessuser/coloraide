@@ -112,7 +112,7 @@ class XYZD65(Space):
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
 
     # Specify the white point that the color space uses
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     # Specify the bounds of the non-alpha color channels.
     # Each channel is specified with either a `GamutBound` or `GamutUnbound` object.

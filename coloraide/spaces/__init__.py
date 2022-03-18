@@ -25,17 +25,33 @@ color\(\s*
 # From CIE 2004 Colorimetry T.3 and T.8
 # B from https://en.wikipedia.org/wiki/Standard_illuminant#White_point
 WHITES = {
-    "A": (0.44758, 0.40745),
-    "B": (0.34842, 0.35161),
-    "C": (0.31006, 0.31616),
-    "D50": (0.34570, 0.35850),  # Use 4 digits like everyone
-    "D55": (0.33243, 0.34744),
-    "D65": (0.31270, 0.32900),  # Use 4 digits like everyone
-    "D75": (0.29903, 0.31488),
-    "E": (1 / 3, 1 / 3),
-    "F2": (0.37210, 0.37510),
-    "F7": (0.31290, 0.32920),
-    "F11": (0.38050, 0.37690)
+    "2deg": {
+        "A": (0.44758, 0.40745),
+        "B": (0.34842, 0.35161),
+        "C": (0.31006, 0.31616),
+        "D50": (0.34570, 0.35850),  # Use 4 digits like everyone
+        "D55": (0.33243, 0.34744),
+        "D65": (0.31270, 0.32900),  # Use 4 digits like everyone
+        "D75": (0.29903, 0.31488),
+        "E": (1 / 3, 1 / 3),
+        "F2": (0.37210, 0.37510),
+        "F7": (0.31290, 0.32920),
+        "F11": (0.38050, 0.37690)
+    },
+
+    "10deg": {
+        "A": (0.45117, 0.40594),
+        "B": (0.34980, 0.35270),
+        "C": (0.31039, 0.31905),
+        "D50": (0.34773, 0.35952),
+        "D55": (0.33412, 0.34877),
+        "D65": (0.31382, 0.33100),
+        "D75": (0.29968, 0.31740),
+        "E": (1 / 3, 1 / 3),
+        "FL1": (0.31811, 0.33559),
+        "FL2": (0.37925, 0.36733),
+        "FL3": (0.41761, 0.38324)
+    }
 }
 
 FLG_ANGLE = 0x1
@@ -180,7 +196,7 @@ class Space(
     # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
     BOUNDS = tuple()  # type: Tuple[Bounds, ...]
     # White point
-    WHITE = "D50"
+    WHITE = WHITES['2deg']['D50']
 
     def __init__(self, color: Union['Space', Vector], alpha: Optional[float] = None) -> None:
         """Initialize."""
@@ -232,10 +248,10 @@ class Space(
         return (cls.NAME,) if not cls.SERIALIZE else cls.SERIALIZE
 
     @classmethod
-    def white(cls) -> MutableVector:
+    def white(cls) -> Vector:
         """Get the white color for this color space."""
 
-        return list(WHITES[cls.WHITE])
+        return cls.WHITE
 
     @property
     def alpha(self) -> float:

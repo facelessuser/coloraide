@@ -8,11 +8,15 @@
   than alpha is omitted, that we will no longer treat them as undefined. Instead, the color will simply fail to parse.
   Raw data channels also must specify all channels.
 - **NEW**: Clamp lower bounds of chroma at the channel level.
+- **NEW**: `coloraide.spaces.WHITES` is now a 2 deep dictionary containing both 2˚ and 10˚ observer variants of white
+  points.
+- **NEW**: Color space plugins now specify `WHITE` as a tuple with the x and y chromaticity coordinates. This allows a
+  space to specify unknown white points if desired.
 - **FIX**: Reduce redundancy in some CSS parsing patterns.
 - **FIX**: Minor performance improvements.
 - **FIX**: Legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` comma separated forms in CSS do not support `none`, only the
   new space separated forms do.
-- **FIX**: Ensure `py.typed` is installed with package.
+- **FIX**: Ensure `py.typed` is installed with package so that type annotations work properly.
 
 ## 0.12.0
 

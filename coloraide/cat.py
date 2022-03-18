@@ -1,7 +1,6 @@
 """Chromatic adaptation transforms."""
 from . import util
 from .util import Matrix, MutableMatrix, Vector, MutableVector
-from . spaces import WHITES
 from functools import lru_cache
 from typing import Tuple, Dict, cast
 
@@ -64,8 +63,8 @@ CATS = {
 
 @lru_cache(maxsize=20)
 def calc_adaptation_matrices(
-    w1: str,
-    w2: str,
+    w1: Tuple[float, float],
+    w2: Tuple[float, float],
     method: str = 'bradford'
 ) -> Tuple[MutableMatrix, MutableMatrix]:
     """
@@ -87,12 +86,12 @@ def calc_adaptation_matrices(
     mi = util.inv(m)
 
     try:
-        first = util.dot(m, util.xy_to_xyz(WHITES[w1]))
+        first = util.dot(m, util.xy_to_xyz(w1))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w1))
 
     try:
-        second = util.dot(m, util.xy_to_xyz(WHITES[w2]))
+        second = util.dot(m, util.xy_to_xyz(w2))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
@@ -102,7 +101,7 @@ def calc_adaptation_matrices(
     return cast(MutableMatrix, adapt), util.inv(cast(Matrix, adapt))
 
 
-def get_adaptation_matrix(w1: str, w2: str, method: str) -> MutableMatrix:
+def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], method: str) -> MutableMatrix:
     """
     Get the appropriate matrix for chromatic adaptation.
 
@@ -116,7 +115,12 @@ def get_adaptation_matrix(w1: str, w2: str, method: str) -> MutableMatrix:
     return mi if a != w2 else m
 
 
-def chromatic_adaptation(w1: str, w2: str, xyz: Vector, method: str = 'bradford') -> MutableVector:
+def chromatic_adaptation(
+    w1: Tuple[float, float],
+    w2: Tuple[float, float],
+    xyz: Vector,
+    method: str = 'bradford'
+) -> MutableVector:
     """Chromatic adaptation."""
 
     if w1 == w2:

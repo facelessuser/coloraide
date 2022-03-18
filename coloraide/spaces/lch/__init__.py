@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT, WHITES
 from ... import util
 import re
 import math
@@ -52,7 +52,7 @@ class Lch(Lchish, Space):
         "hue": "h"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+    WHITE = WHITES['2deg']['D50']
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
         GamutUnbound(0.0, 100.0),

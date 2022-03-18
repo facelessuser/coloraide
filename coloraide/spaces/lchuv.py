@@ -1,5 +1,5 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_PERCENT
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_PERCENT, WHITES
 from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import re
@@ -43,7 +43,7 @@ class Lchuv(Lch, Space):
     NAME = "lchuv"
     SERIALIZE = ("--lchuv",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
         GamutUnbound(0, 100.0, FLG_PERCENT),

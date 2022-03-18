@@ -1,5 +1,5 @@
 """SRGB Linear color class."""
-from ..spaces import RE_DEFAULT_MATCH
+from ..spaces import RE_DEFAULT_MATCH, WHITES
 from .srgb import SRGB
 import re
 from ..util import MutableVector
@@ -43,7 +43,7 @@ class SRGBLinear(SRGB):
     NAME = "srgb-linear"
     SERIALIZE = ("srgb-linear",)
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

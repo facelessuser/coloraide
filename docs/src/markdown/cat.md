@@ -45,12 +45,14 @@ consistency.
 
 ```playground
 from coloraide import cat
+from coloraide.spaces import WHITES
 Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
-cat.chromatic_adaptation("D50", "D65", [0.11627, 0.07261, 0.23256], 'bradford')
+cat.chromatic_adaptation(WHITES['2deg']["D50"], WHITES['2deg']["D65"], [0.11627, 0.07261, 0.23256], 'bradford')
 ```
 
-ColorAide, currently defines the following illuminants, but most people are probably only concerned with D65 and D50
-which are the only illuminants used in the default color spaces provided by ColorAide.
+ColorAide, currently defines the following illuminants for both 2˚ observer and 10˚ observer, but most people are
+probably only concerned with D65 and D50 (2˚ degree observer) which are the only the illuminants used in the default
+color spaces provided by ColorAide.
 
 Illuminants |
 ----------- |

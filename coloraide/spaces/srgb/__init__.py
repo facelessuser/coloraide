@@ -1,5 +1,5 @@
 """SRGB color class."""
-from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT
+from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT, WHITES
 from ... import util
 from ...util import MutableVector
 import re
@@ -57,7 +57,7 @@ class SRGB(Space):
         "green": 'g',
         "blue": 'b'
     }
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     EXTENDED_RANGE = True
     BOUNDS = (

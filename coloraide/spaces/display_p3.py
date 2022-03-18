@@ -1,5 +1,5 @@
 """Display-p3 color class."""
-from ..spaces import RE_DEFAULT_MATCH
+from ..spaces import RE_DEFAULT_MATCH, WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
 from .. import util
 import re
@@ -54,7 +54,7 @@ class DisplayP3(SRGB):
     BASE = "xyz-d65"
     NAME = "display-p3"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

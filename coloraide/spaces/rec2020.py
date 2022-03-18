@@ -1,5 +1,5 @@
 """Rec 2020 color class."""
-from ..spaces import RE_DEFAULT_MATCH
+from ..spaces import RE_DEFAULT_MATCH, WHITES
 from .srgb import SRGB
 from .. import util
 import re
@@ -83,7 +83,7 @@ class Rec2020(SRGB):
     BASE = "xyz-d65"
     NAME = "rec2020"
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

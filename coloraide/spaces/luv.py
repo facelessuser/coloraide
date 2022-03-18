@@ -8,13 +8,14 @@ from .lab import KAPPA, EPSILON, KE
 from .. import util
 import re
 from ..util import MutableVector
+from typing import Tuple
 
 
-def xyz_to_luv(xyz: MutableVector, white: str) -> MutableVector:
+def xyz_to_luv(xyz: MutableVector, white: Tuple[float, float]) -> MutableVector:
     """XYZ to Luv."""
 
     u, v = util.xyz_to_uv(xyz)
-    w_xyz = util.xy_to_xyz(WHITES[white])
+    w_xyz = util.xy_to_xyz(white)
     ur, vr = util.xyz_to_uv(w_xyz)
 
     yr = xyz[1] / w_xyz[1]
@@ -27,11 +28,11 @@ def xyz_to_luv(xyz: MutableVector, white: str) -> MutableVector:
     ]
 
 
-def luv_to_xyz(luv: MutableVector, white: str) -> MutableVector:
+def luv_to_xyz(luv: MutableVector, white: Tuple[float, float]) -> MutableVector:
     """Luv to XYZ."""
 
     l, u, v = luv
-    xyz = util.xy_to_xyz(WHITES[white])
+    xyz = util.xy_to_xyz(white)
     ur, vr = util.xyz_to_uv(xyz)
 
     if l != 0:
@@ -62,7 +63,7 @@ class Luv(Labish, Space):
         "lightness": "l"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),

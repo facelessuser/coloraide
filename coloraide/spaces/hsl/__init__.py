@@ -1,5 +1,5 @@
 """HSL class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical
+from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical, WHITES
 from ... import util
 import re
 from ...util import MutableVector
@@ -65,7 +65,7 @@ class HSL(Cylindrical, Space):
         "lightness": "l"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
     BOUNDS = (

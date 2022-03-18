@@ -18,7 +18,7 @@ is almost certain that some scaling is being applied and that applying none is a
 
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
 from .. import util
 import re
 from ..util import MutableVector
@@ -129,7 +129,7 @@ class Jzazbz(Labish, Space):
         "b": 'bz'
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
         GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),

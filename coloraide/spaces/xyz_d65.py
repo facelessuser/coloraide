@@ -1,5 +1,5 @@
 """XYZ D65 class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound
+from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, WHITES
 import re
 from ..util import MutableVector
 from typing import Tuple
@@ -13,7 +13,7 @@ class XYZD65(Space):
     SERIALIZE = ("xyz-d65", 'xyz')  # type: Tuple[str, ...]
     CHANNEL_NAMES = ("x", "y", "z")
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D65"
+    WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
         GamutUnbound(0.0, 1.0),

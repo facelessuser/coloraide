@@ -1,8 +1,8 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish
+from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish, WHITES
 from ... import util
 import re
-from ...util import Vector, MutableVector
+from ...util import Vector, MutableVector, Vector
 from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
@@ -72,7 +72,7 @@ class Lab(Labish, Space):
         "lightness": "l"
     }
     DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
-    WHITE = "D50"
+    WHITE = WHITES['2deg']['D50']
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),
         GamutUnbound(-160, 160),
