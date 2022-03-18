@@ -2,7 +2,7 @@
 from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish, WHITES
 from ... import util
 import re
-from ...util import Vector, MutableVector, Vector
+from ...util import Vector, MutableVector
 from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`

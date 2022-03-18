@@ -180,7 +180,7 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=3
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
-        axm = [1,2, 0]
+        axm = [1, 2, 0]
     elif is_lchish:
         axm = [2, 1, 0]
     else:
