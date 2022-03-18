@@ -24,26 +24,8 @@ except ImportError:
 from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
 from coloraide.util import is_nan  # noqa: E402
 
-axis_map = {
-    # Lab like spaces
-    "lab": [1, 2, 0],
-    "lab-d65": [1, 2, 0],
-    "oklab": [1, 2, 0],
-    "jzazbz": [1, 2, 0],
-    "ictcp": [1, 2, 0],
-    "din99o": [1, 2, 0],
-    "luv": [1, 2, 0],
-    "luv-d65": [1, 2, 0],
-
-    # Lch like spaces
-    "lch": [2, 1, 0],
-    "lch-d65": [2, 1, 0],
-    "oklch": [2, 1, 0],
-    "jzczhz": [2, 1, 0],
-    "lch99o": [2, 1, 0],
-    "lchuv": [2, 1, 0],
-    "lchuv-d65": [2, 1, 0]
-}
+# Special cases
+axis_map = {}
 
 
 def add_color(space, color, x, y, z, c):
@@ -193,10 +175,16 @@ def plot_space_in_srgb(space, title="", dark=False, resolution=70, rotate_elev=3
     names = Color.CS_MAP[space].CHANNEL_NAMES
     is_cyl = issubclass(Color.CS_MAP[space], Cylindrical)
     is_labish = issubclass(Color.CS_MAP[space], Labish)
-    is_srgb_cyl = is_cyl and not issubclass(Color.CS_MAP[space], Lchish)
+    is_lchish = issubclass(Color.CS_MAP[space], Lchish)
+    is_srgb_cyl = is_cyl and not is_lchish
 
     # Some spaces need us to rearrange the order of the data
-    axm = axis_map.get(space, [0, 1, 2])
+    if is_labish:
+        axm = [1,2, 0]
+    elif is_lchish:
+        axm = [2, 1, 0]
+    else:
+        axm = axis_map.get(space, [0, 1, 2])
 
     # Select the right theme
     if dark:
