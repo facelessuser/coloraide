@@ -672,7 +672,7 @@ def cie_diagram(
         wy = []
         annot = []
         for wp in white_points:
-            w = WHITES[wp]
+            w = WHITES[observer][wp]
             annot.append(wp)
             if opt.mode == '1931':
                 wx.append(w[0])
