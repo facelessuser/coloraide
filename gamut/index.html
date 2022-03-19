@@ -85,9 +85,9 @@ Color('color(display-p3 1 1 0)').clip('srgb')</textarea> </form> </div> <button 
 <span class=gp>... </span>    <span class=n>FIT</span> <span class=o>=</span> <span class=s1>&#39;oklch-chroma&#39;</span>
 <span class=gp>... </span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>ColorCss</span><span class=p>(</span><span class=s2>&quot;lch(85% 80 310)&quot;</span><span class=p>)</span><span class=o>.</span><span class=n>interpolate</span><span class=p>(</span><span class=s2>&quot;lch(85% 100 85)&quot;</span><span class=p>,</span> <span class=n>space</span><span class=o>=</span><span class=s1>&#39;oklch&#39;</span><span class=p>)</span>
-<span class=go>&lt;coloraide.interpolate.InterpolateSingle object at 0x12ab9eca0&gt;</span>
+<span class=go>&lt;coloraide.interpolate.InterpolateSingle object at 0x12c831c70&gt;</span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>ColorOk</span><span class=p>(</span><span class=s2>&quot;lch(85% 80 310)&quot;</span><span class=p>)</span><span class=o>.</span><span class=n>interpolate</span><span class=p>(</span><span class=s2>&quot;lch(85% 100 85)&quot;</span><span class=p>,</span> <span class=n>space</span><span class=o>=</span><span class=s1>&#39;oklch&#39;</span><span class=p>)</span>
-<span class=go>&lt;coloraide.interpolate.InterpolateSingle object at 0x12a9503d0&gt;</span>
+<span class=go>&lt;coloraide.interpolate.InterpolateSingle object at 0x12c5e5a00&gt;</span>
 </code></pre></div></div> </div> <div class="playground-code hidden" id=__playground-code_12> <form autocomplete=off> <textarea class=playground-inputs id=__playground-inputs_12 spellcheck=false>class ColorCss(Color):
     FIT = 'css-color-4'
 class ColorOk(Color):
@@ -102,7 +102,7 @@ ColorOk("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')</textar
 <span class=gp>&gt;&gt;&gt; </span><span class=n>yellow</span><span class=o>.</span><span class=n>steps</span><span class=p>(</span><span class=n>lightness_mask</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>10</span><span class=p>,</span> <span class=n>space</span><span class=o>=</span><span class=s1>&#39;lch&#39;</span><span class=p>)</span>
 <span class=go>[color(display-p3 1 1 0 / 1), color(display-p3 0.86965 0.87865 -0.1393 / 1), color(display-p3 0.74183 0.76037 -0.16139 / 1), color(display-p3 0.61856 0.64535 -0.17688 / 1), color(display-p3 0.50161 0.53384 -0.19747 / 1), color(display-p3 0.39311 0.42617 -0.22085 / 1), color(display-p3 0.29717 0.32269 -0.24546 / 1), color(display-p3 0.22186 0.22377 -0.27027 / 1), color(display-p3 0.17897 0.12968 -0.29464 / 1), color(display-p3 0.13001 0.03358 -0.31816 / 1)]</span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>ColorRow</span><span class=p>()</span>
-<span class=go>&lt;tools.playground.ColorRow object at 0x12a919d60&gt;</span>
+<span class=go>&lt;tools.playground.ColorRow object at 0x12c587550&gt;</span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>yellow</span> <span class=o>=</span> <span class=n>ColorClip</span><span class=p>(</span><span class=s1>&#39;color(display-p3 1 1 0)&#39;</span><span class=p>)</span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>lightness_mask</span> <span class=o>=</span> <span class=n>Color</span><span class=p>(</span><span class=s1>&#39;lch(0% none none)&#39;</span><span class=p>)</span>
 <span class=gp>&gt;&gt;&gt; </span><span class=n>yellow</span><span class=o>.</span><span class=n>steps</span><span class=p>(</span><span class=n>lightness_mask</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>10</span><span class=p>,</span> <span class=n>space</span><span class=o>=</span><span class=s1>&#39;lch&#39;</span><span class=p>)</span>
