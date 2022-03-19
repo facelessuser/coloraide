@@ -271,7 +271,7 @@ def _color_command_console(colors):
                 title = color.string
                 classes = base_classes
                 c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
-                c = '<span class="{classes}" title="{title}">{color}</span>'.format(
+                c = '<span class="{classes}" title="{title}&#013;Copy to clipboard">{color}</span>'.format(
                     classes=classes,
                     color=c,
                     title=title
