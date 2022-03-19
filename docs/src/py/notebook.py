@@ -84,6 +84,7 @@ def get_colors(result):
     """Get color from results."""
 
     from coloraide import Color
+    import coloraide_extras
     from coloraide.interpolate import Interpolator
 
     colors = []
@@ -95,7 +96,7 @@ def get_colors(result):
         colors = result
     elif isinstance(result, str):
         try:
-            colors.append(ColorTuple(result, Color(result)))
+            colors.append(ColorTuple(result, coloraide_extras.Color(result)))
         except Exception:
             pass
     elif isinstance(result, Sequence):
@@ -104,7 +105,7 @@ def get_colors(result):
                 colors.append(ColorTuple(x.to_string(fit=False), x.clone()))
             elif isinstance(x, str):
                 try:
-                    colors.append(ColorTuple(x, Color(x)))
+                    colors.append(ColorTuple(x, coloraide_extras.Color(x)))
                 except Exception:
                     pass
     return colors
@@ -113,12 +114,12 @@ def get_colors(result):
 def find_colors(text):
     """Find colors in text buffer."""
 
-    import coloraide
+    import coloraide_extras
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
         start = m.start()
-        mcolor = coloraide.Color.match(text, start=start)
+        mcolor = coloraide_extras.Color.match(text, start=start)
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
@@ -128,9 +129,11 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
+    import coloraide_extras
 
     g = {
         'Color': coloraide.Color,
+        'coloraide_extras': coloraide_extras,
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
         'Piecewise': coloraide.Piecewise,
@@ -335,7 +338,7 @@ def live_color_command_formatter(src):
 def color_formatter(src="", language="", class_name=None, md=""):
     """Formatter wrapper."""
 
-    from coloraide import Color
+    from coloraide_extras import Color
 
     try:
         result = src.strip()
@@ -488,9 +491,11 @@ def render_notebook(*args):
 cwheel = ''
 mwheel = ''
 pwheel = ''
+ewheel = ''
 
 wheels = [
-    location.origin + '/coloraide/playground/' + cwheel
+    location.origin + '/coloraide/playground/' + cwheel,
+    location.origin + '/coloraide/playground/' + ewheel
 ]
 
 action = globals().get('action')

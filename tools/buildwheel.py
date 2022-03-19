@@ -8,7 +8,8 @@ import shutil
 
 urls = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl"  # noqa: E501
+    "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/1f/5f/90538b677f8265c1f4c756ce1c0705540981972b02f03945547516eae783/coloraide_extras-0.1.0-py3-none-any.whl"  # noqa: E501
 ]
 output = 'docs/src/markdown/playground/'
 externals = {}

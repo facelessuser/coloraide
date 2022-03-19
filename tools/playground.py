@@ -7,6 +7,7 @@ are initialized with the results of the initial contents.
 Any inline code blocks with `color` as the language will be evaluated as a simple color swatch.
 """
 import coloraide
+import coloraide_extras
 from coloraide import Color, NaN, Piecewise
 from coloraide.interpolate import Interpolator
 from pymdownx import superfences
@@ -90,7 +91,7 @@ def get_colors(result):
         colors = result
     elif isinstance(result, str):
         try:
-            colors.append(ColorTuple(result, Color(result)))
+            colors.append(ColorTuple(result, coloraide_extras.Color(result)))
         except Exception:
             pass
     elif isinstance(result, Sequence):
@@ -99,7 +100,7 @@ def get_colors(result):
                 colors.append(ColorTuple(x.to_string(fit=False), x.clone()))
             elif isinstance(x, str):
                 try:
-                    colors.append(ColorTuple(x, Color(x)))
+                    colors.append(ColorTuple(x, coloraide_extras.Color(x)))
                 except Exception:
                     pass
     return colors
@@ -111,7 +112,7 @@ def find_colors(text):
     colors = []
     for m in RE_COLOR_START.finditer(text):
         start = m.start()
-        mcolor = Color.match(text, start=start)
+        mcolor = coloraide_extras.Color.match(text, start=start)
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
@@ -120,7 +121,14 @@ def find_colors(text):
 def execute(cmd):
     """Execute color commands."""
 
-    g = {'Color': Color, 'coloraide': coloraide, 'NaN': NaN, 'Piecewise': Piecewise, 'ColorRow': ColorRow}
+    g = {
+        'Color': Color,
+        'coloraide_extras': coloraide_extras,
+        'coloraide': coloraide,
+        'NaN': NaN,
+        'Piecewise': Piecewise,
+        'ColorRow': ColorRow
+    }
     console = ''
     colors = []
 
@@ -294,7 +302,7 @@ def color_formatter(src="", language="", class_name=None, md=""):
             color = colors[0][0].color
             result = colors[0][0].string
         except Exception:
-            color = Color(result.strip())
+            color = coloraide_extras.Color(result.strip())
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut(WEBSPACE):

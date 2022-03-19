@@ -103,19 +103,25 @@ const config = {
 // Check that we have a Pymdown Extensions wheel
 const pymdownx = await fg([`${wheelsDir}pymdown_extensions*.whl`])
 if (!pymdownx[0]) {
-  throw new Error("No Pymdown Extensions wheel found. Did you forget to build one? Please run './tools/buildwheel.sh'")
+  throw new Error("No Pymdown Extensions wheel found. Did you forget to build one? Please run './tools/buildwheel.py'")
 }
 
 // Check that we have a Markdown wheel
 const markdown = await fg([`${wheelsDir}Markdown*.whl`])
 if (!markdown[0]) {
-  throw new Error("No Markdown wheel found. Did you forget to build one? Please run './tools/buildwheel.sh'")
+  throw new Error("No Markdown wheel found. Did you forget to build one? Please run './tools/buildwheel.py'")
 }
 
 // Check that we have a ColorAide wheel
 const coloraide = await fg([`${wheelsDir}coloraide*.whl`])
 if (!coloraide[0]) {
-  throw new Error("No Coloraide wheel found. Did you forget to build one? Please run './tools/buildwheel.sh'")
+  throw new Error("No Coloraide wheel found. Did you forget to build one? Please run './tools/buildwheel.py'")
+}
+
+// Check that we have a ColorAide wheel
+const coloraideExtras = await fg([`${wheelsDir}coloraide_extras*.whl`])
+if (!coloraide[0]) {
+  throw new Error("No Coloraide Extras wheel found. Did you forget to build one? Please run './tools/buildwheel.py'")
 }
 
 const pycode = fs.readFileSync("docs/src/py/notebook.py", "utf8")
@@ -123,6 +129,7 @@ const pycode = fs.readFileSync("docs/src/py/notebook.py", "utf8")
   .replace(/^cwheel = .*$/m, `cwheel = "${path.basename(coloraide[0])}"`)
   .replace(/^mwheel = .*$/m, `mwheel = "${path.basename(markdown[0])}"`)
   .replace(/^pwheel = .*$/m, `pwheel = "${path.basename(pymdownx[0])}"`)
+  .replace(/^ewheel = .*$/m, `ewheel = "${path.basename(coloraideExtras[0])}"`)
   .replace(/\r?\n/g, "\\n")
   .replace(/"/g, "\\\"")
 
