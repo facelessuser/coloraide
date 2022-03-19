@@ -11,6 +11,7 @@
 [dez]: https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 [de99o]: https://de.wikipedia.org/wiki/DIN99-Farbraum
 [dehyab]: http://markfairchild.org/PDFs/PAP40.pdf
+[extras]: https://github.com/facelessuser/coloraide-extras
 [floating-point]: https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations
 [issues]: https://github.com/facelessuser/coloraide/issues
 [lch-chroma]: https://colorjs.io/docs/gamut-mapping.html#so-how-does-colorjs-handle-all-this

@@ -274,13 +274,14 @@ a plugin already registered with the same name (as dictated by the plugin) the o
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
 
-Here we just overwrite the existing Jzazbz color space plugin with itself again.
+Here is an example of installing an additional color space from [ColorAide Extras][extras], a package we offer
+containing some additional color spaces.
 
 ```playground
+from coloraide_extras.spaces.hunter_lab import HunterLab
 class Custom(Color): ...
-from coloraide.spaces import jzazbz
-Custom.register(jzazbz.Jzazbz, overwrite=True)
-Custom('red').convert('jzazbz')
+Custom.register(HunterLab)
+Custom('red').convert('hunter-lab')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to

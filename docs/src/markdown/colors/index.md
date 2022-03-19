@@ -4,9 +4,19 @@ ColorAide aims to support all the color spaces and models currently offered in m
 CIELAB, Oklab, etc. We also try to include a number of color spaces that are not available in CSS, but are generally
 popular.
 
-It is doubtful that we'll ever include all available color spaces that exist, but ColorAide is extensible allowing for
-new color spaces and models to be added by anyone. It is also possible that in the future, we may even offer an
-additional repository with additional, optional color spaces that can be included as needed.
+It is doubtful that we'll ever include all available color spaces that exist, but ColorAide is extensible and allows for
+new color spaces and models to be added by anyone, even 3rd parties.
+
+Currently, we also offer a separate package called [ColorAide Extras][extras] that provides some more color spaces:
+Hunter Lab, xyY, IPT, etc. We will most likely keep less common and experimental spaces/models over there and be very
+selective as to what we bring over here.
+
+!!! warning "Possible Relocation of Some Color Spaces for 1.0.0"
+    It is possible that before the 1.0.0 release that we may move some color spaces from ColorAide over to
+    [ColorAide Extras][extras]. Any color spaces and associated ∆E methods not considered part of the CSS spec could
+    could be considered for relocation. HSLuv, Jzazbz, DIN99o, CIELUV, and ICtCp are all examples of spaces that could
+    be moved to ColorAide Extras in the future. This would provide a leaner package with the option for users to install
+    the additional package and cherry pick the spaces of interest.
 
 ## RGB
 
