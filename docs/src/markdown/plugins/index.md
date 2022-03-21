@@ -106,12 +106,13 @@ class XYZD65(Space):
     # A dictionary containing a mapping of aliases to `CHANNEL_NAMES` found above.
     CHANNEL_ALIASES = {}
 
-    # `DEFAULT_MATCH` is the pattern for matching colors in the `color(space ...)` format.
-    # Simply import `RE_DEFAULT_MATCH` from `color.spaces` and join all serialized names with `|`
-    # and specify how many color channels to accept.
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
+    # If you'd like this color space to parse as a `color(space ...)` format.
+    # If set to `False` the space will not recognize the color format as an input.
+    # To override output of the color format, you will also need to override the `to_string` method.
+    COLOR_FORMAT = True
 
     # Specify the white point that the color space uses
+    # White point should be a `tuple` containing the x and y chromaticity points.
     WHITE = WHITES['2deg']['D65']
 
     # Specify the bounds of the non-alpha color channels.
@@ -332,23 +333,27 @@ not lightness which is similar but not precisely the same thing.
 
 One common thing that may be desired is altering an existing color space to accept and output a specialized format.
 While using hex color codes or `#!css-color rgb()` formats are fairly common, there are many places were other forms
-are used to represent colors. It may be beneficial to a user working with colors in some more obscure form to repurpose
+are used to represent colors. It may be beneficial for a user working with colors in some more obscure form to repurpose
 a color space to handle different input/output formats.
 
-The base of every color space is defined to accept and output the `#!css-color color(space ...)` format. To add
-additional CSS forms on top, we usually subclass the base and override the `#!py3 match()` and `#!py3 to_string()`,
-calling into `#!py3 super().match()` and `#!py3 super().to_string()` only when we'd like to match or output this the
-`#!css-color color(space ...)` format.
+The base of every color space is defined to accept and output the `#!css-color color(space ...)` format. As this is a
+common input form across all color spaces, it is handled generically for performance reasons. A color can opt out of
+this input format by simply setting `COLOR_FORMAT` to `#!py3 False`. This only disables input parsing and serialization
+to string would need to be overridden as a separate step to also prevent output to the `#!css-color color(space ...)`
+format.
 
-For instance, let's consider the default sRGB space, which can be used as an example on how to create a specialized,
-non-CSS sRGB input/output. While we won't go into the specific parsing logic, the general top-level logic can be seen
-below.
+New matching logic can be achieved by simply by overriding the `#!py3 match()` method. If it is desired to also accept
+the `#!css-color color(space ...)` format, ensure the `COLOR_FORMAT` is enabled; otherwise, disable it.
 
-We opt to use a regular expression pattern to match the `rgb()`, hex color codes, and color name formats. We then
-override `#!py3 match()` and call into the base match function to try and find the `#!css-color color(space ...)`
-format. If we don't get a match, we run our own custom parsing logic. Also, notice that `#!py3 match()` is expected to
-return two things: a tuple containing the color channel coordinates and alpha and the end position
-(`#!py3 ([r, g, b], a), end`). If the match fails, it simply returns `#!py3 None`.
+As an example, let's consider the default sRGB space. We wanted to add additional CSS formats in addition to the
+`#!css-color color(space ...)` format. While we won't go into the specific parsing logic, the general top-level logic
+can be seen below.
+
+We opt to use a regular expression pattern to match the `rgb()`, hex color code, and color name formats. We then then
+override `#!py3 match()` to provide our own matching logic. `#!css-color color(space ...)` will continue to be supported
+unless we turn off `COLOR_FORMAT`. Also, notice that `#!py3 match()` is expected to return two things: a tuple
+containing the color channel coordinates and alpha and the end position (`#!py3 ([r, g, b], a), end`). If the match
+fails, it simply returns `#!py3 None`.
 
 
 ```py
@@ -357,6 +362,10 @@ from .. import srgb as base
 
 class SRGB(base.SRGB):
     """SRGB class."""
+
+    # This color class should opt into the generic `color(space ...)` format.
+    # This is `True` by default, but shown for demonstration purposes.
+    COLOR_FORMAT: True
 
     MATCH = re.compile(r'''(?xi)
         (?:
@@ -395,11 +404,6 @@ class SRGB(base.SRGB):
     ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a CSS color string."""
 
-        # Handle default `color(space...)` support
-        match = super().match(string, start, fullmatch)
-        if match is not None:
-            return match
-
         # Handle `rgb(a)`, hex, and color names
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
@@ -418,8 +422,8 @@ Additionally, we control the output formats by overriding the `#!py3 to_string()
 all the parameters we need, in our case we accept the common parameters and later check for our special inputs in
 `kwargs`.
 
-Just like with inputs, we call the base `#!py3 to_string()` method if we wish to output the
-`#!css-color color(space ...)` format and then continue on with our own logic.
+To ensure we continue to support the `#!css-color color(space ...)` format as an output, we call the base
+`#!py3 to_string()` method if the `color` option is set to `#!py3 True`.
 
 ```py
     def to_string(

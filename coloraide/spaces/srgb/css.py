@@ -212,9 +212,6 @@ class SRGB(base.SRGB):
     ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a CSS color string."""
 
-        match = super().match(string, start, fullmatch)
-        if match is not None:
-            return match
         m = cls.MATCH.match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             string = string[m.start(0):m.end(0)].lower()

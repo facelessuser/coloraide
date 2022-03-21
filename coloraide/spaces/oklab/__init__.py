@@ -25,9 +25,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
+from ...spaces import Space, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
 from ... import util
-import re
 from ...util import Vector, MutableVector
 from typing import cast
 
@@ -120,7 +119,6 @@ class Oklab(Labish, Space):
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

@@ -1,7 +1,6 @@
 """Lab class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, Labish, WHITES
+from ...spaces import Space, GamutUnbound, FLG_PERCENT, Labish, WHITES
 from ... import util
-import re
 from ...util import Vector, MutableVector
 from typing import cast
 
@@ -71,7 +70,6 @@ class Lab(Labish, Space):
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D50']
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),

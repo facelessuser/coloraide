@@ -1,7 +1,6 @@
 """Lch class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT, WHITES
+from ...spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT, WHITES
 from ... import util
-import re
 import math
 from ...util import MutableVector
 from typing import Tuple
@@ -51,7 +50,6 @@ class Lch(Lchish, Space):
         "chroma": "c",
         "hue": "h"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D50']
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_PERCENT),

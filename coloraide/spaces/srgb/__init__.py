@@ -1,8 +1,7 @@
 """SRGB color class."""
-from ...spaces import RE_DEFAULT_MATCH, Space, GamutBound, FLG_OPT_PERCENT, WHITES
+from ...spaces import Space, GamutBound, FLG_OPT_PERCENT, WHITES
 from ... import util
 from ...util import MutableVector
-import re
 import math
 
 
@@ -47,10 +46,6 @@ class SRGB(Space):
 
     BASE = "srgb-linear"
     NAME = "srgb"
-    # In addition to the current gamut, check HSL as it is much more sensitive to small
-    # gamut changes. This is mainly for a better user experience. Colors will still be
-    # mapped/clipped in the current space, unless specified otherwise.
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     CHANNEL_NAMES = ("r", "g", "b")
     CHANNEL_ALIASES = {
         "red": 'r',

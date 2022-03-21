@@ -25,11 +25,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical, WHITES
+from ..spaces import Space, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical, WHITES
 from .. import util
 from .oklab import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
-import re
 import math
 from ..util import MutableVector
 from typing import Tuple
@@ -144,7 +143,6 @@ class Okhsv(Cylindrical, Space):
         "saturation": "s",
         "value": "v"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 

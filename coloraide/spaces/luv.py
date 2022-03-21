@@ -3,10 +3,9 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_PERCENT, WHITES, Labish
+from ..spaces import Space, GamutUnbound, FLG_PERCENT, WHITES, Labish
 from .lab import KAPPA, EPSILON, KE
 from .. import util
-import re
 from ..util import MutableVector
 from typing import Tuple
 
@@ -62,7 +61,6 @@ class Luv(Labish, Space):
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

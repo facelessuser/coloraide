@@ -142,6 +142,13 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color("hsl(20 100% 50%)", filters=['srgb'])
 
+    def test_filtered_color_syntax_input(self):
+        """Test filtered input with color syntax."""
+
+        self.assertTrue(isinstance(Color("red", filters=['srgb']), Color))
+        with self.assertRaises(ValueError):
+            Color("color(--hsl 20 100% 50%)", filters=['srgb'])
+
     def test_filtered_color_input(self):
         """Test filtered Color input."""
 

@@ -1,5 +1,5 @@
 coloraide_extras
-mkdocs_pymdownx_material_extras>=1.6
+mkdocs_pymdownx_material_extras>=2.0
 git+https://github.com/facelessuser/pymdown-lexers.git
 mkdocs-git-revision-date-localized-plugin
 mkdocs-minify-plugin

@@ -3,9 +3,8 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
+from ..spaces import Space, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
 from .. import util
-import re
 from ..util import MutableVector
 from typing import cast
 
@@ -88,7 +87,6 @@ class ICtCp(Labish, Space):
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
     CHANNEL_NAMES = ("i", "ct", "cp")
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

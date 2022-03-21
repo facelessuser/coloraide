@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.0
+
+- **NEW**: Faster parsing. Instead of evaluating each color space individually when parsing the `color(space ...)`
+  format, evaluate all in one instance. The `color(space ...)` format is now evaluated generically and increases speed
+  of parsing. If a color spaces wishes to opt out of the `color(space ...)` input format, the space should set
+  `COLOR_FORMAT` to `False`. This means there is no need to call `super.match()` when overriding `Color.match()` to
+  ensure support for the `color(space ...)` format as it will be handled unless `COLOR_FORMAT` is turned off.
+  `DEFAULT_MATCH` usage should also be discontinued as it now does nothing.
+
 ## 0.13.0
 
 - **NEW**: Add new `closest` method that takes a list of colors and returns the one that is closet to the calling color
