@@ -1,26 +1,26 @@
 """Color base."""
+import re
 from abc import ABCMeta, abstractmethod
 from .. import util
 from ..util import Vector, MutableVector
 from .. import parse
-from typing import Tuple, Dict, Pattern, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-# Technically, this form could handle any number of channels as long as any extra
-# are thrown away. Currently, each space only allows exact, expected channels.
-# In the future, we could allow colors to accept more and throw away extras
-# like the CSS specification requires.
+# TODO: Before 1.0, merge this with the statement below as color spaces will not need this moving forward.
 RE_DEFAULT_MATCH = r"""(?xi)
 color\(\s*
 ({{color_space}})
-((?:{space}(?:{strict_percent}|{float})){{{{{{channels:d}}}}}}(?:{slash}(?:{strict_percent}|{float}))?)
+((?:{space}(?:{strict_percent}|{float})){{{{{{channels}}}}}}(?:{slash}(?:{strict_percent}|{float}))?)
 \s*\)
 """.format(
     **parse.COLOR_PARTS
 )
 
+# Allow 10 channels maximum. This should be able to handle any colors we throw at it.
+RE_COLOR_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='-{0,2}[a-z][-a-z0-9_]*', channels='1,10'))
 
 # From CIE 2004 Colorimetry T.3 and T.8
 # B from https://en.wikipedia.org/wiki/Standard_illuminant#White_point
@@ -57,6 +57,85 @@ WHITES = {
 FLG_ANGLE = 0x1
 FLG_PERCENT = 0x2
 FLG_OPT_PERCENT = 0x4
+
+
+def color_match(
+    string: str,
+    spaces: Dict[str, Type['Space']],
+    start: int,
+    fullmatch: bool = False
+) -> Optional[Tuple[Type['Space'], Tuple[MutableVector, float], int]]:
+    """Perform default color matching."""
+
+    m = RE_COLOR_MATCH.match(string, start)
+    if m is not None and (not fullmatch or m.end(0) == len(string)):
+        ident = m.group(1).lower()
+
+        # Iterate the spaces and see if we find the color serialization identifier
+        for space in spaces.values():
+            if ident in space._serialize():
+                # Break channels up into a list
+                num_channels = len(space.CHANNEL_NAMES)
+                split = parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
+
+                # Get alpha channel
+                alpha = parse.norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
+
+                # Parse color channels
+                channels = []
+                i = -1
+                for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
+                    if c and i < num_channels:
+                        # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
+                        is_percent = space.BOUNDS[i].flags & FLG_PERCENT
+                        channels.append(parse.norm_color_channel(c.lower(), not is_percent))
+                    else:
+                        # Not the right amount of channels
+                        break
+
+                # Apply null adjustments (null hues) if applicable
+                # or return None if we got the wrong amount of channels
+                if i + 1 == num_channels:
+                    return space, (channels, alpha), m.end(0)
+                break
+    return None
+
+
+def color_serialize(
+    space: 'Space',
+    parent: Optional['Color'],
+    **kwargs: Any
+) -> str:
+    """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
+
+    # Get precision
+    precision = kwargs.get('precision')
+    if precision is None:
+        precision = parent.PRECISION if parent else util.DEF_PREC
+
+    # Get if alpha and allow 'none' if desired
+    none = kwargs.get('none', False)
+    a = util.no_nan(space.alpha) if not none else space.alpha
+
+    # Determine if we should show alpha
+    alpha = kwargs.get('alpha')
+    alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
+
+    # Get coordinates and fit if desired. Allow 'none' if desired.
+    fit = kwargs.get('fit', True)
+    method = None if not isinstance(fit, str) else fit
+    coords = parent.fit(method=method).coords() if parent and fit else space.coords()
+    if not none:
+        coords = util.no_nans(coords)
+
+    # Print at the desired precision showing alpha if required
+    values = [util.fmt_float(coord, precision) for coord in coords]
+    if alpha:
+        return "color({} {} / {})".format(
+            space._serialize()[0], ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC))
+        )
+    else:
+        return "color({} {})".format(space._serialize()[0], ' '.join(values))
 
 
 class Bounds:
@@ -172,12 +251,8 @@ class Space(
     CHANNEL_NAMES = tuple()  # type: Tuple[str, ...]
     # Channel aliases
     CHANNEL_ALIASES = {}  # type: Dict[str, str]
-    # For matching the default form of `color(space coords+ / alpha)`.
-    # Classes should define this if they want to use the default match.
-    DEFAULT_MATCH = None  # type: Optional[Pattern[str]]
-    # Match pattern variable for classes to override so we can also
-    # maintain the default and other alternatives.
-    MATCH = None  # type: Optional[Pattern[str]]
+    # Enable or disable default color format parsing and serialization.
+    COLOR_FORMAT = True
     # Should this color also be checked in a different color space? Only when set to a string (specifying a color space)
     # will the default gamut checking also check the specified space as well as the current.
     #
@@ -196,7 +271,7 @@ class Space(
     # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
     BOUNDS = tuple()  # type: Tuple[Bounds, ...]
     # White point
-    WHITE = WHITES['2deg']['D50']
+    WHITE = (0.0, 0.0)
 
     def __init__(self, color: Union['Space', Vector], alpha: Optional[float] = None) -> None:
         """Initialize."""
@@ -226,13 +301,7 @@ class Space(
     def __repr__(self) -> str:
         """Representation."""
 
-        values = [util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]
-
-        return 'color({} {} / {})'.format(
-            self._serialize()[0],
-            ' '.join(values),
-            util.fmt_float(util.no_nan(self.alpha), util.DEF_PREC)
-        )
+        return color_serialize(self, None, alpha=True, none=True, precision=util.DEF_PREC)
 
     __str__ = __repr__
 
@@ -306,25 +375,7 @@ class Space(
     ) -> str:
         """Convert to CSS 'color' string: `color(space coords+ / alpha)`."""
 
-        if precision is None:
-            precision = parent.PRECISION
-
-        a = util.no_nan(self.alpha) if not none else self.alpha
-        alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
-
-        method = None if not isinstance(fit, str) else fit
-        coords = parent.fit(method=method).coords() if fit else self.coords()
-        if not none:
-            coords = util.no_nans(coords)
-
-        values = [util.fmt_float(coord, precision) for coord in coords]
-
-        if alpha:
-            return "color({} {} / {})".format(
-                self._serialize()[0], ' '.join(values), util.fmt_float(a, max(precision, util.DEF_PREC))
-            )
-        else:
-            return "color({} {})".format(self._serialize()[0], ' '.join(values))
+        return color_serialize(self, parent, alpha=alpha, precision=precision, fit=fit, none=none)
 
     @classmethod
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
@@ -340,31 +391,5 @@ class Space(
         fullmatch: bool = True
     ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a color by string."""
-
-        m = cast(Pattern[str], cls.DEFAULT_MATCH).match(string, start)
-        if (
-            m is not None and
-            (
-                (m.group(1) and m.group(1).lower() in cls._serialize())
-            ) and (not fullmatch or m.end(0) == len(string))
-        ):
-
-            # Break channels up into a list
-            num_channels = len(cls.CHANNEL_NAMES)
-            split = parse.RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
-
-            # Get alpha channel
-            alpha = parse.norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
-
-            # Parse color channels
-            channels = []
-            for i, c in enumerate(parse.RE_CHAN_SPLIT.split(split[0]), 0):
-                if c and i < num_channels:
-                    # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                    is_percent = cls.BOUNDS[i].flags & FLG_PERCENT
-                    channels.append(parse.norm_color_channel(c.lower(), not is_percent))
-
-            # Apply null adjustments (null hues) if applicable
-            return (channels, alpha), m.end(0)
 
         return None

@@ -3,9 +3,8 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
+from ..spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
 from .. import util
-import re
 import math
 from ..util import MutableVector
 from typing import Tuple
@@ -58,7 +57,6 @@ class JzCzhz(Lchish, Space):
         "chroma": "cz",
         "hue": "hz"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

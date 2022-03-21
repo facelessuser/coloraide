@@ -1,8 +1,7 @@
 """LCH class."""
-from ..spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, FLG_ANGLE, FLG_PERCENT, WHITES
+from ..spaces import Space, GamutUnbound, FLG_ANGLE, FLG_PERCENT, WHITES
 from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
-import re
 import math
 from ..util import MutableVector
 
@@ -42,7 +41,6 @@ class Lchuv(Lch, Space):
     BASE = "luv"
     NAME = "lchuv"
     SERIALIZE = ("--lchuv",)
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

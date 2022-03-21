@@ -1,7 +1,6 @@
 """HWB class."""
-from ...spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical, WHITES
+from ...spaces import Space, FLG_ANGLE, FLG_OPT_PERCENT, GamutBound, Cylindrical, WHITES
 from ... import util
-import re
 from ...util import MutableVector
 from typing import Tuple
 
@@ -44,7 +43,6 @@ class HWB(Cylindrical, Space):
         "whiteness": "w",
         "blackness": "b"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 

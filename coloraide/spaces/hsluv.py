@@ -24,11 +24,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, RE_DEFAULT_MATCH, FLG_ANGLE, FLG_PERCENT, GamutBound, Cylindrical, WHITES
+from ..spaces import Space, FLG_ANGLE, FLG_PERCENT, GamutBound, Cylindrical, WHITES
 from .lch import ACHROMATIC_THRESHOLD
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
-import re
 import math
 from .. import util
 from ..util import MutableVector
@@ -120,7 +119,6 @@ class HSLuv(Cylindrical, Space):
         "saturation": "s",
         "lightness": "l"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 

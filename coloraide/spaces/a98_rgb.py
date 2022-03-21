@@ -1,8 +1,7 @@
 """A98 RGB color class."""
-from ..spaces import RE_DEFAULT_MATCH, WHITES
+from ..spaces import WHITES
 from .srgb import SRGB
 from .. import util
-import re
 from ..util import MutableVector
 from typing import cast
 
@@ -55,7 +54,6 @@ class A98RGB(SRGB):
 
     BASE = "xyz-d65"
     NAME = "a98-rgb"
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space=NAME, channels=3))
     WHITE = WHITES['2deg']['D65']
 
     @classmethod

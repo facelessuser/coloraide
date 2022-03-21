@@ -23,9 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, RE_DEFAULT_MATCH, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
+from ...spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
 from ... import util
-import re
 import math
 from ...util import Vector, MutableVector
 from typing import Tuple
@@ -74,7 +73,6 @@ class Oklch(Lchish, Space):
         "chroma": "c",
         "hue": "h"
     }
-    DEFAULT_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='|'.join(SERIALIZE), channels=3))
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (

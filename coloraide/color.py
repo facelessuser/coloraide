@@ -9,7 +9,7 @@ from . import compositing
 from . import interpolate
 from . import util
 from .util import Vector, MutableVector, ColorInput
-from .spaces import Space, Cylindrical
+from .spaces import Space, Cylindrical, color_match
 from .spaces.hsv import HSV
 from .spaces.srgb.css import SRGB
 from .spaces.srgb_linear import SRGBLinear
@@ -169,14 +169,13 @@ class Color(metaclass=BaseColor):
         if isinstance(color, str):
             # Parse a color space name and coordinates
             if data is not None:
-                for space, space_class in cls.CS_MAP.items():
-                    s = color.lower()
-                    if space == s and (not filters or s in filters):
-                        num_channels = len(space_class.CHANNEL_NAMES)
-                        if len(data) < num_channels:
-                            data = list(data) + [util.NaN] * (num_channels - len(data))
-                        obj = space_class(data[:num_channels], alpha)
-                        break
+                s = color.lower()
+                space_class = cls.CS_MAP.get(s)
+                if space_class and (not filters or s in filters):
+                    num_channels = len(space_class.CHANNEL_NAMES)
+                    if len(data) < num_channels:
+                        data = list(data) + [util.NaN] * (num_channels - len(data))
+                    obj = space_class(data[:num_channels], alpha)
             # Parse a CSS string
             else:
                 m = cls._match(color, fullmatch=True, filters=filters)
@@ -218,13 +217,21 @@ class Color(metaclass=BaseColor):
 
         filter_set = set(filters) if filters is not None else set()  # type: Set[str]
 
+        # Attempt color match
+        m = color_match(string, cls.CS_MAP, start, fullmatch)
+        if m is not None:
+            if not filter_set or m[0].NAME in filter_set:
+                return m[0](*m[1]), start, m[2]
+            return None
+
+        # Attempt color space specific match
         for space, space_class in cls.CS_MAP.items():
             if filter_set and space not in filter_set:
                 continue
-            m = space_class.match(string, start, fullmatch)
-            if m is not None:
-                color = space_class(*m[0])
-                return color, start, m[1]
+            m2 = space_class.match(string, start, fullmatch)
+            if m2 is not None:
+                color = space_class(*m2[0])
+                return color, start, m2[1]
         return None
 
     @classmethod
