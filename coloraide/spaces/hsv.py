@@ -1,7 +1,7 @@
 """HSV class."""
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..gamut.bounds import GamutBound, FLG_ANGLE
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -60,8 +60,8 @@ class HSV(Cylindrical, Space):
 
     BOUNDS = (
         GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
+        GamutBound(0.0, 1.0),
+        GamutBound(0.0, 1.0)
     )
 
     @property

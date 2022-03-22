@@ -154,11 +154,12 @@ Color("#11223388").to_string(hex=True, compress=True)
 
 ### Percent
 
-sRGB also can output colors in an optional percent format. This will output the channels in the range of [0%,100%]
-instead of using the range [0,255].
+RGB, CIELAB, CIELCH, Oklab, and Oklch can receive and output colors with optional percents for certain channels. This
+will output those channels in the range of [0%,100%] instead of their usual numeric value.
 
 ```playground
 Color("rebeccapurple").to_string(percent=True)
+Color("rebeccapurple").convert('lab').to_string(percent=True)
 ```
 
 ### Names

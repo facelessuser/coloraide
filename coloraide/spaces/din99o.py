@@ -4,6 +4,7 @@ Din99o class.
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
 from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound
 from .lab import Lab
 import math
 from ..types import Vector
@@ -96,6 +97,12 @@ class Din99o(Lab):
     NAME = "din99o"
     SERIALIZE = ("--din99o",)
     WHITE = WHITES['2deg']['D65']
+
+    BOUNDS = (
+        GamutUnbound(0.0, 100.0),  # Technically we could/should clamp the zero side.
+        GamutUnbound(-55, 55),
+        GamutUnbound(-55, 55)
+    )
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

@@ -1,5 +1,12 @@
 # Changelog
 
+## X.X.X
+
+- **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
+  and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
+  number by default instead. Optionally, these forms can force a percentage output with via the `to_string` method when
+  using the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
+
 ## 0.16.0
 
 !!! warning "Deprecations"

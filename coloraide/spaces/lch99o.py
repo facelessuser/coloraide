@@ -1,5 +1,6 @@
 """Din99o Lch class."""
 from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_ANGLE
 from .lch import Lch
 from .. import util
 import math
@@ -45,6 +46,11 @@ class Lch99o(Lch):
     NAME = "lch99o"
     SERIALIZE = ("--lch99o",)
     WHITE = WHITES['2deg']['D65']
+    BOUNDS = (
+        GamutUnbound(0, 100.0),
+        GamutUnbound(0.0, 60.0),
+        GamutUnbound(0.0, 360.0, FLG_ANGLE)
+    )
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

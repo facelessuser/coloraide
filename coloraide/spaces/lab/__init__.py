@@ -75,8 +75,8 @@ class Lab(Labish, Space):
     WHITE = WHITES['2deg']['D50']
     BOUNDS = (
         GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(-125, 125),
-        GamutUnbound(-125, 125)
+        GamutUnbound(-125, 125, FLG_OPT_PERCENT),
+        GamutUnbound(-125, 125, FLG_OPT_PERCENT)
     )
 
     @property

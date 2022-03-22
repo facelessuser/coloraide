@@ -32,7 +32,7 @@ class Oklab(base.Oklab):
             fit=fit,
             none=none,
             color=kwargs.get('color', False),
-            percent=True
+            percent=kwargs.get('percent', False)
         )
 
     @classmethod

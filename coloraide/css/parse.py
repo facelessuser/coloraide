@@ -4,7 +4,7 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
-from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
+from ..gamut.bounds import Bounds, FLG_ANGLE
 from typing import Optional, Tuple
 from typing import Dict, Type, TYPE_CHECKING
 
@@ -14,7 +14,6 @@ if TYPE_CHECKING:  # pragma: no cover
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0
 SCALE_PERCENT = 1 / 100.0
-PERCENT_CHANNEL = FLG_PERCENT | FLG_OPT_PERCENT
 
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
@@ -109,7 +108,8 @@ CSS_MATCH = {
             \b(lab)\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -120,7 +120,7 @@ CSS_MATCH = {
         \b(lch)\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -131,7 +131,8 @@ CSS_MATCH = {
             \b(oklab)\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -142,7 +143,7 @@ CSS_MATCH = {
         \b(oklch)\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -305,10 +306,8 @@ def parse_color(
                 i = -1
                 for i, c in enumerate(RE_CHAN_SPLIT.split(split[0]), 0):
                     if c and i < num_channels:
-                        bound = space.BOUNDS[i]
                         # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                        scale = bound.upper if bound.flags & PERCENT_CHANNEL else 1
-                        channels.append(norm_color_channel(c.lower(), scale))
+                        channels.append(norm_color_channel(c.lower(), space.BOUNDS[i].upper))
                     else:
                         # Not the right amount of channels
                         break

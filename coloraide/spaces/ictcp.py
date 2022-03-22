@@ -5,7 +5,7 @@ https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ..gamut.bounds import GamutUnbound
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -92,7 +92,7 @@ class ICtCp(Labish, Space):
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 1.0),
         GamutUnbound(-0.5, 0.5),
         GamutUnbound(-0.5, 0.5)
     )

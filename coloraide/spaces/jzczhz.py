@@ -5,7 +5,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, Lchish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..gamut.bounds import GamutUnbound, FLG_ANGLE
 from .. import util
 import math
 from .. import algebra as alg
@@ -64,7 +64,7 @@ class JzCzhz(Lchish, Space):
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
+        GamutUnbound(0.0, 1.0),
         GamutUnbound(0.0, 1.0),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
