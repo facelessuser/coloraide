@@ -1,5 +1,5 @@
 """XYZ class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .xyz_d65 import XYZD65
 
 

@@ -1,5 +1,7 @@
 """LCH class."""
-from ..spaces import Space, GamutUnbound, FLG_ANGLE, FLG_PERCENT, WHITES
+from ..spaces import Space
+from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_PERCENT
 from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import math

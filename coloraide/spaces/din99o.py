@@ -3,7 +3,7 @@ Din99o class.
 
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
-from ..spaces import WHITES
+from ..cat import WHITES
 from .lab import Lab
 import math
 from ..util import MutableVector

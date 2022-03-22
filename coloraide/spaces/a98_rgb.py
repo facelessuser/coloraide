@@ -1,5 +1,5 @@
 """A98 RGB color class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .srgb import SRGB
 from .. import util
 from ..util import MutableVector

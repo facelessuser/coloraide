@@ -18,7 +18,9 @@ is almost certain that some scaling is being applied and that applying none is a
 
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
-from ..spaces import Space, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
+from ..spaces import Space, Labish
+from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
 from ..util import MutableVector
 from typing import cast

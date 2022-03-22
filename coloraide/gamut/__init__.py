@@ -1,6 +1,6 @@
 """Gamut handling."""
 from .. import util
-from ..spaces import FLG_ANGLE, GamutBound
+from .bounds import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional, Any
 

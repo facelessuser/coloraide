@@ -8,8 +8,9 @@ from . import gamut
 from . import compositing
 from . import interpolate
 from . import util
+from .css import parse
 from .util import Vector, MutableVector, ColorInput
-from .spaces import Space, Cylindrical, color_match
+from .spaces import Space, Cylindrical
 from .spaces.hsv import HSV
 from .spaces.srgb.css import SRGB
 from .spaces.srgb_linear import SRGBLinear
@@ -218,7 +219,7 @@ class Color(metaclass=BaseColor):
         filter_set = set(filters) if filters is not None else set()  # type: Set[str]
 
         # Attempt color match
-        m = color_match(string, cls.CS_MAP, start, fullmatch)
+        m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
         if m is not None:
             if not filter_set or m[0].NAME in filter_set:
                 return m[0](*m[1]), start, m[2]

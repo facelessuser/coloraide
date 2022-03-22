@@ -16,7 +16,7 @@ try:
 except ImportError:
     from coloraide import Color
 from coloraide import util  # noqa: E402
-from coloraide.spaces import WHITES  # noqa: E402
+from coloraide.cat import WHITES  # noqa: E402
 
 # How dense do we scatter plot the diagram background colors?
 RESOLUTION = 1024

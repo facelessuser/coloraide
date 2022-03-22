@@ -3,7 +3,9 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, GamutUnbound, FLG_PERCENT, WHITES, Labish
+from ..spaces import Space, Labish
+from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from ..util import MutableVector

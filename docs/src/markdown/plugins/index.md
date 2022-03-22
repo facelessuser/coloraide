@@ -84,6 +84,10 @@ space, there are a couple things that must be defined. Using XYZ as an example, 
     to `xyz-d50`.
 
 ```py
+from coloraide import cat
+from coloraide.gamut import bounds
+
+
 class XYZD65(Space):
     """XYZ D65 class."""
 
@@ -113,7 +117,7 @@ class XYZD65(Space):
 
     # Specify the white point that the color space uses
     # White point should be a `tuple` containing the x and y chromaticity points.
-    WHITE = WHITES['2deg']['D65']
+    WHITE = cat.WHITES['2deg']['D65']
 
     # Specify the bounds of the non-alpha color channels.
     # Each channel is specified with either a `GamutBound` or `GamutUnbound` object.
@@ -131,9 +135,9 @@ class XYZD65(Space):
     # NOTE: Behavior of percent flags may change depending on how CSS Level 4 plans to handle non rectangular
     #       colors in the `color(space ...)` format (if they handle them at all).
     BOUNDS = (
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 1.0)
+        bounds.GamutUnbound(0.0, 1.0),
+        bounds.GamutUnbound(0.0, 1.0),
+        bounds.GamutUnbound(0.0, 1.0)
     )
 
     # If `GAMUT_CHECK` is set to a color space name, the provided color space will be used to verify the an "in gamut"
@@ -337,27 +341,30 @@ are used to represent colors. It may be beneficial for a user working with color
 a color space to handle different input/output formats.
 
 The base of every color space is defined to accept and output the `#!css-color color(space ...)` format. As this is a
-common input form across all color spaces, it is handled generically for performance reasons. A color can opt out of
-this input format by simply setting `COLOR_FORMAT` to `#!py3 False`. This only disables input parsing and serialization
-to string would need to be overridden as a separate step to also prevent output to the `#!css-color color(space ...)`
-format.
+common input form across all color spaces, it is handled generically for all spaces in one action for performance
+reasons. Iterating each color space to perform the same match with a different color spaces name is obviously slower.
+A color can opt out of this input format by simply setting `COLOR_FORMAT` to `#!py3 False`. This only disables input
+parsing. In order to disable this format during serialization the color space's `#py3 to_string()` method would need to
+be overridden.
 
-New matching logic can be achieved by simply by overriding the `#!py3 match()` method. If it is desired to also accept
-the `#!css-color color(space ...)` format, ensure the `COLOR_FORMAT` is enabled; otherwise, disable it.
+New, per color space matching logic can be achieved by simply by overriding the `#!py3 match()` method. If it is desired
+to also accept the `#!css-color color(space ...)` format, just keep the `COLOR_FORMAT` flag enabled; otherwise, disable
+it.
 
 As an example, let's consider the default sRGB space. We wanted to add additional CSS formats in addition to the
 `#!css-color color(space ...)` format. While we won't go into the specific parsing logic, the general top-level logic
 can be seen below.
 
-We opt to use a regular expression pattern to match the `rgb()`, hex color code, and color name formats. We then then
-override `#!py3 match()` to provide our own matching logic. `#!css-color color(space ...)` will continue to be supported
-unless we turn off `COLOR_FORMAT`. Also, notice that `#!py3 match()` is expected to return two things: a tuple
-containing the color channel coordinates and alpha and the end position (`#!py3 ([r, g, b], a), end`). If the match
-fails, it simply returns `#!py3 None`.
+We simply override the `#!py3 match()` method and call into our CSS parser. The parser will handle the appropriate
+syntax for our color spaces. It is not configured to process the `#!css-color color(space ...)` format as that is
+already handled more efficiently when with `COLOR_FORMAT` enabled. Also, notice that `#!py3 match()` is expected to
+return two things: a tuple containing the color channel coordinates and the alpha value, and the end position
+(`#!py3 ([r, g, b], a), end`). If the match fails, it simply returns `#!py3 None`.
 
 
 ```py
-from .. import srgb as base
+from coloraide.spaces import srgb as base
+from coloraide.css import parse
 
 
 class SRGB(base.SRGB):
@@ -366,34 +373,6 @@ class SRGB(base.SRGB):
     # This color class should opt into the generic `color(space ...)` format.
     # This is `True` by default, but shown for demonstration purposes.
     COLOR_FORMAT: True
-
-    MATCH = re.compile(r'''(?xi)
-        (?:
-            # RGB syntax
-            \brgba?\(\s*
-            (?:
-                # Space separated format
-                (?:
-                    # Float form
-                    (?:{float}{space}){{2}}{float} |
-                    # Percent form
-                    (?:{percent}{space}){{2}}{percent}
-                )({slash}(?:{percent}|{float}))? |
-                # Comma separated format
-                (?:
-                    # Float form
-                    (?:{float}{comma}){{2}}{float} |
-                    # Percent form
-                    (?:{percent}{comma}){{2}}{percent}
-                )({comma}(?:{percent}|{float}))?
-            )
-            \s*\) |
-            # Hex syntax
-            \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?)\b |
-            # Names
-            \b(?<!\#)[a-z]{{3,}}(?!\()\b
-        )
-        '''.format(**parse.COLOR_PARTS))
 
     @classmethod
     def match(
@@ -404,26 +383,13 @@ class SRGB(base.SRGB):
     ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
         """Match a CSS color string."""
 
-        # Handle `rgb(a)`, hex, and color names
-        m = cls.MATCH.match(string, start)
-        if m is not None and (not fullmatch or m.end(0) == len(string)):
-            string = string[m.start(0):m.end(0)].lower()
-            if not string.startswith(('#', 'rgb')):
-                value = color_names.name2hex(string)
-                if value is not None:
-                    return cls.split_channels(value), m.end(0)
-            else:
-                return cls.split_channels(string), m.end(0)
-
-        return None
+        return parse.parse_css(cls, string, start, fullmatch)
 ```
 
 Additionally, we control the output formats by overriding the `#!py3 to_string()` function. We ensure that it accepts
 all the parameters we need, in our case we accept the common parameters and later check for our special inputs in
 `kwargs`.
 
-To ensure we continue to support the `#!css-color color(space ...)` format as an output, we call the base
-`#!py3 to_string()` method if the `color` option is set to `#!py3 True`.
 
 ```py
     def to_string(
@@ -438,18 +404,22 @@ To ensure we continue to support the `#!css-color color(space ...)` format as an
     ) -> str:
         """Convert to CSS."""
 
-        if precision is None:
-            precision = parent.PRECISION
-
-        # Handle default `color(space...)` format.
-        options = kwargs
-        if options.get("color"):
-            return super().to_string(parent, alpha=alpha, precision=precision, fit=fit, none=none, **kwargs)
-
-        # Additional logic here
-        ...
-
-        return value
+        return serialize.serialize_css(
+            parent,
+            func='rgb',
+            alpha=alpha,
+            precision=precision,
+            fit=fit,
+            none=none,
+            color=kwargs.get('color', False),
+            hexa=kwargs.get('hex', False),
+            name=kwargs.get('names', False),
+            legacy=kwargs.get('comma', False),
+            upper=kwargs.get('upper', False),
+            percent=kwargs.get('percent', False),
+            compress=kwargs.get('compress', False),
+            scale=255
+        )
 ```
 
 As all ColorAide color spaces are defined as plugins, there should be ample examples to help someone start writing a new

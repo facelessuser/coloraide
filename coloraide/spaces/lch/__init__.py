@@ -1,5 +1,7 @@
 """Lch class."""
-from ...spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_PERCENT, WHITES
+from ...spaces import Space, Lchish
+from ...cat import WHITES
+from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_PERCENT
 from ... import util
 import math
 from ...util import MutableVector

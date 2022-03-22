@@ -23,7 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
+from ...spaces import Space, Lchish
+from ...cat import WHITES
+from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ...util import Vector, MutableVector
