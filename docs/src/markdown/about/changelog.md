@@ -16,6 +16,8 @@
   the current color space classes greatly when it comes to supporting CSS specific formats.
 - **NEW**: Move our white space mapping to the `cat` module as it makes more sense there.
 - **NEW**: `GamutBound`, `GamutUnbound`, and associated flags are now contained under `coloraide.gamut.bounds`.
+- **FIX**: Compositing and blending should not "fit" colors before applying, it is only specified that the range should
+  be clamped at the end of blending.
 
 ## 0.13.0
 

@@ -111,13 +111,13 @@ def compose(
         return color
 
     if len(backdrop) > 1:
-        dest = backdrop[-1].convert(space, fit=True)
+        dest = backdrop[-1].convert(space)
         for x in range(len(backdrop) - 2, -1, -1):
-            src = backdrop[x].convert(space, fit=True)
+            src = backdrop[x].convert(space)
             dest = apply_compositing(src, dest, blend, operator, non_seperable)
     else:
-        dest = backdrop[0].convert(space, fit=True)
+        dest = backdrop[0].convert(space)
 
-    src = color.convert(space, fit=True)
+    src = color.convert(space)
 
     return apply_compositing(src, dest, blend, operator, non_seperable)
