@@ -40,12 +40,13 @@ def run(target, rgb, res):
     min_y = float('inf')
     min_z = float('inf')
 
-    print('-> Current:', end="")
+    print(' Current:', end="")
+    template = '\r Current: {}'.ljust(30)
     x = y = z = 0
     color = Color(rgb, [0, 0, 0])
     while True:
         color.update(rgb, [x / res, y / res, z / res])
-        print('\rCurrent: {}'.format(color.to_string(color=True)), end="")
+        print(template.format(color.to_string(color=True)), end="\r")
         cx, cy, cz = color.convert(target).coords()
         if cx < min_x:
             min_x = cx
