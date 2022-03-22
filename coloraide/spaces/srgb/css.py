@@ -71,22 +71,17 @@ class SRGB(base.SRGB):
 
         # Handle hex and color names
         value = ''
-        if options.get("hex") or options.get("names"):
-            h = self._get_hex(parent, upper=options.get("upper", False), alpha=alpha, fit=fit)
-            if options.get("hex"):
-                value = h
-                if compress:
-                    m = RE_COMPRESS.match(value)
-                    if m:
-                        value = m.expand(r"#\1\2\3\4") if alpha else m.expand(r"#\1\2\3")
-            if options.get("names"):
-                length = len(h) - 1
-                index = int(length / 4)
-                if length in (8, 4) and h[-index:].lower() == ("f" * index):
-                    h = h[:-index]
-                n = color_names.hex2name(h)
-                if n is not None:
-                    value = n
+        if options.get("names"):
+            n = self._get_name(parent)
+            if n is not None:
+                value = n
+
+        if not value and options.get("hex"):
+            value = self._get_hex(parent, upper=options.get("upper", False), alpha=alpha, fit=fit)
+            if compress:
+                m = RE_COMPRESS.match(value)
+                if m:
+                    value = m.expand(r"#\1\2\3\4") if alpha else m.expand(r"#\1\2\3")
 
         # Handle normal RGB function format.
         if not value:
@@ -117,6 +112,19 @@ class SRGB(base.SRGB):
                 )
 
         return value
+
+    def _get_name(
+        self,
+        parent: 'Color',
+        *,
+        upper: bool = False,
+        alpha: bool = False,
+        fit: Union[str, bool] = True
+    ):
+
+        method = None if not isinstance(fit, str) else fit
+        coords = util.no_nans(parent.fit(method=method).coords())
+        return color_names.to_name(coords if alpha is not False else coords + [self.alpha])
 
     def _get_hex(
         self,
@@ -216,9 +224,9 @@ class SRGB(base.SRGB):
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             string = string[m.start(0):m.end(0)].lower()
             if not string.startswith(('#', 'rgb')):
-                value = color_names.name2hex(string)
+                value = color_names.from_name(string)
                 if value is not None:
-                    return cls.split_channels(value), m.end(0)
+                    return (value[:3], value[3]), m.end(0)
             else:
                 return cls.split_channels(string), m.end(0)
 
