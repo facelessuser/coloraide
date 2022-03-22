@@ -1,5 +1,5 @@
 """Lch D65 class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .lch import Lch
 
 

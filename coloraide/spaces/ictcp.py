@@ -3,7 +3,9 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, GamutUnbound, FLG_OPT_PERCENT, Labish, WHITES
+from ..spaces import Space, Labish
+from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
 from ..util import MutableVector
 from typing import cast

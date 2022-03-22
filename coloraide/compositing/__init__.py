@@ -7,7 +7,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import util
 from ..util import MutableVector
-from ..spaces import GamutBound, Bounds
+from ..gamut.bounds import GamutBound, Bounds
 from typing import Optional, Union, Callable, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover

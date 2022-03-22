@@ -1,0 +1,182 @@
+"""String serialization."""
+import re
+from .. import util
+from . import parse
+from .color_names import to_name
+from .. import spaces
+from ..util import MutableVector
+from typing import Optional, Union, Match, cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
+
+RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**parse.COLOR_PARTS))
+
+COMMA = ', '
+SLASH = ' / '
+SPACE = ' '
+EMPTY = ''
+
+
+def named_color(obj: 'Color', alpha: Optional[bool], fit: Union[str, bool]) -> Optional[str]:
+    """Get the CSS color name."""
+
+    a = get_alpha(obj, alpha, False)
+    if a is None:
+        a = 1
+    method = None if not isinstance(fit, str) else fit
+    coords = util.no_nans(obj.fit(method=method).coords())
+    return to_name(coords + [a])
+
+
+def named_color_function(
+    obj: 'Color',
+    func: str,
+    alpha: Optional[bool],
+    precision: int,
+    fit: Union[str, bool],
+    none: bool,
+    percent: bool,
+    legacy: bool,
+    scale: float
+) -> str:
+    """Translate to CSS function form `name(...)`."""
+
+    # Create the function `name` or `namea` if old legacy form.
+    a = get_alpha(obj, alpha, none)
+    string = ['{}{}('.format(func, 'a' if legacy and a is not None else EMPTY)]
+
+    # Iterate the coordinates formatting them for percent, not percent, and even scaling them (sRGB).
+    coords = get_coords(obj, fit, none, legacy)
+    for idx, value in enumerate(coords):
+        bound = obj._space.BOUNDS[idx]
+        use_percent = bound.flags & spaces.FLG_PERCENT or (percent and bound.flags & spaces.FLG_OPT_PERCENT)
+        if not use_percent:
+            value *= scale
+        if idx != 0:
+            string.append(COMMA if legacy else SPACE)
+        string.append(util.fmt_float(value, precision, bound.upper if use_percent else 0))
+
+    # Add alpha if needed
+    if a is not None:
+        string.append('{}{})'.format(COMMA if legacy else SLASH, util.fmt_float(a, max(precision, util.DEF_PREC))))
+    else:
+        string.append(')')
+    return EMPTY.join(string)
+
+
+def color_function(
+    obj: 'Color',
+    alpha: Optional[bool],
+    precision: int,
+    fit: Union[str, bool],
+    none: bool,
+    legacy: bool
+) -> str:
+    """Color format."""
+
+    # Export in the `color(space ...)` format
+    coords = get_coords(obj, fit, none, legacy)
+    a = get_alpha(obj, alpha, none)
+    return (
+        'color({} {}{})'.format(
+            obj._space._serialize()[0],
+            SPACE.join([util.fmt_float(coord, precision) for coord in coords]),
+            SLASH + util.fmt_float(a, max(precision, util.DEF_PREC)) if a is not None else EMPTY
+        )
+    )
+
+
+def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) -> MutableVector:
+    """Get the coordinates."""
+
+    method = None if not isinstance(fit, str) else fit
+    coords = obj.fit(method=method).coords() if fit else obj._space.coords()
+    return util.no_nans(coords) if legacy or not none else coords
+
+
+def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool) -> Optional[float]:
+    """Get the alpha if required."""
+
+    a = util.no_nan(obj._space.alpha) if not none else obj._space.alpha
+    alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
+    return None if not alpha else a
+
+
+def hexadecimal(
+    obj: 'Color',
+    alpha: Optional[bool] = None,
+    fit: Union[str, bool] = True,
+    upper: bool = False,
+    compress: bool = False
+) -> str:
+    """Get the hex `RGB` value."""
+
+    method = None if not isinstance(fit, str) else fit
+    coords = [c for c in util.no_nans(obj.fit(method=method).coords())]
+    a = get_alpha(obj, alpha, False)
+
+    if a is not None:
+        value = "#{:02x}{:02x}{:02x}{:02x}".format(
+            int(util.round_half_up(coords[0] * 255.0)),
+            int(util.round_half_up(coords[1] * 255.0)),
+            int(util.round_half_up(coords[2] * 255.0)),
+            int(util.round_half_up(a * 255.0))
+        )
+    else:
+        value = "#{:02x}{:02x}{:02x}".format(
+            int(util.round_half_up(coords[0] * 255.0)),
+            int(util.round_half_up(coords[1] * 255.0)),
+            int(util.round_half_up(coords[2] * 255.0))
+        )
+
+    if upper:
+        value = value.upper()
+
+    if compress:
+        m = cast(Match[str], RE_COMPRESS.match(value))
+        return m.expand(r"#\1\2\3\4") if len(value) == 9 else m.expand(r"#\1\2\3") if m else value
+    else:
+        return value
+
+
+def serialize_css(
+    obj: 'Color',
+    func: str = '',
+    color: bool = False,
+    alpha: Optional[bool] = None,
+    precision: Optional[int] = None,
+    fit: Union[str, bool] = True,
+    none: bool = False,
+    percent: bool = False,
+    hexa: bool = False,
+    upper: bool = False,
+    compress: bool = False,
+    name: bool = False,
+    legacy: bool = False,
+    scale: float = 1.0,
+) -> str:
+    """Convert color to CSS."""
+
+    if precision is None:
+        precision = obj.PRECISION
+
+    # Color format
+    if color:
+        return color_function(obj, alpha, precision, fit, none, legacy)
+
+    # CSS color names
+    if name:
+        n = named_color(obj, alpha, fit)
+        if n is not None:
+            return n
+
+    # Hex RGB
+    if hexa:
+        return hexadecimal(obj, alpha, fit, upper, compress)
+
+    # Normal CSS named function format
+    if func:
+        return named_color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
+
+    raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover

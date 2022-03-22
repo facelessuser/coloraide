@@ -1,5 +1,5 @@
 """Din99o Lch class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .lch import Lch
 from .. import util
 import math

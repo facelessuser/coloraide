@@ -1,5 +1,5 @@
 """Rec 2020 color class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .srgb import SRGB
 from .. import util
 import math

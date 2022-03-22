@@ -1,5 +1,5 @@
 """SRGB Linear color class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .srgb import SRGB
 from ..util import MutableVector
 from typing import cast

@@ -1,5 +1,7 @@
 """SRGB color class."""
-from ...spaces import Space, GamutBound, FLG_OPT_PERCENT, WHITES
+from ...spaces import Space
+from ...cat import WHITES
+from ...gamut.bounds import GamutBound, FLG_OPT_PERCENT
 from ... import util
 from ...util import MutableVector
 import math

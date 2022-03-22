@@ -1,5 +1,5 @@
 """Display-p3 color class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
 from .. import util
 from ..util import MutableVector

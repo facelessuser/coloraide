@@ -1,5 +1,7 @@
 """Lab class."""
-from ...spaces import Space, GamutUnbound, FLG_PERCENT, Labish, WHITES
+from ...spaces import Space, Labish
+from ...cat import WHITES
+from ...gamut.bounds import GamutUnbound, FLG_PERCENT
 from ... import util
 from ...util import Vector, MutableVector
 from typing import cast

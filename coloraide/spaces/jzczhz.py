@@ -3,7 +3,9 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, GamutUnbound, Lchish, FLG_ANGLE, FLG_OPT_PERCENT, WHITES
+from ..spaces import Space, Lchish
+from ..cat import WHITES
+from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 import math
 from ..util import MutableVector

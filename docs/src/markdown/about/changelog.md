@@ -2,12 +2,20 @@
 
 ## 0.14.0
 
-- **NEW**: Faster parsing. Instead of evaluating each color space individually when parsing the `color(space ...)`
-  format, evaluate all in one instance. The `color(space ...)` format is now evaluated generically and increases speed
-  of parsing. If a color spaces wishes to opt out of the `color(space ...)` input format, the space should set
-  `COLOR_FORMAT` to `False`. This means there is no need to call `super.match()` when overriding `Color.match()` to
-  ensure support for the `color(space ...)` format as it will be handled unless `COLOR_FORMAT` is turned off.
-  `DEFAULT_MATCH` usage should also be discontinued as it now does nothing.
+!!! note
+    No changes should break existing color space plugins. Moved objects and references are still also available in old
+    locations, and new functionality is implemented in such a way as to not break existing plugins, but plugins should
+    be updated as sometime before the 1.0 release, such legacy access will be removed.
+
+- **NEW**: Faster parsing. Instead of parsing `color(space ...)` each time it is evaluated for a different color space,
+  parse it generically and then associate it with a given registered color space. If a color spaces wishes to opt out of
+  the `color(space ...)` input format, the space should set `COLOR_FORMAT` to `False`. This means there is no need to
+  call `super.match()` when overriding `Color.match()` to ensure support for the `color(space ...)` format as it will be
+  handled unless `COLOR_FORMAT` is turned off. `DEFAULT_MATCH` usage should also be discontinued as it now does nothing.
+- **NEW**: All CSS parsing and serialization is now contained in a single module at `coloraide.css`. This simplifies
+  the current color space classes greatly when it comes to supporting CSS specific formats.
+- **NEW**: Move our white space mapping to the `cat` module as it makes more sense there.
+- **NEW**: `GamutBound`, `GamutUnbound`, and associated flags are now contained under `coloraide.gamut.bounds`.
 
 ## 0.13.0
 

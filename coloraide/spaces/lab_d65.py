@@ -1,5 +1,5 @@
 """Lab D65 class."""
-from ..spaces import WHITES
+from ..cat import WHITES
 from .lab import Lab
 
 
