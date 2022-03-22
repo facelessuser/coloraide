@@ -108,7 +108,7 @@ CSS_MATCH = {
             \b(lab)\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{percent}|{float}))?
+                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -119,7 +119,7 @@ CSS_MATCH = {
         \b(lch)\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{percent}|{float}))?
+            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
