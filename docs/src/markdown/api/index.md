@@ -366,9 +366,9 @@ def to_dict(
 
 Description
 : 
-    Force normalization of a color's channels by setting any channels to undefined if they meet the specific color's
-    criteria dictating such, e.g., hue is undefined in HSL when saturation is zero. Normalize modifies the current color
-    in place.
+    Force normalization of a color's channels by cleaning up channels that shouldn't be undefined and setting any
+    channels to undefined if they meet the specific color's criteria dictating such, e.g., hue is undefined in HSL when
+    saturation is zero. Normalize modifies the current color in place.
 
 Return
 : 

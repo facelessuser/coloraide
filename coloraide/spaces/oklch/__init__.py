@@ -54,7 +54,8 @@ def oklch_to_oklab(oklch: Vector) -> MutableVector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
-    h = util.no_nan(h)
+    if util.is_nan(h):
+        return [l, 0.0, 0.0]
 
     return [
         l,
@@ -123,10 +124,11 @@ class Oklch(Lchish, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
+        coords = util.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
 
-        return coords, alpha
+        return coords, util.no_nan(alpha)
 
     @classmethod
     def to_base(cls, oklch: Vector) -> MutableVector:

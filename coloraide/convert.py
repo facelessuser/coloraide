@@ -40,8 +40,10 @@ def convert(color: 'Color', space: str) -> Vector:
                     )
                 )
 
-        # Start converting coordinates until we either match a space in the conversion chain or bottom out at XYZ D65
+        # Treat undefined channels as zero
         coords = util.no_nans(color.coords())
+
+        # Start converting coordinates until we either match a space in the conversion chain or bottom out at XYZ D65
         current = type(color._space)
         if current.NAME != ABSOLUTE_BASE:
             count = 0

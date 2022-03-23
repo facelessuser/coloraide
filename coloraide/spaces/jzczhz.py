@@ -34,7 +34,8 @@ def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
-    hz = util.no_nan(hz)
+    if util.is_nan(hz):
+        return [jz, 0.0, 0.0]
 
     return [
         jz,
@@ -107,10 +108,11 @@ class JzCzhz(Lchish, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
+        coords = util.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = util.NaN
 
-        return coords, alpha
+        return coords, util.no_nan(alpha)
 
     @classmethod
     def hue_name(cls) -> str:

@@ -238,7 +238,7 @@ class Space(
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
-        return coords, alpha
+        return util.no_nans(coords), util.no_nan(alpha)
 
     @classmethod
     def match(

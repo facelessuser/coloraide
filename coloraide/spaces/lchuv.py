@@ -28,7 +28,8 @@ def lchuv_to_luv(lchuv: MutableVector) -> MutableVector:
     """Lch(uv) to Luv."""
 
     l, c, h = lchuv
-    h = util.no_nan(h)
+    if util.is_nan(h):
+        return [l, 0.0, 0.0]
 
     return [
         l,
