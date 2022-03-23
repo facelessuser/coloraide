@@ -12,7 +12,8 @@ def lch_to_lab(lch: MutableVector) -> MutableVector:
     """Din99o Lch to lab."""
 
     l, c, h = lch
-    h = util.no_nan(h)
+    if util.is_nan(h):  # pragma: no cover
+        return [l, 0.0, 0.]
 
     return [
         l,

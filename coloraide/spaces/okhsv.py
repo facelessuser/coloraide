@@ -40,7 +40,7 @@ def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
-    h = util.no_nan(h) / 360.0
+    h = h / 360.0
 
     l = toe_inv(v)
     a = b = 0.0

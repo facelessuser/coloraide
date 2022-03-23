@@ -54,7 +54,7 @@ def oklch_to_oklab(oklch: Vector) -> MutableVector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
-    if util.is_nan(h):
+    if util.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 
     return [

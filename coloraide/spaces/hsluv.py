@@ -77,13 +77,12 @@ def hsluv_to_lch(hsluv: MutableVector) -> MutableVector:
     """Convert HSLuv to Lch."""
 
     h, s, l = hsluv
-    h = util.no_nan(h)
     c = 0.0
     if l > 100 - 1e-7:
         l = 100.0
     elif l < 1e-08:
         l = 0.0
-    else:
+    elif not util.is_nan(h):
         _hx_max = max_chroma_for_lh(l, h)
         c = _hx_max / 100.0 * s
         if c < ACHROMATIC_THRESHOLD:
@@ -95,13 +94,12 @@ def lch_to_hsluv(lch: MutableVector) -> MutableVector:
     """Convert Lch to HSLuv."""
 
     l, c, h = lch
-    h = util.no_nan(h)
     s = 0.0
     if l > 100 - 1e-7:
         l = 100.0
     elif l < 1e-08:
         l = 0.0
-    else:
+    elif not util.is_nan(h):
         _hx_max = max_chroma_for_lh(l, h)
         s = c / _hx_max * 100.0
     if s < 1e-08:

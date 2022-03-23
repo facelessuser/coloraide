@@ -34,7 +34,7 @@ def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
-    if util.is_nan(hz):
+    if util.is_nan(hz):  # pragma: no cover
         return [jz, 0.0, 0.0]
 
     return [
