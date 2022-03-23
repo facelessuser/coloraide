@@ -26,7 +26,7 @@ SOFTWARE.
 """
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
+from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .lch import ACHROMATIC_THRESHOLD
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
@@ -126,8 +126,8 @@ class HSLuv(Cylindrical, Space):
 
     BOUNDS = (
         GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 100.0, FLG_PERCENT),
-        GamutBound(0.0, 100.0, FLG_PERCENT)
+        GamutBound(0.0, 100.0, FLG_OPT_PERCENT),
+        GamutBound(0.0, 100.0, FLG_OPT_PERCENT)
     )
 
     @property

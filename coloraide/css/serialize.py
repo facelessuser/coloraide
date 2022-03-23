@@ -70,13 +70,12 @@ def color_function(
     alpha: Optional[bool],
     precision: int,
     fit: Union[str, bool],
-    none: bool,
-    legacy: bool
+    none: bool
 ) -> str:
     """Color format."""
 
     # Export in the `color(space ...)` format
-    coords = get_coords(obj, fit, none, legacy)
+    coords = get_coords(obj, fit, none, False)
     a = get_alpha(obj, alpha, none)
     return (
         'color({} {}{})'.format(
@@ -163,7 +162,7 @@ def serialize_css(
 
     # Color format
     if color:
-        return color_function(obj, alpha, precision, fit, none, legacy)
+        return color_function(obj, alpha, precision, fit, none)
 
     # CSS color names
     if name:

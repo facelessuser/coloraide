@@ -31,8 +31,7 @@ class HWB(base.HWB):
             precision=precision,
             fit=fit,
             none=none,
-            color=kwargs.get('color', False),
-            percent=True
+            color=kwargs.get('color', False)
         )
 
     @classmethod

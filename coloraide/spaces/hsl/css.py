@@ -32,8 +32,7 @@ class HSL(base.HSL):
             fit=fit,
             none=none,
             color=kwargs.get('color', False),
-            legacy=kwargs.get('comma', False),
-            percent=True
+            legacy=kwargs.get('comma', False)
         )
 
     @classmethod

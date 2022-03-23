@@ -1,7 +1,7 @@
 """Lch class."""
 from ...spaces import Space, Lchish
 from ...cat import WHITES
-from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_PERCENT
+from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ...util import MutableVector
@@ -54,7 +54,7 @@ class Lch(Lchish, Space):
     }
     WHITE = WHITES['2deg']['D50']
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),
+        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
         GamutUnbound(0.0, 100.0),
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )

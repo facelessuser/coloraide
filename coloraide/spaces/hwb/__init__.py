@@ -1,7 +1,7 @@
 """HWB class."""
 from ...spaces import Space, Cylindrical
 from ...cat import WHITES
-from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
+from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
 from ... import util
 from ...util import MutableVector
 from typing import Tuple
@@ -50,8 +50,8 @@ class HWB(Cylindrical, Space):
 
     BOUNDS = (
         GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
+        GamutBound(0.0, 1.0, FLG_PERCENT),
+        GamutBound(0.0, 1.0, FLG_PERCENT)
     )
 
     @property

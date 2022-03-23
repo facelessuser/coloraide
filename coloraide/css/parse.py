@@ -4,7 +4,7 @@ import math
 from .. import util
 from ..util import MutableVector
 from . import color_names
-from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT
+from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from typing import Optional, Tuple
 from typing import Dict, Type, TYPE_CHECKING
 
@@ -14,6 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0
 SCALE_PERCENT = 1 / 100.0
+PERCENT_CHANNEL = FLG_PERCENT | FLG_OPT_PERCENT
 
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
@@ -306,7 +307,7 @@ def parse_color(
                     if c and i < num_channels:
                         bound = space.BOUNDS[i]
                         # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                        scale = bound.upper if bound.flags & FLG_PERCENT else 1
+                        scale = bound.upper if bound.flags & PERCENT_CHANNEL else 1
                         channels.append(norm_color_channel(c.lower(), scale))
                     else:
                         # Not the right amount of channels

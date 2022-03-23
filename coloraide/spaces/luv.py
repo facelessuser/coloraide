@@ -5,7 +5,7 @@ https://en.wikipedia.org/wiki/CIELUV
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_PERCENT
+from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from ..util import MutableVector
@@ -66,7 +66,7 @@ class Luv(Labish, Space):
     WHITE = WHITES['2deg']['D65']
 
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),
+        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
         GamutUnbound(-175.0, 175.0),
         GamutUnbound(-175.0, 175.0)
     )

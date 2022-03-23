@@ -1,7 +1,7 @@
 """Lab class."""
 from ...spaces import Space, Labish
 from ...cat import WHITES
-from ...gamut.bounds import GamutUnbound, FLG_PERCENT
+from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import util
 from ...util import Vector, MutableVector
 from typing import cast
@@ -74,9 +74,9 @@ class Lab(Labish, Space):
     }
     WHITE = WHITES['2deg']['D50']
     BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_PERCENT),
-        GamutUnbound(-160, 160),
-        GamutUnbound(-160, 160)
+        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
+        GamutUnbound(-125, 125),
+        GamutUnbound(-125, 125)
     )
 
     @property
