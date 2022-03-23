@@ -12,6 +12,7 @@
   the `color(space ...)` input format, the space should set `COLOR_FORMAT` to `False`. This means there is no need to
   call `super.match()` when overriding `Color.match()` to ensure support for the `color(space ...)` format as it will be
   handled unless `COLOR_FORMAT` is turned off. `DEFAULT_MATCH` usage should also be discontinued as it now does nothing.
+- **NEW**: Other speed optimizations.
 - **NEW**: All CSS parsing and serialization is now contained in a single module at `coloraide.css`. This simplifies
   the current color space classes greatly when it comes to supporting CSS specific formats.
 - **NEW**: Move our white space mapping to the `cat` module as it makes more sense there.

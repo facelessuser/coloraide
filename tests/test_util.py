@@ -140,6 +140,13 @@ class TestUtil(unittest.TestCase):
             ),
             [[4, 8, 12], [4, 0, 6], [14, 24, 36]]
         )
+        self.assertEqual(
+            util.multiply(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                2
+            ),
+            [[8, 8, 8], [2, 0, 2], [4, 6, 8]]
+        )
 
     def test_divide(self):
         """Test divide."""
@@ -176,4 +183,11 @@ class TestUtil(unittest.TestCase):
                 [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
             ),
             [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+        )
+        self.assertEqual(
+            util.divide(
+                [[4, 8, 12], [4, 0, 6], [14, 24, 36]],
+                2
+            ),
+            [[2.0, 4.0, 6.0], [2.0, 0.0, 3.0], [7.0, 12.0, 18.0]]
         )
