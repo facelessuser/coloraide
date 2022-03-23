@@ -262,7 +262,7 @@ class Color(metaclass=BaseColor):
     def _is_color(cls, obj: Any) -> bool:
         """Test if the input is a Color."""
 
-        return isinstance(obj, cls)
+        return isinstance(obj, Color)
 
     @classmethod
     def register(

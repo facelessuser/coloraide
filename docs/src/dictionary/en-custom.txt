@@ -155,6 +155,7 @@ rgb
 sRGB
 sRGB's
 subclassed
+subclasses
 subclassing
 sublicense
 subsamplings

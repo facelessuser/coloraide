@@ -19,6 +19,7 @@
 - **NEW**: `GamutBound`, `GamutUnbound`, and associated flags are now contained under `coloraide.gamut.bounds`.
 - **FIX**: Compositing and blending should not "fit" colors before applying, it is only specified that the range should
   be clamped at the end of blending.
+- **FIX**: Fix issue where a subclassed `Color()` object could not recognize the base class or other subclasses.
 
 ## 0.13.0
 
