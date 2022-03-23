@@ -45,7 +45,7 @@ def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
     l = toe_inv(v)
     a = b = 0.0
 
-    if l != 0 and s != 0:
+    if l != 0 and s != 0 and not util.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 

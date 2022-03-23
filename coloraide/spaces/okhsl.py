@@ -328,12 +328,12 @@ def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
-    h = util.no_nan(h) / 360.0
+    h = h / 360.0
 
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0 and L != 1 and s != 0:
+    if L != 0 and L != 1 and s != 0 and not util.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
