@@ -69,12 +69,17 @@ def plot_slice(
     name0, value = [
         c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel0.split(":"), 0)
     ]
-    name1, factor1, offset1 = [
-        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel1.split(':'), 0)
+    name1, start1, end1 = [
+        c if i == 0 else float(c) for i, c in enumerate(channel1.split(':'), 0)
     ]
-    name2, factor2, offset2 = [
-        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel2.split(':'), 0)
+    factor1 = abs(start1 - end1) if end1 < 0 else (end1 - start1)
+    offset1 = start1
+
+    name2, start2, end2 = [
+        c if i == 0 else float(c) for i, c in enumerate(channel2.split(':'), 0)
     ]
+    factor2 = abs(start2 - end2) if end2 < 0 else (end2 - start2)
+    offset2 = start2
 
     # Get the actual indexes of the specified channels
     name0 = c._space.CHANNEL_ALIASES.get(name0, name0)
@@ -210,8 +215,8 @@ def main():
     parser.add_argument('--space', '-s', help='Desired space.')
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--constant', '-c', help="The channel to hold constant and the value to use 'name:value'.")
-    parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:range:offset'.")
-    parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:range:offset'.")
+    parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:min:max'.")
+    parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:min:max'.")
     parser.add_argument('--polar', '-p', action="store_true", help="Graph the cylindrical space in polar coordinates.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")

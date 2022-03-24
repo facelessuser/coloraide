@@ -34,8 +34,8 @@ def main():
         color2 = color.fit('srgb', method=args.gamut)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
-        xaxis = 'c:160:0'
-        yaxis = 'l:100:0'
+        xaxis = 'c:0:160'
+        yaxis = 'l:0:100'
         constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
         title = 'MINDE and Chroma Reduction in CIELCH'
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
@@ -45,8 +45,8 @@ def main():
         color2 = color.fit('srgb', method=args.gamut)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
-        xaxis = 'c:0.5:0'
-        yaxis = 'l:1:0'
+        xaxis = 'c:0:0.5'
+        yaxis = 'l:0:1'
         constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
         t = 'MINDE and Chroma Reduction in Oklch'
         if args.gamut == 'css-color-4':
@@ -61,8 +61,8 @@ def main():
         color2 = color.fit('srgb', method=args.gamut)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
-        xaxis = 'c:160:0' if space == 'lch' else 'c:0.5:0'
-        yaxis = 'l:100:0' if space == 'lch' else 'l:1:0'
+        xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'
+        yaxis = 'l:0:100' if space == 'lch' else 'l:0:1'
         constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
         t_space = 'CIELCH' if space == 'lch' else 'Oklch'
         title = 'Clipping shown in {}'.format(t_space)

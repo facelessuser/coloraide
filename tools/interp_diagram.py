@@ -61,8 +61,8 @@ def main():
             " and end color specifies as the plot must fit in the 2D plane."
         )
     )
-    parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:range:offset'.")
-    parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:range:offset'.")
+    parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:min:max'.")
+    parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:min:max'.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
