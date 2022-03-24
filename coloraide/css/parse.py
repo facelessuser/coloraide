@@ -342,11 +342,11 @@ def parse_css(
                 if value is not None:
                     return (value[:3], value[3]), m.end(0)
             else:
-                return parse_rgb_channels(string[m.end(1) + 1:-1], cspace.BOUNDS), m.end(0)
+                return parse_rgb_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.BOUNDS), m.end(0)
     else:
         m = CSS_MATCH[cspace.NAME].match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return parse_channels(string[m.end(1) + 1:-1], cspace.BOUNDS), m.end(0)
+            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.BOUNDS), m.end(0)
 
     # If we wanted to support per color matching of this format, we could enable this.
     # It is much faster to generically match all `color(space ...)` instances and then

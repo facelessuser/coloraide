@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.1
+
+- **FIX**: Fix bug related to parsing strings without full matching.
+
 ## 0.14.0
 
 !!! note
