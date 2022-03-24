@@ -275,7 +275,6 @@ def multiply(
 
     is_a_vec, is_a_mat = is_vec_mat(a)
     is_b_vec, is_b_mat = is_vec_mat(b)
-    is_b_num = False
 
     if is_a_vec:
         if is_b_vec:
@@ -284,7 +283,8 @@ def multiply(
         elif is_b_mat:
             # Multiply vector and a matrix
             return cast(MutableMatrix, [[x * y for x, y in zip(row, cast(Vector, a))] for row in cast(Matrix, b)])
-        is_b_num = True
+        # Multiply a vector and a number
+        return cast(MutableVector, [i * cast(float, b) for i in cast(Vector, a)])
 
     elif is_a_mat:
         if is_b_vec:
@@ -296,14 +296,15 @@ def multiply(
                 MutableMatrix,
                 [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
             )
-        is_b_num = True
+        # Multiply a matrix and a number
+        return cast(MutableVector, [[i * cast(float, b) for i in row] for row in cast(Matrix, a)])
 
-    if is_b_num:
-        # Multiply a vector/matrix and number
-        return cast(MutableVector, [multiply(i, cast(float, b)) for i in cast(Union[Vector, Matrix], a)])
-    elif is_b_vec or is_b_mat:
-        # Multiply a number and vector/matrix
-        return cast(MutableVector, [multiply(cast(float, a), i) for i in cast(Union[Vector, Matrix], b)])
+    if is_b_vec:
+        # Multiply a number and a vector
+        return cast(MutableVector, [i * cast(float, a) for i in cast(Vector, b)])
+    elif is_b_mat:
+        # Multiply a number and a matrix
+        return cast(MutableVector, [[i * cast(float, a) for i in row] for row in cast(Matrix, b)])
 
     # Multiply two numbers
     return cast(float, a) * cast(float, b)
@@ -317,7 +318,6 @@ def divide(
 
     is_a_vec, is_a_mat = is_vec_mat(a)
     is_b_vec, is_b_mat = is_vec_mat(b)
-    is_b_num = False
 
     if is_a_vec:
         if is_b_vec:
@@ -325,8 +325,12 @@ def divide(
             return cast(MutableVector, [x / y for x, y in zip(cast(Vector, a), cast(Vector, b))])
         elif is_b_mat:
             # Divide vector and a matrix
-            return cast(MutableMatrix, [[x / y for x, y in zip(row, cast(Vector, a))] for row in cast(Matrix, b)])
-        is_b_num = True
+            return cast(
+                MutableMatrix,
+                [[x / y for x, y in zip(cast(Vector, a), row)] for row in cast(Matrix, b)]
+            )
+        # Divide a vector and a number
+        return cast(MutableVector, [i / cast(float, b) for i in cast(Vector, a)])
 
     elif is_a_mat:
         if is_b_vec:
@@ -338,14 +342,15 @@ def divide(
                 MutableMatrix,
                 [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
             )
-        is_b_num = True
+        # Divide a matrix and number
+        return cast(MutableVector, [[i / cast(float, b) for i in row] for row in cast(Matrix, a)])
 
-    if is_b_num:
-        # Divide a vector/matrix and number
-        return cast(MutableVector, [divide(i, cast(float, b)) for i in cast(Union[Vector, Matrix], a)])
-    elif is_b_vec or is_b_mat:
-        # Divide a number and vector/matrix
-        return cast(MutableVector, [divide(cast(float, a), i) for i in cast(Union[Vector, Matrix], b)])
+    if is_b_vec:
+        # Divide a number and vector
+        return cast(MutableVector, [cast(float, a) / i for i in cast(Vector, b)])
+    elif is_b_mat:
+        # Divide a number and matrix
+        return cast(MutableVector, [[cast(float, a) / i for i in row] for row in cast(Matrix, b)])
 
     # Divide two numbers
     return cast(float, a) / cast(float, b)
