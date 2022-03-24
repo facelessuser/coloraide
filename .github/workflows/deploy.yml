@@ -39,6 +39,7 @@ jobs:
         git remote add gh-token "https://${{ secrets.GH_TOKEN }}@github.com/facelessuser/coloraide.git"
         git fetch gh-token && git fetch gh-token gh-pages:gh-pages
         python tools/buildwheel.py
+        npm run build
         python -m mkdocs gh-deploy -v --clean --remote-name gh-token
         git push gh-token gh-pages
 
