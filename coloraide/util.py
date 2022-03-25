@@ -501,7 +501,7 @@ def adjust_precision(f: float, p: int = 0) -> float:
     """Adjust precision."""
 
     if p == -1:
-        return f
+        return float(f)
 
     elif p == 0:
         return round_half_up(f)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.2
+
+- **FIX**: Fix rare issue where precision adjustment could fail.
+
 ## 0.14.1
 
 - **FIX**: Fix bug related to parsing strings without full matching.
