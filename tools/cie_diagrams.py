@@ -306,7 +306,12 @@ def black_body_curve(t, mode='1931'):
         x, y = black_body_curve_xy(t)
         if mode == '1931':
             return x, y
-        return util.xy_to_uv_1960([x, y])
+
+        u, v = util.xy_to_uv_1960([x, y])
+        if mode == '1976':
+            return u, v * (3 / 2)
+
+        return u, v
 
     u = (
         (0.860117757 + 1.54118254 * (10 ** -4) * t + 1.28641212 * (10 ** -7) * (t ** 2)) /
@@ -320,6 +325,9 @@ def black_body_curve(t, mode='1931'):
 
     if mode == '1931':
         return util.uv_1960_to_xy([u, v])
+    if mode == '1976':
+        return u, v * (3 / 2)
+
     return u, v
 
 
@@ -535,18 +543,13 @@ def cie_diagram(
     # Get points for the spectral locus
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
-        if opt.mode == "1931":
-            x, y = util.xyz_to_xyY(v, (0.31270, 0.32900))[:2]
-            xs.append(x)
-            ys.append(y)
-        elif opt.mode == "1976":
-            x, y = util.xyz_to_uv(v)
-            xs.append(x)
-            ys.append(y)
-        else:
-            x, y = util.xy_to_uv_1960(util.xyz_to_xyY(v, (0.31270, 0.32900))[:2])
-            xs.append(x)
-            ys.append(y)
+        x, y = util.xyz_to_xyY(v, (0.31270, 0.32900))[:2]
+        if opt.mode == "1976":
+            x, y = util.xy_to_uv([x, y])
+        elif opt.mode == "1960":
+            x, y = util.xy_to_uv_1960([x, y])
+        xs.append(x)
+        ys.append(y)
 
         # Prepare annotation labels for all points on the spectral locus.
         if k in labels:
@@ -704,7 +707,7 @@ def cie_diagram(
 
     # Show the black body (Planckian locus) curve
     # Work in progress.
-    if black_body and opt.mode != '1976':
+    if black_body:
         uaxis = []
         vaxis = []
         bres = 20

@@ -10,8 +10,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
 Vector = Sequence[float]
 Matrix = Sequence[Sequence[float]]
+Array = Union[Vector, Matrix]
 MutableVector = List[float]
 MutableMatrix = List[List[float]]
+MutableArray = Union[MutableMatrix, MutableVector]
 ColorInput = Union['Color', str, Mapping[str, Any]]
 
 NaN = float('nan')
@@ -59,32 +61,17 @@ def xy_to_xyz(xy: Vector, Y: float = 1) -> MutableVector:
     return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (1 - x - y) * Y / y]
 
 
-def xyz_to_uv(xyz: Vector) -> MutableVector:
+def xy_to_uv(xy: Vector) -> MutableVector:
     """XYZ to UV."""
 
-    x, y, z = xyz
-    denom = (x + 15 * y + 3 * z)
-    if denom != 0:
-        u = (4 * x) / denom
-        v = (9 * y) / denom
-    else:
-        u = v = 0
-
-    return [u, v]
+    u, v = xy_to_uv_1960(xy)
+    return [u, v * (3 / 2)]
 
 
 def uv_to_xy(uv: Vector) -> MutableVector:
     """XYZ to UV."""
 
-    u, v = uv
-    denom = (6 * u - 16 * v + 12)
-    if denom != 0:
-        x = (9 * u) / denom
-        y = (4 * v) / denom
-    else:
-        x = y = 0
-
-    return [x, y]
+    return uv_1960_to_xy([uv[0], uv[1] * (2 / 3)])
 
 
 def xy_to_uv_1960(xy: Vector) -> MutableVector:
@@ -238,7 +225,7 @@ def is_vec_mat(obj: Union[float, Vector, Matrix]) -> Tuple[bool, bool]:
     return is_vec, is_mat
 
 
-def dot(a: Union[float, Vector, Matrix], b: Union[float, Vector, Matrix]) -> Union[float, MutableVector, MutableMatrix]:
+def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
     """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
 
     is_a_vec, is_a_mat = is_vec_mat(a)
@@ -264,13 +251,10 @@ def dot(a: Union[float, Vector, Matrix], b: Union[float, Vector, Matrix]) -> Uni
             )
 
     # Trying to dot a number with a vector or a matrix, so just multiply
-    return multiply(cast(float, a), cast(float, b))
+    return multiply(a, b)
 
 
-def multiply(
-    a: Union[float, Vector, Matrix],
-    b: Union[float, Vector, Matrix]
-) -> Union[float, MutableVector, MutableMatrix]:
+def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
     """Multiply simple numbers, vectors, and 2D matrices."""
 
     is_a_vec, is_a_mat = is_vec_mat(a)
@@ -310,10 +294,7 @@ def multiply(
     return cast(float, a) * cast(float, b)
 
 
-def divide(
-    a: Union[float, Vector, Matrix],
-    b: Union[float, Vector, Matrix]
-) -> Union[float, MutableVector, MutableMatrix]:
+def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]:
     """Divide simple numbers, vectors, and 2D matrices."""
 
     is_a_vec, is_a_mat = is_vec_mat(a)
@@ -356,7 +337,7 @@ def divide(
     return cast(float, a) / cast(float, b)
 
 
-def diag(v: Union[Vector, Matrix], k: int = 0) -> Union[MutableVector, MutableMatrix]:
+def diag(v: Array, k: int = 0) -> MutableArray:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
 
     size = len(v)

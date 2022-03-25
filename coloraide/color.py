@@ -457,16 +457,8 @@ class Color(metaclass=BaseColor):
     def uv(self, mode: str = '1976') -> MutableVector:
         """Convert to `xy`."""
 
-        uv = None
         if mode == '1976':
-            xyz = self.convert('xyz-d65')
-            coords = cat.chromatic_adaptation(
-                xyz._space.WHITE,
-                self._space.WHITE,
-                xyz.coords(),
-                self.CHROMATIC_ADAPTATION
-            )
-            uv = util.xyz_to_uv(coords)
+            uv = util.xy_to_uv(self.xy())
         elif mode == '1960':
             uv = util.xy_to_uv_1960(self.xy())
         else:

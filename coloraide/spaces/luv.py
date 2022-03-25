@@ -15,9 +15,9 @@ from typing import Tuple
 def xyz_to_luv(xyz: MutableVector, white: Tuple[float, float]) -> MutableVector:
     """XYZ to Luv."""
 
-    u, v = util.xyz_to_uv(xyz)
+    u, v = util.xy_to_uv(util.xyz_to_xyY(xyz, white)[:2])
     w_xyz = util.xy_to_xyz(white)
-    ur, vr = util.xyz_to_uv(w_xyz)
+    ur, vr = util.xy_to_uv(white)
 
     yr = xyz[1] / w_xyz[1]
     l = 116 * util.nth_root(yr, 3) - 16 if yr > EPSILON else KAPPA * yr
@@ -33,8 +33,8 @@ def luv_to_xyz(luv: MutableVector, white: Tuple[float, float]) -> MutableVector:
     """Luv to XYZ."""
 
     l, u, v = luv
-    xyz = util.xy_to_xyz(white)
-    ur, vr = util.xyz_to_uv(xyz)
+    w_xyz = util.xy_to_xyz(white)
+    ur, vr = util.xy_to_uv(white)
 
     if l != 0:
         up = (u / (13 * l)) + ur
@@ -42,7 +42,7 @@ def luv_to_xyz(luv: MutableVector, white: Tuple[float, float]) -> MutableVector:
     else:
         up = vp = 0
 
-    y = xyz[1] * (((l + 16) / 116) ** 3 if l > KE else l / KAPPA)
+    y = w_xyz[1] * (((l + 16) / 116) ** 3 if l > KE else l / KAPPA)
 
     if vp != 0:
         x = y * ((9 * up) / (4 * vp))
