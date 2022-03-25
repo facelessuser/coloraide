@@ -31,7 +31,10 @@ import re
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import Color  # noqa: E402
+try:
+    from coloraide_extras import Color
+except ImportError:
+    from coloraide import Color
 
 RE_LEAD_ZERO = re.compile(r'^0\.0+')
 
