@@ -1,6 +1,5 @@
 """Utilities."""
 import math
-import numbers
 import warnings
 from functools import wraps
 from typing import Optional, Sequence, List, Union, Any, Callable, Mapping, Tuple, cast, TYPE_CHECKING
@@ -171,19 +170,6 @@ def constrain_hue(hue: float) -> float:
     """Constrain hue to 0 - 360."""
 
     return hue % 360 if not is_nan(hue) else hue
-
-
-def is_number(value: Any) -> bool:
-    """Check if value is a number."""
-
-    return isinstance(value, numbers.Number)
-
-
-def assert_number(value: float) -> None:
-    """Assert if not a number."""
-
-    if not isinstance(value, numbers.Number):
-        raise TypeError("Value should be a number, not type '{}'".format(type(value)))
 
 
 def is_nan(value: float) -> bool:

@@ -776,30 +776,35 @@ class Color(metaclass=BaseColor):
     def __getattr__(self, name: str) -> Any:
         """Get attribute."""
 
-        if name.startswith('delta_e_'):
-            de = name[8:]
-            if de in self.DE_MAP:
-                return functools.partial(self.delta_e, method=de)
+        sc = super()
 
-        # Don't test `_space` as it is used to get Space channel attributes.
-        elif name != "_space":
+        # Skip private/protected names
+        if not name.startswith('_'):
+            # Try color space properties
             try:
-                return self._space.get(name)
+                return sc.__getattribute__('_space').get(name)
             except AttributeError:
                 pass
 
-        # Get attributes from Color class.
-        return super().__getattribute__(name)
+            # Try delta E methods
+            if name.startswith('delta_e'):
+                de = name[8:]
+                if de in sc.__getattribute__('DE_MAP'):
+                    return functools.partial(super().__getattribute__('delta_e'), method=de)
+
+        # Do the Color class methods
+        sc.__getattribute__(name)
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Set attribute."""
 
-        try:
-            # See if we need to set the space specific channel attributes.
-            self._space.set(name, value)
-            return
-        except AttributeError:
-            pass
+        if not name.startswith('_'):
+            try:
+                # See if we need to set the space specific channel attributes.
+                super().__getattribute__('_space').set(name, value)
+                return
+            except AttributeError:
+                pass
         # Set all attributes on the Color class.
         super().__setattr__(name, value)
 

@@ -346,7 +346,7 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             c1.set("red", "bad")
 
     def test_blend(self):

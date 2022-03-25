@@ -13,7 +13,7 @@ def lch_to_lab(lch: MutableVector) -> MutableVector:
 
     l, c, h = lch
     if util.is_nan(h):  # pragma: no cover
-        return [l, 0.0, 0.]
+        return [l, 0.0, 0.0]
 
     return [
         l,

@@ -125,10 +125,11 @@ class Space(
         num_channels = len(self.CHANNEL_NAMES)
         self._alpha = util.NaN
         self._coords = [util.NaN] * num_channels
+        self._chan_names = set(self.CHANNEL_NAMES)
+        self._chan_names.add('alpha')
 
         if isinstance(color, Space):
-            for index, channel in enumerate(color.coords()):
-                setattr(self, self.CHANNEL_NAMES[index], channel)
+            self._coords = color.coords()
             self.alpha = color.alpha
         elif isinstance(color, Sequence):
             if len(color) != num_channels:  # pragma: no cover
@@ -136,9 +137,8 @@ class Space(
                 raise ValueError(
                     "{} accepts a list of {} channels".format(self.NAME, num_channels)
                 )
-            for index in range(num_channels):
-                util.assert_number(color[index])
-                setattr(self, self.CHANNEL_NAMES[index], color[index])
+            for name, value in zip(self.CHANNEL_NAMES, color):
+                setattr(self, name, float(value))
             self.alpha = 1.0 if alpha is None else alpha
         else:  # pragma: no cover
             # Only likely to happen with direct usage internally.
@@ -188,18 +188,15 @@ class Space(
         """Set the given channel."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self.CHANNEL_NAMES and name != 'alpha':
+        if name not in self._chan_names:
             raise AttributeError("'{}' is an invalid channel name".format(name))
-
-        util.assert_number(value)
-
-        setattr(self, name, value)
+        setattr(self, name, float(value))
 
     def get(self, name: str) -> float:
         """Get the given channel's value."""
 
         name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self.CHANNEL_NAMES and name != 'alpha':
+        if name not in self._chan_names:
             raise AttributeError("'{}' is an invalid channel name".format(name))
         return cast(float, getattr(self, name))
 

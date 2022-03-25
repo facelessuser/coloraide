@@ -7,14 +7,6 @@ from coloraide import util, NaN
 class TestUtil(unittest.TestCase):
     """Test utilities."""
 
-    def test_is_number(self):
-        """Test if is a number."""
-
-        self.assertTrue(util.is_number(3))
-        self.assertTrue(util.is_number(3.3))
-        self.assertTrue(util.is_number(decimal.Decimal('3.3')))
-        self.assertFalse(util.is_number('3.3'))
-
     def test_no_nan(self):
         """Test no `NaN`."""
 
