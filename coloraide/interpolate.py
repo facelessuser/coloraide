@@ -17,7 +17,8 @@ import math
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from . import util
-from .spaces import Cylindrical, FLG_ANGLE
+from .spaces import Cylindrical
+from .gamut.bounds import FLG_ANGLE
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
 from .util import Vector, ColorInput
 

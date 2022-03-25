@@ -3,7 +3,7 @@ import re
 from .. import util
 from . import parse
 from .color_names import to_name
-from .. import spaces
+from ..gamut.bounds import FLG_PERCENT, FLG_OPT_PERCENT
 from ..util import MutableVector
 from typing import Optional, Union, Match, cast, TYPE_CHECKING
 
@@ -50,7 +50,7 @@ def named_color_function(
     coords = get_coords(obj, fit, none, legacy)
     for idx, value in enumerate(coords):
         bound = obj._space.BOUNDS[idx]
-        use_percent = bound.flags & spaces.FLG_PERCENT or (percent and bound.flags & spaces.FLG_OPT_PERCENT)
+        use_percent = bound.flags & FLG_PERCENT or (percent and bound.flags & FLG_OPT_PERCENT)
         if not use_percent:
             value *= scale
         if idx != 0:
