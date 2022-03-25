@@ -1,6 +1,5 @@
 """Test utilities."""
 import unittest
-import decimal
 from coloraide import util, NaN
 
 
