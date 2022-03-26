@@ -28,8 +28,8 @@ SOFTWARE.
 from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
-from ... import util
-from ...util import Vector, MutableVector
+from ... import algebra as alg
+from ...types import Vector, MutableVector
 from typing import cast
 
 # sRGB Linear to LMS
@@ -80,7 +80,7 @@ def oklab_to_linear_srgb(lab: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        util.dot(LMS_TO_SRGBL, [c ** 3 for c in cast(MutableVector, util.dot(OKLAB_TO_LMS3, lab))])
+        alg.dot(LMS_TO_SRGBL, [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab))])
     )
 
 
@@ -89,7 +89,7 @@ def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:  # pragma: no cover
 
     return cast(
         MutableVector,
-        util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in cast(MutableVector, util.dot(SRGBL_TO_LMS, rgb))])
+        alg.dot(LMS3_TO_OKLAB, [alg.cbrt(c) for c in cast(MutableVector, alg.dot(SRGBL_TO_LMS, rgb))])
     )
 
 
@@ -98,7 +98,7 @@ def oklab_to_xyz_d65(lab: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        util.dot(LMS_TO_XYZD65, [c ** 3 for c in cast(MutableVector, util.dot(OKLAB_TO_LMS3, lab))])
+        alg.dot(LMS_TO_XYZD65, [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab))])
     )
 
 
@@ -107,7 +107,7 @@ def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        util.dot(LMS3_TO_OKLAB, [util.cbrt(c) for c in cast(MutableVector, util.dot(XYZD65_TO_LMS, xyz))])
+        alg.dot(LMS3_TO_OKLAB, [alg.cbrt(c) for c in cast(MutableVector, alg.dot(XYZD65_TO_LMS, xyz))])
     )
 
 

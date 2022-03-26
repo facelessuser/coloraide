@@ -3,7 +3,8 @@ from ...spaces import Space, Cylindrical
 from ...cat import WHITES
 from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
 from ... import util
-from ...util import MutableVector
+from ... import algebra as alg
+from ...types import MutableVector
 from typing import Tuple
 
 
@@ -15,7 +16,7 @@ def hwb_to_hsv(hwb: MutableVector) -> MutableVector:
     wb = w + b
     if (wb >= 1):
         gray = w / wb
-        return [util.NaN, 0.0, gray]
+        return [alg.NaN, 0.0, gray]
 
     v = 1 - b
     s = 0 if v == 0 else 1 - w / v
@@ -29,7 +30,7 @@ def hsv_to_hwb(hsv: MutableVector) -> MutableVector:
     w = v * (1 - s)
     b = 1 - v
     if w + b >= 1:
-        h = util.NaN
+        h = alg.NaN
     return [h, w, b]
 
 
@@ -96,7 +97,7 @@ class HWB(Cylindrical, Space):
 
         coords = util.no_nans(coords)
         if coords[1] + coords[2] >= 1:
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
         return coords, util.no_nan(alpha)
 
     @classmethod

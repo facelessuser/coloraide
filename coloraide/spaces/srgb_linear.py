@@ -1,9 +1,9 @@
 """SRGB Linear color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
-from ..import util
 
 
 RGB_TO_XYZ = [
@@ -26,13 +26,13 @@ def lin_srgb_to_xyz(rgb: MutableVector) -> MutableVector:
     D65 (no chromatic adaptation)
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
 
 
 def xyz_to_lin_srgb(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light sRGB."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
 
 
 class SRGBLinear(SRGB):

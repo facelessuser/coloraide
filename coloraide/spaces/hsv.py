@@ -3,7 +3,8 @@ from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import Tuple
 
 
@@ -19,7 +20,7 @@ def hsv_to_hsl(hsv: MutableVector) -> MutableVector:
     s = 0.0 if (l == 0.0 or l == 1.0) else (v - l) / min(l, 1.0 - l)
 
     if s == 0:
-        h = util.NaN
+        h = alg.NaN
 
     return [util.constrain_hue(h), s, l]
 
@@ -37,7 +38,7 @@ def hsl_to_hsv(hsl: MutableVector) -> MutableVector:
     s = 0.0 if (v == 0.0) else 2 * (1.0 - l / v)
 
     if s == 0:
-        h = util.NaN
+        h = alg.NaN
 
     return [util.constrain_hue(h), s, v]
 
@@ -105,7 +106,7 @@ class HSV(Cylindrical, Space):
 
         coords = util.no_nans(coords)
         if coords[1] == 0:
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
 
         return coords, util.no_nan(alpha)
 

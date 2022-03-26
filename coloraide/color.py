@@ -8,8 +8,9 @@ from . import gamut
 from . import compositing
 from . import interpolate
 from . import util
+from . import algebra as alg
 from .css import parse
-from .util import Vector, MutableVector, ColorInput
+from .types import Vector, MutableVector, ColorInput
 from .spaces import Space, Cylindrical
 from .spaces.hsv import HSV
 from .spaces.srgb.css import SRGB
@@ -175,7 +176,7 @@ class Color(metaclass=BaseColor):
                 if space_class and (not filters or s in filters):
                     num_channels = len(space_class.CHANNEL_NAMES)
                     if len(data) < num_channels:
-                        data = list(data) + [util.NaN] * (num_channels - len(data))
+                        data = list(data) + [alg.NaN] * (num_channels - len(data))
                     obj = space_class(data[:num_channels], alpha)
             # Parse a CSS string
             else:
@@ -349,7 +350,7 @@ class Color(metaclass=BaseColor):
     def is_nan(self, name: str) -> bool:
         """Check if channel is NaN."""
 
-        return util.is_nan(self.get(name))
+        return alg.is_nan(self.get(name))
 
     def _handle_color_input(self, color: ColorInput) -> 'Color':
         """Handle color input."""
@@ -570,7 +571,7 @@ class Color(metaclass=BaseColor):
         )
         for name in (self._space.CHANNEL_NAMES + ('alpha',)):
             if (not invert and name in masks) or (invert and name not in masks):
-                this.set(name, util.NaN)
+                this.set(name, alg.NaN)
         return this
 
     def steps(

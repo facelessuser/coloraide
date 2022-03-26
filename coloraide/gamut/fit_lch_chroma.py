@@ -1,6 +1,6 @@
 """Fit by compressing chroma in Lch."""
 from ..gamut import Fit, clip_channels
-from ..util import NaN
+from ..algebra import NaN
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover

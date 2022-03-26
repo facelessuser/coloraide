@@ -2,7 +2,8 @@
 from abc import ABCMeta, abstractmethod
 from .. import util
 import math
-from ..util import ColorInput
+from .. import algebra as alg
+from ..types import ColorInput
 from typing import TYPE_CHECKING, Any, Sequence, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -20,7 +21,7 @@ def closest(color: 'Color', colors: Sequence[ColorInput], method: Optional[str] 
     except KeyError:
         raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
 
-    lowest = float('inf')
+    lowest = alg.INF
     closest = None
     for c in colors:
         color2 = color._handle_color_input(c)

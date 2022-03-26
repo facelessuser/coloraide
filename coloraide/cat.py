@@ -1,7 +1,8 @@
 """Chromatic adaptation transforms."""
 from . import util
-from .util import Matrix, MutableMatrix, Vector, MutableVector
+from . import algebra as alg
 from functools import lru_cache
+from .types import Matrix, MutableMatrix, Vector, MutableVector
 from typing import Tuple, Dict, cast
 
 # From CIE 2004 Colorimetry T.3 and T.8
@@ -115,22 +116,22 @@ def calc_adaptation_matrices(
         m = CATS[method]
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown chromatic adaptation method encountered: {}'.format(method))
-    mi = util.inv(m)
+    mi = alg.inv(m)
 
     try:
-        first = util.dot(m, util.xy_to_xyz(w1))
+        first = alg.dot(m, util.xy_to_xyz(w1))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w1))
 
     try:
-        second = util.dot(m, util.xy_to_xyz(w2))
+        second = alg.dot(m, util.xy_to_xyz(w2))
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
-    m2 = util.diag(cast(Vector, util.divide(cast(Vector, first), cast(Vector, second))))
-    adapt = util.dot(mi, util.dot(m2, m))
+    m2 = alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second))))
+    adapt = alg.dot(mi, alg.dot(m2, m))
 
-    return cast(MutableMatrix, adapt), util.inv(cast(Matrix, adapt))
+    return cast(MutableMatrix, adapt), alg.inv(cast(Matrix, adapt))
 
 
 def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], method: str) -> MutableMatrix:
@@ -160,4 +161,4 @@ def chromatic_adaptation(
         return list(xyz)
     else:
         # Get the appropriate chromatic adaptation matrix and apply.
-        return cast(MutableVector, util.dot(get_adaptation_matrix(w1, w2, method), xyz))
+        return cast(MutableVector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz))

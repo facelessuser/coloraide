@@ -1,8 +1,8 @@
 """Parse utilities."""
 import re
 import math
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from . import color_names
 from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from typing import Optional, Tuple
@@ -154,7 +154,7 @@ def norm_float(string: str) -> float:
     """Normalize a float value."""
 
     if string == "none":
-        return util.NaN
+        return alg.NaN
     elif string.lower().endswith(('e-', 'e+', 'e')):
         string += '0'
     return float(string)
@@ -204,7 +204,7 @@ def norm_alpha_channel(string: str) -> float:
         value = norm_percent_channel(string, 1)
     else:
         value = norm_float(string)
-    return util.clamp(value, 0.0, 1.0)
+    return alg.clamp(value, 0.0, 1.0)
 
 
 def norm_angle_channel(angle: str) -> float:

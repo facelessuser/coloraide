@@ -1,8 +1,8 @@
 """Pro Photo RGB color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 ET = 1 / 512
@@ -29,13 +29,13 @@ def lin_prophoto_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
 
 
 def xyz_to_lin_prophoto(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
 
 
 def lin_prophoto(rgb: MutableVector) -> MutableVector:
@@ -53,7 +53,7 @@ def lin_prophoto(rgb: MutableVector) -> MutableVector:
         if abs(i) < ET2:
             result.append(i / 16.0)
         else:
-            result.append(util.npow(i, 1.8))
+            result.append(alg.npow(i, 1.8))
     return result
 
 
@@ -72,7 +72,7 @@ def gam_prophoto(rgb: MutableVector) -> MutableVector:
         if abs(i) < ET:
             result.append(16.0 * i)
         else:
-            result.append(util.nth_root(i, 1.8))
+            result.append(alg.nth_root(i, 1.8))
     return result
 
 

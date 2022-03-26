@@ -1,8 +1,8 @@
 """Display-p3 color class."""
 from ..cat import WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 RGB_TO_XYZ = [
@@ -26,13 +26,13 @@ def lin_p3_to_xyz(rgb: MutableVector) -> MutableVector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
 
 
 def xyz_to_lin_p3(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light P3."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
 
 
 def lin_p3(rgb: MutableVector) -> MutableVector:

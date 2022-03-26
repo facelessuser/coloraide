@@ -1,7 +1,7 @@
 """Convert the color."""
 from . import util
 from . import cat
-from .util import Vector
+from .types import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover

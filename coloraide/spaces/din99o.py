@@ -6,7 +6,7 @@ https://de.wikipedia.org/wiki/DIN99-Farbraum
 from ..cat import WHITES
 from .lab import Lab
 import math
-from ..util import MutableVector
+from ..types import MutableVector
 
 KE = 1
 KCH = 1

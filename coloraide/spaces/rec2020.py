@@ -1,9 +1,9 @@
 """Rec 2020 color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from .. import util
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 ALPHA = 1.09929682680944
@@ -37,7 +37,7 @@ def lin_2020(rgb: MutableVector) -> MutableVector:
         if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(util.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
+            result.append(math.copysign(alg.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
     return result
 
 
@@ -67,13 +67,13 @@ def lin_2020_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
 
 
 def xyz_to_lin_2020(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light rec-2020."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
 
 
 class Rec2020(SRGB):

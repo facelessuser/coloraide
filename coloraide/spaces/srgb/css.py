@@ -3,7 +3,7 @@ from .. import srgb as base
 from ...css import parse
 from ...css import serialize
 from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
-from ...util import MutableVector
+from ...types import MutableVector
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color

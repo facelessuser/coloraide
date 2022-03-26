@@ -5,7 +5,8 @@ from .. import cat
 from ..css import parse
 from ..gamut import bounds
 from ..css import serialize
-from ..util import Vector, MutableVector
+from .. import algebra as alg
+from ..types import Vector, MutableVector
 from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -123,8 +124,8 @@ class Space(
         """Initialize."""
 
         num_channels = len(self.CHANNEL_NAMES)
-        self._alpha = util.NaN
-        self._coords = [util.NaN] * num_channels
+        self._alpha = alg.NaN  # type: float
+        self._coords = [alg.NaN] * num_channels
         self._chan_names = set(self.CHANNEL_NAMES)
         self._chan_names.add('alpha')
 
@@ -182,7 +183,7 @@ class Space(
     def alpha(self, value: float) -> None:
         """Adjust alpha."""
 
-        self._alpha = util.clamp(value, 0.0, 1.0)
+        self._alpha = alg.clamp(value, 0.0, 1.0)
 
     def set(self, name: str, value: float) -> None:  # noqa: A003
         """Set the given channel."""

@@ -7,7 +7,8 @@ from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
@@ -54,13 +55,13 @@ def ictcp_to_xyz_d65(ictcp: MutableVector) -> MutableVector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
-    pqlms = cast(MutableVector, util.dot(ictcp_to_lms_p_mi, ictcp))
+    pqlms = cast(MutableVector, alg.dot(ictcp_to_lms_p_mi, ictcp))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms)
 
     # Convert back to absolute XYZ D65
-    absxyz = cast(MutableVector, util.dot(lms_to_xyz_mi, lms))
+    absxyz = cast(MutableVector, alg.dot(lms_to_xyz_mi, lms))
 
     # Convert back to normal XYZ D65
     return util.absxyzd65_to_xyz_d65(absxyz)
@@ -73,13 +74,13 @@ def xyz_d65_to_ictcp(xyzd65: MutableVector) -> MutableVector:
     absxyz = util.xyz_d65_to_absxyzd65(xyzd65)
 
     # Convert to LMS
-    lms = cast(MutableVector, util.dot(xyz_to_lms_m, absxyz))
+    lms = cast(MutableVector, alg.dot(xyz_to_lms_m, absxyz))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms)
 
     # Calculate Izazbz
-    return cast(MutableVector, util.dot(lms_p_to_ictcp_m, pqlms))
+    return cast(MutableVector, alg.dot(lms_p_to_ictcp_m, pqlms))
 
 
 class ICtCp(Labish, Space):

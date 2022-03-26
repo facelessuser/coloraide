@@ -2,7 +2,7 @@
 from .. import lch as base
 from ...css import parse
 from ...css import serialize
-from ...util import MutableVector
+from ...types import MutableVector
 from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover

@@ -3,7 +3,8 @@ from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import util
-from ...util import Vector, MutableVector
+from ... import algebra as alg
+from ...types import Vector, MutableVector
 from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
@@ -37,7 +38,7 @@ def lab_to_xyz(lab: MutableVector, white: Vector) -> MutableVector:
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return cast(MutableVector, util.multiply(xyz, util.xy_to_xyz(white)))
+    return cast(MutableVector, alg.multiply(xyz, util.xy_to_xyz(white)))
 
 
 def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
@@ -51,9 +52,9 @@ def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
     """
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = cast(MutableVector, util.divide(xyz, util.xy_to_xyz(white)))
+    xyz = cast(MutableVector, alg.divide(xyz, util.xy_to_xyz(white)))
     # Compute `fx`, `fy`, and `fz`
-    fx, fy, fz = [util.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
+    fx, fy, fz = [alg.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 
     return [
         (116.0 * fy) - 16.0,

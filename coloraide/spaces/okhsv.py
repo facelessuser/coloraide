@@ -32,7 +32,8 @@ from .. import util
 from .oklab import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import Tuple
 
 
@@ -45,7 +46,7 @@ def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
     l = toe_inv(v)
     a = b = 0.0
 
-    if l != 0 and s != 0 and not util.is_nan(h):
+    if l != 0 and s != 0 and not alg.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -73,7 +74,7 @@ def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
 
         # RGB scale
         rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
-        scale_l = util.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
+        scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l * scale_l
         c = c * scale_l
@@ -90,7 +91,7 @@ def oklab_to_okhsv(lab: MutableVector) -> MutableVector:
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     l = lab[0]
 
-    h = util.NaN
+    h = alg.NaN
     s = 0.0
     v = toe(l)
 
@@ -115,7 +116,7 @@ def oklab_to_okhsv(lab: MutableVector) -> MutableVector:
 
         # we can then use these to invert the step that compensates for the toe and the curved top part of the triangle:
         rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
-        scale_l = util.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
+        scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l / scale_l
         c = c / scale_l
@@ -128,7 +129,7 @@ def oklab_to_okhsv(lab: MutableVector) -> MutableVector:
         s = (s_0 + t_max) * c_v / ((t_max * s_0) + t_max * k * c_v)
 
     if s == 0:
-        h = util.NaN
+        h = alg.NaN
 
     return [util.constrain_hue(h * 360), s, v]
 
@@ -196,7 +197,7 @@ class Okhsv(Cylindrical, Space):
 
         coords = util.no_nans(coords)
         if coords[1] == 0:
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
         return coords, util.no_nan(alpha)
 
     @classmethod

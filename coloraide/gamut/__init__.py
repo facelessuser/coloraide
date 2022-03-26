@@ -1,4 +1,5 @@
 """Gamut handling."""
+from .. import algebra as alg
 from .. import util
 from .bounds import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
@@ -32,7 +33,7 @@ def clip_channels(color: 'Color') -> None:
             a = b = None
 
         # Fit value in bounds.
-        fit.append(util.clamp(value, a, b))
+        fit.append(alg.clamp(value, a, b))
     color.update(color.space(), fit, color.alpha)
 
 

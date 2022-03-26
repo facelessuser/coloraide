@@ -32,7 +32,8 @@ from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
 import math
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import List, Dict, Tuple
 
 
@@ -82,11 +83,11 @@ def hsluv_to_lch(hsluv: MutableVector) -> MutableVector:
         l = 100.0
     elif l < 1e-08:
         l = 0.0
-    elif not util.is_nan(h):
+    elif not alg.is_nan(h):
         _hx_max = max_chroma_for_lh(l, h)
         c = _hx_max / 100.0 * s
         if c < ACHROMATIC_THRESHOLD:
-            h = util.NaN
+            h = alg.NaN
     return [l, c, util.constrain_hue(h)]
 
 
@@ -99,11 +100,11 @@ def lch_to_hsluv(lch: MutableVector) -> MutableVector:
         l = 100.0
     elif l < 1e-08:
         l = 0.0
-    elif not util.is_nan(h):
+    elif not alg.is_nan(h):
         _hx_max = max_chroma_for_lh(l, h)
         s = c / _hx_max * 100.0
     if s < 1e-08:
-        h = util.NaN
+        h = alg.NaN
     return [util.constrain_hue(h), s, l]
 
 
@@ -170,7 +171,7 @@ class HSLuv(Cylindrical, Space):
 
         coords = util.no_nans(coords)
         if coords[1] == 0 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
         return coords, util.no_nan(alpha)
 
     @classmethod

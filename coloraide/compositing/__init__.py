@@ -6,7 +6,8 @@ https://www.w3.org/TR/compositing/
 from . import porter_duff
 from . import blend_modes
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from ..gamut.bounds import GamutBound, Bounds
 from typing import Optional, Union, Callable, List, TYPE_CHECKING
 
@@ -29,7 +30,7 @@ def clip_channel(coord: float, bounds: Bounds) -> float:
         b = None
 
     # Fit value in bounds.
-    return util.clamp(coord, a, b)
+    return alg.clamp(coord, a, b)
 
 
 def apply_compositing(

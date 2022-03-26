@@ -1,8 +1,8 @@
 """A98 RGB color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 RGB_TO_XYZ = [
@@ -28,25 +28,25 @@ def lin_a98rgb_to_xyz(rgb: MutableVector) -> MutableVector:
     https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
 
 
 def xyz_to_lin_a98rgb(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light a98-rgb."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
 
 
 def lin_a98rgb(rgb: MutableVector) -> MutableVector:
     """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
-    return [util.npow(val, 563 / 256) for val in rgb]
+    return [alg.npow(val, 563 / 256) for val in rgb]
 
 
 def gam_a98rgb(rgb: MutableVector) -> MutableVector:
     """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
 
-    return [util.npow(val, 256 / 563) for val in rgb]
+    return [alg.npow(val, 256 / 563) for val in rgb]
 
 
 class A98RGB(SRGB):

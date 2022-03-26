@@ -3,7 +3,8 @@ from ..cat import WHITES
 from .lch import Lch
 from .. import util
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
@@ -12,7 +13,7 @@ def lch_to_lab(lch: MutableVector) -> MutableVector:
     """Din99o Lch to lab."""
 
     l, c, h = lch
-    if util.is_nan(h):  # pragma: no cover
+    if alg.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 
     return [
@@ -32,7 +33,7 @@ def lab_to_lch(lab: MutableVector) -> MutableVector:
     # Achromatic colors will often get extremely close, but not quite hit zero.
     # Essentially, we want to discard noise through rounding and such.
     if c <= ACHROMATIC_THRESHOLD:
-        h = util.NaN
+        h = alg.NaN
 
     return [l, c, util.constrain_hue(h)]
 

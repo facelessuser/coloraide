@@ -2,7 +2,7 @@
 from ..spaces import Space
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound
-from ..util import MutableVector
+from ..types import MutableVector
 from typing import Tuple
 
 

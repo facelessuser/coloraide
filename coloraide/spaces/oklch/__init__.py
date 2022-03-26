@@ -28,7 +28,8 @@ from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
-from ...util import Vector, MutableVector
+from ... import algebra as alg
+from ...types import Vector, MutableVector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.000002
@@ -45,7 +46,7 @@ def oklab_to_oklch(oklab: Vector) -> MutableVector:
     # Achromatic colors will often get extremely close, but not quite hit zero.
     # Essentially, we want to discard noise through rounding and such.
     if c < ACHROMATIC_THRESHOLD:
-        h = util.NaN
+        h = alg.NaN
 
     return [l, c, util.constrain_hue(h)]
 
@@ -54,7 +55,7 @@ def oklch_to_oklab(oklch: Vector) -> MutableVector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
-    if util.is_nan(h):  # pragma: no cover
+    if alg.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 
     return [
@@ -106,7 +107,7 @@ class Oklch(Lchish, Space):
     def c(self, value: float) -> None:
         """chroma."""
 
-        self._coords[1] = util.clamp(value, 0.0)
+        self._coords[1] = alg.clamp(value, 0.0)
 
     @property
     def h(self) -> float:
@@ -126,7 +127,7 @@ class Oklch(Lchish, Space):
 
         coords = util.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
-            coords[2] = util.NaN
+            coords[2] = alg.NaN
 
         return coords, util.no_nan(alpha)
 
