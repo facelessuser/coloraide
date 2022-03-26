@@ -787,7 +787,7 @@ class Color(metaclass=BaseColor):
                 pass
 
             # Try delta E methods
-            if name.startswith('delta_e'):
+            if name.startswith('delta_e_'):
                 de = name[8:]
                 if de in sc.__getattribute__('DE_MAP'):
                     return functools.partial(super().__getattribute__('delta_e'), method=de)
@@ -798,15 +798,17 @@ class Color(metaclass=BaseColor):
     def __setattr__(self, name: str, value: Any) -> None:
         """Set attribute."""
 
+        sc = super()
+
         if not name.startswith('_'):
             try:
                 # See if we need to set the space specific channel attributes.
-                super().__getattribute__('_space').set(name, value)
+                sc.__getattribute__('_space').set(name, value)
                 return
             except AttributeError:
                 pass
         # Set all attributes on the Color class.
-        super().__setattr__(name, value)
+        sc.__setattr__(name, value)
 
 
 Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT)
