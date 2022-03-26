@@ -3,9 +3,9 @@
 ## 0.14.2
 
 - **FIX**: Fix rare issue where precision adjustment could fail.
-- **FIX**: Fix `util.divide` logic when dividing a number or vector by a matrix. No real usage of these cases in code
-  but fixed in case used in the future.
-- **FIX**: General improvements with speed.
+- **FIX**: Fix `util.divide` logic when dividing a number or vector by a matrix. There are no actual usage of these
+  cases in the code but fixed in case they are used in the future.
+- **FIX**: Minor performance improvements.
 
 ## 0.14.1
 
