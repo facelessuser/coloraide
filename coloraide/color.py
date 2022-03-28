@@ -806,7 +806,7 @@ class Color(metaclass=BaseColor):
                 # See if we need to set the space specific channel attributes.
                 sc.__getattribute__('_space').set(name, value)
                 return
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 pass
         # Set all attributes on the Color class.
         sc.__setattr__(name, value)

@@ -15,7 +15,7 @@ we aren't suing them :).
 import math
 import copy
 from .types import Array, Matrix, Vector, MutableArray, MutableMatrix, MutableVector
-from typing import Optional, Sequence, List, Union, Tuple, Iterator, Any, cast
+from typing import Optional, Sequence, List, Union, Iterator, Any, cast
 
 NaN = float('nan')
 INF = float('inf')
@@ -72,25 +72,13 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
-def _is_vec_mat(obj: Union[float, Array]) -> Tuple[bool, bool]:
-    """Is a vector or matrix."""
-
-    is_vec = is_mat = False
-    if isinstance(obj, Sequence):
-        if isinstance(obj[0], Sequence):
-            is_mat = True
-        else:
-            is_vec = True
-    return is_vec, is_mat
-
-
-def vector_dot(a: Vector, b: Vector) -> float:
+def _vector_dot(a: Vector, b: Vector) -> float:
     """Dot two vectors."""
 
     return sum([x * y for x, y in zip(a, b)])
 
 
-def vector_divide(a: Vector, b: Vector) -> MutableVector:
+def _vector_div(a: Vector, b: Vector) -> MutableVector:
     """Divide two vectors."""
 
     if len(a) == 1:
@@ -101,7 +89,7 @@ def vector_divide(a: Vector, b: Vector) -> MutableVector:
     return [x / y for x, y in zip(a, b)]
 
 
-def vector_multiply(a: Vector, b: Vector) -> MutableVector:
+def _vector_mult(a: Vector, b: Vector) -> MutableVector:
     """Multiply two vectors."""
 
     if len(a) == 1:
@@ -134,60 +122,60 @@ def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableA
 
     shape_a = shape(a)
     shape_b = shape(b)
-    d_a = len(shape_a)
-    d_b = len(shape_b)
+    dims_a = len(shape_a)
+    dims_b = len(shape_b)
 
     # Avoid matrices of incompatible shapes
-    if d_a and d_b:
-        if d_a == 1 and d_b == 1:
+    if dims_a and dims_b:
+        if dims_a == 1 and dims_b == 1:
             if shape_a[-1] != shape_b[-1]:
                 raise ValueError('Cannot dot vectors of size {} and {}'.format(shape_a, shape_b))
-        elif d_a == 1:
+        elif dims_a == 1:
             if shape_a[-1] != shape_b[-2]:
                 raise ValueError('Cannot dot vector and matrix of shape {} and {}'.format(shape_a, shape_b))
-        elif d_b == 1:
+        elif dims_b == 1:
             if shape_a[-1] != shape_b[-1]:
                 raise ValueError('Cannot dot matrix and vector of shape {} and {}'.format(shape_a, shape_b))
         elif shape_a[-1] != shape_b[-2]:
             raise ValueError('Cannot dot matrices of shape {} and {}'.format(shape_a, shape_b))
 
-    if d_a == 1:
-        if d_b == 1:
+    if dims_a == 1:
+        if dims_b == 1:
             # Dot product of two vectors
-            return vector_dot(cast(Vector, a), cast(Vector, b))
-        elif d_b == 2:
+            return _vector_dot(cast(Vector, a), cast(Vector, b))
+        elif dims_b == 2:
             # Dot product of vector and a matrix
-            return [vector_dot(cast(Vector, a), col) for col in zip(*cast(Matrix, b))]
-        elif d_b > 2:
+            return [_vector_dot(cast(Vector, a), col) for col in zip(*cast(Matrix, b))]
+        elif dims_b > 2:
             # Dot product of vector and a M-D matrix
-            columns1 = list(_extract_dimension(cast(Matrix, b), d_b - 2))
+            columns1 = list(_extract_dimension(cast(Matrix, b), dims_b - 2))
             shape_c = shape_b[:-2] + shape_b[-1:]
-            return reshape([[vector_dot(cast(Vector, a), cast(Vector, c)) for c in col] for col in columns1], shape_c)
+            return reshape([[_vector_dot(cast(Vector, a), cast(Vector, c)) for c in col] for col in columns1], shape_c)
 
-    elif d_a == 2:
-        if d_b == 1:
+    elif dims_a == 2:
+        if dims_b == 1:
             # Dot product of matrix and a vector
-            return [vector_dot(row, cast(Vector, b)) for row in cast(Matrix, a)]
-        elif d_b == 2:
+            return [_vector_dot(row, cast(Vector, b)) for row in cast(Matrix, a)]
+        elif dims_b == 2:
             # Dot product of two matrices
             return cast(
                 MutableMatrix,
-                [[vector_dot(row, col) for col in zip(*cast(Matrix, b))] for row in cast(Matrix, a)]
+                [[_vector_dot(row, col) for col in zip(*cast(Matrix, b))] for row in cast(Matrix, a)]
             )
-        elif d_b > 2:
-            raise ValueError('Cannot dot matrix of shape {} and {}'.format(d_a, d_b))
+        elif dims_b > 2:
+            raise ValueError('Cannot dot matrix of shape {} and {}'.format(dims_a, dims_b))
 
-    elif d_a > 2:
+    elif dims_a > 2:
         # Dot product of N-D and M-D matrices
         # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-        columns2 = list(_extract_dimension(cast(Array, b), d_b - 2)) if d_b > 1 else cast(Array, [[b]])
-        rows = list(_extract_dimension(cast(Array, a), d_a - 1))
+        columns2 = list(_extract_dimension(cast(Array, b), dims_b - 2)) if dims_b > 1 else cast(Array, [[b]])
+        rows = list(_extract_dimension(cast(Array, a), dims_a - 1))
         m2 = [
             [[sum(cast(List[float], multiply(row, c))) for c in cast(Vector, col)] for col in columns2]
             for row in rows
         ]
         shape_c = shape_a[:-1]
-        if d_b != 1:
+        if dims_b != 1:
             shape_c += shape_b[:-2] + shape_b[-1:]
         return reshape(cast(MutableArray, m2), shape_c)
 
@@ -198,35 +186,56 @@ def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableA
 def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
     """Multiply simple numbers, vectors, and matrices."""
 
-    is_a_vec, is_a_mat = _is_vec_mat(a)
-    is_b_vec, is_b_mat = _is_vec_mat(b)
+    shape_a = shape(a)
+    shape_b = shape(b)
+    dims_a = len(shape_a)
+    dims_b = len(shape_b)
 
-    if is_a_vec:
-        if is_b_vec:
+    if dims_a == 1:
+        if dims_b == 1:
             # Multiply two vectors
-            return vector_multiply(cast(Vector, a), cast(Vector, b))
-        elif is_b_mat:
-            # Multiply vector and a matrix
+            return _vector_mult(cast(Vector, a), cast(Vector, b))
+        elif dims_b == 2:
+            # Multiply vector and 2D matrix
+            return cast(MutableMatrix, [_vector_mult(row, cast(Vector, a)) for row in cast(Matrix, b)])
+        elif dims_b > 2:
+            # Multiply vector and a M-D matrix
             return cast(MutableMatrix, [multiply(row, cast(Vector, a)) for row in cast(Matrix, b)])
         # Multiply a vector and a number
         return cast(MutableVector, [i * cast(float, b) for i in cast(Vector, a)])
 
-    elif is_a_mat:
-        if is_b_vec:
+    elif dims_a == 2:
+        if dims_b == 1:
+            # Multiply 2D matrix and a vector
+            return cast(MutableMatrix, [_vector_mult(row, cast(Vector, b)) for row in cast(Matrix, a)])
+        elif dims_b == 2:
+            # Multiply two 2D matrices
+            return cast(MutableMatrix, [_vector_mult(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+        elif dims_b > 2:
+            # Multiply a N-D matrix and M-D matrix
+            return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+        # Multiply 2D matrix and a number
+        return cast(MutableVector, [[i * cast(float, b) for i in row] for row in cast(Matrix, a)])
+
+    elif dims_a > 2:
+        if dims_b == 1:
             # Multiply matrix and a vector
-            return cast(MutableMatrix, [vector_multiply(row, cast(Vector, b)) for row in cast(Matrix, a)])
-        elif is_b_mat:
-            # Multiply two matrices
+            return cast(MutableMatrix, [multiply(row, cast(Vector, b)) for row in cast(Matrix, a)])
+        elif dims_b > 1:
+            # Multiply a N-D matrix and M-D matrix
             return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
         # Multiply a matrix and a number
-        return cast(MutableVector, [multiply(cast(float, b), row) for row in cast(Matrix, a)])
+        return cast(MutableVector, [multiply(row, cast(float, b)) for row in cast(Matrix, a)])
 
-    if is_b_vec:
+    if dims_b == 1:
         # Multiply a number and a vector
-        return cast(MutableVector, [i * cast(float, a) for i in cast(Vector, b)])
-    elif is_b_mat:
+        return cast(MutableVector, [cast(float, a) * i for i in cast(Vector, b)])
+    elif dims_b == 2:
         # Multiply a number and a matrix
-        return cast(MutableVector, [multiply(row, cast(float, a)) for row in cast(Matrix, b)])
+        return cast(MutableVector, [[cast(float, a) * i for i in row] for row in cast(Matrix, b)])
+    elif dims_b > 2:
+        # Multiply N-D matrix and M-D matrix
+        return cast(MutableVector, [multiply(cast(float, a), row) for row in cast(Matrix, b)])
 
     # Multiply two numbers
     return cast(float, a) * cast(float, b)
@@ -235,34 +244,54 @@ def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Mut
 def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]:
     """Divide simple numbers, vectors, and 2D matrices."""
 
-    is_a_vec, is_a_mat = _is_vec_mat(a)
-    is_b_vec, is_b_mat = _is_vec_mat(b)
+    shape_a = shape(a)
+    shape_b = shape(b)
+    dims_a = len(shape_a)
+    dims_b = len(shape_b)
 
-    if is_a_vec:
-        if is_b_vec:
+    if dims_a == 1:
+        if dims_b == 1:
             # Divide two vectors
-            return vector_divide(cast(Vector, a), cast(Vector, b))
-        elif is_b_mat:
-            # Divide vector and a matrix
+            return _vector_div(cast(Vector, a), cast(Vector, b))
+        elif dims_b == 2:
+            # Divide vector and 2D matrix
+            return cast(MutableMatrix, [_vector_div(cast(Vector, a), row) for row in cast(Matrix, b)])
+        elif dims_b > 2:
+            # Divide vector and N-D matrix
             return cast(MutableMatrix, [divide(cast(Vector, a), row) for row in cast(Matrix, b)])
-        # Divide a vector and a number
+        # Divide a vector and number
         return cast(MutableVector, [i / cast(float, b) for i in cast(Vector, a)])
 
-    elif is_a_mat:
-        if is_b_vec:
-            # Divide matrix and a vector
-            return cast(MutableMatrix, [vector_divide(row, cast(Vector, b)) for row in cast(Matrix, a)])
-        elif is_b_mat:
-            # Divide two matrices
+    elif dims_a == 2:
+        if dims_b == 1:
+            # Divide 2D matrix and a vector
+            return cast(MutableMatrix, [_vector_div(row, cast(Vector, b)) for row in cast(Matrix, a)])
+        elif dims_b == 2:
+            # Divide two 2D matrices
+            return cast(MutableMatrix, [_vector_div(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+        elif dims_b > 2:
             return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
-        # Divide a matrix and number
+        # Divide 2D matrix and number
+        return cast(MutableVector, [[i / cast(float, b) for i in row] for row in cast(Matrix, a)])
+
+    elif dims_a > 2:
+        if dims_b == 1:
+            # Divide matrix and a vector
+            return cast(MutableMatrix, [divide(row, cast(Vector, b)) for row in cast(Matrix, a)])
+        elif dims_b > 1:
+            # Divide a N-D matrix and M-D matrix
+            return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+        # Divide N-D matrix and a number
         return cast(MutableVector, [divide(row, cast(float, b)) for row in cast(Matrix, a)])
 
-    if is_b_vec:
-        # Divide a number and vector
+    if dims_b == 1:
+        # Divide a number and a vector
         return cast(MutableVector, [cast(float, a) / i for i in cast(Vector, b)])
-    elif is_b_mat:
-        # Divide a number and matrix
+    elif dims_b == 2:
+        # Divide a number and a matrix
+        return cast(MutableVector, [[cast(float, a) / i for i in row] for row in cast(Matrix, b)])
+    elif dims_b > 2:
+        # Divide N-D matrix and M-D matrix
         return cast(MutableVector, [divide(cast(float, a), row) for row in cast(Matrix, b)])
 
     # Divide two numbers
@@ -272,14 +301,15 @@ def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array
 def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, MutableArray]) -> MutableArray:
     """Create and fill a shape with the given values."""
 
-    # Ensure `shape` is a vector of sizes
+    # Ensure `shape` is a sequence of sizes
     array_shape = [array_shape] if not isinstance(array_shape, Sequence) else array_shape
-    # Ensure `fill_value` is a vector of values.
+
+    # Ensure `fill_value` is a sequence of values.
     if not isinstance(fill_value, Sequence):
         fill_value = [fill_value]
 
-    length = len(fill_value)
     # If the first item is not a sequence, process the row as values for the current dimension.
+    length = len(fill_value)
     if not isinstance(fill_value[0], Sequence):
         # Check that the length of this dimension matches the shape or is one,
         # one will expand to fill the dimension.
@@ -300,6 +330,7 @@ def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Mutabl
     # We had a 1D shape, but a multi-dimensional input
     else:
         raise ValueError("Could not adjust input of {} to fit shape of {}".format(fill_value, array_shape))
+
     return cast(MutableMatrix, m)
 
 
@@ -334,33 +365,39 @@ def flatiter(array: Array) -> Iterator[float]:
 def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> MutableArray:
     """Change the shape of an array."""
 
+    # Normalize shape specifier to a sequence
     if not isinstance(new_shape, Sequence):
         new_shape = [new_shape]
 
+    # Kick out if the requested shape doesn't match the data
     total = math.prod(cast(Iterator[int], new_shape))
-    m = zeros(new_shape)
-    d = len(new_shape)
-    idx = [0] * d
+    if total != math.prod(shape(array)):
+        raise ValueError('Shape {} does not match the data'.format(new_shape))
 
-    i = -1
+    dims = len(new_shape)
+    idx = [0] * dims
+
+    # Create a zero initilized array with the specified shape
+    m = zeros(new_shape)
+
+    # Traverse the provided array filling our new array
     for i, v in enumerate(flatiter(array), 0):
         if i == total:
             raise ValueError('Size of data incompatible with requested shape')
         t = m  # type: Any
-        for x in range(d - 1):
+        for x in range(dims - 1):
             t = cast(MutableArray, t[idx[x]])
         t[idx[-1]] = v
 
         if i < total - 1:
-            for x in range(-1, -(d + 1), -1):
+            for x in range(-1, -(dims + 1), -1):
                 if idx[x] + 1 == new_shape[x]:
                     idx[x] = 0
                     x += -1
                 else:
                     idx[x] += 1
                     break
-    if i < total - 1:
-        raise ValueError('Shape {} does not match the data'.format(new_shape))
+
     return m
 
 
@@ -378,25 +415,31 @@ def shape(array: Union[float, Array]) -> List[int]:
 
 
 def transpose(array: Array) -> MutableArray:
-    """Simple transpose a matrix."""
+    """
+    A simple transpose of a matrix.
 
-    s = shape(array)
+    `numpy` offers the ability to specify diffrent axes, but right now,
+    we don't have a need for that, nor the desire to figure it out :).
+    """
+
+    s = list(reversed(shape(array)))
     total = math.prod(cast(Iterator[int], s))
 
+    # Create a new zero initialized matrix with the same shape as the provided one.
     m = zeros(s)
-    d = len(s)
-    idx = [0] * d
+    dims = len(s)
+    idx = [0] * dims
 
     for i, v in enumerate(flatiter(array), 0):
         if i == total:
             raise ValueError('Size of data incompatible with requested shape')
         t = m  # type: Any
-        for x in range(d - 1):
+        for x in range(dims - 1):
             t = cast(MutableArray, t[idx[x]])
         t[idx[-1]] = v
 
         if i < total - 1:
-            for x in range(d):
+            for x in range(dims):
                 if (idx[x] + 1) % s[x] == 0:
                     idx[x] = 0
                     x += 1
