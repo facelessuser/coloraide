@@ -14,6 +14,7 @@ we aren't suing them :).
 """
 import math
 import copy
+from itertools import zip_longest as zipl
 from .types import Array, Matrix, Vector, MutableArray, MutableMatrix, MutableVector
 from typing import Optional, Sequence, List, Union, Iterator, Any, cast
 
@@ -75,7 +76,7 @@ def npow(base: float, exp: float) -> float:
 def _vector_dot(a: Vector, b: Vector) -> float:
     """Dot two vectors."""
 
-    return sum([x * y for x, y in zip(a, b)])
+    return sum([x * y for x, y in zipl(a, b)])
 
 
 def _vector_div(a: Vector, b: Vector) -> MutableVector:
@@ -86,7 +87,7 @@ def _vector_div(a: Vector, b: Vector) -> MutableVector:
     elif len(b) == 1:
         b = [b[0]] * len(a)
 
-    return [x / y for x, y in zip(a, b)]
+    return [x / y for x, y in zipl(a, b)]
 
 
 def _vector_mult(a: Vector, b: Vector) -> MutableVector:
@@ -97,7 +98,7 @@ def _vector_mult(a: Vector, b: Vector) -> MutableVector:
     elif len(b) == 1:
         b = [b[0]] * len(a)
 
-    return [x * y for x, y in zip(a, b)]
+    return [x * y for x, y in zipl(a, b)]
 
 
 def _extract_dimension(
@@ -145,7 +146,7 @@ def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableA
             return _vector_dot(cast(Vector, a), cast(Vector, b))
         elif dims_b == 2:
             # Dot product of vector and a matrix
-            return [_vector_dot(cast(Vector, a), col) for col in zip(*cast(Matrix, b))]
+            return [_vector_dot(cast(Vector, a), col) for col in zipl(*cast(Matrix, b))]
         elif dims_b > 2:
             # Dot product of vector and a M-D matrix
             columns1 = list(_extract_dimension(cast(Matrix, b), dims_b - 2))
@@ -160,7 +161,7 @@ def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableA
             # Dot product of two matrices
             return cast(
                 MutableMatrix,
-                [[_vector_dot(row, col) for col in zip(*cast(Matrix, b))] for row in cast(Matrix, a)]
+                [[_vector_dot(row, col) for col in zipl(*cast(Matrix, b))] for row in cast(Matrix, a)]
             )
         elif dims_b > 2:
             raise ValueError('Cannot dot matrix of shape {} and {}'.format(dims_a, dims_b))
@@ -210,10 +211,10 @@ def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Mut
             return cast(MutableMatrix, [_vector_mult(row, cast(Vector, b)) for row in cast(Matrix, a)])
         elif dims_b == 2:
             # Multiply two 2D matrices
-            return cast(MutableMatrix, [_vector_mult(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [_vector_mult(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         elif dims_b > 2:
             # Multiply a N-D matrix and M-D matrix
-            return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         # Multiply 2D matrix and a number
         return cast(MutableVector, [[i * cast(float, b) for i in row] for row in cast(Matrix, a)])
 
@@ -223,7 +224,7 @@ def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Mut
             return cast(MutableMatrix, [multiply(row, cast(Vector, b)) for row in cast(Matrix, a)])
         elif dims_b > 1:
             # Multiply a N-D matrix and M-D matrix
-            return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [multiply(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         # Multiply a matrix and a number
         return cast(MutableVector, [multiply(row, cast(float, b)) for row in cast(Matrix, a)])
 
@@ -268,9 +269,9 @@ def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array
             return cast(MutableMatrix, [_vector_div(row, cast(Vector, b)) for row in cast(Matrix, a)])
         elif dims_b == 2:
             # Divide two 2D matrices
-            return cast(MutableMatrix, [_vector_div(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [_vector_div(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         elif dims_b > 2:
-            return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         # Divide 2D matrix and number
         return cast(MutableVector, [[i / cast(float, b) for i in row] for row in cast(Matrix, a)])
 
@@ -280,7 +281,7 @@ def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array
             return cast(MutableMatrix, [divide(row, cast(Vector, b)) for row in cast(Matrix, a)])
         elif dims_b > 1:
             # Divide a N-D matrix and M-D matrix
-            return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))])
+            return cast(MutableMatrix, [divide(ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
         # Divide N-D matrix and a number
         return cast(MutableVector, [divide(row, cast(float, b)) for row in cast(Matrix, a)])
 
