@@ -22,7 +22,7 @@ try:
 except ImportError:
     from coloraide import Color
 from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
-from coloraide.util import is_nan  # noqa: E402
+from coloraide.algebra import is_nan  # noqa: E402
 
 # Special cases for certain color spaces
 color_options = {
