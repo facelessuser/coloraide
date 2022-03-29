@@ -25,6 +25,19 @@ class TestAlgebra(unittest.TestCase):
              [0.0, 0.0, 0.0]]
         )
 
+    def test_full(self):
+        """Test full."""
+
+        self.assertEqual(
+            alg.full((3, 2, 4), 2),
+            [[[2, 2, 2, 2],
+              [2, 2, 2, 2]],
+             [[2, 2, 2, 2],
+              [2, 2, 2, 2]],
+             [[2, 2, 2, 2],
+              [2, 2, 2, 2]]]
+        )
+
     def test_is_nan(self):
         """Test if is `NaN`."""
 
