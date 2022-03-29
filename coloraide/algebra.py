@@ -12,14 +12,25 @@ We will often reduce complexity to handle simple 2D matrices as that is all we e
 for colors (so far). We will also abandon features if we don't want to figure them out as
 we aren't suing them :).
 """
+import sys
 import math
 import operator
+from functools import reduce
 from itertools import zip_longest as zipl
-from .types import Array, Matrix, Vector, MutableArray, MutableMatrix, MutableVector
-from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, SupportsIndex, Any, cast
+from .types import Array, Matrix, Vector, MutableArray, MutableMatrix, MutableVector, SupportsFloatOrInt
+from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, Any, Iterable, cast
 
 NaN = float('nan')
 INF = float('inf')
+PY38 = (3, 8) <= sys.version_info
+
+if sys.version_info >= (3, 8):
+    prod = math.prod
+else:
+    def prod(values: Iterable[SupportsFloatOrInt]) -> SupportsFloatOrInt:
+        """Get the product of a list of numbers."""
+
+        return reduce((lambda x, y: x * y), values)
 
 
 def is_nan(obj: float) -> bool:
@@ -317,7 +328,7 @@ class BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: Array, orig: tuple[int, ...], old: tuple[int, ...], new: tuple[int, ...]) -> None:
+    def __init__(self, array: Array, orig: Tuple[int, ...], old: Tuple[int, ...], new: Tuple[int, ...]) -> None:
         """Initialize."""
 
         self._loop1 = 0
@@ -338,7 +349,7 @@ class BroadcastTo:
         if self.different:
             # Calculate the shape of the data.
             if len(old) > 1:
-                self.amount = math.prod(old[:-1])
+                self.amount = prod(old[:-1])
                 self.length = old[-1]
             else:
                 # Vectors have to be handled a bit special as they only have 1-D
@@ -350,7 +361,7 @@ class BroadcastTo:
             # dimensions.
             delta_rank = len(new) - len(old)
             counters = [int(x / y) for x, y in zip(new[delta_rank:], old)]
-            repeat = math.prod(counters[:-1]) if len(old) > 1 else 1
+            repeat = prod(counters[:-1]) if len(old) > 1 else 1
             expand = counters[-1]
             if len(orig) % 2:
                 self.expand = repeat
@@ -479,7 +490,7 @@ class Broadcast:
         # But shouldn't matter for what we do.
         self.shape = sa2
         self.ndims = ndims
-        self.size = math.prod(sa2)
+        self.size = prod(sa2)
         self.iters = [
             BroadcastTo(a1, sa, tuple(sa1), tuple(sa2)),
             BroadcastTo(a2, sb, tuple(sb1), tuple(sb2))
@@ -496,7 +507,7 @@ class Broadcast:
         """Next."""
 
         # Get the next chunk of data
-        return next(self._iter)
+        return cast(Tuple[float, float], next(self._iter))
 
     def __iter__(self) -> 'Broadcast':
         """Iterate."""
@@ -612,9 +623,9 @@ def _frange(start: float, stop: float, step: float) -> Iterator[float]:
 
 
 def arange(
-    start: SupportsIndex,
-    stop: Optional[SupportsIndex] = None,
-    step: SupportsIndex = 1
+    start: SupportsFloatOrInt,
+    stop: Optional[SupportsFloatOrInt] = None,
+    step: SupportsFloatOrInt = 1
 ) -> MutableVector:
     """
     Like arrange, but handles floats as well.
@@ -641,8 +652,8 @@ def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> MutableArray:
         new_shape = [new_shape]
 
     # Kick out if the requested shape doesn't match the data
-    total = math.prod(cast(Iterator[int], new_shape))
-    if total != math.prod(shape(array)):
+    total = prod(cast(Iterator[int], new_shape))
+    if total != prod(shape(array)):
         raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     dims = len(new_shape)
@@ -694,7 +705,7 @@ def transpose(array: Array) -> MutableArray:
     """
 
     s = list(reversed(shape(array)))
-    total = math.prod(cast(Iterator[int], s))
+    total = prod(cast(Iterator[int], s))
 
     # Create a new zero initialized matrix with the same shape as the provided one.
     m = zeros(s)
