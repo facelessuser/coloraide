@@ -617,7 +617,8 @@ def _frange(start: float, stop: float, step: float) -> Iterator[float]:
 
     x = start
     rev = step < 0.0
-    while x > stop if rev else x < stop:
+    limit = stop - step
+    while x >= limit if rev else x <= limit:
         yield x
         x += step
 

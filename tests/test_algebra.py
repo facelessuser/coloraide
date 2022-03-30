@@ -25,6 +25,92 @@ class TestAlgebra(unittest.TestCase):
              [0.0, 0.0, 0.0]]
         )
 
+    def test_identity(self):
+        """Test identity."""
+
+        self.assertEqual(
+            alg.identity(4),
+            [[1.0, 0.0, 0.0, 0.0],
+             [0.0, 1.0, 0.0, 0.0],
+             [0.0, 0.0, 1.0, 0.0],
+             [0.0, 0.0, 0.0, 1.0]]
+        )
+
+    def test_reshape(self):
+        """Test `reshape`."""
+
+        self.assertEqual(
+            alg.reshape([0, 1, 2, 3, 4, 5], (3, 2)),
+            [
+                [0, 1],
+                [2, 3],
+                [4, 5]
+            ]
+        )
+
+    def test_arange(self):
+        """Test `arange`."""
+
+        self.assertEqual(
+            alg.reshape(alg.arange(6), (3, 2)),
+            [
+                [0, 1],
+                [2, 3],
+                [4, 5]
+            ]
+        )
+
+        self.assertEqual(
+            alg.arange(0.0, 1.0, 0.1),
+            [0.0,
+             0.1,
+             0.2,
+             0.30000000000000004,
+             0.4,
+             0.5,
+             0.6,
+             0.7,
+             0.7999999999999999,
+             0.8999999999999999]
+        )
+
+        self.assertEqual(
+            alg.arange(1.0, 0.0, -0.1),
+            [1.0,
+             0.9,
+             0.8,
+             0.7000000000000001,
+             0.6000000000000001,
+             0.5000000000000001,
+             0.40000000000000013,
+             0.30000000000000016,
+             0.20000000000000015,
+             0.10000000000000014]
+        )
+
+        self.assertEqual(
+            alg.arange(0.2, -2.0, -0.2),
+            [0.2,
+             0.0,
+             -0.2,
+             -0.4,
+             -0.6000000000000001,
+             -0.8,
+             -1.0,
+             -1.2,
+             -1.4,
+             -1.5999999999999999,
+             -1.7999999999999998]
+        )
+
+    def test_flatiter(self):
+        """Test `flatiter`."""
+
+        self.assertEqual(
+            list(alg.flatiter([[1, 2, 3], [4, 5, 6], [7, 8, 9]])),
+            [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        )
+
     def test_full(self):
         """Test full."""
 
@@ -190,6 +276,28 @@ class TestAlgebra(unittest.TestCase):
         )
         self.assertEqual(
             alg.divide(
+                [[1], [2], [3]],
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]]
+            ),
+            [
+                [1.0, 0.25, 0.1111111111111111],
+                [0.5, 0.2, 0.1111111111111111],
+                [0.42857142857142855, 0.1875, 0.1111111111111111]
+            ]
+        )
+        self.assertEqual(
+            alg.divide(
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]],
+                [[1], [2], [3]]
+            ),
+            [
+                [1.0, 4.0, 9.0],
+                [2.0, 5.0, 9.0],
+                [2.3333333333333335, 5.333333333333333, 9.0]
+            ]
+        )
+        self.assertEqual(
+            alg.divide(
                 [[1, 4, 9], [4, 10, 18], [7, 16, 27]],
                 [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
             ),
@@ -218,5 +326,35 @@ class TestAlgebra(unittest.TestCase):
                 [0.5, 0.25, 0.16666666666666666],
                 [0.5, 2.0, 0.3333333333333333],
                 [0.14285714285714285, 0.08333333333333333, 0.05555555555555555]
+            ]
+        )
+
+    def test_add(self):
+        """Test addition."""
+
+        self.assertEqual(
+            alg.add(
+                alg.reshape(alg.arange(9.0), (3, 3)),
+                alg.arange(3.0)
+            ),
+            [
+                [0.0, 2.0, 4.0],
+                [3.0, 5.0, 7.0],
+                [6.0, 8.0, 10.0]
+            ]
+        )
+
+    def test_subtraction(self):
+        """Test subtraction."""
+
+        self.assertEqual(
+            alg.subtract(
+                alg.reshape(alg.arange(9.0), (3, 3)),
+                alg.arange(3.0)
+            ),
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 3.0, 3.0],
+                [6.0, 6.0, 6.0]
             ]
         )
