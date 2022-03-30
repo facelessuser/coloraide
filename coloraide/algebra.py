@@ -524,13 +524,26 @@ def broadcast(a1: Array, a2: Array) -> Broadcast:
 
 
 def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
-    """Broadcast array to shape."""
+    """Broadcast array to a shape."""
 
     if not isinstance(s, Sequence):
         s = tuple([s])
 
-    b = broadcast(a, zeros(s))
-    return reshape([x + y for x, y in b], s)
+    s_orig = shape(a)
+    ndim_orig = len(s_orig)
+    ndim_target = len(s)
+    if ndim_orig > ndim_target:
+        raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
+
+    s1 = list(s_orig)
+    if ndim_orig < ndim_target:
+        s1 = ([1] * (ndim_target - ndim_orig)) + s1
+
+    for d1, d2 in zip(s1, s):
+        if d1 != d2 and d1 != 1 and d1 > d2:
+            raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
+
+    return reshape(list(BroadcastTo(a, s_orig, tuple(s1), tuple(s))), s)
 
 
 def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Array]) -> MutableArray:
@@ -539,7 +552,8 @@ def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Array]
     # Ensure `shape` is a sequence of sizes
     array_shape = tuple([array_shape]) if not isinstance(array_shape, Sequence) else tuple(array_shape)
 
-    # `fill_value` is not an array, so we can just quickly generate the data and shape it.
+    # Normalize `fill_value` to be an array. If the shape doesn't match,
+    # see if we can broadcast the data to fit.
     if not isinstance(fill_value, Sequence):
         fill_value = [fill_value]
     elif shape(fill_value) != tuple(array_shape):
