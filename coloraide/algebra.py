@@ -33,6 +33,21 @@ else:
         return reduce((lambda x, y: x * y), values)
 
 
+A2D = (2, 2)
+A1D = (1, 1)
+A1D_A2D = (1, 2)
+A2D_A1D = (2, 1)
+NUM_A1D = (0, 1)
+A1D_NUM = (1, 0)
+NUM_A2D = (0, 2)
+A2D_NUM = (2, 0)
+NUM_NUM = (0, 0)
+ND_MD = (3, 3)
+
+
+################################
+# General math
+################################
 def is_nan(obj: float) -> bool:
     """Check if "not a number"."""
 
@@ -96,6 +111,9 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
+################################
+# Matrix/linear algebra math
+################################
 def _vector_dot(a: Vector, b: Vector) -> float:
     """Dot two vectors."""
 
@@ -133,74 +151,72 @@ def _rcopy(a: Union[float, Array]) -> Union[float, MutableArray]:
     return cast(MutableArray, [_rcopy(x) if isinstance(x, Sequence) else x for x in a])
 
 
-def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
+def dot(
+    a: Union[float, Array],
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
+) -> Union[float, MutableArray]:
     """
     Get dot product of simple numbers, vectors, and matrices.
 
     The only broadcasting that is done is to expand single size 1 dimensions.
     """
 
-    shape_a = shape(a)
-    shape_b = shape(b)
-    dims_a = len(shape_a)
-    dims_b = len(shape_b)
+    if dims is None or dims == ND_MD:
+        shape_a = shape(a)
+        shape_b = shape(b)
+        dims_a = len(shape_a)
+        dims_b = len(shape_b)
 
-    # Avoid matrices of incompatible shapes
-    if dims_a and dims_b:
-        if dims_a == 1 and dims_b == 1:
-            if shape_a[-1] != shape_b[-1]:
-                raise ValueError('Cannot dot vectors of size {} and {}'.format(shape_a, shape_b))
-        elif dims_a == 1:
-            if shape_a[-1] != shape_b[-2]:
-                raise ValueError('Cannot dot vector and matrix of shape {} and {}'.format(shape_a, shape_b))
-        elif dims_b == 1:
-            if shape_a[-1] != shape_b[-1]:
-                raise ValueError('Cannot dot matrix and vector of shape {} and {}'.format(shape_a, shape_b))
-        elif shape_a[-1] != shape_b[-2]:
-            raise ValueError('Cannot dot matrices of shape {} and {}'.format(shape_a, shape_b))
+        # Handle matrices of N-D and M-D size
+        if dims_a and dims_b and dims_a > 2 or dims_b > 2:
+            if dims_a == 1:
+                # Dot product of vector and a M-D matrix
+                columns1 = list(_extract_dimension(cast(Matrix, b), dims_b - 2))
+                shape_c = shape_b[:-2] + shape_b[-1:]
+                return reshape(
+                    [[_vector_dot(cast(Vector, a), cast(Vector, c)) for c in col] for col in columns1],
+                    shape_c
+                )
+            else:
+                # Dot product of N-D and M-D matrices
+                # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
+                columns2 = list(_extract_dimension(cast(Array, b), dims_b - 2)) if dims_b > 1 else cast(Array, [[b]])
+                rows = list(_extract_dimension(cast(Array, a), dims_a - 1))
+                m2 = [
+                    [[sum(cast(List[float], multiply(row, c))) for c in cast(Vector, col)] for col in columns2]
+                    for row in rows
+                ]
+                shape_c = shape_a[:-1]
+                if dims_b != 1:
+                    shape_c += shape_b[:-2] + shape_b[-1:]
+                return reshape(cast(MutableArray, m2), shape_c)
 
+    else:
+        dims_a, dims_b = dims
+
+    # Optimize to handle arrays <= 2-D
     if dims_a == 1:
         if dims_b == 1:
             # Dot product of two vectors
             return _vector_dot(cast(Vector, a), cast(Vector, b))
         elif dims_b == 2:
             # Dot product of vector and a matrix
-            return [_vector_dot(cast(Vector, a), col) for col in zipl(*cast(Matrix, b))]
-        elif dims_b > 2:
-            # Dot product of vector and a M-D matrix
-            columns1 = list(_extract_dimension(cast(Matrix, b), dims_b - 2))
-            shape_c = shape_b[:-2] + shape_b[-1:]
-            return reshape([[_vector_dot(cast(Vector, a), cast(Vector, c)) for c in col] for col in columns1], shape_c)
+            return cast(MutableVector, [_vector_dot(cast(Vector, a), col) for col in zipl(*cast(Matrix, b))])
 
     elif dims_a == 2:
         if dims_b == 1:
             # Dot product of matrix and a vector
-            return [_vector_dot(row, cast(Vector, b)) for row in cast(Matrix, a)]
+            return cast(MutableVector, [_vector_dot(row, cast(Vector, b)) for row in cast(Matrix, a)])
         elif dims_b == 2:
             # Dot product of two matrices
             return cast(
                 MutableMatrix,
                 [[_vector_dot(row, col) for col in zipl(*cast(Matrix, b))] for row in cast(Matrix, a)]
             )
-        elif dims_b > 2:
-            raise ValueError('Cannot dot matrices of shape {} and {}'.format(dims_a, dims_b))
-
-    elif dims_a > 2:
-        # Dot product of N-D and M-D matrices
-        # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-        columns2 = list(_extract_dimension(cast(Array, b), dims_b - 2)) if dims_b > 1 else cast(Array, [[b]])
-        rows = list(_extract_dimension(cast(Array, a), dims_a - 1))
-        m2 = [
-            [[sum(cast(List[float], multiply(row, c))) for c in cast(Vector, col)] for col in columns2]
-            for row in rows
-        ]
-        shape_c = shape_a[:-1]
-        if dims_b != 1:
-            shape_c += shape_b[:-2] + shape_b[-1:]
-        return reshape(cast(MutableArray, m2), shape_c)
 
     # Trying to dot a number with a vector or a matrix, so just multiply
-    return multiply(a, b)
+    return multiply(a, b, (dims_a, dims_b))
 
 
 def _vector_math(op: Callable[..., float], a: Vector, b: Vector) -> MutableVector:
@@ -218,7 +234,8 @@ def _vector_math(op: Callable[..., float], a: Vector, b: Vector) -> MutableVecto
 def _math(
     op: Callable[..., float],
     a: Union[float, Array],
-    b: Union[float, Array]
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, MutableArray]:
     """
     Reuse same logic for basic, multiplication, division, addition and subtraction.
@@ -234,10 +251,29 @@ def _math(
     We do not check for them currently for performance reasons.
     """
 
-    shape_a = shape(a)
-    shape_b = shape(b)
-    dims_a = len(shape_a)
-    dims_b = len(shape_b)
+    if not dims or dims == ND_MD:
+        shape_a = shape(a)
+        shape_b = shape(b)
+        dims_a = len(shape_a)
+        dims_b = len(shape_b)
+
+        # Handle matrices of N-D and M-D size
+        if dims_a > 2 or dims_b > 2:
+            if dims_a == dims_b:
+                # Apply math to two N-D matrices
+                return reshape([op(x, y) for x, y in zip(flatiter(cast(Array, a)), flatiter(cast(Array, b)))], shape_a)
+            elif not dims_a or not dims_b:
+                if not dims_a:
+                    # Apply math to a number and an N-D matrix
+                    return reshape([op(a, x) for x in flatiter(cast(Array, b))], shape_b)
+                # Apply math to an N-D matrix and a number
+                return reshape([op(x, b) for x in flatiter(cast(Array, a))], shape_a)
+
+            # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
+            bcast = broadcast(cast(Array, a), cast(Array, b))
+            return reshape([op(x, y) for x, y in bcast], bcast.shape)
+    else:
+        dims_a, dims_b = dims
 
     # Inputs are of equal size and shape
     if dims_a == dims_b:
@@ -247,10 +283,6 @@ def _math(
         elif dims_a == 2:
             # Apply math to two 2-D matrices
             return cast(MutableMatrix, [_vector_math(op, ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
-        elif dims_a > 2:
-            # Apply math to two N-D matrices
-            return reshape([op(x, y) for x, y in zip(flatiter(cast(Array, a)), flatiter(cast(Array, b)))], shape_a)
-        # Apply math to two numbers
         return op(a, b)
 
     # Inputs containing a scalar on either side
@@ -267,63 +299,54 @@ def _math(
         elif dims_b == 2:
             # Apply math to a number and a matrix
             return cast(MutableVector, [[op(cast(float, a), i) for i in row] for row in cast(Matrix, b)])
-        elif not dims_a:
-            # Apply math to a number and an N-D matrix
-            return reshape([op(a, x) for x in flatiter(cast(Array, b))], shape_b)
-        # Apply math to an N-D matrix and a number
-        return reshape([op(x, b) for x in flatiter(cast(Array, a))], shape_a)
+        return op(a, b)
 
     # Inputs are at least 2-D dimensions or below on both sides
-    elif dims_a <= 2 and dims_b <= 2:
-        if dims_a == 1:
-            # Apply math to vector and 2-D matrix
-            return cast(MutableMatrix, [_vector_math(op, cast(Vector, a), row) for row in cast(Matrix, b)])
-        # Apply math to 2-D matrix and a vector
-        return cast(MutableMatrix, [_vector_math(op, row, cast(Vector, b)) for row in cast(Matrix, a)])
-
-    # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
-    bcast = broadcast(cast(Array, a), cast(Array, b))
-    return reshape([op(x, y) for x, y in bcast], bcast.shape)
+    if dims_a == 1:
+        # Apply math to vector and 2-D matrix
+        return cast(MutableMatrix, [_vector_math(op, cast(Vector, a), row) for row in cast(Matrix, b)])
+    # Apply math to 2-D matrix and a vector
+    return cast(MutableMatrix, [_vector_math(op, row, cast(Vector, b)) for row in cast(Matrix, a)])
 
 
-def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """
-    Divide simple numbers, vectors, and 2D matrices.
+def divide(
+    a: Union[float, Array],
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
+) -> Union[float, MutableArray]:
+    """Divide simple numbers, vectors, and 2D matrices."""
 
-    The only broadcasting that is done is to expand single size 1 dimensions.
-    """
-
-    return _math(operator.truediv, a, b)
-
-
-def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """
-    Multiply simple numbers, vectors, and 2D matrices.
-
-    The only broadcasting that is done is to expand single size 1 dimensions.
-    """
-
-    return _math(operator.mul, a, b)
+    return _math(operator.truediv, a, b, dims)
 
 
-def add(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """
-    Add simple numbers, vectors, and 2D matrices.
+def multiply(
+    a: Union[float, Array],
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
+) -> Union[float, MutableArray]:
+    """Multiply simple numbers, vectors, and 2D matrices."""
 
-    The only broadcasting that is done is to expand single size 1 dimensions.
-    """
-
-    return _math(operator.add, a, b)
+    return _math(operator.mul, a, b, dims)
 
 
-def subtract(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """
-    Subtract simple numbers, vectors, and 2D matrices.
+def add(
+    a: Union[float, Array],
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
+) -> Union[float, MutableArray]:
+    """Add simple numbers, vectors, and 2D matrices."""
 
-    The only broadcasting that is done is to expand single size 1 dimensions.
-    """
+    return _math(operator.add, a, b, dims)
 
-    return _math(operator.sub, a, b)
+
+def subtract(
+    a: Union[float, Array],
+    b: Union[float, Array],
+    dims: Optional[Tuple[int, int]] = None
+) -> Union[float, MutableArray]:
+    """Subtract simple numbers, vectors, and 2D matrices."""
+
+    return _math(operator.sub, a, b, dims)
 
 
 class BroadcastTo:
@@ -763,7 +786,7 @@ def _shape(array: Array, size: int) -> Tuple[int, ...]:
     """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
 
     s = (size,)
-    s2 = tuple()  # type: Tuple[int]
+    s2 = tuple()  # type: Tuple[int, ...]
     size2 = -1
     deeper = True
     for a in array:

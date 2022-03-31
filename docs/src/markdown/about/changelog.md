@@ -1,11 +1,11 @@
 # Changelog
 
-## 0.14.2
+## 0.15.0
 
+- **NEW**: Performance improvements.
 - **FIX**: Fix rare issue where precision adjustment could fail.
 - **FIX**: Fix `util.divide` logic when dividing a number or vector by a matrix. There are no actual usage of these
-  cases in the code but fixed in case they are used in the future.
-- **FIX**: Minor performance improvements.
+  cases in the code but they were fixed in case they are used in the future.
 
 ## 0.14.1
 

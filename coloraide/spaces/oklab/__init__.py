@@ -80,7 +80,11 @@ def oklab_to_linear_srgb(lab: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        alg.dot(LMS_TO_SRGBL, [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab))])
+        alg.dot(
+            LMS_TO_SRGBL,
+            [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
+            alg.A2D_A1D
+        )
     )
 
 
@@ -89,7 +93,11 @@ def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:  # pragma: no cover
 
     return cast(
         MutableVector,
-        alg.dot(LMS3_TO_OKLAB, [alg.cbrt(c) for c in cast(MutableVector, alg.dot(SRGBL_TO_LMS, rgb))])
+        alg.dot(
+            LMS3_TO_OKLAB,
+            [alg.cbrt(c) for c in cast(MutableVector, alg.dot(SRGBL_TO_LMS, rgb, alg.A2D_A1D))],
+            alg.A2D_A1D
+        )
     )
 
 
@@ -98,7 +106,11 @@ def oklab_to_xyz_d65(lab: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        alg.dot(LMS_TO_XYZD65, [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab))])
+        alg.dot(
+            LMS_TO_XYZD65,
+            [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
+            alg.A2D_A1D
+        )
     )
 
 
@@ -107,7 +119,11 @@ def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
 
     return cast(
         MutableVector,
-        alg.dot(LMS3_TO_OKLAB, [alg.cbrt(c) for c in cast(MutableVector, alg.dot(XYZD65_TO_LMS, xyz))])
+        alg.dot(
+            LMS3_TO_OKLAB,
+            [alg.cbrt(c) for c in cast(MutableVector, alg.dot(XYZD65_TO_LMS, xyz, alg.A2D_A1D))],
+            alg.A2D_A1D
+        )
     )
 
 

@@ -26,13 +26,13 @@ def lin_p3_to_xyz(rgb: MutableVector) -> MutableVector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_p3(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light P3."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 def lin_p3(rgb: MutableVector) -> MutableVector:

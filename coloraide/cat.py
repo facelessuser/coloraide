@@ -119,19 +119,19 @@ def calc_adaptation_matrices(
     mi = alg.inv(m)
 
     try:
-        first = alg.dot(m, util.xy_to_xyz(w1))
+        first = alg.dot(m, util.xy_to_xyz(w1), alg.A2D_A1D)
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w1))
 
     try:
-        second = alg.dot(m, util.xy_to_xyz(w2))
+        second = alg.dot(m, util.xy_to_xyz(w2), alg.A2D_A1D)
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
-    m2 = alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second))))
-    adapt = alg.dot(mi, alg.dot(m2, m))
+    m2 = cast(MutableMatrix, alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), alg.A1D))))
+    adapt = cast(MutableMatrix, alg.dot(mi, alg.dot(m2, m, alg.A2D), alg.A2D))
 
-    return cast(MutableMatrix, adapt), alg.inv(cast(Matrix, adapt))
+    return adapt, alg.inv(adapt)
 
 
 def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], method: str) -> MutableMatrix:
@@ -161,4 +161,4 @@ def chromatic_adaptation(
         return list(xyz)
     else:
         # Get the appropriate chromatic adaptation matrix and apply.
-        return cast(MutableVector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz))
+        return cast(MutableVector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz, alg.A2D_A1D))

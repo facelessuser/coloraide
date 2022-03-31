@@ -28,13 +28,13 @@ def lin_a98rgb_to_xyz(rgb: MutableVector) -> MutableVector:
     https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
     """
 
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_a98rgb(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light a98-rgb."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 def lin_a98rgb(rgb: MutableVector) -> MutableVector:

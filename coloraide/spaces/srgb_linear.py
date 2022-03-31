@@ -26,13 +26,13 @@ def lin_srgb_to_xyz(rgb: MutableVector) -> MutableVector:
     D65 (no chromatic adaptation)
     """
 
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_srgb(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light sRGB."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 class SRGBLinear(SRGB):

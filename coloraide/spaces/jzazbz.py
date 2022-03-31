@@ -82,13 +82,13 @@ def jzazbz_to_xyz_d65(jzazbz: MutableVector) -> MutableVector:
     iz = (jz + D0) / (1 + D - D * (jz + D0))
 
     # Convert to LMS prime
-    pqlms = cast(MutableVector, alg.dot(izazbz_to_lms_p_mi, [iz, az, bz]))
+    pqlms = cast(MutableVector, alg.dot(izazbz_to_lms_p_mi, [iz, az, bz], alg.A2D_A1D))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms, m2=M2)
 
     # Convert back to absolute XYZ D65
-    xm, ym, za = cast(MutableVector, alg.dot(lms_to_xyz_mi, lms))
+    xm, ym, za = cast(MutableVector, alg.dot(lms_to_xyz_mi, lms, alg.A2D_A1D))
     xa = (xm + ((B - 1) * za)) / B
     ya = (ym + ((G - 1) * xa)) / G
 
@@ -105,13 +105,13 @@ def xyz_d65_to_jzazbz(xyzd65: MutableVector) -> MutableVector:
     ym = (G * ya) - ((G - 1) * xa)
 
     # Convert to LMS
-    lms = cast(MutableVector, alg.dot(xyz_to_lms_m, [xm, ym, za]))
+    lms = cast(MutableVector, alg.dot(xyz_to_lms_m, [xm, ym, za], alg.A2D_A1D))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
 
     # Calculate Izazbz
-    iz, az, bz = cast(MutableVector, alg.dot(lms_p_to_izazbz_m, pqlms))
+    iz, az, bz = cast(MutableVector, alg.dot(lms_p_to_izazbz_m, pqlms, alg.A2D_A1D))
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0

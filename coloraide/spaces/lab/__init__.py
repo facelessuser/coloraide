@@ -38,7 +38,7 @@ def lab_to_xyz(lab: MutableVector, white: Vector) -> MutableVector:
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return cast(MutableVector, alg.multiply(xyz, util.xy_to_xyz(white)))
+    return cast(MutableVector, alg.multiply(xyz, util.xy_to_xyz(white), alg.A1D))
 
 
 def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
@@ -52,7 +52,7 @@ def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
     """
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = cast(MutableVector, alg.divide(xyz, util.xy_to_xyz(white)))
+    xyz = cast(MutableVector, alg.divide(xyz, util.xy_to_xyz(white), alg.A1D))
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = [alg.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 
