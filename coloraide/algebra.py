@@ -372,7 +372,7 @@ class BroadcastTo:
             # We need to flip them based on whether the original shape has an even or odd number of
             # dimensions.
             delta_rank = len(new) - len(old)
-            counters = [int(x / y) for x, y in zip(new[delta_rank:], old)]
+            counters = [int(x / y) if y else y for x, y in zip(new[delta_rank:], old)]
             repeat = prod(counters[:-1]) if len(old) > 1 else 1
             expand = counters[-1]
             if len(orig) % 2:
@@ -759,18 +759,18 @@ def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> MutableArray:
     return cast(MutableArray, m)
 
 
-def _shape(array: Array, size: int) -> List[int]:
+def _shape(array: Array, size: int) -> Tuple[int, ...]:
     """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
 
-    s = [size]
-    s2 = []  # type: List[int]
+    s = (size,)
+    s2 = tuple()  # type: Tuple[int]
     size2 = -1
     deeper = True
     for a in array:
         if not isinstance(a, Sequence) or size != len(a):
-            return []
+            return tuple()
         elif deeper:
-            if isinstance(a[0], Sequence):
+            if a and isinstance(a[0], Sequence):
                 if size2 < 0:
                     size2 = len(a[0])
                 s2 = _shape(a, size2)
@@ -778,23 +778,20 @@ def _shape(array: Array, size: int) -> List[int]:
                     deeper = False
             else:
                 deeper = False
-                s2 = []
-    if s2:
-        s.extend(s2)
-    return s
+                s2 = tuple()
+    return s + s2 if s2 else s
 
 
 def shape(array: Union[float, Array]) -> Tuple[int, ...]:
     """Get the shape of an array."""
 
     if isinstance(array, Sequence):
-        s = [len(array)]
+        s = (len(array),)
         if not s[0]:
             return tuple()
         elif not isinstance(array[0], Sequence):
             return tuple(s)
-        s.extend(_shape(array, len(array[0])))
-        return tuple(s)
+        return s + _shape(array, len(array[0]))
     else:
         return tuple()
 
@@ -842,7 +839,7 @@ def diag(array: Array, k: int = 0) -> MutableArray:
 
     size = len(array)
 
-    if not isinstance(array[0], Sequence):
+    if not array or not isinstance(array[0], Sequence):
         m = []  # type: MutableMatrix
         # Create a diagonal matrix with the provided vector
         for i, value in enumerate(cast(Vector, array)):
