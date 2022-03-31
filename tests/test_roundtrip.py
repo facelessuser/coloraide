@@ -2,7 +2,6 @@
 from coloraide import Color
 from coloraide.spaces import Cylindrical
 from coloraide import algebra as alg
-from coloraide import util
 import pytest
 
 SPACES = Color.CS_MAP.keys()
@@ -46,7 +45,7 @@ class TestRoundTrip:
             # Catch cases where we are really close to 360 which should wrap to 0
             for c in (c1, c2):
                 if isinstance(c._space, Cylindrical):
-                    if alg.round_half_up(util.no_nan(c.hue), c.PRECISION) == 360:
+                    if alg.round_half_up(alg.no_nan(c.hue), c.PRECISION) == 360:
                         c.hue = 0
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
             str1 = Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False)

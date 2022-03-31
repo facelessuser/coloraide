@@ -133,7 +133,7 @@ class TestAlgebra(unittest.TestCase):
         )
 
     def test_fill_diagonal(self):
-        """Test fiiling  a diagonal."""
+        """Test filling  a diagonal."""
 
         m1 = alg.zeros((3, 3))
         alg.fill_diagonal(m1, 3)
@@ -173,6 +173,12 @@ class TestAlgebra(unittest.TestCase):
              [3.0, 0.0, 0.0],
              [0.0, 3.0, 0.0]]
         )
+
+    def test_no_nan(self):
+        """Test no `NaN`."""
+
+        self.assertEqual(alg.no_nan(alg.NaN), 0)
+        self.assertEqual(alg.no_nans([0, 1, 2, alg.NaN]), [0, 1, 2, 0])
 
     def test_is_nan(self):
         """Test if is `NaN`."""

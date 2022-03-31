@@ -155,18 +155,6 @@ def constrain_hue(hue: float) -> float:
     return hue % 360 if not alg.is_nan(hue) else hue
 
 
-def no_nans(value: Vector, default: float = 0.0) -> MutableVector:
-    """Ensure there are no `NaN` values in a sequence."""
-
-    return [(default if alg.is_nan(x) else x) for x in value]
-
-
-def no_nan(value: float, default: float = 0.0) -> float:
-    """Convert list of numbers or single number to valid numbers."""
-
-    return default if alg.is_nan(value) else value
-
-
 def cmp_coords(c1: Vector, c2: Vector) -> bool:
     """Compare coordinates."""
 

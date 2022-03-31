@@ -39,6 +39,18 @@ def is_nan(obj: float) -> bool:
     return math.isnan(obj)
 
 
+def no_nans(value: Vector, default: float = 0.0) -> MutableVector:
+    """Ensure there are no `NaN` values in a sequence."""
+
+    return [(default if is_nan(x) else x) for x in value]
+
+
+def no_nan(value: float, default: float = 0.0) -> float:
+    """Convert list of numbers or single number to valid numbers."""
+
+    return default if is_nan(value) else value
+
+
 def round_half_up(n: float, scale: int = 0) -> float:
     """Round half up."""
 
@@ -752,14 +764,14 @@ def _shape(array: Array, size: int) -> List[int]:
 
     s = [size]
     s2 = []  # type: List[int]
-    size2 = 0
+    size2 = -1
     deeper = True
     for a in array:
         if not isinstance(a, Sequence) or size != len(a):
             return []
         elif deeper:
             if isinstance(a[0], Sequence):
-                if not size2:
+                if size2 < 0:
                     size2 = len(a[0])
                 s2 = _shape(a, size2)
                 if not s2:

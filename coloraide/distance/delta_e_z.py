@@ -5,7 +5,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..distance import DeltaE
 import math
-from .. import util
+from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -21,8 +21,8 @@ class DEZ(DeltaE):
     def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
-        jz1, az1, bz1 = util.no_nans(color.convert('jzazbz').coords())
-        jz2, az2, bz2 = util.no_nans(sample.convert('jzazbz').coords())
+        jz1, az1, bz1 = alg.no_nans(color.convert('jzazbz').coords())
+        jz2, az2, bz2 = alg.no_nans(sample.convert('jzazbz').coords())
 
         cz1 = math.sqrt(az1 ** 2 + bz1 ** 2)
         cz2 = math.sqrt(az2 ** 2 + bz2 ** 2)

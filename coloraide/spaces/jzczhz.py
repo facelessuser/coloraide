@@ -109,11 +109,11 @@ class JzCzhz(Lchish, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        coords = util.no_nans(coords)
+        coords = alg.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = alg.NaN
 
-        return coords, util.no_nan(alpha)
+        return coords, alg.no_nan(alpha)
 
     @classmethod
     def hue_name(cls) -> str:

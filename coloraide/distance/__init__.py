@@ -1,6 +1,5 @@
 """Distance and Delta E."""
 from abc import ABCMeta, abstractmethod
-from .. import util
 import math
 from .. import algebra as alg
 from ..types import ColorInput
@@ -43,8 +42,8 @@ def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> f
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    coords1 = util.no_nans(color.convert(space).coords())
-    coords2 = util.no_nans(sample.convert(space).coords())
+    coords1 = alg.no_nans(color.convert(space).coords())
+    coords2 = alg.no_nans(sample.convert(space).coords())
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 

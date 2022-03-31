@@ -151,7 +151,7 @@ class Space(
         return 'color({} {} / {})'.format(
             self._serialize()[0],
             ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]),
-            util.fmt_float(util.no_nan(self.alpha), util.DEF_PREC)
+            util.fmt_float(alg.no_nan(self.alpha), util.DEF_PREC)
         )
 
     __str__ = __repr__
@@ -236,7 +236,7 @@ class Space(
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
-        return util.no_nans(coords), util.no_nan(alpha)
+        return alg.no_nans(coords), alg.no_nan(alpha)
 
     @classmethod
     def match(

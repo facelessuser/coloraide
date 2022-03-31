@@ -1,7 +1,7 @@
 """Delta E CMC."""
 from ..distance import DeltaE
 import math
-from .. import util
+from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,8 +28,8 @@ class DECMC(DeltaE):
         http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
         """
 
-        l1, a1, b1 = util.no_nans(color.convert("lab").coords())
-        l2, a2, b2 = util.no_nans(sample.convert("lab").coords())
+        l1, a1, b1 = alg.no_nans(color.convert("lab").coords())
+        l2, a2, b2 = alg.no_nans(sample.convert("lab").coords())
 
         # Equation (3)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

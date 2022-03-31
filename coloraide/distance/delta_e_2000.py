@@ -1,6 +1,6 @@
 """Delta E 2000."""
 import math
-from .. import util
+from .. import algebra as alg
 from ..distance import DeltaE
 from typing import TYPE_CHECKING, Any
 
@@ -34,8 +34,8 @@ class DE2000(DeltaE):
         http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
         """
 
-        l1, a1, b1 = util.no_nans(color.convert("lab").coords())
-        l2, a2, b2 = util.no_nans(sample.convert("lab").coords())
+        l1, a1, b1 = alg.no_nans(color.convert("lab").coords())
+        l2, a2, b2 = alg.no_nans(sample.convert("lab").coords())
 
         # Equation (2)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)
