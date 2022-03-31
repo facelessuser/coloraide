@@ -552,44 +552,15 @@ def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Array]
     # Ensure `shape` is a sequence of sizes
     array_shape = tuple([array_shape]) if not isinstance(array_shape, Sequence) else tuple(array_shape)
 
-    # Normalize `fill_value` to be an array. If the shape doesn't match,
-    # see if we can broadcast the data to fit.
+    # Normalize `fill_value` to be an array.
     if not isinstance(fill_value, Sequence):
-        fill_value = [fill_value]
-    elif shape(fill_value) != tuple(array_shape):
-        fill_value = broadcast_to(fill_value, array_shape)
+        return reshape([fill_value] * prod(array_shape), array_shape)
 
-    # If the first item is not a sequence, process the row as values for the current dimension.
-    length = len(fill_value)
-    if not isinstance(fill_value[0], Sequence):
-        # Check that the length of this dimension matches the shape or is one (which we can expand),
-        if length not in (1, array_shape[0]):
-            raise ValueError("Could not adjust input of {} to fit shape of {}".format(fill_value, array_shape))
-
-        # If dimensions match, or we can expand it to fit (size == 1), copy the value.
-        if len(array_shape) == 1:
-            if length == 1:
-                m = cast(MutableArray, [_rcopy(fill_value[0]) for _ in range(array_shape[0])])
-            else:
-                m = cast(MutableArray, _rcopy(fill_value))
-
-        # Dimensions are greater than 1, we'll have to use recursion
-        else:
-            result = full(array_shape[1:], fill_value)
-            m = cast(MutableArray, [
-                result,
-                *[_rcopy(result) for _ in range(array_shape[0] - 1)]
-            ])
-
-    # Input was nested, so the shape must be multi-dimensional, use recursion
-    elif len(array_shape) > 1:
-        m = cast(MutableArray, [full(array_shape[1:], i) for i in fill_value])
-
-    # We had a 1D shape, but a multi-dimensional input
-    else:
-        raise ValueError("Could not adjust input of {} to fit shape of {}".format(fill_value, array_shape))
-
-    return m
+    # If the shape doesn't fit the data, try and broadcast it.
+    # If it does fit, just reshape it.
+    if shape(fill_value) != tuple(array_shape):
+        return broadcast_to(fill_value, array_shape)
+    return reshape(fill_value, array_shape)
 
 
 def ones(array_shape: Union[int, Sequence[int]]) -> MutableArray:
@@ -610,14 +581,25 @@ def identity(size: int) -> MutableMatrix:
     return cast(MutableMatrix, diag([1.0] * size))
 
 
+def _flatiter(array: Array, array_shape: Tuple[int, ...]) -> Iterator[float]:
+    """Iterate and return values based on shape."""
+
+    nested = len(array_shape) > 1
+    for a in array:
+        if nested:
+            if len(cast(Array, a)) != array_shape[1]:
+                raise ValueError('Ragged arrays are not supported')
+            yield from _flatiter(cast(Array, a), array_shape[1:])
+            continue
+        if isinstance(a, Sequence):
+            raise ValueError('Ragged arrays are not supported')
+        yield a
+
+
 def flatiter(array: Array) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    for v in array:
-        if isinstance(v, Sequence):
-            yield from flatiter(v)
-        else:
-            yield v
+    yield from _flatiter(array, shape(array))
 
 
 def ravel(array: Array) -> MutableVector:
@@ -659,6 +641,60 @@ def arange(
         return list(_frange(float(start), float(stop), float(step)))
 
 
+def transpose(array: Array) -> MutableArray:
+    """
+    A simple transpose of a matrix.
+
+    `numpy` offers the ability to specify different axes, but right now,
+    we don't have a need for that, nor the desire to figure it out :).
+    """
+
+    s = list(reversed(shape(array)))
+    total = prod(cast(Iterator[int], s))
+
+    # Create the array
+    m = []  # type: Any
+
+    # Calculate data sizes
+    dims = len(s)
+    length = s[-1]
+
+    # Initialize indexes so we can properly write our data
+    idx = [0] * dims
+
+    # Traverse the provided array filling our new array
+    for i, v in enumerate(flatiter(array), 0):
+
+        # Navigate to the proper index to start writing data.
+        # If the dimension hasn't been created yet, create it.
+        t = m  # type: Any
+        for d, x in enumerate(range(dims - 1)):
+            if not t:
+                for _ in range(s[d]):
+                    t.append([])
+            t = cast(MutableArray, t[idx[x]])
+
+        # Initialize the last dimension
+        # so we can index at the correct position
+        if not t:
+            t[:] = [0] * length
+
+        # Write the data
+        t[idx[-1]] = v
+
+        # Update the current indexes if we aren't done copying data.
+        if i < (total - 1):
+            for x in range(dims):
+                if (idx[x] + 1) % s[x] == 0:
+                    idx[x] = 0
+                    x += 1
+                else:
+                    idx[x] += 1
+                    break
+
+    return cast(MutableArray, m)
+
+
 def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> MutableArray:
     """Change the shape of an array."""
 
@@ -671,79 +707,84 @@ def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> MutableArray:
     if total != prod(shape(array)):
         raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
-    dims = len(new_shape)
-    idx = [0] * dims
+    # Create the array
+    m = []  # type: Any
 
-    # Create a zero initialized array with the specified shape
-    m = zeros(new_shape)
+    # Calculate data sizes
+    dims = len(new_shape)
+    length = new_shape[-1]
+    count = int(total // length)
+
+    # Initialize indexes so we can properly write our data
+    idx = [0] * (dims - 1)
 
     # Traverse the provided array filling our new array
-    for i, v in enumerate(flatiter(array), 0):
-        if i == total:
-            raise ValueError('Size of data incompatible with requested shape')
-        t = m  # type: Any
-        for x in range(dims - 1):
-            t = cast(MutableArray, t[idx[x]])
-        t[idx[-1]] = v
+    data = flatiter(array)
+    for i in range(count):
 
-        if i < total - 1:
-            for x in range(-1, -(dims + 1), -1):
-                if idx[x] + 1 == new_shape[x]:
+        # Navigate to the proper index to start writing data.
+        # If the dimension hasn't been created yet, create it.
+        t = m  # type: Any
+        for d, x in enumerate(range(dims - 1)):
+            if not t:
+                for _ in range(new_shape[d]):
+                    t.append([])
+            t = cast(MutableArray, t[idx[x]])
+
+        # Create the final dimension, writing all the data
+        t[:] = [next(data) for _ in range(length)]
+
+        # Update the current indexes if we aren't done copying data.
+        if i < (count - 1):
+            for x in range(-1, -(dims), -1):
+                if idx[x] + 1 == new_shape[x - 1]:
                     idx[x] = 0
                     x += -1
                 else:
                     idx[x] += 1
                     break
 
-    return m
+    return cast(MutableArray, m)
+
+
+def _shape(array: Array, size: int) -> List[int]:
+    """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
+
+    s = [size]
+    s2 = []  # type: List[int]
+    size2 = 0
+    deeper = True
+    for a in array:
+        if not isinstance(a, Sequence) or size != len(a):
+            return []
+        elif deeper:
+            if isinstance(a[0], Sequence):
+                if not size2:
+                    size2 = len(a[0])
+                s2 = _shape(a, size2)
+                if not s2:
+                    deeper = False
+            else:
+                deeper = False
+                s2 = []
+    if s2:
+        s.extend(s2)
+    return s
 
 
 def shape(array: Union[float, Array]) -> Tuple[int, ...]:
     """Get the shape of an array."""
 
-    s = []
-    t = array
-    while True:
-        if not isinstance(t, Sequence):
-            break
-        s.append(len(t))
-        t = cast(Array, t[0])
-    return tuple(s)
-
-
-def transpose(array: Array) -> MutableArray:
-    """
-    A simple transpose of a matrix.
-
-    `numpy` offers the ability to specify different axes, but right now,
-    we don't have a need for that, nor the desire to figure it out :).
-    """
-
-    s = list(reversed(shape(array)))
-    total = prod(cast(Iterator[int], s))
-
-    # Create a new zero initialized matrix with the same shape as the provided one.
-    m = zeros(s)
-    dims = len(s)
-    idx = [0] * dims
-
-    for i, v in enumerate(flatiter(array), 0):
-        if i == total:
-            raise ValueError('Size of data incompatible with requested shape')
-        t = m  # type: Any
-        for x in range(dims - 1):
-            t = cast(MutableArray, t[idx[x]])
-        t[idx[-1]] = v
-
-        if i < total - 1:
-            for x in range(dims):
-                if (idx[x] + 1) % s[x] == 0:
-                    idx[x] = 0
-                    x += 1
-                else:
-                    idx[x] += 1
-                    break
-    return m
+    if isinstance(array, Sequence):
+        s = [len(array)]
+        if not s[0]:
+            return tuple()
+        elif not isinstance(array[0], Sequence):
+            return tuple(s)
+        s.extend(_shape(array, len(array[0])))
+        return tuple(s)
+    else:
+        return tuple()
 
 
 def fill_diagonal(matrix: MutableMatrix, val: Union[float, Array] = 0.0, wrap: bool = False) -> None:

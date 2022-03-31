@@ -48,6 +48,14 @@ class TestAlgebra(unittest.TestCase):
             ]
         )
 
+    def test_transpose(self):
+        """Test transpose."""
+
+        self.assertEqual(
+            alg.transpose([[[5, 6, 7, 8, 9], [1, 2, 3, 4, 5]], [[9, 8, 7, 6, 5], [6, 5, 4, 3, 2]]]),
+            [[[5, 9], [1, 6]], [[6, 8], [2, 5]], [[7, 7], [3, 4]], [[8, 6], [4, 3]], [[9, 5], [5, 2]]]
+        )
+
     def test_arange(self):
         """Test `arange`."""
 
@@ -122,6 +130,48 @@ class TestAlgebra(unittest.TestCase):
               [2, 2, 2, 2]],
              [[2, 2, 2, 2],
               [2, 2, 2, 2]]]
+        )
+
+    def test_fill_diagonal(self):
+        """Test fiiling  a diagonal."""
+
+        m1 = alg.zeros((3, 3))
+        alg.fill_diagonal(m1, 3)
+        self.assertEqual(
+            m1,
+            [[3, 0, 0], [0, 3, 0], [0, 0, 3]]
+        )
+
+        seq = [4, 5]
+        m1 = alg.zeros((3, 3))
+        alg.fill_diagonal(m1, seq)
+        self.assertEqual(
+            m1,
+            [[4, 0, 0], [0, 5, 0], [0, 0, 4]]
+        )
+
+        m1 = alg.zeros((6, 3))
+        alg.fill_diagonal(m1, 3)
+        self.assertEqual(
+            m1,
+            [[3.0, 0.0, 0.0],
+             [0.0, 3.0, 0.0],
+             [0.0, 0.0, 3.0],
+             [0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0]]
+        )
+
+        m1 = alg.zeros((6, 3))
+        alg.fill_diagonal(m1, 3, wrap=True)
+        self.assertEqual(
+            m1,
+            [[3.0, 0.0, 0.0],
+             [0.0, 3.0, 0.0],
+             [0.0, 0.0, 3.0],
+             [0.0, 0.0, 0.0],
+             [3.0, 0.0, 0.0],
+             [0.0, 3.0, 0.0]]
         )
 
     def test_is_nan(self):
