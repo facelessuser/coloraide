@@ -775,10 +775,10 @@ def _shape(array: Array, size: int) -> Tuple[int, ...]:
                     size2 = len(a[0])
                 s2 = _shape(a, size2)
                 if not s2:
-                    deeper = False
+                    break
             else:
-                deeper = False
                 s2 = tuple()
+                break
     return s + s2 if s2 else s
 
 
