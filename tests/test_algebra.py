@@ -6,6 +6,202 @@ from coloraide import algebra as alg
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
+    maxDiff = None
+
+    def test_diag(self):
+        """Test diag."""
+
+        self.assertEqual(
+            alg.diag([3, 3, 3]),
+            [[3, 0, 0],
+             [0, 3, 0],
+             [0, 0, 3]]
+        )
+
+        self.assertEqual(
+            alg.diag([3, 3, 3], 1),
+            [[0, 3, 0, 0],
+             [0, 0, 3, 0],
+             [0, 0, 0, 3],
+             [0, 0, 0, 0]]
+        )
+
+        self.assertEqual(
+            alg.diag([3, 3, 3], -1),
+            [[0, 0, 0, 0],
+             [3, 0, 0, 0],
+             [0, 3, 0, 0],
+             [0, 0, 3, 0]]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (4, 4))),
+            [0, 5, 10, 15]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (4, 4)), 1),
+            [1, 6, 11]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (4, 4)), -1),
+            [4, 9, 14]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (8, 2))),
+            [0, 3]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (8, 2)), 1),
+            [1]
+        )
+
+        self.assertEqual(
+            alg.diag(alg.reshape(alg.arange(16), (8, 2)), -1),
+            [2, 5]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.diag(alg.reshape(alg.arange(16), (4, 2, 2)))
+
+        with self.assertRaises(ValueError):
+            alg.diag(3)
+
+    def test_broadcast_reset(self):
+        """Test broadcast reset."""
+
+        x = [[[0, 1]],
+             [[2, 3]],
+             [[4, 5]]]
+
+        y = [[0],
+             [1],
+             [-1]]
+
+        b = alg.broadcast(x, y)
+        self.assertEqual(next(b), (0, 0))
+        self.assertEqual(next(b), (1, 0))
+        b.reset()
+        self.assertEqual(
+            list(b),
+            [(0, 0), (1, 0), (0, 1), (1, 1), (0, -1), (1, -1),
+             (2, 0), (3, 0), (2, 1), (3, 1), (2, -1), (3, -1),
+             (4, 0), (5, 0), (4, 1), (5, 1), (4, -1), (5, -1)]
+        )
+
+    def test_broadcast(self):
+        """Test broadcst."""
+
+        self.assertEqual(
+            list(alg.broadcast([3], [1, 2, 3])),
+            [(3, 1), (3, 2), (3, 3)]
+        )
+
+        self.assertEqual(
+            list(alg.broadcast(3, [1, 2, 3])),
+            [(3, 1), (3, 2), (3, 3)]
+        )
+
+        self.assertEqual(
+            list(alg.broadcast([1, 2, 3], 3)),
+            [(1, 3), (2, 3), (3, 3)]
+        )
+
+        # Can't find common shape between two arrays that have no dimensions that are 1
+        with self.assertRaises(ValueError):
+            list(alg.broadcast([[3, 3], [3, 3]], [[3, 3, 3], [3, 3, 3]]))
+
+    def test_broacast_to(self):
+        """Test broadcasting to."""
+
+        self.assertEqual(
+            alg.broadcast_to(3, (3, 2)),
+            [[3, 3], [3, 3], [3, 3]]
+        )
+
+        self.assertEqual(
+            alg.broadcast_to(3, 3),
+            [3, 3, 3]
+        )
+
+        # Can't broadcast to a smaller size
+        with self.assertRaises(ValueError):
+            alg.broadcast_to([[3, 3, 3], [3, 3, 3]], (3,))
+
+        # Can't broadcast dimensions that are greater than 1 to a larger shape
+        with self.assertRaises(ValueError):
+            alg.broadcast_to([[3, 3], [3, 3]], (2, 3))
+
+    def test_shape(self):
+        """Test shape."""
+
+        self.assertEqual(
+            alg.shape(3),
+            tuple()
+        )
+
+        self.assertEqual(
+            alg.shape([1, 2]),
+            (2,)
+        )
+
+        self.assertEqual(
+            alg.shape([[1, 2], [1, 2], [1, 2]]),
+            (3, 2)
+        )
+
+        self.assertEqual(
+            alg.shape(
+                [[[2, 2, 2, 2],
+                  [2, 2, 2, 2]],
+                 [[2, 2, 2, 2],
+                  [2, 2, 2, 2]],
+                 [[2, 2, 2, 2],
+                  [2, 2, 2, 2]]],
+            ),
+            (3, 2, 4)
+        )
+
+        self.assertEqual(
+            alg.shape(
+                [[[2, 2, 2, 2],
+                  [2, 2, 2, 2]],
+                 [[2, 2, 2, 2, 2],
+                  [2, 2, 2, 2]],
+                 [[2, 2, 2, 2],
+                  [2, 2, 2, 2]]],
+            ),
+            (3, 2)
+        )
+
+        self.assertEqual(
+            alg.shape([[1, 2], [1, 2, 3], [1, 2]]),
+            (3,)
+        )
+
+        self.assertEqual(
+            alg.shape([[1, 2], [1, 2, 3], [1, 2]]),
+            (3,)
+        )
+
+        self.assertEqual(
+            alg.shape([[1, 2], [], [1, 2]]),
+            (3,)
+        )
+
+        self.assertEqual(
+            alg.shape([]),
+            tuple()
+        )
+
+        self.assertEqual(
+            alg.shape([[]]),
+            (1, 0)
+        )
+
     def test_ones(self):
         """Test ones matrix."""
 
@@ -46,6 +242,16 @@ class TestAlgebra(unittest.TestCase):
                 [2, 3],
                 [4, 5]
             ]
+        )
+
+        # Can't adjust shape if the shape doesn't match the data size
+        with self.assertRaises(ValueError):
+            alg.reshape([0, 1, 2, 3, 4, 5], (4, 2))
+
+        # We are already at (6,), but it won't break anything
+        self.assertEqual(
+            alg.reshape([0, 1, 2, 3, 4, 5], 6),
+            [0, 1, 2, 3, 4, 5]
         )
 
     def test_transpose(self):
@@ -119,6 +325,12 @@ class TestAlgebra(unittest.TestCase):
             [1, 2, 3, 4, 5, 6, 7, 8, 9]
         )
 
+        with self.assertRaises(ValueError):
+            list(alg.flatiter([[1, 2], []]))
+
+        with self.assertRaises(ValueError):
+            list(alg.flatiter([[[1, 2], [1, 2, 3]], [1, 2]]))
+
     def test_full(self):
         """Test full."""
 
@@ -130,6 +342,38 @@ class TestAlgebra(unittest.TestCase):
               [2, 2, 2, 2]],
              [[2, 2, 2, 2],
               [2, 2, 2, 2]]]
+        )
+
+        self.assertEqual(
+            alg.full(
+                (3, 2, 4),
+                [[[0, 1, 2, 3],
+                  [4, 5, 6, 7]],
+                 [[0, 1, 2, 3],
+                  [4, 5, 6, 7]],
+                 [[0, 1, 2, 3],
+                  [4, 5, 6, 7]]]
+            ),
+            [[[0, 1, 2, 3],
+              [4, 5, 6, 7]],
+             [[0, 1, 2, 3],
+              [4, 5, 6, 7]],
+             [[0, 1, 2, 3],
+              [4, 5, 6, 7]]]
+        )
+
+        self.assertEqual(
+            alg.full(
+                (3, 2, 4),
+                [[0, 1, 2, 3],
+                 [4, 5, 6, 7]]
+            ),
+            [[[0, 1, 2, 3],
+              [4, 5, 6, 7]],
+             [[0, 1, 2, 3],
+              [4, 5, 6, 7]],
+             [[0, 1, 2, 3],
+              [4, 5, 6, 7]]]
         )
 
     def test_fill_diagonal(self):
@@ -173,6 +417,14 @@ class TestAlgebra(unittest.TestCase):
              [3.0, 0.0, 0.0],
              [0.0, 3.0, 0.0]]
         )
+
+        # Dimensions must be at least 2D
+        with self.assertRaises(ValueError):
+            alg.fill_diagonal([0, 0, 0], 3)
+
+        # Dimensions over 2D require a equal dimensions
+        with self.assertRaises(ValueError):
+            alg.fill_diagonal(alg.zeros((3, 2, 4)), 3)
 
     def test_no_nan(self):
         """Test no `NaN`."""
@@ -253,6 +505,50 @@ class TestAlgebra(unittest.TestCase):
             [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
         )
 
+        m1 = [[[[1, 2, 3, 4],
+                [5, 6, 7, 8]],
+               [[10, 20, 30, 40],
+                [50, 60, 70, 80]],
+               [[15, 25, 35, 45],
+                [55, 65, 75, 85]]]]
+
+        m2 = [[[[11, 21],
+                [31, 41],
+                [51, 61],
+                [71, 81]],
+               [[21, 11],
+                [41, 12],
+                [51, 13],
+                [81, 14]]],
+              [[[5, 21],
+                [5, 41],
+                [5, 61],
+                [5, 81]],
+               [[21, 3],
+                [41, 3],
+                [51, 3],
+                [81, 3]]]]
+
+        self.assertEqual(
+            alg.dot(m1, m2),
+            [[[[[[510, 610], [580, 130]], [[50, 610], [580, 30]]],
+               [[[1166, 1426], [1356, 330]], [[130, 1426], [1356, 78]]]],
+              [[[[5100, 6100], [5800, 1300]], [[500, 6100], [5800, 300]]],
+               [[[11660, 14260], [13560, 3300]], [[1300, 14260], [13560, 780]]]],
+              [[[[5920, 7120], [6770, 1550]], [[600, 7120], [6770, 360]]],
+               [[[12480, 15280], [14530, 3550]], [[1400, 15280], [14530, 840]]]]]]
+        )
+
+        self.assertEqual(
+            alg.dot([40, 0.3, 12, 9], m2),
+            [[[1700.3, 2313.3], [2193.3, 725.6]], [[306.5, 2313.3], [2193.3, 183.9]]]
+        )
+
+        self.assertEqual(
+            alg.dot(m2, [40, 12]),
+            [[[692, 1732, 2772, 3812], [972, 1784, 2196, 3408]], [[452, 692, 932, 1172], [876, 1676, 2076, 3276]]]
+        )
+
     def test_multiply(self):
         """Test multiply."""
 
@@ -302,6 +598,68 @@ class TestAlgebra(unittest.TestCase):
                 [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
             ),
             [[8, 8, 8], [2, 0, 2], [4, 6, 8]]
+        )
+
+        m1 = [[[[1, 2, 3, 4],
+                [5, 6, 7, 8]],
+               [[10, 20, 30, 40],
+                [50, 60, 70, 80]],
+               [[15, 25, 35, 45],
+                [55, 65, 75, 85]]]]
+
+        m2 = [[[[50, 60, 70, 80],
+                [15, 25, 35, 45]],
+               [[10, 20, 30, 40],
+                [5, 6, 7, 8]],
+               [[1, 2, 3, 4],
+                [55, 65, 75, 85]]]]
+
+        self.assertEqual(
+            alg.multiply(m1, [1, 2, 3, 4]),
+            [[[[1, 4, 9, 16],
+               [5, 12, 21, 32]],
+              [[10, 40, 90, 160],
+               [50, 120, 210, 320]],
+              [[15, 50, 105, 180],
+               [55, 130, 225, 340]]]]
+        )
+
+        self.assertEqual(
+            alg.multiply([1, 2, 3, 4], m1),
+            [[[[1, 4, 9, 16],
+               [5, 12, 21, 32]],
+              [[10, 40, 90, 160],
+               [50, 120, 210, 320]],
+              [[15, 50, 105, 180],
+               [55, 130, 225, 340]]]]
+        )
+
+        self.assertEqual(
+            alg.multiply(m1, m2),
+            [[[[50, 120, 210, 320], [75, 150, 245, 360]],
+              [[100, 400, 900, 1600], [250, 360, 490, 640]],
+              [[15, 50, 105, 180], [3025, 4225, 5625, 7225]]]]
+        )
+
+        self.assertEqual(
+            alg.multiply(m2, m1),
+            [[[[50, 120, 210, 320], [75, 150, 245, 360]],
+              [[100, 400, 900, 1600], [250, 360, 490, 640]],
+              [[15, 50, 105, 180], [3025, 4225, 5625, 7225]]]]
+        )
+
+        self.assertEqual(
+            alg.multiply(m1, 3),
+            [[[[3, 6, 9, 12], [15, 18, 21, 24]],
+              [[30, 60, 90, 120], [150, 180, 210, 240]],
+              [[45, 75, 105, 135], [165, 195, 225, 255]]]]
+        )
+
+        self.assertEqual(
+            alg.multiply(3, m1),
+            [[[[3, 6, 9, 12], [15, 18, 21, 24]],
+              [[30, 60, 90, 120], [150, 180, 210, 240]],
+              [[45, 75, 105, 135], [165, 195, 225, 255]]]]
         )
 
     def test_divide(self):
@@ -384,6 +742,7 @@ class TestAlgebra(unittest.TestCase):
                 [0.14285714285714285, 0.08333333333333333, 0.05555555555555555]
             ]
         )
+        self.assertEqual(alg.divide(8, 4), 2)
 
     def test_add(self):
         """Test addition."""

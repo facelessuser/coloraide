@@ -73,7 +73,11 @@ def round_half_up(n: float, scale: int = 0) -> float:
     return math.floor(n * mult + 0.5) / mult
 
 
-def clamp(value: float, mn: Optional[float] = None, mx: Optional[float] = None) -> float:
+def clamp(
+    value: SupportsFloatOrInt,
+    mn: Optional[SupportsFloatOrInt] = None,
+    mx: Optional[SupportsFloatOrInt] = None
+) -> SupportsFloatOrInt:
     """Clamp the value to the the given minimum and maximum."""
 
     if mn is not None and mx is not None:
@@ -142,15 +146,6 @@ def _extract_dimension(
             yield from cast(Array, _extract_dimension(cast(Array, m2), target, depth + 1))
 
 
-def _rcopy(a: Union[float, Array]) -> Union[float, MutableArray]:
-    """Recursive copy, but ensure mutable."""
-
-    if not isinstance(a, Sequence):
-        return a
-
-    return cast(MutableArray, [_rcopy(x) if isinstance(x, Sequence) else x for x in a])
-
-
 def dot(
     a: Union[float, Array],
     b: Union[float, Array],
@@ -159,7 +154,13 @@ def dot(
     """
     Get dot product of simple numbers, vectors, and matrices.
 
-    The only broadcasting that is done is to expand single size 1 dimensions.
+    Matrices will be detected and the appropriate logic applied
+    unless `dims` is provided. `dims` should simply describe the
+    number of dimensions of `a` and `b`: (2, 1) for a 2D and 1D array.
+    Providing `dims` will sidestep analyzing the matrix for a more
+    performant operation. Anything dimensions above 2 will be treated
+    as an ND x MD scenario and the actual dimensions will be extracted
+    regardless due to necessity.
     """
 
     if dims is None or dims == ND_MD:
@@ -245,10 +246,13 @@ def _math(
     - operations between two inputs whose number of dimensions are below 2
     - operations involving at least one scalar
 
-    All other operations will attempt to be broadcasted through the generalized means.
-
-    Ragged, nested lists are not encouraged and will either break or return confusing data.
-    We do not check for them currently for performance reasons.
+    Matrices will be detected and the appropriate logic applied
+    unless `dims` is provided. `dims` should simply describe the
+    number of dimensions of `a` and `b`: (2, 1) for a 2D and 1D array.
+    Providing `dims` will sidestep analyzing the matrix for a more
+    performant operation. Anything dimensions above 2 will be treated
+    as an ND x MD scenario and the actual dimensions will be extracted
+    regardless due to necessity.
     """
 
     if not dims or dims == ND_MD:
@@ -296,10 +300,8 @@ def _math(
         elif dims_a == 2:
             # Apply math to 2-D matrix and number
             return cast(MutableVector, [[op(i, cast(float, b)) for i in row] for row in cast(Matrix, a)])
-        elif dims_b == 2:
-            # Apply math to a number and a matrix
-            return cast(MutableVector, [[op(cast(float, a), i) for i in row] for row in cast(Matrix, b)])
-        return op(a, b)
+        # Apply math to a number and a matrix
+        return cast(MutableVector, [[op(cast(float, a), i) for i in row] for row in cast(Matrix, b)])
 
     # Inputs are at least 2-D dimensions or below on both sides
     if dims_a == 1:
@@ -412,17 +414,23 @@ class BroadcastTo:
             self.expand = 1
             self.repeat = 1
 
-    def _chunk_data(self) -> List[float]:
-        """Chunk the source data using are pre-calculated understanding of data amounts and length."""
-
-        return self.data[self._chunk_index:self._chunk_index + self.length]
+        self.reset()
 
     def reset(self) -> None:
         """Reset."""
 
-        # Zero out the loops to halt further iterations.
-        self._loop1 = 0
-        self._loop2 = 0
+        # Setup and return the iterator.
+        self._loop1 = self.repeat
+        self._loop2 = self.expand
+        self._chunk_subindex = 0
+        self._chunk_max = self.amount * self.length
+        self._chunk_index = 0
+        self._chunk = self._chunk_data()
+
+    def _chunk_data(self) -> List[float]:
+        """Chunk the source data using are pre-calculated understanding of data amounts and length."""
+
+        return self.data[self._chunk_index:self._chunk_index + self.length]
 
     def __next__(self) -> float:
         """Next."""
@@ -462,14 +470,6 @@ class BroadcastTo:
 
     def __iter__(self) -> Iterator[float]:
         """Return the broadcasted array, piece by piece."""
-
-        # Setup and return the iterator.
-        self._loop1 = self.repeat
-        self._loop2 = self.expand
-        self._chunk_subindex = 0
-        self._chunk_max = self.amount * self.length
-        self._chunk_index = 0
-        self._chunk = self._chunk_data()
 
         return self
 
@@ -531,12 +531,20 @@ class Broadcast:
             BroadcastTo(a2, sb, tuple(sb1), tuple(sb2))
         ]
 
+        self._init()
+
+    def _init(self) -> None:
+        """Setup main iterator."""
+
+        self._iter = zipl(self.iters[0], self.iters[1])
+
     def reset(self) -> None:
         """Reset iterator."""
 
         # Reset all the child iterators.
         for i in self.iters:
             i.reset()
+        self._init()
 
     def __next__(self) -> Tuple[float, float]:
         """Next."""
@@ -548,12 +556,17 @@ class Broadcast:
         """Iterate."""
 
         # Setup and and return the iterator.
-        self._iter = zipl(self.iters[0], self.iters[1])
         return self
 
 
 def broadcast(a1: Array, a2: Array) -> Broadcast:
     """Broadcast."""
+
+    if not isinstance(a1, Sequence):
+        a1 = [a1]
+
+    if not isinstance(a2, Sequence):
+        a2 = [a2]
 
     return Broadcast(a1, a2)
 
@@ -562,7 +575,10 @@ def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
     """Broadcast array to a shape."""
 
     if not isinstance(s, Sequence):
-        s = tuple([s])
+        s = (s,)
+
+    if not isinstance(a, Sequence):
+        a = [a]
 
     s_orig = shape(a)
     ndim_orig = len(s_orig)
@@ -575,7 +591,7 @@ def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
         s1 = ([1] * (ndim_target - ndim_orig)) + s1
 
     for d1, d2 in zip(s1, s):
-        if d1 != d2 and d1 != 1 and d1 > d2:
+        if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
 
     return reshape(list(BroadcastTo(a, s_orig, tuple(s1), tuple(s))), s)
@@ -622,13 +638,11 @@ def _flatiter(array: Array, array_shape: Tuple[int, ...]) -> Iterator[float]:
     nested = len(array_shape) > 1
     for a in array:
         if nested:
-            if len(cast(Array, a)) != array_shape[1]:
-                raise ValueError('Ragged arrays are not supported')
             yield from _flatiter(cast(Array, a), array_shape[1:])
-            continue
-        if isinstance(a, Sequence):
+        elif isinstance(a, Sequence):
             raise ValueError('Ragged arrays are not supported')
-        yield a
+        else:
+            yield a
 
 
 def flatiter(array: Array) -> Iterator[float]:
@@ -800,8 +814,8 @@ def _shape(array: Array, size: int) -> Tuple[int, ...]:
                 if not s2:
                     break
             else:
+                deeper = False
                 s2 = tuple()
-                break
     return s + s2 if s2 else s
 
 
@@ -859,25 +873,36 @@ def fill_diagonal(matrix: MutableMatrix, val: Union[float, Array] = 0.0, wrap: b
 
 def diag(array: Array, k: int = 0) -> MutableArray:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
+    s = shape(array)
+    dims = len(s)
+    if not dims or dims > 2:
+        raise ValueError('Array must be 1-D or 2-D in shape')
 
-    size = len(array)
+    if dims == 1:
+        # Calculate size of matrix to accomodate the diagonal
+        size = s[0] - k if k < 0 else s[0] + k if k else s[0]
+        maximum = size - 1
+        minimum = 0
 
-    if not array or not isinstance(array[0], Sequence):
-        m = []  # type: MutableMatrix
         # Create a diagonal matrix with the provided vector
-        for i, value in enumerate(cast(Vector, array)):
-            m.append(([0.0] * i) + [value] + ([0.0] * (size - i - 1)))
+        m = []  # type: MutableMatrix
+        for i in range(size):
+            pos = i + k
+            idx = i if k >= 0 else pos
+            m.append(
+                ([0.0] * clamp(pos, minimum, maximum)) +
+                [cast(float, array[idx]) if (0 <= pos < size) else 0.0] +
+                ([0.0] * clamp(size - pos - 1, minimum, maximum))
+            )
         return m
-    else:  # pragma: no cover
-        d = []  # type: MutableVector
-        for r in cast(Matrix, array):
-            # Check that the matrix is square
-            if len(r) != size:
-                raise ValueError('Matrix must be a n x n matrix')
-            # Return just the specified diagonal vector
-            if 0 <= k < size:
-                d.append(r[k])
-            k += 1
+    else:
+        # Extract the requested diagonal from a rectangular 2-D matrix
+        size = s[1]
+        d = []
+        for i, r in enumerate(array):
+            pos = i + k
+            if (0 <= pos < size):
+                d.append(cast(Vector, r)[pos])
         return d
 
 
