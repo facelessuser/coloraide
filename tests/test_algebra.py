@@ -9,7 +9,7 @@ class TestAlgebra(unittest.TestCase):
     maxDiff = None
 
     def test_diag(self):
-        """Test diag."""
+        """Test `diag`."""
 
         self.assertEqual(
             alg.diag([3, 3, 3]),
@@ -93,7 +93,7 @@ class TestAlgebra(unittest.TestCase):
         )
 
     def test_broadcast(self):
-        """Test broadcst."""
+        """Test broadcast."""
 
         self.assertEqual(
             list(alg.broadcast([3], [1, 2, 3])),

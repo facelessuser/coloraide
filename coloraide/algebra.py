@@ -477,66 +477,55 @@ class BroadcastTo:
 class Broadcast:
     """Broadcast."""
 
-    def __init__(self, a1: Array, a2: Array) -> None:
+    def __init__(self, *arrays: Array) -> None:
         """Broadcast."""
 
-        sa = shape(a1)
-        sb = shape(a2)
+        # Determine maximum dimensions
+        shapes = []
+        arrays2 = []
+        max_dims = 0
+        for a in arrays:
+            arrays2.append([a] if not isinstance(a, Sequence) else a)
+            s = shape(arrays2[-1])
+            dims = len(s)
+            if dims > max_dims:
+                max_dims = dims
+            shapes.append(s)
 
-        # Stage: 1
-        # Pad the left side of the array with the smallest number of dimensions.
-        # Smallest array is padding with 1s.
-        sa1 = list(sa)
-        sb1 = list(sb)
-        ndim_a = len(sa)
-        ndim_b = len(sb)
-        if ndim_a < ndim_b:
-            sa1 = ([1] * (ndim_b - ndim_a)) + sa1
-        elif ndim_b < ndim_a:
-            sb1 = ([1] * (ndim_a - ndim_b)) + sb1
+        # Adjust array shapes py padding out with '1's until matches max dimensions
+        stage1_shapes = []
+        for s in shapes:
+            dims = len(s)
+            if dims < max_dims:
+                stage1_shapes.append(((1,) * (max_dims - dims)) + s)
+            else:
+                stage1_shapes.append(s)
 
-        # Common number of dimensions
-        ndims = len(sa1)
+        # Determine a common shape, if possible
+        s2 = []
+        for dim in zip(*stage1_shapes):
+            maximum = max(dim)
+            if not all([d == 1 or d == maximum for d in dim]):
+                raise ValueError("Could not broadcast arrays as shapes are incompatible")
+            s2.append(maximum)
+        common = tuple(s2)
 
-        # Stage: 2
-        # Iterate the dimensions using the largest of the two
-        # if, and only if, the smallest dimension is 1.
-        sa2 = sa1[:]
-        sb2 = sb1[:]
-        for i in range(ndims):
-            a_dim = sa2[i]
-            b_dim = sb2[i]
-
-            if a_dim == b_dim:
-                continue
-
-            if a_dim == 1 or b_dim == 1:
-                larger = max(a_dim, b_dim)
-
-                if larger == a_dim:
-                    sb2[i] = larger
-                else:
-                    sa2[i] = larger
-                continue
-
-            raise ValueError("Could not broadcast between {} and {}".format(sa, sb))
+        # Create iterators to "broadcast to"
+        self.iters = []
+        for a, s0, s1 in zip(arrays2, shapes, stage1_shapes):
+            self.iters.append(BroadcastTo(a, s0, s1, common))
 
         # I don't think this is done the same way as `numpy`.
         # But shouldn't matter for what we do.
-        self.shape = sa2
-        self.ndims = ndims
-        self.size = prod(sa2)
-        self.iters = [
-            BroadcastTo(a1, sa, tuple(sa1), tuple(sa2)),
-            BroadcastTo(a2, sb, tuple(sb1), tuple(sb2))
-        ]
-
+        self.shape = common
+        self.ndims = max_dims
+        self.size = prod(common)
         self._init()
 
     def _init(self) -> None:
         """Setup main iterator."""
 
-        self._iter = zipl(self.iters[0], self.iters[1])
+        self._iter = zipl(*self.iters)
 
     def reset(self) -> None:
         """Reset iterator."""
@@ -559,16 +548,10 @@ class Broadcast:
         return self
 
 
-def broadcast(a1: Array, a2: Array) -> Broadcast:
+def broadcast(*arrays: Array) -> Broadcast:
     """Broadcast."""
 
-    if not isinstance(a1, Sequence):
-        a1 = [a1]
-
-    if not isinstance(a2, Sequence):
-        a2 = [a2]
-
-    return Broadcast(a1, a2)
+    return Broadcast(*arrays)
 
 
 def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
