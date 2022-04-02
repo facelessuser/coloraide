@@ -56,23 +56,32 @@ due to [limitations of floating-point arithmetic][floating-point] and precision 
 edge cases where colors don't round trip perfectly. By default, `in_gamut` allows for a tolerance of `#!py3 0.000075` to
 account for such cases where a color is "close enough". If desired, this "tolerance" can be adjusted.
 
-Let's consider CIELAB. The sRGB round trip through CIELAB for `#!color white` does not perfectly convert back to the
-original color. We can see that when using a tolerance of zero, the color is considered out of gamut. Depending on what
-you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be desirable
-to have some tolerance, and other times not.
+Let's consider CIELAB with a D65 white point. The sRGB round trip through CIELAB D65 for `#!color white` does not
+perfectly convert back to the original color. This is due to the perils of floating point arithmetic.
 
 ```playground
-Color('color(srgb 1 1 1)').convert('lab').convert('srgb').coords()
-Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut()
-Color('color(srgb 1 1 1)').convert('lab').convert('srgb').in_gamut(tolerance=0)
+Color('color(srgb 1 1 1)').convert('lab-d65').coords()
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').coords()
 ```
 
-On the topic of tolerance, there are some color models that are alternate representations of an existing color space.
-For instance, the cylindrical spaces HSL, HSV, and HWB are just different color models for the sRGB color space. They
-are are essentially the sRGB color space, just with cylindrical coordinates that isolate certain attributes of the
-color space: saturation, whiteness, blackness, etc. So their gamut is exactly the same as the sRGB space, because they
-are the sRGB color space. So it stands to reason that simply using the sRGB gamut check for them should be sufficient,
-and if we are using strict tolerance, this would be true.
+We can see that when using a tolerance of zero, and gamut checking in sRGB, that the color is considered out of gamut.
+This makes sense as the round trip through CIELAB D65 and back is so very close, but ever so slightly off. Depending on
+what you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be
+desirable to have some tolerance, and other times not.
+
+```playground
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').coords()
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut()
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut(tolerance=0)
+```
+
+On the topic of tolerance, lets consider some color models that do not handle out of gamut colors very well. There are
+some color models that are alternate representations of an existing color space. For instance, the cylindrical spaces
+HSL, HSV, and HWB are just different color models for the sRGB color space. They are are essentially the sRGB color
+space, just with cylindrical coordinates that isolate certain attributes of the color space: saturation, whiteness,
+blackness, etc. So their gamut is exactly the same as the sRGB space, because they are the sRGB color space. So it
+stands to reason that simply using the sRGB gamut check for them should be sufficient, and if we are using strict
+tolerance, this would be true.
 
 ```playground
 Color('rgb(255 255 255)').in_gamut('srgb', tolerance=0)
@@ -117,10 +126,10 @@ If the Cartesian check is the only desired check, and the strange cylindrical va
 problem, `srgb` can always be specified. `#!py3 tolerance=0` can also be used to constrain the check to values exactly
 in the gamut.
 
-When a color is precisely in gamut, HSL has a very tight conversion to and from sRGB. A color that is gamut, will remain
-in gamut throughout the conversion, forwards and backwards. Okhsl and Okhsv, on the other hand, are color models have
-a looser conversion algorithm. While the constrains mimic the traditional HSL and HSV boundaries, the edges of those
-boundaries do not always convert precisely back into the sRGB gamut.
+When a color is precisely in gamut, HSL has a very tight conversion to and from sRGB. A color that is in gamut, will
+remain in gamut throughout the conversion, forwards and backwards. Okhsl and Okhsv, on the other hand, are color models
+have a looser conversion algorithm. While the constrains mimic the traditional HSL and HSV boundaries, the edges of
+those boundaries do not always convert precisely back into the sRGB gamut.
 
 Okhsl and Okhsv are color models that more approximate the sRGB gamut, and seem to expect some clipping and/or rounding
 when going back to sRGB. Adjusting the tolerance for these color models may be sufficient until you are ready to

@@ -2,6 +2,9 @@
 
 ## 0.15.0
 
+- **NEW**: Regenerate all matrices with our own matrix tools so that there is consistency between precision of
+  pre-generated matrices and on-the-fly matrix generation. Reduces some noise in some color space transforms.
+- **NEW**: All matrix and math utilities have been moved to `coloraide.algebra`.
 - **NEW**: Performance improvements.
 - **FIX**: Fix rare issue where precision adjustment could fail.
 - **FIX**: Fix `util.divide` logic when dividing a number or vector by a matrix. There are no actual usage of these
