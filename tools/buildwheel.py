@@ -9,7 +9,7 @@ import shutil
 urls = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
     "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/9f/52/801913c6da8bb8f3657e8f15dafb450079f225d8564ada518bb545812417/coloraide_extras-0.2.0-py3-none-any.whl"  # noqa: E501
+    # "https://files.pythonhosted.org/packages/9f/52/801913c6da8bb8f3657e8f15dafb450079f225d8564ada518bb545812417/coloraide_extras-0.2.0-py3-none-any.whl"  # noqa: E501
 ]
 
 # Keep a compatible version in the repository so we can always release docs.
@@ -17,7 +17,7 @@ urls = [
 # the release, locally upload it and then make a release.
 # Afterwards, once `coloraide` is available, we can release the official
 # `coloraide-extras`. This prevents our documentation from ever breaking.
-keep = {'coloraide_extras-0.2.0-py3-none-any.whl'}
+keep = {'coloraide_extras-0.3.0-py3-none-any.whl'}
 output = 'docs/src/markdown/playground/'
 externals = {}
 for url in urls:
