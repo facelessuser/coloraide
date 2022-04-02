@@ -1,5 +1,5 @@
 """Test HSL library."""
-from coloraide.util import NaN
+from coloraide import NaN
 import unittest
 import math
 from . import util

@@ -1,5 +1,5 @@
 """Test Okhsl library."""
-from coloraide.util import NaN
+from coloraide import NaN
 import unittest
 from . import util
 from coloraide import Color

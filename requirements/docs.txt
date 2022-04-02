@@ -1,4 +1,4 @@
-coloraide_extras
+./docs/src/markdown/playground/coloraide_extras-0.2.0-py3-none-any.whl
 mkdocs_pymdownx_material_extras>=2.0
 git+https://github.com/facelessuser/pymdown-lexers.git
 mkdocs-git-revision-date-localized-plugin

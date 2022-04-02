@@ -2,21 +2,10 @@
 import math
 import warnings
 from functools import wraps
-from typing import Optional, Sequence, List, Union, Any, Callable, Mapping, Tuple, cast, TYPE_CHECKING
+from . import algebra as alg
+from .types import MutableVector, Vector
+from typing import Any, Callable
 
-if TYPE_CHECKING:  # pragma: no cover
-    from .color import Color
-
-Vector = Sequence[float]
-Matrix = Sequence[Sequence[float]]
-Array = Union[Vector, Matrix]
-MutableVector = List[float]
-MutableMatrix = List[List[float]]
-MutableArray = Union[MutableMatrix, MutableVector]
-ColorInput = Union['Color', str, Mapping[str, Any]]
-
-NaN = float('nan')
-INF = float('inf')
 ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
@@ -121,9 +110,9 @@ def pq_st2084_inverse_eotf(
 
     adjusted = []
     for c in values:
-        c = npow(c / 10000, m1)
+        c = alg.npow(c / 10000, m1)
         r = (c1 + c2 * c) / (1 + c3 * c)
-        adjusted.append(npow(r, m2))
+        adjusted.append(alg.npow(r, m2))
     return adjusted
 
 
@@ -142,9 +131,9 @@ def pq_st2084_eotf(
 
     adjusted = []
     for c in values:
-        c = npow(c, im2)
+        c = alg.npow(c, im2)
         r = (c - c1) / (c2 - c3 * c)
-        adjusted.append(10000 * npow(r, im1))
+        adjusted.append(10000 * alg.npow(r, im1))
     return adjusted
 
 
@@ -160,34 +149,10 @@ def absxyzd65_to_xyz_d65(absxyzd65: Vector) -> MutableVector:
     return [max(c / YW, 0) for c in absxyzd65]
 
 
-def npow(base: float, exp: float) -> float:
-    """Perform `pow` with a negative number."""
-
-    return math.copysign(abs(base) ** exp, base)
-
-
 def constrain_hue(hue: float) -> float:
     """Constrain hue to 0 - 360."""
 
-    return hue % 360 if not is_nan(hue) else hue
-
-
-def is_nan(value: float) -> bool:
-    """Check if value is "not a number"."""
-
-    return math.isnan(value)
-
-
-def no_nans(value: Vector, default: float = 0.0) -> MutableVector:
-    """Ensure there are no `NaN` values in a sequence."""
-
-    return [(default if is_nan(x) else x) for x in value]
-
-
-def no_nan(value: float, default: float = 0.0) -> float:
-    """Convert list of numbers or single number to valid numbers."""
-
-    return default if is_nan(value) else value
+    return hue % 360 if not alg.is_nan(hue) else hue
 
 
 def cmp_coords(c1: Vector, c2: Vector) -> bool:
@@ -199,272 +164,6 @@ def cmp_coords(c1: Vector, c2: Vector) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def is_vec_mat(obj: Union[float, Vector, Matrix]) -> Tuple[bool, bool]:
-    """Is a vector or matrix."""
-
-    is_vec = is_mat = False
-    if isinstance(obj, Sequence):
-        if isinstance(obj[0], Sequence):
-            is_mat = True
-        else:
-            is_vec = True
-    return is_vec, is_mat
-
-
-def dot(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """Get dot product of simple numbers, vectors, and 2D matrices and/or numbers."""
-
-    is_a_vec, is_a_mat = is_vec_mat(a)
-    is_b_vec, is_b_mat = is_vec_mat(b)
-
-    if is_a_vec:
-        if is_b_vec:
-            # Dot product of two vectors
-            return sum([x * y for x, y in zip(cast(Vector, a), cast(Vector, b))])
-        elif is_b_mat:
-            # Dot product of vector and a matrix
-            return [sum([x * y for x, y in zip(cast(Vector, a), col)]) for col in zip(*cast(Matrix, b))]
-
-    elif is_a_mat:
-        if is_b_vec:
-            # Dot product of matrix and a vector
-            return [sum([x * y for x, y in zip(row, cast(Vector, b))]) for row in cast(Matrix, a)]
-        elif is_b_mat:
-            # Dot product of two matrices
-            return cast(
-                MutableMatrix,
-                [[sum(x * y for x, y in zip(row, col)) for col in zip(*cast(Matrix, b))] for row in cast(Matrix, a)]
-            )
-
-    # Trying to dot a number with a vector or a matrix, so just multiply
-    return multiply(a, b)
-
-
-def multiply(a: Union[float, Array], b: Union[float, Array]) -> Union[float, MutableArray]:
-    """Multiply simple numbers, vectors, and 2D matrices."""
-
-    is_a_vec, is_a_mat = is_vec_mat(a)
-    is_b_vec, is_b_mat = is_vec_mat(b)
-
-    if is_a_vec:
-        if is_b_vec:
-            # Multiply two vectors
-            return cast(MutableVector, [x * y for x, y in zip(cast(Vector, a), cast(Vector, b))])
-        elif is_b_mat:
-            # Multiply vector and a matrix
-            return cast(MutableMatrix, [[x * y for x, y in zip(row, cast(Vector, a))] for row in cast(Matrix, b)])
-        # Multiply a vector and a number
-        return cast(MutableVector, [i * cast(float, b) for i in cast(Vector, a)])
-
-    elif is_a_mat:
-        if is_b_vec:
-            # Multiply matrix and a vector
-            return cast(MutableMatrix, [[x * y for x, y in zip(row, cast(Vector, b))] for row in cast(Matrix, a)])
-        elif is_b_mat:
-            # Multiply two matrices
-            return cast(
-                MutableMatrix,
-                [[x * y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
-            )
-        # Multiply a matrix and a number
-        return cast(MutableVector, [[i * cast(float, b) for i in row] for row in cast(Matrix, a)])
-
-    if is_b_vec:
-        # Multiply a number and a vector
-        return cast(MutableVector, [i * cast(float, a) for i in cast(Vector, b)])
-    elif is_b_mat:
-        # Multiply a number and a matrix
-        return cast(MutableVector, [[i * cast(float, a) for i in row] for row in cast(Matrix, b)])
-
-    # Multiply two numbers
-    return cast(float, a) * cast(float, b)
-
-
-def divide(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]:
-    """Divide simple numbers, vectors, and 2D matrices."""
-
-    is_a_vec, is_a_mat = is_vec_mat(a)
-    is_b_vec, is_b_mat = is_vec_mat(b)
-
-    if is_a_vec:
-        if is_b_vec:
-            # Divide two vectors
-            return cast(MutableVector, [x / y for x, y in zip(cast(Vector, a), cast(Vector, b))])
-        elif is_b_mat:
-            # Divide vector and a matrix
-            return cast(
-                MutableMatrix,
-                [[x / y for x, y in zip(cast(Vector, a), row)] for row in cast(Matrix, b)]
-            )
-        # Divide a vector and a number
-        return cast(MutableVector, [i / cast(float, b) for i in cast(Vector, a)])
-
-    elif is_a_mat:
-        if is_b_vec:
-            # Divide matrix and a vector
-            return cast(MutableMatrix, [[x / y for x, y in zip(row, cast(Vector, b))] for row in cast(Matrix, a)])
-        elif is_b_mat:
-            # Divide two matrices
-            return cast(
-                MutableMatrix,
-                [[x / y for x, y in zip(ra, rb)] for ra, rb in zip(cast(Matrix, a), cast(Matrix, b))]
-            )
-        # Divide a matrix and number
-        return cast(MutableVector, [[i / cast(float, b) for i in row] for row in cast(Matrix, a)])
-
-    if is_b_vec:
-        # Divide a number and vector
-        return cast(MutableVector, [cast(float, a) / i for i in cast(Vector, b)])
-    elif is_b_mat:
-        # Divide a number and matrix
-        return cast(MutableVector, [[cast(float, a) / i for i in row] for row in cast(Matrix, b)])
-
-    # Divide two numbers
-    return cast(float, a) / cast(float, b)
-
-
-def diag(v: Array, k: int = 0) -> MutableArray:
-    """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
-
-    size = len(v)
-
-    if not isinstance(v[0], Sequence):
-        m = []  # type: MutableMatrix
-        # Create a diagonal matrix with the provided vector
-        for i, value in enumerate(cast(Vector, v)):
-            m.append(([0.0] * i) + [value] + ([0.0] * (size - i - 1)))
-        return m
-    else:  # pragma: no cover
-        d = []  # type: MutableVector
-        for r in cast(Matrix, v):
-            # Check that the matrix is square
-            if len(r) != size:
-                raise ValueError('Matrix must be a n x n matrix')
-            # Return just the specified diagonal vector
-            if 0 <= k < size:
-                d.append(r[k])
-            k += 1
-        return d
-
-
-def inv(matrix: Matrix) -> MutableMatrix:
-    """
-    Invert the matrix.
-
-    Derived from https://github.com/ThomIves/MatrixInverse.
-
-    While not as performant as using `numpy`, we are often caching any
-    inversion we are doing, so this keeps us from having to require all
-    of `numpy` for the few hits to this we do.
-
-    This is free and unencumbered software released into the public domain.
-
-    Anyone is free to copy, modify, publish, use, compile, sell, or
-    distribute this software, either in source code form or as a compiled
-    binary, for any purpose, commercial or non-commercial, and by any
-    means.
-
-    In jurisdictions that recognize copyright laws, the author or authors
-    of this software dedicate any and all copyright interest in the
-    software to the public domain. We make this dedication for the benefit
-    of the public at large and to the detriment of our heirs and
-    successors. We intend this dedication to be an overt act of
-    relinquishment in perpetuity of all present and future rights to this
-    software under copyright law.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-    OTHER DEALINGS IN THE SOFTWARE.
-
-    For more information, please refer to <http://unlicense.org/>
-    """
-
-    size = len(matrix)
-    indices = list(range(size))
-    m = [list(x) for x in matrix]
-
-    # Ensure we have a square matrix
-    for r in m:
-        if len(r) != size:  # pragma: no cover
-            raise ValueError('Matrix must be a n x n matrix')
-
-    # Create an identity matrix of the same size as our provided vector
-    im = cast(List[List[float]], diag([1] * size))
-
-    # Iterating through each row, we will scale each row by it's "focus diagonal".
-    # Then using the scaled row, we will adjust the other rows.
-    # ```
-    # [[fd, 0,  0 ]
-    #  [0,  fd, 0 ]
-    #  [0,  0,  fd]]
-    # ```
-    for fd in indices:
-        # We will divide each value in the row by the "focus diagonal" value.
-        # If the we have a zero for the given `fd` value, we cannot invert.
-        denom = m[fd][fd]
-        if denom == 0:  # pragma: no cover
-            raise ValueError('Matrix is not invertable')
-
-        # We are converting the matrix to the identity and vice versa,
-        # So scale the diagonal such that it will now equal 1.
-        # Additionally, the same operations will be applied to the identity matrix
-        # and will turn it into `m ** -1` (what we are looking for)
-        fd_scalar = 1.0 / denom
-        for j in indices:
-            m[fd][j] *= fd_scalar
-            im[fd][j] *= fd_scalar
-
-        # Now, using the value found at the index `fd` in the remaining rows (excluding `row[fd]`),
-        # Where `cr` is the current row under evaluation, subtract `row[cr][fd] * row[fd] from row[cr]`.
-        for cr in indices[0:fd] + indices[fd + 1:]:
-            # The scalar for the current row
-            cr_scalar = m[cr][fd]
-
-            # Scale each item in the `row[fd]` and subtract it from the current row `row[cr]`
-            for j in indices:
-                m[cr][j] -= cr_scalar * m[fd][j]
-                im[cr][j] -= cr_scalar * im[fd][j]
-
-    # The identify matrix is now the inverse matrix and vice versa.
-    return im
-
-
-def cbrt(n: float) -> float:
-    """Calculate cube root."""
-
-    return nth_root(n, 3)
-
-
-def nth_root(n: float, p: float) -> float:
-    """Calculate nth root."""
-
-    if p == 0:  # pragma: no cover
-        return float('inf')
-
-    if n == 0:
-        # Can't do anything with zero
-        return 0
-
-    return math.copysign(abs(n) ** (p ** -1), n)
-
-
-def clamp(value: float, mn: Optional[float] = None, mx: Optional[float] = None) -> float:
-    """Clamp the value to the the given minimum and maximum."""
-
-    if mn is not None and mx is not None:
-        return max(min(value, mx), mn)
-    elif mn is not None:
-        return max(value, mn)
-    elif mx is not None:
-        return min(value, mx)
-    else:
-        return value
-
-
 def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
@@ -474,7 +173,7 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
     <positive number>: precision level
     """
 
-    if is_nan(f):
+    if alg.is_nan(f):
         return "none"
 
     value = adjust_precision(f / (percent * 0.01) if percent else f, p)
@@ -490,19 +189,12 @@ def adjust_precision(f: float, p: int = 0) -> float:
         return float(f)
 
     elif p == 0:
-        return round_half_up(f)
+        return alg.round_half_up(f)
 
     else:
         whole = int(f)
         digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return round_half_up(whole if digits > p else f, p - digits)
-
-
-def round_half_up(n: float, scale: int = 0) -> float:
-    """Round half up."""
-
-    mult = 10.0 ** scale
-    return math.floor(n * mult + 0.5) / mult
+        return alg.round_half_up(whole if digits > p else f, p - digits)
 
 
 def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover

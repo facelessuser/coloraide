@@ -32,7 +32,8 @@ from .oklab import oklab_to_linear_srgb
 from .. import util
 import math
 import sys
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import Tuple, Optional
 
 FLT_MAX = sys.float_info.max
@@ -110,7 +111,7 @@ def find_cusp(a: float, b: float) -> MutableVector:
 
     # Convert to linear sRGB to find the first point where at least one of r, g or b >= 1:
     r, g, b = oklab_to_linear_srgb([1, s_cusp * a, s_cusp * b])
-    l_cusp = util.nth_root(1.0 / max(max(r, g), b), 3)
+    l_cusp = alg.nth_root(1.0 / max(max(r, g), b), 3)
     c_cusp = l_cusp * s_cusp
 
     return [l_cusp, c_cusp]
@@ -333,7 +334,7 @@ def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0 and L != 1 and s != 0 and not util.is_nan(h):
+    if L != 0 and L != 1 and s != 0 and not alg.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -374,7 +375,7 @@ def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
 
-    h = util.NaN
+    h = alg.NaN
     L = lab[0]
     s = 0.0
 
@@ -409,7 +410,7 @@ def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
     l = toe(L)
 
     if s == 0:
-        h = util.NaN
+        h = alg.NaN
 
     return [util.constrain_hue(h * 360), s, l]
 
@@ -475,10 +476,10 @@ class Okhsl(Cylindrical, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        coords = util.no_nans(coords)
+        coords = alg.no_nans(coords)
         if coords[1] == 0 or coords[2] in (0, 1):
-            coords[0] = util.NaN
-        return coords, util.no_nan(alpha)
+            coords[0] = alg.NaN
+        return coords, alg.no_nan(alpha)
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

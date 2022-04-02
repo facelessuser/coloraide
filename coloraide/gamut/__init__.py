@@ -1,5 +1,5 @@
 """Gamut handling."""
-from .. import util
+from .. import algebra as alg
 from .bounds import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional, Any
@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def clip_channels(color: 'Color') -> None:
     """Clip channels."""
 
-    channels = util.no_nans(color.coords())
+    channels = alg.no_nans(color.coords())
     fit = []
 
     for i, value in enumerate(channels):
@@ -32,14 +32,14 @@ def clip_channels(color: 'Color') -> None:
             a = b = None
 
         # Fit value in bounds.
-        fit.append(util.clamp(value, a, b))
+        fit.append(alg.clamp(value, a, b))
     color.update(color.space(), fit, color.alpha)
 
 
 def verify(color: 'Color', tolerance: float) -> bool:
     """Verify the values are in bound."""
 
-    channels = util.no_nans(color.coords())
+    channels = alg.no_nans(color.coords())
     for i, value in enumerate(channels):
         bounds = color._space.BOUNDS[i]
         a = bounds.lower  # type: Optional[float]

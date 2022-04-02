@@ -1,7 +1,7 @@
 """Convert the color."""
-from . import util
+from . import algebra as alg
 from . import cat
-from .util import Vector
+from .types import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -41,7 +41,7 @@ def convert(color: 'Color', space: str) -> Vector:
                 )
 
         # Treat undefined channels as zero
-        coords = util.no_nans(color.coords())
+        coords = alg.no_nans(color.coords())
 
         # Start converting coordinates until we either match a space in the conversion chain or bottom out at XYZ D65
         current = type(color._space)

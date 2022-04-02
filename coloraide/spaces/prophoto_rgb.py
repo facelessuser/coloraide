@@ -1,23 +1,23 @@
 """Pro Photo RGB color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 ET = 1 / 512
 ET2 = 16 / 512
 
 RGB_TO_XYZ = [
-    [7.9776048967230273e-01, 1.3518583717574034e-01, 3.1349349581524806e-02],
-    [2.8807112822929343e-01, 7.1184321781010151e-01, 8.5653960605259035e-05],
-    [0.0000000000000000e+00, 0.0000000000000000e+00, 8.2510460251046025e-01]
+    [0.7977604896723027, 0.13518583717574031, 0.0313493495815248],
+    [0.2880711282292934, 0.7118432178101014, 8.565396060525902e-05],
+    [0.0, 0.0, 0.8251046025104601]
 ]
 
 XYZ_TO_RGB = [
-    [1.345798973102828, -0.2555801000799754, -0.05110628506753401],
-    [-0.5446224939028346, 1.508232741313278, 0.020536032391479723],
-    [0.0, 0.0, 1.2119675456389452]
+    [1.3457989731028281, -0.2555801000799754, -0.05110628506753401],
+    [-0.5446224939028347, 1.5082327413132781, 0.02053603239147973],
+    [0.0, 0.0, 1.2119675456389454]
 ]
 
 
@@ -29,13 +29,13 @@ def lin_prophoto_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_prophoto(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 def lin_prophoto(rgb: MutableVector) -> MutableVector:
@@ -53,7 +53,7 @@ def lin_prophoto(rgb: MutableVector) -> MutableVector:
         if abs(i) < ET2:
             result.append(i / 16.0)
         else:
-            result.append(util.npow(i, 1.8))
+            result.append(alg.npow(i, 1.8))
     return result
 
 
@@ -72,7 +72,7 @@ def gam_prophoto(rgb: MutableVector) -> MutableVector:
         if abs(i) < ET:
             result.append(16.0 * i)
         else:
-            result.append(util.nth_root(i, 1.8))
+            result.append(alg.nth_root(i, 1.8))
     return result
 
 

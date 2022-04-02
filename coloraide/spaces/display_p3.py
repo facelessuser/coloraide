@@ -1,20 +1,20 @@
 """Display-p3 color class."""
 from ..cat import WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 RGB_TO_XYZ = [
-    [4.8657094864821610e-01, 2.6566769316909306e-01, 1.9821728523436244e-01],
-    [2.2897456406974875e-01, 6.9173852183650641e-01, 7.9286914093744970e-02],
-    [-3.9720755169334868e-17, 4.5113381858902638e-02, 1.0439443689009755e+00]
+    [0.4865709486482161, 0.26566769316909306, 0.1982172852343625],
+    [0.22897456406974875, 0.6917385218365063, 0.079286914093745],
+    [-3.972075516933487e-17, 0.04511338185890263, 1.043944368900976]
 ]
 
 XYZ_TO_RGB = [
-    [2.4934969119414254, -0.9313836179191239, -0.40271078445071695],
-    [-0.8294889695615746, 1.7626640603183463, 0.023624685841943566],
-    [0.03584583024378447, -0.07617238926804185, 0.9568845240076876]
+    [2.4934969119414254, -0.9313836179191239, -0.40271078445071684],
+    [-0.8294889695615747, 1.7626640603183465, 0.02362468584194358],
+    [0.03584583024378446, -0.0761723892680418, 0.9568845240076872]
 ]
 
 
@@ -26,13 +26,13 @@ def lin_p3_to_xyz(rgb: MutableVector) -> MutableVector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_p3(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light P3."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 def lin_p3(rgb: MutableVector) -> MutableVector:

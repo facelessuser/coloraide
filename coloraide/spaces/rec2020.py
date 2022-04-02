@@ -1,9 +1,9 @@
 """Rec 2020 color class."""
 from ..cat import WHITES
 from .srgb import SRGB
-from .. import util
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 ALPHA = 1.09929682680944
@@ -11,15 +11,15 @@ BETA = 0.018053968510807
 BETA45 = 0.018053968510807 * 4.5
 
 RGB_TO_XYZ = [
-    [6.3695804830129132e-01, 1.4461690358620838e-01, 1.6888097516417216e-01],
-    [2.6270021201126703e-01, 6.7799807151887104e-01, 5.9301716469861973e-02],
-    [4.9941065744660755e-17, 2.8072693049087438e-02, 1.0609850577107913e+00]
+    [0.6369580483012914, 0.14461690358620832, 0.16888097516417208],
+    [0.2627002120112671, 0.6779980715188708, 0.05930171646986195],
+    [4.994106574466076e-17, 0.028072693049087428, 1.0609850577107909]
 ]
 
 XYZ_TO_RGB = [
-    [1.7166511879712676, -0.3556707837763924, -0.2533662813736598],
-    [-0.6666843518324889, 1.6164812366349388, 0.01576854581391115],
-    [0.01763985744531078, -0.04277061325780851, 0.9421031212354736]
+    [1.7166511879712674, -0.35567078377639233, -0.25336628137365974],
+    [-0.6666843518324892, 1.6164812366349395, 0.015768545813911124],
+    [0.017639857445310787, -0.04277061325780853, 0.9421031212354739]
 ]
 
 
@@ -37,7 +37,7 @@ def lin_2020(rgb: MutableVector) -> MutableVector:
         if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(util.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
+            result.append(math.copysign(alg.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
     return result
 
 
@@ -67,13 +67,13 @@ def lin_2020_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, util.dot(RGB_TO_XYZ, rgb))
+    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
 def xyz_to_lin_2020(xyz: MutableVector) -> MutableVector:
     """Convert XYZ to linear-light rec-2020."""
 
-    return cast(MutableVector, util.dot(XYZ_TO_RGB, xyz))
+    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 class Rec2020(SRGB):

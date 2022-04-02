@@ -5,7 +5,8 @@ from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 
 
 def luv_to_lchuv(luv: MutableVector) -> MutableVector:
@@ -19,7 +20,7 @@ def luv_to_lchuv(luv: MutableVector) -> MutableVector:
     # Achromatic colors will often get extremely close, but not quite hit zero.
     # Essentially, we want to discard noise through rounding and such.
     if c < ACHROMATIC_THRESHOLD:
-        h = util.NaN
+        h = alg.NaN
 
     return [l, c, util.constrain_hue(h)]
 
@@ -28,7 +29,7 @@ def lchuv_to_luv(lchuv: MutableVector) -> MutableVector:
     """Lch(uv) to Luv."""
 
     l, c, h = lchuv
-    if util.is_nan(h):  # pragma: no cover
+    if alg.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 
     return [

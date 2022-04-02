@@ -3,7 +3,8 @@ from ...spaces import Space, Cylindrical
 from ...cat import WHITES
 from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
 from ... import util
-from ...util import MutableVector
+from ... import algebra as alg
+from ...types import MutableVector
 from typing import Tuple
 
 
@@ -13,7 +14,7 @@ def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
     r, g, b = rgb
     mx = max(rgb)
     mn = min(rgb)
-    h = util.NaN
+    h = alg.NaN
     s = 0.0
     l = (mn + mx) / 2
     c = mx - mn
@@ -28,7 +29,7 @@ def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
         s = 0 if l == 0 or l == 1 else (mx - l) / min(l, 1 - l)
         h *= 60.0
         if s == 0:
-            h = util.NaN
+            h = alg.NaN
 
     return [util.constrain_hue(h), s, l]
 
@@ -113,11 +114,11 @@ class HSL(Cylindrical, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        coords = util.no_nans(coords)
+        coords = alg.no_nans(coords)
         if coords[1] == 0 or coords[2] in (0, 1):
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
 
-        return coords, util.no_nan(alpha)
+        return coords, alg.no_nan(alpha)
 
     @classmethod
     def to_base(cls, coords: MutableVector) -> MutableVector:

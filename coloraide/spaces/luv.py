@@ -8,7 +8,8 @@ from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import Tuple
 
 
@@ -20,7 +21,7 @@ def xyz_to_luv(xyz: MutableVector, white: Tuple[float, float]) -> MutableVector:
     ur, vr = util.xy_to_uv(white)
 
     yr = xyz[1] / w_xyz[1]
-    l = 116 * util.nth_root(yr, 3) - 16 if yr > EPSILON else KAPPA * yr
+    l = 116 * alg.nth_root(yr, 3) - 16 if yr > EPSILON else KAPPA * yr
 
     return [
         l,

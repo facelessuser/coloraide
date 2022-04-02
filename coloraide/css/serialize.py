@@ -1,10 +1,11 @@
 """String serialization."""
 import re
 from .. import util
+from .. import algebra as alg
 from . import parse
 from .color_names import to_name
 from ..gamut.bounds import FLG_PERCENT, FLG_OPT_PERCENT
-from ..util import MutableVector
+from ..types import MutableVector
 from typing import Optional, Union, Match, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -25,7 +26,7 @@ def named_color(obj: 'Color', alpha: Optional[bool], fit: Union[str, bool]) -> O
     if a is None:
         a = 1
     method = None if not isinstance(fit, str) else fit
-    coords = util.no_nans(obj.fit(method=method).coords())
+    coords = alg.no_nans(obj.fit(method=method).coords())
     return to_name(coords + [a])
 
 
@@ -91,14 +92,14 @@ def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) ->
 
     method = None if not isinstance(fit, str) else fit
     coords = obj.fit(method=method).coords() if fit else obj._space.coords()
-    return util.no_nans(coords) if legacy or not none else coords
+    return alg.no_nans(coords) if legacy or not none else coords
 
 
 def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool) -> Optional[float]:
     """Get the alpha if required."""
 
-    a = util.no_nan(obj._space.alpha) if not none else obj._space.alpha
-    alpha = alpha is not False and (alpha is True or a < 1.0 or util.is_nan(a))
+    a = alg.no_nan(obj._space.alpha) if not none else obj._space.alpha
+    alpha = alpha is not False and (alpha is True or a < 1.0 or alg.is_nan(a))
     return None if not alpha else a
 
 
@@ -112,21 +113,21 @@ def hexadecimal(
     """Get the hex `RGB` value."""
 
     method = None if not isinstance(fit, str) else fit
-    coords = [c for c in util.no_nans(obj.fit(method=method).coords())]
+    coords = [c for c in alg.no_nans(obj.fit(method=method).coords())]
     a = get_alpha(obj, alpha, False)
 
     if a is not None:
         value = "#{:02x}{:02x}{:02x}{:02x}".format(
-            int(util.round_half_up(coords[0] * 255.0)),
-            int(util.round_half_up(coords[1] * 255.0)),
-            int(util.round_half_up(coords[2] * 255.0)),
-            int(util.round_half_up(a * 255.0))
+            int(alg.round_half_up(coords[0] * 255.0)),
+            int(alg.round_half_up(coords[1] * 255.0)),
+            int(alg.round_half_up(coords[2] * 255.0)),
+            int(alg.round_half_up(a * 255.0))
         )
     else:
         value = "#{:02x}{:02x}{:02x}".format(
-            int(util.round_half_up(coords[0] * 255.0)),
-            int(util.round_half_up(coords[1] * 255.0)),
-            int(util.round_half_up(coords[2] * 255.0))
+            int(alg.round_half_up(coords[0] * 255.0)),
+            int(alg.round_half_up(coords[1] * 255.0)),
+            int(alg.round_half_up(coords[2] * 255.0))
         )
 
     if upper:

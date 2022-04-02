@@ -9,7 +9,7 @@ try:
     from coloraide_extras import Color
 except ImportError:
     from coloraide import Color
-from coloraide import util  # noqa: E402
+from coloraide import algebra as alg  # noqa: E402
 
 
 def main():
@@ -78,9 +78,9 @@ def run(target, rgb, res):
     print('')
     chan_x, chan_y, chan_z = Color('white').convert(target)._space.CHANNEL_NAMES
     print('---- {} range in {} ----'.format(target, rgb))
-    print('{}: [{}, {}]'.format(chan_x, util.round_half_up(min_x, 3), util.round_half_up(max_x, 3)))
-    print('{}: [{}, {}]'.format(chan_y, util.round_half_up(min_y, 3), util.round_half_up(max_y, 3)))
-    print('{}: [{}, {}]'.format(chan_z, util.round_half_up(min_z, 3), util.round_half_up(max_z, 3)))
+    print('{}: [{}, {}]'.format(chan_x, alg.round_half_up(min_x, 3), alg.round_half_up(max_x, 3)))
+    print('{}: [{}, {}]'.format(chan_y, alg.round_half_up(min_y, 3), alg.round_half_up(max_y, 3)))
+    print('{}: [{}, {}]'.format(chan_z, alg.round_half_up(min_z, 3), alg.round_half_up(max_z, 3)))
 
     return 0
 

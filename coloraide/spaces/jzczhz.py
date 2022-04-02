@@ -8,7 +8,8 @@ from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 import math
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0003
@@ -25,7 +26,7 @@ def jzazbz_to_jzczhz(jzazbz: MutableVector) -> MutableVector:
     # Achromatic colors will often get extremely close, but not quite hit zero.
     # Essentially, we want to discard noise through rounding and such.
     if cz < ACHROMATIC_THRESHOLD:
-        hz = util.NaN
+        hz = alg.NaN
 
     return [jz, cz, util.constrain_hue(hz)]
 
@@ -34,7 +35,7 @@ def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
-    if util.is_nan(hz):  # pragma: no cover
+    if alg.is_nan(hz):  # pragma: no cover
         return [jz, 0.0, 0.0]
 
     return [
@@ -90,7 +91,7 @@ class JzCzhz(Lchish, Space):
     def cz(self, value: float) -> None:
         """Set chroma."""
 
-        self._coords[1] = util.clamp(value, 0.0)
+        self._coords[1] = alg.clamp(value, 0.0)
 
     @property
     def hz(self) -> float:
@@ -108,11 +109,11 @@ class JzCzhz(Lchish, Space):
     def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
         """On color update."""
 
-        coords = util.no_nans(coords)
+        coords = alg.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
-            coords[2] = util.NaN
+            coords[2] = alg.NaN
 
-        return coords, util.no_nan(alpha)
+        return coords, alg.no_nan(alpha)
 
     @classmethod
     def hue_name(cls) -> str:

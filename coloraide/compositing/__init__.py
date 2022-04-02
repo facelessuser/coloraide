@@ -5,8 +5,8 @@ https://www.w3.org/TR/compositing/
 """
 from . import porter_duff
 from . import blend_modes
-from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from ..gamut.bounds import GamutBound, Bounds
 from typing import Optional, Union, Callable, List, TYPE_CHECKING
 
@@ -29,7 +29,7 @@ def clip_channel(coord: float, bounds: Bounds) -> float:
         b = None
 
     # Fit value in bounds.
-    return util.clamp(coord, a, b)
+    return alg.clamp(coord, a, b)
 
 
 def apply_compositing(
@@ -42,10 +42,10 @@ def apply_compositing(
     """Perform the actual blending."""
 
     # Get the color coordinates
-    csa = util.no_nan(color1.alpha)
-    cba = util.no_nan(color2.alpha)
-    coords1 = util.no_nans(color1.coords())
-    coords2 = util.no_nans(color2.coords())
+    csa = alg.no_nan(color1.alpha)
+    cba = alg.no_nan(color2.alpha)
+    coords1 = alg.no_nans(color1.coords())
+    coords2 = alg.no_nans(color2.coords())
 
     # Setup compositing
     compositor = None  # type: Optional[porter_duff.PorterDuff]

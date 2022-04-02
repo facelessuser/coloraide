@@ -22,7 +22,8 @@ from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
-from ..util import MutableVector
+from .. import algebra as alg
+from ..types import MutableVector
 from typing import cast
 
 B = 1.15
@@ -54,8 +55,8 @@ xyz_to_lms_m = [
 
 lms_to_xyz_mi = [
     [1.9242264357876069, -1.0047923125953657, 0.037651404030617994],
-    [0.35031676209499907, 0.7264811939316552, -0.06538442294808501],
-    [-0.09098281098284754, -0.3127282905230739, 1.5227665613052603]
+    [0.350316762094999, 0.7264811939316552, -0.06538442294808501],
+    [-0.09098281098284752, -0.3127282905230739, 1.5227665613052603]
 ]
 
 # LMS to Izazbz matrices
@@ -66,9 +67,9 @@ lms_p_to_izazbz_m = [
 ]
 
 izazbz_to_lms_p_mi = [
-    [1.0, 0.1386050432715393, 0.05804731615611882],
-    [1.0, -0.13860504327153927, -0.05804731615611891],
-    [1.0, -0.09601924202631895, -0.811891896056039]
+    [1.0, 0.1386050432715393, 0.05804731615611886],
+    [1.0, -0.1386050432715393, -0.05804731615611886],
+    [0.9999999999999998, -0.09601924202631895, -0.8118918960560388]
 ]
 
 
@@ -81,13 +82,13 @@ def jzazbz_to_xyz_d65(jzazbz: MutableVector) -> MutableVector:
     iz = (jz + D0) / (1 + D - D * (jz + D0))
 
     # Convert to LMS prime
-    pqlms = cast(MutableVector, util.dot(izazbz_to_lms_p_mi, [iz, az, bz]))
+    pqlms = cast(MutableVector, alg.dot(izazbz_to_lms_p_mi, [iz, az, bz], alg.A2D_A1D))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms, m2=M2)
 
     # Convert back to absolute XYZ D65
-    xm, ym, za = cast(MutableVector, util.dot(lms_to_xyz_mi, lms))
+    xm, ym, za = cast(MutableVector, alg.dot(lms_to_xyz_mi, lms, alg.A2D_A1D))
     xa = (xm + ((B - 1) * za)) / B
     ya = (ym + ((G - 1) * xa)) / G
 
@@ -104,13 +105,13 @@ def xyz_d65_to_jzazbz(xyzd65: MutableVector) -> MutableVector:
     ym = (G * ya) - ((G - 1) * xa)
 
     # Convert to LMS
-    lms = cast(MutableVector, util.dot(xyz_to_lms_m, [xm, ym, za]))
+    lms = cast(MutableVector, alg.dot(xyz_to_lms_m, [xm, ym, za], alg.A2D_A1D))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
 
     # Calculate Izazbz
-    iz, az, bz = cast(MutableVector, util.dot(lms_p_to_izazbz_m, pqlms))
+    iz, az, bz = cast(MutableVector, alg.dot(lms_p_to_izazbz_m, pqlms, alg.A2D_A1D))
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0
