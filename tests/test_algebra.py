@@ -6,6 +6,113 @@ from coloraide import algebra as alg
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
+    def test_outer(self):
+        """Test outer."""
+
+        self.assertEqual(
+            alg.outer(3, 4),
+            [[12]]
+        )
+
+        self.assertEqual(
+            alg.outer(4, [1, 2, 3]),
+            [[4, 8, 12]]
+        )
+
+        self.assertEqual(
+            alg.outer([1, 2, 3], 4),
+            [[4], [8], [12]]
+        )
+
+        self.assertEqual(
+            alg.outer([1, 2, 3], [4, 5, 6]),
+            [[4, 5, 6],
+             [8, 10, 12],
+             [12, 15, 18]]
+        )
+
+        self.assertEqual(
+            alg.outer([[1, 2], [4, 5]], [4, 5, 6]),
+            [[4, 5, 6],
+             [8, 10, 12],
+             [16, 20, 24],
+             [20, 25, 30]]
+        )
+
+        self.assertEqual(
+            alg.outer([4, 5, 6], [[1, 2], [4, 5]]),
+            [[4, 8, 16, 20],
+             [5, 10, 20, 25],
+             [6, 12, 24, 30]]
+        )
+
+        self.assertEqual(
+            alg.outer([[1, 2], [3, 4]], [[5, 6], [7, 8]]),
+            [[5, 6, 7, 8],
+             [10, 12, 14, 16],
+             [15, 18, 21, 24],
+             [20, 24, 28, 32]]
+        )
+
+    def test_inner(self):
+        """Test inner."""
+
+        self.assertEqual(
+            alg.inner(3, 4),
+            12
+        )
+
+        self.assertEqual(
+            alg.inner(3, [1, 2, 3]),
+            [3, 6, 9]
+        )
+
+        self.assertEqual(
+            alg.inner(3, [[1, 2], [3, 4]]),
+            [[3, 6], [9, 12]]
+        )
+
+        self.assertEqual(
+            alg.inner(3, [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]]),
+            [[[3, 6], [9, 12], [15, 18]], [[21, 24], [27, 30], [33, 36]]]
+        )
+
+        self.assertEqual(
+            alg.inner([1, 2, 3], [4, 5, 6]),
+            32
+        )
+
+        self.assertEqual(
+            alg.inner([1, 2], [[1, 2], [3, 4]]),
+            [5, 11]
+        )
+
+        self.assertEqual(
+            alg.inner([[1, 2], [3, 4]], [[5, 6], [7, 8]]),
+            [[17, 23], [39, 53]]
+        )
+
+        self.assertEqual(
+            alg.inner([[1, 2], [3, 4], [3, 4]], [[5, 6], [7, 8]]),
+            [[17, 23], [39, 53], [39, 53]]
+        )
+
+        self.assertEqual(
+            alg.inner(
+                [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]],
+                [[[13, 14], [15, 16], [17, 18]], [[19, 20], [21, 22], [23, 24]]]
+            ),
+            [[[[41, 47, 53], [59, 65, 71]],
+              [[95, 109, 123], [137, 151, 165]],
+              [[149, 171, 193], [215, 237, 259]]],
+             [[[203, 233, 263], [293, 323, 353]],
+              [[257, 295, 333], [371, 409, 447]],
+              [[311, 357, 403], [449, 495, 541]]]]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.inner([1, 2, 3], [1, 2])
+
     def test_inv(self):
         """Test inverse."""
 
@@ -363,6 +470,14 @@ class TestAlgebra(unittest.TestCase):
             alg.reshape([0, 1, 2, 3, 4, 5], 6),
             [0, 1, 2, 3, 4, 5]
         )
+
+        self.assertEqual(
+            alg.reshape([1], tuple()),
+            1
+        )
+
+        with self.assertRaises(ValueError):
+            alg.reshape([1, 2], tuple())
 
     def test_transpose(self):
         """Test transpose."""
