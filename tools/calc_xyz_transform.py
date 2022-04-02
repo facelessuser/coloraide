@@ -36,17 +36,10 @@ def get_matrix(wp, space):
         raise ValueError
 
     one = np.float64(1.0)
-    m = np.asfarray(
-        [
-            [x[0] / y[0], one, (one - x[0] - y[0]) / y[0]],
-            [x[1] / y[1], one, (one - x[1] - y[1]) / y[1]],
-            [x[2] / y[2], one, (one - x[2] - y[2]) / y[2]]
-        ]
-    )
+    m = np.transpose([xy_to_xyz(*xy) for xy in zip(x, y)])
     mi = np.linalg.inv(m)
-
-    rgb = np.dot(wp, mi).reshape(3, 1)
-    rgb2xyz = np.multiply(rgb, m).transpose()
+    rgb = np.dot(mi, wp)
+    rgb2xyz = np.multiply(m, rgb)
     xyz2rgb = np.linalg.inv(rgb2xyz)
 
     return rgb2xyz, xyz2rgb
