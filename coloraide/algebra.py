@@ -492,7 +492,7 @@ class Broadcast:
                 max_dims = dims
             shapes.append(s)
 
-        # Adjust array shapes py padding out with '1's until matches max dimensions
+        # Adjust array shapes by padding out with '1's until matches max dimensions
         stage1_shapes = []
         for s in shapes:
             dims = len(s)
@@ -862,7 +862,7 @@ def diag(array: Array, k: int = 0) -> MutableArray:
         raise ValueError('Array must be 1-D or 2-D in shape')
 
     if dims == 1:
-        # Calculate size of matrix to accomodate the diagonal
+        # Calculate size of matrix to accommodate the diagonal
         size = s[0] - k if k < 0 else s[0] + k if k else s[0]
         maximum = size - 1
         minimum = 0
@@ -919,19 +919,31 @@ def inv(matrix: Matrix) -> MutableMatrix:
     OTHER DEALINGS IN THE SOFTWARE.
 
     For more information, please refer to <http://unlicense.org/>
+
+    ---
+
+    Modified to handle greater than 2 x 2 dimensions.
     """
 
-    size = len(matrix)
-    indices = list(range(size))
+    # Ensure we have a square matrix
+    s = shape(matrix)
+    dims = len(s)
+    if dims < 2 or min(s) != max(s):
+        raise ValueError('Matrix must be a N x N matrix')
+
+    # Handle dimensions greater than 2 x 2
+    elif dims > 2:
+        invert = []
+        cols = list(_extract_dimension(matrix, dims - 2))
+        for c in cols:
+            invert.append(transpose(inv(cast(MutableMatrix, c))))
+        return cast(MutableMatrix, reshape(cast(MutableMatrix, invert), s))
+
+    indices = list(range(s[0]))
     m = [list(x) for x in matrix]
 
-    # Ensure we have a square matrix
-    for r in m:
-        if len(r) != size:  # pragma: no cover
-            raise ValueError('Matrix must be a n x n matrix')
-
     # Create an identity matrix of the same size as our provided vector
-    im = cast(List[List[float]], diag([1] * size))
+    im = cast(List[List[float]], diag([1] * s[0]))
 
     # Iterating through each row, we will scale each row by it's "focus diagonal".
     # Then using the scaled row, we will adjust the other rows.
@@ -944,7 +956,7 @@ def inv(matrix: Matrix) -> MutableMatrix:
         # We will divide each value in the row by the "focus diagonal" value.
         # If the we have a zero for the given `fd` value, we cannot invert.
         denom = m[fd][fd]
-        if denom == 0:  # pragma: no cover
+        if denom == 0:
             raise ValueError('Matrix is not invertable')
 
         # We are converting the matrix to the identity and vice versa,
@@ -969,3 +981,73 @@ def inv(matrix: Matrix) -> MutableMatrix:
 
     # The identify matrix is now the inverse matrix and vice versa.
     return im
+
+
+def vstack(arrays: Tuple[Array, ...]) -> MutableArray:
+    """Vertical stack."""
+
+    m = []  # type: List[MutableArray]
+    first = True
+    dims = 0
+    for i in arrays:
+        cs = shape(i)
+        if first:
+            dims = len(cs)
+            first = False
+            if dims == 0:
+                return reshape(cast(Vector, arrays), (len(arrays), 1))
+            elif dims == 1:
+                return reshape(cast(Matrix, arrays), (len(arrays), cs[-1]))
+        m.append(reshape(i, (prod(cs[:1 - dims]), *cs[1 - dims:-1], cs[-1])))
+
+    if first:
+        raise ValueError("'vstack' requires at least one array")
+
+    return sum(cast(Iterable[MutableArray], m), cast(MutableArray, []))
+
+
+def _hstack_extract(a: MutableArray, s: Tuple[int, ...]) -> Iterator[MutableVector]:
+    """Extract data from the second dimension."""
+
+    data = flatiter(a)
+    length = prod(s[1:])
+    for _ in range(s[0]):
+        yield [next(data) for _ in range(length)]
+
+
+def hstack(arrays: Tuple[Array, ...]) -> MutableArray:
+    """Horizontal stack."""
+
+    # Gather up shapes
+    columns = 0
+    shapes = []
+    first = None  # type: Optional[Tuple[int, ...]]
+    for a in arrays:
+        cs = shape(a)
+
+        # Shortcut out for simple list of numbers or 1-D arrays
+        if first is None:
+            first = cs
+            if not cs:
+                return reshape(cast(Vector, arrays), (len(arrays),))
+            elif len(cs) == 1:
+                m1 = []  # type: MutableVector
+                for a1 in arrays:
+                    m1.extend(ravel(a1))
+                return reshape(m1, (len(m1),))
+
+        # Gather up shapes and tally the size of the new second dimension
+        columns += cs[1]
+        shapes.append(cs)
+
+    if first is None:
+        raise ValueError("'hstack' requires at least one array")
+
+    # Iterate the arrays returning the content per second dimension
+    m = []  # type: List[MutableArray]
+    for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrays, shapes)]):
+        m.extend(sum(data, []))
+
+    # Shape the data to the new shape
+    new_shape = first[:1] + tuple([columns]) + first[2:]
+    return reshape(cast(MutableArray, m), new_shape)
