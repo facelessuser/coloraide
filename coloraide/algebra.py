@@ -1012,7 +1012,7 @@ def vstack(arrays: Tuple[Array, ...]) -> MutableArray:
                 return cast(MutableArray, reshape(cast(Vector, arrays), (len(arrays), 1)))
             elif dims == 1:
                 return cast(MutableArray, reshape(cast(Matrix, arrays), (len(arrays), cs[-1])))
-        m.append(cast(MutableArray, reshape(i, (prod(cs[:1 - dims]), *cs[1 - dims:-1], cs[-1]))))
+        m.append(cast(MutableArray, reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:])))
 
     if first:
         raise ValueError("'vstack' requires at least one array")
@@ -1110,7 +1110,7 @@ def inner(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]
 
     # Perform the actual inner product
     m = [[sum([x * y for x, y in zipl(cast(Vector, r1), cast(Vector, r2))]) for r2 in second] for r1 in first]
-    new_shape = (*shape_a[:-1], *shape_b[:-1])
+    new_shape = shape_a[:-1] + shape_b[:-1]
 
     # Shape the data.
     return reshape(m, new_shape)
