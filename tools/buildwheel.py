@@ -112,7 +112,7 @@ if __name__ == "__main__":
         if status:
             sys.exit(status)
 
-    # Get coloraide-extras. If we can't find it in the version's tag,
+    # Get `coloraide-extras`. If we can't find it in the version's tag,
     # tag may not be created with this version, particularly during development,
     # attempt on master
     extras = EXTRAS.format(get_version())
