@@ -2,7 +2,7 @@
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import cast
 
 
@@ -19,20 +19,20 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_srgb_to_xyz(rgb: MutableVector) -> MutableVector:
+def lin_srgb_to_xyz(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light sRGB values to CIE XYZ using sRGB's own white.
 
     D65 (no chromatic adaptation)
     """
 
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
-def xyz_to_lin_srgb(xyz: MutableVector) -> MutableVector:
+def xyz_to_lin_srgb(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light sRGB."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 class SRGBLinear(SRGB):
@@ -44,13 +44,13 @@ class SRGBLinear(SRGB):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from SRGB Linear."""
 
         return lin_srgb_to_xyz(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ to SRGB Linear."""
 
         return xyz_to_lin_srgb(coords)

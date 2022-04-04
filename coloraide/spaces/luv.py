@@ -9,11 +9,11 @@ from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple
 
 
-def xyz_to_luv(xyz: MutableVector, white: Tuple[float, float]) -> MutableVector:
+def xyz_to_luv(xyz: Vector, white: Tuple[float, float]) -> Vector:
     """XYZ to Luv."""
 
     u, v = util.xy_to_uv(util.xyz_to_xyY(xyz, white)[:2])
@@ -30,7 +30,7 @@ def xyz_to_luv(xyz: MutableVector, white: Tuple[float, float]) -> MutableVector:
     ]
 
 
-def luv_to_xyz(luv: MutableVector, white: Tuple[float, float]) -> MutableVector:
+def luv_to_xyz(luv: Vector, white: Tuple[float, float]) -> Vector:
     """Luv to XYZ."""
 
     l, u, v = luv
@@ -109,13 +109,13 @@ class Luv(Labish, Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ D50 from Luv."""
 
         return luv_to_xyz(coords, cls.WHITE)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ D50 to Luv."""
 
         return xyz_to_luv(coords, cls.WHITE)

@@ -2,7 +2,7 @@
 from ..spaces import Space
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple
 
 
@@ -58,7 +58,7 @@ class XYZD65(Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """
         To XYZ (no change).
 
@@ -68,7 +68,7 @@ class XYZD65(Space):
         return coords
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """
         From XYZ (no change).
 

@@ -3,7 +3,7 @@ import math
 import warnings
 from functools import wraps
 from . import algebra as alg
-from .types import MutableVector, Vector
+from .types import Vector, VectorLike
 from typing import Any, Callable
 
 ACHROMATIC_THRESHOLD = 0.0005
@@ -42,27 +42,27 @@ C2 = 2413 / 128
 C3 = 2392 / 128
 
 
-def xy_to_xyz(xy: Vector, Y: float = 1) -> MutableVector:
+def xy_to_xyz(xy: VectorLike, Y: float = 1) -> Vector:
     """Convert `xyY` to `xyz`."""
 
     x, y = xy
     return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (1 - x - y) * Y / y]
 
 
-def xy_to_uv(xy: Vector) -> MutableVector:
+def xy_to_uv(xy: VectorLike) -> Vector:
     """XYZ to UV."""
 
     u, v = xy_to_uv_1960(xy)
     return [u, v * (3 / 2)]
 
 
-def uv_to_xy(uv: Vector) -> MutableVector:
+def uv_to_xy(uv: VectorLike) -> Vector:
     """XYZ to UV."""
 
     return uv_1960_to_xy([uv[0], uv[1] * (2 / 3)])
 
 
-def xy_to_uv_1960(xy: Vector) -> MutableVector:
+def xy_to_uv_1960(xy: VectorLike) -> Vector:
     """XYZ to UV."""
 
     x, y = xy
@@ -76,7 +76,7 @@ def xy_to_uv_1960(xy: Vector) -> MutableVector:
     return [u, v]
 
 
-def uv_1960_to_xy(uv: Vector) -> MutableVector:
+def uv_1960_to_xy(uv: VectorLike) -> Vector:
     """XYZ to UV."""
 
     u, v = uv
@@ -90,7 +90,7 @@ def uv_1960_to_xy(uv: Vector) -> MutableVector:
     return [x, y]
 
 
-def xyz_to_xyY(xyz: Vector, white: Vector) -> MutableVector:
+def xyz_to_xyY(xyz: VectorLike, white: VectorLike) -> Vector:
     """XYZ to `xyY`."""
 
     x, y, z = xyz
@@ -99,13 +99,13 @@ def xyz_to_xyY(xyz: Vector, white: Vector) -> MutableVector:
 
 
 def pq_st2084_inverse_eotf(
-    values: Vector,
+    values: VectorLike,
     c1: float = C1,
     c2: float = C2,
     c3: float = C3,
     m1: float = M1,
     m2: float = M2
-) -> MutableVector:
+) -> Vector:
     """Perceptual quantizer (SMPTE ST 2084) - inverse EOTF."""
 
     adjusted = []
@@ -117,13 +117,13 @@ def pq_st2084_inverse_eotf(
 
 
 def pq_st2084_eotf(
-    values: Vector,
+    values: VectorLike,
     c1: float = C1,
     c2: float = C2,
     c3: float = C3,
     m1: float = M1,
     m2: float = M2
-) -> MutableVector:
+) -> Vector:
     """Perceptual quantizer (SMPTE ST 2084) - EOTF."""
 
     im1 = 1 / m1
@@ -137,13 +137,13 @@ def pq_st2084_eotf(
     return adjusted
 
 
-def xyz_d65_to_absxyzd65(xyzd65: Vector) -> MutableVector:
+def xyz_d65_to_absxyzd65(xyzd65: VectorLike) -> Vector:
     """XYZ D65 to Absolute XYZ D65."""
 
     return [max(c * YW, 0) for c in xyzd65]
 
 
-def absxyzd65_to_xyz_d65(absxyzd65: Vector) -> MutableVector:
+def absxyzd65_to_xyz_d65(absxyzd65: VectorLike) -> Vector:
     """Absolute XYZ D65 XYZ D65."""
 
     return [max(c / YW, 0) for c in absxyzd65]
@@ -155,7 +155,7 @@ def constrain_hue(hue: float) -> float:
     return hue % 360 if not alg.is_nan(hue) else hue
 
 
-def cmp_coords(c1: Vector, c2: Vector) -> bool:
+def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
     """Compare coordinates."""
 
     if len(c1) != len(c2):

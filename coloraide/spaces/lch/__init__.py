@@ -5,13 +5,13 @@ from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ... import algebra as alg
-from ...types import MutableVector
+from ...types import Vector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
 
-def lab_to_lch(lab: MutableVector) -> MutableVector:
+def lab_to_lch(lab: Vector) -> Vector:
     """Lab to Lch."""
 
     l, a, b = lab
@@ -28,7 +28,7 @@ def lab_to_lch(lab: MutableVector) -> MutableVector:
     return test
 
 
-def lch_to_lab(lch: MutableVector) -> MutableVector:
+def lch_to_lab(lch: Vector) -> Vector:
     """Lch to Lab."""
 
     l, c, h = lch
@@ -98,7 +98,7 @@ class Lch(Lchish, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -107,13 +107,13 @@ class Lch(Lchish, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To Lab from Lch."""
 
         return lch_to_lab(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From Lab to Lch."""
 
         return lab_to_lch(coords)

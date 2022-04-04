@@ -33,7 +33,7 @@ from .srgb_linear import XYZ_TO_RGB
 import math
 from .. import util
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import List, Dict, Tuple
 
 
@@ -74,7 +74,7 @@ def max_chroma_for_lh(l: float, h: float) -> float:
     return min(length for length in lengths if length >= 0)
 
 
-def hsluv_to_lch(hsluv: MutableVector) -> MutableVector:
+def hsluv_to_lch(hsluv: Vector) -> Vector:
     """Convert HSLuv to Lch."""
 
     h, s, l = hsluv
@@ -91,7 +91,7 @@ def hsluv_to_lch(hsluv: MutableVector) -> MutableVector:
     return [l, c, util.constrain_hue(h)]
 
 
-def lch_to_hsluv(lch: MutableVector) -> MutableVector:
+def lch_to_hsluv(lch: Vector) -> Vector:
     """Convert Lch to HSLuv."""
 
     l, c, h = lch
@@ -166,7 +166,7 @@ class HSLuv(Cylindrical, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -175,13 +175,13 @@ class HSLuv(Cylindrical, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To LCHuv from HSLuv."""
 
         return hsluv_to_lch(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From LCHuv to HSLuv."""
 
         return lch_to_hsluv(coords)

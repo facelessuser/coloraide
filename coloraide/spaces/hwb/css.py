@@ -2,7 +2,7 @@
 from .. import hwb as base
 from ...css import parse
 from ...css import serialize
-from ...types import MutableVector
+from ...types import Vector
 from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -40,7 +40,7 @@ class HWB(base.HWB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
+    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
         return parse.parse_css(cls, string, start, fullmatch)

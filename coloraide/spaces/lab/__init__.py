@@ -4,7 +4,7 @@ from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import util
 from ... import algebra as alg
-from ...types import Vector, MutableVector
+from ...types import VectorLike, Vector
 from typing import cast
 
 EPSILON = 216 / 24389  # `6^3 / 29^3`
@@ -13,7 +13,7 @@ KAPPA = 24389 / 27
 KE = 8  # KAPPA * EPSILON = 8
 
 
-def lab_to_xyz(lab: MutableVector, white: Vector) -> MutableVector:
+def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
     """
     Convert Lab to D50-adapted XYZ.
 
@@ -38,10 +38,10 @@ def lab_to_xyz(lab: MutableVector, white: Vector) -> MutableVector:
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return cast(MutableVector, alg.multiply(xyz, util.xy_to_xyz(white), alg.A1D))
+    return cast(Vector, alg.multiply(xyz, util.xy_to_xyz(white), alg.A1D))
 
 
-def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
+def xyz_to_lab(xyz: Vector, white: VectorLike) -> Vector:
     """
     Assuming XYZ is relative to D50, convert to CIE Lab from CIE standard.
 
@@ -52,7 +52,7 @@ def xyz_to_lab(xyz: MutableVector, white: Vector) -> MutableVector:
     """
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = cast(MutableVector, alg.divide(xyz, util.xy_to_xyz(white), alg.A1D))
+    xyz = cast(Vector, alg.divide(xyz, util.xy_to_xyz(white), alg.A1D))
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = [alg.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 
@@ -117,13 +117,13 @@ class Lab(Labish, Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ D50 from Lab."""
 
         return lab_to_xyz(coords, cls.white())
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ D50 to Lab."""
 
         return xyz_to_lab(coords, cls.white())

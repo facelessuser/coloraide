@@ -8,7 +8,7 @@ from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
@@ -51,36 +51,36 @@ ictcp_to_lms_p_mi = [
 ]
 
 
-def ictcp_to_xyz_d65(ictcp: MutableVector) -> MutableVector:
+def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
-    pqlms = cast(MutableVector, alg.dot(ictcp_to_lms_p_mi, ictcp, alg.A2D_A1D))
+    pqlms = cast(Vector, alg.dot(ictcp_to_lms_p_mi, ictcp, alg.A2D_A1D))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms)
 
     # Convert back to absolute XYZ D65
-    absxyz = cast(MutableVector, alg.dot(lms_to_xyz_mi, lms, alg.A2D_A1D))
+    absxyz = cast(Vector, alg.dot(lms_to_xyz_mi, lms, alg.A2D_A1D))
 
     # Convert back to normal XYZ D65
     return util.absxyzd65_to_xyz_d65(absxyz)
 
 
-def xyz_d65_to_ictcp(xyzd65: MutableVector) -> MutableVector:
+def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     """From XYZ to ICtCp."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
     absxyz = util.xyz_d65_to_absxyzd65(xyzd65)
 
     # Convert to LMS
-    lms = cast(MutableVector, alg.dot(xyz_to_lms_m, absxyz, alg.A2D_A1D))
+    lms = cast(Vector, alg.dot(xyz_to_lms_m, absxyz, alg.A2D_A1D))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms)
 
     # Calculate Izazbz
-    return cast(MutableVector, alg.dot(lms_p_to_ictcp_m, pqlms, alg.A2D_A1D))
+    return cast(Vector, alg.dot(lms_p_to_ictcp_m, pqlms, alg.A2D_A1D))
 
 
 class ICtCp(Labish, Space):
@@ -135,13 +135,13 @@ class ICtCp(Labish, Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
 
         return ictcp_to_xyz_d65(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ to ICtCp."""
 
         return xyz_d65_to_ictcp(coords)

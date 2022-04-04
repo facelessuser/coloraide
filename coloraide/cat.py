@@ -2,7 +2,7 @@
 from . import util
 from . import algebra as alg
 from functools import lru_cache
-from .types import Matrix, MutableMatrix, Vector, MutableVector
+from .types import MatrixLike, Matrix, VectorLike, Vector
 from typing import Tuple, Dict, cast
 
 # From CIE 2004 Colorimetry T.3 and T.8
@@ -91,7 +91,7 @@ CATS = {
         [0.650173, 1.204414, 0.048952],
         [-0.051461, -0.045854, -0.953127]
     ]
-}  # type: Dict[str, Matrix]
+}  # type: Dict[str, MatrixLike]
 
 
 @lru_cache(maxsize=20)
@@ -99,7 +99,7 @@ def calc_adaptation_matrices(
     w1: Tuple[float, float],
     w2: Tuple[float, float],
     method: str = 'bradford'
-) -> Tuple[MutableMatrix, MutableMatrix]:
+) -> Tuple[Matrix, Matrix]:
     """
     Get the von Kries based adaptation matrix based on the method and illuminants.
 
@@ -128,13 +128,13 @@ def calc_adaptation_matrices(
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
-    m2 = cast(MutableMatrix, alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), alg.A1D))))
-    adapt = cast(MutableMatrix, alg.dot(mi, alg.dot(m2, m, alg.A2D), alg.A2D))
+    m2 = cast(Matrix, alg.diag(cast(VectorLike, alg.divide(cast(VectorLike, first), cast(VectorLike, second), alg.A1D))))
+    adapt = cast(Matrix, alg.dot(mi, alg.dot(m2, m, alg.A2D), alg.A2D))
 
     return adapt, alg.inv(adapt)
 
 
-def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], method: str) -> MutableMatrix:
+def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], method: str) -> Matrix:
     """
     Get the appropriate matrix for chromatic adaptation.
 
@@ -151,9 +151,9 @@ def get_adaptation_matrix(w1: Tuple[float, float], w2: Tuple[float, float], meth
 def chromatic_adaptation(
     w1: Tuple[float, float],
     w2: Tuple[float, float],
-    xyz: Vector,
+    xyz: VectorLike,
     method: str = 'bradford'
-) -> MutableVector:
+) -> Vector:
     """Chromatic adaptation."""
 
     if w1 == w2:
@@ -161,4 +161,4 @@ def chromatic_adaptation(
         return list(xyz)
     else:
         # Get the appropriate chromatic adaptation matrix and apply.
-        return cast(MutableVector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz, alg.A2D_A1D))
+        return cast(Vector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz, alg.A2D_A1D))

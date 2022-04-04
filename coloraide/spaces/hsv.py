@@ -4,11 +4,11 @@ from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple
 
 
-def hsv_to_hsl(hsv: MutableVector) -> MutableVector:
+def hsv_to_hsl(hsv: Vector) -> Vector:
     """
     HSV to HSL.
 
@@ -25,7 +25,7 @@ def hsv_to_hsl(hsv: MutableVector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_hsv(hsl: MutableVector) -> MutableVector:
+def hsl_to_hsv(hsl: Vector) -> Vector:
     """
     HSL to HSV.
 
@@ -101,7 +101,7 @@ class HSV(Cylindrical, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -111,13 +111,13 @@ class HSV(Cylindrical, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To HSL from HSV."""
 
         return hsv_to_hsl(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From HSL to HSV."""
 
         return hsl_to_hsv(coords)

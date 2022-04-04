@@ -33,7 +33,7 @@ from .. import util
 import math
 import sys
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple, Optional
 
 FLT_MAX = sys.float_info.max
@@ -55,14 +55,14 @@ def toe_inv(x: float) -> float:
     return (x ** 2 + K_1 * x) / (K_3 * (x + K_2))
 
 
-def to_st(cusp: MutableVector) -> MutableVector:
+def to_st(cusp: Vector) -> Vector:
     """To ST."""
 
     l, c = cusp
     return [c / l, c / (1 - l)]
 
 
-def get_st_mid(a: float, b: float) -> MutableVector:
+def get_st_mid(a: float, b: float) -> Vector:
     """
     Returns a smooth approximation of the location of the cusp.
 
@@ -99,7 +99,7 @@ def get_st_mid(a: float, b: float) -> MutableVector:
     return [s, t]
 
 
-def find_cusp(a: float, b: float) -> MutableVector:
+def find_cusp(a: float, b: float) -> Vector:
     """
     Finds L_cusp and C_cusp for a given hue.
 
@@ -123,7 +123,7 @@ def find_gamut_intersection(
     l1: float,
     c1: float,
     l0: float,
-    cusp: Optional[MutableVector] = None
+    cusp: Optional[Vector] = None
 ) -> float:
     """
     Finds intersection of the line.
@@ -213,7 +213,7 @@ def find_gamut_intersection(
     return t
 
 
-def get_cs(lab: MutableVector) -> MutableVector:
+def get_cs(lab: Vector) -> Vector:
     """Get Cs."""
 
     l, a, b = lab
@@ -325,7 +325,7 @@ def compute_max_saturation(a: float, b: float) -> float:
     return sat
 
 
-def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
+def okhsl_to_oklab(hsl: Vector) -> Vector:
     """Convert Okhsl to sRGB."""
 
     h, s, l = hsl
@@ -370,7 +370,7 @@ def okhsl_to_oklab(hsl: MutableVector) -> MutableVector:
     return [L, a, b]
 
 
-def oklab_to_okhsl(lab: MutableVector) -> MutableVector:
+def oklab_to_okhsl(lab: Vector) -> Vector:
     """Oklab to Okhsl."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
@@ -473,7 +473,7 @@ class Okhsl(Cylindrical, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -482,13 +482,13 @@ class Okhsl(Cylindrical, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""
 
         return okhsl_to_oklab(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From Oklab to Okhsl."""
 
         return oklab_to_okhsl(coords)

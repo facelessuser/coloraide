@@ -2,7 +2,7 @@
 import re
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from . import color_names
 from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from typing import Optional, Tuple
@@ -223,7 +223,7 @@ def norm_angle_channel(angle: str) -> float:
     return value
 
 
-def parse_hex(color: str) -> Tuple[MutableVector, float]:
+def parse_hex(color: str) -> Tuple[Vector, float]:
     """Parse hexadecimal color."""
     length = len(color)
     if length in (7, 9):
@@ -246,7 +246,7 @@ def parse_hex(color: str) -> Tuple[MutableVector, float]:
         )
 
 
-def parse_rgb_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[MutableVector, float]:
+def parse_rgb_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
     channels = []
     alpha = 1.0
@@ -259,7 +259,7 @@ def parse_rgb_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Mutable
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[MutableVector, float]:
+def parse_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
 
     channels = []
@@ -283,7 +283,7 @@ def parse_color(
     spaces: Dict[str, Type['Space']],
     start: int,
     fullmatch: bool = False
-) -> Optional[Tuple[Type['Space'], Tuple[MutableVector, float], int]]:
+) -> Optional[Tuple[Type['Space'], Tuple[Vector, float], int]]:
     """Perform default color matching."""
 
     m = RE_COLOR_MATCH.match(string, start)
@@ -327,7 +327,7 @@ def parse_css(
     start: int = 0,
     fullmatch: bool = True,
     color: bool = False
-) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
+) -> Optional[Tuple[Tuple[Vector, float], int]]:
     """Match a CSS color string."""
 
     name = cspace.NAME

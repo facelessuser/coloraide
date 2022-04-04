@@ -4,12 +4,12 @@ from .lch import Lch
 from .. import util
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
 
-def lch_to_lab(lch: MutableVector) -> MutableVector:
+def lch_to_lab(lch: Vector) -> Vector:
     """Din99o Lch to lab."""
 
     l, c, h = lch
@@ -23,7 +23,7 @@ def lch_to_lab(lch: MutableVector) -> MutableVector:
     ]
 
 
-def lab_to_lch(lab: MutableVector) -> MutableVector:
+def lab_to_lch(lab: Vector) -> Vector:
     """Din99o Lab to Lch."""
 
     l, a, b = lab
@@ -47,13 +47,13 @@ class Lch99o(Lch):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To Din99o from Din99o Lch."""
 
         return lch_to_lab(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From Din99o to Din99o Lch."""
 
         return lab_to_lch(coords)

@@ -6,10 +6,10 @@ from .lch import Lch, ACHROMATIC_THRESHOLD
 from .. import util
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 
 
-def luv_to_lchuv(luv: MutableVector) -> MutableVector:
+def luv_to_lchuv(luv: Vector) -> Vector:
     """Luv to Lch(uv)."""
 
     l, u, v = luv
@@ -25,7 +25,7 @@ def luv_to_lchuv(luv: MutableVector) -> MutableVector:
     return [l, c, util.constrain_hue(h)]
 
 
-def lchuv_to_luv(lchuv: MutableVector) -> MutableVector:
+def lchuv_to_luv(lchuv: Vector) -> Vector:
     """Lch(uv) to Luv."""
 
     l, c, h = lchuv
@@ -54,13 +54,13 @@ class Lchuv(Lch, Space):
     )
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To Luv from Lch(uv)."""
 
         return lchuv_to_luv(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From Luv to Lch(uv)."""
 
         return luv_to_lchuv(coords)

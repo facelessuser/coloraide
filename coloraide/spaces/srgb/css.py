@@ -3,7 +3,7 @@ from .. import srgb as base
 from ...css import parse
 from ...css import serialize
 from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
-from ...types import MutableVector
+from ...types import Vector
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
@@ -47,7 +47,7 @@ class SRGB(base.SRGB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
+    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
         return parse.parse_css(cls, string, start, fullmatch)

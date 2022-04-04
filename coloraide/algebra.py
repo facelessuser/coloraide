@@ -17,7 +17,7 @@ import math
 import operator
 from functools import reduce
 from itertools import zip_longest as zipl
-from .types import Array, Matrix, Vector, MutableArray, MutableMatrix, MutableVector, SupportsFloatOrInt
+from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
 from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, Any, Iterable, cast
 
 NaN = float('nan')
@@ -54,7 +54,7 @@ def is_nan(obj: float) -> bool:
     return math.isnan(obj)
 
 
-def no_nans(value: Vector, default: float = 0.0) -> MutableVector:
+def no_nans(value: VectorLike, default: float = 0.0) -> Vector:
     """Ensure there are no `NaN` values in a sequence."""
 
     return [(default if is_nan(x) else x) for x in value]
@@ -118,17 +118,17 @@ def npow(base: float, exp: float) -> float:
 ################################
 # Matrix/linear algebra math
 ################################
-def _vector_dot(a: Vector, b: Vector) -> float:
+def _vector_dot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
     return sum([x * y for x, y in zipl(a, b)])
 
 
 def _extract_dimension(
-    m: Array,
+    m: ArrayLike,
     target: int,
     depth: int = 0
-) -> Iterator[Array]:
+) -> Iterator[ArrayLike]:
     """
     Extract the requested dimension.
 
@@ -138,19 +138,19 @@ def _extract_dimension(
 
     if depth == target:
         if isinstance(m[0], Sequence):
-            yield cast(Array, [[cast(Array, x)[r] for x in m] for r in range(len(m[0]))])
+            yield cast(ArrayLike, [[cast(ArrayLike, x)[r] for x in m] for r in range(len(m[0]))])
         else:
             yield m
     else:
         for m2 in m:
-            yield from cast(Array, _extract_dimension(cast(Array, m2), target, depth + 1))
+            yield from cast(ArrayLike, _extract_dimension(cast(ArrayLike, m2), target, depth + 1))
 
 
 def dot(
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """
     Get dot product of simple numbers, vectors, and matrices.
 
@@ -173,28 +173,30 @@ def dot(
         if dims_a and dims_b and dims_a > 2 or dims_b > 2:
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
-                columns1 = list(_extract_dimension(cast(Matrix, b), dims_b - 2))
+                columns1 = list(_extract_dimension(cast(MatrixLike, b), dims_b - 2))
                 shape_c = shape_b[:-2] + shape_b[-1:]
                 return cast(
-                    MutableMatrix,
+                    Matrix,
                     reshape(
-                        [[_vector_dot(cast(Vector, a), cast(Vector, c)) for c in col] for col in columns1],
+                        [[_vector_dot(cast(VectorLike, a), cast(VectorLike, c)) for c in col] for col in columns1],
                         shape_c
                     )
                 )
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-                columns2 = list(_extract_dimension(cast(Array, b), dims_b - 2)) if dims_b > 1 else cast(Array, [[b]])
-                rows = list(_extract_dimension(cast(Array, a), dims_a - 1))
+                columns2 = list(
+                    _extract_dimension(cast(ArrayLike, b), dims_b - 2)) if dims_b > 1 else cast(ArrayLike, [[b]]
+                )
+                rows = list(_extract_dimension(cast(ArrayLike, a), dims_a - 1))
                 m2 = [
-                    [[sum(cast(List[float], multiply(row, c))) for c in cast(Vector, col)] for col in columns2]
+                    [[sum(cast(List[float], multiply(row, c))) for c in cast(VectorLike, col)] for col in columns2]
                     for row in rows
                 ]
                 shape_c = shape_a[:-1]
                 if dims_b != 1:
                     shape_c += shape_b[:-2] + shape_b[-1:]
-                return cast(MutableMatrix, reshape(cast(MutableArray, m2), shape_c))
+                return cast(Matrix, reshape(cast(Array, m2), shape_c))
 
     else:
         dims_a, dims_b = dims
@@ -203,27 +205,27 @@ def dot(
     if dims_a == 1:
         if dims_b == 1:
             # Dot product of two vectors
-            return _vector_dot(cast(Vector, a), cast(Vector, b))
+            return _vector_dot(cast(VectorLike, a), cast(VectorLike, b))
         elif dims_b == 2:
             # Dot product of vector and a matrix
-            return cast(MutableVector, [_vector_dot(cast(Vector, a), col) for col in zipl(*cast(Matrix, b))])
+            return cast(Vector, [_vector_dot(cast(VectorLike, a), col) for col in zipl(*cast(MatrixLike, b))])
 
     elif dims_a == 2:
         if dims_b == 1:
             # Dot product of matrix and a vector
-            return cast(MutableVector, [_vector_dot(row, cast(Vector, b)) for row in cast(Matrix, a)])
+            return cast(Vector, [_vector_dot(row, cast(VectorLike, b)) for row in cast(MatrixLike, a)])
         elif dims_b == 2:
             # Dot product of two matrices
             return cast(
-                MutableMatrix,
-                [[_vector_dot(row, col) for col in zipl(*cast(Matrix, b))] for row in cast(Matrix, a)]
+                Matrix,
+                [[_vector_dot(row, col) for col in zipl(*cast(MatrixLike, b))] for row in cast(MatrixLike, a)]
             )
 
     # Trying to dot a number with a vector or a matrix, so just multiply
     return multiply(a, b, (dims_a, dims_b))
 
 
-def _vector_math(op: Callable[..., float], a: Vector, b: Vector) -> MutableVector:
+def _vector_math(op: Callable[..., float], a: VectorLike, b: VectorLike) -> Vector:
     """Divide two vectors."""
 
     # Broadcast the vector
@@ -237,10 +239,10 @@ def _vector_math(op: Callable[..., float], a: Vector, b: Vector) -> MutableVecto
 
 def _math(
     op: Callable[..., float],
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """
     Reuse same logic for basic, multiplication, division, addition and subtraction.
 
@@ -269,19 +271,22 @@ def _math(
             if dims_a == dims_b:
                 # Apply math to two N-D matrices
                 return cast(
-                    MutableMatrix,
-                    reshape([op(x, y) for x, y in zip(flatiter(cast(Array, a)), flatiter(cast(Array, b)))], shape_a)
+                    Matrix,
+                    reshape(
+                        [op(x, y) for x, y in zip(flatiter(cast(ArrayLike, a)), flatiter(cast(ArrayLike, b)))],
+                        shape_a
+                    )
                 )
             elif not dims_a or not dims_b:
                 if not dims_a:
                     # Apply math to a number and an N-D matrix
-                    return cast(MutableMatrix, reshape([op(a, x) for x in flatiter(cast(Array, b))], shape_b))
+                    return cast(Matrix, reshape([op(a, x) for x in flatiter(cast(ArrayLike, b))], shape_b))
                 # Apply math to an N-D matrix and a number
-                return cast(MutableMatrix, reshape([op(x, b) for x in flatiter(cast(Array, a))], shape_a))
+                return cast(Matrix, reshape([op(x, b) for x in flatiter(cast(ArrayLike, a))], shape_a))
 
             # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
-            bcast = broadcast(cast(Array, a), cast(Array, b))
-            return cast(MutableMatrix, reshape([op(x, y) for x, y in bcast], bcast.shape))
+            bcast = broadcast(cast(ArrayLike, a), cast(ArrayLike, b))
+            return cast(Matrix, reshape([op(x, y) for x, y in bcast], bcast.shape))
     else:
         dims_a, dims_b = dims
 
@@ -289,69 +294,69 @@ def _math(
     if dims_a == dims_b:
         if dims_a == 1:
             # Apply math to two vectors
-            return _vector_math(op, cast(Vector, a), cast(Vector, b))
+            return _vector_math(op, cast(VectorLike, a), cast(VectorLike, b))
         elif dims_a == 2:
             # Apply math to two 2-D matrices
-            return cast(MutableMatrix, [_vector_math(op, ra, rb) for ra, rb in zipl(cast(Matrix, a), cast(Matrix, b))])
+            return cast(Matrix, [_vector_math(op, ra, rb) for ra, rb in zipl(cast(MatrixLike, a), cast(MatrixLike, b))])
         return op(a, b)
 
     # Inputs containing a scalar on either side
     elif not dims_a or not dims_b:
         if dims_a == 1:
             # Apply math to a vector and number
-            return cast(MutableVector, [op(i, cast(float, b)) for i in cast(Vector, a)])
+            return cast(Vector, [op(i, cast(float, b)) for i in cast(VectorLike, a)])
         elif dims_b == 1:
             # Apply math to a number and a vector
-            return cast(MutableVector, [op(cast(float, a), i) for i in cast(Vector, b)])
+            return cast(Vector, [op(cast(float, a), i) for i in cast(VectorLike, b)])
         elif dims_a == 2:
             # Apply math to 2-D matrix and number
-            return cast(MutableVector, [[op(i, cast(float, b)) for i in row] for row in cast(Matrix, a)])
+            return cast(Vector, [[op(i, cast(float, b)) for i in row] for row in cast(MatrixLike, a)])
         # Apply math to a number and a matrix
-        return cast(MutableVector, [[op(cast(float, a), i) for i in row] for row in cast(Matrix, b)])
+        return cast(Vector, [[op(cast(float, a), i) for i in row] for row in cast(MatrixLike, b)])
 
     # Inputs are at least 2-D dimensions or below on both sides
     if dims_a == 1:
         # Apply math to vector and 2-D matrix
-        return cast(MutableMatrix, [_vector_math(op, cast(Vector, a), row) for row in cast(Matrix, b)])
+        return cast(Matrix, [_vector_math(op, cast(VectorLike, a), row) for row in cast(MatrixLike, b)])
     # Apply math to 2-D matrix and a vector
-    return cast(MutableMatrix, [_vector_math(op, row, cast(Vector, b)) for row in cast(Matrix, a)])
+    return cast(Matrix, [_vector_math(op, row, cast(VectorLike, b)) for row in cast(MatrixLike, a)])
 
 
 def divide(
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """Divide simple numbers, vectors, and 2D matrices."""
 
     return _math(operator.truediv, a, b, dims)
 
 
 def multiply(
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """Multiply simple numbers, vectors, and 2D matrices."""
 
     return _math(operator.mul, a, b, dims)
 
 
 def add(
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """Add simple numbers, vectors, and 2D matrices."""
 
     return _math(operator.add, a, b, dims)
 
 
 def subtract(
-    a: Union[float, Array],
-    b: Union[float, Array],
+    a: Union[float, ArrayLike],
+    b: Union[float, ArrayLike],
     dims: Optional[Tuple[int, int]] = None
-) -> Union[float, MutableArray]:
+) -> Union[float, Array]:
     """Subtract simple numbers, vectors, and 2D matrices."""
 
     return _math(operator.sub, a, b, dims)
@@ -371,7 +376,7 @@ class BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: Array, orig: Tuple[int, ...], old: Tuple[int, ...], new: Tuple[int, ...]) -> None:
+    def __init__(self, array: ArrayLike, orig: Tuple[int, ...], old: Tuple[int, ...], new: Tuple[int, ...]) -> None:
         """Initialize."""
 
         self._loop1 = 0
@@ -483,7 +488,7 @@ class BroadcastTo:
 class Broadcast:
     """Broadcast."""
 
-    def __init__(self, *arrays: Array) -> None:
+    def __init__(self, *arrays: ArrayLike) -> None:
         """Broadcast."""
 
         # Determine maximum dimensions
@@ -554,13 +559,13 @@ class Broadcast:
         return self
 
 
-def broadcast(*arrays: Array) -> Broadcast:
+def broadcast(*arrays: ArrayLike) -> Broadcast:
     """Broadcast."""
 
     return Broadcast(*arrays)
 
 
-def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
+def broadcast_to(a: ArrayLike, s: Union[int, Sequence[int]]) -> Array:
     """Broadcast array to a shape."""
 
     if not isinstance(s, Sequence):
@@ -583,10 +588,10 @@ def broadcast_to(a: Array, s: Union[int, Sequence[int]]) -> MutableArray:
         if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
 
-    return cast(MutableArray, reshape(list(BroadcastTo(a, s_orig, tuple(s1), tuple(s))), s))
+    return cast(Array, reshape(list(BroadcastTo(a, s_orig, tuple(s1), tuple(s))), s))
 
 
-def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Array]) -> MutableArray:
+def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, ArrayLike]) -> Array:
     """Create and fill a shape with the given values."""
 
     # Ensure `shape` is a sequence of sizes
@@ -594,53 +599,53 @@ def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, Array]
 
     # Normalize `fill_value` to be an array.
     if not isinstance(fill_value, Sequence):
-        return cast(MutableArray, reshape([fill_value] * prod(array_shape), array_shape))
+        return cast(Array, reshape([fill_value] * prod(array_shape), array_shape))
 
     # If the shape doesn't fit the data, try and broadcast it.
     # If it does fit, just reshape it.
     if shape(fill_value) != tuple(array_shape):
         return broadcast_to(fill_value, array_shape)
-    return cast(MutableArray, reshape(fill_value, array_shape))
+    return cast(Array, reshape(fill_value, array_shape))
 
 
-def ones(array_shape: Union[int, Sequence[int]]) -> MutableArray:
+def ones(array_shape: Union[int, Sequence[int]]) -> Array:
     """Create and fill a shape with ones."""
 
     return full(array_shape, 1.0)
 
 
-def zeros(array_shape: Union[int, Sequence[int]]) -> MutableArray:
+def zeros(array_shape: Union[int, Sequence[int]]) -> Array:
     """Create and fill a shape with zeros."""
 
     return full(array_shape, 0.0)
 
 
-def identity(size: int) -> MutableMatrix:
+def identity(size: int) -> Matrix:
     """Create an identity matrix."""
 
-    return cast(MutableMatrix, diag([1.0] * size))
+    return cast(Matrix, diag([1.0] * size))
 
 
-def _flatiter(array: Array, array_shape: Tuple[int, ...]) -> Iterator[float]:
+def _flatiter(array: ArrayLike, array_shape: Tuple[int, ...]) -> Iterator[float]:
     """Iterate and return values based on shape."""
 
     nested = len(array_shape) > 1
     for a in array:
         if nested:
-            yield from _flatiter(cast(Array, a), array_shape[1:])
+            yield from _flatiter(cast(ArrayLike, a), array_shape[1:])
         elif isinstance(a, Sequence):
             raise ValueError('Ragged arrays are not supported')
         else:
             yield a
 
 
-def flatiter(array: Array) -> Iterator[float]:
+def flatiter(array: ArrayLike) -> Iterator[float]:
     """Traverse an array returning values."""
 
     yield from _flatiter(array, shape(array))
 
 
-def ravel(array: Array) -> MutableVector:
+def ravel(array: ArrayLike) -> Vector:
     """Return a flattened vector."""
 
     return list(flatiter(array))
@@ -661,7 +666,7 @@ def arange(
     start: SupportsFloatOrInt,
     stop: Optional[SupportsFloatOrInt] = None,
     step: SupportsFloatOrInt = 1
-) -> MutableVector:
+) -> Vector:
     """
     Like arrange, but handles floats as well.
 
@@ -679,7 +684,7 @@ def arange(
         return list(_frange(float(start), float(stop), float(step)))
 
 
-def transpose(array: Array) -> MutableArray:
+def transpose(array: ArrayLike) -> Array:
     """
     A simple transpose of a matrix.
 
@@ -710,7 +715,7 @@ def transpose(array: Array) -> MutableArray:
             if not t:
                 for _ in range(s[d]):
                     t.append([])
-            t = cast(MutableArray, t[idx[x]])
+            t = cast(Array, t[idx[x]])
 
         # Initialize the last dimension
         # so we can index at the correct position
@@ -730,10 +735,10 @@ def transpose(array: Array) -> MutableArray:
                     idx[x] += 1
                     break
 
-    return cast(MutableArray, m)
+    return cast(Array, m)
 
 
-def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> Union[float, Array]:
+def reshape(array: ArrayLike, new_shape: Union[int, Sequence[int]]) -> Union[float, ArrayLike]:
     """Change the shape of an array."""
 
     # Normalize shape specifier to a sequence
@@ -775,7 +780,7 @@ def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> Union[float, 
             if not t:
                 for _ in range(new_shape[d]):
                     t.append([])
-            t = cast(MutableArray, t[idx[x]])
+            t = cast(Array, t[idx[x]])
 
         # Create the final dimension, writing all the data
         t[:] = [next(data) for _ in range(length)]
@@ -790,10 +795,10 @@ def reshape(array: Array, new_shape: Union[int, Sequence[int]]) -> Union[float, 
                     idx[x] += 1
                     break
 
-    return cast(MutableArray, m)
+    return cast(Array, m)
 
 
-def _shape(array: Array, size: int) -> Tuple[int, ...]:
+def _shape(array: ArrayLike, size: int) -> Tuple[int, ...]:
     """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
 
     s = (size,)
@@ -816,7 +821,7 @@ def _shape(array: Array, size: int) -> Tuple[int, ...]:
     return s + s2 if s2 else s
 
 
-def shape(array: Union[float, Array]) -> Tuple[int, ...]:
+def shape(array: Union[float, ArrayLike]) -> Tuple[int, ...]:
     """Get the shape of an array."""
 
     if isinstance(array, Sequence):
@@ -830,7 +835,7 @@ def shape(array: Union[float, Array]) -> Tuple[int, ...]:
         return tuple()
 
 
-def fill_diagonal(matrix: MutableMatrix, val: Union[float, Array] = 0.0, wrap: bool = False) -> None:
+def fill_diagonal(matrix: Matrix, val: Union[float, ArrayLike] = 0.0, wrap: bool = False) -> None:
     """Fill an N-D matrix diagonal."""
 
     s = shape(matrix)
@@ -868,7 +873,7 @@ def fill_diagonal(matrix: MutableMatrix, val: Union[float, Array] = 0.0, wrap: b
         pos = pos + 1 if pos < dlen else 0
 
 
-def diag(array: Array, k: int = 0) -> MutableArray:
+def diag(array: ArrayLike, k: int = 0) -> Array:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
     s = shape(array)
     dims = len(s)
@@ -882,7 +887,7 @@ def diag(array: Array, k: int = 0) -> MutableArray:
         minimum = 0
 
         # Create a diagonal matrix with the provided vector
-        m = []  # type: MutableMatrix
+        m = []  # type: Matrix
         for i in range(size):
             pos = i + k
             idx = i if k >= 0 else pos
@@ -899,11 +904,11 @@ def diag(array: Array, k: int = 0) -> MutableArray:
         for i, r in enumerate(array):
             pos = i + k
             if (0 <= pos < size):
-                d.append(cast(Vector, r)[pos])
+                d.append(cast(VectorLike, r)[pos])
         return d
 
 
-def inv(matrix: Matrix) -> MutableMatrix:
+def inv(matrix: MatrixLike) -> Matrix:
     """
     Invert the matrix.
 
@@ -950,8 +955,8 @@ def inv(matrix: Matrix) -> MutableMatrix:
         invert = []
         cols = list(_extract_dimension(matrix, dims - 2))
         for c in cols:
-            invert.append(transpose(inv(cast(MutableMatrix, c))))
-        return cast(MutableMatrix, reshape(cast(MutableMatrix, invert), s))
+            invert.append(transpose(inv(cast(Matrix, c))))
+        return cast(Matrix, reshape(cast(Matrix, invert), s))
 
     indices = list(range(s[0]))
     m = [list(x) for x in matrix]
@@ -997,10 +1002,10 @@ def inv(matrix: Matrix) -> MutableMatrix:
     return im
 
 
-def vstack(arrays: Tuple[Array, ...]) -> MutableArray:
+def vstack(arrays: Tuple[ArrayLike, ...]) -> Array:
     """Vertical stack."""
 
-    m = []  # type: List[MutableArray]
+    m = []  # type: List[Array]
     first = True
     dims = 0
     for i in arrays:
@@ -1009,18 +1014,18 @@ def vstack(arrays: Tuple[Array, ...]) -> MutableArray:
             dims = len(cs)
             first = False
             if dims == 0:
-                return cast(MutableArray, reshape(cast(Vector, arrays), (len(arrays), 1)))
+                return cast(Array, reshape(cast(VectorLike, arrays), (len(arrays), 1)))
             elif dims == 1:
-                return cast(MutableArray, reshape(cast(Matrix, arrays), (len(arrays), cs[-1])))
-        m.append(cast(MutableArray, reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:])))
+                return cast(Array, reshape(cast(MatrixLike, arrays), (len(arrays), cs[-1])))
+        m.append(cast(Array, reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:])))
 
     if first:
         raise ValueError("'vstack' requires at least one array")
 
-    return sum(cast(Iterable[MutableArray], m), cast(MutableArray, []))
+    return sum(cast(Iterable[Array], m), cast(Array, []))
 
 
-def _hstack_extract(a: MutableArray, s: Tuple[int, ...]) -> Iterator[MutableVector]:
+def _hstack_extract(a: Array, s: Tuple[int, ...]) -> Iterator[Vector]:
     """Extract data from the second dimension."""
 
     data = flatiter(a)
@@ -1029,7 +1034,7 @@ def _hstack_extract(a: MutableArray, s: Tuple[int, ...]) -> Iterator[MutableVect
         yield [next(data) for _ in range(length)]
 
 
-def hstack(arrays: Tuple[Array, ...]) -> MutableArray:
+def hstack(arrays: Tuple[ArrayLike, ...]) -> Array:
     """Horizontal stack."""
 
     # Gather up shapes
@@ -1043,12 +1048,12 @@ def hstack(arrays: Tuple[Array, ...]) -> MutableArray:
         if first is None:
             first = cs
             if not cs:
-                return cast(MutableArray, reshape(cast(Vector, arrays), (len(arrays),)))
+                return cast(Array, reshape(cast(VectorLike, arrays), (len(arrays),)))
             elif len(cs) == 1:
-                m1 = []  # type: MutableVector
+                m1 = []  # type: Vector
                 for a1 in arrays:
                     m1.extend(ravel(a1))
-                return cast(MutableArray, reshape(m1, (len(m1),)))
+                return cast(Array, reshape(m1, (len(m1),)))
 
         # Gather up shapes and tally the size of the new second dimension
         columns += cs[1]
@@ -1058,16 +1063,16 @@ def hstack(arrays: Tuple[Array, ...]) -> MutableArray:
         raise ValueError("'hstack' requires at least one array")
 
     # Iterate the arrays returning the content per second dimension
-    m = []  # type: List[MutableArray]
+    m = []  # type: List[Array]
     for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrays, shapes)]):
         m.extend(sum(data, []))
 
     # Shape the data to the new shape
     new_shape = first[:1] + tuple([columns]) + first[2:]
-    return cast(MutableArray, reshape(cast(MutableArray, m), new_shape))
+    return cast(Array, reshape(cast(Array, m), new_shape))
 
 
-def outer(a: Union[float, Array], b: Union[float, Array]) -> MutableMatrix:
+def outer(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Matrix:
     """Compute the outer product of two vectors (or flattened matrices)."""
 
     v1 = ravel(a) if isinstance(a, Sequence) else [a]
@@ -1075,7 +1080,7 @@ def outer(a: Union[float, Array], b: Union[float, Array]) -> MutableMatrix:
     return [[x * y for y in v2] for x in v1]
 
 
-def inner(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]:
+def inner(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
     """Compute the inner product of two arrays."""
 
     shape_a = shape(a)
@@ -1097,19 +1102,19 @@ def inner(a: Union[float, Array], b: Union[float, Array]) -> Union[float, Array]
     if dims_a == 1:
         first = [a]  # type: Any
     elif dims_a > 2:
-        first = list(_extract_dimension(cast(Array, a), dims_a - 1))
+        first = list(_extract_dimension(cast(ArrayLike, a), dims_a - 1))
     else:
         first = a
 
     if dims_b == 1:
         second = [b]  # type: Any
     elif dims_b > 2:
-        second = list(_extract_dimension(cast(Array, b), dims_b - 1))
+        second = list(_extract_dimension(cast(ArrayLike, b), dims_b - 1))
     else:
         second = b
 
     # Perform the actual inner product
-    m = [[sum([x * y for x, y in zipl(cast(Vector, r1), cast(Vector, r2))]) for r2 in second] for r1 in first]
+    m = [[sum([x * y for x, y in zipl(cast(VectorLike, r1), cast(VectorLike, r2))]) for r2 in second] for r1 in first]
     new_shape = shape_a[:-1] + shape_b[:-1]
 
     # Shape the data.

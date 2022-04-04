@@ -7,7 +7,7 @@ http://www.w3.org/TR/SVG/types.html#ColorKeywords
 """
 from typing import Optional, Tuple, Dict
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 
 name2val_map = {
     'aliceblue': (240.0, 248.0, 255.0, 255.0),
@@ -166,13 +166,13 @@ name2val_map = {
 val2name_map = dict([(v, k) for k, v in name2val_map.items()])  # type: Dict[Tuple[float, ...], str]
 
 
-def to_name(value: MutableVector) -> Optional[str]:
+def to_name(value: Vector) -> Optional[str]:
     """Convert CSS hex to webcolor name."""
 
     return val2name_map.get(tuple([alg.round_half_up(c * 255) for c in value]), None)
 
 
-def from_name(name: str) -> Optional[MutableVector]:
+def from_name(name: str) -> Optional[Vector]:
     """Convert CSS hex to webcolor name."""
 
     value = name2val_map.get(name.lower(), None)

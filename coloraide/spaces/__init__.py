@@ -6,7 +6,7 @@ from ..css import parse
 from ..gamut import bounds
 from ..css import serialize
 from .. import algebra as alg
-from ..types import Vector, MutableVector
+from ..types import VectorLike, Vector
 from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -120,7 +120,7 @@ class Space(
     # White point
     WHITE = (0.0, 0.0)
 
-    def __init__(self, color: Union['Space', Vector], alpha: Optional[float] = None) -> None:
+    def __init__(self, color: Union['Space', VectorLike], alpha: Optional[float] = None) -> None:
         """Initialize."""
 
         num_channels = len(self.CHANNEL_NAMES)
@@ -156,7 +156,7 @@ class Space(
 
     __str__ = __repr__
 
-    def coords(self) -> MutableVector:
+    def coords(self) -> Vector:
         """Coordinates."""
 
         return self._coords[:]
@@ -168,7 +168,7 @@ class Space(
         return (cls.NAME,) if not cls.SERIALIZE else cls.SERIALIZE
 
     @classmethod
-    def white(cls) -> Vector:
+    def white(cls) -> VectorLike:
         """Get the white color for this color space."""
 
         return cls.WHITE
@@ -203,12 +203,12 @@ class Space(
 
     @classmethod
     @abstractmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+    def to_base(cls, coords: Vector) -> Vector:  # pragma: no cover
         """To base color."""
 
     @classmethod
     @abstractmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:  # pragma: no cover
+    def from_base(cls, coords: Vector) -> Vector:  # pragma: no cover
         """From base color."""
 
     def to_string(
@@ -233,7 +233,7 @@ class Space(
         )
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
         return alg.no_nans(coords), alg.no_nan(alpha)
@@ -244,7 +244,7 @@ class Space(
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
+    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a color by string."""
 
         return None

@@ -33,11 +33,11 @@ from .oklab import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple
 
 
-def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
+def okhsv_to_oklab(hsv: Vector) -> Vector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
@@ -85,7 +85,7 @@ def okhsv_to_oklab(hsv: MutableVector) -> MutableVector:
     return [l, a, b]
 
 
-def oklab_to_okhsv(lab: MutableVector) -> MutableVector:
+def oklab_to_okhsv(lab: Vector) -> Vector:
     """Oklab to Okhsv."""
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
@@ -192,7 +192,7 @@ class Okhsv(Cylindrical, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -201,13 +201,13 @@ class Okhsv(Cylindrical, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, okhsv: MutableVector) -> MutableVector:
+    def to_base(cls, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""
 
         return okhsv_to_oklab(okhsv)
 
     @classmethod
-    def from_base(cls, oklab: MutableVector) -> MutableVector:
+    def from_base(cls, oklab: Vector) -> Vector:
         """From Oklab to Okhsv."""
 
         return oklab_to_okhsv(oklab)

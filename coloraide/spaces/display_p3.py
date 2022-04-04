@@ -2,7 +2,7 @@
 from ..cat import WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import cast
 
 RGB_TO_XYZ = [
@@ -18,7 +18,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_p3_to_xyz(rgb: MutableVector) -> MutableVector:
+def lin_p3_to_xyz(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light image-p3 values to CIE XYZ using  D65 (no chromatic adaptation).
 
@@ -26,22 +26,22 @@ def lin_p3_to_xyz(rgb: MutableVector) -> MutableVector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
-def xyz_to_lin_p3(xyz: MutableVector) -> MutableVector:
+def xyz_to_lin_p3(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light P3."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
-def lin_p3(rgb: MutableVector) -> MutableVector:
+def lin_p3(rgb: Vector) -> Vector:
     """Convert an array of image-p3 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
     return lin_srgb(rgb)  # same as sRGB
 
 
-def gam_p3(rgb: MutableVector) -> MutableVector:
+def gam_p3(rgb: Vector) -> Vector:
     """Convert an array of linear-light image-p3 RGB  in the range 0.0-1.0 to gamma corrected form."""
 
     return gam_srgb(rgb)  # same as sRGB
@@ -55,13 +55,13 @@ class DisplayP3(SRGB):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from Display P3."""
 
         return lin_p3_to_xyz(lin_p3(coords))
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ to Display P3."""
 
         return gam_p3(xyz_to_lin_p3(coords))

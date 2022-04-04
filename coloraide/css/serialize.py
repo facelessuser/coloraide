@@ -5,7 +5,7 @@ from .. import algebra as alg
 from . import parse
 from .color_names import to_name
 from ..gamut.bounds import FLG_PERCENT, FLG_OPT_PERCENT
-from ..types import MutableVector
+from ..types import Vector
 from typing import Optional, Union, Match, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -87,7 +87,7 @@ def color_function(
     )
 
 
-def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) -> MutableVector:
+def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) -> Vector:
     """Get the coordinates."""
 
     method = None if not isinstance(fit, str) else fit

@@ -29,13 +29,13 @@ from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ... import algebra as alg
-from ...types import Vector, MutableVector
+from ...types import VectorLike, Vector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.000002
 
 
-def oklab_to_oklch(oklab: Vector) -> MutableVector:
+def oklab_to_oklch(oklab: VectorLike) -> Vector:
     """Oklab to Oklch."""
 
     l, a, b = oklab
@@ -51,7 +51,7 @@ def oklab_to_oklch(oklab: Vector) -> MutableVector:
     return [l, c, util.constrain_hue(h)]
 
 
-def oklch_to_oklab(oklch: Vector) -> MutableVector:
+def oklch_to_oklab(oklch: VectorLike) -> Vector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
@@ -122,7 +122,7 @@ class Oklch(Lchish, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -132,13 +132,13 @@ class Oklch(Lchish, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, oklch: Vector) -> MutableVector:
+    def to_base(cls, oklch: VectorLike) -> Vector:
         """To Lab."""
 
         return oklch_to_oklab(oklch)
 
     @classmethod
-    def from_base(cls, oklab: Vector) -> MutableVector:
+    def from_base(cls, oklab: VectorLike) -> Vector:
         """To Lab."""
 
         return oklab_to_oklch(oklab)

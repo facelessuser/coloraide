@@ -4,11 +4,11 @@ from ...cat import WHITES
 from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
 from ... import util
 from ... import algebra as alg
-from ...types import MutableVector
+from ...types import Vector
 from typing import Tuple
 
 
-def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
+def srgb_to_hsl(rgb: Vector) -> Vector:
     """SRGB to HSL."""
 
     r, g, b = rgb
@@ -34,7 +34,7 @@ def srgb_to_hsl(rgb: MutableVector) -> MutableVector:
     return [util.constrain_hue(h), s, l]
 
 
-def hsl_to_srgb(hsl: MutableVector) -> MutableVector:
+def hsl_to_srgb(hsl: Vector) -> Vector:
     """
     HSL to RGB.
 
@@ -111,7 +111,7 @@ class HSL(Cylindrical, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -121,13 +121,13 @@ class HSL(Cylindrical, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To sRGB from HSL."""
 
         return hsl_to_srgb(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From sRGB to HSL."""
 
         return srgb_to_hsl(coords)

@@ -9,13 +9,13 @@ from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.0003
 
 
-def jzazbz_to_jzczhz(jzazbz: MutableVector) -> MutableVector:
+def jzazbz_to_jzczhz(jzazbz: Vector) -> Vector:
     """Jzazbz to JzCzhz."""
 
     jz, az, bz = jzazbz
@@ -31,7 +31,7 @@ def jzazbz_to_jzczhz(jzazbz: MutableVector) -> MutableVector:
     return [jz, cz, util.constrain_hue(hz)]
 
 
-def jzczhz_to_jzazbz(jzczhz: MutableVector) -> MutableVector:
+def jzczhz_to_jzazbz(jzczhz: Vector) -> Vector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
@@ -106,7 +106,7 @@ class JzCzhz(Lchish, Space):
         self._coords[2] = value
 
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -122,13 +122,13 @@ class JzCzhz(Lchish, Space):
         return "hz"
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To Jzazbz from JzCzhz."""
 
         return jzczhz_to_jzazbz(coords)
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From Jzazbz to JzCzhz."""
 
         return jzazbz_to_jzczhz(coords)

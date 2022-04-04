@@ -29,7 +29,7 @@ from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import algebra as alg
-from ...types import Vector, MutableVector
+from ...types import VectorLike, Vector
 from typing import cast
 
 # sRGB Linear to LMS
@@ -75,53 +75,53 @@ LMS_TO_XYZD65 = [
 ]
 
 
-def oklab_to_linear_srgb(lab: Vector) -> MutableVector:
+def oklab_to_linear_srgb(lab: VectorLike) -> Vector:
     """Convert from Oklab to linear sRGB."""
 
     return cast(
-        MutableVector,
+        Vector,
         alg.dot(
             LMS_TO_SRGBL,
-            [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
+            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
             alg.A2D_A1D
         )
     )
 
 
-def linear_srgb_to_oklab(rgb: Vector) -> MutableVector:  # pragma: no cover
+def linear_srgb_to_oklab(rgb: VectorLike) -> Vector:  # pragma: no cover
     """Linear sRGB to Oklab."""
 
     return cast(
-        MutableVector,
+        Vector,
         alg.dot(
             LMS3_TO_OKLAB,
-            [alg.cbrt(c) for c in cast(MutableVector, alg.dot(SRGBL_TO_LMS, rgb, alg.A2D_A1D))],
+            [alg.cbrt(c) for c in cast(Vector, alg.dot(SRGBL_TO_LMS, rgb, alg.A2D_A1D))],
             alg.A2D_A1D
         )
     )
 
 
-def oklab_to_xyz_d65(lab: Vector) -> MutableVector:
+def oklab_to_xyz_d65(lab: VectorLike) -> Vector:
     """Convert from Oklab to XYZ D65."""
 
     return cast(
-        MutableVector,
+        Vector,
         alg.dot(
             LMS_TO_XYZD65,
-            [c ** 3 for c in cast(MutableVector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
+            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, alg.A2D_A1D))],
             alg.A2D_A1D
         )
     )
 
 
-def xyz_d65_to_oklab(xyz: Vector) -> MutableVector:
+def xyz_d65_to_oklab(xyz: VectorLike) -> Vector:
     """XYZ D65 to Oklab."""
 
     return cast(
-        MutableVector,
+        Vector,
         alg.dot(
             LMS3_TO_OKLAB,
-            [alg.cbrt(c) for c in cast(MutableVector, alg.dot(XYZD65_TO_LMS, xyz, alg.A2D_A1D))],
+            [alg.cbrt(c) for c in cast(Vector, alg.dot(XYZD65_TO_LMS, xyz, alg.A2D_A1D))],
             alg.A2D_A1D
         )
     )
@@ -182,13 +182,13 @@ class Oklab(Labish, Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, oklab: Vector) -> MutableVector:
+    def to_base(cls, oklab: VectorLike) -> Vector:
         """To XYZ."""
 
         return oklab_to_xyz_d65(oklab)
 
     @classmethod
-    def from_base(cls, xyz: Vector) -> MutableVector:
+    def from_base(cls, xyz: VectorLike) -> Vector:
         """From XYZ."""
 
         return xyz_d65_to_oklab(xyz)

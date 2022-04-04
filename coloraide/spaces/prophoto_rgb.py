@@ -2,7 +2,7 @@
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import cast
 
 ET = 1 / 512
@@ -21,7 +21,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_prophoto_to_xyz(rgb: MutableVector) -> MutableVector:
+def lin_prophoto_to_xyz(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light prophoto-rgb values to CIE XYZ using  D50.D50.
 
@@ -29,16 +29,16 @@ def lin_prophoto_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
-def xyz_to_lin_prophoto(xyz: MutableVector) -> MutableVector:
+def xyz_to_lin_prophoto(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
-def lin_prophoto(rgb: MutableVector) -> MutableVector:
+def lin_prophoto(rgb: Vector) -> Vector:
     """
     Convert an array of prophoto-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -57,7 +57,7 @@ def lin_prophoto(rgb: MutableVector) -> MutableVector:
     return result
 
 
-def gam_prophoto(rgb: MutableVector) -> MutableVector:
+def gam_prophoto(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light prophoto-rgb  in the range 0.0-1.0 to gamma corrected form.
 
@@ -84,13 +84,13 @@ class ProPhotoRGB(SRGB):
     WHITE = WHITES['2deg']['D50']
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from Pro Photo RGB."""
 
         return lin_prophoto_to_xyz(lin_prophoto(coords))
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ to Pro Photo RGB."""
 
         return gam_prophoto(xyz_to_lin_prophoto(coords))

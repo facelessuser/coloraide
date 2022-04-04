@@ -3,7 +3,7 @@ from ..cat import WHITES
 from .srgb import SRGB
 import math
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from typing import cast
 
 ALPHA = 1.09929682680944
@@ -23,7 +23,7 @@ XYZ_TO_RGB = [
 ]
 
 
-def lin_2020(rgb: MutableVector) -> MutableVector:
+def lin_2020(rgb: Vector) -> Vector:
     """
     Convert an array of rec-2020 RGB values in the range 0.0 - 1.0 to linear light (un-corrected) form.
 
@@ -41,7 +41,7 @@ def lin_2020(rgb: MutableVector) -> MutableVector:
     return result
 
 
-def gam_2020(rgb: MutableVector) -> MutableVector:
+def gam_2020(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light rec-2020 RGB  in the range 0.0-1.0 to gamma corrected form.
 
@@ -59,7 +59,7 @@ def gam_2020(rgb: MutableVector) -> MutableVector:
     return result
 
 
-def lin_2020_to_xyz(rgb: MutableVector) -> MutableVector:
+def lin_2020_to_xyz(rgb: Vector) -> Vector:
     """
     Convert an array of linear-light rec-2020 values to CIE XYZ using  D65.
 
@@ -67,13 +67,13 @@ def lin_2020_to_xyz(rgb: MutableVector) -> MutableVector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(MutableVector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
 
 
-def xyz_to_lin_2020(xyz: MutableVector) -> MutableVector:
+def xyz_to_lin_2020(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light rec-2020."""
 
-    return cast(MutableVector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
 
 
 class Rec2020(SRGB):
@@ -84,13 +84,13 @@ class Rec2020(SRGB):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from Rec 2020."""
 
         return lin_2020_to_xyz(lin_2020(coords))
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """From XYZ to Rec 2020."""
 
         return gam_2020(xyz_to_lin_2020(coords))

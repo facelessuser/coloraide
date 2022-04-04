@@ -6,7 +6,7 @@ https://www.w3.org/TR/compositing/
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
-from ..types import MutableVector
+from ..types import Vector
 from ..gamut.bounds import GamutBound, Bounds
 from typing import Optional, Union, Callable, List, TYPE_CHECKING
 
@@ -59,7 +59,7 @@ def apply_compositing(
 
     # Perform compositing
     bounds = color1._space.BOUNDS
-    coords = []  # type: MutableVector
+    coords = []  # type: Vector
     if isinstance(blend, str) and non_seperable:
         # Setup blend mode.
         ns_blender = blend_modes.get_non_seperable_blender(blend.lower())

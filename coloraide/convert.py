@@ -1,7 +1,7 @@
 """Convert the color."""
 from . import algebra as alg
 from . import cat
-from .types import Vector
+from .types import VectorLike
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -12,7 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 ABSOLUTE_BASE = 'xyz-d65'
 
 
-def convert(color: 'Color', space: str) -> Vector:
+def convert(color: 'Color', space: str) -> VectorLike:
     """Convert the color coordinates to the specified space."""
 
     if color.space() != space:

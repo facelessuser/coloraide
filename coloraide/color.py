@@ -10,7 +10,7 @@ from . import interpolate
 from . import util
 from . import algebra as alg
 from .css import parse
-from .types import Vector, MutableVector, ColorInput
+from .types import VectorLike, Vector, ColorInput
 from .spaces import Space, Cylindrical
 from .spaces.hsv import HSV
 from .spaces.srgb.css import SRGB
@@ -126,7 +126,7 @@ class Color(metaclass=BaseColor):
     def __init__(
         self,
         color: ColorInput,
-        data: Optional[Vector] = None,
+        data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         *,
         filters: Optional[Sequence[str]] = None,
@@ -159,7 +159,7 @@ class Color(metaclass=BaseColor):
     def _parse(
         cls,
         color: ColorInput,
-        data: Optional[Vector] = None,
+        data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         *,
         filters: Optional[Sequence[str]] = None,
@@ -367,7 +367,7 @@ class Color(metaclass=BaseColor):
 
         return self._space.NAME
 
-    def coords(self) -> MutableVector:
+    def coords(self) -> Vector:
         """Coordinates."""
 
         return self._space.coords()
@@ -375,7 +375,7 @@ class Color(metaclass=BaseColor):
     def new(
         self,
         color: ColorInput,
-        data: Optional[Vector] = None,
+        data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         *,
         filters: Optional[Sequence[str]] = None,
@@ -408,7 +408,7 @@ class Color(metaclass=BaseColor):
     def mutate(
         self,
         color: ColorInput,
-        data: Optional[Vector] = None,
+        data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         *,
         filters: Optional[Sequence[str]] = None,
@@ -423,7 +423,7 @@ class Color(metaclass=BaseColor):
     def update(
         self,
         color: Union['Color', str, Mapping[str, Any]],
-        data: Optional[Vector] = None,
+        data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         *,
         filters: Optional[Sequence[str]] = None,
@@ -450,12 +450,12 @@ class Color(metaclass=BaseColor):
 
     __str__ = __repr__
 
-    def white(self) -> MutableVector:
+    def white(self) -> Vector:
         """Get the white point."""
 
         return util.xy_to_xyz(self._space.white())
 
-    def uv(self, mode: str = '1976') -> MutableVector:
+    def uv(self, mode: str = '1976') -> Vector:
         """Convert to `xy`."""
 
         if mode == '1976':
@@ -466,7 +466,7 @@ class Color(metaclass=BaseColor):
             raise ValueError("'mode' must be either '1960' or '1976' (default), not '{}'".format(mode))
         return uv
 
-    def xy(self) -> MutableVector:
+    def xy(self) -> Vector:
         """Convert to `xy`."""
 
         xyz = self.convert('xyz-d65')
