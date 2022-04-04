@@ -119,18 +119,18 @@ def calc_adaptation_matrices(
     mi = alg.inv(m)
 
     try:
-        first = alg.dot(m, util.xy_to_xyz(w1), alg.D2_D1)
+        first = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w1))
 
     try:
-        second = alg.dot(m, util.xy_to_xyz(w2), alg.D2_D1)
+        second = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
     m2 = cast(
         Matrix,
-        alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), alg.D1)))
+        alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), dims=alg.D1)))
     )
     adapt = cast(Matrix, alg.multi_dot([mi, m2, m]))
 
@@ -164,4 +164,4 @@ def chromatic_adaptation(
         return list(xyz)
     else:
         # Get the appropriate chromatic adaptation matrix and apply.
-        return cast(Vector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz, alg.D2_D1))
+        return cast(Vector, alg.dot(get_adaptation_matrix(w1, w2, method), xyz, dims=alg.D2_D1))

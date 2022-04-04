@@ -82,8 +82,8 @@ def oklab_to_linear_srgb(lab: Vector) -> Vector:
         Vector,
         alg.dot(
             LMS_TO_SRGBL,
-            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, alg.D2_D1))],
-            alg.D2_D1
+            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, dims=alg.D2_D1))],
+            dims=alg.D2_D1
         )
     )
 
@@ -95,8 +95,8 @@ def linear_srgb_to_oklab(rgb: Vector) -> Vector:  # pragma: no cover
         Vector,
         alg.dot(
             LMS3_TO_OKLAB,
-            [alg.cbrt(c) for c in cast(Vector, alg.dot(SRGBL_TO_LMS, rgb, alg.D2_D1))],
-            alg.D2_D1
+            [alg.cbrt(c) for c in cast(Vector, alg.dot(SRGBL_TO_LMS, rgb, dims=alg.D2_D1))],
+            dims=alg.D2_D1
         )
     )
 
@@ -108,8 +108,8 @@ def oklab_to_xyz_d65(lab: Vector) -> Vector:
         Vector,
         alg.dot(
             LMS_TO_XYZD65,
-            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, alg.D2_D1))],
-            alg.D2_D1
+            [c ** 3 for c in cast(Vector, alg.dot(OKLAB_TO_LMS3, lab, dims=alg.D2_D1))],
+            dims=alg.D2_D1
         )
     )
 
@@ -121,8 +121,8 @@ def xyz_d65_to_oklab(xyz: Vector) -> Vector:
         Vector,
         alg.dot(
             LMS3_TO_OKLAB,
-            [alg.cbrt(c) for c in cast(Vector, alg.dot(XYZD65_TO_LMS, xyz, alg.D2_D1))],
-            alg.D2_D1
+            [alg.cbrt(c) for c in cast(Vector, alg.dot(XYZD65_TO_LMS, xyz, dims=alg.D2_D1))],
+            dims=alg.D2_D1
         )
     )
 

@@ -168,6 +168,7 @@ def _extract_dims(
 def dot(
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """
@@ -239,7 +240,7 @@ def dot(
             )
 
     # Trying to dot a number with a vector or a matrix, so just multiply
-    return multiply(a, b, (dims_a, dims_b))
+    return multiply(a, b, dims=(dims_a, dims_b))
 
 
 def _matrix_chain_order(dims: List[Tuple[int, int]]) -> List[List[int]]:
@@ -285,7 +286,7 @@ def _multi_dot(a: List[Array], s: List[List[int]], i: int, j: int) -> Array:
             dot(
                 _multi_dot(a, s, i, int(s[i][j])),
                 _multi_dot(a, s, int(s[i][j]) + 1, j),
-                D2
+                dims=D2
             )
         )
     return a[i]
@@ -345,9 +346,9 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Union[float, Array]:
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
         cost2 = pc * shapes[0][1] + pa * shapes[2][1]
         if cost1 < cost2:
-            value = dot(dot(arrays[0], arrays[1], D2), arrays[2], D2)
+            value = dot(dot(arrays[0], arrays[1], dims=D2), arrays[2], dims=D2)
         else:
-            value = dot(arrays[0], dot(arrays[1], arrays[2], D2), D2)
+            value = dot(arrays[0], dot(arrays[1], arrays[2], dims=D2), dims=D2)
 
     # Calculate the fastest ordering with dynamic programming using memoization
     s = _matrix_chain_order([cast(Tuple[int, int], shape(a)) for a in arrays])
@@ -378,6 +379,7 @@ def _math(
     op: Callable[..., float],
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """
@@ -462,41 +464,45 @@ def _math(
 def divide(
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """Divide simple numbers, vectors, and 2D matrices."""
 
-    return _math(operator.truediv, a, b, dims)
+    return _math(operator.truediv, a, b, dims=dims)
 
 
 def multiply(
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """Multiply simple numbers, vectors, and 2D matrices."""
 
-    return _math(operator.mul, a, b, dims)
+    return _math(operator.mul, a, b, dims=dims)
 
 
 def add(
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """Add simple numbers, vectors, and 2D matrices."""
 
-    return _math(operator.add, a, b, dims)
+    return _math(operator.add, a, b, dims=dims)
 
 
 def subtract(
     a: Union[float, ArrayLike],
     b: Union[float, ArrayLike],
+    *,
     dims: Optional[Tuple[int, int]] = None
 ) -> Union[float, Array]:
     """Subtract simple numbers, vectors, and 2D matrices."""
 
-    return _math(operator.sub, a, b, dims)
+    return _math(operator.sub, a, b, dims=dims)
 
 
 class BroadcastTo:
@@ -1231,7 +1237,7 @@ def inner(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Union[float
 
     # If we have a scalar, we should just multiply
     if (not dims_a or not dims_b):
-        return multiply(a, b, (dims_a, dims_b))
+        return multiply(a, b, dims=(dims_a, dims_b))
 
     # Adjust the input so that they can properly be evaluated
     # Scalars will be broadcasted to properly match the last dimension
