@@ -200,7 +200,7 @@ class XYZD65(Space):
     # To and from conversion functions that transform the color to and from the `BASE` color.
     ############################
     @classmethod
-    def to_base(cls, coords: MutableVector) -> MutableVector:
+    def to_base(cls, coords: Vector) -> Vector:
         """
         To XYZ (no change).
 
@@ -210,7 +210,7 @@ class XYZD65(Space):
         return coords
 
     @classmethod
-    def from_base(cls, coords: MutableVector) -> MutableVector:
+    def from_base(cls, coords: Vector) -> Vector:
         """
         From XYZ (no change).
 
@@ -228,7 +228,7 @@ the `Color` object. In the case of such color spaces, it may be necessary to def
 
 ```py
     @classmethod
-    def null_adjust(cls, coords: MutableVector, alpha: float) -> Tuple[MutableVector, float]:
+    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 
         coords = util.no_nans(coords)
@@ -381,7 +381,7 @@ class SRGB(base.SRGB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[MutableVector, float], int]]:
+    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
         return parse.parse_css(cls, string, start, fullmatch)
