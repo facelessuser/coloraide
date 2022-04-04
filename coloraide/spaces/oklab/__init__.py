@@ -29,7 +29,7 @@ from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import algebra as alg
-from ...types import VectorLike, Vector
+from ...types import Vector
 from typing import cast
 
 # sRGB Linear to LMS
