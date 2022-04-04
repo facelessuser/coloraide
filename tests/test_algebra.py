@@ -774,6 +774,60 @@ class TestAlgebra(unittest.TestCase):
             [[[692, 1732, 2772, 3812], [972, 1784, 2196, 3408]], [[452, 692, 932, 1172], [876, 1676, 2076, 3276]]]
         )
 
+    def test_multi_dot(self):
+        """Test multi-dot."""
+
+        a = alg.reshape(alg.arange(10 * 30), (10, 30))
+        b = alg.reshape(alg.arange(30 * 5), (30, 5))
+        c = alg.reshape(alg.arange(5 * 60), (5, 60))
+        d = alg.reshape(alg.arange(60 * 5), (60, 5))
+
+        # We need at least two arrays
+        with self.assertRaises(ValueError):
+            alg.multi_dot([1, 2, 3])
+
+        # Test path of 2 matrices which will just be redirected to normal dot.
+        self.assertEqual(
+            alg.multi_dot(
+                (
+                    [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                    [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+                )
+            ),
+            [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
+        )
+
+        # Test 3 way case which is a little less computationally intense.
+        self.assertEqual(
+            alg.multi_dot((a, b, c)),
+            alg.dot(a, alg.dot(b, c))
+        )
+
+        # Test >3
+        self.assertEqual(
+            alg.multi_dot((a, b, c, d)),
+            alg.dot(a, alg.dot(b, alg.dot(c, d)))
+        )
+
+        # Test that we assert if matrices are not of shape 2-D
+        with self.assertRaises(ValueError):
+            alg.multi_dot((a, alg.zeros((2,)), c))
+
+        # Test that a vector in position 1 or -1 will be treated
+        # as row vector or column vector respectively.
+        self.assertEqual(
+            alg.multi_dot(([1, 2, 3], alg.full((3, 3), 1))),
+            [6, 6, 6]
+        )
+        self.assertEqual(
+            alg.multi_dot((alg.full((3, 3), 1), [1, 2, 3])),
+            [6, 6, 6]
+        )
+        self.assertEqual(
+            alg.multi_dot(([1, 2, 3], alg.full((3, 3), 1), [1, 2, 3])),
+            36
+        )
+
     def test_multiply(self):
         """Test multiply."""
 

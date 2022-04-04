@@ -1,16 +1,24 @@
 """
 Math related methods.
 
-Includes various math related functions to aide in color translation and manipulation.
+Includes various math related functions to aid in color translation and manipulation.
 
-We actually also implement a number of matrix methods. This is mainly to avoid requiring
-all of `numpy` as a dependency. While `numpy` would be faster and more feature rich,
-avoiding it keeps our dependencies light.
+Matrix methods are implemented to mimic `numpy`. We've cherry picked what we think is the
+most useful for what we do with colors. We basically implement each function according to
+the API description and then verify our tested inputs and outputs match `numpy`.
 
-Often, we will borrow the API interface of `numpy`, but functionality may not be the same.
-We will often reduce complexity to handle simple 2D matrices as that is all we ever need
-for colors (so far). We will also abandon features if we don't want to figure them out as
-we aren't suing them :).
+We actually really like `numpy`, and have only done this to keep dependencies lightweight
+and available on non C Python based implementations. If we ever decide to swap out `numpy`,
+we should be able to relatively easily.
+
+Some liberties are taken here and there. For instance, we are not as fast as `numpy`, so
+we add some shortcuts to things that are used a lot (`dot`, `multiply`, `divide`, etc.).
+In these cases, we provide new input to instruct the operation as to the dimensions of the
+matrix so we don't waste time analyzing the matrix.
+
+There is no requirement that color space plugins (or really any plugin) need to use
+anything here, `numpy` could be used as long as the final results are converted to normal
+types.
 """
 import sys
 import math
@@ -221,6 +229,125 @@ def dot(
 
     # Trying to dot a number with a vector or a matrix, so just multiply
     return multiply(a, b, (dims_a, dims_b))
+
+
+def _matrix_chain_order(dims: List[Tuple[int, int]]) -> List[List[int]]:
+    """
+    Calculate chain order.
+
+    Referenced the following sites:
+
+    - https://en.wikipedia.org/wiki/Matrix_chain_multiplication
+    - https://www.cs.cmu.edu/afs/cs/academic/class/15451-s04/www/Lectures/CRLS-DynamicProg.pdf
+
+    This helped clarify `p` as that was not immediately clear:
+
+    - https://www.geeksforgeeks.org/matrix-chain-multiplication-dp-8/
+
+    We did adjust the looping. The algorithm originally called for looping from 2 - n,
+    I can't see why though, so we've adjusted it to work from 1 - n.
+    """
+
+    n = len(dims)
+    m = cast(Matrix, full((n, n), 0))
+    s = cast(Matrix, full((n, n), 0))
+    p = [a[0] for a in dims] + [dims[-1][1]]
+
+    for d in range(1, n):
+        for i in range(n - d):
+            j = i + d
+            m[i][j] = INF
+            for k in range(i, j):
+                cost = m[i][k] + m[k + 1][j] + p[i] * p[k + 1] * p[j + 1]
+                if cost < m[i][j]:
+                    m[i][j] = cost
+                    s[i][j] = k
+    return cast(List[List[int]], s)
+
+
+def _multi_dot(a: List[Array], s: List[List[int]], i: int, j: int) -> Array:
+    """Recursively dot the matrices in the array."""
+
+    if i != j:
+        return cast(
+            Matrix,
+            dot(
+                _multi_dot(a, s, i, int(s[i][j])),
+                _multi_dot(a, s, int(s[i][j]) + 1, j)
+            )
+        )
+    return a[i]
+
+
+def multi_dot(arrays: Sequence[ArrayLike]) -> Union[float, Array]:
+    """
+    Multi-dot.
+
+    Dots matrices using the most efficient groupings to reduce operations.
+    """
+
+    is_scalar = False
+    is_vector = False
+
+    # Must have at lest two arrays
+    count = len(arrays)
+    if count == 1:
+        raise ValueError('At least 2 arrays must be provided')
+
+    # If there are only 2 arrays, just send them through normal dot
+    elif count == 2:
+        return dot(arrays[0], arrays[1])
+
+    # Calculate the shapes
+    shapes = [shape(a) for a in arrays]
+
+    # We need the list mutable if we are going to update the entries
+    if not isinstance(arrays, list):
+        arrays = list(arrays)
+
+    # Row vector
+    if len(shapes[0]) == 1:
+        arrays[0] = [arrays[0]]
+        shapes[0] = (1,) + shapes[0]
+        is_vector = True
+
+    # Column vector
+    if len(shapes[-1]) == 1:
+        arrays[-1] = transpose([arrays[-1]])
+        shapes[-1] = shapes[-1] + (1,)
+        if is_vector:
+            is_scalar = True
+        else:
+            is_vector = True
+
+    # Make sure everything is a 2-D matrix as the next calculations only work for 2-D.
+    if not all([len(s) == 2 for s in shapes]):
+        raise ValueError('All arrays must be 2-D matrices')
+
+    # No need to do the expensive and complicated chain order algorithm for only 3.
+    # We can easily calculate three with less complexity and in less time. Anything
+    # greater than three becomes a headache.
+    if count == 3:
+        pa = prod(shapes[0])
+        pc = prod(shapes[2])
+        cost1 = pa * shapes[2][0] + pc * shapes[0][0]
+        cost2 = pc * shapes[0][1] + pa * shapes[2][1]
+        if cost1 < cost2:
+            value = dot(dot(arrays[0], arrays[1]), arrays[2])
+        else:
+            value = dot(arrays[0], dot(arrays[1], arrays[2]))
+
+    # Calculate the fastest ordering with dynamic programming using memoization
+    s = _matrix_chain_order([cast(Tuple[int, int], shape(a)) for a in arrays])
+    value = _multi_dot(arrays, s, 0, count - 1)
+
+    # `numpy` returns the shape differently depending on if there is a row and/or column vector
+    if is_scalar:
+        return cast(Matrix, value)[0][0]
+    elif is_vector:
+        return ravel(value)
+    else:
+        return value
 
 
 def _vector_math(op: Callable[..., float], a: VectorLike, b: VectorLike) -> Vector:

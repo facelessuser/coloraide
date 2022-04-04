@@ -139,6 +139,7 @@ jz
 luma
 luminance
 macOS
+memoization
 opRGB
 opto
 performant
