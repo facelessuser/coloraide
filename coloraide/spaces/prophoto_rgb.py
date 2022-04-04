@@ -29,13 +29,13 @@ def lin_prophoto_to_xyz(rgb: Vector) -> Vector:
     http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     """
 
-    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.D2_D1))
 
 
 def xyz_to_lin_prophoto(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light prophoto-rgb."""
 
-    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.D2_D1))
 
 
 def lin_prophoto(rgb: Vector) -> Vector:

@@ -28,13 +28,13 @@ def lin_a98rgb_to_xyz(rgb: Vector) -> Vector:
     https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
     """
 
-    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.A2D_A1D))
+    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, alg.D2_D1))
 
 
 def xyz_to_lin_a98rgb(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light a98-rgb."""
 
-    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.A2D_A1D))
+    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, alg.D2_D1))
 
 
 def lin_a98rgb(rgb: Vector) -> Vector:

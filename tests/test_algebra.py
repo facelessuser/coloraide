@@ -784,7 +784,7 @@ class TestAlgebra(unittest.TestCase):
 
         # We need at least two arrays
         with self.assertRaises(ValueError):
-            alg.multi_dot([1, 2, 3])
+            alg.multi_dot([[1, 2, 3]])
 
         # Test path of 2 matrices which will just be redirected to normal dot.
         self.assertEqual(
@@ -816,12 +816,12 @@ class TestAlgebra(unittest.TestCase):
         # Test that a vector in position 1 or -1 will be treated
         # as row vector or column vector respectively.
         self.assertEqual(
-            alg.multi_dot(([1, 2, 3], alg.full((3, 3), 1))),
-            [6, 6, 6]
+            alg.multi_dot(([1, 2, 3], alg.full((3, 3), 1), alg.full((3, 3), 2))),
+            [36, 36, 36]
         )
         self.assertEqual(
-            alg.multi_dot((alg.full((3, 3), 1), [1, 2, 3])),
-            [6, 6, 6]
+            alg.multi_dot((alg.full((3, 3), 2), alg.full((3, 3), 1), [1, 2, 3])),
+            [36, 36, 36]
         )
         self.assertEqual(
             alg.multi_dot(([1, 2, 3], alg.full((3, 3), 1), [1, 2, 3])),

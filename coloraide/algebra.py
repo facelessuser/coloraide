@@ -40,17 +40,28 @@ else:
 
         return reduce((lambda x, y: x * y), values)
 
-
-A2D = (2, 2)
-A1D = (1, 1)
-A1D_A2D = (1, 2)
-A2D_A1D = (2, 1)
-NUM_A1D = (0, 1)
-A1D_NUM = (1, 0)
-NUM_A2D = (0, 2)
-A2D_NUM = (2, 0)
-NUM_NUM = (0, 0)
-ND_MD = (3, 3)
+# Shortcut for math operations
+# Specify one of these in divide, multiply, dot, etc.
+# to bypass analyzing the shape to determine which path
+# to take.
+#
+# `SC` = scalar, `D1` = 1-D array or vector, `D2` = 2-D
+# matrix, and `DN_DM` means an N-D and M-D matrix.
+#
+# If just a single specifier is used, it is assumed that
+# the operation is performed against another of the same.
+# `SC` = scalar and a scalar, while `SC_D1` means a scalar
+# and a vector
+SC = (0, 0)
+D1 = (1, 1)
+D2 = (2, 2)
+SC_D1 = (0, 1)
+SC_D2 = (0, 2)
+D1_SC = (1, 0)
+D1_D2 = (1, 2)
+D2_SC = (2, 0)
+D2_D1 = (2, 1)
+DN_DM = (3, 3)
 
 
 ################################
@@ -273,7 +284,8 @@ def _multi_dot(a: List[Array], s: List[List[int]], i: int, j: int) -> Array:
             Matrix,
             dot(
                 _multi_dot(a, s, i, int(s[i][j])),
-                _multi_dot(a, s, int(s[i][j]) + 1, j)
+                _multi_dot(a, s, int(s[i][j]) + 1, j),
+                D2
             )
         )
     return a[i]
@@ -333,9 +345,9 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Union[float, Array]:
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
         cost2 = pc * shapes[0][1] + pa * shapes[2][1]
         if cost1 < cost2:
-            value = dot(dot(arrays[0], arrays[1]), arrays[2])
+            value = dot(dot(arrays[0], arrays[1], D2), arrays[2], D2)
         else:
-            value = dot(arrays[0], dot(arrays[1], arrays[2]))
+            value = dot(arrays[0], dot(arrays[1], arrays[2], D2), D2)
 
     # Calculate the fastest ordering with dynamic programming using memoization
     s = _matrix_chain_order([cast(Tuple[int, int], shape(a)) for a in arrays])

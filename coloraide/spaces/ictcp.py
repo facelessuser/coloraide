@@ -55,13 +55,13 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
-    pqlms = cast(Vector, alg.dot(ictcp_to_lms_p_mi, ictcp, alg.A2D_A1D))
+    pqlms = cast(Vector, alg.dot(ictcp_to_lms_p_mi, ictcp, alg.D2_D1))
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms)
 
     # Convert back to absolute XYZ D65
-    absxyz = cast(Vector, alg.dot(lms_to_xyz_mi, lms, alg.A2D_A1D))
+    absxyz = cast(Vector, alg.dot(lms_to_xyz_mi, lms, alg.D2_D1))
 
     # Convert back to normal XYZ D65
     return util.absxyzd65_to_xyz_d65(absxyz)
@@ -74,13 +74,13 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     absxyz = util.xyz_d65_to_absxyzd65(xyzd65)
 
     # Convert to LMS
-    lms = cast(Vector, alg.dot(xyz_to_lms_m, absxyz, alg.A2D_A1D))
+    lms = cast(Vector, alg.dot(xyz_to_lms_m, absxyz, alg.D2_D1))
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms)
 
     # Calculate Izazbz
-    return cast(Vector, alg.dot(lms_p_to_ictcp_m, pqlms, alg.A2D_A1D))
+    return cast(Vector, alg.dot(lms_p_to_ictcp_m, pqlms, alg.D2_D1))
 
 
 class ICtCp(Labish, Space):
