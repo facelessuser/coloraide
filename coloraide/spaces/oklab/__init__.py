@@ -75,7 +75,7 @@ LMS_TO_XYZD65 = [
 ]
 
 
-def oklab_to_linear_srgb(lab: VectorLike) -> Vector:
+def oklab_to_linear_srgb(lab: Vector) -> Vector:
     """Convert from Oklab to linear sRGB."""
 
     return cast(
@@ -88,7 +88,7 @@ def oklab_to_linear_srgb(lab: VectorLike) -> Vector:
     )
 
 
-def linear_srgb_to_oklab(rgb: VectorLike) -> Vector:  # pragma: no cover
+def linear_srgb_to_oklab(rgb: Vector) -> Vector:  # pragma: no cover
     """Linear sRGB to Oklab."""
 
     return cast(
@@ -101,7 +101,7 @@ def linear_srgb_to_oklab(rgb: VectorLike) -> Vector:  # pragma: no cover
     )
 
 
-def oklab_to_xyz_d65(lab: VectorLike) -> Vector:
+def oklab_to_xyz_d65(lab: Vector) -> Vector:
     """Convert from Oklab to XYZ D65."""
 
     return cast(
@@ -114,7 +114,7 @@ def oklab_to_xyz_d65(lab: VectorLike) -> Vector:
     )
 
 
-def xyz_d65_to_oklab(xyz: VectorLike) -> Vector:
+def xyz_d65_to_oklab(xyz: Vector) -> Vector:
     """XYZ D65 to Oklab."""
 
     return cast(
@@ -182,13 +182,13 @@ class Oklab(Labish, Space):
         self._coords[2] = value
 
     @classmethod
-    def to_base(cls, oklab: VectorLike) -> Vector:
+    def to_base(cls, oklab: Vector) -> Vector:
         """To XYZ."""
 
         return oklab_to_xyz_d65(oklab)
 
     @classmethod
-    def from_base(cls, xyz: VectorLike) -> Vector:
+    def from_base(cls, xyz: Vector) -> Vector:
         """From XYZ."""
 
         return xyz_d65_to_oklab(xyz)

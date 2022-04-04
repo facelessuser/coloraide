@@ -2,6 +2,9 @@
 
 ## 0.15.0
 
+- **NEW**: Changes to type annotations. `Mutable<type>`, where type is either `Matrix`, `Vector`, or `Array`, are simply
+  known as `<type>`. Types previously specified as `<type>`, where type is either `Matrix`, `Vector`, or `Array`, are
+  now known as `<type>Like`. The types are expected to be mutable lists, anything else is noted as "like".
 - **NEW**: Regenerate all matrices with our own matrix tools so that there is consistency between precision of
   pre-generated matrices and on-the-fly matrix generation. Reduces some noise in some color space transforms.
 - **NEW**: All matrix and math utilities have been moved to `coloraide.algebra`.

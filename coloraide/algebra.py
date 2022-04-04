@@ -124,7 +124,7 @@ def _vector_dot(a: VectorLike, b: VectorLike) -> float:
     return sum([x * y for x, y in zipl(a, b)])
 
 
-def _extract_dimension(
+def _extract_dims(
     m: ArrayLike,
     target: int,
     depth: int = 0
@@ -143,7 +143,7 @@ def _extract_dimension(
             yield m
     else:
         for m2 in m:
-            yield from cast(ArrayLike, _extract_dimension(cast(ArrayLike, m2), target, depth + 1))
+            yield from cast(ArrayLike, _extract_dims(cast(ArrayLike, m2), target, depth + 1))
 
 
 def dot(
@@ -173,24 +173,22 @@ def dot(
         if dims_a and dims_b and dims_a > 2 or dims_b > 2:
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
-                columns1 = list(_extract_dimension(cast(MatrixLike, b), dims_b - 2))
+                cols1 = list(_extract_dims(cast(MatrixLike, b), dims_b - 2))
                 shape_c = shape_b[:-2] + shape_b[-1:]
                 return cast(
                     Matrix,
                     reshape(
-                        [[_vector_dot(cast(VectorLike, a), cast(VectorLike, c)) for c in col] for col in columns1],
+                        [[_vector_dot(cast(VectorLike, a), cast(VectorLike, c)) for c in col] for col in cols1],
                         shape_c
                     )
                 )
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-                columns2 = list(
-                    _extract_dimension(cast(ArrayLike, b), dims_b - 2)) if dims_b > 1 else cast(ArrayLike, [[b]]
-                )
-                rows = list(_extract_dimension(cast(ArrayLike, a), dims_a - 1))
+                cols2 = list(_extract_dims(cast(ArrayLike, b), dims_b - 2)) if dims_b > 1 else cast(ArrayLike, [[b]])
+                rows = list(_extract_dims(cast(ArrayLike, a), dims_a - 1))
                 m2 = [
-                    [[sum(cast(List[float], multiply(row, c))) for c in cast(VectorLike, col)] for col in columns2]
+                    [[sum(cast(List[float], multiply(row, c))) for c in cast(VectorLike, col)] for col in cols2]
                     for row in rows
                 ]
                 shape_c = shape_a[:-1]
@@ -953,7 +951,7 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
         invert = []
-        cols = list(_extract_dimension(matrix, dims - 2))
+        cols = list(_extract_dims(matrix, dims - 2))
         for c in cols:
             invert.append(transpose(inv(cast(Matrix, c))))
         return cast(Matrix, reshape(cast(Matrix, invert), s))
@@ -1102,14 +1100,14 @@ def inner(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Union[float
     if dims_a == 1:
         first = [a]  # type: Any
     elif dims_a > 2:
-        first = list(_extract_dimension(cast(ArrayLike, a), dims_a - 1))
+        first = list(_extract_dims(cast(ArrayLike, a), dims_a - 1))
     else:
         first = a
 
     if dims_b == 1:
         second = [b]  # type: Any
     elif dims_b > 2:
-        second = list(_extract_dimension(cast(ArrayLike, b), dims_b - 1))
+        second = list(_extract_dims(cast(ArrayLike, b), dims_b - 1))
     else:
         second = b
 

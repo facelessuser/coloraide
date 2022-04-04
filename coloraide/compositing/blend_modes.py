@@ -2,7 +2,7 @@
 import math
 from operator import itemgetter
 from typing import Any, Callable, cast
-from ..types import VectorLike, Vector
+from ..types import Vector
 
 
 def is_non_seperable(mode: Any) -> bool:
@@ -14,7 +14,7 @@ def is_non_seperable(mode: Any) -> bool:
 # -----------------------------------------
 # Non-separable blending helper functions
 # -----------------------------------------
-def lum(rgb: VectorLike) -> float:
+def lum(rgb: Vector) -> float:
     """Get luminosity."""
 
     return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
@@ -36,7 +36,7 @@ def clip_color(rgb: Vector) -> Vector:
     return rgb
 
 
-def set_lum(rgb: VectorLike, l: float) -> Vector:
+def set_lum(rgb: Vector, l: float) -> Vector:
     """Set luminosity."""
 
     d = l - lum(rgb)
@@ -44,19 +44,19 @@ def set_lum(rgb: VectorLike, l: float) -> Vector:
     return clip_color(new_rgb)
 
 
-def sat(rgb: VectorLike) -> float:
+def sat(rgb: Vector) -> float:
     """Saturation."""
 
     return max(*rgb) - min(*rgb)
 
 
-def set_sat(rgb: VectorLike, s: float) -> Vector:
+def set_sat(rgb: Vector, s: float) -> Vector:
     """Set saturation."""
 
     final = [0.0] * 3
-    indices, rgb = zip(*sorted(enumerate(rgb), key=itemgetter(1)))
-    if rgb[2] > rgb[0]:
-        final[indices[1]] = (((rgb[1] - rgb[0]) * s) / (rgb[2] - rgb[0]))
+    indices, rgb_sort = zip(*sorted(enumerate(rgb), key=itemgetter(1)))
+    if rgb_sort[2] > rgb_sort[0]:
+        final[indices[1]] = (((rgb_sort[1] - rgb_sort[0]) * s) / (rgb_sort[2] - rgb_sort[0]))
         final[indices[2]] = s
     else:
         final[indices[1]] = 0
@@ -163,24 +163,24 @@ def blend_soft_light(cb: float, cs: float) -> float:
         return cb + (2 * cs - 1) * (d - cb)
 
 
-def non_seperable_blend_hue(cb: VectorLike, cs: VectorLike) -> Vector:
+def non_seperable_blend_hue(cb: Vector, cs: Vector) -> Vector:
     """Blend mode 'hue'."""
 
     return set_lum(set_sat(cs, sat(cb)), lum(cb))
 
 
-def non_seperable_blend_saturation(cb: VectorLike, cs: VectorLike) -> Vector:
+def non_seperable_blend_saturation(cb: Vector, cs: Vector) -> Vector:
     """Blend mode 'saturation'."""
 
     return set_lum(set_sat(cb, sat(cs)), lum(cb))
 
 
-def non_seperable_blend_luminosity(cb: VectorLike, cs: VectorLike) -> Vector:
+def non_seperable_blend_luminosity(cb: Vector, cs: Vector) -> Vector:
     """Blend mode 'luminosity'."""
     return set_lum(cb, lum(cs))
 
 
-def non_seperable_blend_color(cb: VectorLike, cs: VectorLike) -> Vector:
+def non_seperable_blend_color(cb: Vector, cs: Vector) -> Vector:
     """Blend mode 'color'."""
 
     return set_lum(cs, lum(cb))
@@ -198,12 +198,12 @@ def get_seperable_blender(blend: str) -> Callable[[float, float], float]:
         raise ValueError("'{}' is not a recognized blend mode".format(blend))
 
 
-def get_non_seperable_blender(blend: str) -> Callable[[VectorLike, VectorLike], VectorLike]:
+def get_non_seperable_blender(blend: str) -> Callable[[Vector, Vector], Vector]:
     """Get desired blend mode."""
 
     try:
         return cast(
-            Callable[[VectorLike, VectorLike], VectorLike],
+            Callable[[Vector, Vector], Vector],
             globals()['non_seperable_blend_{}'.format(blend.replace('-', '_'))]
         )
     except KeyError:  # pragma: no cover

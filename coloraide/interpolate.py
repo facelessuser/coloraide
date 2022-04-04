@@ -18,7 +18,7 @@ from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from . import util
 from . import algebra as alg
-from .types import VectorLike
+from .types import Vector
 from .spaces import Cylindrical
 from .gamut.bounds import FLG_ANGLE
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
@@ -92,8 +92,8 @@ class InterpolateSingle(Interpolator):
 
     def __init__(
         self,
-        channels1: VectorLike,
-        channels2: VectorLike,
+        channels1: Vector,
+        channels2: Vector,
         names: Sequence[str],
         create: Type['Color'],
         progress: Optional[Callable[..., float]],
@@ -159,7 +159,7 @@ class InterpolatePiecewise(Interpolator):
         self.stops = stops
         self.interpolators = interpolators
 
-    def get_delta(self, method: Optional[str]) -> VectorLike:
+    def get_delta(self, method: Optional[str]) -> Vector:
         """Get the delta total."""
 
         return [i.get_delta(method) for i in self.interpolators]

@@ -128,7 +128,10 @@ def calc_adaptation_matrices(
     except KeyError:  # pragma: no cover
         raise ValueError('Unknown white point encountered: {}'.format(w2))
 
-    m2 = cast(Matrix, alg.diag(cast(VectorLike, alg.divide(cast(VectorLike, first), cast(VectorLike, second), alg.A1D))))
+    m2 = cast(
+        Matrix,
+        alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), alg.A1D)))
+    )
     adapt = cast(Matrix, alg.dot(mi, alg.dot(m2, m, alg.A2D), alg.A2D))
 
     return adapt, alg.inv(adapt)

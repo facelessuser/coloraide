@@ -29,13 +29,13 @@ from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ... import algebra as alg
-from ...types import VectorLike, Vector
+from ...types import Vector
 from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.000002
 
 
-def oklab_to_oklch(oklab: VectorLike) -> Vector:
+def oklab_to_oklch(oklab: Vector) -> Vector:
     """Oklab to Oklch."""
 
     l, a, b = oklab
@@ -51,7 +51,7 @@ def oklab_to_oklch(oklab: VectorLike) -> Vector:
     return [l, c, util.constrain_hue(h)]
 
 
-def oklch_to_oklab(oklch: VectorLike) -> Vector:
+def oklch_to_oklab(oklch: Vector) -> Vector:
     """Oklch to Oklab."""
 
     l, c, h = oklch
@@ -132,13 +132,13 @@ class Oklch(Lchish, Space):
         return coords, alg.no_nan(alpha)
 
     @classmethod
-    def to_base(cls, oklch: VectorLike) -> Vector:
+    def to_base(cls, oklch: Vector) -> Vector:
         """To Lab."""
 
         return oklch_to_oklab(oklch)
 
     @classmethod
-    def from_base(cls, oklab: VectorLike) -> Vector:
+    def from_base(cls, oklab: Vector) -> Vector:
         """To Lab."""
 
         return oklab_to_oklch(oklab)
