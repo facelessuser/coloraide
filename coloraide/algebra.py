@@ -1034,8 +1034,31 @@ def fill_diagonal(matrix: ArrayLike, val: Union[float, ArrayLike] = 0.0, wrap: b
         pos = pos + 1 if pos < dlen else 0
 
 
+def eye(n: int, m: Optional[int] = None, k: int = 0) -> Matrix:
+    """Create a diagonal of ones in a zero initialized matrix at the specified position."""
+
+    if m is None:
+        m = n
+
+    # Length of diagonal
+    dlen = m if n > m and k < 0 else (m - abs(k))
+
+    a = []  # type: Matrix
+    for i in range(n):
+        pos = i + k
+        idx = i if k >= 0 else pos
+        d = int(0 <= idx < dlen)  # Number of diagonals to insert (0 or 1)
+        a.append(
+            ([0.0] * clamp(pos, 0, m)) +
+            ([1.0] * d) +
+            ([0.0] * clamp(m - pos - d, 0, m))
+        )
+    return a
+
+
 def diag(array: ArrayLike, k: int = 0) -> Array:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
+
     s = shape(array)
     dims = len(s)
     if not dims or dims > 2:
@@ -1043,7 +1066,7 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
 
     if dims == 1:
         # Calculate size of matrix to accommodate the diagonal
-        size = s[0] - k if k < 0 else s[0] + k if k else s[0]
+        size = s[0] - k if k < 0 else (s[0] + k if k else s[0])
         maximum = size - 1
         minimum = 0
 

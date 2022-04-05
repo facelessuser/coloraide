@@ -229,25 +229,25 @@ class TestAlgebra(unittest.TestCase):
         """Test `diag`."""
 
         self.assertEqual(
-            alg.diag([3, 3, 3]),
-            [[3, 0, 0],
-             [0, 3, 0],
+            alg.diag([1, 2, 3]),
+            [[1, 0, 0],
+             [0, 2, 0],
              [0, 0, 3]]
         )
 
         self.assertEqual(
-            alg.diag([3, 3, 3], 1),
-            [[0, 3, 0, 0],
-             [0, 0, 3, 0],
+            alg.diag([1, 2, 3], 1),
+            [[0, 1, 0, 0],
+             [0, 0, 2, 0],
              [0, 0, 0, 3],
              [0, 0, 0, 0]]
         )
 
         self.assertEqual(
-            alg.diag([3, 3, 3], -1),
+            alg.diag([1, 2, 3], -1),
             [[0, 0, 0, 0],
-             [3, 0, 0, 0],
-             [0, 3, 0, 0],
+             [1, 0, 0, 0],
+             [0, 2, 0, 0],
              [0, 0, 3, 0]]
         )
 
@@ -436,6 +436,78 @@ class TestAlgebra(unittest.TestCase):
             alg.zeros((2, 3)),
             [[0.0, 0.0, 0.0],
              [0.0, 0.0, 0.0]]
+        )
+
+    def test_eye(self):
+        """Test eye."""
+
+        self.assertEqual(
+            alg.eye(2),
+            [[1.0, 0.0],
+             [0.0, 1.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, k=1),
+            [[0.0, 1.0],
+             [0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, k=2),
+            [[0.0, 0.0],
+             [0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, k=-1),
+            [[0.0, 0.0],
+             [1.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, k=-2),
+            [[0.0, 0.0],
+             [0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, 3),
+            [[1.0, 0.0, 0.0],
+             [0.0, 1.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, 3, k=2),
+            [[0.0, 0.0, 1.0],
+             [0.0, 0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(2, 3, k=-1),
+            [[0.0, 0.0, 0.0],
+             [1.0, 0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(3, 2),
+            [[1.0, 0.0],
+             [0.0, 1.0],
+             [0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(3, 2, k=1),
+            [[0.0, 1.0],
+             [0.0, 0.0],
+             [0.0, 0.0]]
+        )
+
+        self.assertEqual(
+            alg.eye(3, 2, k=-1),
+            [[0.0, 0.0],
+             [1.0, 0.0],
+             [0.0, 1.0]]
         )
 
     def test_identity(self):
