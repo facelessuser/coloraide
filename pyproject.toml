@@ -63,3 +63,5 @@ files = [
 ]
 strict = true
 show_error_codes = true
+
+[tool.hatch.metadata.hooks.custom]
