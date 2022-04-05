@@ -56,7 +56,7 @@ jobs:
           pip install --upgrade build
           python -m build -s -w
       - name: Publish
-        uses: pypa/gh-action-pypi-publish@v1.5
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_PWD }}
