@@ -173,8 +173,8 @@ c1.in_gamut()
     others. This is mainly mentioned as fitting in one color space and round tripping back may not give exact results:
 
     ```playground
-    Color("lch(100% 50 75)").convert('srgb').fit().coords()
-    Color("lch(100% 50 75)").fit('srgb').convert('srgb').coords()
+    Color("color(--lch-d65 100 50 75)").convert('srgb').fit().coords()
+    Color("color(--lch-d65 100 50 75)").fit('srgb').convert('srgb').coords()
     ```
 
     While the above case is well within the threshold, depending on what you are doing, and what spaces you are working
