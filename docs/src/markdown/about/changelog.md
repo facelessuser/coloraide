@@ -2,15 +2,22 @@
 
 ## 0.15.0
 
+!!! warning
+    No changes in the public API have changed, but type annotations have. If you were importing type annotations, you
+    will have to update them.
+
+    Also, if any undocumented math related methods were accessed (for plugins or otherwise) they've been moved to
+    `coloraide.algebra`
+
+- **NEW**: A number of performance improvements.
+- **NEW**: Regenerate all matrices with our own matrix tools so that there is consistency between precision of
+  pre-generated matrices and on-the-fly matrix generation. Reduces some noise in a few color space transforms.
 - **NEW**: Changes to type annotations. `Mutable<type>`, where type is either `Matrix`, `Vector`, or `Array`, are simply
   known as `<type>`. Types previously specified as `<type>`, where type is either `Matrix`, `Vector`, or `Array`, are
   now known as `<type>Like`. The types are expected to be mutable lists, anything else is noted as "like".
-- **NEW**: Regenerate all matrices with our own matrix tools so that there is consistency between precision of
-  pre-generated matrices and on-the-fly matrix generation. Reduces some noise in some color space transforms.
 - **NEW**: All matrix and math utilities have been moved to `coloraide.algebra`.
-- **NEW**: Performance improvements.
 - **FIX**: Fix rare issue where precision adjustment could fail.
-- **FIX**: Fix `util.divide` logic when dividing a number or vector by a matrix. There are no actual usage of these
+- **FIX**: Fix matrix `divide` logic when dividing a number or vector by a matrix. There are no actual usage of these
   cases in the code but they were fixed in case they are used in the future.
 
 ## 0.14.1
