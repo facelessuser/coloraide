@@ -176,25 +176,10 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
     if alg.is_nan(f):
         return "none"
 
-    value = adjust_precision(f / (percent * 0.01) if percent else f, p)
+    value = alg.round_to(f / (percent * 0.01) if percent else f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
     s = string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
     return '{}%'.format(s) if percent else s
-
-
-def adjust_precision(f: float, p: int = 0) -> float:
-    """Adjust precision."""
-
-    if p == -1:
-        return float(f)
-
-    elif p == 0:
-        return alg.round_half_up(f)
-
-    else:
-        whole = int(f)
-        digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return alg.round_half_up(whole if digits > p else f, p - digits)
 
 
 def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover
