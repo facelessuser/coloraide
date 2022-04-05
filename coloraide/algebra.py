@@ -277,7 +277,7 @@ def _matrix_chain_order(dims: List[Tuple[int, int]]) -> List[List[int]]:
     return cast(List[List[int]], s)
 
 
-def _multi_dot(a: List[Array], s: List[List[int]], i: int, j: int) -> Array:
+def _multi_dot(a: List[ArrayLike], s: List[List[int]], i: int, j: int) -> ArrayLike:
     """Recursively dot the matrices in the array."""
 
     if i != j:
@@ -352,7 +352,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Union[float, Array]:
 
     # Calculate the fastest ordering with dynamic programming using memoization
     s = _matrix_chain_order([cast(Tuple[int, int], shape(a)) for a in arrays])
-    value = _multi_dot(arrays, s, 0, count - 1)
+    value = cast(Array, _multi_dot(arrays, s, 0, count - 1))
 
     # `numpy` returns the shape differently depending on if there is a row and/or column vector
     if is_scalar:
@@ -881,7 +881,7 @@ def transpose(array: ArrayLike) -> Array:
     return cast(Array, m)
 
 
-def reshape(array: ArrayLike, new_shape: Union[int, Sequence[int]]) -> Union[float, ArrayLike]:
+def reshape(array: ArrayLike, new_shape: Union[int, Sequence[int]]) -> Union[float, Array]:
     """Change the shape of an array."""
 
     # Normalize shape specifier to a sequence
@@ -978,7 +978,7 @@ def shape(array: Union[float, ArrayLike]) -> Tuple[int, ...]:
         return tuple()
 
 
-def fill_diagonal(matrix: Matrix, val: Union[float, ArrayLike] = 0.0, wrap: bool = False) -> None:
+def fill_diagonal(matrix: ArrayLike, val: Union[float, ArrayLike] = 0.0, wrap: bool = False) -> None:
     """Fill an N-D matrix diagonal."""
 
     s = shape(matrix)
@@ -1051,7 +1051,7 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def inv(matrix: MatrixLike) -> Matrix:
+def inv(matrix: ArrayLike) -> Matrix:
     """
     Invert the matrix.
 
@@ -1102,7 +1102,7 @@ def inv(matrix: MatrixLike) -> Matrix:
         return cast(Matrix, reshape(cast(Matrix, invert), s))
 
     indices = list(range(s[0]))
-    m = [list(x) for x in matrix]
+    m = [list(x) for x in cast(Matrix, matrix)]
 
     # Create an identity matrix of the same size as our provided vector
     im = cast(List[List[float]], diag([1] * s[0]))
@@ -1223,7 +1223,7 @@ def outer(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Matrix:
     return [[x * y for y in v2] for x in v1]
 
 
-def inner(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+def inner(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Union[float, Array]:
     """Compute the inner product of two arrays."""
 
     shape_a = shape(a)
