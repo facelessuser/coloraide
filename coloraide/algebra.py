@@ -784,7 +784,7 @@ def zeros(array_shape: Union[int, Sequence[int]]) -> Array:
 def identity(size: int) -> Matrix:
     """Create an identity matrix."""
 
-    return cast(Matrix, diag([1.0] * size))
+    return eye(size)
 
 
 def _flatiter(array: ArrayLike, array_shape: Tuple[int, ...]) -> Iterator[float]:
