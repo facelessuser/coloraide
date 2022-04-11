@@ -274,14 +274,21 @@ a plugin already registered with the same name (as dictated by the plugin) the o
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
 
-Here is an example of installing an additional color space from [ColorAide Extras][extras], a package we offer
-containing some additional color spaces.
+Here is an example creating a custom XYZ color space using the D55 white point.
 
 ```playground
-from coloraide_extras.spaces.hunter_lab import HunterLab
+from coloraide.cat import WHITES
+from coloraide.spaces.xyz_d65 import XYZD65
+
+class XYZD55(XYZD65):
+    BASE = "xyz-d65"
+    NAME = "xyz-d55"
+    SERIALIZE = ("xyz-d55",)
+    WHITE = WHITES['2deg']['D55']
+
 class Custom(Color): ...
-Custom.register(HunterLab)
-Custom('red').convert('hunter-lab')
+Custom.register(XYZD55)
+Custom('red').convert('xyz-d55')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to

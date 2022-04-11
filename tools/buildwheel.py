@@ -6,52 +6,54 @@ import urllib.request
 import urllib.error
 import glob
 import shutil
+import re
+import hashlib
 
-urls = [
+# Notebook specific wheels
+NOTEBOOK_WHEELS = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
     "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl",  # noqa: E501
 ]
 
+# Wheels required in addition to the current project
+PLAYGROUND_WHEELS = [
+    "https://files.pythonhosted.org/packages/1d/17/ed4d2df187995561b28f1073df24137cb750e12f9879d291cc8ab67c65d2/Pygments-2.11.2-py3-none-any.whl"  # noqa: E501
+]
 
-def get_version():
-    """Get version and version_info without importing the entire module."""
+MKDOCS_YML = 'docs/src/mkdocs.yml'
 
-    import importlib.util
+RE_CONFIG = re.compile(r'playground-config.*?\.js')
+RE_BUILD = re.compile(r'Successfully built ([-_0-9.a-zA-Z]+?\.whl)')
 
-    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'coloraide', '__meta__.py')
-    spec = importlib.util.spec_from_file_location("__meta__", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    vi = module.__version_info__
-    return vi._get_canonical()
+CONFIG = """\
+var color_notebook = {{
+    "playground_wheels": {},
+    "notebook_wheels": {},
+    "default_playground": "import coloraide\\ncoloraide.__version__\\nColor('red')"
+}}
+"""
 
+OUTPUT = 'docs/src/markdown/playground/'
 
-# Keep a compatible version in the repository so we can always release docs.
-# If we ever have a breaking change, we can patch `coloraide-extras` before
-# the release, locally upload it and then make a release.
-# Afterwards, once `coloraide` is available, we can release the official
-# `coloraide-extras`. This prevents our documentation from ever breaking.
-EXTRA_VERSION = '0.3.0'
-EXTRA_WHEEL = 'coloraide_extras-{}-py3-none-any.whl'.format(EXTRA_VERSION)
-keep = {EXTRA_WHEEL}
-EXTRAS = "https://raw.githubusercontent.com/facelessuser/coloraide/{{}}/docs/src/markdown/playground/{}".format(
-    EXTRA_WHEEL
-)
-output = 'docs/src/markdown/playground/'
-externals = {}
-for url in urls:
-    externals[os.path.join(output, url.split('/')[-1])] = url
+NOTEBOOK = {}
+for url in NOTEBOOK_WHEELS:
+    NOTEBOOK[os.path.join(OUTPUT, url.split('/')[-1])] = url
+
+PLAYGROUND = {}
+for url in PLAYGROUND_WHEELS:
+    PLAYGROUND[os.path.join(OUTPUT, url.split('/')[-1])] = url
 
 
-def build_coloraide():
+def build_package():
     """Build `coloraide` wheel."""
-    cmd = [sys.executable, '-m', 'build', '--wheel', '-o', output]
+    cmd = [sys.executable, '-m', 'build', '--wheel', '-o', OUTPUT]
 
     if sys.platform.startswith('win'):
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         process = subprocess.Popen(
             cmd,
+            stdout=subprocess.PIPE,
             startupinfo=startupinfo,
             shell=False,
             env=os.environ.copy()
@@ -59,12 +61,14 @@ def build_coloraide():
     else:
         process = subprocess.Popen(
             cmd,
+            stdout=subprocess.PIPE,
             shell=False,
             env=os.environ.copy()
         )
-    process.communicate()
+    out, _ = process.communicate()
+    m = RE_BUILD.search(out.decode('utf-8'))
 
-    return process.returncode
+    return process.returncode, m.group(1) if m else ''
 
 
 def download_wheel(url, dest):
@@ -90,51 +94,62 @@ def download_wheel(url, dest):
 
 
 if __name__ == "__main__":
+
+    status = 0
+
     # Clean up all old wheels
-    for file in glob.glob(output + '*.whl'):
-        if file not in externals.keys() and os.path.basename(file) not in keep:
+    for file in glob.glob(OUTPUT + '*.whl'):
+        if file not in NOTEBOOK.keys() and file not in PLAYGROUND.keys():
             os.remove(file)
+
+    for file in glob.glob('docs/theme/playground-config*.js'):
+        os.remove(file)
 
     # Clean up build directory
     if os.path.exists('build'):
         shutil.rmtree('build')
 
-    # Build `coloraide` wheel
-    if build_coloraide():
-        sys.exit(1)
-
-    # Get dependencies
-    for file, url in externals.items():
-        if os.path.exists(file):
-            print('Skipping: {}'.format(file))
-            continue
-        status = download_wheel(url, file)
-        if status:
-            sys.exit(status)
-
-    # Get `coloraide-extras`. If we can't find it in the version's tag,
-    # tag may not be created with this version, particularly during development,
-    # attempt on master
-    extras = EXTRAS.format(get_version())
-    extra_output = os.path.join(output, extras.split('/')[-1])
-    if not os.path.exists(extra_output):
-        status = download_wheel(extras, extra_output)
-        if status:
-            print(
-                (
-                    'Could not find ColorAide Extras at tag {},'
-                    'tag may not have been created yet, try to grab latest on master'
-                ).format(get_version())
-            )
-            extras = EXTRAS.format('master')
-            extra_output = os.path.join(output, extras.split('/')[-1])
-            status = download_wheel(extras, extra_output)
+    # Build wheel
+    status, package = build_package()
+    if not status:
+        # Get dependencies
+        for file, url in NOTEBOOK.items():
+            if os.path.exists(file):
+                print('Skipping: {}'.format(file))
+                continue
+            status = download_wheel(url, file)
             if status:
-                print('No available ColorAide Extras on master')
-    else:
-        status = 0
-        print('Skipping: {}'.format(extra_output))
+                break
+    if not status:
+        for file, url in PLAYGROUND.items():
+            if os.path.exists(file):
+                print('Skipping: {}'.format(file))
+                continue
+            status = download_wheel(url, file)
+            if status:
+                break
+
+    if not status:
+        # Build up a list of wheels needed for playgrounds and notebooks
+        playground = [os.path.basename(x) for x in PLAYGROUND.keys()] + [package]
+        notebook = [os.path.basename(x) for x in NOTEBOOK.keys()] + playground
+
+        # Create the config that specifies which wheels need to be used
+        config = CONFIG.format(str(playground), str(notebook)).replace('\r', '').encode('utf-8')
+        m = hashlib.sha256()
+        m.update(b'playground-config.js')
+        m.update(b':')
+        m.update(config)
+        hsh = m.hexdigest()[0:8]
+        with open('docs/theme/playground-config-{}.js'.format(hsh), 'wb') as f:
+            f.write(config)
+
+        # Update `mkdocs` source to reference wheel config
+        with open(MKDOCS_YML, 'rb') as f:
+            mkdocs = f.read().decode('utf-8')
+        mkdocs = RE_CONFIG.sub('playground-config-{}.js'.format(hsh), mkdocs)
+        with open(MKDOCS_YML, 'wb') as f:
+            f.write(mkdocs.encode('utf-8'))
 
     print("FAILED :(" if status else "SUCCESS :)")
-
     sys.exit(status)

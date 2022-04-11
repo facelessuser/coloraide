@@ -1,14 +1,17 @@
 """
 Execute Python code in code blocks (color previews added specifically for ColorAide).
 
+This can be executed in either a Pyodide environment of a normal Python environment.
+3rd party libraries (that are not available directly from Pyodide) are only loaded
+when needed so that Pyodide will have a chance to load them if necessary. This is also
+hardcoded to work with ColorAide.
+
 This is meant to be executed by Pyodide on preformatted HTML to allow for live execution of
 code snippets using `coloraide`.
 
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
-import micropip
-from js import document, location
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence
 from collections import namedtuple
@@ -17,10 +20,6 @@ from io import StringIO
 import contextlib
 import sys
 import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import find_formatter_class
-HtmlFormatter = find_formatter_class('html')
 
 WEBSPACE = "srgb"
 AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
@@ -84,8 +83,11 @@ def get_colors(result):
     """Get color from results."""
 
     from coloraide import Color
-    import coloraide_extras
     from coloraide.interpolate import Interpolator
+    try:
+        from coloraide_extras import Color as Color2
+    except ImportError:
+        Color2 = Color
 
     colors = []
     if isinstance(result, Color):
@@ -96,7 +98,7 @@ def get_colors(result):
         colors = result
     elif isinstance(result, str):
         try:
-            colors.append(ColorTuple(result, coloraide_extras.Color(result)))
+            colors.append(ColorTuple(result, Color2(result)))
         except Exception:
             pass
     elif isinstance(result, Sequence):
@@ -105,7 +107,7 @@ def get_colors(result):
                 colors.append(ColorTuple(x.to_string(fit=False), x.clone()))
             elif isinstance(x, str):
                 try:
-                    colors.append(ColorTuple(x, coloraide_extras.Color(x)))
+                    colors.append(ColorTuple(x, Color2(x)))
                 except Exception:
                     pass
     return colors
@@ -114,12 +116,15 @@ def get_colors(result):
 def find_colors(text):
     """Find colors in text buffer."""
 
-    import coloraide_extras
+    try:
+        from coloraide_extras import Color
+    except ImportError:
+        from coloraide import Color
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
         start = m.start()
-        mcolor = coloraide_extras.Color.match(text, start=start)
+        mcolor = Color.match(text, start=start)
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
@@ -129,16 +134,23 @@ def execute(cmd):
     """Execute color commands."""
 
     import coloraide
-    import coloraide_extras
+    try:
+        import coloraide_extras
+    except ImportError:
+        coloraide_extras = None
 
     g = {
         'Color': coloraide.Color,
-        'coloraide_extras': coloraide_extras,
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
         'Piecewise': coloraide.Piecewise,
         'ColorRow': ColorRow
     }
+
+    if coloraide_extras is not None:
+        g['coloraide_extras'] = coloraide_extras
+        g['Color'] = coloraide_extras.Color
+
     console = ''
     colors = []
 
@@ -211,6 +223,11 @@ def execute(cmd):
 
 def colorize(src, lang, **options):
     """Colorize."""
+
+    from pygments import highlight
+    from pygments.lexers import get_lexer_by_name
+    from pygments.formatters import find_formatter_class
+    HtmlFormatter = find_formatter_class('html')
 
     lexer = get_lexer_by_name(lang, **options)
     formatter = HtmlFormatter(cssclass="highlight", wrapcode=True)
@@ -338,7 +355,10 @@ def live_color_command_formatter(src):
 def color_formatter(src="", language="", class_name=None, md=""):
     """Formatter wrapper."""
 
-    from coloraide_extras import Color
+    try:
+        from coloraide_extras import Color
+    except ImportError:
+        from coloraide import Color
 
     try:
         result = src.strip()
@@ -390,8 +410,13 @@ def color_formatter(src="", language="", class_name=None, md=""):
     return el
 
 
+#############################
+# Pyodide specific code
+#############################
 def render_console(*args):
     """Render console update."""
+
+    from js import document
 
     try:
         # Run code
@@ -409,6 +434,7 @@ def render_notebook(*args):
 
     import markdown
     from pymdownx import slugs
+    from js import document
 
     text = globals().get('content', '')
     extensions = [
@@ -485,33 +511,3 @@ def render_notebook(*args):
         html = ''
     content = document.getElementById("__notebook-render")
     content.innerHTML = html
-
-
-# Load up necessary wheels and then execute the appropriate payload
-cwheel = ''
-mwheel = ''
-pwheel = ''
-ewheel = ''
-
-wheels = [
-    location.origin + '/coloraide/playground/' + cwheel,
-    location.origin + '/coloraide/playground/' + ewheel
-]
-
-action = globals().get('action')
-if action == 'render':
-    callback = render_notebook
-    wheels.extend(
-        [
-            location.origin + '/coloraide/playground/' + mwheel,
-            location.origin + '/coloraide/playground/' + pwheel
-        ]
-    )
-else:
-    callback = render_console
-
-# We run this from inside an async JavaScript function
-# so it is okay to call await outside a coroutine as
-# we are technically still inside one.
-await micropip.install(wheels)
-callback()

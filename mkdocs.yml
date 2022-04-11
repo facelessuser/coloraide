@@ -70,8 +70,8 @@ markdown_extensions:
       custom_fences:
         - name: playground
           class: playground
-          format: !!python/name:tools.playground.color_command_formatter
-          validator: !!python/name:tools.playground.color_command_validator
+          format: !!python/name:docs.src.py.notebook.color_command_formatter
+          validator: !!python/name:docs.src.py.notebook.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline
@@ -86,7 +86,7 @@ markdown_extensions:
       custom_inline:
         - name: color
           class: color
-          format: !!python/name:tools.playground.color_formatter
+          format: !!python/name:docs.src.py.notebook.color_formatter
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true
@@ -122,8 +122,9 @@ markdown_extensions:
 extra_css:
   - assets/coloraide-extras/extra-477e18ad12.css
 extra_javascript:
-  - https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-d1c0d0ef.js
+  - playground-config-f8c81d3f.js
+  - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
+  - assets/coloraide-extras/extra-notebook-2aa5ae1a.js
 
 extra:
   social:

@@ -13,8 +13,24 @@
   // presses the `Run` button. It will execute the code, create a
   // Python console output, find color references, steps, and interpolation
   // references and render the appropriate preview.
-  const pycode = "{{pycode}}"
-  const defContent = "import coloraide\ncoloraide.__version__\nColor('red')"
+  const pycode = `
+{{pycode}}
+
+import micropip
+from js import location
+
+action = globals().get('action')
+if action == 'notebook':
+    callback = render_notebook
+else:
+    callback = render_console
+
+base = location.pathname.lstrip('/').split('/')[0]
+await micropip.install([location.origin + '/{}/playground/{}'.format(base, w) for w in wheels])
+callback()
+`
+
+  const defContent = window.color_notebook.default_playground
 
   const getContent = content => {
     return `
@@ -62,21 +78,23 @@ ${content}
   }
 
   const pyexecute = async currentID => {
-    // Execute Python code
+    // Execute Python code inside a playground
 
     const currentInputs = document.getElementById(`__playground-inputs_${currentID}`)
     currentInputs.setAttribute("readonly", "")
     pyodide.globals.set("id_num", currentID)
-    pyodide.globals.set("action", "notebook")
+    pyodide.globals.set("action", "playground")
+    pyodide.globals.set('wheels', window.color_notebook.playground_wheels)
     await pyodide.runPythonAsync(pycode)
     currentInputs.removeAttribute("readonly")
   }
 
   const pyrender = async text => {
-    // Execute Python code
+    // Render an entire notebook page
 
     pyodide.globals.set("content", text)
-    pyodide.globals.set("action", "render")
+    pyodide.globals.set("action", "notebook")
+    pyodide.globals.set('wheels', window.color_notebook.notebook_wheels)
     await pyodide.runPythonAsync(pycode)
     const src = document.getElementById("__notebook-input")
     if (src) {
@@ -95,10 +113,10 @@ ${content}
     if (!initialized) {
       initialized = true
       pyodide = await loadPyodide({ // eslint-disable-line no-undef
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/",
         fullStdLib: false
       })
-      await pyodide.loadPackage(["micropip", "Pygments"])
+      await pyodide.loadPackage(["micropip"])
     }
   }
 
@@ -124,8 +142,9 @@ ${content}
   const popState = () => {
     // Handle notebook history
 
+    const base = window.location.pathname.split('/')[1]
     if (
-      window.location.pathname === "/coloraide/playground/"
+      window.location.pathname === `/${base}/playground/`
     ) {
       const current = decodeURIComponent(new URLSearchParams(window.location.search).toString())
       if (current !== lastSearch) {
@@ -137,12 +156,13 @@ ${content}
   const interceptClickEvent = e => {
     // Catch links to other notebook pages and handle them
 
+    const base = window.location.pathname.split('/')[1]
     const target = e.target || e.srcElement
     if (target.tagName === "A" && main) { // eslint-disable-line no-use-before-define
       if (
         target.getAttribute("href") &&
         target.host === window.location.host &&
-        window.location.pathname === "/coloraide/playground/" &&
+        window.location.pathname === `/${base}/playground/"` &&
         window.location.pathname === target.pathname &&
         window.location.search !== target.search
       ) {
@@ -345,11 +365,12 @@ ${content}
       buttonShare.addEventListener("click", async() => {
         // Handle the share click: copy URL with code as parameter.
 
+        const base = window.location.pathname.split('/')[1]
         const uri = encodeuri(inputs.value)
         const loc = window.location
         let pathname = "/playground/"
-        if (loc.pathname.startsWith("/coloraide/")) {
-          pathname = "/coloraide/playground/"
+        if (loc.pathname.startsWith(`/${base}/`)) {
+          pathname = `/${base}/playground/`
         }
         const path = `${loc.protocol}//${loc.host}${pathname}?code=${uri}`
         if (uri.length > 1000) {
