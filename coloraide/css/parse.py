@@ -342,7 +342,8 @@ def parse_css(
                 if value is not None:
                     return (value[:3], value[3]), m.end(0)
             else:
-                return parse_rgb_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.BOUNDS), m.end(0)
+                offset = m.start(0)
+                return parse_rgb_channels(string[m.end(1) - offset + 1:m.end(0) - offset - 1], cspace.BOUNDS), m.end(0)
     else:
         m = CSS_MATCH[cspace.NAME].match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
