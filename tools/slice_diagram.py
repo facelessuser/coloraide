@@ -14,6 +14,10 @@ import argparse
 import sys
 import os
 import math
+from shapely.geometry import Polygon
+from shapely.geometry.base import dump_coords
+from shapely.geometry.collection import GeometryCollection
+from shapely.geometry.linestring import LineString
 
 sys.path.insert(0, os.getcwd())
 
@@ -109,7 +113,15 @@ def plot_slice(
     c2_mx = float('-inf')
 
     # Track the edge of the graphed shape.
-    edge_map = {}
+    # This is done from the perspective of the X and Y axis.
+    # We will capture the min and max Y for a given X and
+    # the min and max X for a given Y.
+    # Both are imperfect, but taking both and find the
+    # the intersection should yield a suitable edge.
+    edge_map_x = {}
+    edge_map_y = {}
+    ex = []
+    ey = []
 
     # Iterate through the two specified channels
     for c1, c2 in itertools.product(
@@ -140,48 +152,42 @@ def plot_slice(
                 c2_mx = c2
 
             # Create an edge map so we can draw an outline
-            if c1 not in edge_map:
+            # This should be all we need for polar.
+            if c1 not in edge_map_x:
                 mn = mx = c2
             else:
-                mn, mx = edge_map[c1]
+                mn, mx = edge_map_x[c1]
                 if c2 < mn:
                     mn = c2
                 elif c2 > mx:
                     mx = c2
-            edge_map[c1] = [mn, mx]
+            edge_map_x[c1] = [mn, mx]
+
+            # If we aren't doing polar, we need both the X and Y perspective
+            if hue_index == -1:
+                if c2 not in edge_map_y:
+                    mn = mx = c1
+                else:
+                    mn, mx = edge_map_y[c2]
+                    if c1 < mn:
+                        mn = c1
+                    elif c1 > mx:
+                        mx = c1
+                edge_map_y[c2] = [mn, mx]
 
             # Save the points
             xaxis.append(c1)
             yaxis.append(c2)
             c_map.append(c.convert('srgb').to_string(hex=True))
 
-    # Create a border around the data
-    xe = []
-    ye = []
-    xtemp = []
-    ytemp = []
-    for p1, edges in edge_map.items():
-        if hue_index == -1:
-            xe.append(p1)
-            ye.append(edges[0])
-            xtemp.append(p1)
-            ytemp.append(edges[1])
-        else:
-            xe.append(p1)
-            ye.append(edges[1])
-
-    if hue_index == -1:
-        xe.extend(reversed(xtemp))
-        ye.extend(reversed(ytemp))
-        xe.append(xe[0])
-        ye.append(ye[0])
-
+    # Create axes
     ax = plt.axes(
         xlabel='{}: {} - {}'.format(name1, fmt_float(c1_mn, 5), fmt_float(c1_mx, 5)),
         ylabel='{}: {} - {}'.format(name2, fmt_float(c2_mn, 5), fmt_float(c2_mx, 5)),
         **kwargs
     )
 
+    # Create titles
     if not title:
         title = "Plot of {} showing '{}' and '{}' with '{}' at {}".format(
             space, name1, name2, name0, fmt_float(value, 5)
@@ -194,11 +200,11 @@ def plot_slice(
         else:
             ax.set_title(subtitle, fontdict={'fontsize': 8}, pad=2)
 
+    # Set aspect
     ax.set_aspect('auto' if hue_index == -1 else 'equal')
     figure.add_axes(ax)
 
-    plt.plot(xe, ye, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
-
+    # Fill colors
     plt.scatter(
         xaxis,
         yaxis,
@@ -206,6 +212,56 @@ def plot_slice(
         color=c_map,
         s=2
     )
+
+    # Create a border from the X axis perspective
+    edge_x = []
+    temp = []
+    for p1, edges in edge_map_x.items():
+        if hue_index == -1:
+            # Min and max
+            edge_x.append((p1, edges[0]))
+            temp.append((p1, edges[1]))
+        else:
+            # Just need max for polar
+            edge_x.append((p1, edges[1]))
+
+    if hue_index == -1:
+        # Combine the min/max values in one shape
+        edge_x.extend(reversed(temp))
+        # Close shape
+        edge_x.append(edge_x[0])
+
+    # Create a border from the Y axis perspective
+    if hue_index == -1:
+        edge_y = []
+        temp.clear()
+
+        for p1 in sorted(edge_map_y.keys()):
+            edges = edge_map_y[p1]
+            edge_y.append((edges[0], p1))
+            temp.append((edges[1], p1))
+
+        edge_y.extend(reversed(temp))
+        edge_y.append(edge_y[0])
+
+        # Get the intersection of X and Y to get the most accurate border
+        poly = Polygon(edge_x).intersection(Polygon(edge_y))
+        if isinstance(poly, GeometryCollection):
+            for a in poly.geoms:
+                # Sometimes the intersection can have weird, unnecessary `LineString`.
+                # This occurs with very complex polygons. Just throw them away until
+                # as they seem to be a bug.
+                if isinstance(a, LineString):
+                    continue
+                ex, ey = zip(*dump_coords(a))
+        else:
+            ex, ey = zip(*dump_coords(poly))
+    else:
+        # Using polar, so just split the data by axis
+        ex, ey = zip(*edge_x)
+
+    # Plot the edge border
+    plt.plot(ex, ey, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
 
 
 def main():
