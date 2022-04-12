@@ -121,11 +121,13 @@ when a color has no lightness, etc.
     color.coords()
     ```
 
-2. When using the `#!css-color color()` function syntax, if a channel is not explicitly defined, it will be considered
-undefined as well, the exception is that `alpha` is usually assumed to be `1` unless explicitly defined.
+2. When specifying raw data, and an insufficient amount of channel data is provided, the missing channels will be
+assumed as undefined, the exception is the `alpha` channel which is assumed to be `1` unless explicitly defined or
+explicitly set as undefined.
 
     ```playground
-    Color('color(srgb 1)').coords()
+    Color('srgb', [1]).coords()
+    Color('srgb', [1, 0, 0], NaN).alpha
     ```
 
 3. Undefined values can also occur when a user specifies a channel with the `none` keyword. This can also be done in raw
@@ -146,7 +148,7 @@ color data by directly passing `#!py3 float('nan')` -- the provided `NaN` consta
     color.coords()
     ```
 
-3. Lastly, a user can use the `mask` method which is a quick way to set one or multiple channels as undefined.
+4. Lastly, a user can use the `mask` method which is a quick way to set one or multiple channels as undefined.
 Additionally, it returns a clone leaving the original untouched by default.
 
     ```playground
