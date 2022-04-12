@@ -700,10 +700,20 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_match_offset(self):
         """Test match with offset."""
 
-        obj = Color.match('yellow red', start=7)
-        self.assertEqual(obj.color, Color('red'))
+        obj = Color.match('yellow green #0000FF rgb(1, 0, 0)', start=7)
+        self.assertEqual(obj.color, Color('green'))
         self.assertEqual(obj.start, 7)
-        self.assertEqual(obj.end, 10)
+        self.assertEqual(obj.end, 12)
+
+        obj = Color.match('yellow green #0000FF rgb(1, 0, 0)', start=13)
+        self.assertEqual(obj.color, Color('blue'))
+        self.assertEqual(obj.start, 13)
+        self.assertEqual(obj.end, 20)
+
+        obj = Color.match('yellow green #0000FF rgb(255, 0, 0)', start=21)
+        self.assertEqual(obj.color, Color('red'))
+        self.assertEqual(obj.start, 21)
+        self.assertEqual(obj.end, 35)
 
     def test_match_filters(self):
         """Test match with filters."""

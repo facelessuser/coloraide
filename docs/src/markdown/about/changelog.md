@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.1
+
+- **FIX**: Fix an issue related to matching colors in a buffer at a given offset.
+
 ## 0.15.0
 
 !!! warning
