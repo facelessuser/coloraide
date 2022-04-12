@@ -1,7 +1,6 @@
 manifest*.json
 node_modules/*
 *.whl
-!*coloraide_extras*.whl
 
 .DS_Store
 

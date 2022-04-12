@@ -964,9 +964,9 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     Name       | Range
     ---------- | -----
-    x:         | [0.0, 0.964]^\*^
-    y:         | [0.0, 1.0]^\*^
-    z:         | [0.0, 0.825]^\*^
+    x          | [0.0, 0.964]^\*^
+    y          | [0.0, 1.0]^\*^
+    z          | [0.0, 0.825]^\*^
 
     ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
 
