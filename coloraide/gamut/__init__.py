@@ -60,7 +60,7 @@ def verify(color: 'Color', tolerance: float) -> bool:
     return True
 
 
-class Fit(ABCMeta):
+class Fit(metaclass=ABCMeta):
     """Fit plugin class."""
 
     NAME = ''

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.0
+
+- **NEW**: Inputs method names for distancing, gamut mapping, and compositing methods are now case sensitive. There were
+  inconsistencies in some places, so it was opted to make all case sensitive.
+
 ## 0.15.1
 
 - **FIX**: Fix an issue related to matching colors in a buffer at a given offset.

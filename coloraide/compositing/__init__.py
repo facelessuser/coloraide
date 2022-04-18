@@ -8,7 +8,7 @@ from . import blend_modes
 from .. import algebra as alg
 from ..types import Vector
 from ..gamut.bounds import GamutBound, Bounds
-from typing import Optional, Union, Callable, List, TYPE_CHECKING
+from typing import Optional, Union, List, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -35,9 +35,8 @@ def clip_channel(coord: float, bounds: Bounds) -> float:
 def apply_compositing(
     color1: 'Color',
     color2: 'Color',
-    blend: Union[str, bool],
-    operator: Union[str, bool],
-    non_seperable: bool
+    blender: Optional[Type[blend_modes.Blend]],
+    operator: Union[str, bool]
 ) -> 'Color':
     """Perform the actual blending."""
 
@@ -60,35 +59,14 @@ def apply_compositing(
     # Perform compositing
     bounds = color1._space.BOUNDS
     coords = []  # type: Vector
-    if isinstance(blend, str) and non_seperable:
-        # Setup blend mode.
-        ns_blender = blend_modes.get_non_seperable_blender(blend.lower())
 
-        # Convert to a hue, saturation, luminosity space and apply the requested blending.
-        # Afterwards, clip and apply alpha compositing.
-        i = 0
-        blended = ns_blender(coords2, coords1) if ns_blender is not None else coords1
-        for cb, cr in zip(coords2, blended):
-            cr = (1 - cba) * cr + cba * cr if ns_blender is not None else cr
-            cr = clip_channel(cr, bounds[i])
-            coords.append(compositor.co(cb, cr) if compositor is not None else cr)
-            i += 1
-    else:
-        # Setup blend mode.
-        blender = None  # type: Optional[Callable[[float, float], float]]
-        if isinstance(blend, str):
-            blend = blend.lower()
-            blender = blend_modes.get_seperable_blender(blend)
-        elif blend is True:
-            blender = blend_modes.get_seperable_blender('normal')
-
-        # Blend each channel. Afterward, clip and apply alpha compositing.
-        i = 0
-        for cb, cs in zip(coords2, coords1):
-            cr = (1 - cba) * cs + cba * blender(cb, cs) if blender is not None else cs
-            cr = clip_channel(cr, bounds[i])
-            coords.append(compositor.co(cb, cr) if compositor is not None else cr)
-            i += 1
+    # Blend each channel. Afterward, clip and apply alpha compositing.
+    i = 0
+    for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):
+        cr = (1 - cba) * cr + cba * cr if blender else cr
+        cr = clip_channel(cr, bounds[i])
+        coords.append(compositor.co(cb, cr) if compositor else cr)
+        i += 1
 
     return color1.update(color1.space(), coords, cra)
 
@@ -102,10 +80,17 @@ def compose(
 ) -> 'Color':
     """Blend colors using the specified blend mode."""
 
+    # We need to go ahead and grab the blender as we need to check what type of blender it is.
+    blender = None  # Optional[blend_modes.Blend]
+    if isinstance(blend, str):
+        blender = blend_modes.get_blender(blend)
+    elif blend is True:
+        blender = blend_modes.get_blender('normal')
+    is_seperable = blender is not None and issubclass(blender, blend_modes.NonSeperableBlend)
+
     # If we are doing non-separable, we are converting to a special space that
     # can only be done from sRGB, so we have to force sRGB anyway.
-    non_seperable = blend_modes.is_non_seperable(blend)
-    space = 'srgb' if space is None or non_seperable else space.lower()
+    space = 'srgb' if space is None or is_seperable else space.lower()
 
     if not backdrop:
         return color
@@ -114,10 +99,10 @@ def compose(
         dest = backdrop[-1].convert(space)
         for x in range(len(backdrop) - 2, -1, -1):
             src = backdrop[x].convert(space)
-            dest = apply_compositing(src, dest, blend, operator, non_seperable)
+            dest = apply_compositing(src, dest, blender, operator)
     else:
         dest = backdrop[0].convert(space)
 
     src = color.convert(space)
 
-    return apply_compositing(src, dest, blend, operator, non_seperable)
+    return apply_compositing(src, dest, blender, operator)

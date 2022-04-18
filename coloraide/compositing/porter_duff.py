@@ -13,13 +13,13 @@ class PorterDuff(metaclass=ABCMeta):
         self.csa = csa
 
     @abstractmethod
-    def _fa(self) -> float:  # pragma: no cover
+    def fa(self) -> float:  # pragma: no cover
         """Calculate `Fa`."""
 
         raise NotImplementedError('fa is not implemented')
 
     @abstractmethod
-    def _fb(self) -> float:  # pragma: no cover
+    def fb(self) -> float:  # pragma: no cover
         """Calculate `Fb`."""
 
         raise NotImplementedError('fb is not implemented')
@@ -27,23 +27,23 @@ class PorterDuff(metaclass=ABCMeta):
     def co(self, cb: float, cs: float) -> float:
         """Calculate premultiplied coordinate."""
 
-        return self.csa * self._fa() * cs + self.cba * self._fb() * cb
+        return self.csa * self.fa() * cs + self.cba * self.fb() * cb
 
     def ao(self) -> float:
         """Calculate output alpha."""
 
-        return self.csa * self._fa() + self.cba * self._fb()
+        return self.csa * self.fa() + self.cba * self.fb()
 
 
 class Clear(PorterDuff):
     """Clear."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 0
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 0
@@ -52,12 +52,12 @@ class Clear(PorterDuff):
 class Copy(PorterDuff):
     """Copy."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 0
@@ -66,12 +66,12 @@ class Copy(PorterDuff):
 class Destination(PorterDuff):
     """Destination."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 0
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1
@@ -80,12 +80,12 @@ class Destination(PorterDuff):
 class SourceOver(PorterDuff):
     """Source over."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1 - self.csa
@@ -94,12 +94,12 @@ class SourceOver(PorterDuff):
 class DestinationOver(PorterDuff):
     """Destination over."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1 - self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1
@@ -108,12 +108,12 @@ class DestinationOver(PorterDuff):
 class SourceIn(PorterDuff):
     """Source in."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 0
@@ -122,12 +122,12 @@ class SourceIn(PorterDuff):
 class DestinationeIn(PorterDuff):
     """Destination in."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 0
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return self.csa
@@ -136,12 +136,12 @@ class DestinationeIn(PorterDuff):
 class SourceOut(PorterDuff):
     """Source out."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1 - self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 0
@@ -150,12 +150,12 @@ class SourceOut(PorterDuff):
 class DestinationOut(PorterDuff):
     """Destination out."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 0
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1 - self.csa
@@ -164,12 +164,12 @@ class DestinationOut(PorterDuff):
 class SourceAtop(PorterDuff):
     """Source atop."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1 - self.csa
@@ -178,12 +178,12 @@ class SourceAtop(PorterDuff):
 class DestinationAtop(PorterDuff):
     """Destination atop."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1 - self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return self.csa
@@ -192,12 +192,12 @@ class DestinationAtop(PorterDuff):
 class XOR(PorterDuff):
     """XOR."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1 - self.cba
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1 - self.csa
@@ -206,12 +206,12 @@ class XOR(PorterDuff):
 class Lighter(PorterDuff):
     """Lighter."""
 
-    def _fa(self) -> float:
+    def fa(self) -> float:
         """Calculate `Fa`."""
 
         return 1
 
-    def _fb(self) -> float:
+    def fb(self) -> float:
         """Calculate `Fb`."""
 
         return 1
@@ -237,7 +237,7 @@ SUPPORTED = {
 def compositor(name: str) -> Type[PorterDuff]:
     """Get the requested compositor."""
 
-    name = name.lower()
-    if name not in SUPPORTED:
+    try:
+        return SUPPORTED[name]
+    except KeyError:
         raise ValueError("'{}' compositing is not supported".format(name))
-    return SUPPORTED[name]
