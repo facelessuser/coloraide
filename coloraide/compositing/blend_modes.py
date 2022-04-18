@@ -1,14 +1,9 @@
 """Blend modes."""
 import math
+from abc import ABCMeta, abstractmethod
 from operator import itemgetter
-from typing import Any, Callable, cast
+from typing import Dict, Type
 from ..types import Vector
-
-
-def is_non_seperable(mode: Any) -> bool:
-    """Check if blend mode is non-separable."""
-
-    return mode in frozenset(['color', 'hue', 'saturation', 'luminosity'])
 
 
 # -----------------------------------------
@@ -68,144 +63,257 @@ def set_sat(rgb: Vector, s: float) -> Vector:
 # -----------------------------------------
 # Blend modes
 # -----------------------------------------
-def blend_normal(cb: float, cs: float) -> float:
-    """Blend mode 'normal'."""
+class Blend(metaclass=ABCMeta):
+    """Blend base class."""
 
-    return cs
+    @classmethod
+    @abstractmethod
+    def blend(cls, coords1: Vector, coords2: Vector) -> Vector:  # pragma: no cover
+        """Blend coordinates."""
 
-
-def blend_multiply(cb: float, cs: float) -> float:
-    """Blend mode 'multiply'."""
-
-    return cb * cs
-
-
-def blend_screen(cb: float, cs: float) -> float:
-    """Blend mode 'screen'."""
-
-    return cb + cs - (cb * cs)
+        raise NotImplementedError('blend is not implemented')
 
 
-def blend_darken(cb: float, cs: float) -> float:
-    """Blend mode 'darken'."""
+class SeperableBlend(Blend):
+    """Blend coordinates."""
 
-    return min(cb, cs)
+    @classmethod
+    @abstractmethod
+    def apply(cls, cb: float, cs: float) -> float:  # pragma: no cover
+        """Blend two values."""
 
+        raise NotImplementedError('apply is not implemented')
 
-def blend_lighten(cb: float, cs: float) -> float:
-    """Blend mode 'lighten'."""
+    @classmethod
+    def blend(cls, coords1: Vector, coords2: Vector) -> Vector:
+        """Apply blending logic."""
 
-    return max(cb, cs)
-
-
-def blend_color_dodge(cb: float, cs: float) -> float:
-    """Blend mode 'dodge'."""
-
-    if cb == 0:
-        return 0
-    elif cs == 1:
-        return 1
-    else:
-        return min(1, cb / (1 - cs))
+        return [cls.apply(cb, cs) for cb, cs in zip(coords1, coords2)]
 
 
-def blend_color_burn(cb: float, cs: float) -> float:
-    """Blend mode 'burn'."""
+class NonSeperableBlend(Blend):
+    """Non seperable blend method."""
 
-    if cb == 1:
-        return 1
-    elif cs == 0:
-        return 0
-    else:
-        return 1 - min(1, (1 - cb) / cs)
+    @classmethod
+    @abstractmethod
+    def apply(cls, cb: Vector, cs: Vector) -> Vector:  # pragma: no cover
+        """Blend two vectors."""
 
+        raise NotImplementedError('apply is not implemented')
 
-def blend_overlay(cb: float, cs: float) -> float:
-    """Blend mode 'overlay'."""
+    @classmethod
+    def blend(cls, coords_backgrond: Vector, coords_source: Vector) -> Vector:
+        """Apply blending logic."""
 
-    if cb >= 0.5:
-        return blend_screen(cb, 2 * cs - 1)
-    else:
-        return blend_multiply(cb, cs * 2)
+        return cls.apply(coords_backgrond, coords_source)
 
 
-def blend_difference(cb: float, cs: float) -> float:
-    """Blend mode 'difference'."""
+class BlendNormal(SeperableBlend):
+    """Normal blend mode."""
 
-    return abs(cb - cs)
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
 
-
-def blend_exclusion(cb: float, cs: float) -> float:
-    """Blend mode 'exclusion'."""
-
-    return cb + cs - 2 * cb * cs
+        return cs
 
 
-def blend_hard_light(cb: float, cs: float) -> float:
-    """Blend mode 'hard-light'."""
+class BlendMultiply(SeperableBlend):
+    """Multiply blend mode."""
 
-    if cs <= 0.5:
-        return blend_multiply(cb, cs * 2)
-    else:
-        return blend_screen(cb, 2 * cs - 1)
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return cb * cs
 
 
-def blend_soft_light(cb: float, cs: float) -> float:
-    """Blend mode 'soft-light'."""
+class BlendScreen(SeperableBlend):
+    """Screen blend mode."""
 
-    if cs <= 0.5:
-        return cb - (1 - 2 * cs) * cb * (1 - cb)
-    else:
-        if cb <= 0.25:
-            d = ((16 * cb - 12) * cb + 4) * cb
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return cb + cs - (cb * cs)
+
+
+class BlendDarken(SeperableBlend):
+    """Darken blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return min(cb, cs)
+
+
+class BlendLighten(SeperableBlend):
+    """Lighten blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return max(cb, cs)
+
+
+class BlendColorDodge(SeperableBlend):
+    """Color dodge blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        if cb == 0:
+            return 0
+        elif cs == 1:
+            return 1
         else:
-            d = math.sqrt(cb)
-        return cb + (2 * cs - 1) * (d - cb)
+            return min(1, cb / (1 - cs))
 
 
-def non_seperable_blend_hue(cb: Vector, cs: Vector) -> Vector:
-    """Blend mode 'hue'."""
+class BlendColorBurn(SeperableBlend):
+    """Color Burn blend mode."""
 
-    return set_lum(set_sat(cs, sat(cb)), lum(cb))
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
 
-
-def non_seperable_blend_saturation(cb: Vector, cs: Vector) -> Vector:
-    """Blend mode 'saturation'."""
-
-    return set_lum(set_sat(cb, sat(cs)), lum(cb))
-
-
-def non_seperable_blend_luminosity(cb: Vector, cs: Vector) -> Vector:
-    """Blend mode 'luminosity'."""
-    return set_lum(cb, lum(cs))
+        if cb == 1:
+            return 1
+        elif cs == 0:
+            return 0
+        else:
+            return 1 - min(1, (1 - cb) / cs)
 
 
-def non_seperable_blend_color(cb: Vector, cs: Vector) -> Vector:
-    """Blend mode 'color'."""
+class BlendOverlay(SeperableBlend):
+    """Overlay blend mode."""
 
-    return set_lum(cs, lum(cb))
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        if cb >= 0.5:
+            return BlendScreen.apply(cb, 2 * cs - 1)
+        else:
+            return BlendMultiply.apply(cb, cs * 2)
 
 
-def get_seperable_blender(blend: str) -> Callable[[float, float], float]:
+class BlendDifference(SeperableBlend):
+    """Difference blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return abs(cb - cs)
+
+
+class BlendExclusion(SeperableBlend):
+    """Exclusion blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        return cb + cs - 2 * cb * cs
+
+
+class BlendHardLight(SeperableBlend):
+    """Hard light blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        if cs <= 0.5:
+            return BlendMultiply.apply(cb, cs * 2)
+        else:
+            return BlendScreen.apply(cb, 2 * cs - 1)
+
+
+class BlendSoftLight(SeperableBlend):
+    """Soft light blend mode."""
+
+    @classmethod
+    def apply(cls, cb: float, cs: float) -> float:
+        """Blend two values."""
+
+        if cs <= 0.5:
+            return cb - (1 - 2 * cs) * cb * (1 - cb)
+        else:
+            if cb <= 0.25:
+                d = ((16 * cb - 12) * cb + 4) * cb
+            else:
+                d = math.sqrt(cb)
+            return cb + (2 * cs - 1) * (d - cb)
+
+
+class BlendHue(NonSeperableBlend):
+    """Hue blend mode."""
+
+    @classmethod
+    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+        """Blend two vectors."""
+
+        return set_lum(set_sat(cs, sat(cb)), lum(cb))
+
+
+class BlendSaturation(NonSeperableBlend):
+    """Saturation blend mode."""
+
+    @classmethod
+    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+        """Blend two vectors."""
+
+        return set_lum(set_sat(cb, sat(cs)), lum(cb))
+
+
+class BlendLuminosity(NonSeperableBlend):
+    """Luminosity blend mode."""
+
+    @classmethod
+    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+        """Blend two vectors."""
+        return set_lum(cb, lum(cs))
+
+
+class BlendColor(NonSeperableBlend):
+    """Color blend mode."""
+
+    @classmethod
+    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+        """Blend two vectors."""
+
+        return set_lum(cs, lum(cb))
+
+
+SUPPORTED = {
+    "normal": BlendNormal,
+    "multiply": BlendMultiply,
+    "screen": BlendScreen,
+    "darken": BlendDarken,
+    "lighten": BlendLighten,
+    "color-dodge": BlendColorDodge,
+    "color-burn": BlendColorBurn,
+    "overlay": BlendOverlay,
+    "difference": BlendDifference,
+    "exclusion": BlendExclusion,
+    "hard-light": BlendHardLight,
+    "soft-light": BlendSoftLight,
+    "hue": BlendHue,
+    "saturation": BlendSaturation,
+    "luminosity": BlendLuminosity,
+    "color": BlendColor,
+}  # type: Dict[str, Type[Blend]]
+
+
+def get_blender(blend: str) -> Type[Blend]:
     """Get desired blend mode."""
 
     try:
-        return cast(
-            Callable[[float, float], float],
-            globals()['blend_{}'.format(blend.replace('-', '_'))]
-        )
+        return SUPPORTED[blend]
     except KeyError:
         raise ValueError("'{}' is not a recognized blend mode".format(blend))
-
-
-def get_non_seperable_blender(blend: str) -> Callable[[Vector, Vector], Vector]:
-    """Get desired blend mode."""
-
-    try:
-        return cast(
-            Callable[[Vector, Vector], Vector],
-            globals()['non_seperable_blend_{}'.format(blend.replace('-', '_'))]
-        )
-    except KeyError:  # pragma: no cover
-        # The way we use this function, we will never hit this as we've verified the method before calling
-        raise ValueError("'{}' is not a recognized non seperable blend mode".format(blend))

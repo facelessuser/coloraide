@@ -712,12 +712,10 @@ class Color(metaclass=BaseColor):
         if method is None:
             method = self.DELTA_E
 
-        algorithm = method.lower()
-
         try:
-            return self.DE_MAP[algorithm].distance(self, color, **kwargs)
+            return self.DE_MAP[method].distance(self, color, **kwargs)
         except KeyError:
-            raise ValueError("'{}' is not currently a supported distancing algorithm.".format(algorithm))
+            raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
 
     def distance(self, color: ColorInput, *, space: str = "lab") -> float:
         """Delta."""

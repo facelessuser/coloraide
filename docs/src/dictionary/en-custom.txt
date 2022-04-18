@@ -72,6 +72,7 @@ Lch
 Lchish
 Lilley
 Luv
+MATLAB
 MERCHANTABILITY
 MINDE
 MacAdam
@@ -157,6 +158,7 @@ repurpose
 rgb
 sRGB
 sRGB's
+seperable
 subclassed
 subclasses
 subclassing

@@ -48,7 +48,7 @@ def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> f
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 
 
-class DeltaE(ABCMeta):
+class DeltaE(metaclass=ABCMeta):
     """Delta E plugin class."""
 
     NAME = ''
