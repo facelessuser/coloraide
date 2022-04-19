@@ -1034,6 +1034,40 @@ Return
 : 
     Returns a set of XYZ coordinates that align with the white point for the given color space.
 
+## `Color.chromatic_adaptation`
+
+```py3
+@classmethod
+def chromatic_adaptation(
+    cls,
+    w1,
+    w2,
+    xyz,
+    *,
+    method=None
+):
+```
+
+Description
+: 
+    A class method that converts an XYZ set of coordinates between a two given white points. The first white point must
+    match the white point of that the coordinates are currently using and the second white point must be the desired
+    white point to use. `method` dictates the method of chromatic adaptation to use.
+
+Parameters
+: 
+    Parameters | Defaults           | Description
+    ---------- | ------------------ | -----------
+    `w1`       |                    | Current white point of the XYZ coordinates.
+    `w2`       |                    | Desired white point of the XYZ coordinates.
+    `xyz`      |                    | The XYZ coordinates to adapt.
+    `method`   | `#!py3 None`       | The method of chromatic adaptation to use. If not specified, the current class's default method will be used.
+
+Return
+: 
+    Returns a set of XYZ coordinates that have been chromatically adapted to the desired white point.
+
+
 ## `Color.xy` {#xy}
 
 ```py3

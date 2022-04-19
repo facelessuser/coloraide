@@ -5,6 +5,7 @@ methods or even new color spaces quite easy. Currently, ColorAide implements the
 
 - [∆E methods](#delta-e)
 - [Gamut mapping](#fitgamut-mapping)
+- [Chromatic adaptation](#chromatic-adaptation)
 - [Color spaces](#color-spaces)
 
 ## Delta E
@@ -62,6 +63,53 @@ anything and should modify the `color` directly to be in gamut.
 !!! warning "Reserved Name"
     `clip` is a special, reserved name and the associated plugin cannot be overridden. Another clip plugin can be
     written, but it cannot override the original.
+
+## Chromatic Adaptation
+
+CAT plugins chromatically adapt a given XYZ coordinate from its current reference white point to a new desired white
+point. This is useful during conversion when one color space is converted to another color space that uses a difference
+reference white.
+
+### Plugin Class
+
+Plugins are are created by subclassing `#!py3 coloraide.cat.CAT`.
+
+```py
+class CAT(Plugin, metaclass=ABCMeta):
+    """Chromatic adaptation."""
+
+    NAME = ""
+
+    @classmethod
+    @abstractmethod
+    def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+        """Adapt a given XYZ color using the provided white points."""
+```
+
+The plugin should provide a `NAME` with the adaptation logic under `#!py3 adapt()`.
+
+Currently, ColorAide only ships with Von Kries based adaptation methods. If it is desired to create a Von Kries based
+plugin, it is recommended to subclass the `VonKries` class which is based on `CAT`. When subclassing a `VonKries` based
+cat, `NAME` and a `MATRIX` must be provided. The inverted matrix will be automatically calculated based on the white
+points.
+
+```py
+class Bradford(VonKries):
+    """
+    Bradford CAT.
+
+    http://brucelindbloom.com/Eqn_ChromAdapt.html
+    https://hrcak.srce.hr/file/95370
+    """
+
+    NAME = "bradford"
+
+    MATRIX = [
+        [0.8951000, 0.2664000, -0.1614000],
+        [-0.7502000, 1.7135000, 0.0367000],
+        [0.0389000, -0.0685000, 1.0296000]
+    ]
+```
 
 ## Color Space
 

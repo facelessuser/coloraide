@@ -1,7 +1,6 @@
 """Colors."""
 import abc
 import functools
-from . import cat
 from . import distance
 from . import convert
 from . import gamut
@@ -54,6 +53,8 @@ from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
 from .gamut.fit_oklch_chroma import OklchChroma
 from .gamut.fit_css_color_4 import CssColor4
+from .cat import CAT, Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
+from .types import Plugin
 from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
@@ -70,6 +71,8 @@ SUPPORTED_SPACES = (
 SUPPORTED_FIT = (
     LchChroma, OklchChroma, CssColor4
 )
+
+SUPPORTED_CAT = (Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16)
 
 
 class ColorMatch:
@@ -100,6 +103,7 @@ class BaseColor(abc.ABCMeta):
             cls.CS_MAP = cls.CS_MAP.copy()  # type: Dict[str, Type[Space]]
             cls.DE_MAP = cls.DE_MAP.copy()  # type: Dict[str, Type[DeltaE]]
             cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Type[Fit]]
+            cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, Type[CAT]]
 
 
 class Color(metaclass=BaseColor):
@@ -108,6 +112,7 @@ class Color(metaclass=BaseColor):
     CS_MAP = {}  # type: Dict[str, Type[Space]]
     DE_MAP = {}  # type: Dict[str, Type[DeltaE]]
     FIT_MAP = {}  # type: Dict[str, Type[Fit]]
+    CAT_MAP = {}  # type: Dict[str, Type[CAT]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
@@ -289,7 +294,7 @@ class Color(metaclass=BaseColor):
     @classmethod
     def register(
         cls,
-        plugin: Union[Type[Fit], Type[DeltaE], Type[Space], Sequence[Any]],
+        plugin: Union[Type[Plugin], Sequence[Type[Plugin]]],
         overwrite: bool = False
     ) -> None:
         """Register the hook."""
@@ -297,12 +302,14 @@ class Color(metaclass=BaseColor):
         if not isinstance(plugin, Sequence):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
+        mapping = None  # type: Optional[Dict[str, Type[Any]]]
         for p in plugin:
             if issubclass(p, Space):
                 mapping = cls.CS_MAP
             elif issubclass(p, DeltaE):
                 mapping = cls.DE_MAP
+            elif issubclass(p, CAT):
+                mapping = cls.CAT_MAP
             elif issubclass(p, Fit):
                 mapping = cls.FIT_MAP
                 if p.NAME == 'clip':
@@ -314,7 +321,7 @@ class Color(metaclass=BaseColor):
             value = p
 
             if name != "*" and name not in mapping or overwrite:
-                mapping[name] = value
+                cast(Dict[str, Type[Plugin]], mapping)[name] = value
             else:
                 raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
 
@@ -325,12 +332,13 @@ class Color(metaclass=BaseColor):
         if isinstance(plugin, str):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[Union[Dict[str, Type[Fit]], Dict[str, Type[DeltaE]], Dict[str, Type[Space]]]]
+        mapping = None  # type: Optional[Dict[str, Type[Any]]]
         for p in plugin:
             if p == '*':
                 cls.CS_MAP.clear()
                 cls.DE_MAP.clear()
                 cls.FIT_MAP.clear()
+                cls.CAT_MAP.clear()
                 return
 
             ptype, name = p.split(':', 1)
@@ -338,6 +346,8 @@ class Color(metaclass=BaseColor):
                 mapping = cls.CS_MAP
             elif ptype == "delta-e":
                 mapping = cls.DE_MAP
+            elif ptype == 'cat':
+                mapping = cls.CAT_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
                 if name == 'clip':
@@ -496,13 +506,30 @@ class Color(metaclass=BaseColor):
         """Convert to `xy`."""
 
         xyz = self.convert('xyz-d65')
-        coords = cat.chromatic_adaptation(
+        coords = self.chromatic_adaptation(
             xyz._space.WHITE,
             self._space.WHITE,
-            xyz.coords(),
-            self.CHROMATIC_ADAPTATION
+            xyz.coords()
         )
         return util.xyz_to_xyY(coords, self._space.white())[:2]
+
+    @classmethod
+    def chromatic_adaptation(
+        cls,
+        w1: Tuple[float, float],
+        w2: Tuple[float, float],
+        xyz: VectorLike,
+        *,
+        method: Optional[str] = None
+    ) -> Vector:
+        """Chromatic adaptation."""
+
+        try:
+            adapter = cls.CAT_MAP[method if method is not None else cls.CHROMATIC_ADAPTATION]
+        except KeyError:
+            raise ValueError("'{}' is not a supported CAT".format(method))
+
+        return adapter.adapt(w1, w2, xyz)
 
     def clip(self, space: Optional[str] = None, *, in_place: bool = False) -> 'Color':
         """Clip the color channels."""
@@ -852,4 +879,4 @@ class Color(metaclass=BaseColor):
         sc.__setattr__(name, value)
 
 
-Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT)
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT)

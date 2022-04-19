@@ -1645,6 +1645,50 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         Custom.register(fit_lch_chroma.LchChroma)
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
+    def test_plugin_registration_cat(self):
+        """Test plugin registration of `cat`."""
+
+        from coloraide.cat import VonKries, WHITES
+
+        expected = [0.42980066937825656, 0.21417803538899305, 0.014645639757305108]
+
+        # Deregistration should have taken place
+        class Custom(Color):
+            pass
+
+        Custom.deregister('cat:von-kries')
+        c1 = Custom('red').convert('xyz-d65')
+        with self.assertRaises(ValueError):
+            Custom.chromatic_adaptation(
+                WHITES['2deg']['D65'],
+                WHITES['2deg']['D50'],
+                c1.coords(),
+                method='von-kries'
+            )
+
+        # But it should not affect the base class
+        self.assertEqual(
+            Color.chromatic_adaptation(
+                WHITES['2deg']['D65'],
+                WHITES['2deg']['D50'],
+                c1.coords(),
+                method='von-kries'
+            ),
+            expected
+        )
+
+        # Now it is registered again
+        Custom.register(VonKries)
+        self.assertEqual(
+            Custom.chromatic_adaptation(
+                WHITES['2deg']['D65'],
+                WHITES['2deg']['D50'],
+                c1.coords(),
+                method='von-kries'
+            ),
+            expected
+        )
+
     def test_deregister_all_category(self):
         """Test deregistration of all plugins in a category."""
 

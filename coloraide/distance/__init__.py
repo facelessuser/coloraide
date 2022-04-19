@@ -2,7 +2,7 @@
 from abc import ABCMeta, abstractmethod
 import math
 from .. import algebra as alg
-from ..types import ColorInput
+from ..types import ColorInput, Plugin
 from typing import TYPE_CHECKING, Any, Sequence, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -48,7 +48,7 @@ def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> f
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 
 
-class DeltaE(metaclass=ABCMeta):
+class DeltaE(Plugin, metaclass=ABCMeta):
     """Delta E plugin class."""
 
     NAME = ''

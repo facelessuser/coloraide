@@ -292,9 +292,9 @@ Custom('red').convert('xyz-d55')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to
-deregister: `category:name`. Valid categories are `space`, `delta-e`, and `fit`. If the given plugin is not found,
-an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the there will
-be no error thrown.
+deregister: `category:name`. Valid categories are `space`, `delta-e`, `cat`, and `fit`. If the given plugin is not
+found, an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the
+there will be no error thrown.
 
 ```playground
 class Custom(Color): ...

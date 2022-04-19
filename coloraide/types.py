@@ -15,3 +15,13 @@ MatrixLike = Sequence[VectorLike]
 ArrayLike = Union[VectorLike, MatrixLike]
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
+
+
+class Plugin:
+    """
+    Plugin type base class.
+
+    A common class used to help simplify typing in some cases.
+    """
+
+    NAME = ""
