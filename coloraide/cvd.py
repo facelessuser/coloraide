@@ -434,8 +434,9 @@ SUPPORTED = {
 def cvd(color: 'Color', name: str, amount: Optional[float] = None) -> 'Color':
     """Filter."""
 
+    space = color.space()
     try:
         SUPPORTED[name](color.convert('srgb-linear', in_place=True), amount)
-        return color
     except KeyError:
         raise ValueError("'{}' filter is not supported".format(name))
+    return color.convert(space, in_place=True)
