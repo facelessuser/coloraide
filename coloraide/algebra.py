@@ -161,6 +161,21 @@ def _vector_dot(a: VectorLike, b: VectorLike) -> float:
     return sum([x * y for x, y in zipl(a, b)])
 
 
+def _vector_cross(v1: VectorLike, v2: VectorLike) -> Vector:
+    """
+    Cross two vectors.
+
+    Would like to generalize this more like `numpy`, but this is good for now.
+    Will likely replace this with a full implementation in the future.
+    """
+
+    return [
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v2[2] * v1[0],
+        v1[0] * v2[1] - v1[1] * v2[0]
+    ]
+
+
 def _extract_dims(
     m: ArrayLike,
     target: int,

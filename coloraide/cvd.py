@@ -1,0 +1,441 @@
+# -*- coding: utf-8 -*-
+"""Color vision deficiency."""
+from . import algebra as alg
+from .interpolate import lerp
+from .types import Vector, Matrix
+from typing import Optional, Dict, Tuple, cast, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .color import Color
+
+LRGB_TO_LMS = [
+    [0.1788315947640612, 0.4399813067603072, 0.03597439330845842],
+    [0.033798905547214174, 0.27515876526029825, 0.03621503435966088],
+    [0.00031083956494671645, 0.001916652059097586, 0.015284557008174545]
+]
+
+INV_LMS_TO_LRGB = [
+    [8.006605439487906, -12.884009114492532, 11.682514549178705],
+    [-0.9781986265569573, 5.269343182653304, -10.182783982803086],
+    [-0.04016494160643852, -0.39874480300255594, 66.46482888609172]
+]
+
+ACHROMATOPSIA = [
+    [0.212656, 0.715158, 0.072186],
+    [0.212656, 0.715158, 0.072186],
+    [0.212656, 0.715158, 0.072186]
+]
+
+BRETTEL_PROTAN = (
+    [
+        [0.0, 4.601963481151596, -33.603845913662],
+        [0.0, 3.1330128106441544, -4.649970365182458],
+        [0.0, -0.48646275957526675, 66.69200681278052]
+    ],
+    [
+        [0.0, 4.459087290426133, -30.787672758115008],
+        [0.0, 3.150468559474495, -4.994033368376835],
+        [0.0, -0.4857460246367451, 66.67787954858585]
+    ],
+    [0.0, 0.01751204863221885, -0.3451727051671733]
+)  # type: Tuple[Matrix, Matrix, Vector]
+
+BRETTEL_DEUTAN = (
+    [
+        [2.0585800667377834, 0.0, -19.868153658269534],
+        [1.4544437807582153, 0.0, 2.720909033066217],
+        [-0.2242492731553509, 0.0, 65.48837312087291]
+    ],
+    [
+        [2.107180806727998, 0.0, -21.685368064956243],
+        [1.4345668949485586, 0.0, 3.464119182966142],
+        [-0.22274513788806224, 0.0, 65.4321324900127]
+    ],
+    [-0.01751204863221885, 0.0, 0.6547872948328268]
+)  # type: Tuple[Matrix, Matrix, Vector]
+
+BRETTEL_TRITAN = (
+    [
+        [7.282866078566971, -10.918384106846926, 0.0],
+        [-0.347368547887983, 3.5560532261295186, 0.0],
+        [-4.157704241835348, 10.784201234635589, 0.0]
+    ],
+    [
+        [7.981703886196052, -12.244068643121977, 0.0],
+        [-0.9564937840814959, 4.711554398878355, 0.0],
+        [-0.18183628056123033, 3.2420410695833217, 0.0]
+    ],
+    [0.3451727051671733, -0.6547872948328268, 0.0]
+)  # type: Tuple[Matrix, Matrix, Vector]
+
+
+VIENOT_PROTAN = [
+    [0.10887256075552479, 0.8911274392444744, -8.326672684688674e-17],
+    [0.10887256075552504, 0.8911274392444752, 0.0],
+    [0.004470319142320402, -0.004470319142320406, 1.0000000000000002]
+]
+
+VIENOT_DEUTAN = [
+    [0.2902683260039952, 0.7097316739960047, 2.7755575615628914e-17],
+    [0.29026832600399544, 0.709731673996005, 0.0],
+    [-0.021965353642437093, 0.021965353642437083, 1.0000000000000002]
+]
+
+VIENOT_TRITAN = [
+    [1.0000000000000002, 0.15241850478972624, -0.15241850478972596],
+    [-3.0357660829594124e-18, 0.8671480610854684, 0.1328519389145317],
+    [-3.469446951953614e-18, 0.8671480610854685, 0.13285193891453168]
+]
+
+MACHADO_PROTAN = {
+    0: [
+        [1.000000, 0.000000, -0.000000],
+        [0.000000, 1.000000, 0.000000],
+        [-0.000000, -0.000000, 1.000000]
+    ],
+    1: [
+        [0.856167, 0.182038, -0.038205],
+        [0.029342, 0.955115, 0.015544],
+        [-0.002880, -0.001563, 1.004443]
+    ],
+    2: [
+        [0.734766, 0.334872, -0.069637],
+        [0.051840, 0.919198, 0.028963],
+        [-0.004928, -0.004209, 1.009137]
+    ],
+    3: [
+        [0.630323, 0.465641, -0.095964],
+        [0.069181, 0.890046, 0.040773],
+        [-0.006308, -0.007724, 1.014032]
+    ],
+    4: [
+        [0.539009, 0.579343, -0.118352],
+        [0.082546, 0.866121, 0.051332],
+        [-0.007136, -0.011959, 1.019095]
+    ],
+    5: [
+        [0.458064, 0.679578, -0.137642],
+        [0.092785, 0.846313, 0.060902],
+        [-0.007494, -0.016807, 1.024301]
+    ],
+    6: [
+        [0.385450, 0.769005, -0.154455],
+        [0.100526, 0.829802, 0.069673],
+        [-0.007442, -0.022190, 1.029632]
+    ],
+    7: [
+        [0.319627, 0.849633, -0.169261],
+        [0.106241, 0.815969, 0.077790],
+        [-0.007025, -0.028051, 1.035076]
+    ],
+    8: [
+        [0.259411, 0.923008, -0.182420],
+        [0.110296, 0.804340, 0.085364],
+        [-0.006276, -0.034346, 1.040622]
+    ],
+    9: [
+        [0.203876, 0.990338, -0.194214],
+        [0.112975, 0.794542, 0.092483],
+        [-0.005222, -0.041043, 1.046265]
+    ],
+    10: [
+        [0.152286, 1.052583, -0.204868],
+        [0.114503, 0.786281, 0.099216],
+        [-0.003882, -0.048116, 1.051998]
+    ]
+}  # type: Dict[int, Matrix]
+
+MACHADO_DEUTAN = {
+    0: [
+        [1.000000, 0.000000, -0.000000],
+        [0.000000, 1.000000, 0.000000],
+        [-0.000000, -0.000000, 1.000000],
+    ],
+    1: [
+        [0.866435, 0.177704, -0.044139],
+        [0.049567, 0.939063, 0.011370],
+        [-0.003453, 0.007233, 0.996220]
+    ],
+    2: [
+        [0.760729, 0.319078, -0.079807],
+        [0.090568, 0.889315, 0.020117],
+        [-0.006027, 0.013325, 0.992702]
+    ],
+    3: [
+        [0.675425, 0.433850, -0.109275],
+        [0.125303, 0.847755, 0.026942],
+        [-0.007950, 0.018572, 0.989378]
+    ],
+    4: [
+        [0.605511, 0.528560, -0.134071],
+        [0.155318, 0.812366, 0.032316],
+        [-0.009376, 0.023176, 0.986200]
+    ],
+    5: [
+        [0.547494, 0.607765, -0.155259],
+        [0.181692, 0.781742, 0.036566],
+        [-0.010410, 0.027275, 0.983136]
+    ],
+    6: [
+        [0.498864, 0.674741, -0.173604],
+        [0.205199, 0.754872, 0.039929],
+        [-0.011131, 0.030969, 0.980162]
+    ],
+    7: [
+        [0.457771, 0.731899, -0.189670],
+        [0.226409, 0.731012, 0.042579],
+        [-0.011595, 0.034333, 0.977261]
+    ],
+    8: [
+        [0.422823, 0.781057, -0.203881],
+        [0.245752, 0.709602, 0.044646],
+        [-0.011843, 0.037423, 0.974421]
+    ],
+    9: [
+        [0.392952, 0.823610, -0.216562],
+        [0.263559, 0.690210, 0.046232],
+        [-0.011910, 0.040281, 0.971630]
+    ],
+    10: [
+        [0.367322, 0.860646, -0.227968],
+        [0.280085, 0.672501, 0.047413],
+        [-0.011820, 0.042940, 0.968881]
+    ],
+
+}  # type: Dict[int, Matrix]
+
+MACHADO_TRITAN = {
+    0: [
+        [1.000000, 0.000000, -0.000000],
+        [0.000000, 1.000000, 0.000000],
+        [-0.000000, -0.000000, 1.000000]
+    ],
+    1: [
+        [0.926670, 0.092514, -0.019184],
+        [0.021191, 0.964503, 0.014306],
+        [0.008437, 0.054813, 0.936750]
+    ],
+    2: [
+        [0.895720, 0.133330, -0.029050],
+        [0.029997, 0.945400, 0.024603],
+        [0.013027, 0.104707, 0.882266]
+    ],
+    3: [
+        [0.905871, 0.127791, -0.033662],
+        [0.026856, 0.941251, 0.031893],
+        [0.013410, 0.148296, 0.838294]
+    ],
+    4: [
+        [0.948035, 0.089490, -0.037526],
+        [0.014364, 0.946792, 0.038844],
+        [0.010853, 0.193991, 0.795156]
+    ],
+    5: [
+        [1.017277, 0.027029, -0.044306],
+        [-0.006113, 0.958479, 0.047634],
+        [0.006379, 0.248708, 0.744913]
+    ],
+    6: [
+        [1.104996, -0.046633, -0.058363],
+        [-0.032137, 0.971635, 0.060503],
+        [0.001336, 0.317922, 0.680742]
+    ],
+    7: [
+        [1.193214, -0.109812, -0.083402],
+        [-0.058496, 0.979410, 0.079086],
+        [-0.002346, 0.403492, 0.598854]
+    ],
+    8: [
+        [1.257728, -0.139648, -0.118081],
+        [-0.078003, 0.975409, 0.102594],
+        [-0.003316, 0.501214, 0.502102]
+    ],
+    9: [
+        [1.278864, -0.125333, -0.153531],
+        [-0.084748, 0.957674, 0.127074],
+        [-0.000989, 0.601151, 0.399838]
+    ],
+    10: [
+        [1.255528, -0.076749, -0.178779],
+        [-0.078411, 0.930809, 0.147602],
+        [0.004733, 0.691367, 0.303900]
+    ],
+}  # type: Dict[int, Matrix]
+
+
+def brettel(color: 'Color', amount: Optional[float], wings: Tuple[Matrix, Matrix, Vector]) -> None:
+    """
+    Calculate color blindness using Brettel 1997.
+
+    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
+
+    Probably the only accurate approach for tritanopia, but is more expensive to calculate.
+    """
+
+    amount = alg.clamp(1 if amount is None else amount, 0, 1)
+    w1, w2, sep = wings
+
+    # Which side are we on?
+    lms_c = alg.dot(LRGB_TO_LMS, color.coords(), dims=alg.D2_D1)
+    if cast(float, alg.dot(lms_c, sep)) > 0:
+        coords = cast(Vector, alg.dot(w2, lms_c, dims=alg.D2_D1))
+    else:
+        coords = cast(Vector, alg.dot(w1, lms_c, dims=alg.D2_D1))
+
+    if amount < 1:
+        color._space._coords = [lerp(a, b, amount) for a, b in zip(color.coords(), coords)]
+    else:
+        color._space._coords = coords
+
+
+def vienot(color: 'Color', amount: Optional[float], transform: Matrix) -> None:
+    """
+    Calculate color blindness using the Viénot, Brettel, and Mollon 1999 approach, best for protanopia and deuteranopia.
+
+    Can be used for tritanopia, but will be not be accurate. Based on
+    http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf. Tritanopia is inferred from the paper as they do not
+    actually go through the logic, the difference is we use LMS red instead of LMS blue.
+
+    Covered here as well: https://ixora.io/projects/colorblindness/color-blindness-simulation-research/. Though they use
+    Hunt-Pointer-Estevez transformation, but here they argue that Smith and Pokorny is still probably the way to go:
+    https://daltonlens.org/understanding-cvd-simulation/#From-CIE-XYZ-to-LMS.
+
+    Our matrices are precalculated, so all we need to do is dot and go unless we want something lower than severity 1,
+    then we interpolate against the original color.
+    """
+
+    amount = alg.clamp(1 if amount is None else amount, 0, 1)
+    coords = cast(Vector, alg.dot(transform, color.coords(), dims=alg.D2_D1))
+    if amount < 1:
+        color._space._coords = [lerp(c1, c2, amount) for c1, c2 in zip(color.coords(), coords)]
+    else:
+        color._space._coords = coords
+
+
+def machado(color: 'Color', amount: Optional[float], matrices: Dict[int, Matrix]) -> None:
+    """
+    Machado approach to protanopia, deuteranopia, and tritanopia.
+
+    https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html#Reference
+
+    Decent results for protanopia and deuteranopia, but tritanopia is really only an approximation.
+    They don't even bother to show tritanopia results.
+    """
+
+    # Calculate the approximate severity
+    amount = alg.clamp(1.0 if amount is None else amount, 0.0, 1.0) * 10
+
+    severity1 = int(amount)
+
+    # Filter the color according to the severity
+    m1 = matrices[severity1]
+    coords = cast(Vector, alg.dot(m1, color.coords(), dims=alg.D2_D1))
+
+    # If severity was not exact, and it also isn't max severity,
+    # let's calculate the next most severity and interpolate
+    # between the two results.
+    if severity1 != amount and severity1 < 10:
+        # Calculate next highest severity
+        severity2 = severity1 + 1
+        # Calculate the weight
+        weight = (amount - severity1)
+        # Get the next severity in the list
+        m2 = matrices[severity2]
+
+        # It is actually stated that the two matrices should be interpolated,
+        # but it ends up being faster just modifying the color on both the high
+        # and low matrix and interpolated the color than interpolated the matrix
+        # and then applying it to the color. The results are identical as well.
+        coords2 = cast(Vector, alg.dot(m2, color.coords(), dims=alg.D2_D1))
+        coords = [lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
+
+    # Return the altered color
+    color._space._coords = coords
+
+
+def brettel_protan(color: 'Color', amount: Optional[float]) -> None:
+    """Protanopia vision deficiency using Brettel method."""
+
+    brettel(color, amount, BRETTEL_PROTAN)
+
+
+def brettel_deutan(color: 'Color', amount: Optional[float]) -> None:
+    """Deuteranopia vision deficiency using Brettel method."""
+
+    brettel(color, amount, BRETTEL_DEUTAN)
+
+
+def brettel_tritan(color: 'Color', amount: Optional[float]) -> None:
+    """Tritanopia vision deficiency using Brettel method."""
+
+    brettel(color, amount, BRETTEL_TRITAN)
+
+
+def vienot_protan(color: 'Color', amount: Optional[float]) -> None:
+    """Protanopia vision deficiency using Viénot method."""
+
+    vienot(color, amount, VIENOT_PROTAN)
+
+
+def vienot_deutan(color: 'Color', amount: Optional[float]) -> None:
+    """Deuteranopia vision deficiency using Viénot method."""
+
+    vienot(color, amount, VIENOT_DEUTAN)
+
+
+def vienot_tritan(color: 'Color', amount: Optional[float]) -> None:
+    """Tritanopia vision deficiency using Viénot method."""
+
+    vienot(color, amount, VIENOT_TRITAN)
+
+
+def machado_protan(color: 'Color', amount: Optional[float]) -> None:
+    """Protanopia vision deficiency using Machado method."""
+
+    machado(color, amount, MACHADO_PROTAN)
+
+
+def machado_deutan(color: 'Color', amount: Optional[float]) -> None:
+    """Deuteranopia vision deficiency using Machado method."""
+
+    machado(color, amount, MACHADO_DEUTAN)
+
+
+def machado_tritan(color: 'Color', amount: Optional[float]) -> None:
+    """Tritanopia vision deficiency using Machado method."""
+
+    machado(color, amount, MACHADO_TRITAN)
+
+
+def achromatopsia(color: 'Color', amount: Optional[float]) -> None:
+    """
+    Achromatopsia vision deficiency.
+
+    Viénot doesn't really define a method for achromatopsia, but it can easily apply the matrix.
+    """
+
+    vienot(color, amount, ACHROMATOPSIA)
+
+
+SUPPORTED = {
+    'vienot-protan': vienot_protan,
+    'vienot-deutan': vienot_deutan,
+    'vienot-tritan': vienot_tritan,
+    'brettel-protan': brettel_protan,
+    'brettel-deutan': brettel_deutan,
+    'brettel-tritan': brettel_tritan,
+    'machado-protan': machado_protan,
+    'machado-deutan': machado_deutan,
+    'machado-tritan': machado_tritan,
+    'achromatopsia': achromatopsia
+}
+
+
+def cvd(color: 'Color', name: str, amount: Optional[float] = None) -> 'Color':
+    """Filter."""
+
+    try:
+        SUPPORTED[name](color.convert('srgb-linear', in_place=True), amount)
+        return color
+    except KeyError:
+        raise ValueError("'{}' filter is not supported".format(name))

@@ -28,6 +28,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
+def lerp(a: float, b: float, t: float) -> float:
+    """Linear interpolation."""
+
+    return a + (b - a) * t
+
+
 class Lerp:
     """Linear interpolation."""
 
@@ -39,7 +45,7 @@ class Lerp:
     def __call__(self, a: float, b: float, t: float) -> float:
         """Interpolate with period."""
 
-        return a + (b - a) * (t if self.progress is None else self.progress(t))
+        return lerp(a, b, t if self.progress is None else self.progress(t))
 
 
 class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'premultiplied'])):
@@ -139,8 +145,8 @@ class InterpolateSingle(Interpolator):
                     progress = self.progress.get(name, self.progress.get('all'))
                 else:
                     progress = self.progress
-                lerp = progress if isinstance(progress, Lerp) else Lerp(progress)
-                value = lerp(c1, c2, p)
+                lerper = progress if isinstance(progress, Lerp) else Lerp(progress)
+                value = lerper(c1, c2, p)
             channels.append(value)
         color = self.create(self.space, channels[:-1], channels[-1])
         if self.premultiplied:

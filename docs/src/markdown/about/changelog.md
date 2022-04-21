@@ -4,6 +4,7 @@
 
 - **NEW**: Inputs method names for distancing, gamut mapping, and compositing methods are now case sensitive. There were
   inconsistencies in some places, so it was opted to make all case sensitive.
+- **NEW**: Add new color vision deficiency method.
 
 ## 0.15.1
 

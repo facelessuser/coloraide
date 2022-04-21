@@ -1,11 +1,13 @@
 AST
 ASTM
 Accessors
+Achromatopsia
 Alvy
 Az
 BT
 Björn
 Boronine
+Brettel
 Bz
 CATs
 CIE
@@ -17,6 +19,8 @@ CIELCH
 CIELCH's
 CIELUV
 CMC
+CMF
+CMFs
 CMYK
 CSS
 Changelog
@@ -33,9 +37,12 @@ Cz
 DCI
 Deregister
 Deregistration
+Deutan
+Deuteranopia
 Dormont
 EOTF
 Ebner
+Estevez
 FNF
 FNL
 Fairchild
@@ -76,8 +83,10 @@ MATLAB
 MERCHANTABILITY
 MINDE
 MacAdam
+Machado
 Matcher
 MkDocs
+Mollon
 NONINFRINGEMENT
 NaN
 NaNs
@@ -89,8 +98,11 @@ Ottosson
 PQ
 Piecewise
 Planckian
+Pokorny
 Premultiply
 ProPhoto
+Protan
+Protanopia
 PyPI
 Pyodide
 RGB
@@ -100,10 +112,13 @@ SMPTE
 SRGB
 Sharma
 TODO
+Tritan
+Tritanopia
 Twemoji
 UCS
 UHDTV
 Verou
+Viénot
 Von
 WCAG
 WCG
@@ -111,6 +126,7 @@ XYZ
 YCbCr
 accessor
 accessors
+achromatopsia
 async
 az
 boolean
@@ -127,6 +143,7 @@ cz
 deregister
 deregistered
 deregistration
+deuteranopia
 fixup
 formatter
 grayscale
@@ -146,6 +163,7 @@ opto
 performant
 piecewise
 pre
+precalculated
 preformatted
 premultiplication
 premultiplied
@@ -153,6 +171,7 @@ prepended
 prerelease
 prereleases
 prophoto
+protanopia
 quantizer
 repurpose
 rgb
@@ -166,6 +185,7 @@ sublicense
 subsamplings
 subtractive
 th
+tritanopia
 un
 uncomment
 unsaturate

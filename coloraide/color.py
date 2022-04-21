@@ -7,6 +7,7 @@ from . import convert
 from . import gamut
 from . import compositing
 from . import interpolate
+from . import cvd
 from . import util
 from . import algebra as alg
 from .css import parse
@@ -675,6 +676,16 @@ class Color(metaclass=BaseColor):
                 hue,
                 premultiplied
             )
+
+    def cvd(
+        self,
+        name: str,
+        amount: float = 1,
+        in_place: bool = False
+    ) -> 'Color':
+        """Simulate color blindness."""
+
+        return cvd.cvd(self if in_place else self.clone(), name, amount)
 
     def compose(
         self,
