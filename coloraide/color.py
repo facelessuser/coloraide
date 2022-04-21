@@ -137,6 +137,26 @@ class Color(metaclass=BaseColor):
 
         self._space = self._parse(color, data, alpha, filters=filters, **kwargs)
 
+    def __len__(self) -> int:
+        """Get number of channels."""
+
+        return len(self._space.CHANNEL_NAMES) + 1
+
+    def __getitem__(self, i: Union[int, slice]) -> Union[float, Vector]:
+        """Get channels."""
+
+        return (self._space._coords + [self._space.alpha])[i]
+
+    def __setitem__(self, i: Union[int, slice], v: Union[float, Vector]) -> None:
+        """Set channels."""
+
+        if not hasattr(v, '__len__'):
+            setattr(self._space, cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]), cast(float, v))
+            return
+
+        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
+            setattr(self._space, name, cast(Vector, v)[e])
+
     def __dir__(self) -> Sequence[str]:
         """Get attributes for `dir()`."""
 
@@ -153,7 +173,7 @@ class Color(metaclass=BaseColor):
         return (
             type(other) == type(self) and
             other.space() == self.space() and
-            util.cmp_coords(other.coords() + [other.alpha], self.coords() + [self.alpha])
+            util.cmp_coords(cast(Vector, other[:]), cast(Vector, self[:]))
         )
 
     @classmethod
@@ -768,7 +788,11 @@ class Color(metaclass=BaseColor):
 
         return self._space.get(name)
 
-    def set(self, name: str, value: Union[float, Callable[..., float]]) -> 'Color':  # noqa: A003
+    def set(  # noqa: A003
+        self,
+        name: str,
+        value: Union[float, Callable[..., float]]
+    ) -> 'Color':
         """Set channel."""
 
         # Handle space.attribute

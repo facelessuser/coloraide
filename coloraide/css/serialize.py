@@ -91,7 +91,7 @@ def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) ->
     """Get the coordinates."""
 
     method = None if not isinstance(fit, str) else fit
-    coords = obj.fit(method=method).coords() if fit else obj._space.coords()
+    coords = obj.fit(method=method).coords() if fit else obj.coords()
     return alg.no_nans(coords) if legacy or not none else coords
 
 

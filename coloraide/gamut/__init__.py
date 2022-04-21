@@ -33,7 +33,7 @@ def clip_channels(color: 'Color') -> None:
 
         # Fit value in bounds.
         fit.append(alg.clamp(value, a, b))
-    color.update(color.space(), fit, color.alpha)
+    color._space._coords = fit
 
 
 def verify(color: 'Color', tolerance: float) -> bool:
