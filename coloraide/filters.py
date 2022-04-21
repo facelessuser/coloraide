@@ -1,6 +1,6 @@
 """Provide filters as described by the https://www.w3.org/TR/filter-effects-1/."""
 from . import algebra as alg
-from .interpolate import Lerp
+from .interpolate import lerp
 import math
 from .types import Vector
 from typing import Optional, cast, TYPE_CHECKING
@@ -34,7 +34,7 @@ def sepia(color: 'Color', amount: Optional[float]) -> None:
 
 
 def grayscale(color: 'Color', amount: Optional[float]) -> None:
-    """Apply a sepia filter to the color."""
+    """Apply a grayscale filter to the color."""
 
     amount = 1 - alg.clamp(1 if amount is None else amount, 0, 1)
 
@@ -48,7 +48,7 @@ def grayscale(color: 'Color', amount: Optional[float]) -> None:
 
 
 def saturate(color: 'Color', amount: Optional[float]) -> None:
-    """Apply a sepia filter to the color."""
+    """Apply a saturation filter to the color."""
 
     amount = 1 - alg.clamp(1 if amount is None else amount, 0)
 
@@ -62,10 +62,9 @@ def saturate(color: 'Color', amount: Optional[float]) -> None:
 
 
 def invert(color: 'Color', amount: Optional[float]) -> None:
-    """Invert."""
+    """Apply an invert filter."""
 
     amount = alg.clamp(1 if amount is None else amount, 0, 1)
-    lerp = Lerp(None)
     coords = []
     for c in color.coords():
         coords.append(lerp(amount, 1 - amount, c))
@@ -73,15 +72,14 @@ def invert(color: 'Color', amount: Optional[float]) -> None:
 
 
 def opacity(color: 'Color', amount: Optional[float]) -> None:
-    """Invert."""
+    """Apply an opacity filter."""
 
     amount = alg.clamp(1 if amount is None else amount, 0, 1)
-    lerp = Lerp(None)
     color.alpha = lerp(0, amount, color.alpha)
 
 
 def brightness(color: 'Color', amount: Optional[float]) -> None:
-    """Brightness."""
+    """Apply a brightness filter."""
 
     amount = alg.clamp(1 if amount is None else amount, 0)
     coords = []
@@ -91,7 +89,7 @@ def brightness(color: 'Color', amount: Optional[float]) -> None:
 
 
 def contrast(color: 'Color', amount: Optional[float]) -> None:
-    """Contrast."""
+    """Apply a contrast filter."""
 
     amount = alg.clamp(1 if amount is None else amount, 0)
     coords = []
@@ -101,7 +99,7 @@ def contrast(color: 'Color', amount: Optional[float]) -> None:
 
 
 def hue_rotate(color: 'Color', amount: Optional[float]) -> None:
-    """Hue rotate."""
+    """Apply a hue rotatation filter."""
 
     rad = math.radians(0 if amount is None else amount)
     cos = math.cos(rad)
@@ -132,6 +130,7 @@ def filters(color: 'Color', name: str, amount: Optional[float] = None) -> None:
     """Filter."""
 
     try:
-        return SUPPORTED[name](color, amount)
+        f = SUPPORTED[name]
     except KeyError:
         raise ValueError("'{}' filter is not supported".format(name))
+    return f(color, amount)
