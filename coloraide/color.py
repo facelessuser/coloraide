@@ -422,9 +422,14 @@ class Color(metaclass=BaseColor):
                 converted = self.convert(space, in_place=in_place)
                 return converted.fit(space, method=method, in_place=True)
 
-        coords = convert.convert(self, space)
+        if space == self.space():
+            return self if in_place else self.clone()
 
-        return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
+        c = convert.convert(self, space)
+        this = self if in_place else self.clone()
+        this._space = c
+
+        return this
 
     def mutate(
         self,
@@ -506,7 +511,7 @@ class Color(metaclass=BaseColor):
             space = self.space()
 
         # Convert to desired space
-        c = self.convert(space)
+        c = self.convert(space, in_place=in_place)
 
         # If we are perfectly in gamut, don't waste time clipping.
         if c.in_gamut(tolerance=0.0):
@@ -517,7 +522,7 @@ class Color(metaclass=BaseColor):
             gamut.clip_channels(c)
 
         # Adjust "this" color
-        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
+        return c.convert(self.space(), in_place=True)
 
     def fit(
         self,
@@ -547,7 +552,7 @@ class Color(metaclass=BaseColor):
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        c = self.convert(space)
+        c = self.convert(space, in_place=in_place)
 
         # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
         # If out of gamut, apply mapping/clipping/etc.
@@ -560,7 +565,7 @@ class Color(metaclass=BaseColor):
             func(c, **kwargs)
 
         # Adjust "this" color
-        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
+        return c.convert(self.space(), in_place=True)
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
