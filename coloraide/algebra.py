@@ -161,7 +161,7 @@ def _vector_dot(a: VectorLike, b: VectorLike) -> float:
     return sum([x * y for x, y in zipl(a, b)])
 
 
-def _vector_cross(v1: VectorLike, v2: VectorLike) -> Vector:
+def _vector_cross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
     """
     Cross two vectors.
 

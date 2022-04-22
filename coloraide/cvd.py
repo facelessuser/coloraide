@@ -338,7 +338,7 @@ def cvd(color: 'Color', deficiency: str, severity: float = 1.0, method: Optional
 
     space = color.space()
     try:
-        get_algorithm(deficiency, method, severity < 1.0)(color.convert('srgb-linear', in_place=True), severity)
+        get_algorithm(deficiency, method, severity >= 1.0)(color.convert('srgb-linear', in_place=True), severity)
     except KeyError:
         raise ValueError(
             "Could not find a matching algorithm for deficiency '{}' and method '{}'".format(deficiency, method)

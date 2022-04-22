@@ -11,6 +11,19 @@ PERCENT_SKIP = "Skipping as we currently do not perform any percent restrictions
 class TestAPI(util.ColorAsserts, unittest.TestCase):
     """Test API."""
 
+    def test_color_indexing(self):
+        """Test color indexing."""
+
+        c1 = Color('red')
+        self.assertEqual(len(c1), 4)
+        self.assertEqual(c1[0], 1)
+        self.assertEqual(c1[:], [1, 0, 0, 1])
+        c1[2] = 1
+        self.assertEqual(c1[2], 1)
+        c2 = Color('blue')
+        c1[:] = c2[:]
+        self.assertColorEqual(c1, c2)
+
     def test_dir(self):
         """Test `dir()` usage."""
 
