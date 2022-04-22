@@ -704,13 +704,15 @@ class Color(metaclass=BaseColor):
 
     def cvd(
         self,
-        name: str,
-        amount: float = 1,
+        deficiency: str,
+        severity: float = 1,
+        *,
+        method: Optional[str] = None,
         in_place: bool = False
     ) -> 'Color':
         """Simulate color blindness."""
 
-        return cvd.cvd(self if in_place else self.clone(), name, amount)
+        return cvd.cvd(self if in_place else self.clone(), deficiency, severity, method)
 
     def compose(
         self,
