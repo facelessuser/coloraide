@@ -24,6 +24,7 @@ CMFs
 CMYK
 CSS
 CVD
+CVDs
 Changelog
 Chroma
 Chromaticities
@@ -93,6 +94,7 @@ Monochromacy
 NONINFRINGEMENT
 NaN
 NaNs
+Numpy
 Okhsl
 Okhsv
 Oklab
@@ -130,6 +132,7 @@ XYZ
 YCbCr
 accessor
 accessors
+achromatomaly
 achromatopsia
 async
 az
