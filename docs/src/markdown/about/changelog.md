@@ -4,6 +4,11 @@
 
 - **NEW**: Inputs method names for distancing, gamut mapping, and compositing methods are now case sensitive. There were
   inconsistencies in some places, so it was opted to make all case sensitive.
+- **NEW**: Add new color vision deficiency simulation.
+- **NEW**: `Color` objects are now indexable. All channels, including `alpha`, can be indexed into via `#!py3 Color[i]`.
+  Slicing and assignments via slicing are also supported: `#!py3 Color1[:] = Color2[:]`. All channels can be iterated
+  through as well `#!py3 [do_something(c) for c in Color]`.
+- **NEW**: Some performance enhancements in conversions.
 
 ## 0.15.1
 

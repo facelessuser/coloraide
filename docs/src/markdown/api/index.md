@@ -733,44 +733,46 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
-## `Color.average` {#average}
+## `Color.cvd` {#cvd}
 
-```py3
-def average(
+```py
+def cvd(
     self,
-    color,
-    weights=None,
+    deficiency,
+    severity=1,
     *,
-    space='lab',
-    out_space=None,
-    in_place=False,
-    hue=util.DEF_HUE_ADJ,
-    sort_hue=False
+    method:=None,
+    in_place:=False
 ):
 ```
 
 Description
 : 
-    Allows the averaging of one or more colors essentially allowing a mixing of any number of colors. Each color is
-    mixed in such a way so that each color has an equal weight. If, and only if, a color set has a color with
-    transparency, the transparency will be averaged separately.
+    Simulate color vision deficiencies. Deficiency is specified via `deficiency`. By default, `severity` is set to 1
+    for complete color deficiency in that category. The `severity` can be set anywhere from 0 (no CVD) up to 1 (full
+    CVD). Multiple methods for calculating CVD are also available and can be controlled by setting `method`.
 
-    The specified color(s) to average with the base color can be a single color, or a list of colors as specified in the
-    parameters below.
+    CVD           | Name
+    ------------- | ----
+    Protanopia    | `protan`
+    Deuteranopia  | `deutan`
+    Tritanopia    | `tritan`
+    Achromatopsia | `achroma`
 
-    Like [`interpolate`](#interpolate), the default interpolation space is `lab`.
+    Simulation\ Approach             | Name
+    -------------------------------- | ----
+    Brettel 1997                     | `brettel`
+    Viénot, Brettel, and Mollon 1999 | `vienot`
+    Machado 2009                     | `machado`
 
 Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A color string or [`Color`](#color) object representing a color. Also, multiple can be provided via a list.
-    `weights`                  | `#!py3 [1] * n`                    | An array of length n (where n is number of colors that are to be averaged) that specifies the weight of the given colors. Order of the weights should match the order of the inputs where the base color is index 0.
-    `space`                    | `#!py3 "lab"`                      | Color space to interpolate in.
-    `out_space`                | `#!py3 None`                       | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
-    `hue`                      | `#!py3 "shorter"`                  | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
+    `deficiency`               |                                    | The name of the deficiency that should be simulated.
+    `severity`                 | `#!py3 1`                          | A numerical value between 0 - 1 representing the severity level of the CVD. 
+    `method`                   | `#!py3 None`                       | Controls the algorithm used for simulating the given CVD.
     `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
-    `sort_hue`                 | `#py3 False`                       | Specifies whether cylindrical spaces should sort colors by hue before averaging to ensure a consistence, predictable averaging regardless of what order the colors are provided.
 
 Return
 : 
@@ -779,7 +781,7 @@ Return
 
 ## `Color.compose` {#compose}
 
-```py3
+```py
 def compose(
     self,
     backdrop,

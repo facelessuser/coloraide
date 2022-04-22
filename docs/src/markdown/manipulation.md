@@ -30,13 +30,23 @@ There are various ways to read the current values of color coordinates.
     color.get("lch.chroma")
     ```
 
-3. All coordinates can be read simultaneously by using the `coords` function. The alpha channel is excluded from
-   `coords` and must be retrieved separately.
+3. As getting all coordinates except alpha is a common enough task, `coords` allows for the extraction of all the color
+   color channels without the alpha channel.
 
     ```playground
     color = Color("orange")
     color.coords()
     color.alpha
+    ```
+
+4. Lastly, the ColorAide object is indexable. Any channel can be accessed using an index, or even slices. If desired,
+   the channels can be iterated.
+
+    ```playground
+    color = Color("orange")
+    color[0]
+    color[:-1]
+    [c for c in color]
     ```
 
 ## Modifying Coordinates
@@ -67,6 +77,15 @@ relative adjustment of the green channel and transform the color `#!color pink` 
 
 ```playground
 Color("pink").set('green', lambda g: g * 1.3)
+```
+
+The `Color` object can also be set via indexes. This is useful if you just need to bulk set a number of coordinates.ways
+
+```playground
+c1 = Color('red')
+c2 = Color('blue')
+c1[:] = c2[:]
+c1, c2
 ```
 
 ## Modifying Coordinates in Other Spaces

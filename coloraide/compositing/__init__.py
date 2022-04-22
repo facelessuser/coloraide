@@ -68,7 +68,9 @@ def apply_compositing(
         coords.append(compositor.co(cb, cr) if compositor else cr)
         i += 1
 
-    return color1.update(color1.space(), coords, cra)
+    color1._space._coords = coords
+    color1._space.alpha = cra
+    return color1
 
 
 def compose(

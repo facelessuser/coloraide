@@ -27,14 +27,22 @@ ColorAide is a continually evolving project, but was created with a number of sp
 - Allow users to configure defaults to their liking.
 
 There are many color libraries out there, and ColorAide is not meant to be the _one_ library to replace all other color
-libraries. In the Python community, there are a number of great libraries. Two libraries that stand out are
+libraries. ColorAide focuses on not only trying to be accurate with its colors, but also to be easy to use. Not all
+color libraries are easy to pick up and use and can require a user to manage a color's illuminant, be aware of and
+manage the full conversion chain to get one color convert to another, and other various intricacies. ColorAide tries to
+handle a lot of this so you can go straight to using the colors.
+
+There are some great scientific libraries out there for working with colors. Two libraries that stand out are
 [Colour Science][colour-science] and [Colorio][colorio], both of which are fantastic libraries, but are definitely more
 geared towards scientific endeavors. They provide a wealth of various spaces, illuminants, access to complex color space
-visualizers, and numerous esoteric tools. If you want to learn more about colors, these are great libraries to play
-with, but can be a little more cumbersome to use for the average user.
+visualizers, and numerous esoteric tools. They use Numpy to greatly speed up calculations as well. If you want to learn
+more about colors, these are great libraries to play with, but can be a little more cumbersome to use for the average
+user.
 
 While ColorAide could certainly be used to analyze colors, it does not aim to provide scientific tools and mainly
-focuses on making color usage easy and accessible in projects using colors.
+focuses on making color usage easy and accessible in projects using colors. It may in the future add optional Numpy
+support to facilitate faster mathematical operations, but we also wanted to ensure that ColorAide could be used as a
+pure Python library anywhere as well.
 
 ## Installation
 

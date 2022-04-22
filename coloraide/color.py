@@ -7,6 +7,7 @@ from . import convert
 from . import gamut
 from . import compositing
 from . import interpolate
+from . import cvd
 from . import util
 from . import algebra as alg
 from .css import parse
@@ -136,6 +137,26 @@ class Color(metaclass=BaseColor):
 
         self._space = self._parse(color, data, alpha, filters=filters, **kwargs)
 
+    def __len__(self) -> int:
+        """Get number of channels."""
+
+        return len(self._space.CHANNEL_NAMES) + 1
+
+    def __getitem__(self, i: Union[int, slice]) -> Union[float, Vector]:
+        """Get channels."""
+
+        return (self._space._coords + [self._space.alpha])[i]
+
+    def __setitem__(self, i: Union[int, slice], v: Union[float, Vector]) -> None:
+        """Set channels."""
+
+        if not hasattr(v, '__len__'):
+            setattr(self._space, cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]), cast(float, v))
+            return
+
+        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
+            setattr(self._space, name, cast(Vector, v)[e])
+
     def __dir__(self) -> Sequence[str]:
         """Get attributes for `dir()`."""
 
@@ -152,7 +173,7 @@ class Color(metaclass=BaseColor):
         return (
             type(other) == type(self) and
             other.space() == self.space() and
-            util.cmp_coords(other.coords() + [other.alpha], self.coords() + [self.alpha])
+            util.cmp_coords(cast(Vector, other[:]), cast(Vector, self[:]))
         )
 
     @classmethod
@@ -401,9 +422,14 @@ class Color(metaclass=BaseColor):
                 converted = self.convert(space, in_place=in_place)
                 return converted.fit(space, method=method, in_place=True)
 
-        coords = convert.convert(self, space)
+        if space == self.space():
+            return self if in_place else self.clone()
 
-        return self.mutate(space, coords, self.alpha) if in_place else self.new(space, coords, self.alpha)
+        c = convert.convert(self, space)
+        this = self if in_place else self.clone()
+        this._space = c
+
+        return this
 
     def mutate(
         self,
@@ -485,7 +511,7 @@ class Color(metaclass=BaseColor):
             space = self.space()
 
         # Convert to desired space
-        c = self.convert(space)
+        c = self.convert(space, in_place=in_place)
 
         # If we are perfectly in gamut, don't waste time clipping.
         if c.in_gamut(tolerance=0.0):
@@ -496,7 +522,7 @@ class Color(metaclass=BaseColor):
             gamut.clip_channels(c)
 
         # Adjust "this" color
-        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
+        return c.convert(self.space(), in_place=True)
 
     def fit(
         self,
@@ -526,7 +552,7 @@ class Color(metaclass=BaseColor):
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        c = self.convert(space)
+        c = self.convert(space, in_place=in_place)
 
         # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
         # If out of gamut, apply mapping/clipping/etc.
@@ -539,7 +565,7 @@ class Color(metaclass=BaseColor):
             func(c, **kwargs)
 
         # Adjust "this" color
-        return self.update(c) if in_place else c.convert(self.space(), in_place=True)
+        return c.convert(self.space(), in_place=True)
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
@@ -676,6 +702,18 @@ class Color(metaclass=BaseColor):
                 premultiplied
             )
 
+    def cvd(
+        self,
+        deficiency: str,
+        severity: float = 1,
+        *,
+        method: Optional[str] = None,
+        in_place: bool = False
+    ) -> 'Color':
+        """Simulate color blindness."""
+
+        return cvd.cvd(self if in_place else self.clone(), deficiency, severity, method)
+
     def compose(
         self,
         backdrop: Union[ColorInput, Sequence[ColorInput]],
@@ -757,7 +795,11 @@ class Color(metaclass=BaseColor):
 
         return self._space.get(name)
 
-    def set(self, name: str, value: Union[float, Callable[..., float]]) -> 'Color':  # noqa: A003
+    def set(  # noqa: A003
+        self,
+        name: str,
+        value: Union[float, Callable[..., float]]
+    ) -> 'Color':
         """Set channel."""
 
         # Handle space.attribute

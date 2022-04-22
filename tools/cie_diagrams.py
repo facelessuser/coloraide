@@ -625,7 +625,8 @@ def cie_diagram(
                     if s[-1].contains_point(r):
                         px.append(r[0])
                         py.append(r[1])
-                        c.append(srgb.update('srgb', [0.5] * 3, 1).to_string(hex=True))
+                        srgb[:] = ([0.5] * 3) + [1]
+                        c.append(srgb.to_string(hex=True))
         plt.scatter(
             px, py,
             edgecolors=None,
