@@ -87,6 +87,9 @@ st = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [q1, q2, 0.0]]
 m = alg.multi_dot([INV_T, st, T])
 pprint(m)
 
+print('===== ACHROMATOPSIA =====')
+pprint([RGB_TO_XYZ[1]] * 3)
+
 ####################
 # Brettel matrices
 ####################

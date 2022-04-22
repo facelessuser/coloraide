@@ -3,7 +3,7 @@
 from . import algebra as alg
 from .interpolate import lerp
 from .types import Vector, Matrix
-from typing import Optional, Dict, Tuple, Callable, Any, cast, TYPE_CHECKING
+from typing import Optional, Dict, Tuple, Callable, cast, TYPE_CHECKING
 from functools import lru_cache
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -22,9 +22,9 @@ INV_LMS_TO_LRGB = [
 ]
 
 ACHROMATOPSIA = [
-    [0.212656, 0.715158, 0.072186],
-    [0.212656, 0.715158, 0.072186],
-    [0.212656, 0.715158, 0.072186]
+    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371],
+    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371],
+    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371]
 ]
 
 BRETTEL_PROTAN = (
@@ -212,7 +212,7 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
 
         # It is actually stated that the two matrices should be interpolated,
         # but it ends up being faster just modifying the color on both the high
-        # and low matrix and interpolated the color than interpolated the matrix
+        # and low matrix and interpolating the color than interpolating the matrix
         # and then applying it to the color. The results are identical as well.
         coords2 = cast(Vector, alg.dot(m2, color.coords(), dims=alg.D2_D1))
         coords = [lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
@@ -294,7 +294,8 @@ SUPPORTED = {
     'brettel-tritan': brettel_tritan,
     'machado-protan': machado_protan,
     'machado-deutan': machado_deutan,
-    'machado-tritan': machado_tritan
+    'machado-tritan': machado_tritan,
+    'achroma': achromatopsia
 }
 
 
@@ -309,7 +310,7 @@ def get_algorithm(deficiency: str, method: Optional[str], max_severity: bool) ->
 
     # There is only one approach for achromatopsia
     if deficiency == 'achroma':
-        return achromatopsia
+        return SUPPORTED[deficiency]
 
     # If there is no method defined, use the best one for the job:
     #
