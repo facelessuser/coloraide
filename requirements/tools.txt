@@ -1,3 +1,4 @@
 scipy
 numpy
 shapely
+pillow
