@@ -71,8 +71,8 @@ def convert(color: 'Color', space: str) -> 'Space':
                     )
                 )
 
-    # If we still do not match start converting from the point in the conversion chain
-    # where are current color resides
+    # If we still do not match, start converting from the point in the conversion chain
+    # where our current color resides
     if current.NAME != space:
         start = from_color_index[current.NAME] - 1
 
