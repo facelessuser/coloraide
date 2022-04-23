@@ -2,6 +2,7 @@
 from .. import algebra as alg
 from .bounds import FLG_ANGLE, GamutBound
 from abc import ABCMeta, abstractmethod
+from ..types import Plugin
 from typing import TYPE_CHECKING, Optional, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -60,7 +61,7 @@ def verify(color: 'Color', tolerance: float) -> bool:
     return True
 
 
-class Fit(metaclass=ABCMeta):
+class Fit(Plugin, metaclass=ABCMeta):
     """Fit plugin class."""
 
     NAME = ''

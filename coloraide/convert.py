@@ -1,6 +1,5 @@
 """Convert the color."""
 from . import algebra as alg
-from . import cat
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -53,11 +52,10 @@ def convert(color: 'Color', space: str) -> 'Space':
 
             # Convert to XYZ, make sure we chromatically adapt to the appropriate white point
             if base_space.NAME == ABSOLUTE_BASE:
-                coords = cat.chromatic_adaptation(
+                coords = color.chromatic_adaptation(
                     current.WHITE,
                     base_space.WHITE,
-                    coords,
-                    color.CHROMATIC_ADAPTATION
+                    coords
                 )
 
             # Get next color in the chain
@@ -78,11 +76,10 @@ def convert(color: 'Color', space: str) -> 'Space':
 
         # Convert from XYZ, make sure we chromatically adapt from the appropriate white point
         if current.NAME == ABSOLUTE_BASE:
-            coords = cat.chromatic_adaptation(
+            coords = color.chromatic_adaptation(
                 current.WHITE,
                 from_color[start].WHITE,
-                coords,
-                color.CHROMATIC_ADAPTATION
+                coords
             )
 
         for index in range(start, -1, -1):

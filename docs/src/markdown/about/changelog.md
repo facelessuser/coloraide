@@ -9,6 +9,7 @@
   Slicing and assignments via slicing are also supported: `#!py3 Color1[:] = Color2[:]`. All channels can be iterated
   through as well `#!py3 [do_something(c) for c in Color]`.
 - **NEW**: Some performance enhancements in conversions.
+- **NEW**: Chromatic adaptation is now implemented as a plugin. New methods can be created externally and registered.
 
 ## 0.15.1
 

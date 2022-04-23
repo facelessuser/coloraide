@@ -6,7 +6,7 @@ from ..css import parse
 from ..gamut import bounds
 from ..css import serialize
 from .. import algebra as alg
-from ..types import VectorLike, Vector
+from ..types import VectorLike, Vector, Plugin
 from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -74,7 +74,7 @@ class Lchish(Cylindrical):
         return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
 
 
-class BaseSpace(ABCMeta):
+class _Space(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
@@ -84,9 +84,7 @@ class BaseSpace(ABCMeta):
             cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: Dict[str, str]
 
 
-class Space(
-    metaclass=BaseSpace
-):
+class Space(Plugin, metaclass=_Space):
     """Base color space object."""
 
     BASE = ""  # type: str

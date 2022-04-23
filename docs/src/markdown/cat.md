@@ -44,9 +44,8 @@ XYZ coordinates we wish to transform. ColorAide uses the Bradford CAT by default
 consistency.
 
 ```playground
-from coloraide import cat
 Color('color(xyz-d50 0.11627 0.07261 0.23256 / 1)').convert('xyz-d65').coords()
-cat.chromatic_adaptation(cat.WHITES['2deg']["D50"], cat.WHITES['2deg']["D65"], [0.11627, 0.07261, 0.23256], 'bradford')
+Color.chromatic_adaptation(cat.WHITES['2deg']["D50"], cat.WHITES['2deg']["D65"], [0.11627, 0.07261, 0.23256], 'bradford')
 ```
 
 ColorAide, currently defines the following illuminants for both 2˚ observer and 10˚ observer, but most people are
