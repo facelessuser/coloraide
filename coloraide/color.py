@@ -7,6 +7,7 @@ from . import gamut
 from . import compositing
 from . import interpolate
 from . import cvd
+from . import filters
 from . import util
 from . import algebra as alg
 from .css import parse
@@ -728,6 +729,23 @@ class Color(metaclass=BaseColor):
                 hue,
                 premultiplied
             )
+
+    def filter(  # noqa: A003
+        self,
+        name: str,
+        amount: Optional[float] = None,
+        *,
+        space: str = 'srgb-linear',
+        in_place: bool = False
+    ) -> 'Color':
+        """Filter."""
+
+        if space not in ('srgb-linear', 'srgb'):
+            raise ValueError('Filters only work on sRGB or SRGB Linear color spaces, not {}'.format(space))
+
+        c = self.convert(space)
+        filters.filters(c, name, amount)
+        return self.update(c.space(), c.coords(), c.alpha) if in_place else c.convert(self.space())
 
     def cvd(
         self,

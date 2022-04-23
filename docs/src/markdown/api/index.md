@@ -779,6 +779,53 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
+## `Color.filter` {#cvd}
+
+```py
+def filter(
+    self,
+    name,
+    amount=None,
+    *,
+    space='srgb-linear',
+    in_place=False
+):
+```
+
+Description
+: 
+    Apply a color filter to alter a given color. Filters are based on the W3C [Filter Effects][filter-effects] and
+    behave in the same manner. Colors are evaluated in the sRGB Linear color space unless otherwise specified via the
+    `space` parameter. No other color space will be accepted except sRGB and sRGB Linear.
+
+    An `amount` can be provided to adjust how much the color is filtered. Any clamping that occurs with the `amount`
+    parameter, and related ways in which `amount` are applied, follow the W3C [Filter Effects][filter-effects] spec.
+
+    Filters       | Name         | Default
+    ------------- | ------------ | -------
+    Brightness    | `brightness` | `#!py3 1`
+    Saturation    | `saturate`   | `#!py3 1`
+    Contrast      | `contrast`   | `#!py3 1`
+    Opacity       | `opacity`    | `#!py3 1`
+    Invert        | `invert`     | `#!py3 1`
+    Hue\ rotation | `hue-rotate` | `#!py3 0`
+    Sepia         | `sepia`      | `#!py3 1`
+    Grayscale     | `grayscale`  | `#!py3 1`
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `name`                     |                                    | The name of the filter that should be applied.
+    `amount`                   | See\ above                         | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
+    `space`                    | `#!py3 None`                       | Controls the algorithm used for simulating the given CVD.
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
+    `in_place` is `#!py3 True`.
+
 ## `Color.compose` {#compose}
 
 ```py

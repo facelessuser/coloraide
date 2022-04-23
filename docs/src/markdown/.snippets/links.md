@@ -13,10 +13,12 @@
 [deitp]: https://kb.portrait.com/help/ictcp-color-difference-metric
 [dez]: https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 [extras]: https://github.com/facelessuser/coloraide-extras
+[filter-effects]: https://www.w3.org/TR/filter-effects-1/
 [floating-point]: https://docs.python.org/3/tutorial/floatingpoint.html#floating-point-arithmetic-issues-and-limitations
 [issues]: https://github.com/facelessuser/coloraide/issues
 [lch-chroma]: https://colorjs.io/docs/gamut-mapping.html#so-how-does-colorjs-handle-all-this
 [machado]: https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html#Reference
+[pillow]: https://pypi.org/project/Pillow/
 [porter-duff]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators
 [source-over]: https://www.w3.org/TR/compositing-1/#porterduffcompositingoperators_srcover
 [vienot]: http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf

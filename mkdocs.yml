@@ -37,6 +37,7 @@ nav:
       - Gamut Mapping: gamut.md
       - Chromatic Adaptation: cat.md
       - Contrast: contrast.md
+      - Filters: filters.md
       - Color Vision Deficiency Simulation: cvd.md
       - String Output: strings.md
   - Color Spaces:
