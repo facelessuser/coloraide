@@ -92,7 +92,8 @@ def compose(
 
     # If we are doing non-separable, we are converting to a special space that
     # can only be done from sRGB, so we have to force sRGB anyway.
-    space = 'srgb' if space is None or is_seperable else space.lower()
+    if space is None or is_seperable:
+        space = 'srgb'
 
     if not backdrop:
         return color

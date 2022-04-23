@@ -303,7 +303,6 @@ def premultiply(color: 'Color') -> None:
 def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     """Adjust hues."""
 
-    hue = hue.lower()
     if hue == "specified":
         return
 

@@ -2,8 +2,9 @@
 
 ## 0.16.0
 
-- **NEW**: Inputs method names for distancing, gamut mapping, and compositing methods are now case sensitive. There were
-  inconsistencies in some places, so it was opted to make all case sensitive.
+- **NEW**: Input method names for distancing, gamut mapping, compositing, and space methods are now case sensitive.
+  There were inconsistencies in some places, so it was opted to make all case sensitive. Only CSS syntax parsing is
+  case insensitive.
 - **NEW**: Add new color vision deficiency simulation.
 - **NEW**: `Color` objects are now indexable. All channels, including `alpha`, can be indexed into via `#!py3 Color[i]`.
   Slicing and assignments via slicing are also supported: `#!py3 Color1[:] = Color2[:]`. All channels can be iterated

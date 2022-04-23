@@ -198,7 +198,7 @@ class Color(metaclass=BaseColor):
         if isinstance(color, str):
             # Parse a color space name and coordinates
             if data is not None:
-                s = color.lower()
+                s = color
                 space_class = cls.CS_MAP.get(s)
                 if space_class and (not filters or s in filters):
                     num_channels = len(space_class.CHANNEL_NAMES)
@@ -425,8 +425,6 @@ class Color(metaclass=BaseColor):
     def convert(self, space: str, *, fit: Union[bool, str] = False, in_place: bool = False) -> 'Color':
         """Convert to color space."""
 
-        space = space.lower()
-
         if fit:
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
@@ -598,7 +596,8 @@ class Color(metaclass=BaseColor):
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
 
-        space = space.lower() if space is not None else self.space()
+        if space is None:
+            space = self.space()
 
         # Check gamut in the provided space
         if space is not None and space != self.space():
@@ -695,8 +694,11 @@ class Color(metaclass=BaseColor):
         mixing occurs.
         """
 
-        space = (space if space is not None else self.INTERPOLATE).lower()
-        out_space = self.space() if out_space is None else out_space.lower()
+        if space is None:
+            space = self.INTERPOLATE
+
+        if out_space is None:
+            out_space = self.space()
 
         # A piecewise object was provided, so treat it as such,
         # or we've changed the stop of the base color, so run it through piecewise.
@@ -778,8 +780,10 @@ class Color(metaclass=BaseColor):
 
         color = compositing.compose(self, bcolor, blend, operator, space)
 
-        outspace = self.space() if out_space is None else out_space.lower()
-        color.convert(outspace, in_place=True)
+        if out_space is None:
+            out_space = self.space()
+
+        color.convert(out_space, in_place=True)
         return self.mutate(color) if in_place else color
 
     def delta_e(
