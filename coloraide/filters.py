@@ -50,7 +50,7 @@ def grayscale(color: 'Color', amount: Optional[float]) -> None:
 def saturate(color: 'Color', amount: Optional[float]) -> None:
     """Apply a saturation filter to the color."""
 
-    amount = 1 - alg.clamp(1 if amount is None else amount, 0)
+    amount = alg.clamp(1 if amount is None else amount, 0)
 
     m = [
         [0.213 + 0.787 * amount, 0.715 - 0.715 * amount, 0.072 - 0.072 * amount],
@@ -99,7 +99,7 @@ def contrast(color: 'Color', amount: Optional[float]) -> None:
 
 
 def hue_rotate(color: 'Color', amount: Optional[float]) -> None:
-    """Apply a hue rotatation filter."""
+    """Apply a hue rotation filter."""
 
     rad = math.radians(0 if amount is None else amount)
     cos = math.cos(rad)
@@ -133,4 +133,4 @@ def filters(color: 'Color', name: str, amount: Optional[float] = None) -> None:
         f = SUPPORTED[name]
     except KeyError:
         raise ValueError("'{}' filter is not supported".format(name))
-    return f(color, amount)
+    f(color, amount)

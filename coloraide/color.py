@@ -730,7 +730,7 @@ class Color(metaclass=BaseColor):
                 premultiplied
             )
 
-     def filter(  # noqa: A003
+    def filter(  # noqa: A003
         self,
         name: str,
         amount: Optional[float] = None,
