@@ -6,6 +6,7 @@ import argparse
 import sys
 import os
 
+# We want to load ColorAide from the working directory to pick up the version under development
 sys.path.insert(0, os.getcwd())
 
 try:
@@ -44,18 +45,13 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_filter(deficiency, method, severity, p):
+def apply_cvd(deficiency, method, severity, p):
     """Apply filter."""
 
     has_alpha = len(p) > 3
-    color = Color(
-        'srgb', [x / 255 for x in p[:3]],
-        p[3] / 255 if has_alpha else 1
-    ).cvd(
-        deficiency, severity, in_place=True, method=method
-    ).clip(
-        in_place=True
-    )
+    color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
+    color.cvd(deficiency, severity, in_place=True, method=method)
+    color.clip(in_place=True)
     return tuple([int(x * 255) for x in color.coords()]) + ((int(color[-1] * 255),) if has_alpha else tuple())
 
 
@@ -73,7 +69,7 @@ def process_image(img, output, deficiency, method, severity):
         print('> 0%', end='\r')
         for e, i in enumerate(range(im.size[0])):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_filter(deficiency, method, severity, pixels[i, j])
+                pixels[i, j] = apply_cvd(deficiency, method, severity, pixels[i, j])
             print('> {}%'.format(int((e * j) * factor)), end="\r")
         print('> 100%')
 

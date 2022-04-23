@@ -6,6 +6,7 @@ import argparse
 import sys
 import os
 
+# We want to load ColorAide from the working directory to pick up the version under development
 sys.path.insert(0, os.getcwd())
 
 try:
@@ -48,14 +49,9 @@ def apply_filter(name, amount, space, p):
     """Apply filter."""
 
     has_alpha = len(p) > 3
-    color = Color(
-        'srgb', [x / 255 for x in p[:3]],
-        p[3] / 255 if has_alpha else 1
-    ).filter(
-        name, amount, space=space, in_place=True
-    ).clip(
-        in_place=True
-    )
+    color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
+    color.filter(name, amount, space=space, in_place=True)
+    color.clip(in_place=True)
     return tuple([int(x * 255) for x in color.coords()]) + ((int(color[-1] * 255),) if has_alpha else tuple())
 
 
