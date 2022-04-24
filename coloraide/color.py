@@ -100,11 +100,27 @@ class BaseColor(abc.ABCMeta):
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
+        # Ensure subclassed Color objects do not use the same plugin mappings
         if len(cls.mro()) > 2:
             cls.CS_MAP = cls.CS_MAP.copy()  # type: Dict[str, Type[Space]]
             cls.DE_MAP = cls.DE_MAP.copy()  # type: Dict[str, Type[DeltaE]]
             cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Type[Fit]]
             cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, Type[CAT]]
+
+        # Ensure each derived class tracks its own conversion paths for color spaces
+        # relative to the installed color space plugins.
+        @classmethod  # type: ignore[misc]
+        @functools.lru_cache(maxsize=256)
+        def _get_convert_chain(
+            cls: Type['Color'],
+            space: Type['Space'],
+            target: str
+        ) -> List[Tuple[Type['Space'], Type['Space'], int, bool]]:
+            """Resolve a conversion chain, cache it for speed."""
+
+            return convert.get_convert_chain(cls, space, target)
+
+        cls._get_convert_chain = _get_convert_chain
 
 
 class Color(metaclass=BaseColor):
@@ -300,6 +316,8 @@ class Color(metaclass=BaseColor):
     ) -> None:
         """Register the hook."""
 
+        reset_convert_cache = False
+
         if not isinstance(plugin, Sequence):
             plugin = [plugin]
 
@@ -307,6 +325,7 @@ class Color(metaclass=BaseColor):
         for p in plugin:
             if issubclass(p, Space):
                 mapping = cls.CS_MAP
+                reset_convert_cache = True
             elif issubclass(p, DeltaE):
                 mapping = cls.DE_MAP
             elif issubclass(p, CAT):
@@ -314,8 +333,12 @@ class Color(metaclass=BaseColor):
             elif issubclass(p, Fit):
                 mapping = cls.FIT_MAP
                 if p.NAME == 'clip':
+                    if reset_convert_cache:  # pragma: no cover
+                        cls._get_convert_chain.cache_clear()
                     raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
             else:
+                if reset_convert_cache:  # pragma: no cover
+                    cls._get_convert_chain.cache_clear()
                 raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
 
             name = p.NAME
@@ -324,11 +347,18 @@ class Color(metaclass=BaseColor):
             if name != "*" and name not in mapping or overwrite:
                 cast(Dict[str, Type[Plugin]], mapping)[name] = value
             else:
+                if reset_convert_cache:  # pragma: no cover
+                    cls._get_convert_chain.cache_clear()
                 raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
+
+        if reset_convert_cache:
+            cls._get_convert_chain.cache_clear()
 
     @classmethod
     def deregister(cls, plugin: Union[str, Sequence[str]], silent: bool = False) -> None:
         """Deregister a plugin by name of specified plugin type."""
+
+        reset_convert_cache = False
 
         if isinstance(plugin, str):
             plugin = [plugin]
@@ -345,6 +375,7 @@ class Color(metaclass=BaseColor):
             ptype, name = p.split(':', 1)
             if ptype == 'space':
                 mapping = cls.CS_MAP
+                reset_convert_cache = True
             elif ptype == "delta-e":
                 mapping = cls.DE_MAP
             elif ptype == 'cat':
@@ -352,8 +383,12 @@ class Color(metaclass=BaseColor):
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
                 if name == 'clip':
+                    if reset_convert_cache:  # pragma: no cover
+                        cls._get_convert_chain.cache_clear()
                     raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
             else:
+                if reset_convert_cache:  # pragma: no cover
+                    cls._get_convert_chain.cache_clear()
                 raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
 
             if name == '*':
@@ -361,7 +396,12 @@ class Color(metaclass=BaseColor):
             elif name in mapping:
                 del mapping[name]
             elif not silent:
+                if reset_convert_cache:
+                    cls._get_convert_chain.cache_clear()
                 raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
+
+        if reset_convert_cache:
+            cls._get_convert_chain.cache_clear()
 
     def to_dict(self) -> Mapping[str, Any]:
         """Return color as a data object."""
