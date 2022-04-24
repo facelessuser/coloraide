@@ -28,12 +28,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
-def lerp(a: float, b: float, t: float) -> float:
-    """Linear interpolation."""
-
-    return a + (b - a) * t
-
-
 class Lerp:
     """Linear interpolation."""
 
@@ -45,7 +39,7 @@ class Lerp:
     def __call__(self, a: float, b: float, t: float) -> float:
         """Interpolate with period."""
 
-        return lerp(a, b, t if self.progress is None else self.progress(t))
+        return alg.lerp(a, b, t if self.progress is None else self.progress(t))
 
 
 class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'premultiplied'])):

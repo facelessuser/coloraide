@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Color vision deficiency."""
-from . import algebra as alg
-from .interpolate import lerp
-from .types import Vector, Matrix
-from typing import Optional, Dict, Tuple, Callable, cast, TYPE_CHECKING
-from functools import lru_cache
+from .. import algebra as alg
+from ..filters import Filter
+from ..types import Vector, Matrix
+from typing import Any, Optional, Dict, Tuple, Callable, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .color import Color
+    from ..color import Color
 
 LRGB_TO_LMS = [
     [0.1788315947640612, 0.4399813067603072, 0.03597439330845842],
@@ -19,12 +18,6 @@ INV_LMS_TO_LRGB = [
     [8.006605439487906, -12.884009114492532, 11.682514549178705],
     [-0.9781986265569573, 5.269343182653304, -10.182783982803086],
     [-0.04016494160643852, -0.39874480300255594, 66.46482888609172]
-]
-
-ACHROMATOPSIA = [
-    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371],
-    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371],
-    [0.21263900587151022, 0.7151686787677561, 0.07219231536073371]
 ]
 
 BRETTEL_PROTAN = (
@@ -140,7 +133,6 @@ def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector
     Probably the only accurate approach for tritanopia, but is more expensive to calculate.
     """
 
-    severity = alg.clamp(1 if severity is None else severity, 0, 1)
     w1, w2, sep = wings
 
     # Which side are we on?
@@ -151,7 +143,7 @@ def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector
         coords = cast(Vector, alg.dot(w1, lms_c, dims=alg.D2_D1))
 
     if severity < 1:
-        color._space._coords = [lerp(a, b, severity) for a, b in zip(color.coords(), coords)]
+        color._space._coords = [alg.lerp(a, b, severity) for a, b in zip(color.coords(), coords)]
     else:
         color._space._coords = coords
 
@@ -172,10 +164,9 @@ def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
     then we interpolate against the original color.
     """
 
-    severity = alg.clamp(severity, 0, 1)
     coords = cast(Vector, alg.dot(transform, color.coords(), dims=alg.D2_D1))
     if severity < 1:
-        color._space._coords = [lerp(c1, c2, severity) for c1, c2 in zip(color.coords(), coords)]
+        color._space._coords = [alg.lerp(c1, c2, severity) for c1, c2 in zip(color.coords(), coords)]
     else:
         color._space._coords = coords
 
@@ -191,8 +182,7 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
     """
 
     # Calculate the approximate severity
-    severity = alg.clamp(severity, 0.0, 1.0) * 10
-
+    severity *= 10
     severity1 = int(severity)
 
     # Filter the color according to the severity
@@ -215,134 +205,92 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
         # and low matrix and interpolating the color than interpolating the matrix
         # and then applying it to the color. The results are identical as well.
         coords2 = cast(Vector, alg.dot(m2, color.coords(), dims=alg.D2_D1))
-        coords = [lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
+        coords = [alg.lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
 
     # Return the altered color
     color._space._coords = coords
 
 
-def brettel_protan(color: 'Color', severity: float) -> None:
-    """Protanopia vision deficiency using Brettel method."""
+class Protan(Filter):
+    """Protanopia filter."""
 
-    brettel(color, severity, BRETTEL_PROTAN)
+    NAME = "protan"
 
+    ALLOWED_SPACES = ('srgb-linear',)
 
-def brettel_deutan(color: 'Color', severity: float) -> None:
-    """Deuteranopia vision deficiency using Brettel method."""
+    BRETTEL = BRETTEL_PROTAN
+    VIENOT = VIENOT_PROTAN
+    MACHADO = MACHADO_PROTAN
 
-    brettel(color, severity, BRETTEL_DEUTAN)
+    @classmethod
+    def brettel(cls, color: 'Color', severity: float) -> None:
+        """Tritanopia vision deficiency using Brettel method."""
 
+        brettel(color, severity, cls.BRETTEL)
 
-def brettel_tritan(color: 'Color', severity: float) -> None:
-    """Tritanopia vision deficiency using Brettel method."""
+    @classmethod
+    def vienot(cls, color: 'Color', severity: float) -> None:
+        """Tritanopia vision deficiency using Viénot method."""
 
-    brettel(color, severity, BRETTEL_TRITAN)
+        vienot(color, severity, cls.VIENOT)
 
+    @classmethod
+    def machado(cls, color: 'Color', severity: float) -> None:
+        """Tritanopia vision deficiency using Machado method."""
 
-def vienot_protan(color: 'Color', severity: float) -> None:
-    """Protanopia vision deficiency using Viénot method."""
+        machado(color, severity, cls.MACHADO)
 
-    vienot(color, severity, VIENOT_PROTAN)
+    @classmethod
+    def select_filter(cls, method: str) -> Callable[..., None]:
+        """Select the best filter."""
 
-
-def vienot_deutan(color: 'Color', severity: float) -> None:
-    """Deuteranopia vision deficiency using Viénot method."""
-
-    vienot(color, severity, VIENOT_DEUTAN)
-
-
-def vienot_tritan(color: 'Color', severity: float) -> None:
-    """Tritanopia vision deficiency using Viénot method."""
-
-    vienot(color, severity, VIENOT_TRITAN)
-
-
-def machado_protan(color: 'Color', severity: float) -> None:
-    """Protanopia vision deficiency using Machado method."""
-
-    machado(color, severity, MACHADO_PROTAN)
-
-
-def machado_deutan(color: 'Color', severity: float) -> None:
-    """Deuteranopia vision deficiency using Machado method."""
-
-    machado(color, severity, MACHADO_DEUTAN)
-
-
-def machado_tritan(color: 'Color', severity: float) -> None:
-    """Tritanopia vision deficiency using Machado method."""
-
-    machado(color, severity, MACHADO_TRITAN)
-
-
-def achromatopsia(color: 'Color', severity: float) -> None:
-    """
-    Achromatopsia vision deficiency.
-
-    Viénot doesn't really define a method for achromatopsia, but it can easily apply the matrix.
-    """
-
-    vienot(color, severity, ACHROMATOPSIA)
-
-
-SUPPORTED = {
-    'vienot-protan': vienot_protan,
-    'vienot-deutan': vienot_deutan,
-    'vienot-tritan': vienot_tritan,
-    'brettel-protan': brettel_protan,
-    'brettel-deutan': brettel_deutan,
-    'brettel-tritan': brettel_tritan,
-    'machado-protan': machado_protan,
-    'machado-deutan': machado_deutan,
-    'machado-tritan': machado_tritan,
-    'achroma': achromatopsia
-}
-
-
-@lru_cache(maxsize=60)
-def get_algorithm(deficiency: str, method: Optional[str], max_severity: bool) -> Callable[..., None]:
-    """
-    Get the algorithm.
-
-    Cache the results so we don't waste time going through the logic on every call.
-    Allocate enough in the cache to handle every permutation.
-    """
-
-    # There is only one approach for achromatopsia
-    if deficiency == 'achroma':
-        return SUPPORTED[deficiency]
-
-    # If there is no method defined, use the best one for the job:
-    #
-    # - Tritanopia is only reliable with Brettel. Machado is way off, and while Viénot seems to look
-    #   much closer, research indicates that Brettel is the best choice. Generally, for severity 1
-    #   Brettel is the better choice, but it is slower than all the others.
-    # - Viénot is the second best choice for protanopia and deuteranopia, but becomes the first choice
-    #   since it is so much faster.
-    # - Machado has a more tested approach for severity under 1 for protanopia and deuteranopia,
-    #   but is really bad at tritanopia.
-    elif method is None:
-        if deficiency == 'tritan':
-            return SUPPORTED['brettel-tritan']
-        elif not max_severity:
-            return SUPPORTED['machado-' + deficiency]
+        if method == 'brettel':
+            return cls.brettel
+        elif method == 'vienot':
+            return cls.vienot
+        elif method == 'machado':
+            return cls.machado
         else:
-            return SUPPORTED['vienot-' + deficiency]
+            raise ValueError("Unrecognized CVD filter method '{}'".format(method))
 
-    # Since a specific approach was specified, use it.
-    return SUPPORTED['{}-{}'.format(method, deficiency)]
+    @classmethod
+    def get_best_filter(cls, method: Optional[str], max_severity: bool) -> Callable[..., None]:
+        """Get the best filter based on the situation."""
+
+        if method is None:
+            method = 'vienot' if max_severity else 'machado'
+        return cls.select_filter(method)
+
+    @classmethod
+    def filter(cls, color: 'Color', amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
+        """Filter the color."""
+
+        method = kwargs.get('method')  # type: Optional[str]
+        amount = alg.clamp(1 if amount is None else amount, 0, 1)
+        cls.get_best_filter(method, amount == 1)(color, amount)
 
 
-def cvd(color: 'Color', deficiency: str, severity: float = 1.0, method: Optional[str] = None) -> 'Color':
-    """Filter the color."""
+class Deutan(Protan):
+    """Deuteranopia filter."""
 
-    space = color.space()
-    try:
-        algorithm = get_algorithm(deficiency, method, severity >= 1.0)
-    except KeyError:
-        raise ValueError(
-            "Could not find a matching algorithm for deficiency '{}' and method '{}'".format(deficiency, method)
-        )
+    NAME = 'deutan'
 
-    algorithm(color.convert('srgb-linear', in_place=True), severity)
-    return color.convert(space, in_place=True)
+    BRETTEL = BRETTEL_DEUTAN
+    VIENOT = VIENOT_DEUTAN
+    MACHADO = MACHADO_DEUTAN
+
+
+class Tritan(Protan):
+    """Deuteranopia filter."""
+
+    NAME = 'tritan'
+
+    BRETTEL = BRETTEL_TRITAN
+    VIENOT = VIENOT_TRITAN
+    MACHADO = MACHADO_TRITAN
+
+    @classmethod
+    def get_best_filter(cls, method: Optional[str], amount: float) -> Callable[..., None]:
+        """Get the best filter based on the situation."""
+
+        return cls.select_filter('brettel' if method is None else method)

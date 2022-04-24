@@ -2,9 +2,9 @@
 from . import util
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
-from functools import lru_cache
+import functools
 from .types import Matrix, VectorLike, Vector, Plugin
-from typing import Tuple, cast
+from typing import Any, Type, Dict, Tuple, cast
 
 # From CIE 2004 Colorimetry T.3 and T.8
 # B from https://en.wikipedia.org/wiki/Standard_illuminant#White_point
@@ -68,8 +68,30 @@ def calc_adaptation_matrices(
     return adapt, alg.inv(adapt)
 
 
-class CAT(Plugin, metaclass=ABCMeta):
+class CATMeta(ABCMeta):
+    """Meta class for CAT plugin."""
+
+    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
+        """Cache best filter."""
+
+        @classmethod  # type: ignore[misc]
+        @functools.lru_cache(maxsize=6)
+        def get_adaptation_matrices(
+            cls: Type['CAT'],
+            w1: Tuple[float, float],
+            w2: Tuple[float, float]
+        ) -> Tuple[Matrix, Matrix]:
+            """Get the adaptation matrices."""
+
+            return calc_adaptation_matrices(w1, w2, cls.MATRIX)
+
+        cls.get_adaptation_matrices = get_adaptation_matrices
+
+
+class CAT(Plugin, metaclass=CATMeta):
     """Chromatic adaptation."""
+
+    MATRIX = [[]]  # type: Matrix
 
     @classmethod
     @abstractmethod
@@ -94,17 +116,6 @@ class VonKries(CAT):
     ]
 
     @classmethod
-    @lru_cache(maxsize=50)
-    def calc_adaptation_matrices(cls, w1: Tuple[float, float], w2: Tuple[float, float]) -> Tuple[Matrix, Matrix]:
-        """
-        Perform the calculation for the transformation matrices.
-
-        Results are cached for a given pair of white points for good performance.
-        """
-
-        return calc_adaptation_matrices(w1, w2, cls.MATRIX)
-
-    @classmethod
     def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 
@@ -113,7 +124,7 @@ class VonKries(CAT):
             return list(xyz)
 
         a, b = sorted([w1, w2])
-        m, mi = cls.calc_adaptation_matrices(a, b)
+        m, mi = cls.get_adaptation_matrices(a, b)
         return cast(Vector, alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1))
 
 

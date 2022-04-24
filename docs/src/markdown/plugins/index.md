@@ -111,6 +111,36 @@ class Bradford(VonKries):
     ]
 ```
 
+## Filters
+
+Filter plugins allow you to apply a filter on a given color.
+
+```py
+class Filter(Plugin, metaclass=ABCMeta):
+    """Filter plugin."""
+
+    NAME = ""
+    DEFAULT_SPACE = 'srgb-linear'
+    ALLOWED_SPACES = ('srgb-linear', 'srgb')
+
+    @classmethod
+    @abstractmethod
+    def filter(color: 'Color', amount: Optional[float], **kwargs: Any) -> None:
+        """Filter the given color."""
+```
+
+The plugin should provide a `NAME` with the filter logic under `filter`. The provided color will be modified directly.
+
+A suitable `DEFAULT_SPACE` should also be provided. Additionally, `ALLOWED_SPACES` should be set with a finite number of
+specific color spaces in which manipulation is allowed.
+
+A plugin may accept `kwargs` for additional parameters.
+
+All of ColorAide's default filters use the sRGB Linear color space as their default. It is usually better to manipulate
+colors in a non-gamma encoded color space such as sRGB Linear, but their may be some existing filters out their
+specifically designed for other color spaces such as the gamma encoded sRGB space. The provided W3C Filter Effects that
+ship with ColorAide also support sRGB as the specification allows them for legacy purposes.
+
 ## Color Space
 
 All color spaces supported by ColorAide are specified via color space plugins. These `Space` objects specify color

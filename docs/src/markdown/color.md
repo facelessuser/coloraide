@@ -252,7 +252,8 @@ Properties             | Defaults            | Description
 
 ### Plugins
 
-Currently, only color spaces, delta E methods, and gamut mapping methods are exposed as plugins.
+Currently, only color spaces, delta E methods, chromatic adaptation, filters, and gamut mapping methods are exposed as
+plugins.
 
 Some potential, useful cases: register a new color spaces not supported directly in ColorAide, test out a new ∆E
 algorithm, experiment with a potentially better gamut mapping method, tweak an existing color space to accept and
@@ -292,8 +293,8 @@ Custom('red').convert('xyz-d55')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to
-deregister: `category:name`. Valid categories are `space`, `delta-e`, `cat`, and `fit`. If the given plugin is not
-found, an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the
+deregister: `category:name`. Valid categories are `space`, `delta-e`, `cat`, `filter`, and `fit`. If the given plugin is
+not found, an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the
 there will be no error thrown.
 
 ```playground

@@ -152,6 +152,12 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
+def lerp(a: float, b: float, t: float) -> float:
+    """Linear interpolation."""
+
+    return a + (b - a) * t
+
+
 ################################
 # Matrix/linear algebra math
 ################################
