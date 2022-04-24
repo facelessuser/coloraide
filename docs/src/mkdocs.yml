@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/coloraide
 edit_uri: ""
 site_description: A library to aid in using colors
 copyright: |
-  Copyright &copy; 2014 - 2022 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2020 - 2022 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
