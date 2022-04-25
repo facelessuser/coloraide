@@ -24,7 +24,7 @@ color spaces will throw an error.
 
 === "Contrast"
 
-    ![Contrast](./images/color-wheel-brightness.png)
+    ![Contrast](./images/color-wheel-contrast.png)
 
 === "Opacity"
 
@@ -58,7 +58,7 @@ ColorRow()
 ColorRow()
 [c.filter('saturate', 0.5).clip() for c in colors]
 ColorRow()
-[c.filter('contrast', 0.5).clip() for c in colors]
+[c.filter('contrast', 1.2).clip() for c in colors]
 ColorRow()
 [c.filter('opacity', 0.5).clip() for c in colors]
 ColorRow()
