@@ -1689,6 +1689,28 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             expected
         )
 
+    def test_plugin_registration_filter(self):
+        """Test plugin registration of `filter`."""
+
+        from coloraide.filters.w3c_filter_effects import Sepia
+
+        # Deregistration should have taken place
+        class Custom(Color):
+            pass
+
+        Custom.deregister('filter:sepia')
+        color = Color('red').filter('sepia')
+
+        with self.assertRaises(ValueError):
+            Custom('red').filter('sepia')
+
+        # Now it is registered again
+        Custom.register(Sepia)
+        self.assertColorEqual(
+            Custom('red').filter('sepia'),
+            color
+        )
+
     def test_deregister_all_category(self):
         """Test deregistration of all plugins in a category."""
 

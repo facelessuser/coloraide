@@ -74,7 +74,7 @@ class Lchish(Cylindrical):
         return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
 
 
-class _Space(ABCMeta):
+class SpaceMeta(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
@@ -84,7 +84,7 @@ class _Space(ABCMeta):
             cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: Dict[str, str]
 
 
-class Space(Plugin, metaclass=_Space):
+class Space(Plugin, metaclass=SpaceMeta):
     """Base color space object."""
 
     BASE = ""  # type: str

@@ -6,7 +6,6 @@ from . import convert
 from . import gamut
 from . import compositing
 from . import interpolate
-from . import cvd
 from . import filters
 from . import util
 from . import algebra as alg
@@ -55,6 +54,9 @@ from .gamut.fit_lch_chroma import LchChroma
 from .gamut.fit_oklch_chroma import OklchChroma
 from .gamut.fit_css_color_4 import CssColor4
 from .cat import CAT, Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
+from .filters import Filter
+from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
+from .filters.cvd import Protan, Deutan, Tritan
 from .types import Plugin
 from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
@@ -75,6 +77,10 @@ SUPPORTED_FIT = (
 
 SUPPORTED_CAT = (Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16)
 
+SUPPORTED_FILTERS = (
+    Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert, Protan, Deutan, Tritan
+)
+
 
 class ColorMatch:
     """Color match object."""
@@ -94,7 +100,7 @@ class ColorMatch:
     __repr__ = __str__
 
 
-class BaseColor(abc.ABCMeta):
+class ColorMeta(abc.ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
@@ -106,6 +112,7 @@ class BaseColor(abc.ABCMeta):
             cls.DE_MAP = cls.DE_MAP.copy()  # type: Dict[str, Type[DeltaE]]
             cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Type[Fit]]
             cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, Type[CAT]]
+            cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: Dict[str, Type[Filter]]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -123,13 +130,14 @@ class BaseColor(abc.ABCMeta):
         cls._get_convert_chain = _get_convert_chain
 
 
-class Color(metaclass=BaseColor):
+class Color(metaclass=ColorMeta):
     """Color class object which provides access and manipulation of color spaces."""
 
     CS_MAP = {}  # type: Dict[str, Type[Space]]
     DE_MAP = {}  # type: Dict[str, Type[DeltaE]]
     FIT_MAP = {}  # type: Dict[str, Type[Fit]]
     CAT_MAP = {}  # type: Dict[str, Type[CAT]]
+    FILTER_MAP = {}  # type: Dict[str, Type[Filter]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
@@ -330,6 +338,8 @@ class Color(metaclass=BaseColor):
                 mapping = cls.DE_MAP
             elif issubclass(p, CAT):
                 mapping = cls.CAT_MAP
+            elif issubclass(p, Filter):
+                mapping = cls.FILTER_MAP
             elif issubclass(p, Fit):
                 mapping = cls.FIT_MAP
                 if p.NAME == 'clip':
@@ -380,6 +390,8 @@ class Color(metaclass=BaseColor):
                 mapping = cls.DE_MAP
             elif ptype == 'cat':
                 mapping = cls.CAT_MAP
+            elif ptype == 'filter':
+                mapping = cls.FILTER_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
                 if name == 'clip':
@@ -777,29 +789,13 @@ class Color(metaclass=BaseColor):
         name: str,
         amount: Optional[float] = None,
         *,
-        space: str = 'srgb-linear',
-        in_place: bool = False
+        space: Optional[str] = None,
+        in_place: bool = False,
+        **kwargs: Any
     ) -> 'Color':
         """Filter."""
 
-        if space not in ('srgb-linear', 'srgb'):
-            raise ValueError('Filters only work on sRGB or SRGB Linear color spaces, not {}'.format(space))
-
-        c = self.convert(space)
-        filters.filters(c, name, amount)
-        return self.update(c.space(), c.coords(), c.alpha) if in_place else c.convert(self.space())
-
-    def cvd(
-        self,
-        deficiency: str,
-        severity: float = 1,
-        *,
-        method: Optional[str] = None,
-        in_place: bool = False
-    ) -> 'Color':
-        """Simulate color blindness."""
-
-        return cvd.cvd(self if in_place else self.clone(), deficiency, severity, method)
+        return filters.filters(self, name, amount, space, in_place, **kwargs)
 
     def compose(
         self,
@@ -941,4 +937,4 @@ class Color(metaclass=BaseColor):
         sc.__setattr__(name, value)
 
 
-Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT)
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)

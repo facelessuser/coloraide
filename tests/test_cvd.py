@@ -21,14 +21,6 @@ class TestCVD(util.ColorAsserts):
     @pytest.mark.parametrize(
         'color1,color2,deficiency,method,severity',
         [
-            ('red', 'rgb(127.11 127.11 127.11)', 'achroma', None, 1),
-            ('orange', 'rgb(184.41 184.41 184.41)', 'achroma', None, 1),
-            ('yellow', 'rgb(246.73 246.73 246.73)', 'achroma', None, 1),
-            ('green', 'rgb(109.48 109.48 109.48)', 'achroma', None, 1),
-            ('blue', 'rgb(75.959 75.959 75.959)', 'achroma', None, 1),
-            ('indigo', 'rgb(49.309 49.309 49.309)', 'achroma', None, 1),
-            ('violet', 'rgb(170.23 170.23 170.23)', 'achroma', None, 1),
-
             ('red', 'rgb(104.96 91.131 13.778)', 'protan', 'brettel', 1),
             ('orange', 'rgb(200.46 174.78 6.9316)', 'protan', 'brettel', 1),
             ('yellow', 'rgb(286.95 250.72 -5.1084)', 'protan', 'brettel', 1),
@@ -134,23 +126,12 @@ class TestCVD(util.ColorAsserts):
             ('red', 'rgb(145.92 83.279 11.702)', 'protan', 'vienot', 0.8),
             ('red', 'rgb(122.98 88.173 12.996)', 'protan', 'vienot', 0.9),
 
-            ('red', 'red', 'achroma', None, 0),
-            ('red', 'rgb(245.96 40.048 40.048)', 'achroma', None, 0.1),
-            ('red', 'rgb(236.46 58.153 58.153)', 'achroma', None, 0.2),
-            ('red', 'rgb(226.43 71.438 71.438)', 'achroma', None, 0.3),
-            ('red', 'rgb(215.77 82.321 82.321)', 'achroma', None, 0.4),
-            ('red', 'rgb(204.37 91.709 91.709)', 'achroma', None, 0.5),
-            ('red', 'rgb(192.08 100.05 100.05)', 'achroma', None, 0.6),
-            ('red', 'rgb(178.65 107.62 107.62)', 'achroma', None, 0.7),
-            ('red', 'rgb(163.77 114.58 114.58)', 'achroma', None, 0.8),
-            ('red', 'rgb(146.91 121.05 121.05)', 'achroma', None, 0.9),
-
-            ('red', Color('red').cvd('tritan'), 'tritan', 'brettel', 1),
-            ('red', Color('red').cvd('protan'), 'protan', 'vienot', 1),
-            ('red', Color('red').cvd('deutan'), 'deutan', 'vienot', 1),
-            ('red', Color('red').cvd('tritan', 0.5), 'tritan', 'brettel', 0.5),
-            ('red', Color('red').cvd('protan', 0.5), 'protan', 'machado', 0.5),
-            ('red', Color('red').cvd('deutan', 0.5), 'deutan', 'machado', 0.5)
+            ('red', Color('red').filter('tritan'), 'tritan', 'brettel', 1),
+            ('red', Color('red').filter('protan'), 'protan', 'vienot', 1),
+            ('red', Color('red').filter('deutan'), 'deutan', 'vienot', 1),
+            ('red', Color('red').filter('tritan', 0.5), 'tritan', 'brettel', 0.5),
+            ('red', Color('red').filter('protan', 0.5), 'protan', 'machado', 0.5),
+            ('red', Color('red').filter('deutan', 0.5), 'deutan', 'machado', 0.5)
         ]
     )
     def test_cvd(self, color1, color2, deficiency, method, severity):
@@ -159,7 +140,7 @@ class TestCVD(util.ColorAsserts):
         print('color1: ', color1)
         print('color2: ', color2)
         self.assertColorEqual(
-            Color(color1).cvd(deficiency, severity, method=method),
+            Color(color1).filter(deficiency, severity, method=method),
             Color(color2) if isinstance(color2, str) else color2
         )
 
@@ -167,14 +148,8 @@ class TestCVD(util.ColorAsserts):
 class TestBad(unittest.TestCase):
     """Test bad cases."""
 
-    def test_bad_deficiency(self):
-        """Test bad method."""
-
-        with self.assertRaises(ValueError):
-            Color('red').cvd('bad')
-
     def test_bad_method(self):
         """Test empty list."""
 
         with self.assertRaises(ValueError):
-            Color('red').cvd('protan', method='bad')
+            Color('red').filter('protan', method='bad')

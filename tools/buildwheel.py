@@ -12,12 +12,12 @@ import hashlib
 # Notebook specific wheels
 NOTEBOOK_WHEELS = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/9a/9a/36f71797fbaf1f4b6cb8debe1ab6d3ec969e8dbc651181f131a16b794d80/pymdown_extensions-9.0-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/37/28/8750666d9431c9cb5201df4bfa14b5ffcdcf659b22156a4810ee9ad5ca06/pymdown_extensions-9.4-py3-none-any.whl",  # noqa: E501
 ]
 
 # Wheels required in addition to the current project
 PLAYGROUND_WHEELS = [
-    "https://files.pythonhosted.org/packages/1d/17/ed4d2df187995561b28f1073df24137cb750e12f9879d291cc8ab67c65d2/Pygments-2.11.2-py3-none-any.whl"  # noqa: E501
+    "https://files.pythonhosted.org/packages/5c/8e/1d9017950034297fffa336c72e693a5b51bbf85141b24a763882cf1977b5/Pygments-2.12.0-py3-none-any.whl"  # noqa: E501
 ]
 
 MKDOCS_YML = 'docs/src/mkdocs.yml'

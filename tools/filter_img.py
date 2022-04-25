@@ -1,4 +1,4 @@
-"""Modify a picture with a given CVD."""
+"""Modify a picture with a given filter."""
 from functools import lru_cache
 from PIL import Image
 import time
@@ -45,20 +45,32 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_cvd(deficiency, method, severity, p):
+def apply_filter(name, amount, space, method, p):
     """Apply filter."""
 
     has_alpha = len(p) > 3
     color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
-    color.cvd(deficiency, severity, in_place=True, method=method)
+    if method is not None:
+        # This is a CVD filter that allows specifying the method
+        color.filter(name, amount, space=space, in_place=True, method=method)
+    else:
+        # General filter.
+        color.filter(name, amount, space=space, in_place=True)
+    # We could gamut map or just do a simple clip, we've opted for a simple fast clip for now.
     color.clip(in_place=True)
     return tuple([int(x * 255) for x in color.coords()]) + ((int(color[-1] * 255),) if has_alpha else tuple())
 
 
-def process_image(img, output, deficiency, method, severity):
+def process_image(img, output, name, amount, space, cvd_approach):
     """Process the image applying the requested deficiency."""
 
     with Image.open(img) as im:
+
+        # Make sure we are writing in transparent mode for the opacity filter
+        if im.format == 'PNG' and name == 'opacity':
+            if im.mode not in ('RGBA',):
+                im = im.convert('RGBA')
+
         pixels = im.load()
         total = im.size[0]
         start = time.perf_counter_ns()
@@ -69,10 +81,9 @@ def process_image(img, output, deficiency, method, severity):
         print('> 0%', end='\r')
         for e, i in enumerate(range(im.size[0])):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_cvd(deficiency, method, severity, pixels[i, j])
+                pixels[i, j] = apply_filter(name, amount, space, cvd_approach, pixels[i, j])
             print('> {}%'.format(int((e * j) * factor)), end="\r")
         print('> 100%')
-
         t = time.perf_counter_ns() - start
         printt(t)
         im.save(output)
@@ -81,15 +92,16 @@ def process_image(img, output, deficiency, method, severity):
 def main():
     """Main."""
 
-    parser = argparse.ArgumentParser(prog='diagrams', description='Apply CVD to an image.')
+    parser = argparse.ArgumentParser(prog='filter_img', description='Apply filter to an image.')
     parser.add_argument('--input', '-i', help='Input image.')
     parser.add_argument('--output', '-o', help='Output name and location.')
-    parser.add_argument('--deficiency', '-d', help='The deficiency to apply.')
-    parser.add_argument('--method', '-m', help='The method to use: vienot, brettel, machado.')
-    parser.add_argument('--severity', '-s', default=1, type=float, help='The severity: 0 - 1')
+    parser.add_argument('--filter', '-f', help='The filter to use.')
+    parser.add_argument('--amount', '-a', type=float, help='Amount to filter the image.')
+    parser.add_argument('--cvd-approach', '-c', help='CVD approach to use.')
+    parser.add_argument('--space', '-s', default='srgb-linear', help='Color space to filter in.')
     args = parser.parse_args()
 
-    process_image(args.input, args.output, args.deficiency, args.method, args.severity)
+    process_image(args.input, args.output, args.filter, args.amount, args.space, args.cvd_approach)
 
     return 0
 
