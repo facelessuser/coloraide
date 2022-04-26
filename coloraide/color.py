@@ -585,6 +585,7 @@ class Color(metaclass=ColorMeta):
     def clip(self, space: Optional[str] = None, *, in_place: bool = False) -> 'Color':
         """Clip the color channels."""
 
+        orig_space = self.space()
         if space is None:
             space = self.space()
 
@@ -600,7 +601,7 @@ class Color(metaclass=ColorMeta):
             gamut.clip_channels(c)
 
         # Adjust "this" color
-        return c.convert(self.space(), in_place=True)
+        return c.convert(orig_space, in_place=True)
 
     def fit(
         self,
@@ -613,6 +614,7 @@ class Color(metaclass=ColorMeta):
         """Fit the gamut using the provided method."""
 
         # Dedicated clip method.
+        orig_space = self.space()
         if method == 'clip' or (method is None and self.FIT == "clip"):
             return self.clip(space, in_place=in_place)
 
@@ -643,7 +645,7 @@ class Color(metaclass=ColorMeta):
             func(c, **kwargs)
 
         # Adjust "this" color
-        return c.convert(self.space(), in_place=True)
+        return c.convert(orig_space, in_place=True)
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
