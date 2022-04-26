@@ -24,3 +24,17 @@ class ColorAsserts:
             color1.to_string(fit=fit, precision=precision),
             color2.to_string(fit=fit, precision=precision)
         )
+
+
+class ColorAssertsPyTest(ColorAsserts):
+    """Asserts for `pytest`."""
+
+    def assertEqual(self, a, b):
+        """Assert equal."""
+
+        assert a == b
+
+    def assertNotEqual(self, a, b):
+        """Assert not equal."""
+
+        assert a != b

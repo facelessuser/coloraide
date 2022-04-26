@@ -326,7 +326,8 @@ ${content}
           let content = ''
           const parent = el.parentNode
           if (!parent.matches('span.swatch-gradient')) {
-            content = parent.getAttribute('title').replace('\nCopy to clipboard', '')
+            content = parent.getAttribute('title').replace('Copy to clipboard', '')
+            content = content.replace('\n', '')
             if (window.clipboardData && window.clipboardData.setData) {
               // Old `IE`` handling, do we really need this?
               return window.clipboardData.setData("Text", content)

@@ -52,23 +52,15 @@ according to the W3C spec will be used instead.
 ```playground
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color(inputs[0]).steps(inputs[1:], steps=10, space='srgb')
-colors
-ColorRow()
-[c.filter('brightness', 0.5).clip() for c in colors]
-ColorRow()
-[c.filter('saturate', 0.5).clip() for c in colors]
-ColorRow()
-[c.filter('contrast', 1.2).clip() for c in colors]
-ColorRow()
-[c.filter('opacity', 0.5).clip() for c in colors]
-ColorRow()
-[c.filter('invert', 1).clip() for c in colors]
-ColorRow()
-[c.filter('hue-rotate', 90).clip() for c in colors]
-ColorRow()
-[c.filter('sepia', 1).clip() for c in colors]
-ColorRow()
-[c.filter('grayscale', 1).clip() for c in colors]
+HtmlRow(colors)
+HtmlRow([c.filter('brightness', 0.5).clip() for c in colors])
+HtmlRow([c.filter('saturate', 0.5).clip() for c in colors])
+HtmlRow([c.filter('contrast', 1.2).clip() for c in colors])
+HtmlRow([c.filter('opacity', 0.5).clip() for c in colors])
+HtmlRow([c.filter('invert', 1).clip() for c in colors])
+HtmlRow([c.filter('hue-rotate', 90).clip() for c in colors])
+HtmlRow([c.filter('sepia', 1).clip() for c in colors])
+HtmlRow([c.filter('grayscale', 1).clip() for c in colors])
 ```
 
 ## Color Vision Deficiency Simulation
@@ -116,13 +108,10 @@ probably the best approach for all cases, Viénot is much faster and does quite 
 ```playground
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color(inputs[0]).steps(inputs[1:], steps=10, space='srgb')
-colors
-ColorRow()
-[c.filter('protan').clip() for c in colors]
-ColorRow()
-[c.filter('deutan').clip() for c in colors]
-ColorRow()
-[c.filter('tritan').clip() for c in colors]
+HtmlRow(colors)
+HtmlRow([c.filter('protan').clip() for c in colors])
+HtmlRow([c.filter('deutan').clip() for c in colors])
+HtmlRow([c.filter('tritan').clip() for c in colors])
 ```
 
 If desired, any of the three available methods can be used. Brettel is usually considered best option for accuracy.
@@ -133,13 +122,10 @@ tritanopia.
 ```playground
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color(inputs[0]).steps(inputs[1:], steps=10, space='srgb')
-colors
-ColorRow()
-[c.filter('tritan', method='brettel').clip() for c in colors]
-ColorRow()
-[c.filter('tritan', method='vienot').clip() for c in colors]
-ColorRow()
-[c.filter('tritan', method='machado').clip() for c in colors]
+HtmlRow(colors)
+HtmlRow([c.filter('tritan', method='brettel').clip() for c in colors])
+HtmlRow([c.filter('tritan', method='vienot').clip() for c in colors])
+HtmlRow([c.filter('tritan', method='machado').clip() for c in colors])
 ```
 
 ### Anomalous Trichromacy
@@ -180,13 +166,10 @@ results. With that said, the `method` can always be overridden to use something 
 ```playground
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color(inputs[0]).steps(inputs[1:], steps=10, space='srgb')
-colors
-ColorRow()
-[c.filter('protan', 0.75).clip() for c in colors]
-ColorRow()
-[c.filter('deutan', 0.75).clip() for c in colors]
-ColorRow()
-[c.filter('tritan', 0.75).clip() for c in colors]
+HtmlRow(colors)
+HtmlRow([c.filter('protan', 0.75).clip() for c in colors])
+HtmlRow([c.filter('deutan', 0.75).clip() for c in colors])
+HtmlRow([c.filter('tritan', 0.75).clip() for c in colors])
 ```
 
 ## Usage Details
@@ -216,11 +199,9 @@ designed to be applied in the Linear sRGB space, and cannot be used in any other
 ```playground
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color(inputs[0]).steps(inputs[1:], steps=10, space='srgb')
-colors
-ColorRow()
-[c.filter('sepia', 1, space='srgb-linear').clip() for c in colors]
-ColorRow()
-[c.filter('sepia', 1, space='srgb').clip() for c in colors]
+HtmlRow(colors)
+HtmlRow([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
+HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
 ```
 
 !!! tip "Processing Lots of Colors"

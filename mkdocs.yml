@@ -37,6 +37,7 @@ nav:
       - Gamut Mapping: gamut.md
       - Chromatic Adaptation: cat.md
       - Contrast: contrast.md
+      - Color Harmonies: harmonies.md
       - Filters: filters.md
       - String Output: strings.md
   - Color Spaces:
@@ -125,7 +126,7 @@ extra_css:
 extra_javascript:
   - playground-config-4a12028b.js
   - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-570ca31d.js
+  - assets/coloraide-extras/extra-notebook-61f86469.js
 
 extra:
   social:

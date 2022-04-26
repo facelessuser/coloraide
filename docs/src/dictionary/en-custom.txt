@@ -113,11 +113,14 @@ PyPI
 Pyodide
 RGB
 ROMM
+RYB
 SDR
 SMPTE
 SRGB
 Sharma
 TODO
+Tetradic
+Triadic
 Trichromacy
 Tritan
 Tritanopia
@@ -155,6 +158,7 @@ deregistration
 deuteranomaly
 deuteranopia
 dichromacy
+dyad
 fixup
 formatter
 grayscale
@@ -200,7 +204,9 @@ subclassing
 sublicense
 subsamplings
 subtractive
+tetradic
 th
+triadic
 trichromacy
 tritanomaly
 tritanopia
