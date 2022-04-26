@@ -117,30 +117,30 @@ class TestLabProperties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--lab 90% 50 -20 / 1)')
-        self.assertEqual(c.lightness, 90)
-        c.lightness = 80
-        self.assertEqual(c.lightness, 80)
+        self.assertEqual(c['lightness'], 90)
+        c['lightness'] = 80
+        self.assertEqual(c['lightness'], 80)
 
     def test_a(self):
         """Test `a`."""
 
         c = Color('color(--lab 90% 50 -20 / 1)')
-        self.assertEqual(c.a, 50)
-        c.a = 40
-        self.assertEqual(c.a, 40)
+        self.assertEqual(c['a'], 50)
+        c['a'] = 40
+        self.assertEqual(c['a'], 40)
 
     def test_b(self):
         """Test `b`."""
 
         c = Color('color(--lab 90% 50 -20 / 1)')
-        self.assertEqual(c.b, -20)
-        c.b = -10
-        self.assertEqual(c.b, -10)
+        self.assertEqual(c['b'], -20)
+        c['b'] = -10
+        self.assertEqual(c['b'], -10)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--lab 90% 50 -20 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)

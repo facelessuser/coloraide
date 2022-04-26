@@ -23,7 +23,7 @@ class CssColor4(Fit):
 
         space = color.space()
         mapcolor = color.convert(cls.SPACE)
-        lightness = mapcolor.lightness
+        lightness = mapcolor['lightness']
 
         # Return white or black if lightness is out of range
         if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
@@ -34,7 +34,7 @@ class CssColor4(Fit):
 
         # Set initial chroma boundaries
         low = 0.0
-        high = mapcolor.chroma
+        high = mapcolor['chroma']
         clip_channels(color.update(mapcolor))
 
         # Adjust chroma (using binary search).
@@ -42,12 +42,12 @@ class CssColor4(Fit):
         # Compress chroma until we are are right outside the gamut, but under the JND.
         if not mapcolor.in_gamut(space):
             while True:
-                mapcolor.chroma = (high + low) * 0.5
+                mapcolor['chroma'] = (high + low) * 0.5
 
                 if mapcolor.in_gamut(space, tolerance=0):
-                    low = mapcolor.chroma
+                    low = mapcolor['chroma']
                 else:
                     clip_channels(color.update(mapcolor))
                     if mapcolor.delta_e(color, method=cls.DE) < cls.LIMIT:
                         break
-                    high = mapcolor.chroma
+                    high = mapcolor['chroma']

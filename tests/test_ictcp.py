@@ -87,30 +87,30 @@ class TestICtCpProperties(util.ColorAsserts, unittest.TestCase):
         """Test `i`."""
 
         c = Color('color(--ictcp 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.i, 1)
-        c.i = 0.2
-        self.assertEqual(c.i, 0.2)
+        self.assertEqual(c['i'], 1)
+        c['i'] = 0.2
+        self.assertEqual(c['i'], 0.2)
 
     def test_ct(self):
         """Test `ct`."""
 
         c = Color('color(--ictcp 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.ct, 0.2)
-        c.ct = 0.1
-        self.assertEqual(c.ct, 0.1)
+        self.assertEqual(c['ct'], 0.2)
+        c['ct'] = 0.1
+        self.assertEqual(c['ct'], 0.1)
 
     def test_cp(self):
         """Test `cp`."""
 
         c = Color('color(--ictcp 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.cp, -0.3)
-        c.cp = 0.1
-        self.assertEqual(c.cp, 0.1)
+        self.assertEqual(c['cp'], -0.3)
+        c['cp'] = 0.1
+        self.assertEqual(c['cp'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--ictcp 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)

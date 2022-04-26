@@ -60,8 +60,8 @@ Let's consider CIELAB with a D65 white point. The sRGB round trip through CIELAB
 perfectly convert back to the original color. This is due to the perils of floating point arithmetic.
 
 ```playground
-Color('color(srgb 1 1 1)').convert('lab-d65').coords()
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').coords()
+Color('color(srgb 1 1 1)').convert('lab-d65')[:]
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
 ```
 
 We can see that when using a tolerance of zero, and gamut checking in sRGB, that the color is considered out of gamut.
@@ -70,7 +70,7 @@ what you are doing, this may not be an issue up until you are ready to finalize 
 desirable to have some tolerance, and other times not.
 
 ```playground
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').coords()
+Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut()
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut(tolerance=0)
 ```
@@ -173,8 +173,8 @@ c1.in_gamut()
     others. This is mainly mentioned as fitting in one color space and round tripping back may not give exact results:
 
     ```playground
-    Color("color(--lch-d65 100 50 75)").convert('srgb').fit().coords()
-    Color("color(--lch-d65 100 50 75)").fit('srgb').convert('srgb').coords()
+    Color("color(--lch-d65 100 50 75)").convert('srgb').fit()[:]
+    Color("color(--lch-d65 100 50 75)").fit('srgb').convert('srgb')[:]
     ```
 
     While the above case is well within the threshold, depending on what you are doing, and what spaces you are working

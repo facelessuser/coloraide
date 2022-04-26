@@ -2,14 +2,27 @@
 
 ## 0.16.0
 
+!!! warning
+    The `Color` object has now replaced named channel properties with indexing. What this means is that things like
+    `#!py3 Color.red` is now replaced with either `#!py3 Color['red']` or `#!py3 Color[0]`. Slicing can also be used
+    `#!py3 Color[0:2] = [0.5, 1.0]`. Also, `Color.coords()` has also been removed in favor of using `#!py3 Color[:-1]`
+    to get all coordinates except alpha.
+
+    This change was done as dynamic properties add too much overhead on every class attribute access. This new
+    methodology allows more powerful indexing into color channels while avoiding the slow down of intercepting class
+    attribute get and set operations.
+
+    Until the 1.0 release happens, we will provide `ColorLegacy` which allows the old style `#!py3 Color.red` and
+    `Color.coords()`. It is strongly advised that migration to the new methodology occurs promptly though.
+
+- **NEW**: `Color` objects are now indexable and channels can be retrieved using either numbers or strings, e.g.,
+  `#!py3 Color[0]` or `#!py3 Color['red']`. Slicing and assignments via slicing are also supported:
+  `#!py3 Color1[:] = Color2[:]`. Dynamic properties and `coords()` are replaced with this functionality.
 - **NEW**: Input method names for distancing, gamut mapping, compositing, and space methods are now case sensitive.
   There were inconsistencies in some places, so it was opted to make all case sensitive.
 - **NEW**: Add new support for filters, including W3C Filter Effects Level 1 and color vision deficiency simulation.
-- **NEW**: `Color` objects are now indexable. All channels, including `alpha`, can be indexed into via `#!py3 Color[i]`.
-  Slicing and assignments via slicing are also supported: `#!py3 Color1[:] = Color2[:]`. All channels can be iterated
-  through as well `#!py3 [do_something(c) for c in Color]`.
 - **NEW**: Some performance enhancements in conversions.
-- **NEW**: Chromatic adaptation is now exposed as a plugin. New methods can be created externally and registered.
+- **NEW**: Chromatic adaptation is now exposed as a plugin. New CAT plugins can be created externally and registered.
 
 ## 0.15.1
 

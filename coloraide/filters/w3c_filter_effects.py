@@ -37,7 +37,7 @@ class Sepia(Filter):
             [0.272 - 0.272 * amount, 0.534 - 0.534 * amount, 0.131 + 0.869 * amount]
         ]
 
-        color._space._coords = cast(Vector, alg.dot(m, color.coords(), dims=alg.D2_D1))
+        color._space._coords = cast(Vector, alg.dot(m, color[:-1], dims=alg.D2_D1))
 
 
 class Grayscale(Filter):
@@ -58,7 +58,7 @@ class Grayscale(Filter):
             [0.2126 - 0.2126 * amount, 0.7152 - 0.7152 * amount, 0.0722 + 0.9278 * amount]
         ]
 
-        color._space._coords = cast(Vector, alg.dot(m, color.coords(), dims=alg.D2_D1))
+        color._space._coords = cast(Vector, alg.dot(m, color[:-1], dims=alg.D2_D1))
 
 
 class Saturate(Filter):
@@ -79,7 +79,7 @@ class Saturate(Filter):
             [0.213 - 0.213 * amount, 0.715 - 0.715 * amount, 0.072 + 0.928 * amount]
         ]
 
-        color._space._coords = cast(Vector, alg.dot(m, color.coords(), dims=alg.D2_D1))
+        color._space._coords = cast(Vector, alg.dot(m, color[:-1], dims=alg.D2_D1))
 
 
 class Invert(Filter):
@@ -94,7 +94,7 @@ class Invert(Filter):
 
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
         coords = []
-        for c in color.coords():
+        for c in color[:-1]:
             coords.append(alg.lerp(amount, 1 - amount, c))
         color._space._coords = coords
 
@@ -110,7 +110,7 @@ class Opacity(Filter):
         """Apply an opacity filter."""
 
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
-        color.alpha = alg.lerp(0, amount, color.alpha)
+        color[-1] = alg.lerp(0, amount, color[-1])
 
 
 class Brightness(Filter):
@@ -125,7 +125,7 @@ class Brightness(Filter):
 
         amount = alg.clamp(1 if amount is None else amount, 0)
         coords = []
-        for c in color.coords():
+        for c in color[:-1]:
             coords.append(linear_transfer(c, amount))
         color._space._coords = coords
 
@@ -142,7 +142,7 @@ class Contrast(Filter):
 
         amount = alg.clamp(1 if amount is None else amount, 0)
         coords = []
-        for c in color.coords():
+        for c in color[:-1]:
             coords.append(linear_transfer(c, amount, (1 - amount) * 0.5))
         color._space._coords = coords
 
@@ -167,4 +167,4 @@ class HueRotate(Filter):
             [0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072]
         ]
 
-        color._space._coords = cast(Vector, alg.dot(m, color.coords(), dims=alg.D2_D1))
+        color._space._coords = cast(Vector, alg.dot(m, color[:-1], dims=alg.D2_D1))

@@ -64,7 +64,7 @@ def create_custom_hsv(gamut):
 def add_rect_color(space, color, x, y, z, c):
     """Add rectangular color to the provided arrays."""
 
-    coords = color.convert(space).coords()
+    coords = color.convert(space)[:-1]
     x.append(coords[0])
     y.append(coords[1])
     z.append(coords[2])

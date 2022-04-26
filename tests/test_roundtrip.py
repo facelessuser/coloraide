@@ -45,8 +45,8 @@ class TestRoundTrip:
             # Catch cases where we are really close to 360 which should wrap to 0
             for c in (c1, c2):
                 if isinstance(c._space, Cylindrical):
-                    if alg.round_half_up(alg.no_nan(c.hue), c.PRECISION) == 360:
-                        c.hue = 0
+                    if alg.round_half_up(alg.no_nan(c['hue']), c.PRECISION) == 360:
+                        c.set('hue', 0)
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
             str1 = Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False)
             str2 = Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False)
@@ -54,8 +54,8 @@ class TestRoundTrip:
             if str1 != str2:
                 print('----- Convert: {} <=> {} -----'.format(c1.space(), space))
                 print('Original: ', color.to_string(color=True, fit=False))
-                print(c1.space() + ': ', str1, c1.coords())
-                print(space + ': ', str2, c2.coords())
+                print(c1.space() + ': ', str1, c1[:])
+                print(space + ': ', str2, c2[:])
                 assert str1 == str2
 
     @pytest.mark.parametrize('space', SPACES)

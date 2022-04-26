@@ -24,17 +24,6 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
         c1[:] = c2[:]
         self.assertColorEqual(c1, c2)
 
-    def test_dir(self):
-        """Test `dir()` usage."""
-
-        d = dir(Color('red'))
-        # Test channel properties
-        self.assertTrue('r' in d)
-        # Test channel property aliases
-        self.assertTrue('green' in d)
-        # Test delta E methods
-        self.assertTrue('delta_e_2000' in d)
-
     def test_print_none(self):
         """Test printing `none`."""
 
@@ -43,14 +32,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_none(self):
         """Test none."""
 
-        self.assertEqual(Color('color(srgb 1 none 1)').coords(), [1, NaN, 1])
+        self.assertEqual(Color('color(srgb 1 none 1)')[:-1], [1, NaN, 1])
         self.assertTrue(Color('color(srgb 1 1 1 / none)').is_nan('alpha'))
 
     def test_percent_none(self):
         """Test none for percents."""
 
-        self.assertEqual(Color('color(--lch none 0 none)').coords(), [NaN, 0, NaN])
-        self.assertEqual(Color('hsl(30 none none)').coords(), [30, NaN, NaN])
+        self.assertEqual(Color('color(--lch none 0 none)')[:-1], [NaN, 0, NaN])
+        self.assertEqual(Color('hsl(30 none none)')[:-1], [30, NaN, NaN])
 
     def test_normalize(self):
         """
@@ -179,14 +168,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_missing_inputs(self):
         """Test missing inputs."""
 
-        coords = Color("srgb", []).coords()
+        coords = Color("srgb", [])[:-1]
         for c in coords:
             self.assertTrue(math.isnan(c))
 
     def test_too_many_inputs(self):
         """Test too many inputs."""
 
-        coords = Color("srgb", [0.5, 0.5, 0.5, 0.5]).coords()
+        coords = Color("srgb", [0.5, 0.5, 0.5, 0.5])[:-1]
         self.assertEqual(len(coords), 3)
         for c in coords:
             self.assertEqual(c, 0.5)
@@ -271,15 +260,15 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
         c2 = c1.convert('xyz-d65')
-        self.assertEqual(c1.luminance(), c2.y)
+        self.assertEqual(c1.luminance(), c2.get('y'))
 
     def test_property(self):
         """Test set."""
 
         c1 = Color('red')
-        self.assertEqual(c1.green, 0)
-        c1.green = 0.5
-        self.assertEqual(c1.green, 0.5)
+        self.assertEqual(c1.get('green'), 0)
+        c1.set('green', 0.5)
+        self.assertEqual(c1.get('green'), 0.5)
 
     def test_get(self):
         """Test get."""
@@ -1606,22 +1595,22 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         from coloraide.distance import delta_e_z
 
-        expected = Color('red').delta_e_jz('green')
+        expected = Color('red').delta_e('green', method='jz')
 
         # Deregistration should have taken place
         class Custom(Color):
             pass
 
         Custom.deregister('delta-e:jz')
-        with self.assertRaises(AttributeError):
-            Custom('red').delta_e_jz('green')
+        with self.assertRaises(ValueError):
+            Custom('red').delta_e('green', method='jz')
 
         # But it should not affect the base class
-        self.assertEqual(Color('red').delta_e_jz('green'), expected)
+        self.assertEqual(Color('red').delta_e('green', method='jz'), expected)
 
         # Now it is registered again
         Custom.register(delta_e_z.DEZ)
-        self.assertEqual(Custom('red').delta_e_jz('green'), expected)
+        self.assertEqual(Custom('red').delta_e('green', method='jz'), expected)
 
     def test_plugin_registration_fit(self):
         """Test plugin registration of `Fit`."""
@@ -1662,7 +1651,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             Custom.chromatic_adaptation(
                 WHITES['2deg']['D65'],
                 WHITES['2deg']['D50'],
-                c1.coords(),
+                c1[:-1],
                 method='von-kries'
             )
 
@@ -1671,7 +1660,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             Color.chromatic_adaptation(
                 WHITES['2deg']['D65'],
                 WHITES['2deg']['D50'],
-                c1.coords(),
+                c1[:-1],
                 method='von-kries'
             ),
             expected
@@ -1683,7 +1672,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             Custom.chromatic_adaptation(
                 WHITES['2deg']['D65'],
                 WHITES['2deg']['D50'],
-                c1.coords(),
+                c1[:-1],
                 method='von-kries'
             ),
             expected

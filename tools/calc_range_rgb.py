@@ -50,7 +50,7 @@ def run(target, rgb, res):
     while True:
         color.update(rgb, [x / res, y / res, z / res])
         print(template.format(color.to_string(color=True)), end="\r")
-        cx, cy, cz = color.convert(target).coords()
+        cx, cy, cz = color.convert(target)[:-1]
         if cx < min_x:
             min_x = cx
         if cy < min_y:

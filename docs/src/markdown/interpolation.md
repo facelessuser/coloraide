@@ -445,9 +445,9 @@ when the color is mixed with a second color (`#!color green`), the hue of the se
 
 ```playground
 color = Color('white').convert('hsl')
-color.coords()
+color[:-1]
 color2 = Color('green').convert('hsl')
-color2.coords()
+color2[:-1]
 color.mix(color2, space="hsl")
 ```
 
@@ -455,9 +455,9 @@ But if we manually set the hue to `#!py 0` instead of `NaN`, we can see that the
 
 ```playground
 color = Color('white').convert('hsl').set('hue', 0)
-color.coords()
+color[:-1]
 color2 = Color('green').convert('hsl')
-color2.coords()
+color2[:-1]
 color.mix(color2, space="hsl")
 ```
 

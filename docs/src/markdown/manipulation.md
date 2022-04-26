@@ -8,39 +8,15 @@ access.
 
 There are various ways to read the current values of color coordinates.
 
-1. Channel properties can be read directly:
+1. Channel properties can be read directly by indexing the color object with the channel name.
 
     ```playground
     color = Color("orange")
-    color.red
+    color['red']
     ```
 
-2. Channel values can also be read by using the `get` method and providing the name of desired channel.
-
-    ```playground
-    color = Color("orange")
-    color.get("green")
-    ```
-
-    Additionally, we can also access values of the current color in terms of other color space properties. Simply
-    specify the color space and the color property.
-
-    ```playground
-    color = Color("orange")
-    color.get("lch.chroma")
-    ```
-
-3. As getting all coordinates except alpha is a common enough task, `coords` allows for the extraction of all the color
-   color channels without the alpha channel.
-
-    ```playground
-    color = Color("orange")
-    color.coords()
-    color.alpha
-    ```
-
-4. Lastly, the ColorAide object is indexable. Any channel can be accessed using an index, or even slices. If desired,
-   the channels can be iterated.
+4. The object can also be indexed with numerical numbers and even use slicing to set or get multiple values. Color
+   objects can also be iterated.
 
     ```playground
     color = Color("orange")
@@ -49,52 +25,81 @@ There are various ways to read the current values of color coordinates.
     [c for c in color]
     ```
 
+2. For more advanced get operations, the `get` method can be used. Channels can be accessed with normal strings:
+
+    ```playground
+    color = Color("orange")
+    color.get("green")
+    ```
+
+    They can also be used to access values of the current color in terms of other color space properties. Simply
+    specify the color space and the color property.
+
+    ```playground
+    color = Color("orange")
+    color.get("lch.chroma")
+    ```
+
 ## Modifying Coordinates
 
-Channel properties can be modified directly by using the named property. Here we modify `#!color red` by adjusting its
-`green` property and get an orange hued color.
+As with coordinate retrieval, a number of ways can be used set coordinates as well
 
-```playground
-color = Color("red")
-color.green = 0.5
-color.to_string()
-```
+1. Channel properties can be modified directly by using the channel. Here we modify `#!color red` by adjusting its
+  `green` property and get an orange hued color.
 
-When doing so, keep in mind, the internal coordinates are being adjusted, so their scale and range is dictated by the
-given color space in which they relate to. sRGB, for example, specifies its color channels in the range of \[0, 1\],
-though it should allow extended ranges if required.
+    ```playground
+    color = Color("red")
+    color['green'] = 0.5
+    color.to_string()
+    ```
 
-Much like reading with the `get` method, values can be modified with the `set` method. As these methods return a
-reference to the current class, multiple set operations can be chained together. Chaining multiple `set` operations
-together, we can transform `#!color white` to `#!color rgb(0 127.5 255)`.
+    When doing so, keep in mind that the internal coordinates are being adjusted, so their scale and range is dictated
+    by the given color space in which they relate to. sRGB, for example, specifies its color channels in the range of
+    \[0, 1\], though it should allow extended ranges if required.
 
-```playground
-Color("white").set("red", 0).set("green", 0.5)
-```
+2. Additionally, colors channels can be set with numerical indexes. Slicing can even be used to set multiple channels
+   in one operation:
 
-Functions can also be used to modify a channel property. This allows us to do more complex set operations. Here we do a
-relative adjustment of the green channel and transform the color `#!color pink` to `#!color rgb(255 249.6 203)`.
+    ```playground
+    c1 = Color('red')
+    c2 = Color('blue')
+    c1[:] = c2[:]
+    c1, c2
+    ```
 
-```playground
-Color("pink").set('green', lambda g: g * 1.3)
-```
+3. More advanced set operations can be performed by using the `set` method.
 
-The `Color` object can also be set via indexes. This is useful if you just need to bulk set a number of coordinates.ways
 
-```playground
-c1 = Color('red')
-c2 = Color('blue')
-c1[:] = c2[:]
-c1, c2
-```
+    As these methods return a reference to the current class, multiple set operations can be chained together. Chaining
+    multiple `set` operations together, we can transform `#!color white` to `#!color rgb(0 127.5 255)`.
+
+    ```playground
+    Color("white").set("red", 0).set("green", 0.5)
+    ```
+
+    Functions can also be used to modify a channel property. This allows us to do more complex set operations, like
+    providing easing functions. Here we do a relative adjustment of the green channel and transform the color
+    `#!color pink` to `#!color rgb(255 249.6 203)`.
+
+    ```playground
+    Color("pink").set('green', lambda g: g * 1.3)
+    ```
+
+    And just like the `get` method, we can use this method to set color channels in other color spaces.
+
+    ```playground
+    c = Color("red")
+    c
+    c.set('hsl.hue', lambda x: x + 180)
+    ```
 
 ## Modifying Coordinates in Other Spaces
 
-Channels in other color spaces can also be modified with the `set` function. Here we alter the color `#!color blue` by
-editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`. Keep in mind
-that the colors are being converted to the specified space under the hood, set, and then converted back, so if you have
-multiple operations to apply in a given color space, it may be more efficient to convert to that space, apply the set
-operations directly, and then convert back.
+As previously mentioned, coordinates in other spaces can be modified with the `set` function. Here we alter the color
+`#!color blue` by editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`.
+Keep in mind that the colors are being converted to the specified space under the hood, set, and then converted back, so
+if you have multiple operations to apply in a given color space, it may be more efficient to convert to that space,
+apply the set operations directly, and then convert back.
 
 ```playground
 Color("blue").set('lch.hue', 130)
@@ -111,7 +116,7 @@ Consider the following example comparing the modification of an HSL color in HWB
 ```playground
 Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
 Color('hsl(0 0% 50%)').set('oklab.lightness', 1)
-Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb').coords()
+Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb')[:]
 ```
 
 The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise, but the
@@ -137,7 +142,7 @@ when a color has no lightness, etc.
 
     ```playground
     color = Color('white').convert('hsl')
-    color.coords()
+    color[:]
     ```
 
 2. When specifying raw data, and an insufficient amount of channel data is provided, the missing channels will be
@@ -145,8 +150,8 @@ assumed as undefined, the exception is the `alpha` channel which is assumed to b
 explicitly set as undefined.
 
     ```playground
-    Color('srgb', [1]).coords()
-    Color('srgb', [1, 0, 0], NaN).alpha
+    Color('srgb', [1])[:]
+    Color('srgb', [1, 0, 0], NaN)[:]
     ```
 
 3. Undefined values can also occur when a user specifies a channel with the `none` keyword. This can also be done in raw
@@ -161,32 +166,31 @@ color data by directly passing `#!py3 float('nan')` -- the provided `NaN` consta
     ```playground
     from coloraide import NaN
     color = Color("srgb", [0.3, NaN, 0.4])
-    color.coords()
+    color[:]
 
     color = Color('rgb(30% none 40%)')
-    color.coords()
+    color[:]
     ```
 
 4. Lastly, a user can use the `mask` method which is a quick way to set one or multiple channels as undefined.
 Additionally, it returns a clone leaving the original untouched by default.
 
     ```playground
-    Color('white').coords()
-    Color('white').mask(['red', 'green']).coords()
+    Color('white')[:]
+    Color('white').mask(['red', 'green'])[:]
     ```
 
     The `alpha` channel can also be masked:
 
     ```playground
-    Color('white').mask('alpha').alpha
+    Color('white').mask('alpha')[-1]
     ```
 
     You can also do inverse masks, or masks that apply to every channel not specified.
 
     ```playground
     c = Color('white').mask('blue', invert=True)
-    c.coords()
-    c.alpha
+    c[:]
     ```
 
 ## Checking for Undefined Values
@@ -205,7 +209,7 @@ undefined, how could we possibly add to it? The only sane answer is to return `N
 
 ```playground
 color = Color('color(srgb 1 none 1)')
-color.g + 0.5
+color['green'] + 0.5
 ```
 
 Because a `NaN` may cause surprising results, it can be useful to check if a hue (or any channel) is `NaN` before
@@ -221,5 +225,5 @@ This is equivalent to using the `math` library and comparing the value directly:
 
 ```playground
 import math
-math.isnan(Color('hsl(none 0% 100%)').hue)
+math.isnan(Color('hsl(none 0% 100%)')['hue'])
 ```

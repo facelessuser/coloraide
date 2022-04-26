@@ -94,30 +94,30 @@ class TestLuvProperties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--luv 90% 50 -20 / 1)')
-        self.assertEqual(c.lightness, 90)
-        c.lightness = 80
-        self.assertEqual(c.lightness, 80)
+        self.assertEqual(c['lightness'], 90)
+        c['lightness'] = 80
+        self.assertEqual(c['lightness'], 80)
 
     def test_u(self):
         """Test `u`."""
 
         c = Color('color(--luv 90% 50 -20 / 1)')
-        self.assertEqual(c.u, 50)
-        c.u = 40
-        self.assertEqual(c.u, 40)
+        self.assertEqual(c['u'], 50)
+        c['u'] = 40
+        self.assertEqual(c['u'], 40)
 
     def test_v(self):
         """Test `v`."""
 
         c = Color('color(--luv 90% 50 -20 / 1)')
-        self.assertEqual(c.v, -20)
-        c.v = -10
-        self.assertEqual(c.v, -10)
+        self.assertEqual(c['v'], -20)
+        c['v'] = -10
+        self.assertEqual(c['v'], -10)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--luv 90% 50 -20 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)

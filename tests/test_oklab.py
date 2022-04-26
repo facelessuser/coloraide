@@ -117,30 +117,30 @@ class TestOklabProperties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--oklab 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.lightness, 1)
-        c.lightness = 0.2
-        self.assertEqual(c.lightness, 0.2)
+        self.assertEqual(c['lightness'], 1)
+        c['lightness'] = 0.2
+        self.assertEqual(c['lightness'], 0.2)
 
     def test_a(self):
         """Test `a`."""
 
         c = Color('color(--oklab 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.a, 0.2)
-        c.a = 0.1
-        self.assertEqual(c.a, 0.1)
+        self.assertEqual(c['a'], 0.2)
+        c['a'] = 0.1
+        self.assertEqual(c['a'], 0.1)
 
     def test_b(self):
         """Test `b`."""
 
         c = Color('color(--oklab 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.b, -0.3)
-        c.b = 0.1
-        self.assertEqual(c.b, 0.1)
+        self.assertEqual(c['b'], -0.3)
+        c['b'] = 0.1
+        self.assertEqual(c['b'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--oklab 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)

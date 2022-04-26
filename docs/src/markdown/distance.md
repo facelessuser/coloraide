@@ -56,13 +56,6 @@ Delta\ E                                 | Name            | Parameters
 [∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab"`
 ∆E~ok~                                   | `ok`            | `scalar=1`
 
-∆E methods are also accessible via methods `delta_e_<name>`, where `<name>` is a name from the above table.
-
-```playground
-Color("red").delta_e_jz("blue")
-Color("red").delta_e_hyab("blue")
-```
-
 ## Finding Closest Color
 
 ColorAide implements a simple way to find the closest color, given a list of colors, to another color. The method is

@@ -87,33 +87,33 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
         """Test `jz`."""
 
         c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
-        self.assertEqual(c.jz, 0.22)
-        c.jz = 0.2
-        self.assertEqual(c.jz, 0.2)
+        self.assertEqual(c['jz'], 0.22)
+        c['jz'] = 0.2
+        self.assertEqual(c['jz'], 0.2)
 
     def test_cz(self):
         """Test `chroma`."""
 
         c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
-        self.assertEqual(c.chroma, 0.5)
-        c.chroma = 0.1
-        self.assertEqual(c.chroma, 0.1)
+        self.assertEqual(c['chroma'], 0.5)
+        c['chroma'] = 0.1
+        self.assertEqual(c['chroma'], 0.1)
 
     def test_hue(self):
         """Test `hue`."""
 
         c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
-        self.assertEqual(c.hue, 270)
-        c.hue = 0.1
-        self.assertEqual(c.hue, 0.1)
+        self.assertEqual(c['hue'], 270)
+        c['hue'] = 0.1
+        self.assertEqual(c['hue'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
 
 
 class TestNull(util.ColorAsserts, unittest.TestCase):

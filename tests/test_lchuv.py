@@ -97,33 +97,33 @@ class TestLCHuvD65Properties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--lchuv 90% 50 120 / 1)')
-        self.assertEqual(c.lightness, 90)
-        c.lightness = 80
-        self.assertEqual(c.lightness, 80)
+        self.assertEqual(c['lightness'], 90)
+        c['lightness'] = 80
+        self.assertEqual(c['lightness'], 80)
 
     def test_chroma(self):
         """Test `chroma`."""
 
         c = Color('color(--lchuv 90% 50 120 / 1)')
-        self.assertEqual(c.chroma, 50)
-        c.chroma = 40
-        self.assertEqual(c.chroma, 40)
+        self.assertEqual(c['chroma'], 50)
+        c['chroma'] = 40
+        self.assertEqual(c['chroma'], 40)
 
     def test_hue(self):
         """Test `hue`."""
 
         c = Color('color(--lchuv 90% 50 120 / 1)')
-        self.assertEqual(c.hue, 120)
-        c.hue = 110
-        self.assertEqual(c.hue, 110)
+        self.assertEqual(c['hue'], 120)
+        c['hue'] = 110
+        self.assertEqual(c['hue'], 110)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--lchuv 90% 50 120 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
 
 
 class TestNull(util.ColorAsserts, unittest.TestCase):

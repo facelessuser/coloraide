@@ -87,30 +87,30 @@ class TestJzazbzProperties(util.ColorAsserts, unittest.TestCase):
         """Test `lightness`."""
 
         c = Color('color(--jzazbz 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.jz, 1)
-        c.jz = 0.2
-        self.assertEqual(c.jz, 0.2)
+        self.assertEqual(c['jz'], 1)
+        c['jz'] = 0.2
+        self.assertEqual(c['jz'], 0.2)
 
     def test_az(self):
         """Test `az`."""
 
         c = Color('color(--jzazbz 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.az, 0.2)
-        c.az = 0.1
-        self.assertEqual(c.az, 0.1)
+        self.assertEqual(c['az'], 0.2)
+        c['az'] = 0.1
+        self.assertEqual(c['az'], 0.1)
 
     def test_bz(self):
         """Test `bz`."""
 
         c = Color('color(--jzazbz 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.bz, -0.3)
-        c.bz = 0.1
-        self.assertEqual(c.bz, 0.1)
+        self.assertEqual(c['bz'], -0.3)
+        c['bz'] = 0.1
+        self.assertEqual(c['bz'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--jzazbz 1 0.2 -0.3 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
