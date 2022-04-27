@@ -3,7 +3,6 @@ from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 RGB_TO_XYZ = [
     [0.5766690429101305, 0.1855582379065463, 0.1882286462349947],
@@ -28,13 +27,13 @@ def lin_a98rgb_to_xyz(rgb: Vector) -> Vector:
     https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
     """
 
-    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1))
+    return alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
 
 
 def xyz_to_lin_a98rgb(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light a98-rgb."""
 
-    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1))
+    return alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
 def lin_a98rgb(rgb: Vector) -> Vector:

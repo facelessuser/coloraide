@@ -58,11 +58,7 @@ def calc_adaptation_matrices(
 
     first = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
     second = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
-
-    m2 = cast(
-        Matrix,
-        alg.diag(cast(Vector, alg.divide(cast(Vector, first), cast(Vector, second), dims=alg.D1)))
-    )
+    m2 = alg.diag(alg.divide(first, second, dims=alg.D1))
     adapt = cast(Matrix, alg.multi_dot([alg.inv(m), m2, m]))
 
     return adapt, alg.inv(adapt)
@@ -125,7 +121,7 @@ class VonKries(CAT):
 
         a, b = sorted([w1, w2])
         m, mi = cls.get_adaptation_matrices(a, b)
-        return cast(Vector, alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1))
+        return alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1)
 
 
 class Bradford(VonKries):

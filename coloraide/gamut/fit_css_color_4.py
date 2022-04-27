@@ -27,8 +27,8 @@ class CssColor4(Fit):
 
         # Return white or black if lightness is out of range
         if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
-            mapcolor.chroma = 0
-            mapcolor.hue = NaN
+            mapcolor['chroma'] = 0
+            mapcolor['hue'] = NaN
             clip_channels(color.update(mapcolor))
             return
 

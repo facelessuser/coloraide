@@ -58,7 +58,7 @@ from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
 from .types import Plugin
-from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
+from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
     DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB, DEOK
@@ -172,6 +172,14 @@ class Color(metaclass=ColorMeta):
 
         return len(self._space.CHANNEL_NAMES) + 1
 
+    @overload
+    def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
+        pass
+
+    @overload
+    def __getitem__(self, i: slice) -> Vector:  # noqa: D105
+        pass
+
     def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
         """Get channels."""
 
@@ -179,17 +187,29 @@ class Color(metaclass=ColorMeta):
             return self._space.get(i)
         return (self._space._coords + [self._space.alpha])[i]
 
+    @overload
+    def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
+        pass
+
+    @overload
+    def __setitem__(self, i: slice, v: Vector) -> None:  # noqa: D105
+        pass
+
     def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
         """Set channels."""
 
-        if isinstance(i, str):
-            return self._space.set(i, v)
-
         if not hasattr(v, '__len__'):
-            setattr(self._space, cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]), cast(float, v))
-            return
+            if isinstance(i, str):
+                return self._space.set(i, cast(float, v))
+            else:
+                setattr(
+                    self._space,
+                    cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]),
+                    cast(float, v)
+                )
+                return
 
-        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
+        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[cast(int, i)]):
             setattr(self._space, name, cast(Vector, v)[e])
 
     def __eq__(self, other: Any) -> bool:
@@ -198,7 +218,7 @@ class Color(metaclass=ColorMeta):
         return (
             type(other) == type(self) and
             other.space() == self.space() and
-            util.cmp_coords(cast(Vector, other[:]), cast(Vector, self[:]))
+            util.cmp_coords(other[:], self[:])
         )
 
     @classmethod
@@ -851,7 +871,7 @@ class Color(metaclass=ColorMeta):
     def luminance(self) -> float:
         """Get color's luminance."""
 
-        return cast(float, self.convert("xyz-d65")['y'])
+        return self.convert("xyz-d65")['y']
 
     def contrast(self, color: ColorInput) -> float:
         """Compare the contrast ratio of this color and the provided color."""

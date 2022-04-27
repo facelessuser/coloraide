@@ -24,7 +24,6 @@ from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 B = 1.15
 G = 0.66
@@ -82,13 +81,13 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     iz = (jz + D0) / (1 + D - D * (jz + D0))
 
     # Convert to LMS prime
-    pqlms = cast(Vector, alg.dot(izazbz_to_lms_p_mi, [iz, az, bz], dims=alg.D2_D1))
+    pqlms = alg.dot(izazbz_to_lms_p_mi, [iz, az, bz], dims=alg.D2_D1)
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms, m2=M2)
 
     # Convert back to absolute XYZ D65
-    xm, ym, za = cast(Vector, alg.dot(lms_to_xyz_mi, lms, dims=alg.D2_D1))
+    xm, ym, za = alg.dot(lms_to_xyz_mi, lms, dims=alg.D2_D1)
     xa = (xm + ((B - 1) * za)) / B
     ya = (ym + ((G - 1) * xa)) / G
 
@@ -105,13 +104,13 @@ def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     ym = (G * ya) - ((G - 1) * xa)
 
     # Convert to LMS
-    lms = cast(Vector, alg.dot(xyz_to_lms_m, [xm, ym, za], dims=alg.D2_D1))
+    lms = alg.dot(xyz_to_lms_m, [xm, ym, za], dims=alg.D2_D1)
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
 
     # Calculate Izazbz
-    iz, az, bz = cast(Vector, alg.dot(lms_p_to_izazbz_m, pqlms, dims=alg.D2_D1))
+    iz, az, bz = alg.dot(lms_p_to_izazbz_m, pqlms, dims=alg.D2_D1)
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0
