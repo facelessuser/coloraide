@@ -3,7 +3,7 @@
 from .. import algebra as alg
 from ..filters import Filter
 from ..types import Vector, Matrix
-from typing import Any, Optional, Dict, Tuple, Callable, cast, TYPE_CHECKING
+from typing import Any, Optional, Dict, Tuple, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -136,14 +136,14 @@ def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector
     w1, w2, sep = wings
 
     # Which side are we on?
-    lms_c = alg.dot(LRGB_TO_LMS, color.coords(), dims=alg.D2_D1)
-    if cast(float, alg.dot(lms_c, sep)) > 0:
-        coords = cast(Vector, alg.dot(w2, lms_c, dims=alg.D2_D1))
+    lms_c = alg.dot(LRGB_TO_LMS, color[:-1], dims=alg.D2_D1)
+    if alg.dot(lms_c, sep) > 0:
+        coords = alg.dot(w2, lms_c, dims=alg.D2_D1)
     else:
-        coords = cast(Vector, alg.dot(w1, lms_c, dims=alg.D2_D1))
+        coords = alg.dot(w1, lms_c, dims=alg.D2_D1)
 
     if severity < 1:
-        color._space._coords = [alg.lerp(a, b, severity) for a, b in zip(color.coords(), coords)]
+        color._space._coords = [alg.lerp(a, b, severity) for a, b in zip(color[:-1], coords)]
     else:
         color._space._coords = coords
 
@@ -164,9 +164,9 @@ def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
     then we interpolate against the original color.
     """
 
-    coords = cast(Vector, alg.dot(transform, color.coords(), dims=alg.D2_D1))
+    coords = alg.dot(transform, color[:-1], dims=alg.D2_D1)
     if severity < 1:
-        color._space._coords = [alg.lerp(c1, c2, severity) for c1, c2 in zip(color.coords(), coords)]
+        color._space._coords = [alg.lerp(c1, c2, severity) for c1, c2 in zip(color[:-1], coords)]
     else:
         color._space._coords = coords
 
@@ -187,7 +187,7 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
 
     # Filter the color according to the severity
     m1 = matrices[severity1]
-    coords = cast(Vector, alg.dot(m1, color.coords(), dims=alg.D2_D1))
+    coords = alg.dot(m1, color[:-1], dims=alg.D2_D1)
 
     # If severity was not exact, and it also isn't max severity,
     # let's calculate the next most severity and interpolate
@@ -204,7 +204,7 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
         # but it ends up being faster just modifying the color on both the high
         # and low matrix and interpolating the color than interpolating the matrix
         # and then applying it to the color. The results are identical as well.
-        coords2 = cast(Vector, alg.dot(m2, color.coords(), dims=alg.D2_D1))
+        coords2 = alg.dot(m2, color[:-1], dims=alg.D2_D1)
         coords = [alg.lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
 
     # Return the altered color

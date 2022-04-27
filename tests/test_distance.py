@@ -500,7 +500,7 @@ class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(
             Color('red').delta_e('blue', method='2000'),
-            Color('red').delta_e_2000('blue')
+            Color('red').delta_e('blue', method='2000')
         )
 
     def test_delta_e_alternate_calls_with_params(self):
@@ -508,7 +508,7 @@ class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(
             Color('red').delta_e('blue', method='hyab', space="din99o"),
-            Color('red').delta_e_hyab('blue', space="din99o")
+            Color('red').delta_e('blue', method='hyab', space="din99o")
         )
 
     def test_hyab_bad_space(self):

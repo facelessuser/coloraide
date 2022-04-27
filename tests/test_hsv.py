@@ -87,33 +87,33 @@ class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
         """Test `hue`."""
 
         c = Color('color(--hsv 120 50% 50% / 1)')
-        self.assertEqual(c.hue, 120)
-        c.hue = 110
-        self.assertEqual(c.hue, 110)
+        self.assertEqual(c['hue'], 120)
+        c['hue'] = 110
+        self.assertEqual(c['hue'], 110)
 
     def test_saturation(self):
         """Test `saturation`."""
 
         c = Color('color(--hsv 120 50% 50% / 1)')
-        self.assertEqual(c.saturation, 0.5)
-        c.saturation = 0.6
-        self.assertEqual(c.saturation, 0.6)
+        self.assertEqual(c['saturation'], 0.5)
+        c['saturation'] = 0.6
+        self.assertEqual(c['saturation'], 0.6)
 
     def test_value(self):
         """Test `value`."""
 
         c = Color('color(--hsv 120 50% 50% / 1)')
-        self.assertEqual(c.value, 0.5)
-        c.value = 0.4
-        self.assertEqual(c.value, 0.4)
+        self.assertEqual(c['value'], 0.5)
+        c['value'] = 0.4
+        self.assertEqual(c['value'], 0.4)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--hsv 120 50% 50% / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
 
 
 class TestNull(util.ColorAsserts, unittest.TestCase):

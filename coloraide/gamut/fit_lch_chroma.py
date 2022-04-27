@@ -45,18 +45,18 @@ class LchChroma(Fit):
 
         space = color.space()
         mapcolor = color.convert(cls.SPACE)
-        lightness = mapcolor.lightness
+        lightness = mapcolor['lightness']
 
         # Return white or black if lightness is out of range
         if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
-            mapcolor.chroma = 0
-            mapcolor.hue = NaN
+            mapcolor['chroma'] = 0
+            mapcolor['hue'] = NaN
             clip_channels(color.update(mapcolor))
             return
 
         # Set initial chroma boundaries
         low = 0.0
-        high = mapcolor.chroma
+        high = mapcolor['chroma']
         clip_channels(color.update(mapcolor))
 
         # Adjust chroma if we are not under the JND yet.
@@ -65,11 +65,11 @@ class LchChroma(Fit):
             lower_in_gamut = True
 
             while True:
-                mapcolor.chroma = (high + low) * 0.5
+                mapcolor['chroma'] = (high + low) * 0.5
 
                 # Avoid doing expensive delta E checks if in gamut
                 if lower_in_gamut and mapcolor.in_gamut(space, tolerance=0):
-                    low = mapcolor.chroma
+                    low = mapcolor['chroma']
                 else:
                     clip_channels(color.update(mapcolor))
                     de = mapcolor.delta_e(color, method=cls.DE)
@@ -84,7 +84,7 @@ class LchChroma(Fit):
                         # chroma to get as close to the JND as possible.
                         if lower_in_gamut:
                             lower_in_gamut = False
-                        low = mapcolor.chroma
+                        low = mapcolor['chroma']
                     else:
                         # We are still outside the gamut and outside the JND
-                        high = mapcolor.chroma
+                        high = mapcolor['chroma']

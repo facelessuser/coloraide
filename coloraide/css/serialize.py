@@ -26,7 +26,7 @@ def named_color(obj: 'Color', alpha: Optional[bool], fit: Union[str, bool]) -> O
     if a is None:
         a = 1
     method = None if not isinstance(fit, str) else fit
-    coords = alg.no_nans(obj.fit(method=method).coords())
+    coords = alg.no_nans(obj.fit(method=method)[:-1])
     return to_name(coords + [a])
 
 
@@ -91,7 +91,7 @@ def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) ->
     """Get the coordinates."""
 
     method = None if not isinstance(fit, str) else fit
-    coords = obj.fit(method=method).coords() if fit else obj.coords()
+    coords = obj.fit(method=method)[:-1] if fit else obj[:-1]
     return alg.no_nans(coords) if legacy or not none else coords
 
 
@@ -113,7 +113,7 @@ def hexadecimal(
     """Get the hex `RGB` value."""
 
     method = None if not isinstance(fit, str) else fit
-    coords = [c for c in alg.no_nans(obj.fit(method=method).coords())]
+    coords = [c for c in alg.no_nans(obj.fit(method=method)[:-1])]
     a = get_alpha(obj, alpha, False)
 
     if a is not None:

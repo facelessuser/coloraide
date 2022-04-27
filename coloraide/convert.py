@@ -123,10 +123,10 @@ def convert(color: 'Color', space: str) -> 'Space':
 
     # Grab the convert for the current space to the desired space
     # Result is cached for quicker future conversions.
-    chain = color._get_convert_chain(type(color._space), space)
+    chain = color._get_convert_chain(type(color._space), space)  # type: ignore[attr-defined]
 
     # Get coordinates and convert NaN values to 0
-    coords = alg.no_nans(color.coords())
+    coords = alg.no_nans(color[:-1])
 
     # Navigate the conversion chain translated the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
@@ -148,4 +148,4 @@ def convert(color: 'Color', space: str) -> 'Space':
             )
         last = b
 
-    return last(coords, color.alpha)
+    return last(coords, color[-1])

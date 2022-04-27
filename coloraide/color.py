@@ -58,7 +58,7 @@ from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
 from .types import Plugin
-from typing import Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
+from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
     DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB, DEOK
@@ -172,30 +172,45 @@ class Color(metaclass=ColorMeta):
 
         return len(self._space.CHANNEL_NAMES) + 1
 
-    def __getitem__(self, i: Union[int, slice]) -> Union[float, Vector]:
+    @overload
+    def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
+        pass
+
+    @overload
+    def __getitem__(self, i: slice) -> Vector:  # noqa: D105
+        pass
+
+    def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
         """Get channels."""
 
+        if isinstance(i, str):
+            return self._space.get(i)
         return (self._space._coords + [self._space.alpha])[i]
 
-    def __setitem__(self, i: Union[int, slice], v: Union[float, Vector]) -> None:
+    @overload
+    def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
+        pass
+
+    @overload
+    def __setitem__(self, i: slice, v: Vector) -> None:  # noqa: D105
+        pass
+
+    def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
         """Set channels."""
 
         if not hasattr(v, '__len__'):
-            setattr(self._space, cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]), cast(float, v))
-            return
+            if isinstance(i, str):
+                return self._space.set(i, cast(float, v))
+            else:
+                setattr(
+                    self._space,
+                    cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]),
+                    cast(float, v)
+                )
+                return
 
-        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
+        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[cast(int, i)]):
             setattr(self._space, name, cast(Vector, v)[e])
-
-    def __dir__(self) -> Sequence[str]:
-        """Get attributes for `dir()`."""
-
-        attr = cast(List['str'], super().__dir__())
-        attr.extend(self._space.CHANNEL_NAMES)
-        attr.extend('alpha')
-        attr.extend(list(self._space.CHANNEL_ALIASES.keys()))
-        attr.extend(['delta_e_{}'.format(name) for name in self.DE_MAP.keys()])
-        return attr
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -203,7 +218,7 @@ class Color(metaclass=ColorMeta):
         return (
             type(other) == type(self) and
             other.space() == self.space() and
-            util.cmp_coords(cast(Vector, other[:]), cast(Vector, self[:]))
+            util.cmp_coords(other[:], self[:])
         )
 
     @classmethod
@@ -300,8 +315,8 @@ class Color(metaclass=ColorMeta):
 
         m = cls._match(string, start, fullmatch, filters=filters)
         if m is not None:
-            color = m[0]
-            return ColorMatch(cls(color.NAME, color.coords(), color.alpha), m[1], m[2])
+            space = m[0]
+            return ColorMatch(cls(space.NAME, space.coords(), space.alpha), m[1], m[2])
         return None
 
     @classmethod
@@ -419,16 +434,16 @@ class Color(metaclass=ColorMeta):
         """Return color as a data object."""
 
         data = {'space': self.space()}  # type: Dict[str, Any]
-        coords = self.coords()
+        coords = self[:-1]
         for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
             data[name] = coords[i]
-        data['alpha'] = self.alpha
+        data['alpha'] = self[-1]
         return data
 
     def normalize(self) -> 'Color':
         """Normalize the color."""
 
-        coords, alpha = self._space.null_adjust(self.coords(), self.alpha)
+        coords, alpha = self._space.null_adjust(self[:-1], self[-1])
         return self.mutate(self.space(), coords, alpha)
 
     def is_nan(self, name: str) -> bool:
@@ -451,11 +466,6 @@ class Color(metaclass=ColorMeta):
 
         return self._space.NAME
 
-    def coords(self) -> Vector:
-        """Coordinates."""
-
-        return self._space.coords()
-
     def new(
         self,
         color: ColorInput,
@@ -472,7 +482,7 @@ class Color(metaclass=ColorMeta):
     def clone(self) -> 'Color':
         """Clone."""
 
-        return self.new(self.space(), self.coords(), self.alpha)
+        return self.new(self.space(), self[:-1], self[-1])
 
     def convert(self, space: str, *, fit: Union[bool, str] = False, in_place: bool = False) -> 'Color':
         """Convert to color space."""
@@ -560,7 +570,7 @@ class Color(metaclass=ColorMeta):
         coords = self.chromatic_adaptation(
             xyz._space.WHITE,
             self._space.WHITE,
-            xyz.coords()
+            xyz[:-1]
         )
         return util.xyz_to_xyY(coords, self._space.white())[:2]
 
@@ -596,7 +606,7 @@ class Color(metaclass=ColorMeta):
         if c.in_gamut(tolerance=0.0):
             if isinstance(c._space, Cylindrical):
                 name = c._space.hue_name()
-                c.set(name, util.constrain_hue(c.get(name)))
+                c.set(name, util.constrain_hue(c[name]))
         else:
             gamut.clip_channels(c)
 
@@ -639,7 +649,7 @@ class Color(metaclass=ColorMeta):
         if c.in_gamut(tolerance=0.0):
             if isinstance(c._space, Cylindrical):
                 name = c._space.hue_name()
-                c.set(name, util.constrain_hue(c.get(name)))
+                c.set(name, util.constrain_hue(c[name]))
         else:
             # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
             func(c, **kwargs)
@@ -861,7 +871,7 @@ class Color(metaclass=ColorMeta):
     def luminance(self) -> float:
         """Get color's luminance."""
 
-        return cast(float, self.convert("xyz-d65").y)
+        return self.convert("xyz-d65")['y']
 
     def contrast(self, color: ColorInput) -> float:
         """Compare the contrast ratio of this color and the provided color."""
@@ -893,13 +903,26 @@ class Color(metaclass=ColorMeta):
         if '.' in name:
             space, channel = name.split('.', 1)
             obj = self.convert(space)
-            obj._space.set(channel, value(self._space.get(channel)) if callable(value) else value)
+            obj._space.set(channel, value(obj._space.get(channel)) if callable(value) else value)
             return self.update(obj)
 
         # Handle a function that modifies the value or a direct value
         self._space.set(name, value(self._space.get(name)) if callable(value) else value)
 
         return self
+
+
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
+
+
+# TODO: remove before release of 1.0
+class ColorLegacy(Color):  # pragma: no cover
+    """Legacy color class."""
+
+    def coords(self) -> Vector:
+        """Coordinates."""
+
+        return self[:-1]
 
     def __getattr__(self, name: str) -> Any:
         """Get attribute."""
@@ -935,8 +958,6 @@ class Color(metaclass=ColorMeta):
                 return
             except AttributeError:  # pragma: no cover
                 pass
+
         # Set all attributes on the Color class.
         sc.__setattr__(name, value)
-
-
-Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)

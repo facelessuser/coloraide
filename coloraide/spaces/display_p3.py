@@ -3,7 +3,6 @@ from ..cat import WHITES
 from .srgb import SRGB, lin_srgb, gam_srgb
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 RGB_TO_XYZ = [
     [0.4865709486482161, 0.26566769316909306, 0.1982172852343625],
@@ -26,13 +25,13 @@ def lin_p3_to_xyz(rgb: Vector) -> Vector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1))
+    return alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
 
 
 def xyz_to_lin_p3(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light P3."""
 
-    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1))
+    return alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
 def lin_p3(rgb: Vector) -> Vector:

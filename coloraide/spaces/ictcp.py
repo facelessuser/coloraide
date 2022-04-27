@@ -9,7 +9,6 @@ from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -55,13 +54,13 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     """From ICtCp to XYZ."""
 
     # Convert to LMS prime
-    pqlms = cast(Vector, alg.dot(ictcp_to_lms_p_mi, ictcp, dims=alg.D2_D1))
+    pqlms = alg.dot(ictcp_to_lms_p_mi, ictcp, dims=alg.D2_D1)
 
     # Decode PQ LMS to LMS
     lms = util.pq_st2084_eotf(pqlms)
 
     # Convert back to absolute XYZ D65
-    absxyz = cast(Vector, alg.dot(lms_to_xyz_mi, lms, dims=alg.D2_D1))
+    absxyz = alg.dot(lms_to_xyz_mi, lms, dims=alg.D2_D1)
 
     # Convert back to normal XYZ D65
     return util.absxyzd65_to_xyz_d65(absxyz)
@@ -74,13 +73,13 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     absxyz = util.xyz_d65_to_absxyzd65(xyzd65)
 
     # Convert to LMS
-    lms = cast(Vector, alg.dot(xyz_to_lms_m, absxyz, dims=alg.D2_D1))
+    lms = alg.dot(xyz_to_lms_m, absxyz, dims=alg.D2_D1)
 
     # PQ encode the LMS
     pqlms = util.pq_st2084_inverse_eotf(lms)
 
     # Calculate Izazbz
-    return cast(Vector, alg.dot(lms_p_to_ictcp_m, pqlms, dims=alg.D2_D1))
+    return alg.dot(lms_p_to_ictcp_m, pqlms, dims=alg.D2_D1)
 
 
 class ICtCp(Labish, Space):

@@ -58,7 +58,7 @@ def apply_filter(name, amount, space, method, p):
         color.filter(name, amount, space=space, in_place=True)
     # We could gamut map or just do a simple clip, we've opted for a simple fast clip for now.
     color.clip(in_place=True)
-    return tuple([int(x * 255) for x in color.coords()]) + ((int(color[-1] * 255),) if has_alpha else tuple())
+    return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),) if has_alpha else tuple())
 
 
 def process_image(img, output, name, amount, space, cvd_approach):

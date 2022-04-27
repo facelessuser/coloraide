@@ -3,7 +3,6 @@ from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 
 RGB_TO_XYZ = [
@@ -26,13 +25,13 @@ def lin_srgb_to_xyz(rgb: Vector) -> Vector:
     D65 (no chromatic adaptation)
     """
 
-    return cast(Vector, alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1))
+    return alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
 
 
 def xyz_to_lin_srgb(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light sRGB."""
 
-    return cast(Vector, alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1))
+    return alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
 class SRGBLinear(SRGB):

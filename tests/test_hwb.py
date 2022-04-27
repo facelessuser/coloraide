@@ -137,33 +137,33 @@ class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
         """Test `hue`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.hue, 120)
-        c.hue = 110
-        self.assertEqual(c.hue, 110)
+        self.assertEqual(c['hue'], 120)
+        c['hue'] = 110
+        self.assertEqual(c['hue'], 110)
 
     def test_whiteness(self):
         """Test `whiteness`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.whiteness, 0.5)
-        c.whiteness = 0.6
-        self.assertEqual(c.whiteness, 0.6)
+        self.assertEqual(c['whiteness'], 0.5)
+        c['whiteness'] = 0.6
+        self.assertEqual(c['whiteness'], 0.6)
 
     def test_blackness(self):
         """Test `blackness`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.blackness, 0.2)
-        c.blackness = 0.1
-        self.assertEqual(c.blackness, 0.1)
+        self.assertEqual(c['blackness'], 0.2)
+        c['blackness'] = 0.1
+        self.assertEqual(c['blackness'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(--hwb 120 50% 20% / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
 
 
 class TestNull(util.ColorAsserts, unittest.TestCase):

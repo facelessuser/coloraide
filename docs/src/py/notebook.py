@@ -377,14 +377,14 @@ def color_formatter(src="", language="", class_name=None, md=""):
             attributes = {'class': "swatch out-of-gamut", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
             stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
+            if color[-1] < 1.0:
                 stops[-1] += ' 50%'
                 stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
         else:
             attributes = {'class': "swatch", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
             stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
-            if color.alpha < 1.0:
+            if color[-1] < 1.0:
                 stops[-1] += ' 50%'
                 stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
 

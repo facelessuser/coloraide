@@ -66,7 +66,8 @@ class Color:
 Description
 : 
     The `Color` class object is a wrapper around the internal color space objects. It provides an API interface to allow
-    users to specify and manipulate colors.
+    users to specify and manipulate colors. Color objects can be iterated, which will return each color channel. They
+    are also indexable by channel name or by channel index.
 
 Import path
 : 
@@ -338,23 +339,6 @@ Description
 Return
 : 
     Returns a string with the name of the current color space.
-
-## `Color.coords` {#coords}
-
-```py3
-def coords(
-    self
-):
-```
-
-Description
-: 
-    Returns a list of the color's coordinates. This does **not** include the alpha channel. Alpha can be accessed via
-    the `alpha` property or `get` and `set` accessors.
-
-Return
-: 
-    Returns a list of numbers indicating the current coordinate values.
 
 ## `Color.normalize` {#normalize}
 
@@ -1154,27 +1138,3 @@ Parameters
 Return
 : 
     Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color.
-
-## `Color` Channel Properties
-
-Depending on the given color space, channel properties will be available on the color object as well. These are
-dynamically available depending on what the current color space is.
-
-For instance, if the color space is sRGB, the channels `red`, `green`, `blue`, and `alpha` will all be available.
-Color channel names are defined in [Supported Colors](../colors/index.md).
-
-These properties are read and writable. When read, they will return the numerical value stored in the specified channel.
-When written, they can accept a numerical value or a string value using CSS syntax acceptable for that channel in that
-color space.
-
-For more complex setting operations, or to chain multiple set operations, please use [`set`](#set) and [`get`](#get).
-
-## `Color` Dynamic Methods
-
-Depending on what ∆E methods are available, you can access the method, not only as `Color.delta_e(value, method="name")`,
-you can can also access them directly via `Color.delta_e_name(value)`:
-
-```playground
-Color('red').delta_e('green', method="2000")
-Color('red').delta_e_2000('green')
-```

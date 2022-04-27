@@ -259,11 +259,11 @@ def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
 def postdivide(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
-    if color.alpha >= 1.0:
+    if color[-1] >= 1.0:
         return
 
-    channels = color.coords()
-    alpha = color.alpha
+    channels = color[:-1]
+    alpha = color[-1]
     coords = []
     for i, value in enumerate(channels):
 
@@ -278,11 +278,11 @@ def postdivide(color: 'Color') -> None:
 def premultiply(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
-    if color.alpha >= 1.0:
+    if color[-1] >= 1.0:
         return
 
-    channels = color.coords()
-    alpha = color.alpha
+    channels = color[:-1]
+    alpha = color[-1]
     coords = []
     for i, value in enumerate(channels):
 
@@ -491,12 +491,12 @@ def color_lerp(
         premultiply(color1)
         premultiply(color2)
 
-    channels1 = color1.coords()
-    channels2 = color2.coords()
+    channels1 = color1[:-1]
+    channels2 = color2[:-1]
 
     # Include alpha
-    channels1.append(color1.alpha)
-    channels2.append(color2.alpha)
+    channels1.append(color1[-1])
+    channels2.append(color2[-1])
 
     return InterpolateSingle(
         names=color1._space.CHANNEL_NAMES + ('alpha',),

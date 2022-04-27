@@ -29,8 +29,8 @@ class DE94(DeltaE):
         http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
         """
 
-        l1, a1, b1 = alg.no_nans(color.convert("lab").coords())
-        l2, a2, b2 = alg.no_nans(sample.convert("lab").coords())
+        l1, a1, b1 = alg.no_nans(color.convert("lab")[:-1])
+        l2, a2, b2 = alg.no_nans(sample.convert("lab")[:-1])
 
         # Equation (5)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

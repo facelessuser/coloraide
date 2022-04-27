@@ -19,7 +19,7 @@ plugins, and users can create their own as well.
 ∆E plugins are subclassed from `#!py3 coloraide.distance.DeltaE`.
 
 ```py
-class DeltaE(ABCMeta):
+class DeltaE(Plugin, metaclass=ABCMeta):
     """Delta E plugin class."""
 
     NAME = ''
@@ -46,7 +46,8 @@ gamut. All default gamut mapping methods provided by ColorAide are provided via 
 Plugins are are created by subclassing `#!py3 coloraide.gamut.Fit`.
 
 ```py
-class Fit(ABCMeta):
+class Fit(Plugin, metaclass=ABCMeta):
+    """Fit plugin class."""
     """Fit plugin class."""
 
     NAME = ''

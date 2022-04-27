@@ -84,30 +84,30 @@ class TestXYZD65Properties(util.ColorAsserts, unittest.TestCase):
         """Test `x`."""
 
         c = Color('color(xyz 0.1 0.2 0.3 / 1)')
-        self.assertEqual(c.x, 0.1)
-        c.x = 0.2
-        self.assertEqual(c.x, 0.2)
+        self.assertEqual(c['x'], 0.1)
+        c['x'] = 0.2
+        self.assertEqual(c['x'], 0.2)
 
     def test_y(self):
         """Test `y`."""
 
         c = Color('color(xyz 0.1 0.2 0.3 / 1)')
-        self.assertEqual(c.y, 0.2)
-        c.y = 0.1
-        self.assertEqual(c.y, 0.1)
+        self.assertEqual(c['y'], 0.2)
+        c['y'] = 0.1
+        self.assertEqual(c['y'], 0.1)
 
     def test_z(self):
         """Test `z`."""
 
         c = Color('color(xyz 0.1 0.2 0.3 / 1)')
-        self.assertEqual(c.z, 0.3)
-        c.z = 0.1
-        self.assertEqual(c.z, 0.1)
+        self.assertEqual(c['z'], 0.3)
+        c['z'] = 0.1
+        self.assertEqual(c['z'], 0.1)
 
     def test_alpha(self):
         """Test `alpha`."""
 
         c = Color('color(xyz 0.1 0.2 0.3 / 1)')
-        self.assertEqual(c.alpha, 1)
-        c.alpha = 0.5
-        self.assertEqual(c.alpha, 0.5)
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
