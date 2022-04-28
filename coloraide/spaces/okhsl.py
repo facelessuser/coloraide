@@ -42,6 +42,9 @@ K_1 = 0.206
 K_2 = 0.03
 K_3 = (1.0 + K_1) / (1.0 + K_2)
 
+L_MAX = 1 - 1e-8
+S_MIN = 0.00002
+
 
 def toe(x: float) -> float:
     """Toe function for L_r."""
@@ -334,7 +337,10 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0 and L != 1 and s != 0 and not alg.is_nan(h):
+    if l == 0.0 or (L_MAX < l <= 1.0):
+        return [L, 0.0, 0.0]
+
+    if s >= S_MIN and not alg.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -373,13 +379,15 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
 def oklab_to_okhsl(lab: Vector) -> Vector:
     """Oklab to Okhsl."""
 
-    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
-
     h = alg.NaN
     L = lab[0]
     s = 0.0
 
-    if c != 0 and L not in (0, 1):
+    if L == 0.0 or (L_MAX < L <= 1.0):
+        return [alg.NaN, 0.0, L]
+
+    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    if c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -409,7 +417,7 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
 
     l = toe(L)
 
-    if s == 0:
+    if s < S_MIN:
         h = alg.NaN
 
     return [util.constrain_hue(h * 360), s, l]
@@ -477,7 +485,8 @@ class Okhsl(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if coords[1] == 0 or coords[2] in (0, 1):
+        s, l = coords[1:3]
+        if s < S_MIN or l == 0.0 or (L_MAX < l <= 1.0):
             coords[0] = alg.NaN
         return coords, alg.no_nan(alpha)
 

@@ -30,7 +30,7 @@ from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 from .oklab import oklab_to_linear_srgb
-from .okhsl import toe, toe_inv, find_cusp, to_st
+from .okhsl import toe, toe_inv, find_cusp, to_st, S_MIN, L_MAX
 import math
 from .. import algebra as alg
 from ..types import Vector
@@ -41,12 +41,16 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
+    h = alg.no_nan(h)
     h = h / 360.0
 
     l = toe_inv(v)
     a = b = 0.0
 
-    if l != 0 and s != 0 and not alg.is_nan(h):
+    if v == 0 or (L_MAX < v <= 1.0 and s < S_MIN):
+        return [l, 0.0, 0.0]
+
+    if s >= S_MIN and not alg.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -88,14 +92,19 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
 def oklab_to_okhsv(lab: Vector) -> Vector:
     """Oklab to Okhsv."""
 
-    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    # If we are white or black, we can shortcut out
+
     l = lab[0]
 
     h = alg.NaN
     s = 0.0
     v = toe(l)
 
-    if c != 0 and l != 0 and l != 1:
+    if v == 0.0 or (L_MAX < v <= 1.0):
+        return [alg.NaN, 0.0, v]
+
+    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    if c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -128,7 +137,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
         v = l / l_v
         s = (s_0 + t_max) * c_v / ((t_max * s_0) + t_max * k * c_v)
 
-    if s == 0:
+    if s < S_MIN:
         h = alg.NaN
 
     return [util.constrain_hue(h * 360), s, v]
@@ -196,7 +205,8 @@ class Okhsv(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if coords[1] == 0:
+        s, v = coords[1:3]
+        if s < S_MIN or v == 0 or (L_MAX < v <= 1.0 and s < S_MIN):
             coords[0] = alg.NaN
         return coords, alg.no_nan(alpha)
 

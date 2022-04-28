@@ -1047,6 +1047,14 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
             Color("lab(54.291% 80.805 69.891)")
         )
 
+    def test_interpolate_fit_required(self):
+        """Test interpolation case that requires fitting."""
+
+        self.assertColorEqual(
+            Color('color(display-p3 0 1 1)').interpolate('color(display-p3 0 0 1)', space='hsl')(0.5),
+            Color('color(display-p3 0.21789 0.49793 0.96522)')
+        )
+
     def test_interpolate(self):
         """Test interpolation."""
 

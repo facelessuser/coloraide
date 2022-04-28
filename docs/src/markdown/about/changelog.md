@@ -23,7 +23,9 @@
 - **NEW**: Add new support for filters, including W3C Filter Effects Level 1 and color vision deficiency simulation.
 - **NEW**: Some performance enhancements in conversions.
 - **NEW**: Chromatic adaptation is now exposed as a plugin. New CAT plugins can be created externally and registered.
-
+- **FIX**: Okhsl and Okhsv algorithm is not very precise when calculating achromatic values, you can be fairly close
+  but still not get hues to register as undefined. Add fix-up threshold to detect when saturation is very close to zero
+  or lightness is very close black or white. Okhsv will check when `value` is very close to zero only.
 ## 0.15.1
 
 - **FIX**: Fix an issue related to matching colors in a buffer at a given offset.
