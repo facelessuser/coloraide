@@ -6,7 +6,6 @@ from . import algebra as alg
 from .types import Vector, VectorLike
 from typing import Any, Callable
 
-ACHROMATIC_THRESHOLD = 0.0005
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
 DEF_ALPHA = 1.0

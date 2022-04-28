@@ -29,6 +29,7 @@ from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .oklab import oklab_to_linear_srgb
+from .oklch import ACHROMATIC_THRESHOLD
 from .. import util
 import math
 import sys
@@ -334,7 +335,7 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0 and L != 1 and s != 0 and not alg.is_nan(h):
+    if L not in (0.0, 1.0) and s != 0.0 and not alg.is_nan(h):
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -373,13 +374,16 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
 def oklab_to_okhsl(lab: Vector) -> Vector:
     """Oklab to Okhsl."""
 
-    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
-
     h = alg.NaN
     L = lab[0]
     s = 0.0
+    l = toe(L)
 
-    if c != 0 and L not in (0, 1):
+    c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    if c < ACHROMATIC_THRESHOLD:
+        c = 0
+
+    if c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -406,11 +410,6 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
 
             t = (c - k_0) / (k_1 + k_2 * (c - k_0))
             s = mid + 0.2 * t
-
-    l = toe(L)
-
-    if s == 0:
-        h = alg.NaN
 
     return [util.constrain_hue(h * 360), s, l]
 
@@ -477,7 +476,7 @@ class Okhsl(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if coords[1] == 0 or coords[2] in (0, 1):
+        if coords[2] in (0.0, 1.0) or coords[1] == 0.0:
             coords[0] = alg.NaN
         return coords, alg.no_nan(alpha)
 

@@ -23,6 +23,7 @@
 - **NEW**: Add new support for filters, including W3C Filter Effects Level 1 and color vision deficiency simulation.
 - **NEW**: Some performance enhancements in conversions.
 - **NEW**: Chromatic adaptation is now exposed as a plugin. New CAT plugins can be created externally and registered.
+- **FIX**: Okhsl and Okhsv handling of achromatic values during conversion.
 
 ## 0.15.1
 

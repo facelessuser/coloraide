@@ -127,20 +127,8 @@ problem, `srgb` can always be specified. `#!py3 tolerance=0` can also be used to
 in the gamut.
 
 When a color is precisely in gamut, HSL has a very tight conversion to and from sRGB. A color that is in gamut, will
-remain in gamut throughout the conversion, forwards and backwards. Okhsl and Okhsv, on the other hand, are color models
-have a looser conversion algorithm. While the constrains mimic the traditional HSL and HSV boundaries, the edges of
-those boundaries do not always convert precisely back into the sRGB gamut.
-
-Okhsl and Okhsv are color models that more approximate the sRGB gamut, and seem to expect some clipping and/or rounding
-when going back to sRGB. Adjusting the tolerance for these color models may be sufficient until you are ready to
-finalize the color by clipping the color to remove the noise.
-
-```playground
-okhsv = Color('color(--okhsv 20 100% 75% / 1)')
-okhsv.in_gamut()
-okhsv.convert('srgb')
-okhsv.in_gamut(tolerance=0.0005)
-```
+remain in gamut throughout the conversion, forwards and backwards. On the other hand, there may be color models that
+have a looser conversion algorithm. There may be cases where it may be beneficial to decrease the threshold.
 
 ## Mapping Colors
 

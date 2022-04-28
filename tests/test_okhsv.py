@@ -125,6 +125,12 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('okhsv', [NaN, 0.5, 0.75], 1)
         self.assertTrue(c.is_nan('hue'))
 
+    def test_gray_null(self):
+        """Test that gray has null."""
+
+        c = Color('gray').convert('okhsv')
+        self.assertTrue(c.is_nan('hue'))
+
     def test_none_input(self):
         """Test `none` null."""
 
