@@ -36,7 +36,7 @@ def main():
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160'
         yaxis = 'l:0:100'
-        constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
+        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
         title = 'MINDE and Chroma Reduction in CIELCH'
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
     elif args.gamut in ('oklch-chroma', 'css-color-4'):
@@ -47,7 +47,7 @@ def main():
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:0.5'
         yaxis = 'l:0:1'
-        constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
+        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
         t = 'MINDE and Chroma Reduction in Oklch'
         if args.gamut == 'css-color-4':
             t += ' (CSS Color Level 4)'
@@ -63,7 +63,7 @@ def main():
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'
         yaxis = 'l:0:100' if space == 'lch' else 'l:0:1'
-        constant = 'h:{}'.format(fmt_float(mapcolor.hue, 5))
+        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
         t_space = 'CIELCH' if space == 'lch' else 'Oklch'
         title = 'Clipping shown in {}'.format(t_space)
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
