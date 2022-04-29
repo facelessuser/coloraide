@@ -7,6 +7,7 @@ from . import gamut
 from . import compositing
 from . import interpolate
 from . import filters
+from . import harmonies
 from . import util
 from . import algebra as alg
 from .css import parse
@@ -808,6 +809,16 @@ class Color(metaclass=ColorMeta):
         """Filter."""
 
         return filters.filters(self, name, amount, space, in_place, **kwargs)
+
+    def harmony(
+        self,
+        name: str,
+        *,
+        space: Optional[str] = None
+    ) -> List['Color']:
+        """Acquire the specified color harmonies."""
+
+        return harmonies.harmonize(self, name, space)
 
     def compose(
         self,

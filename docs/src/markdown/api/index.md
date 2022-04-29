@@ -810,6 +810,35 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
+## `Color.harmony` {#harmony}
+
+```py
+def harmony(
+    self,
+    name,
+    *,
+    space
+):
+```
+
+Description
+: 
+    The `harmony` method uses the current color and returns a set of harmonious colors (including the current color).
+    The color harmonies are based on the classical color harmonies of color theory. By default, harmonious colors are
+    performed under the perceptually uniform Oklch color space, but other cylindrical color spaces can be used.
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `name`                     |                                    | The name of the filter that should be applied.
+    `name`                     |                                    | Name of the color harmony to use.
+    `space`                    | `#!py3 'oklch'`                    | Color space under which the harmonies will be calculated. Must be a cylindrical space unless using `mono` which can take non cylindrical spaces.
+
+Return
+: 
+    Returns a list of [`Color`](#color) objects.
+
 ## `Color.compose` {#compose}
 
 ```py

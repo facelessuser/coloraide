@@ -47,16 +47,20 @@ template = '''<div class="playground" id="__playground_{el_id}">
 code_id = 0
 
 
-class ColorInterpolate(list):
-    """Color interpolate."""
+class HtmlGradient(list):
+    """HTML color gradient."""
+
+
+class HtmlSteps(list):
+    """HTML color steps."""
 
 
 class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
 
 
-class ColorRow():
-    """Force a new color row."""
+class HtmlRow(list):
+    """Create a row with the given colors."""
 
 
 def _escape(txt):
@@ -90,12 +94,20 @@ def get_colors(result):
         Color2 = Color
 
     colors = []
-    if isinstance(result, Color):
+    if isinstance(result, HtmlRow):
+        colors = HtmlRow(
+            [
+                ColorTuple(c.to_string(fit=False), c.clone()) if isinstance(c, Color) else ColorTuple(c, Color2(c))
+                for c in result
+            ]
+        )
+    elif isinstance(result, (HtmlSteps, HtmlGradient)):
+        t = type(result)
+        colors = t([c.clone() if isinstance(c, Color) else Color2(c) for c in result])
+    elif isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(fit=False), result.clone()))
     elif isinstance(result, Interpolator):
-        colors = ColorInterpolate(result.steps(steps=5, max_delta_e=3))
-    elif isinstance(result, ColorRow):
-        colors = result
+        colors = HtmlGradient(result.steps(steps=5, max_delta_e=3))
     elif isinstance(result, str):
         try:
             colors.append(ColorTuple(result, Color2(result)))
@@ -144,7 +156,9 @@ def execute(cmd):
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
         'Piecewise': coloraide.Piecewise,
-        'ColorRow': ColorRow
+        'HtmlRow': HtmlRow,
+        'HtmlSteps': HtmlSteps,
+        'HtmlGradient': HtmlGradient
     }
 
     if coloraide_extras is not None:
@@ -254,21 +268,31 @@ def _color_command_console(colors):
     bar = False
     values = []
     for item in colors:
-        if isinstance(item, ColorRow):
-            if bar:
-                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
-                values = []
-            bar = False
-        elif isinstance(item, ColorInterpolate):
+        if isinstance(item, (HtmlGradient, HtmlSteps)):
+            current = total = percent = last = 0
+            if isinstance(item, HtmlSteps):
+                total = len(item)
+                percent = 100 / total
+                current = percent
+
             if bar:
                 el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
                 values = []
             sub_el1 = '<div class="swatch-bar"><span class="swatch swatch-gradient">{}</span></div>'
             style = "--swatch-stops: "
             stops = []
-            for color in item:
+            for e, color in enumerate(item):
                 color.fit(WEBSPACE, in_place=True)
-                stops.append(color.convert(WEBSPACE).to_string())
+                if current:
+                    stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(last)))
+                    stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(current)))
+                    last = current
+                    if e < (total - 1):
+                        current += percent
+                    else:
+                        current = 100
+                else:
+                    stops.append(color.convert(WEBSPACE).to_string())
             if not stops:
                 stops.extend(['transparent'] * 2)
             if len(stops) == 1:
@@ -278,6 +302,14 @@ def _color_command_console(colors):
             el += sub_el1.format(sub_el2)
             bar = False
         else:
+            is_row = False
+            if isinstance(item, HtmlRow):
+                is_row = True
+                if bar and values:
+                    el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                    values = []
+                bar = False
+
             bar = True
             base_classes = "swatch"
             for color in item:
@@ -297,6 +329,11 @@ def _color_command_console(colors):
                     title=title
                 )
                 values.append(c)
+
+            if is_row and values:
+                el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
+                values = []
+                bar = False
     if bar:
         el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))
         values = []

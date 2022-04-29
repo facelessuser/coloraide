@@ -37,6 +37,7 @@ nav:
       - Gamut Mapping: gamut.md
       - Chromatic Adaptation: cat.md
       - Contrast: contrast.md
+      - Color Harmonies: harmonies.md
       - Filters: filters.md
       - String Output: strings.md
   - Color Spaces:
