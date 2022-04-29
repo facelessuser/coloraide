@@ -10,8 +10,6 @@ if TYPE_CHECKING:  # pragma: no cover
 class Harmony:
     """Color harmony."""
 
-    DEFAULT_SPACE = 'oklch'
-
     @classmethod
     def harmonize(cls, color: 'Color', space: Optional[str]) -> List['Color']:
         """Get color harmonies."""
@@ -25,7 +23,7 @@ class Monochromatic(Harmony):
         """Get color harmonies."""
 
         if space is None:
-            space = cls.DEFAULT_SPACE
+            space = color.HARMONY
         orig_space = color.space()
 
         # Create black and white so we can generate tints and shades
@@ -82,7 +80,7 @@ class Geometric(Harmony):
         """Get color harmonies."""
 
         if space is None:
-            space = cls.DEFAULT_SPACE
+            space = color.HARMONY
 
         orig_space = color.space()
         color0 = color.convert(space)
@@ -131,7 +129,7 @@ class SplitComplementary(Harmony):
         """Get color harmonies."""
 
         if space is None:
-            space = cls.DEFAULT_SPACE
+            space = color.HARMONY
 
         orig_space = color.space()
         color0 = color.convert(space)
@@ -160,7 +158,7 @@ class Analogous(Harmony):
         """Get color harmonies."""
 
         if space is None:
-            space = cls.DEFAULT_SPACE
+            space = color.HARMONY
 
         orig_space = color.space()
         color0 = color.convert(space)
@@ -189,7 +187,7 @@ class TetradicRect(Harmony):
         """Get color harmonies."""
 
         if space is None:
-            space = cls.DEFAULT_SPACE
+            space = color.HARMONY
 
         orig_space = color.space()
         color0 = color.convert(space)

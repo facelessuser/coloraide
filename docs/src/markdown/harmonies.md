@@ -157,3 +157,17 @@ The rectangular tetradic harmony is very similar to square except that it draws 
 ```playground
 HtmlSteps(Color('red').harmony('rectangle'))
 ```
+
+## Changing the Default Harmony Color Space
+
+If you'd like to change the `#!py3 Color()` class's default harmony color space, it can be done with
+[class override](./color.md#override-default-settings). Simply derive a new `#!py3 Color()` class from the original and
+override the `HARMONY` property with the name of a suitable cylindrical color space. Afterwards, all color color
+harmony calculations will use the specified color space unless overridden via the method's `space` parameter.
+
+```playground
+class Custom(Color):
+    HARMONY = 'hsl'
+
+HtmlSteps(Custom('red').harmony('split'))
+```

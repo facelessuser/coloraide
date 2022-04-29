@@ -162,6 +162,7 @@ class Color(metaclass=ColorMeta):
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
     DELTA_E = util.DEF_DELTA_E
+    HARMONY = util.DEF_HARMONY
     CHROMATIC_ADAPTATION = 'bradford'
 
     # It is highly unlikely that a user would ever need to override this, but

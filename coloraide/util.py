@@ -13,6 +13,7 @@ DEF_MIX = 0.5
 DEF_HUE_ADJ = "shorter"
 DEF_INTERPOLATE = "oklab"
 DEF_FIT = "lch-chroma"
+DEF_HARMONY = "oklch"
 DEF_DELTA_E = "76"
 
 ERR_MAP_MSG = """

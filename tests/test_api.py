@@ -1558,6 +1558,23 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             Color2('red').mix('green', space='din99o').to_string()
         )
 
+    def test_override_harmony(self):
+        """Test harmony override."""
+
+        class Color2(Color):
+            """Color."""
+
+            HARMONY = "hsl"
+
+        self.assertEqual(
+            Color('red').harmony('complement'),
+            Color('red').harmony('complement', space=Color.HARMONY)
+        )
+        self.assertEqual(
+            Color2('red').harmony('complement'),
+            Color2('red').harmony('complement', space='hsl')
+        )
+
     def test_override_delta_e(self):
         """Test delta e override."""
 

@@ -22,8 +22,10 @@
   `#!py3 Color1[:] = Color2[:]`. Dynamic properties and `coords()` are replaced with this functionality.
 - **NEW**: Input method names for distancing, gamut mapping, compositing, and space methods are now case sensitive.
   There were inconsistencies in some places, so it was opted to make all case sensitive.
-- **NEW**: The ability to create color harmonies has been added.
-- **NEW**: Add new support for filters, including W3C Filter Effects Level 1 and color vision deficiency simulation.
+- **NEW**: The ability to create color harmonies has been added via the new `harmony()` method. Also, the default color
+  space used to calculate color harmonies can be overridden by the class property `HARMONY`.
+- **NEW**: Add new support for filters added via the `filter()` method. Filters include the W3C Filter Effects Level 1
+  and color vision deficiency simulation.
 - **NEW**: Some performance enhancements in conversions.
 - **NEW**: Chromatic adaptation is now exposed as a plugin. New CAT plugins can be created externally and registered.
 - **FIX**: Okhsl and Okhsv handling of achromatic values during conversion.
