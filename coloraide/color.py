@@ -82,6 +82,25 @@ SUPPORTED_FILTERS = (
     Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert, Protan, Deutan, Tritan
 )
 
+WARN_COORDS = """
+Color channel access has changed. Dynamic channel properties have been removed.
+Using the static functions and properties Color.coords(), Color.alpha is deprecated.
+All channels can now easily be accessed with indexing.
+
+- You can index with numbers: Color[0]
+- You can index with channel names: Color['red']
+- You can slice to get just color coordinates: Color[:-1]
+- You can get all coordinates: Color[:] or list(Color)
+- You can even iterate: [c for c in Color]
+- Indexing also supports assignment: Color[0] = 1 or Color[:3] = [1, 1, 1]
+
+Please consider updating usage to utilize this new functionality as Color.coords()
+and Color.alpha will be removed in version 1.0.
+
+To temporarily regain dynamic properties, such as Color.red, you can use the ColorLegacy
+class instead of Color, but this is only provided temporarily to help people transition.
+"""
+
 
 class ColorMatch:
     """Color match object."""
@@ -922,18 +941,51 @@ class Color(metaclass=ColorMeta):
 
         return self
 
+    @property  # type: ignore[misc]
+    @util.deprecated(WARN_COORDS)
+    def alpha(self) -> float:  # pragma: no cover
+        """
+        Alpha channel.
+
+        TODO: remove before release of 1.0
+        """
+
+        return self[-1]
+
+    @alpha.setter  # type: ignore[misc]
+    @util.deprecated(WARN_COORDS)
+    def alpha(self, value: float) -> None:  # pragma: no cover
+        """
+        Adjust alpha.
+
+        TODO: remove before release of 1.0
+        """
+
+        self[-1] = value
+
+    @util.deprecated(WARN_COORDS)
+    def coords(self) -> Vector:  # pragma: no cover
+        """
+        Coordinates.
+
+        TODO: remove before release of 1.0
+        """
+
+        return self[:-1]
+
 
 Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
 
 
-# TODO: remove before release of 1.0
 class ColorLegacy(Color):  # pragma: no cover
-    """Legacy color class."""
+    """
+    Legacy color class that provides dynamic color properties depending on the current color space.
 
-    def coords(self) -> Vector:
-        """Coordinates."""
+    This is not recommended as it requires overhead on every class attribute access.
+    Channel indexing should be used instead.
 
-        return self[:-1]
+    TODO: remove before release of 1.0
+    """
 
     def __getattr__(self, name: str) -> Any:
         """Get attribute."""

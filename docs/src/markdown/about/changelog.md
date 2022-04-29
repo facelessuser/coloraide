@@ -5,21 +5,24 @@
 !!! warning
     The `Color` object has now replaced named channel properties with indexing. What this means is that things like
     `#!py3 Color.red` is now replaced with either `#!py3 Color['red']` or `#!py3 Color[0]`. Slicing can also be used
-    `#!py3 Color[0:2] = [0.5, 1.0]`. Also, `Color.coords()` has also been removed in favor of using `#!py3 Color[:-1]`
-    to get all coordinates except alpha.
+    `#!py3 Color[0:2] = [0.5, 1.0]`.
+
+    Also, non-dynamic methods such as `Color.coords()` and the property `Color.alpha` are still present, but deprecated.
+    Alternatives to `coords()` and `Color.alpha`are `Color[:-1]` and `Color.alpha` respectively.
 
     This change was done as dynamic properties add too much overhead on every class attribute access. This new
     methodology allows more powerful indexing into color channels while avoiding the slow down of intercepting class
-    attribute get and set operations.
+    attribute get and set operations. The indexing feature has also made `Color.coords()` and `Color.alpha` redundant.
 
-    Until the 1.0 release happens, we will provide `ColorLegacy` which allows the old style `#!py3 Color.red` and
-    `Color.coords()`. It is strongly advised that migration to the new methodology occurs promptly though.
+    Until the 1.0 release occurs, we will provide `ColorLegacy` which can bring back the old style dynamic properties.
+    After the 1.0 release, `coords()`, `alpha`, and all other dynamic properties will be completely removed.
 
 - **NEW**: `Color` objects are now indexable and channels can be retrieved using either numbers or strings, e.g.,
   `#!py3 Color[0]` or `#!py3 Color['red']`. Slicing and assignments via slicing are also supported:
   `#!py3 Color1[:] = Color2[:]`. Dynamic properties and `coords()` are replaced with this functionality.
 - **NEW**: Input method names for distancing, gamut mapping, compositing, and space methods are now case sensitive.
   There were inconsistencies in some places, so it was opted to make all case sensitive.
+- **NEW**: The ability to create color harmonies has been added.
 - **NEW**: Add new support for filters, including W3C Filter Effects Level 1 and color vision deficiency simulation.
 - **NEW**: Some performance enhancements in conversions.
 - **NEW**: Chromatic adaptation is now exposed as a plugin. New CAT plugins can be created externally and registered.
