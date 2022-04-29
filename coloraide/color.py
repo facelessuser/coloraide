@@ -83,22 +83,33 @@ SUPPORTED_FILTERS = (
 )
 
 WARN_COORDS = """
-Color channel access has changed. Dynamic channel properties have been removed.
-Using the static functions and properties Color.coords(), Color.alpha is deprecated.
-All channels can now easily be accessed with indexing.
+Color channel access has changed. Dynamic channel properties have been deprecated.
+Usage of Color.coords() has also been deprecated. All channels can now easily be
+accessed with indexing.
 
 - You can index with numbers: Color[0]
 - You can index with channel names: Color['red']
-- You can slice to get just color coordinates: Color[:-1]
+- You can slice to get specific color coordinates: Color[:-1]
 - You can get all coordinates: Color[:] or list(Color)
-- You can even iterate: [c for c in Color]
+- You can even iterate coordinates: [c for c in Color]
 - Indexing also supports assignment: Color[0] = 1 or Color[:3] = [1, 1, 1]
 
 Please consider updating usage to utilize this new functionality as Color.coords()
-and Color.alpha will be removed in version 1.0.
+and all other dynamic properties will be removed sometime before the 1.0 release.
 
-To temporarily regain dynamic properties, such as Color.red, you can use the ColorLegacy
-class instead of Color, but this is only provided temporarily to help people transition.
+These changes were made in an effort to remove unnecessary overhead on every class
+attribute get/set operation.
+"""
+
+WARN_DE = """
+Use of delta_e_<method> is deprecated. Users should use delta_e(color, method=name)
+instead.
+
+Please consider updating usage to adhere to this guidance as this functionality will be
+removed at some time befor the 1.0 release.
+
+These changes were made in an effort to remove unnecessary overhead on every class
+attribute get/set operation.
 """
 
 
@@ -942,28 +953,6 @@ class Color(metaclass=ColorMeta):
 
         return self
 
-    @property  # type: ignore[misc]
-    @util.deprecated(WARN_COORDS)
-    def alpha(self) -> float:  # pragma: no cover
-        """
-        Alpha channel.
-
-        TODO: remove before release of 1.0
-        """
-
-        return self[-1]
-
-    @alpha.setter  # type: ignore[misc]
-    @util.deprecated(WARN_COORDS)
-    def alpha(self, value: float) -> None:  # pragma: no cover
-        """
-        Adjust alpha.
-
-        TODO: remove before release of 1.0
-        """
-
-        self[-1] = value
-
     @util.deprecated(WARN_COORDS)
     def coords(self) -> Vector:  # pragma: no cover
         """
@@ -974,21 +963,7 @@ class Color(metaclass=ColorMeta):
 
         return self[:-1]
 
-
-Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
-
-
-class ColorLegacy(Color):  # pragma: no cover
-    """
-    Legacy color class that provides dynamic color properties depending on the current color space.
-
-    This is not recommended as it requires overhead on every class attribute access.
-    Channel indexing should be used instead.
-
-    TODO: remove before release of 1.0
-    """
-
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> Any:  # pragma: no cover
         """Get attribute."""
 
         sc = super()
@@ -997,7 +972,9 @@ class ColorLegacy(Color):  # pragma: no cover
         if not name.startswith('_'):
             # Try color space properties
             try:
-                return sc.__getattribute__('_space').get(name)
+                value = sc.__getattribute__('_space').get(name)
+                util.warn_deprecated(WARN_COORDS, 3)
+                return value
             except AttributeError:
                 pass
 
@@ -1005,12 +982,13 @@ class ColorLegacy(Color):  # pragma: no cover
             if name.startswith('delta_e_'):
                 de = name[8:]
                 if de in sc.__getattribute__('DE_MAP'):
-                    return functools.partial(super().__getattribute__('delta_e'), method=de)
+                    util.warn_deprecated(WARN_DE, 3)
+                    return functools.partial(sc.__getattribute__('delta_e'), method=de)
 
         # Do the Color class methods
         sc.__getattribute__(name)
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
         """Set attribute."""
 
         sc = super()
@@ -1019,9 +997,13 @@ class ColorLegacy(Color):  # pragma: no cover
             try:
                 # See if we need to set the space specific channel attributes.
                 sc.__getattribute__('_space').set(name, value)
+                util.warn_deprecated(WARN_COORDS, 3)
                 return
             except AttributeError:  # pragma: no cover
                 pass
 
         # Set all attributes on the Color class.
         sc.__setattr__(name, value)
+
+
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)

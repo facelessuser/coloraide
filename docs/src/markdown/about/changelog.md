@@ -2,24 +2,33 @@
 
 ## 0.16.0
 
-!!! warning
-    The `Color` object has now replaced named channel properties with indexing. What this means is that things like
-    `#!py3 Color.red` is now replaced with either `#!py3 Color['red']` or `#!py3 Color[0]`. Slicing can also be used
-    `#!py3 Color[0:2] = [0.5, 1.0]`.
+!!! warning "Deprecations"
+    In interest of speed, and due to the overhead inflicted on every class attribute access, we've decided to deprecate
+    dynamic properties. This includes dynamic color properties (e.g. `Color.red`) and dynamic ∆E methods (e.g.
+    `Color.delta_e_2000()`). As far as color channel coordinate access is concerned, we've reworked a faster more useful
+    approach. ∆E already has a suitable replacement and will be the only approach moving forward.
 
-    Also, non-dynamic methods such as `Color.coords()` and the property `Color.alpha` are still present, but deprecated.
-    Alternatives to `coords()` and `Color.alpha`are `Color[:-1]` and `Color.alpha` respectively.
+    1. Use of `delta_e_<method>` is deprecated. Users should use the already available `delta_e(color, method=name)`
+       approach when using non-default ∆E methods.
 
-    This change was done as dynamic properties add too much overhead on every class attribute access. This new
-    methodology allows more powerful indexing into color channels while avoiding the slow down of intercepting class
-    attribute get and set operations. The indexing feature has also made `Color.coords()` and `Color.alpha` redundant.
+    2. Color channel access has changed. Dynamic channel properties have been deprecated. Usage of `Color.coords()` has
+       also been deprecated. All channels can now easily be accessed with indexing. `Color.get()` and `Color.set()`
+       have not changed.
 
-    Until the 1.0 release occurs, we will provide `ColorLegacy` which can bring back the old style dynamic properties.
-    After the 1.0 release, `coords()`, `alpha`, and all other dynamic properties will be completely removed.
+        - You can index with numbers: `Color[0]`.
+        - You can index with channel names: `Color['red']`.
+        - You can slice to get specific color coordinates: `Color[:-1]`.
+        - You can get all coordinates: `Color[:]` or `list(Color)`.
+        - You can even iterate coordinates: `[c for c in Color]`.
+        - Indexing also supports assignment: `Color[0] = 1` or `Color[:3] = [1, 1, 1]`.
+
+    Please consider updating usage to utilize the suggested approaches. The aforementioned methods will be removed
+    sometime before the 1.0 release.
 
 - **NEW**: `Color` objects are now indexable and channels can be retrieved using either numbers or strings, e.g.,
   `#!py3 Color[0]` or `#!py3 Color['red']`. Slicing and assignments via slicing are also supported:
-  `#!py3 Color1[:] = Color2[:]`. Dynamic properties and `coords()` are replaced with this functionality.
+  `#!py3 Color1[:] = Color2[:]`.
+- **NEW**: `Color.coords()`, dynamic color properties, and dynamic ∆E methods are all deprecated.
 - **NEW**: Input method names for distancing, gamut mapping, compositing, and space methods are now case sensitive.
   There were inconsistencies in some places, so it was opted to make all case sensitive.
 - **NEW**: The ability to create color harmonies has been added via the new `harmony()` method. Also, the default color
