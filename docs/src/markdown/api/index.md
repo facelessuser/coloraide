@@ -717,52 +717,6 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
-## `Color.cvd` {#cvd}
-
-```py
-def cvd(
-    self,
-    deficiency,
-    severity=1,
-    *,
-    method:=None,
-    in_place:=False
-):
-```
-
-Description
-: 
-    Simulate color vision deficiencies. Deficiency is specified via `deficiency`. By default, `severity` is set to 1
-    for complete color deficiency in that category. The `severity` can be set anywhere from 0 (no CVD) up to 1 (full
-    CVD). Multiple methods for calculating CVD are also available and can be controlled by setting `method`.
-
-    CVD           | Name
-    ------------- | ----
-    Protanopia    | `protan`
-    Deuteranopia  | `deutan`
-    Tritanopia    | `tritan`
-    Achromatopsia | `achroma`
-
-    Simulation\ Approach             | Name
-    -------------------------------- | ----
-    Brettel 1997                     | `brettel`
-    Viénot, Brettel, and Mollon 1999 | `vienot`
-    Machado 2009                     | `machado`
-
-Parameters
-: 
-    Parameters                 | Defaults                           | Description
-    -------------------------- | ---------------------------------- | -----------
-    `deficiency`               |                                    | The name of the deficiency that should be simulated.
-    `severity`                 | `#!py3 1`                          | A numerical value between 0 - 1 representing the severity level of the CVD. 
-    `method`                   | `#!py3 None`                       | Controls the algorithm used for simulating the given CVD.
-    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
-
-Return
-: 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
-    `in_place` is `#!py3 True`.
-
 ## `Color.filter` {#cvd}
 
 ```py
@@ -772,7 +726,8 @@ def filter(
     amount=None,
     *,
     space='srgb-linear',
-    in_place=False
+    in_place=False,
+    **kwargs: Any
 ):
 ```
 
@@ -785,16 +740,21 @@ Description
     An `amount` can be provided to adjust how much the color is filtered. Any clamping that occurs with the `amount`
     parameter, and related ways in which `amount` are applied, follow the W3C [Filter Effects][filter-effects] spec.
 
-    Filters       | Name         | Default
-    ------------- | ------------ | -------
-    Brightness    | `brightness` | `#!py3 1`
-    Saturation    | `saturate`   | `#!py3 1`
-    Contrast      | `contrast`   | `#!py3 1`
-    Opacity       | `opacity`    | `#!py3 1`
-    Invert        | `invert`     | `#!py3 1`
-    Hue\ rotation | `hue-rotate` | `#!py3 0`
-    Sepia         | `sepia`      | `#!py3 1`
-    Grayscale     | `grayscale`  | `#!py3 1`
+    Some filters, such as CVDs, may take additional arguments via `kwargs`.
+
+    Filters           | Name         | Default
+    ----------------- | ------------ | -------
+    Brightness        | `brightness` | `#!py3 1`
+    Saturation        | `saturate`   | `#!py3 1`
+    Contrast          | `contrast`   | `#!py3 1`
+    Opacity           | `opacity`    | `#!py3 1`
+    Invert            | `invert`     | `#!py3 1`
+    Hue\ rotation     | `hue-rotate` | `#!py3 0`
+    Sepia             | `sepia`      | `#!py3 1`
+    Grayscale         | `grayscale`  | `#!py3 1`
+    Protanopia\ CVD   | `protan`     | `#!py3 1`
+    Deuteranopia\ CVD | `deutan`     | `#!py3 1`
+    Tritanopia\ CVD   | `tritan`     | `#!py3 1`
 
 Parameters
 : 
@@ -803,7 +763,16 @@ Parameters
     `name`                     |                                    | The name of the filter that should be applied.
     `amount`                   | See\ above                         | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
     `space`                    | `#!py3 None`                       | Controls the algorithm used for simulating the given CVD.
-    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned. 
+    `**kwargs`                 |                                    | Additional filter specific parameters.
+
+    CVDs also take an optional `method` parameter that allows for specifying the CVD algorithm to use.
+
+    Simulation\ Approach             | Name
+    -------------------------------- | ----
+    Brettel 1997                     | `brettel`
+    Viénot, Brettel, and Mollon 1999 | `vienot`
+    Machado 2009                     | `machado`
 
 Return
 : 
@@ -827,11 +796,20 @@ Description
     The color harmonies are based on the classical color harmonies of color theory. By default, harmonious colors are
     performed under the perceptually uniform Oklch color space, but other cylindrical color spaces can be used.
 
+    Harmony             | Name
+    ------------------- | ------------
+    Monochromatic       | `mono`
+    Complementary       | `complement`
+    Split\ Complement   | `split`
+    Analogous           | `analogous`
+    Triadic             | `triad`
+    Tetradic\ Square    | `square`
+    Tetradic\ Rectangle | `rectangle`
+
 Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `name`                     |                                    | The name of the filter that should be applied.
     `name`                     |                                    | Name of the color harmony to use.
     `space`                    | `#!py3 'oklch'`                    | Color space under which the harmonies will be calculated. Must be a cylindrical space unless using `mono` which can take non cylindrical spaces.
 

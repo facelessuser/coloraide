@@ -114,7 +114,9 @@ class Bradford(VonKries):
 
 ## Filters
 
-Filter plugins allow you to apply a filter on a given color.
+Filter plugins allow you to apply a filter to a given color.
+
+### Plugin Class
 
 ```py
 class Filter(Plugin, metaclass=ABCMeta):
