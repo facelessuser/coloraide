@@ -244,11 +244,4 @@ HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
     \* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
     pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
 
-<style>
-img.trans-bg {
-    background-color: var(--swatch-bg-color);
-    background-image: linear-gradient(45deg,var(--swatch-bg-alt-color) 25%,transparent 25%),linear-gradient(-45deg,var(--swatch-bg-alt-color) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--swatch-bg-alt-color) 75%),linear-gradient(-45deg,transparent 75%,var(--swatch-bg-alt-color) 75%);
-    background-position: 0 0,0 0.5em,0.5em -0.5em,-0.5em 0;
-    background-size: 1em 1em;
-}
-</style>
+--8<-- "images.md"

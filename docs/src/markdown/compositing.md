@@ -587,7 +587,9 @@ _Specified as `#!py3 'color'`_.
 
 No regions are enabled.
 
-![Clear](images/PD_clr.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Clear](images/compose_clear.png){.trans-bg}
 
 _Specified as `#!py3 'clear'`_.
 
@@ -595,7 +597,9 @@ _Specified as `#!py3 'clear'`_.
 
 Only the source will be present.
 
-![Clear](images/PD_src.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Copy](images/compose_copy.png){.trans-bg}
 
 _Specified as `#!py3 'copy'`_.
 
@@ -603,7 +607,9 @@ _Specified as `#!py3 'copy'`_.
 
 Only the destination will be present.
 
-![Clear](images/PD_dst.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Destination](images/compose_destination.png){.trans-bg}
 
 _Specified as `#!py3 'destination'`_.
 
@@ -611,7 +617,9 @@ _Specified as `#!py3 'destination'`_.
 
 Source is placed over the destination.
 
-![Clear](images/PD_src-over.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Source Over](images/compose_source-over.png){.trans-bg}
 
 _Specified as `#!py3 'source-over'`_.
 
@@ -619,7 +627,9 @@ _Specified as `#!py3 'source-over'`_.
 
 Destination is placed over the source.
 
-![Clear](images/PD_dst-over.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Destination Over](images/compose_destination-over.png){.trans-bg}
 
 _Specified as `#!py3 'destination-over'`_.
 
@@ -627,7 +637,9 @@ _Specified as `#!py3 'destination-over'`_.
 
 The source that overlaps the destination, replaces the destination.
 
-![Clear](images/PD_src-in.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Source In](images/compose_source-in.png){.trans-bg}
 
 _Specified as `#!py3 'source-in'`_.
 
@@ -635,7 +647,9 @@ _Specified as `#!py3 'source-in'`_.
 
 Destination which overlaps the source, replaces the source.
 
-![Destination In](images/PD_dst-in.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Destination In](images/compose_destination-in.png){.trans-bg}
 
 _Specified as `#!py3 'destination-in'`_.
 
@@ -643,7 +657,9 @@ _Specified as `#!py3 'destination-in'`_.
 
 Source is placed, where it falls outside of the destination.
 
-![Clear](images/PD_src-out.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Source Out](images/compose_source-out.png){.trans-bg}
 
 _Specified as `#!py3 'source-out'`_.
 
@@ -651,7 +667,9 @@ _Specified as `#!py3 'source-out'`_.
 
 Destination is placed, where it falls outside of the source.
 
-![Clear](images/PD_dst-out.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Destination Out](images/compose_destination-out.png){.trans-bg}
 
 _Specified as `#!py3 'destination-out'`_.
 
@@ -659,7 +677,9 @@ _Specified as `#!py3 'destination-out'`_.
 
 Source which overlaps the destination, replaces the destination. Destination is placed elsewhere.
 
-![Clear](images/PD_src-atop.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Source Atop](images/compose_source-atop.png){.trans-bg}
 
 _Specified as `#!py3 'source-atop'`_.
 
@@ -667,7 +687,9 @@ _Specified as `#!py3 'source-atop'`_.
 
 Destination which overlaps the source replaces the source. Source is placed elsewhere.
 
-![Clear](images/PD_dst-atop.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![Destination Atop](images/compose_destination-atop.png){.trans-bg}
 
 _Specified as `#!py3 'destination-atop'`_.
 
@@ -675,7 +697,9 @@ _Specified as `#!py3 'destination-atop'`_.
 
 Destination which overlaps the source replaces the source. Source is placed elsewhere.
 
-![Clear](images/PD_xor.svg)
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} | ![XOR](images/compose_xor.png){.trans-bg}
 
 _Specified as `#!py3 'xor'`_.
 
@@ -683,8 +707,13 @@ _Specified as `#!py3 'xor'`_.
 
 Display the sum of the source image and destination image.
 
+Source | Destination | Result
+------ | ----------- | ------
+![Source](images/compose_src.png){.trans-bg} | ![Destination](images/compose_dest.png){.trans-bg} |  ![Lighter](images/compose_lighter.png){.trans-bg}
+
 _Specified as `#!py3 'lighter'`_.
 
 --8<--
 compositing.md
+images.md
 --8<--

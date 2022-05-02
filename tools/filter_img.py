@@ -62,7 +62,7 @@ def apply_filter(name, amount, space, method, p):
 
 
 def process_image(img, output, name, amount, space, cvd_approach):
-    """Process the image applying the requested deficiency."""
+    """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
 
