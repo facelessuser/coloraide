@@ -108,9 +108,9 @@ WINGS = [(LMS_475, LMS_575), (LMS_475, LMS_575), (LMS_485, LMS_660)]
 for axis, name, wings in zip(AXIS, NAMES, WINGS):
     wing1, wing2 = wings
 
-    v1 = alg._vector_cross(LMS_WHITE, wing1)
-    v2 = alg._vector_cross(LMS_WHITE, wing2)
-    va = alg._vector_cross(LMS_WHITE, axis)
+    v1 = alg.cross(LMS_WHITE, wing1)
+    v2 = alg.cross(LMS_WHITE, wing2)
+    va = alg.cross(LMS_WHITE, axis)
 
     # Make sure the wings are on the correct sides
     if alg.dot(va, v1) < 0:

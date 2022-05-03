@@ -182,6 +182,148 @@ def _vector_cross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
     ]
 
 
+@overload
+def _to_array(a: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def _to_array(a: MatrixLike) -> Matrix:
+    ...
+
+
+def _to_array(a: ArrayLike) -> Array:
+    """Translate from array like to array."""
+
+    return cast(Array, [(_to_array(i) if isinstance(i, Sequence) else i) for i in a])
+
+
+@overload
+def _cross_pad(a: VectorLike, s: Tuple[int, ...]) -> Vector:
+    ...
+
+
+@overload
+def _cross_pad(a: MatrixLike, s: Tuple[int, ...]) -> Matrix:
+    ...
+
+
+def _cross_pad(a: ArrayLike, s: Tuple[int, ...]) -> Array:
+    """Pad an array with 2-D vectors."""
+
+    m = _to_array(a)
+
+    # Initialize indexes so we can properly write our data
+    total = prod(cast(Iterator[int], s[:-1]))
+    idx = [0] * (len(s) - 1)
+
+    for c in range(total):
+        t = m  # type: Any
+        for i in idx:
+            t = t[i]
+
+        t.append(0)
+
+        if c < (total - 1):
+            for x in range(len(s) - 1):
+                if (idx[x] + 1) % s[x] == 0:
+                    idx[x] = 0
+                    x += 1
+                else:
+                    idx[x] += 1
+                    break
+    return m
+
+
+@overload
+def cross(a: VectorLike, b: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def cross(a: MatrixLike, b: Union[VectorLike, MatrixLike]) -> Matrix:
+    ...
+
+
+@overload
+def cross(a: Union[VectorLike, MatrixLike], b: MatrixLike) -> Matrix:
+    ...
+
+
+def cross(a: ArrayLike, b: ArrayLike) -> Array:
+    """Vector cross product."""
+
+    # Determine shape of arrays
+    shape_a = shape(a)
+    shape_b = shape(b)
+    dims_a = len(shape_a)
+    dims_b = len(shape_b)
+
+    # Avoid crossing scalars
+    if not dims_a or not dims_b:
+        raise ValueError('Cannot cross scalars')
+
+    if not (1 < shape_a[-1] < 4 ) or not not (1 < shape_b[-1] < 4):
+        ValueError('Vectors must be of dimensions 2 or 3')
+
+    # Pad 2-D vectors
+    if shape_a[-1] != shape_b[-1]:
+        if shape_a[-1] == 2:
+            a = _cross_pad(a, shape_a)
+            shape_a = shape_a[:-1] + (3,)
+        else:
+            b = _cross_pad(b, shape_b)
+            shape_b = shape_b[:-1] + (3,)
+
+    if dims_a == 1:
+        if dims_b == 1:
+            # Cross two vectors
+            return _vector_cross(cast(VectorLike, a), cast(VectorLike, b))
+        elif dims_b == 2:
+            # Cross a vector and a 2-D matrix
+            return [_vector_cross(cast(VectorLike, a), cast(VectorLike, r)) for r in b]
+        else:
+            # Cross a vector and an N-D matrix
+            return cast(
+                Matrix,
+                reshape(
+                    [_vector_cross(cast(VectorLike, a), cast(VectorLike, r)) for r in _extract_dims(b, dims_b - 1)],
+                    shape_b
+                )
+            )
+    elif dims_a == 2:
+        if dims_b == 1:
+            # Cross a 2-D matrix and a vector
+            return [_vector_cross(cast(VectorLike, r), cast(VectorLike, b)) for r in a]
+    elif dims_b == 1:
+        # Cross an N-D matrix and a vector
+        return cast(
+            Matrix,
+            reshape(
+                [_vector_cross(cast(VectorLike, r), cast(VectorLike, b)) for r in _extract_dims(a, dims_a - 1)],
+                shape_a
+            )
+        )
+
+    # Cross an N-D and M-D matrix
+    bcast = broadcast(a, b)
+    a2 = []
+    b2 = []
+    data = []
+    count = 1
+    size = bcast.shape[-1]
+    for x, y in bcast:
+        a2.append(x)
+        b2.append(y)
+        if count == size:
+            data.append(_vector_cross(a2, b2))
+            a2.clear()
+            b2.clear()
+            count = 0
+        count += 1
+    return cast(Matrix, reshape(data, bcast.shape))
+
+
 def _extract_dims(
     m: ArrayLike,
     target: int,
