@@ -1,5 +1,5 @@
 :root {
-  --swatch-border-color: hsl(0, 0%, 90%);
+  --swatch-border-color: hsl(0, 0%, 85%);
   --swatch-bg-color: hsl(0, 0%, 100%);
   --swatch-bg-alt-color: hsl(0, 0%, 90%);
   --swatch-gamut-border-color: hsl(340 82% 52%);
@@ -12,7 +12,7 @@
   [data-md-color-scheme="dracula"] {
     --swatch-bg-color: var(--md-default-bg-color);
     --swatch-bg-alt-color: hsl(231deg 15% 20%);
-    --swatch-border-color: hsl(231deg 15% 20%);
+    --swatch-border-color: hsl(231deg 15% 25%);
     --swatch-gamut-border-color: hsl(326, 100%, 74%);
   }
 }
@@ -76,7 +76,7 @@ div.swatch-bar {
                     linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
   background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
   background-size: 1em 1em;
-  border: 2px solid var(--swatch-border-color);
+  border: 2px solid var(--swatch-bg-alt-color);
 
   .swatch {
     background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;

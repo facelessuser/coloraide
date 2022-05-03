@@ -15,7 +15,7 @@ channels and then calculates the luminance. What we end up with is actually the 
 D65 white point.
 
 ```playground
-r, g, b = Color('purple').[:-1]
+r, g, b = Color('purple')[:-1]
 r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
 g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
 b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
