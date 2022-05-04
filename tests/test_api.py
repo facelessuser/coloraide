@@ -32,14 +32,20 @@ class TestAPI(util.ColorAsserts, unittest.TestCase):
     def test_none(self):
         """Test none."""
 
-        self.assertEqual(Color('color(srgb 1 none 1)')[:-1], [1, NaN, 1])
+        c = Color('color(srgb 1 none 1)')
+        self.assertEqual(c[:-1:2], [1, 1])
+        self.assertTrue(c.is_nan('green'))
         self.assertTrue(Color('color(srgb 1 1 1 / none)').is_nan('alpha'))
 
     def test_percent_none(self):
         """Test none for percents."""
 
-        self.assertEqual(Color('color(--lch none 0 none)')[:-1], [NaN, 0, NaN])
-        self.assertEqual(Color('hsl(30 none none)')[:-1], [30, NaN, NaN])
+        c = Color('color(--lch none 0 none)')
+        self.assertEqual(c[1], 0)
+        self.assertTrue(c.is_nan('l') and c.is_nan('h'))
+        c = Color('hsl(30 none none)')
+        self.assertEqual(c[0], 30)
+        self.assertTrue(c.is_nan('s') and c.is_nan('l'))
 
     def test_normalize(self):
         """
