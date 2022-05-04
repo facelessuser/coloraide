@@ -161,41 +161,46 @@ def lerp(a: float, b: float, t: float) -> float:
 ################################
 # Matrix/linear algebra math
 ################################
-def _vector_dot(a: VectorLike, b: VectorLike) -> float:
+def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
     return sum([x * y for x, y in zipl(a, b)])
 
 
-def _vector_cross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
+def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
     """
     Cross two vectors.
 
-    Would like to generalize this more like `numpy`, but this is good for now.
-    Will likely replace this with a full implementation in the future.
+    Takes vectors of either 2 or 3 dimensions. If 2 dimensions, will return the z component.
+    To mix 2 and 3 vector components, please use `cross` instead which will pad 2 dimension
+    vectors if the other is of 3 dimensions. `cross` has more overhead, so use `cross` if
+    you don't need broadcasting of any kind.
     """
 
-    return [
-        v1[1] * v2[2] - v1[2] * v2[1],
-        v1[2] * v2[0] - v2[2] * v1[0],
-        v1[0] * v2[1] - v1[1] * v2[0]
-    ]
+    if len(v1) == len(v2) == 2:
+        return [v1[0] * v2[1] - v1[1] * v2[0]]
+    else:
+        return [
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v2[2] * v1[0],
+            v1[0] * v2[1] - v1[1] * v2[0]
+        ]
 
 
 @overload
-def _to_array(a: VectorLike) -> Vector:
+def acopy(a: VectorLike) -> Vector:
     ...
 
 
 @overload
-def _to_array(a: MatrixLike) -> Matrix:
+def acopy(a: MatrixLike) -> Matrix:
     ...
 
 
-def _to_array(a: ArrayLike) -> Array:
-    """Translate from array like to array."""
+def acopy(a: ArrayLike) -> Array:
+    """Array copy."""
 
-    return cast(Array, [(_to_array(i) if isinstance(i, Sequence) else i) for i in a])
+    return cast(Array, [(acopy(i) if isinstance(i, Sequence) else i) for i in a])
 
 
 @overload
@@ -211,7 +216,7 @@ def _cross_pad(a: MatrixLike, s: Tuple[int, ...]) -> Matrix:
 def _cross_pad(a: ArrayLike, s: Tuple[int, ...]) -> Array:
     """Pad an array with 2-D vectors."""
 
-    m = _to_array(a)
+    m = acopy(a)
 
     # Initialize indexes so we can properly write our data
     total = prod(cast(Iterator[int], s[:-1]))
@@ -259,12 +264,9 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     dims_a = len(shape_a)
     dims_b = len(shape_b)
 
-    # Avoid crossing scalars
-    if not dims_a or not dims_b:
-        raise ValueError('Cannot cross scalars')
-
-    if not (1 < shape_a[-1] < 4 ) or not not (1 < shape_b[-1] < 4):
-        ValueError('Vectors must be of dimensions 2 or 3')
+    # Avoid crossing vectors of the wrong size or scalars
+    if not shape_a or not shape_b or not (1 < shape_a[-1] < 4) or not (1 < shape_b[-1] < 4):
+        raise ValueError('Values must contain vectors of dimensions 2 or 3')
 
     # Pad 2-D vectors
     if shape_a[-1] != shape_b[-1]:
@@ -278,31 +280,28 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     if dims_a == 1:
         if dims_b == 1:
             # Cross two vectors
-            return _vector_cross(cast(VectorLike, a), cast(VectorLike, b))
+            return vcross(cast(VectorLike, a), cast(VectorLike, b))
         elif dims_b == 2:
             # Cross a vector and a 2-D matrix
-            return [_vector_cross(cast(VectorLike, a), cast(VectorLike, r)) for r in b]
+            return [vcross(cast(VectorLike, a), cast(VectorLike, r)) for r in b]
         else:
             # Cross a vector and an N-D matrix
             return cast(
                 Matrix,
                 reshape(
-                    [_vector_cross(cast(VectorLike, a), cast(VectorLike, r)) for r in _extract_dims(b, dims_b - 1)],
+                    [vcross(cast(VectorLike, a), cast(VectorLike, r)) for r in _extract_dims(b, dims_b - 1)],
                     shape_b
                 )
             )
     elif dims_a == 2:
         if dims_b == 1:
             # Cross a 2-D matrix and a vector
-            return [_vector_cross(cast(VectorLike, r), cast(VectorLike, b)) for r in a]
+            return [vcross(cast(VectorLike, r), cast(VectorLike, b)) for r in a]
     elif dims_b == 1:
         # Cross an N-D matrix and a vector
         return cast(
             Matrix,
-            reshape(
-                [_vector_cross(cast(VectorLike, r), cast(VectorLike, b)) for r in _extract_dims(a, dims_a - 1)],
-                shape_a
-            )
+            reshape([vcross(cast(VectorLike, r), cast(VectorLike, b)) for r in _extract_dims(a, dims_a - 1)], shape_a)
         )
 
     # Cross an N-D and M-D matrix
@@ -316,9 +315,9 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
         a2.append(x)
         b2.append(y)
         if count == size:
-            data.append(_vector_cross(a2, b2))
-            a2.clear()
-            b2.clear()
+            data.append(vcross(a2, b2))
+            a2 = []
+            b2 = []
             count = 0
         count += 1
     return cast(Matrix, reshape(data, bcast.shape))
@@ -423,10 +422,7 @@ def dot(
                 shape_c = shape_b[:-2] + shape_b[-1:]
                 return cast(
                     Matrix,
-                    reshape(
-                        [[_vector_dot(cast(VectorLike, a), cast(VectorLike, c)) for c in col] for col in cols1],
-                        shape_c
-                    )
+                    reshape([[vdot(cast(VectorLike, a), cast(VectorLike, c)) for c in col] for col in cols1], shape_c)
                 )
             else:
                 # Dot product of N-D and M-D matrices
@@ -449,21 +445,18 @@ def dot(
     if dims_a == 1:
         if dims_b == 1:
             # Dot product of two vectors
-            return _vector_dot(cast(VectorLike, a), cast(VectorLike, b))
+            return vdot(cast(VectorLike, a), cast(VectorLike, b))
         elif dims_b == 2:
             # Dot product of vector and a matrix
-            return cast(Vector, [_vector_dot(cast(VectorLike, a), col) for col in zipl(*cast(MatrixLike, b))])
+            return cast(Vector, [vdot(cast(VectorLike, a), col) for col in zipl(*cast(MatrixLike, b))])
 
     elif dims_a == 2:
         if dims_b == 1:
             # Dot product of matrix and a vector
-            return cast(Vector, [_vector_dot(row, cast(VectorLike, b)) for row in cast(MatrixLike, a)])
+            return cast(Vector, [vdot(row, cast(VectorLike, b)) for row in cast(MatrixLike, a)])
         elif dims_b == 2:
             # Dot product of two matrices
-            return cast(
-                Matrix,
-                [[_vector_dot(row, col) for col in zipl(*cast(MatrixLike, b))] for row in cast(MatrixLike, a)]
-            )
+            return cast(Matrix, [[vdot(row, col) for col in zipl(*cast(MatrixLike, b))] for row in cast(MatrixLike, a)])
 
     # Trying to dot a number with a vector or a matrix, so just multiply
     return multiply(a, b, dims=(dims_a, dims_b))
@@ -1001,16 +994,15 @@ class BroadcastTo:
             # Calculate how many times we should replicate data both horizontally and vertically
             # We need to flip them based on whether the original shape has an even or odd number of
             # dimensions.
-            delta_rank = len(new) - len(old)
-            counters = [int(x / y) if y else y for x, y in zip(new[delta_rank:], old)]
+            counters = [int(x / y) if y else y for x, y in zip(new, old)]
             repeat = prod(counters[:-1]) if len(old) > 1 else 1
             expand = counters[-1]
-            if len(orig) % 2:
-                self.expand = repeat
+            if len(counters) > 1 and counters[-2] > 1:
                 self.repeat = expand
+                self.expand = repeat
             else:
-                self.expand = expand
                 self.repeat = repeat
+                self.expand = expand
         else:
             # There is no modifications that need to be made on this array,
             # So we'll be chunking it without any cleverness.
@@ -1431,7 +1423,7 @@ def shape(array: Union[float, ArrayLike]) -> Tuple[int, ...]:
     if isinstance(array, Sequence):
         s = (len(array),)
         if not s[0]:
-            return tuple()
+            return (0,)
         elif not isinstance(array[0], Sequence):
             return tuple(s)
         return s + _shape(array, len(array[0]))
@@ -1596,7 +1588,7 @@ def inv(matrix: MatrixLike) -> Matrix:
         return cast(Matrix, reshape(cast(Matrix, invert), s))
 
     indices = list(range(s[0]))
-    m = [list(x) for x in cast(Matrix, matrix)]
+    m = acopy(matrix)
 
     # Create an identity matrix of the same size as our provided vector
     im = diag([1] * s[0])
