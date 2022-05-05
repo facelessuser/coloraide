@@ -5,18 +5,8 @@ import pytest
 import unittest
 
 
-class TestCVD(util.ColorAsserts):
+class TestCVD(util.ColorAssertsPyTest):
     """Test distance."""
-
-    def assertEqual(self, a, b):
-        """Assert equal."""
-
-        assert a == b
-
-    def assertNotEqual(self, a, b):
-        """Assert not equal."""
-
-        assert a != b
 
     @pytest.mark.parametrize(
         'color1,color2,deficiency,method,severity',

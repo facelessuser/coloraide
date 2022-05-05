@@ -5,18 +5,8 @@ import pytest
 import unittest
 
 
-class TestFilters(util.ColorAsserts):
+class TestFilters(util.ColorAssertsPyTest):
     """Test filters."""
-
-    def assertEqual(self, a, b):
-        """Assert equal."""
-
-        assert a == b
-
-    def assertNotEqual(self, a, b):
-        """Assert not equal."""
-
-        assert a != b
 
     @pytest.mark.parametrize(
         'color1,color2,name,amount',

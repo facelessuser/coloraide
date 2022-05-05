@@ -5,18 +5,8 @@ import pytest
 import unittest
 
 
-class TestDistance(util.ColorAsserts):
+class TestDistance(util.ColorAssertsPyTest):
     """Test distance."""
-
-    def assertEqual(self, a, b):
-        """Assert equal."""
-
-        assert a == b
-
-    def assertNotEqual(self, a, b):
-        """Assert not equal."""
-
-        assert a != b
 
     @pytest.mark.parametrize(
         'color1,color2,space,value',
@@ -548,3 +538,9 @@ class TestClosest(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').closest([])
+
+    def test_bad_delta_e(self):
+        """Test bad delta e input."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('blue', method='bad')

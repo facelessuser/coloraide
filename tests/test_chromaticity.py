@@ -6,18 +6,8 @@ import unittest
 from coloraide import util as cutil
 
 
-class TestChromaticity(util.ColorAsserts):
+class TestChromaticity(util.ColorAssertsPyTest):
     """Test chromaticity conversions."""
-
-    def assertEqual(self, a, b):
-        """Assert equal."""
-
-        assert a == b
-
-    def assertNotEqual(self, a, b):
-        """Assert not equal."""
-
-        assert a != b
 
     @pytest.mark.parametrize(
         'color,xy',

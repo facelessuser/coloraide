@@ -207,3 +207,49 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
             Color(BLUISH).compose(YELLOWISH, blend='color', space="display-p3"),
             Color(BLUISH).compose(YELLOWISH, blend='color', space="srgb")
         )
+
+
+class TestBlend(util.ColorAsserts, unittest.TestCase):
+    """Test general blend API."""
+
+    def test_blend_no_mode(self):
+        """Test blend with no mode."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertEqual(c1.compose(c2, blend='normal'), c1.compose(c2))
+
+    def test_blend_different_space(self):
+        """Test blend logic in different space."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertColorEqual(
+            c1.compose(c2, blend='normal', space="display-p3"),
+            Color('rgb(127.5 127.5 167.63)')
+        )
+
+    def test_blend_different_space_and_output(self):
+        """Test blend logic in different space and different output."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        self.assertColorEqual(
+            c1.compose(c2, blend='normal', space="display-p3", out_space="display-p3"),
+            Color('color(display-p3 0.5 0.5 0.64524)')
+        )
+
+    def test_blend_bad_mode(self):
+        """Test blend bad mode."""
+
+        with self.assertRaises(ValueError):
+            Color('blue').compose('red', blend='bad')
+
+    def test_blend_in_place(self):
+        """Test blend in place modifies original."""
+
+        c1 = Color('blue').set('alpha', 0.5)
+        c2 = Color('yellow')
+        c3 = c1.compose(c2, blend='normal', in_place=True)
+        self.assertTrue(c1 is c3)
+        self.assertEqual(c1, Color('color(srgb 0.5 0.5 0.5)'))
