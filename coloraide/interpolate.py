@@ -262,17 +262,13 @@ def postdivide(color: 'Color') -> None:
     if color[-1] >= 1.0:
         return
 
-    channels = color[:-1]
     alpha = color[-1]
-    coords = []
-    for i, value in enumerate(channels):
+    for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
         if color._space.BOUNDS[i].flags & FLG_ANGLE:
-            coords.append(value)
             continue
-        coords.append(value / alpha if alpha != 0 else value)
-    color._space._coords = coords
+        color[i] = value / alpha if alpha != 0 else value
 
 
 def premultiply(color: 'Color') -> None:
@@ -281,17 +277,13 @@ def premultiply(color: 'Color') -> None:
     if color[-1] >= 1.0:
         return
 
-    channels = color[:-1]
     alpha = color[-1]
-    coords = []
-    for i, value in enumerate(channels):
+    for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
         if color._space.BOUNDS[i].flags & FLG_ANGLE:
-            coords.append(value)
             continue
-        coords.append(value * alpha)
-    color._space._coords = coords
+        color[i] = value * alpha
 
 
 def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:

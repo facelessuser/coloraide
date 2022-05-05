@@ -13,7 +13,6 @@ def clip_channels(color: 'Color') -> None:
     """Clip channels."""
 
     channels = alg.no_nans(color[:-1])
-    fit = []
 
     for i, value in enumerate(channels):
         bounds = color._space.BOUNDS[i]
@@ -23,7 +22,7 @@ def clip_channels(color: 'Color') -> None:
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
         if bounds.flags & FLG_ANGLE:
-            fit.append(value % 360.0)
+            color[i] = value % 360.0
             continue
 
         # These parameters are unbounded
@@ -33,8 +32,7 @@ def clip_channels(color: 'Color') -> None:
             a = b = None
 
         # Fit value in bounds.
-        fit.append(alg.clamp(value, a, b))
-    color._space._coords = fit
+        color[i] = alg.clamp(value, a, b)
 
 
 def verify(color: 'Color', tolerance: float) -> bool:
