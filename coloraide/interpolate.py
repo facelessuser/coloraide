@@ -51,7 +51,7 @@ class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'pr
         cls,
         color: ColorInput,
         stop: Optional[float] = None,
-        progress: Optional[Callable[..., float]] = None,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = False
     ) -> 'Piecewise':
@@ -96,7 +96,7 @@ class InterpolateSingle(Interpolator):
         channels2: Vector,
         names: Sequence[str],
         create: Type['Color'],
-        progress: Optional[Callable[..., float]],
+        progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
         space: str,
         outspace: str,
         premultiplied: bool
@@ -136,7 +136,9 @@ class InterpolateSingle(Interpolator):
             else:
                 progress = None
                 if isinstance(self.progress, Mapping):
-                    progress = self.progress.get(name, self.progress.get('all'))
+                    progress = self.progress.get(name)
+                    if progress is None:
+                        progress = self.progress.get('all')
                 else:
                     progress = self.progress
                 lerper = progress if isinstance(progress, Lerp) else Lerp(progress)
@@ -254,6 +256,17 @@ def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
             final[j] = last / 100
 
     return final
+
+
+def process_mapping(
+    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+    aliases: Mapping[str, str]
+) -> Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]]:
+    """Process a mapping, such that it is not using aliases."""
+
+    if not isinstance(progress, Mapping):
+        return progress
+    return {aliases.get(k, k): v for k, v in progress.items()}
 
 
 def postdivide(color: 'Color') -> None:
@@ -405,7 +418,7 @@ def color_piecewise_lerp(
     pw: List[Union[ColorInput, Piecewise]],
     space: str,
     out_space: str,
-    progress: Optional[Callable[..., float]],
+    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
     hue: str,
     premultiplied: bool
 ) -> InterpolatePiecewise:
@@ -464,7 +477,7 @@ def color_lerp(
     color2: ColorInput,
     space: str,
     out_space: str,
-    progress: Optional[Callable[..., float]],
+    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
     hue: str,
     premultiplied: bool
 ) -> InterpolateSingle:
@@ -495,11 +508,11 @@ def color_lerp(
     channels2.append(color2[-1])
 
     return InterpolateSingle(
-        names=color1._space.CHANNEL_NAMES + ('alpha',),
         channels1=channels1,
         channels2=channels2,
+        names=color1._space.CHANNEL_NAMES + ('alpha',),
         create=type(color1),
-        progress=progress,
+        progress=process_mapping(progress, color1._space.CHANNEL_ALIASES),
         space=space,
         outspace=out_space,
         premultiplied=premultiplied

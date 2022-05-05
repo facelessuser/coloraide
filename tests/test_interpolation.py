@@ -357,6 +357,20 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color('rgb(255 0 0 / 0.875)')
         )
 
+    def test_interpolate_channel_aliases(self):
+        """Test interpolating a specific channel using a color's channel alias."""
+
+        self.assertColorEqual(
+            Color('orange').interpolate(
+                Color('purple'),
+                progress={
+                    'red': lambda t: t ** 3
+                },
+                space='srgb'
+            )(0.5),
+            Color('rgb(239.13 82.5 64)')
+        )
+
     def test_interpolate_input_piecewise(self):
         """Test interpolation with piecewise."""
 

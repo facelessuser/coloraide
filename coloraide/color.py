@@ -774,7 +774,7 @@ class Color(metaclass=ColorMeta):
         space: Optional[str] = None,
         out_space: Optional[str] = None,
         stop: float = 0,
-        progress: Optional[Callable[..., float]] = None,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = False
     ) -> interpolate.Interpolator:

@@ -124,7 +124,7 @@ markdown_extensions:
 extra_css:
   - assets/coloraide-extras/extra-bd45e82c72.css
 extra_javascript:
-  - playground-config-8781298e.js
+  - playground-config-3c5f0a84.js
   - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
   - assets/coloraide-extras/extra-notebook-61f86469.js
 
