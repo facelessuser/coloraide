@@ -106,6 +106,20 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(
             alg.cross(
+                [1, 2, 3],
+                [[[1, 2],
+                  [4, 5]],
+                 [[7, 8],
+                  [10, 11]]]
+            ),
+            [[[-6, 3, 0],
+              [-15, 12, -3]],
+             [[-24, 21, -6],
+              [-33, 30, -9]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
                 [[[1, 2, 3],
                   [4, 5, 6]],
                  [[7, 8, 9],
