@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.0
+
+- **NEW**: Add some new methods in `algebra` library and fix some matrix related logic.
+
 ## 0.16.0
 
 !!! warning "Deprecations"

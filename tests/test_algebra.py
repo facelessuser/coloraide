@@ -6,6 +6,163 @@ from coloraide import algebra as alg
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
+    def test_cross(self):
+        """Test cross product."""
+
+        self.assertEqual(
+            alg.cross([1, 2, 3], [4, 5, 6]),
+            [-3, 6, -3]
+        )
+
+        self.assertEqual(
+            alg.cross([1, 2], [4, 5]),
+            [-3]
+        )
+
+        self.assertEqual(
+            alg.cross([1, 2, 3], [4, 5]),
+            [-15, 12, -3]
+        )
+
+        self.assertEqual(
+            alg.cross([1, 2], [4, 5, 6]),
+            [12, -6, -3]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[1, 2, 3],
+                 [4, 5, 6]],
+                [7, 8, 9]
+            ),
+            [[-6, 12, -6],
+             [-3, 6, -3]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [7, 8, 9],
+                [[1, 2, 3],
+                 [4, 5, 6]]
+            ),
+            [[6, -12, 6],
+             [3, -6, 3]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[1, 2],
+                 [4, 5]],
+                [7, 8, 9]
+            ),
+            [[18, -9, -6], [45, -36, -3]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [7, 8, 9],
+                [[1, 2],
+                 [4, 5]]
+            ),
+            [[-18, 9, 6], [-45, 36, 3]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [7, 8],
+                [[1, 2],
+                 [4, 5]]
+            ),
+            [[6], [3]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[[1, 2, 3],
+                  [4, 5, 6]],
+                 [[7, 8, 9],
+                  [10, 11, 12]]],
+                [1, 2, 3]
+            ),
+            [[[0, 0, 0],
+              [3, -6, 3]],
+             [[6, -12, 6],
+              [9, -18, 9]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [1, 2, 3],
+                [[[1, 2, 3],
+                  [4, 5, 6]],
+                 [[7, 8, 9],
+                  [10, 11, 12]]]
+            ),
+            [[[0, 0, 0],
+              [-3, 6, -3]],
+             [[-6, 12, -6],
+              [-9, 18, -9]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [1, 2, 3],
+                [[[1, 2],
+                  [4, 5]],
+                 [[7, 8],
+                  [10, 11]]]
+            ),
+            [[[-6, 3, 0],
+              [-15, 12, -3]],
+             [[-24, 21, -6],
+              [-33, 30, -9]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[[1, 2, 3],
+                  [4, 5, 6]],
+                 [[7, 8, 9],
+                  [10, 11, 12]]],
+                [[[4, 8, 9],
+                  [2, 7, 6]],
+                 [[1, 4, 3],
+                  [2, 3, 1]]]
+            ),
+            [[[-6, 3, 0],
+              [-12, -12, 18]],
+             [[-12, -12, 20],
+              [-25, 14, 8]]]
+        )
+
+        # Broadcast
+        self.assertEqual(
+            alg.cross(
+                [[[1, 2, 3],
+                  [4, 5, 6]]],
+                [[[4, 8, 9],
+                  [2, 7, 6]],
+                 [[1, 4, 3],
+                  [2, 3, 1]]]
+            ),
+            [[[-6, 3, 0],
+              [-12, -12, 18]],
+             [[-6, 0, 2],
+              [-13, 8, 2]]]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.cross(
+                [[[1], [4]]],
+                [[[4, 8, 9],
+                  [2, 7, 6]],
+                 [[1, 4, 3],
+                  [2, 3, 1]]]
+            )
+
+        with self.assertRaises(ValueError):
+            alg.cross(3, 4)
+
     def test_outer(self):
         """Test outer."""
 
@@ -411,7 +568,7 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(
             alg.shape([]),
-            tuple()
+            (0,)
         )
 
         self.assertEqual(
