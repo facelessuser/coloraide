@@ -2,6 +2,9 @@
 
 ## 0.17.0
 
+- **NEW**: All mixing/interpolation methods will use `#!py3 premultiply=True` by default. In cases where 
+  premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. Premultiplication is now covered
+  in the documentation.
 - **NEW**: Allow aliases in interpolation's progress mappings.
 - **FIX**: Fix premultiplication when alpha is undefined.
 - **FIX**: Fix some potential issues in some matrix logic.
