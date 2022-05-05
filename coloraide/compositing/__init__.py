@@ -6,7 +6,6 @@ https://www.w3.org/TR/compositing/
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
-from ..types import Vector
 from ..gamut.bounds import GamutBound, Bounds
 from typing import Optional, Union, List, Type, TYPE_CHECKING
 
@@ -58,18 +57,16 @@ def apply_compositing(
 
     # Perform compositing
     bounds = color1._space.BOUNDS
-    coords = []  # type: Vector
 
     # Blend each channel. Afterward, clip and apply alpha compositing.
     i = 0
     for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):
         cr = (1 - cba) * cr + cba * cr if blender else cr
         cr = clip_channel(cr, bounds[i])
-        coords.append(compositor.co(cb, cr) if compositor else cr)
+        color1[i] = compositor.co(cb, cr) if compositor else cr
         i += 1
 
-    color1._space._coords = coords
-    color1._space.alpha = cra
+    color1[-1] = cra
     return color1
 
 

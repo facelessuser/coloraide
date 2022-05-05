@@ -206,43 +206,41 @@ class Color(metaclass=ColorMeta):
 
     @overload
     def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
-        pass
+        ...
 
     @overload
     def __getitem__(self, i: slice) -> Vector:  # noqa: D105
-        pass
+        ...
 
     def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
         """Get channels."""
 
         if isinstance(i, str):
             return self._space.get(i)
-        return (self._space._coords + [self._space.alpha])[i]
+        return self._space._coords[i]
 
     @overload
     def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
-        pass
+        ...
 
     @overload
     def __setitem__(self, i: slice, v: Vector) -> None:  # noqa: D105
-        pass
+        ...
 
     def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
         """Set channels."""
 
-        if not hasattr(v, '__len__'):
-            if isinstance(i, str):
-                return self._space.set(i, cast(float, v))
-            else:
-                setattr(
-                    self._space,
-                    cast(str, (self._space.CHANNEL_NAMES + ('alpha',))[i]),
-                    cast(float, v)
-                )
-                return
-
-        for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[cast(int, i)]):
-            setattr(self._space, name, cast(Vector, v)[e])
+        if isinstance(i, slice):
+            for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
+                setattr(self._space, name, cast(Vector, v)[e])
+        elif isinstance(i, int):
+            setattr(
+                self._space,
+                (self._space.CHANNEL_NAMES + ('alpha',))[i],
+                v
+            )
+        else:
+            self._space.set(i, cast(float, v))
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -961,7 +959,17 @@ class Color(metaclass=ColorMeta):
         TODO: remove before release of 1.0
         """
 
-        return self[:-1]
+        return self._space.coords()
+
+    @util.deprecated(WARN_COORDS)
+    def alpha(self) -> float:  # pragma: no cover
+        """
+        Get alpha.
+
+        TODO: remove before release of 1.0
+        """
+
+        return self._space.alpha
 
     def __getattr__(self, name: str) -> Any:  # pragma: no cover
         """Get attribute."""

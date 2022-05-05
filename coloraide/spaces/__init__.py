@@ -122,14 +122,12 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Initialize."""
 
         num_channels = len(self.CHANNEL_NAMES)
-        self._alpha = alg.NaN  # type: float
-        self._coords = [alg.NaN] * num_channels
+        self._coords = [alg.NaN] * (num_channels + 1)
         self._chan_names = set(self.CHANNEL_NAMES)
         self._chan_names.add('alpha')
 
         if isinstance(color, Space):
-            self._coords = color.coords()
-            self.alpha = color.alpha
+            self._coords[:] = color._coords[:]
         elif isinstance(color, Sequence):
             if len(color) != num_channels:  # pragma: no cover
                 # Only likely to happen with direct usage internally.
@@ -157,7 +155,7 @@ class Space(Plugin, metaclass=SpaceMeta):
     def coords(self) -> Vector:
         """Coordinates."""
 
-        return self._coords[:]
+        return self._coords[:-1]
 
     @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
@@ -175,13 +173,13 @@ class Space(Plugin, metaclass=SpaceMeta):
     def alpha(self) -> float:
         """Alpha channel."""
 
-        return self._alpha
+        return self._coords[-1]
 
     @alpha.setter
     def alpha(self, value: float) -> None:
         """Adjust alpha."""
 
-        self._alpha = alg.clamp(value, 0.0, 1.0)
+        self._coords[-1] = alg.clamp(value, 0.0, 1.0)
 
     def set(self, name: str, value: float) -> None:  # noqa: A003
         """Set the given channel."""

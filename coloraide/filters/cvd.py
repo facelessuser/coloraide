@@ -143,9 +143,9 @@ def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector
         coords = alg.dot(w1, lms_c, dims=alg.D2_D1)
 
     if severity < 1:
-        color._space._coords = [alg.lerp(a, b, severity) for a, b in zip(color[:-1], coords)]
+        color[:-1] = [alg.lerp(a, b, severity) for a, b in zip(color[:-1], coords)]
     else:
-        color._space._coords = coords
+        color[:-1] = coords
 
 
 def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
@@ -166,9 +166,9 @@ def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
 
     coords = alg.dot(transform, color[:-1], dims=alg.D2_D1)
     if severity < 1:
-        color._space._coords = [alg.lerp(c1, c2, severity) for c1, c2 in zip(color[:-1], coords)]
+        color[:-1] = [alg.lerp(c1, c2, severity) for c1, c2 in zip(color[:-1], coords)]
     else:
-        color._space._coords = coords
+        color[:-1] = coords
 
 
 def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> None:
@@ -208,7 +208,7 @@ def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> Non
         coords = [alg.lerp(c1, c2, weight) for c1, c2 in zip(coords, coords2)]
 
     # Return the altered color
-    color._space._coords = coords
+    color[:-1] = coords
 
 
 class Protan(Filter):
