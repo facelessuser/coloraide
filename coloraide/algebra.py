@@ -997,10 +997,10 @@ class BroadcastTo:
             # Calculate how many times we should replicate data both horizontally and vertically
             # We need to flip them based on whether the original shape has an even or odd number of
             # dimensions.
-            counters = [int(x / y) if y else y for x, y in zip(new, old)]
-            repeat = prod(counters[:-1]) if len(old) > 1 else 1
-            expand = counters[-1]
-            if len(counters) > 1 and counters[-2] > 1:
+            diff = [int(x / y) if y else y for x, y in zip(new, old)]
+            repeat = prod(diff[:-1]) if len(old) > 1 else 1
+            expand = diff[-1]
+            if len(diff) > 1 and diff[-2] > 1:
                 self.repeat = expand
                 self.expand = repeat
             else:
