@@ -23,7 +23,7 @@ types.
 import sys
 import math
 import operator
-from functools import reduce
+import functools
 from itertools import zip_longest as zipl
 from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
 from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, Any, Iterable, overload, cast
@@ -38,7 +38,10 @@ else:
     def prod(values: Iterable[SupportsFloatOrInt]) -> SupportsFloatOrInt:
         """Get the product of a list of numbers."""
 
-        return reduce((lambda x, y: x * y), values)
+        if not values:
+            return 1
+
+        return functools.reduce(lambda x, y: x * y, values)
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
