@@ -134,6 +134,56 @@ To help visualize the different hue methods, consider the following evaluation b
     )
     ```
 
+## Interpolating with Alpha
+
+Interpolating color channels is pretty straight forward and uses traditional linear interpolation logic, but when
+introducing transparency to a color, interpolation uses a concept known as premultiplication which alters the normal
+interpolation process.
+
+Premultiplication is a technique that tends to produce better results when two colors have differing transparency.
+Consider the following two example. Normally, when transitioning to a "transparent" color, the colors will be more gray
+during the transition. This is because `#!color transparent` is actually black. But when using premultiplication, the
+transition looks just as one would expect as the transparent color's channels are weighted less due to the high
+transparency.
+
+The example below transitions from white to a fully transparent color for both non-premultiplied and premultiplied
+interpolation. We've forced a white background (_for dark theme users_) to make the grayish transition of the
+non-premultiplied results easy to see.
+
+<div style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%) " markdown="1">
+
+```playground
+Color('white').interpolate('transparent', space='srgb', premultiplied=False)
+Color('white').interpolate('transparent', space='srgb')
+```
+
+</div>
+
+Premultiplication does better because it takes into account the differing amounts of transparency that each color has.
+Colors that are more opaque are "weighted" more, and contribute more to the overall color.
+
+Consider the example below. Orange is fully opaque while blue is quite transparent. Logically, the blue shouldn't have
+as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
+colors equally, we see that the resultant color is also equally influenced by the hue of both colors. In the
+premultiplied example, we see that orange is still quite dominant at 50%.
+
+
+```playground
+Color('orange').mix(Color('blue').set('alpha', 0.25), space='srgb', premultiplied=False)
+Color('orange').mix(Color('blue').set('alpha', 0.25), space='srgb')
+```
+
+If we interpolate it, we can see the difference in transition.
+
+```playground
+Color('orange').interpolate(Color('blue').set('alpha', 0.25), space='srgb', premultiplied=False)
+Color('orange').interpolate(Color('blue').set('alpha', 0.25), space='srgb')
+```
+
+There may be some cases where it is desired to use a non-premultiplied. There are many reasons, one could simply be that
+you need to mimic the same behavior of a system that does not use premultiplied interpolation. If so, simply set
+`premultiplied` to `#!py3 False` as shown above.
+
 ## Masking
 
 If desired, we can mask off specific channels that we do not wish to interpolate. Masking works by cloning the color
@@ -214,14 +264,15 @@ Color("lch(50% 50 0)").interpolate(
 )
 ```
 
-We can also set all the channels to a function via `all` and then override specific channels.
+We can also set all the channels to a function via `all` and then override specific channels. In this case we reverse
+the lightness period, and only the lightness period.
 
 ```playground
 Color("lch(50% 50 0)").interpolate(
-    "lch(90% 50 20 / 0)",
+    "transparent",
     progress={
-        'all': lambda t: 1 - t,
-        'alpha': lambda t: t ** 3
+        'all': lambda t: t ** 3,
+        'lightness': lambda t: 1 - t
     }
 )
 ```

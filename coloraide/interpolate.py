@@ -274,7 +274,7 @@ def postdivide(color: 'Color') -> None:
 
     alpha = color[-1]
 
-    if alg.is_nan(alpha) or alpha == 0:
+    if alg.is_nan(alpha) or alpha in (0.0, 1.0):
         return
 
     for i, value in enumerate(color[:-1]):
@@ -290,7 +290,7 @@ def premultiply(color: 'Color') -> None:
 
     alpha = color[-1]
 
-    if alg.is_nan(alpha):
+    if alg.is_nan(alpha) or alpha == 1.0:
         return
 
     for i, value in enumerate(color[:-1]):

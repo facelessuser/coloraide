@@ -76,7 +76,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('color(srgb 1 0 0 / 0.75)').mix('color(srgb 0 0 1 / 0.25)', space="srgb"),
-            Color('rgb(127.5 0 127.5 / 0.5)')
+            Color('rgb(191.25 0 63.75 / 0.5)')
         )
 
     def test_mix_premultiplied_alpha(self):
@@ -342,7 +342,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('red').interpolate(Color('blue').set('alpha', 0), progress={'alpha': lambda t: t ** 3})(0.5),
-            Color('rgb(140.36 83.033 162.31 / 0.875)')
+            Color('rgb(119.63 0 0 / 0.875)')
         )
 
     def test_interpolate_channel_all(self):
@@ -350,11 +350,14 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('red').interpolate(
-                Color('blue').set('alpha', 0), progress={
+                Color('blue').set('alpha', 0),
+                progress={
                     'alpha': lambda t: t ** 3,
-                    'all': lambda t: 0
-                })(0.5),
-            Color('rgb(255 0 0 / 0.875)')
+                    'all': lambda t: 0,
+                },
+                space='srgb'
+            )(0.5),
+            Color('rgb(291.43 0 0 / 0.875)')
         )
 
     def test_interpolate_channel_aliases(self):
@@ -441,7 +444,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('color(srgb 1 0 0 / 0.75)').interpolate('color(srgb 0 0 1 / 0.25)', space="srgb")(0.5),
-            Color('rgb(127.5 0 127.5 / 0.5)')
+            Color('rgb(191.25 0 63.75 / 0.5)')
         )
 
     def test_interpolate_premultiplied_alpha(self):
@@ -654,7 +657,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('color(srgb 1 0 0 / 0.75)').steps('color(srgb 0 0 1 / 0.25)', space="srgb", steps=1)[0],
-            Color('rgb(127.5 0 127.5 / 0.5)')
+            Color('rgb(191.25 0 63.75 / 0.5)')
         )
 
     def test_steps_premultiplied_alpha(self):
