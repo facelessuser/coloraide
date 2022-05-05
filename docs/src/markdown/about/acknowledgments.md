@@ -17,7 +17,7 @@ When researching color vision deficiencies, aside from the usual scientific pape
 quite helpful.
 
 - [daltonlens.org](https://daltonlens.org/) was particularly helpful. As it comes from the perspective of an actual
-  Protan, it provided reviews on various algorithm's and explained in great depth by some approaches were preferred over
-  others.
+  Protan, it provided reviews on various algorithm's and explained in great depth some approaches and why they were
+  preferred over others.
 - [ixora.io](https://ixora.io/projects/colorblindness/color-blindness-simulation-research/) was another useful site
   that went into great details specifically about the Viénot approach.
