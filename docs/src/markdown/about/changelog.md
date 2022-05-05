@@ -3,6 +3,7 @@
 ## 0.17.0
 
 - **NEW**: Allow aliases in interpolation's progress mappings.
+- **FIX**: Fix premultiplication when alpha is undefined.
 - **FIX**: Fix some potential issues in some matrix logic.
 
 ## 0.16.0

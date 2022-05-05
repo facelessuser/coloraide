@@ -272,25 +272,27 @@ def process_mapping(
 def postdivide(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
-    if color[-1] >= 1.0:
+    alpha = color[-1]
+
+    if alg.is_nan(alpha) or alpha == 0:
         return
 
-    alpha = color[-1]
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
         if color._space.BOUNDS[i].flags & FLG_ANGLE:
             continue
-        color[i] = value / alpha if alpha != 0 else value
+        color[i] = value / alpha
 
 
 def premultiply(color: 'Color') -> None:
     """Premultiply the given transparent color."""
 
-    if color[-1] >= 1.0:
+    alpha = color[-1]
+
+    if alg.is_nan(alpha):
         return
 
-    alpha = color[-1]
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
