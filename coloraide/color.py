@@ -961,16 +961,6 @@ class Color(metaclass=ColorMeta):
 
         return self._space.coords()
 
-    @util.deprecated(WARN_COORDS)
-    def alpha(self) -> float:  # pragma: no cover
-        """
-        Get alpha.
-
-        TODO: remove before release of 1.0
-        """
-
-        return self._space.alpha
-
     def __getattr__(self, name: str) -> Any:  # pragma: no cover
         """Get attribute."""
 
