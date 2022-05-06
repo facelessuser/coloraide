@@ -6,7 +6,7 @@
     ColorAide has moved to make premultiplication the default for interpolation methods such as `mix`, `steps`, and
     `interpolate`. The aim is to provide more accurate interpolation when using transparent colors. In cases where
     premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. There are real reasons to do so
-    as it may be desirous to mimic a old implementation that has always used naive interpolation of transparent colors.
+    as it may be desirous to mimic an old implementation that has always used naive interpolation of transparent colors.
 
     Additionally, in the past, premultiplication was not really documented as it had not been fully tested.
     Premultiplication is now covered in the documentation.
