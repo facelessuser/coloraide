@@ -599,7 +599,7 @@ def interpolate(
     progress=None,
     out_space=None,
     hue=util.DEF_HUE_ADJ,
-    premultiplied=False
+    premultiplied=True
 ):
 ```
 
@@ -634,7 +634,7 @@ Parameters
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
     `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
     `hue`           | `#!py3 "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
-    `premultiplied` | `#!py3 False`     | Use premultiplied alpha when interpolating.
+    `premultiplied` | `#!py3 True`      | Use premultiplied alpha when interpolating.
 
 Return
 : 

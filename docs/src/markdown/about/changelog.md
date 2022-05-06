@@ -8,6 +8,7 @@
 - **NEW**: Allow aliases in interpolation's progress mappings.
 - **FIX**: Fix premultiplication when alpha is undefined.
 - **FIX**: Fix some potential issues in some matrix logic.
+- **FIX**: `#!py Piecewise()` object didn't default to `#!py None` for all the non-required parameters as documented.
 
 ## 0.16.0
 

@@ -16,7 +16,6 @@ License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/packa
 import math
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
-from . import util
 from . import algebra as alg
 from .types import Vector
 from .spaces import Cylindrical
@@ -52,8 +51,8 @@ class Piecewise(namedtuple('Piecewise', ['color', 'stop', 'progress', 'hue', 'pr
         color: ColorInput,
         stop: Optional[float] = None,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
-        hue: str = util.DEF_HUE_ADJ,
-        premultiplied: bool = False
+        hue: Optional[str] = None,
+        premultiplied: Optional[bool] = None
     ) -> 'Piecewise':
         """Initialize."""
 
