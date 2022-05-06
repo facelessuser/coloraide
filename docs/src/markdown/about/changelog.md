@@ -2,13 +2,20 @@
 
 ## 0.17.0
 
-- **NEW**: All mixing/interpolation methods will use `#!py3 premultiply=True` by default. In cases where 
-  premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. Premultiplication is now covered
-  in the documentation.
+!!! warning "Interpolations Are Now Premultiplied"
+    ColorAide has moved to make premultiplication the default for interpolation methods such as `mix`, `steps`, and
+    `interpolate`. The aim is to provide more accurate interpolation when using transparent colors. In cases where
+    premultiplication is not desired, it can be disabled by setting it to `#!py3 False`. There are real reasons to do so
+    as it may be desirous to mimic a old implementation that has always used naive interpolation of transparent colors.
+
+    Additionally, in the past, premultiplication was not really documented as it had not been fully tested.
+    Premultiplication is now covered in the documentation.
+
+- **NEW**: All mixing/interpolation methods will use `#!py3 premultiply=True` by default.
 - **NEW**: Allow aliases in interpolation's progress mappings.
 - **FIX**: Fix premultiplication when alpha is undefined.
-- **FIX**: Fix some potential issues in some matrix logic.
-- **FIX**: `#!py Piecewise()` object didn't default to `#!py None` for all the non-required parameters as documented.
+- **FIX**: Fix some potential issues in some matrix math logic.
+- **FIX**: `#!py Piecewise()` object didn't default all the non-required parameters to `#!py None` as documented.
 
 ## 0.16.0
 

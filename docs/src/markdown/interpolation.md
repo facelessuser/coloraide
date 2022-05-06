@@ -264,16 +264,19 @@ Color("lch(50% 50 0)").interpolate(
 )
 ```
 
-We can also set all the channels to a function via `all` and then override specific channels. In this case we reverse
-the lightness period, and only the lightness period.
+We can also set all the channels to an easing function via `all` and then override specific channels. In this case,
+we take two colors: `#!color color(srgb 0 1 1)` and `#!color color(srgb 1 0 0)`. We ramp down color channels to half the
+distance between the two colors, but then target `red` to ramp all the way up from 0 to 1. This results in a final color
+of `#!color color(srgb 1 0.5 0.5)`.
 
 ```playground
-Color("lch(50% 50 0)").interpolate(
-    "transparent",
+Color("color(srgb 0 1 1)").interpolate(
+    "color(srgb 1 0 0)",
     progress={
-        'all': lambda t: t ** 3,
-        'lightness': lambda t: 1 - t
-    }
+        'all': lambda t: t / 2,
+        'r': lambda t: t
+    },
+    space='srgb'
 )
 ```
 
