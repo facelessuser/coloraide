@@ -24,8 +24,7 @@ def lab_to_lch(lab: Vector) -> Vector:
     if c < ACHROMATIC_THRESHOLD:
         h = alg.NaN
 
-    test = [l, c, util.constrain_hue(h)]
-    return test
+    return [l, c, util.constrain_hue(h)]
 
 
 def lch_to_lab(lch: Vector) -> Vector:
