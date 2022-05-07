@@ -289,9 +289,10 @@ class Color(metaclass=ColorMeta):
             space = color['space']
             if not filters or space in filters:
                 cs = cls.CS_MAP[space]
-                coords = [color[name] for name in cs.CHANNEL_NAMES]
-                alpha = color.get('alpha', 1)
-                obj = cs(coords, alpha)
+                aliases = cs.CHANNEL_ALIASES
+                names = cs.CHANNEL_NAMES
+                color = {aliases.get(k, k): v for k, v in color.items()}
+                return cs([color[name] for name in names], color.get('alpha', 1))
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
