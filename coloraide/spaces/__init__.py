@@ -129,7 +129,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         if isinstance(color, Space):
             self._coords[:] = color._coords[:]
         elif isinstance(color, Sequence):
-            if len(color) != num_channels:  # pragma: no cover
+            if len(color) != num_channels:
                 # Only likely to happen with direct usage internally.
                 raise ValueError(
                     "{} accepts a list of {} channels".format(self.NAME, num_channels)

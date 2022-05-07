@@ -273,7 +273,7 @@ class Color(metaclass=ColorMeta):
                     num_channels = len(space_class.CHANNEL_NAMES)
                     if len(data) < num_channels:
                         data = list(data) + [alg.NaN] * (num_channels - len(data))
-                    obj = space_class(data[:num_channels], alpha)
+                    obj = space_class(data, alpha)
             # Parse a CSS string
             else:
                 m = cls._match(color, fullmatch=True, filters=filters)
