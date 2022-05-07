@@ -97,7 +97,8 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
     def test_too_many_raw_input(self):
         """Test when too many color channels are provided via raw input."""
 
-        self.assertColorEqual(Color("srgb", [1, 0, 0, 0]), Color("srgb", [1, 0, 0]))
+        with self.assertRaises(ValueError):
+            Color("srgb", [1, 0, 0, 0])
 
     def test_bad_input(self):
         """Test bad input."""
@@ -163,14 +164,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         coords = Color("srgb", [])[:-1]
         for c in coords:
             self.assertTrue(math.isnan(c))
-
-    def test_too_many_inputs(self):
-        """Test too many inputs."""
-
-        coords = Color("srgb", [0.5, 0.5, 0.5, 0.5])[:-1]
-        self.assertEqual(len(coords), 3)
-        for c in coords:
-            self.assertEqual(c, 0.5)
 
     def test_new(self):
         """Test new."""

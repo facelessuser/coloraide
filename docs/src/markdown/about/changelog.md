@@ -3,6 +3,7 @@
 ## 0.18.0
 
 - **NEW**: Allow dictionary input to use aliases in the dictionary.
+- **FIX**: If too many channels are given to a color space via raw data, ensure the operation fails.
 
 ## 0.17.0
 

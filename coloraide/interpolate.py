@@ -114,8 +114,8 @@ class InterpolateSingle(Interpolator):
     def get_delta(self, method: Optional[str]) -> float:
         """Get the delta."""
 
-        return self.create(self.space, self.channels1).delta_e(
-            self.create(self.space, self.channels2),
+        return self.create(self.space, self.channels1[:-1]).delta_e(
+            self.create(self.space, self.channels2[:-1]),
             method=method
         )
 
