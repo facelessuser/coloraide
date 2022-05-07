@@ -474,8 +474,8 @@ class Color(metaclass=ColorMeta):
     def normalize(self) -> 'Color':
         """Normalize the color."""
 
-        coords, alpha = self._space.null_adjust(self[:-1], self[-1])
-        return self.mutate(self.space(), coords, alpha)
+        self[:-1], self[-1] = self._space.null_adjust(self[:-1], self[-1])
+        return self
 
     def is_nan(self, name: str) -> bool:
         """Check if channel is NaN."""
