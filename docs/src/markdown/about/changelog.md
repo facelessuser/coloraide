@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.18.0
+
+- **NEW**: Allow dictionary input to use aliases in the dictionary.
+
 ## 0.17.0
 
 !!! warning "Interpolations Are Now Premultiplied"

@@ -25,7 +25,7 @@ Color("rgb(0 0 255 / 1)")
     Though CSS Level 4 is supported, the CSS spec is not finalized and there could be some churn in relation to the
     syntax as browsers begin to implement the spec, there may be changes.
 
-ColorAide, not only supports colors in the CSS spec, but also some other additional color spaces as well. To bridge the
+ColorAide not only supports colors in the CSS spec, but also some other additional color spaces as well. To bridge the
 gap with syntax, ColorAide allows all colors, whether in the CSS spec or not, to be recognized using the CSS color
 function (`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently
 specified to use the `#!css-color color()` function, we still allow it.
@@ -48,8 +48,7 @@ Color("srgb", [0.5, 0, 1], 0.3)
 
 Colors can also be exported to and receive input from simple dictionaries. These can be useful when serializing to JSON
 or various other reasons. The `space` key and all relevant color channels must be specified when constructing a color
-object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted. Default channel
-names must currently be used (no aliases).
+object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted.
 
 ```playground
 d = Color('red').to_dict()
