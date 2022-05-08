@@ -21,7 +21,16 @@ class TestRoundTrip:
     enough.
     """
 
-    # Skip colors with null hues or hues that can wrap.
+    # Except for black, it can be very difficult to get perfect round tripping
+    # on achromatic colors unless we do absolutely no hue adjustments near achromatic.
+    # Many algorithms do not exactly land on what is expected for achromatic. For
+    # instance CIELAB rarely resolves to `a = b = 0` except in the case of black.
+    # For cylindrical spaces that pass through a Lab-like spaces during conversion,
+    # you can often get wild hues near achromatic values because the saturation or
+    # chroma never quite gets to zero. In these case, we often set hue as undefined when
+    # chroma or saturation is very close to zero. But, when we pass through multiple
+    # spaces that do this, we can get a compounding error near achromatic colors making
+    # it difficult to get perfect round tripping with achromatic values.
     COLORS = [
         Color('red'),
         Color('orange'),
@@ -30,7 +39,6 @@ class TestRoundTrip:
         Color('blue'),
         Color('indigo'),
         Color('violet'),
-        # Color('white'),  # General: this is difficult as not everything lands exactly
         Color('black')
     ]
 

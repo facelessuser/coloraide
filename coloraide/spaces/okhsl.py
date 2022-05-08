@@ -383,15 +383,13 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
     if c < ACHROMATIC_THRESHOLD:
         c = 0
 
-    if c != 0:
+    if l not in (0.0, 1.0) and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
         h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
         c_0, c_mid, c_max = get_cs([L, a_, b_])
-
-        # Inverse of the interpolation in `okhsl_to_srgb`:
 
         mid = 0.8
         mid_inv = 1.25

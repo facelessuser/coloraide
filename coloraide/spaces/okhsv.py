@@ -100,7 +100,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     if c < ACHROMATIC_THRESHOLD:
         c = 0
 
-    if c != 0:
+    if l not in (0.0, 1.0) and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
