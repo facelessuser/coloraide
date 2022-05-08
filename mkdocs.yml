@@ -122,7 +122,7 @@ markdown_extensions:
       alternate_style: true
 
 extra_css:
-  - assets/coloraide-extras/extra-bd45e82c72.css
+  - assets/coloraide-extras/extra-753860a807.css
 extra_javascript:
   - playground-config-18a6b090.js
   - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
