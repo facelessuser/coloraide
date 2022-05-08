@@ -100,9 +100,10 @@ c1.clone()
 ## Updating
 
 A color can be "updated" using another color input. When an update occurs, the current color space is updated from the
-data of the second color, but the color space does not change. Using `update` is the equivalent of converting the second
-color to the color space of the first and then updating all the coordinates (including alpha). The input parameters
-are identical to the `new` method, so we can use a color object, a color string, or even raw data points.
+data of the second color, but the color space does not change. Using `update` is the equivalent of
+[converting](#converting) the second color to the color space of the first and then updating all the coordinates
+(including alpha). The input parameters are identical to the `new` method, so we can use a color object, a color string,
+dictionary, or even raw data points.
 
 Here we update the color `#!color red` to the color `#!color blue`:
 
@@ -120,8 +121,8 @@ Color("red").update("lch(80% 50 130)")
 ## Mutating
 
 "Mutating" is similar to [updating](#updating) except that it will update the color **and** the color space from another
-color. The input parameters are identical to the `new` method, so we can use a color object, a color string, or even
-raw data points.
+color. The input parameters are identical to the `new` method, so we can use a color object, a color string, dictionary,
+or even raw data points.
 
 In this example, the `#!color red` color object literally becomes the specified CIELCH color of
 `#!color lch(80% 50 130)`.
@@ -142,6 +143,69 @@ we could simply call the `convert` method with the desired color space.
 ```playground
 Color('yellow').convert("lab")
 ```
+
+??? note "Notes on Round Tripping Accuracy"
+    In general, ColorAide is careful to provide good round trip conversions where practical. What this means is that we
+    try to maintain a high level of accuracy so that when a color is converted to a different color and then back, that
+    it will be very close, if not exactly, the same. We accomplish this by not not clipping values during conversion and
+    maintaining as high of precision as we can, but there are some cases where the round tripping accuracy cannot be
+    maintained at the same high level, or when round tripping cannot be maintained at all.
+
+    1. One situation that can cause bad round tripping is when one color model cannot properly handle a color due to its
+       gamut being beyond the conversion algorithms limits.
+
+        Consider a wide gamut, HDR color space like Jzazbz. When it is converted to HSLuv, whose algorithm clamps any
+        lightness that exceeds the SDR range, the round trip is broken. This is just the nature of the HSLuv algorithm
+        as it adheres to an sRGB gamut that does not support HDR lightness.
+
+        ```playground
+        jz = Color('color(--jzazbz 0.25 0 0)')
+        jz
+        hsluv = jz.convert('hsluv')
+        hsluv
+        hsluv.convert('jzazbz')
+        ```
+
+    2. Sometimes, round tripping can be compromised for practical reasons. This does not mean round tripping breaks, but
+       the high degree of accuracy can drop some. A common case where this happens is with Lch-like color models: Lch,
+       Oklch, JzCzhz, etc.
+
+        By definition, a color within an Lch-like color model is determined to be achromatic when chroma is `#!py3 0`.
+        These color models usually calculate chroma by taking a Lab-like color space's `a` and `b` components (or some
+        equivalent) and calculating the chroma with `#!py3 chroma = math.sqrt(a ** 2 + b ** 2)`. This requires both `a`
+        and `b` to be exactly `#!py3 0` or chroma will not be `#!py3 0`. Many of these Lab-like color spaces do not
+        resolve such that `a` and `b` are perfectly `#!py3 0`. Due to the complexity of the conversion to these Lab-like
+        color spaces, coupled with inherent issues with floating point arithmetic, you will sometimes get very close to
+        `#!py3 0`, but not exactly `#!py3 0`.
+
+        What is more a problem is not that chroma doesn't resolve to `#!py3 0`, but that you can get nonsensical hues as
+        chroma gets very close to zero. Because of this, we simply set hue to undefined when chroma is deemed very close
+        for the color model. But this small change can affect the outcome slightly when doing a round trip back to the
+        original color, though, not usually enough to impact the value in any significantly meaningful way.
+
+        The definition of very close to `#!py3 0` can be different from color space to color space, so the impact of
+        such a change can be more significant for certain color spaces.
+
+        Consider the conversion of the color `#!color gray` to both Oklab and Jzazbz.
+
+        ```playground
+        c1 = Color('gray').convert('oklab')
+        c2 = Color('gray').convert('jzazbz')
+        c1, c2
+        list(c1)
+        list(c2)
+        ```
+
+        Jzazbz simply doesn't resolve as close to zero as Oklab; therefore, it's cylindrical counter part (JzCzhz) will
+        be more sensitive during the round trip than Oklab's cylindrical counterpart (Oklch). It should be noted that
+        the difference is still not perceivable to the human eye.
+
+        ```playground
+        jz = Color('gray').convert('jzazbz')
+        jz
+        jz2 = jz.convert('jzczhz').convert('jzazbz')
+        jz.delta_e(jz2, method='jz')
+        ```
 
 ## Color Matching
 
@@ -255,8 +319,8 @@ Properties             | Defaults            | Description
 Currently, only color spaces, delta E methods, chromatic adaptation, filters, and gamut mapping methods are exposed as
 plugins.
 
-Some potential, useful cases: register a new color spaces not supported directly in ColorAide, test out a new ∆E
-algorithm, experiment with a potentially better gamut mapping method, tweak an existing color space to accept and
+Some potential, useful cases: register new color spaces that are not supported directly in ColorAide, test out a new ∆E
+algorithm, experiment with a potentially better gamut mapping algorithm, tweak an existing color space to accept and
 output color strings in a new format, create a variant of a color space that uses a different white point than is
 currently supported, etc.
 

@@ -16,7 +16,9 @@ Color('lch(75% 50 0)').steps('lch(75% 50 300)', steps=8, space='lch', hue='longe
 
 ColorAide is a continually evolving project, but was created with a number of specific goals in mind:
 
-- [x] Accurate colors with proper round tripping.
+- [x] Accurate colors.
+
+- [x] Proper round tripping (where reasonable).
 
 - [x] Be generally easy to pick up for the average user.
 
