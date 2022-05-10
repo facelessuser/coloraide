@@ -966,7 +966,7 @@ class BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: ArrayLike, orig: Tuple[int, ...], old: Tuple[int, ...], new: Tuple[int, ...]) -> None:
+    def __init__(self, array: ArrayLike, old: Tuple[int, ...], new: Tuple[int, ...]) -> None:
         """Initialize."""
 
         self._loop1 = 0
@@ -1082,11 +1082,11 @@ class Broadcast:
 
         # Determine maximum dimensions
         shapes = []
-        arrays2 = []
         max_dims = 0
         for a in arrays:
-            arrays2.append([a] if not isinstance(a, Sequence) else a)
-            s = shape(arrays2[-1])
+            s = shape(a)
+            if not s:
+                s = (1,)
             dims = len(s)
             if dims > max_dims:
                 max_dims = dims
@@ -1112,8 +1112,8 @@ class Broadcast:
 
         # Create iterators to "broadcast to"
         self.iters = []
-        for a, s0, s1 in zip(arrays2, shapes, stage1_shapes):
-            self.iters.append(BroadcastTo(a, s0, s1, common))
+        for a, s1 in zip(arrays, stage1_shapes):
+            self.iters.append(BroadcastTo(a, s1, common))
 
         # I don't think this is done the same way as `numpy`.
         # But shouldn't matter for what we do.
@@ -1177,7 +1177,7 @@ def broadcast_to(a: ArrayLike, s: Union[int, Sequence[int]]) -> Array:
         if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
 
-    return cast(Array, reshape(list(BroadcastTo(a, s_orig, tuple(s1), tuple(s))), s))
+    return cast(Array, reshape(list(BroadcastTo(a, tuple(s1), tuple(s))), s))
 
 
 def full(array_shape: Union[int, Sequence[int]], fill_value: Union[float, ArrayLike]) -> Array:
