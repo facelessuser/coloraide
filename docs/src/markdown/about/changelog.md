@@ -5,6 +5,7 @@
 - **NEW**: Allow dictionary input to use aliases in the dictionary.
 - **FIX**: If too many channels are given to a color space via raw data, ensure the operation fails.
 - **FIX**: Sync up achromatic logic of the Okhsl and Okhsv `normalize` function with the actual conversion algorithm.
+- **FIX**: Regression that caused `cat16` not to work due to a misnamed variable.
 
 ## 0.17.0
 
