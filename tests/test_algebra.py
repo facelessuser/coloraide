@@ -539,7 +539,7 @@ class TestAlgebra(unittest.TestCase):
             (3, 2, 4)
         )
 
-        self.assertEqual(
+        with self.assertRaises(ValueError):
             alg.shape(
                 [[[2, 2, 2, 2],
                   [2, 2, 2, 2]],
@@ -547,24 +547,16 @@ class TestAlgebra(unittest.TestCase):
                   [2, 2, 2, 2]],
                  [[2, 2, 2, 2],
                   [2, 2, 2, 2]]],
-            ),
-            (3, 2)
-        )
+            )
 
-        self.assertEqual(
-            alg.shape([[1, 2], [1, 2, 3], [1, 2]]),
-            (3,)
-        )
+        with self.assertRaises(ValueError):
+            alg.shape([3, [3], 3])
 
-        self.assertEqual(
-            alg.shape([[1, 2], [1, 2, 3], [1, 2]]),
-            (3,)
-        )
+        with self.assertRaises(ValueError):
+            alg.shape([[1, 2], [1, 2, 3], [1, 2]])
 
-        self.assertEqual(
-            alg.shape([[1, 2], [], [1, 2]]),
-            (3,)
-        )
+        with self.assertRaises(ValueError):
+            alg.shape([[1, 2], [], [1, 2]])
 
         self.assertEqual(
             alg.shape([]),

@@ -1222,19 +1222,20 @@ def _flatiter(array: ArrayLike, array_shape: Tuple[int, ...]) -> Iterator[float]
     for a in array:
         if nested:
             yield from _flatiter(cast(ArrayLike, a), array_shape[1:])
-        elif isinstance(a, Sequence):
-            raise ValueError('Ragged arrays are not supported')
         else:
-            yield a
+            yield cast(float, a)
 
 
-def flatiter(array: ArrayLike) -> Iterator[float]:
+def flatiter(array: Union[float, ArrayLike]) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    yield from _flatiter(array, shape(array))
+    if not isinstance(array, Sequence):
+        yield array
+    else:
+        yield from _flatiter(array, shape(array))
 
 
-def ravel(array: ArrayLike) -> Vector:
+def ravel(array: Union[float, ArrayLike]) -> Vector:
     """Return a flattened vector."""
 
     return list(flatiter(array))
@@ -1347,7 +1348,7 @@ def reshape(array: ArrayLike, new_shape: Union[int, Sequence[int]]) -> Union[flo
     # Shape to a scalar
     if not new_shape:
         v = ravel(array)
-        if len(v) == 1 and not isinstance(v[0], Sequence):
+        if len(v) == 1:
             return v[0]
         else:
             raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
@@ -1406,14 +1407,12 @@ def _shape(array: ArrayLike, size: int) -> Tuple[int, ...]:
     deeper = True
     for a in array:
         if not isinstance(a, Sequence) or size != len(a):
-            return tuple()
+            raise ValueError('Ragged lists are not supported')
         elif deeper:
             if a and isinstance(a[0], Sequence):
                 if size2 < 0:
                     size2 = len(a[0])
                 s2 = _shape(a, size2)
-                if not s2:
-                    break
             else:
                 deeper = False
                 s2 = tuple()
@@ -1425,12 +1424,30 @@ def shape(array: Union[float, ArrayLike]) -> Tuple[int, ...]:
 
     if isinstance(array, Sequence):
         s = (len(array),)
+
+        # Zero length vector
         if not s[0]:
-            return (0,)
-        elif not isinstance(array[0], Sequence):
-            return tuple(s)
-        return s + _shape(array, len(array[0]))
+            return s
+
+        # Handle scalers
+        is_scalar = False
+        all_scalar = True
+        for a in array:
+            if not isinstance(a, Sequence):
+                is_scalar = True
+                if not all_scalar:
+                    break
+            else:
+                all_scalar = False
+        if is_scalar:
+            if all_scalar:
+                return s
+            raise ValueError('Ragged lists are not supported')
+
+        # Looks like we only have sequences
+        return s + _shape(array, len(cast(ArrayLike, array[0])))
     else:
+        # Scalar
         return tuple()
 
 
@@ -1707,8 +1724,8 @@ def hstack(arrays: Tuple[ArrayLike, ...]) -> Array:
 def outer(a: Union[float, ArrayLike], b: Union[float, ArrayLike]) -> Matrix:
     """Compute the outer product of two vectors (or flattened matrices)."""
 
-    v1 = ravel(a) if isinstance(a, Sequence) else [a]
-    v2 = ravel(b) if isinstance(b, Sequence) else [b]
+    v1 = ravel(a)
+    v2 = ravel(b)
     return [[x * y for y in v2] for x in v1]
 
 
