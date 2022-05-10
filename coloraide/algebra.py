@@ -1429,7 +1429,7 @@ def shape(array: Union[float, ArrayLike]) -> Tuple[int, ...]:
         if not s[0]:
             return s
 
-        # Handle scalers
+        # Handle scalars
         is_scalar = False
         all_scalar = True
         for a in array:
