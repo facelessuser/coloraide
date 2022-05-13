@@ -19,7 +19,8 @@ def main():
 
     parser = argparse.ArgumentParser(prog='gamut_diagrams', description='Demonstrate gamut mapping.')
     parser.add_argument('--color', '-c', help="Color to gamut map.")
-    parser.add_argument('--gamut', '-g', default='lch-chroma', help="Gamut map method")
+    parser.add_argument('--method', '-m', default='lch-chroma', help="Gamut map method")
+    parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--clip-space', '-p', default='lch', help="Lch space to show clipping in.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
@@ -28,10 +29,10 @@ def main():
 
     args = parser.parse_args()
 
-    if args.gamut == 'lch-chroma':
+    if args.method == 'lch-chroma':
         space = 'lch'
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.gamut)
+        color2 = color.fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160'
@@ -39,26 +40,26 @@ def main():
         constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
         title = 'MINDE and Chroma Reduction in CIELCH'
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
-    elif args.gamut in ('oklch-chroma', 'css-color-4'):
+    elif args.method in ('oklch-chroma', 'css-color-4'):
         space = 'oklch'
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.gamut)
+        color2 = color.fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:0.5'
         yaxis = 'l:0:1'
         constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
         t = 'MINDE and Chroma Reduction in Oklch'
-        if args.gamut == 'css-color-4':
+        if args.method == 'css-color-4':
             t += ' (CSS Color Level 4)'
         title = '{}'.format(t)
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
-    elif args.gamut == 'clip':
+    elif args.method == 'clip':
         space = args.clip_space
         if space not in ('lch', 'oklch'):
             raise ValueError('"{}" is an unsupported clipping space'.format(space))
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.gamut)
+        color2 = color.fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'
@@ -68,7 +69,7 @@ def main():
         title = 'Clipping shown in {}'.format(t_space)
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
     else:
-        raise ValueError('"{}" is an unsupported gamut mapping algorithm'.format(args.gamut))
+        raise ValueError('"{}" is an unsupported gamut mapping algorithm'.format(args.method))
 
     plot_slice(
         space,
@@ -96,7 +97,7 @@ def main():
         mapcolor.c,
         mapcolor.l,
         marker="o",
-        color=color2.convert('srgb').to_string(hex=True, fit=args.gamut),
+        color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
         zorder=100
     )
@@ -105,7 +106,7 @@ def main():
         mapcolor2.c,
         mapcolor2.l,
         marker="o",
-        color=color2.convert('srgb').to_string(hex=True, fit=args.gamut),
+        color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
         zorder=100
     )

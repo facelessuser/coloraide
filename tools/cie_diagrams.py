@@ -19,7 +19,7 @@ from coloraide import util  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
 
 # How dense do we scatter plot the diagram background colors?
-RESOLUTION = 1024
+RESOLUTION = 800
 
 CCT = [1000, 1500, 2000, 2500, 3000, 6000, 10000, 15000, 20000, 25000]
 
