@@ -107,7 +107,7 @@ def get_colors(result):
     elif isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(fit=False), result.clone()))
     elif isinstance(result, Interpolator):
-        colors = HtmlGradient(result.steps(steps=5, max_delta_e=3))
+        colors = HtmlGradient(result.steps(steps=5, max_delta_e=2.3))
     elif isinstance(result, str):
         try:
             colors.append(ColorTuple(result, Color2(result)))

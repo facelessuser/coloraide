@@ -776,6 +776,12 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 continue
             self.assertTrue(color.delta_e(colors[index - 1]) <= 3)
 
+    def test_max_delta_min_step_less_than_two(self):
+        """Test that when a minimum step less than 2 is given that `max_delta_e` won't break."""
+
+        colors = Color('lightblue').steps('blue', space="srgb", steps=1, max_delta_e=10)
+        self.assertTrue(len(colors) > 2)
+
     def test_steps_max_delta_e_steps(self):
         """Test steps with a max delta e."""
 
