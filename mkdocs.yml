@@ -126,7 +126,7 @@ extra_css:
 extra_javascript:
   - playground-config-18a6b090.js
   - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-a3ce9f1c.js
+  - assets/coloraide-extras/extra-notebook-fe68fb4e.js
 
 extra:
   social:
