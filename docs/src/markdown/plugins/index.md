@@ -6,6 +6,7 @@ methods or even new color spaces quite easy. Currently, ColorAide implements the
 - [∆E methods](#delta-e)
 - [Gamut mapping](#fitgamut-mapping)
 - [Chromatic adaptation](#chromatic-adaptation)
+- [Filters](#filters)
 - [Color spaces](#color-spaces)
 
 ## Delta E
