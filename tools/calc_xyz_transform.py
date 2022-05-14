@@ -1,8 +1,4 @@
-"""
-Calculate XYZ conversion matrices.
-
-Uses our own matrix tools for calculations, but can easily be replaced with `numpy`.
-"""
+"""Calculate XYZ conversion matrices."""
 import sys
 import os
 

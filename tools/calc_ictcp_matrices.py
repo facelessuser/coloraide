@@ -2,8 +2,6 @@
 Calculate ICtCp matrices.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
-
-Uses our own matrix tools for calculations, but can easily be replaced with `numpy`.
 """
 import sys
 import os

@@ -1,8 +1,4 @@
-"""
-Calculate Jzazbz matrices.
-
-Uses our own matrix tools for calculations, but can easily be replaced with `numpy`.
-"""
+"""Calculate Jzazbz matrices."""
 import sys
 import os
 

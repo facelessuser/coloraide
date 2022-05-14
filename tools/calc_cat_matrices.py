@@ -3,8 +3,6 @@ Calculate CATs.
 
 We now do this internally, and on the fly, but can be useful if a CAT needs to be
 generated for other calculations externally.
-
-Uses our own matrix tools for calculations, but can easily be replaced with `numpy`.
 """
 import sys
 import os

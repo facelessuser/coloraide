@@ -2,8 +2,6 @@
 Calculate `oklab` matrices.
 
 https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-945714988
-
-Uses our own matrix tools for calculations, but can easily be replaced with `numpy`.
 """
 import sys
 import os
