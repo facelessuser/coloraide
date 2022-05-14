@@ -13,14 +13,13 @@ color.js.
 Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
 """
-import math
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from . import algebra as alg
 from .types import Vector
 from .spaces import Cylindrical
 from .gamut.bounds import FLG_ANGLE
-from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Any, Union, cast, TYPE_CHECKING
+from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Union, cast, TYPE_CHECKING
 from .types import ColorInput
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -67,10 +66,6 @@ class Interpolator(metaclass=ABCMeta):
         """Initialize."""
 
     @abstractmethod
-    def get_delta(self, method: Optional[str]) -> Any:
-        """Get the delta."""
-
-    @abstractmethod
     def __call__(self, p: float) -> 'Color':
         """Call the interpolator."""
 
@@ -110,14 +105,6 @@ class InterpolateSingle(Interpolator):
         self.space = space
         self.outspace = outspace
         self.premultiplied = premultiplied
-
-    def get_delta(self, method: Optional[str]) -> float:
-        """Get the delta."""
-
-        return self.create(self.space, self.channels1[:-1]).delta_e(
-            self.create(self.space, self.channels2[:-1]),
-            method=method
-        )
 
     def __call__(self, p: float) -> 'Color':
         """Run through the coordinates and run the interpolation on them."""
@@ -159,11 +146,6 @@ class InterpolatePiecewise(Interpolator):
         self.end = stops[len(stops) - 1]
         self.stops = stops
         self.interpolators = interpolators
-
-    def get_delta(self, method: Optional[str]) -> Vector:
-        """Get the delta total."""
-
-        return [i.get_delta(method) for i in self.interpolators]
 
     def __call__(self, p: float) -> 'Color':
         """Interpolate."""
@@ -354,23 +336,20 @@ def color_steps(
 ) -> List['Color']:
     """Color steps."""
 
-    if max_delta_e <= 0:
-        actual_steps = steps
-    else:
-        actual_steps = 0
-        deltas = interpolator.get_delta(delta_e)
-        if not isinstance(deltas, Sequence):
-            deltas = [deltas]
-        # Make a very rough guess of required steps.
-        actual_steps = max(steps, sum([math.ceil(d / max_delta_e) + 1 for d in deltas]))
+    actual_steps = steps
 
+    # Allocate at least two steps if we are doing a maximum delta E,
+    if max_delta_e != 0 and actual_steps < 2:
+        actual_steps = 2
+
+    # Make sure we don't start out allocating too many colors
     if max_steps is not None:
         actual_steps = min(actual_steps, max_steps)
 
     ret = []
     if actual_steps == 1:
         ret = [{"p": 0.5, "color": interpolator(0.5)}]
-    else:
+    elif actual_steps > 1:
         step = 1 / (actual_steps - 1)
         for i in range(actual_steps):
             p = i * step
@@ -382,13 +361,11 @@ def color_steps(
     if max_delta_e > 0:
         # Initial check to see if we need to insert more stops
         m_delta = 0.0
-        for i, entry in enumerate(ret):
-            if i == 0:
-                continue
+        for i in range(1, len(ret)):
             m_delta = max(
                 m_delta,
-                cast('Color', entry['color']).delta_e(
-                    cast('Color', ret[i - 1]['color']),
+                cast('Color', ret[i - 1]['color']).delta_e(
+                    cast('Color', ret[i]['color']),
                     method=delta_e
                 )
             )
@@ -399,9 +376,11 @@ def color_steps(
             # Inject stops while measuring again to see if it was sufficient
             m_delta = 0.0
             i = 1
-            while i < len(ret):
-                prev = ret[i - 1]
-                cur = ret[i]
+            offset = 0
+            for i in range(1, len(ret)):
+                index = i + offset
+                prev = ret[index - 1]
+                cur = ret[index]
                 p = (cast(float, cur['p']) + cast(float, prev['p'])) / 2
                 color = interpolator(p)
                 m_delta = max(
@@ -409,8 +388,8 @@ def color_steps(
                     color.delta_e(cast('Color', prev['color']), method=delta_e),
                     color.delta_e(cast('Color', cur['color']), method=delta_e)
                 )
-                ret.insert(i, {'p': p, 'color': color})
-                i += 2
+                ret.insert(index, {'p': p, 'color': color})
+                offset += 1
 
     return [cast('Color', i['color']) for i in ret]
 

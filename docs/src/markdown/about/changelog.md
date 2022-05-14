@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.18.1
+
+- **FIX**: Fix issue where when generating steps with a `max_delta_e`, the ∆E was reduced too much causing additional,
+  unnecessary steps along with longer processing time.
+
 ## 0.18.0
 
 - **NEW**: Allow dictionary input to use aliases in the dictionary.
