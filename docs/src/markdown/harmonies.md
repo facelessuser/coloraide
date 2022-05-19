@@ -5,8 +5,8 @@ Modern day color theory probably starts with the first color wheel created by Is
 light with prisms, he formed probably the first color wheel. From there, many others built upon this work, sometimes
 with opposing ideas.
 
-The original color wheel, while inspired by what was observed by light was created based on experiments with pigments as
-well. As most know, in paint, red, yellow, and blue are considered primary colors. Newton thought this translated to
+The original color wheel, while inspired by what was observed by light, was created based on experiments with pigments
+as well. As most know, in paint, red, yellow, and blue are considered primary colors. Newton thought this translated to
 light as well and stated they were also the primary colors of light. While this isn't actually true, his work was very
 important in reshaping how people viewed color.
 
@@ -22,46 +22,58 @@ form more pleasing color combinations.
 
 ## Which Color Space is Best for Color Harmonies?
 
-As we know, these days, there are many color spaces out there, and not all color spaces are created equal.
+As we know, these days, there are many color spaces out there: subtractive models, additive models, perceptually
+uniform models, high dynamic range models, etc. Many color spaces trying to solve specific issues based on the knowledge
+at the time.
 
 The early work that created the first color wheel was based on an RYB color model. In modern TVs and monitors, the RYB
 color model is not used. Electronic screens create all their colors with light based methods that mix red, green, and
 blue lights. In addition, the human eye perceives colors using red, green, and blue as well.
 
-The colors of light generally behave and mix differently than pigments. Most modern color spaces are based on human
-perception of light, so RGB based color spaces are quite a bit more common. If we were to compose a color wheel based on
-the common sRGB color space, we could base it off the 3 primary colors of light. Starting with red (0˚), we could
-extract the colors at evenly spaced degrees, 30˚ to be exact. This would give us our 12 colors for the sRGB color space.
+In reality, we could create a color wheel from any of the various color spaces out there and end up with slightly
+different results. If we were to compose a color wheel based on the common sRGB color space, we could base it off the 3
+primary colors of light. Starting with red (0˚), we could extract the colors at evenly spaced degrees, 30˚ to be exact.
+This would give us our 12 colors for the sRGB color space.
 
 ```playground
 HtmlSteps([Color('hsl', [x, 1, 0.5]) for x in range(0, 360, 30)])
 ```
 
-From this we can construct our sRGB color wheel.
+From this we can construct an sRGB color wheel.
 
 ![RGB Color Wheel](images/rgb-color-wheel.png)
 
-You could do this for almost any cylindrical color space and you'd get slightly different values. For instance, if we
-were to select the perceptually uniform Oklch color space, and seed it with red's lightness and chroma, we'd get:
+This is different from the RYB color wheel, and more accurate in relation to how light works, but does it yield better
+harmonies for colors?
+
+If we were to select the perceptually uniform Oklch color space, and seed it with red's lightness and chroma, we'd get:
 
 ```playground
 c = Color('red').convert('oklch', in_place=True)
 HtmlSteps([Color('oklch', [*c[0:2], x]) for x in range(0, 360, 30)])
 ```
 
-Well, which is better? That really depends on your criteria. The truth is, what is considered harmonious can be largely
-subjective, and everyone has reasons for selecting certain color spaces as **the** color space to use.
+This produces colors with visually more uniform lightness, does that mean these are better?
+
+The truth is, what is better or even harmonious can be largely subjective, and everyone has reasons for selecting
+certain color spaces for a specific task.
 
 Many artists swear by the classical color wheel, others are fine with using the sRGB color wheel as it is easy to work
 with in CSS via the HSL color space, and there are still others that are more interested in perceptually uniform color
 spaces that aim for more consistent hues and predictable lightness.
 
-ColorAide, by default uses the perceptually uniform Oklch color space to calculate color harmonies. Oklch does a better
-job at keeping hues constant, and the gamut of colors it can represent is not as limited as sRGB. With that said, there
-may be reasons to select other color spaces. ColorAide allows for any cylindrical color space to be used instead of the
-default. If you prefer sRGB, just specify HSL as the color space to use.
+As far as ColorAide is concerned, we've chosen to use Oklch as the color space in which we work in. This is based
+mainly on the fact it keeps hue more consistent than some other options, and it allows us to support a wider gamut than
+options like HSL.
 
-Use what you like, we won't judge :smile:.
+```playground
+HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='oklch'))
+HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='hsl'))
+HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='lch'))
+```
+
+While Oklch is the default, we understand that there are many reasons to use other spaces, so use what you like, we
+won't judge :smile:.
 
 ```playground
 HtmlSteps(Color('red').harmony('complement'))
@@ -90,20 +102,18 @@ visualize better what is happening in a familiar color wheel format. You can see
 
 ### Monochromatic
 
-Monochromatic is probably the most straight forward color harmony. By specifying various tints and shades of a given
-hue, very pleasing palettes can be created.
-
-ColorAide will do its best to select colors with sufficient contrast between them. The specified color will usually be
-in the middle, but in cases where the color is too close to black or white, it may be offset.
-
-Additionally, the monochromatic harmony is the only color harmony that will accept non-cylindrical color spaces as the
-target environment.
+The monochromatic harmony pairs various tints and shades of a color together to create pleasing color schemes.
 
 ![Harmony Monochromatic](images/harmony-mono.png)
 
 ```playground
 HtmlSteps(Color('red').harmony('mono'))
 ```
+
+!!! note "Achromatic Colors"
+    Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
+    achromatic.
+
 ### Complementary
 
 Complementary harmonies use a dyad of colors at opposite ends of the color wheel.

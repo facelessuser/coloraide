@@ -16,7 +16,31 @@ class Harmony:
 
 
 class Monochromatic(Harmony):
-    """Monochromatic harmony."""
+    """
+    Monochromatic harmony.
+
+    Take a given color and create both tints and shades such that we have `RANGE` total steps ranging
+    from black -> color -> white. Normally, we will throw away pure black, pure white, and the duplicate
+    target color (as we interpolate with it on both sides) leaving us with RANGE - 3 colors to extract
+    the target `STEPS` from. The one exception is when targeting an achromatic color, and in that case,
+    we only throw away the duplicate color (though if a color is close enough to white or black, white
+    or black may not be included simply because we cannot get a reasonable step that includes it).
+
+    Once we have our `RANGE`, we can extract a total of `STEPS` colors with the target color at the center
+    (when possible). If the target color is too close to the either the minimum or maximum color step,
+    there may not be enough tints or shades on one side, so the result may have to draw heavier on the
+    side that has more plentiful tints or shades which would cause the target color to shift from the center.
+
+    The current `RANGE` was chosen as 12 as it seems to to provide OK contrast in most cases for the monochromatic
+    colors. The one exception is with a target color of black or very near black which may return at least one color
+    with very low contrast to black. Generally, extremely dark colors do not make a good target for color harmonies,
+    but it should be noted that Oklch's lightness tends to the more darker side. The poor contrast may be
+    less with other color spaces.
+    """
+
+    DELTA_E = '2000'
+    RANGE = 12
+    STEPS = 5
 
     @classmethod
     def harmonize(cls, color: 'Color', space: Optional[str]) -> List['Color']:
@@ -24,50 +48,63 @@ class Monochromatic(Harmony):
 
         if space is None:
             space = color.HARMONY
+
         orig_space = color.space()
+        color0 = color.convert(space).normalize()
+
+        if not isinstance(color0._space, Cylindrical):
+            raise ValueError('Color space must be cylindrical')
+
+        # Trim off black and white unless the color is achromatic,
+        # But always trim duplicate target color from left side.
+        if not color0.is_nan('hue'):
+            ltrim, rtrim = slice(1, -1, None), slice(None, -1, None)
+        else:
+            ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
 
         # Create black and white so we can generate tints and shades
-        w = color.new('color(srgb 1 1 1 / none)').convert(space, in_place=True)
-        b = color.new('color(srgb 0 0 0 / none)').convert(space, in_place=True)
-        color0 = color.convert(space)
+        # Ensure hue and alpha is masked so we don't interpolate them.
+        w = color.new('color(srgb 1 1 1 / none)').convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
+        b = color.new('color(srgb 0 0 0 / none)').convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
 
         # Calculate how many tints and shades we need to generate
-        db = b.delta_e(color0, method="2000")
-        dw = w.delta_e(color0, method="2000")
-        total = db + dw
-        steps_w = int(alg.round_half_up((dw / total) * 11))
-        steps_b = int(alg.round_half_up((db / total) * 11))
+        db = b.delta_e(color0, method=cls.DELTA_E)
+        dw = w.delta_e(color0, method=cls.DELTA_E)
+        steps_w = int(alg.round_half_up((dw / (db + dw)) * cls.RANGE))
+        steps_b = cls.RANGE - steps_w
 
-        if isinstance(color0._space, Cylindrical):
-            w.mask(['hue', 'alpha'], in_place=True)
-            b.mask(['hue', 'alpha'], in_place=True)
-        else:
-            w.mask(['alpha'], in_place=True)
-            b.mask(['alpha'], in_place=True)
-
-        # Close to black or is black, no need to interpolate from black to current color
-        if db < 5:
+        # Very close to black or is black, no need to interpolate from black to current color
+        if steps_b <= 1:
             left = []
-            right = color0.steps(w, steps=steps_w, space=space, out_space=orig_space)[:]
+            if steps_b == 1:
+                left.extend(b.steps(color, steps=steps_b, space=space, out_space=orig_space))
+            steps = min(cls.RANGE - (1 + steps_b), steps_w)
+            right = color0.steps(w, steps=steps, space=space, out_space=orig_space)[rtrim]
 
-        # Close to white or is white, no need to interpolate from current color to white
-        elif dw < 5:
-            left = b.steps(color, steps=steps_b, space=space, out_space=orig_space)[:-1]
-            right = [color.clone()]
+        # Very close to white or is white, no need to interpolate from current color to white
+        elif steps_w <= 1:
+            right = []
+            if steps_w == 1:
+                right.extend(color0.steps(w, steps=steps_w, space=space, out_space=orig_space))
+            steps = min(cls.RANGE - (1 + steps_w), steps_b)
+            right.insert(0, color.clone())
+            left = b.steps(color, steps=steps, space=space, out_space=orig_space)[ltrim]
 
-        # Anything else in between
         else:
-            left = b.steps(color, steps=steps_b, space=space, out_space=orig_space)[1:-1]
-            right = color0.steps(w, steps=steps_w, space=space, out_space=orig_space)[:-1]
+            # Anything else in between
+            left = b.steps(color, steps=steps_b, space=space, out_space=orig_space)[ltrim]
+            right = color0.steps(w, steps=steps_w, space=space, out_space=orig_space)[rtrim]
 
-        # Assemble a portion of the results to return
+        # Extract a subset of the results
         len_l = len(left)
         len_r = len(right)
-        if len_r < 3:
-            return left[-5 + len_r:] + right
-        elif len_l < 2:
-            return left + right[:5 - len_l]
-        return left[-2:] + right[:3]
+        l = int(cls.STEPS // 2)
+        r = l + (1 if cls.STEPS % 2 else 0)
+        if len_r < r:
+            return left[-cls.STEPS + len_r:] + right
+        elif len_l < l:
+            return left + right[:cls.STEPS - len_l]
+        return left[-l:] + right[:r]
 
 
 class Geometric(Harmony):

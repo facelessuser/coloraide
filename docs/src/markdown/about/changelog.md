@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.0
+
+- **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
+  easier. This means all color harmonies now must be performed under a cylindrical color space.
+- **FIX**: Better handling of monochromatic harmonies that are near white or black.
+
 ## 0.18.1
 
 - **FIX**: Fix issue where when generating steps with a `max_delta_e`, the ∆E was reduced too much causing additional,

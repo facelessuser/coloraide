@@ -102,6 +102,7 @@ Okhsv
 Oklab
 Oklab's
 Oklch
+Oklch's
 Ottosson
 PQ
 Piecewise
