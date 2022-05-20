@@ -18,8 +18,8 @@ class TestHarmonies(util.ColorAssertsPyTest):
                 ['rgb(128.04 0 0)',
                  'rgb(189.52 0 0)',
                  'rgb(255 0 0)',
-                 'rgb(263.47 106.88 88.846)',
-                 'rgb(266.95 161.01 145.22)'],
+                 'rgb(262.16 94.255 76.67)',
+                 'rgb(266.2 140.53 123.15)'],
                 None
             ),
             (
@@ -40,6 +40,26 @@ class TestHarmonies(util.ColorAssertsPyTest):
                  'rgb(21.957 21.957 21.957)',
                  'rgb(45.705 45.705 45.705)',
                  'rgb(71.554 71.554 71.554)'],
+                None
+            ),
+            (
+                'lightyellow',
+                'mono',
+                ['rgb(148.04 148.04 129.36)',
+                 'rgb(182.47 182.47 159.83)',
+                 'rgb(218.17 218.17 191.41)',
+                 'rgb(255 255 224)',
+                 'rgb(254.96 255.07 239.68)'],
+                None
+            ),
+            (
+                '#000011',
+                'mono',
+                ['rgb(0 0 2.3084)',
+                 'rgb(0 0 17)',
+                 'rgb(6.8796 16.788 39.776)',
+                 'rgb(31.005 41.641 63.598)',
+                 'rgb(58.097 68.188 88.434)'],
                 None
             ),
             (
@@ -97,16 +117,6 @@ class TestHarmonies(util.ColorAssertsPyTest):
                 ['rgb(255 0 0)',
                  'rgb(0 255 255)'],
                 'hsl'
-            ),
-            (
-                'red',
-                'mono',
-                ['rgb(153 0 0)',
-                 'rgb(204 0 0)',
-                 'rgb(255 0 0)',
-                 'rgb(255 63.75 63.75)',
-                 'rgb(255 127.5 127.5)'],
-                'srgb'  # monochromatic doesn't restrict space
             )
         ]
     )
@@ -141,6 +151,9 @@ class TestHarmonyError(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').harmony('rectangle', space='srgb')
+
+        with self.assertRaises(ValueError):
+            Color('red').harmony('mono', space='srgb')
 
     def test_bad_harmony(self):
         """Test bad harmony."""
