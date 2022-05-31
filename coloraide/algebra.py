@@ -1682,7 +1682,7 @@ def vstack(arrays: Tuple[ArrayLike, ...]) -> Array:
     return sum(cast(Iterable[Array], m), cast(Array, []))
 
 
-def _hstack_extract(a: Array, s: Tuple[int, ...]) -> Iterator[Vector]:
+def _hstack_extract(a: ArrayLike, s: Sequence[int]) -> Iterator[Vector]:
     """Extract data from the second dimension."""
 
     data = flatiter(a)
@@ -1720,7 +1720,7 @@ def hstack(arrays: Tuple[ArrayLike, ...]) -> Array:
         raise ValueError("'hstack' requires at least one array")
 
     # Iterate the arrays returning the content per second dimension
-    m = []  # type: List[Array]
+    m = []  # type: List[Any]
     for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrays, shapes)]):
         m.extend(sum(data, []))
 
