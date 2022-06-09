@@ -1,7 +1,7 @@
 mkdocs-material==8.2.10
-pymdown-extensions>=9.4
+pymdown-extensions>=9.5
 pygments>=2.12
-mkdocs_pymdownx_material_extras>=2.0
+mkdocs_pymdownx_material_extras>=2.1
 git+https://github.com/facelessuser/pymdown-lexers.git
 mkdocs-git-revision-date-localized-plugin
 mkdocs-minify-plugin
