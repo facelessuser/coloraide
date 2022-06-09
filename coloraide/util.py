@@ -42,11 +42,18 @@ C2 = 2413 / 128
 C3 = 2392 / 128
 
 
-def xy_to_xyz(xy: VectorLike, Y: float = 1) -> Vector:
-    """Convert `xyY` to `xyz`."""
+def xy_to_xyz(xy: VectorLike, Y: float = 1.0, scale: float = 1.0) -> Vector:
+    """
+    Convert `xyY` to `xyz`.
+
+    In many cases, we are dealing with chromaticity values with no Y value,
+    in this case, assume 1 unless otherwise specified. Generally, scale is
+    also assumed to be between 0 - 1, but allow changing scale if we are
+    dealing with things like 0 - 100, etc.
+    """
 
     x, y = xy
-    return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (1 - x - y) * Y / y]
+    return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (scale - x - y) * Y / y]
 
 
 def xy_to_uv(xy: VectorLike) -> Vector:
