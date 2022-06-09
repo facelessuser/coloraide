@@ -146,7 +146,7 @@ def execute(cmd, no_except=True, inline=False):
     """Execute color commands."""
 
     import coloraide
-    # from pymdownx.inlinehilite import InlineHiliteException
+    from pymdownx.inlinehilite import InlineHiliteException
     try:
         import coloraide_extras
     except ImportError:
@@ -179,8 +179,8 @@ def execute(cmd, no_except=True, inline=False):
             if not inline:
                 from pymdownx.superfences import SuperFencesException
                 raise SuperFencesException from e
-            # else:
-            #     raise InlineHiliteException from e
+            else:
+                raise InlineHiliteException from e
         import traceback
         return '{}'.format(traceback.format_exc()), colors
 
@@ -229,8 +229,8 @@ def execute(cmd, no_except=True, inline=False):
                 if not inline:
                     from pymdownx.superfences import SuperFencesException
                     raise SuperFencesException from e
-                # else:
-                #     raise InlineHiliteException from e
+                else:
+                    raise InlineHiliteException from e
             import traceback
             console += '{}\n{}'.format(command, traceback.format_exc())
             # Failed for some reason, so quit
@@ -394,7 +394,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
 def color_formatter(src="", language="", class_name=None, md=""):
     """Formatter wrapper."""
 
-    # from pymdownx.inlinehilite import InlineHiliteException
+    from pymdownx.inlinehilite import InlineHiliteException
     try:
         from coloraide_extras import Color
     except ImportError:
@@ -443,8 +443,8 @@ def color_formatter(src="", language="", class_name=None, md=""):
         )
 
         el.append(md.inlinePatterns['backtick'].handle_code('css-color', result))
-    # except InlineHiliteException:
-    #     raise
+    except InlineHiliteException:
+        raise
     except Exception:
         import traceback
         print(traceback.format_exc())
