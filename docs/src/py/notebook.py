@@ -391,7 +391,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
     return el
 
 
-def color_formatter(src="", language="", class_name=None, md=""):
+def color_formatter(src="", language="", class_name=None, md="", exceptions=True):
     """Formatter wrapper."""
 
     from pymdownx.inlinehilite import InlineHiliteException
@@ -402,14 +402,19 @@ def color_formatter(src="", language="", class_name=None, md=""):
 
     try:
         result = src.strip()
+
         try:
-            console, colors = execute(result, inline=True)
+            color = Color(result.strip())
+        except Exception:
+            console, colors = execute(result, exceptions, inline=True)
             if len(colors) != 1 or len(colors[0]) != 1:
-                raise ValueError('Need one color only')
+                if exceptions:
+                    raise InlineHiliteException('Only one color allowed')
+                else:
+                    raise ValueError('Only one color allowed')
             color = colors[0][0].color
             result = colors[0][0].string
-        except Exception:
-            color = Color(result.strip())
+
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut(WEBSPACE):
@@ -479,6 +484,12 @@ def live_color_command_validator(language, inputs, options, attrs, md):
     # Live edit, we always allow exceptions so not to crash the service.
     options['exceptions'] = True
     return value
+
+
+def live_color_formatter(src="", language="", class_name=None, md=""):
+    """Color formatter for a live environment."""
+
+    return color_formatter(src, language, class_name, md, exceptions=False)
 
 
 def render_console(*args):
@@ -557,7 +568,7 @@ def render_notebook(*args):
                 {
                     'name': 'color',
                     'class': 'color',
-                    'format': color_formatter
+                    'format': live_color_formatter
                 }
             ]
         },

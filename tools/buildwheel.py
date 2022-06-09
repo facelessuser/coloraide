@@ -12,7 +12,7 @@ import hashlib
 # Notebook specific wheels
 NOTEBOOK_WHEELS = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/37/28/8750666d9431c9cb5201df4bfa14b5ffcdcf659b22156a4810ee9ad5ca06/pymdown_extensions-9.4-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/f1/e0/1ed09f66cd1648f8e009120debf9b7d67596fb688e53e71522da1daa02a0/pymdown_extensions-9.5-py3-none-any.whl",  # noqa: E501
 ]
 
 # Wheels required in addition to the current project
