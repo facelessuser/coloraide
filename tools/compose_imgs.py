@@ -48,12 +48,12 @@ def printt(t):
 def apply_compositing(background, blend, operator, pixels):
     """Apply compositing."""
 
-    c1 = Color('srgb', [x / 255 for x in pixels[0][:3]], pixels[0][3] / 255)
+    color = Color('srgb', [x / 255 for x in pixels[0][:3]], pixels[0][3] / 255)
     # Overlay first layer on background color in isolation
     if background != 'transparent':
-        c1 = c1.compose(background)
+        color.compose(background, in_place=True)
     backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
-    color = c1.compose(backdrops, blend=blend, operator=operator).clip()
+    color.compose(backdrops, blend=blend, operator=operator).clip(in_place=True)
     return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),))
 
 
