@@ -12,8 +12,9 @@ if TYPE_CHECKING:  # pragma: no cover
 class Lab(base.Lab):
     """Lab class."""
 
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,

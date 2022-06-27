@@ -60,41 +60,23 @@ class Lch(Lchish, Space):
         GamutUnbound(0.0, 360.0, FLG_ANGLE)
     )
 
-    @property
-    def l(self) -> float:
-        """Lightness."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
+    @classmethod
+    def l(self, value: float) -> float:
         """Get true luminance."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def c(self) -> float:
-        """Chroma."""
-
-        return self._coords[1]
-
-    @c.setter
-    def c(self, value: float) -> None:
+    @classmethod
+    def c(self, value: float) -> float:
         """chroma."""
 
-        self._coords[1] = alg.clamp(value, 0.0)
+        return alg.clamp(value, 0.0)
 
-    @property
-    def h(self) -> float:
-        """Hue."""
-
-        return self._coords[2]
-
-    @h.setter
-    def h(self, value: float) -> None:
+    @classmethod
+    def h(self, value: float) -> float:
         """Shift the hue."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

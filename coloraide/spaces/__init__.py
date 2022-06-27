@@ -118,44 +118,61 @@ class Space(Plugin, metaclass=SpaceMeta):
     # White point
     WHITE = (0.0, 0.0)
 
-    def __init__(self, color: Union['Space', VectorLike], alpha: Optional[float] = None) -> None:
+    # def __init__(self, color: Union['Space', VectorLike], alpha: Optional[float] = None) -> None:
+    #     """Initialize."""
+
+    #     num_channels = len(self.CHANNEL_NAMES)
+    #     self._coords = [alg.NaN] * (num_channels + 1)
+    #     self._chan_names = set(self.CHANNEL_NAMES)
+    #     self._chan_names.add('alpha')
+
+    #     if isinstance(color, Space):
+    #         self._coords[:] = color._coords[:]
+    #     elif isinstance(color, Sequence):
+    #         if len(color) != num_channels:
+    #             # Only likely to happen with direct usage internally.
+    #             raise ValueError(
+    #                 "{} accepts a list of {} channels".format(self.NAME, num_channels)
+    #             )
+    #         for name, value in zip(self.CHANNEL_NAMES, color):
+    #             setattr(self, name, float(value))
+    #         self.alpha = 1.0 if alpha is None else alpha
+    #     else:  # pragma: no cover
+    #         # Only likely to happen with direct usage internally.
+    #         raise TypeError("Unexpected type '{}' received".format(type(color)))
+
+    @classmethod
+    def parse(cls, color: VectorLike, alpha: Optional[float] = None) -> None:
         """Initialize."""
 
-        num_channels = len(self.CHANNEL_NAMES)
-        self._coords = [alg.NaN] * (num_channels + 1)
-        self._chan_names = set(self.CHANNEL_NAMES)
-        self._chan_names.add('alpha')
+        num_channels = len(cls.CHANNEL_NAMES)
+        _coords = [alg.NaN] * (num_channels + 1)
 
-        if isinstance(color, Space):
-            self._coords[:] = color._coords[:]
-        elif isinstance(color, Sequence):
-            if len(color) != num_channels:
-                # Only likely to happen with direct usage internally.
-                raise ValueError(
-                    "{} accepts a list of {} channels".format(self.NAME, num_channels)
-                )
-            for name, value in zip(self.CHANNEL_NAMES, color):
-                setattr(self, name, float(value))
-            self.alpha = 1.0 if alpha is None else alpha
-        else:  # pragma: no cover
+        if len(color) != num_channels:
             # Only likely to happen with direct usage internally.
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
+            raise ValueError(
+                "{} accepts a list of {} channels".format(cls.NAME, num_channels)
+            )
+        for i, pair in enumerate(zip(cls.CHANNEL_NAMES, color)):
+            _coords[i] = getattr(cls, pair[0])(float(pair[1]))
+        _coords[-1] = 1.0 if alpha is None else cls.alpha(alpha)
+        return _coords
 
-    def __repr__(self) -> str:
-        """Representation."""
+    # def __repr__(self) -> str:
+    #     """Representation."""
 
-        return 'color({} {} / {})'.format(
-            self._serialize()[0],
-            ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]),
-            util.fmt_float(alg.no_nan(self.alpha), util.DEF_PREC)
-        )
+    #     return 'color({} {} / {})'.format(
+    #         self._serialize()[0],
+    #         ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]),
+    #         util.fmt_float(alg.no_nan(self.alpha), util.DEF_PREC)
+    #     )
 
-    __str__ = __repr__
+    # __str__ = __repr__
 
-    def coords(self) -> Vector:
-        """Coordinates."""
+    # def coords(self) -> Vector:
+    #     """Coordinates."""
 
-        return self._coords[:-1]
+    #     return self._coords[:-1]
 
     @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
@@ -169,33 +186,28 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return cls.WHITE
 
-    @property
-    def alpha(self) -> float:
-        """Alpha channel."""
-
-        return self._coords[-1]
-
-    @alpha.setter
-    def alpha(self, value: float) -> None:
+    @staticmethod
+    def alpha(value: float) -> float:
         """Adjust alpha."""
 
-        self._coords[-1] = alg.clamp(value, 0.0, 1.0)
+        return alg.clamp(value, 0.0, 1.0)
 
-    def set(self, name: str, value: float) -> None:  # noqa: A003
-        """Set the given channel."""
+    # @classmethod
+    # def set(cls, name: str, value: float) -> None:  # noqa: A003
+    #     """Set the given channel."""
 
-        name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self._chan_names:
-            raise AttributeError("'{}' is an invalid channel name".format(name))
-        setattr(self, name, float(value))
+    #     name = cls.CHANNEL_ALIASES.get(name, name)
+    #     if name not in cls.CHANNEL_NAMES and name != 'alpha':
+    #         raise AttributeError("'{}' is an invalid channel name".format(name))
+    #     return getattr(cls, name)(float(value))
 
-    def get(self, name: str) -> float:
-        """Get the given channel's value."""
+    # def get(self, name: str) -> float:
+    #     """Get the given channel's value."""
 
-        name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self._chan_names:
-            raise AttributeError("'{}' is an invalid channel name".format(name))
-        return cast(float, getattr(self, name))
+    #     name = self.CHANNEL_ALIASES.get(name, name)
+    #     if name not in self._chan_names:
+    #         raise AttributeError("'{}' is an invalid channel name".format(name))
+    #     return cast(float, getattr(self, name))
 
     @classmethod
     @abstractmethod
@@ -207,8 +219,9 @@ class Space(Plugin, metaclass=SpaceMeta):
     def from_base(cls, coords: Vector) -> Vector:  # pragma: no cover
         """From base color."""
 
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,

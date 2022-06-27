@@ -288,7 +288,7 @@ def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     if hue == "specified":
         return
 
-    name = cast(Cylindrical, color1._space).hue_name()
+    name = cast(Type[Cylindrical], color1._space).hue_name()
     c1 = color1.get(name)
     c2 = color2.get(name)
 
@@ -473,7 +473,7 @@ def color_lerp(
             color2.fit(in_place=True)
 
     # Adjust hues if we have two valid hues
-    if isinstance(color1._space, Cylindrical):
+    if issubclass(color1._space, Cylindrical):
         adjust_hues(color1, color2, hue)
 
     if premultiplied:

@@ -72,41 +72,23 @@ class Luv(Labish, Space):
         GamutUnbound(-175.0, 175.0)
     )
 
-    @property
-    def l(self) -> float:
-        """L channel."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
+    @classmethod
+    def l(cls, value: float) -> float:
         """Get true luminance."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def u(self) -> float:
-        """U channel."""
-
-        return self._coords[1]
-
-    @u.setter
-    def u(self, value: float) -> None:
+    @classmethod
+    def u(cls, value: float) -> float:
         """U axis."""
 
-        self._coords[1] = value
+        return value
 
-    @property
-    def v(self) -> float:
-        """V channel."""
-
-        return self._coords[2]
-
-    @v.setter
-    def v(self, value: float) -> None:
+    @classmethod
+    def v(cls, value: float) -> float:
         """V axis."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

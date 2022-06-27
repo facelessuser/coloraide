@@ -21,41 +21,23 @@ class XYZD65(Space):
         GamutUnbound(0.0, 1.0)
     )
 
-    @property
-    def x(self) -> float:
-        """X channel."""
-
-        return self._coords[0]
-
-    @x.setter
-    def x(self, value: float) -> None:
+    @classmethod
+    def x(cls, value: float) -> float:
         """Shift the X."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def y(self) -> float:
-        """Y channel."""
-
-        return self._coords[1]
-
-    @y.setter
-    def y(self, value: float) -> None:
+    @classmethod
+    def y(cls, value: float) -> float:
         """Set Y."""
 
-        self._coords[1] = value
+        return value
 
-    @property
-    def z(self) -> float:
-        """Z channel."""
-
-        return self._coords[2]
-
-    @z.setter
-    def z(self, value: float) -> None:
+    @classmethod
+    def z(cls, value: float) -> float:
         """Set Z channel."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

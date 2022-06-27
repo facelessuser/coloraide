@@ -54,41 +54,23 @@ class HWB(Cylindrical, Space):
         GamutBound(0.0, 1.0, FLG_PERCENT)
     )
 
-    @property
-    def h(self) -> float:
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @h.setter
-    def h(self, value: float) -> None:
+    @classmethod
+    def h(self, value: float) -> float:
         """Shift the hue."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def w(self) -> float:
-        """Whiteness channel."""
-
-        return self._coords[1]
-
-    @w.setter
-    def w(self, value: float) -> None:
+    @classmethod
+    def w(self, value: float) -> float:
         """Set whiteness channel."""
 
-        self._coords[1] = value
+        return value
 
-    @property
-    def b(self) -> float:
-        """Blackness channel."""
-
-        return self._coords[2]
-
-    @b.setter
-    def b(self, value: float) -> None:
+    @classmethod
+    def b(self, value: float) -> float:
         """Set blackness channel."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

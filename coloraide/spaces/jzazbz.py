@@ -137,41 +137,23 @@ class Jzazbz(Labish, Space):
         GamutUnbound(-0.5, 0.5)
     )
 
-    @property
-    def jz(self) -> float:
-        """Jz channel."""
-
-        return self._coords[0]
-
-    @jz.setter
-    def jz(self, value: float) -> None:
+    @classmethod
+    def jz(cls, value: float) -> float:
         """Set jz channel."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def az(self) -> float:
+    @classmethod
+    def az(cls, value: float) -> float:
         """Az axis."""
 
-        return self._coords[1]
+        return value
 
-    @az.setter
-    def az(self, value: float) -> None:
-        """Az axis."""
-
-        self._coords[1] = value
-
-    @property
-    def bz(self) -> float:
-        """Bz axis."""
-
-        return self._coords[2]
-
-    @bz.setter
-    def bz(self, value: float) -> None:
+    @classmethod
+    def bz(cls, value: float) -> float:
         """Set bz axis."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

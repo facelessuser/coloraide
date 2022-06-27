@@ -433,41 +433,23 @@ class Okhsl(Cylindrical, Space):
         GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
     )
 
-    @property
-    def h(self) -> float:
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @h.setter
-    def h(self, value: float) -> None:
+    @classmethod
+    def h(cls, value: float) -> float:
         """Shift the hue."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def s(self) -> float:
-        """Saturation channel."""
-
-        return self._coords[1]
-
-    @s.setter
-    def s(self, value: float) -> None:
+    @classmethod
+    def s(cls, value: float) -> float:
         """Saturate or unsaturate the color by the given factor."""
 
-        self._coords[1] = value
+        return value
 
-    @property
-    def l(self) -> float:
-        """Lightness channel."""
-
-        return self._coords[2]
-
-    @l.setter
-    def l(self, value: float) -> None:
+    @classmethod
+    def l(cls, value: float) -> float:
         """Set lightness channel."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

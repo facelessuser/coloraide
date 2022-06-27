@@ -97,41 +97,23 @@ class ICtCp(Labish, Space):
         GamutUnbound(-0.5, 0.5)
     )
 
-    @property
-    def i(self) -> float:
-        """`I` channel."""
-
-        return self._coords[0]
-
-    @i.setter
-    def i(self, value: float) -> None:
+    @classmethod
+    def i(cls, value: float) -> float:
         """Set `I` channel."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def ct(self) -> float:
+    @classmethod
+    def ct(cls, value: float) -> float:
         """`Ct` axis."""
 
-        return self._coords[1]
+        return value
 
-    @ct.setter
-    def ct(self, value: float) -> None:
-        """`Ct` axis."""
-
-        self._coords[1] = value
-
-    @property
-    def cp(self) -> float:
-        """`Cp` axis."""
-
-        return self._coords[2]
-
-    @cp.setter
-    def cp(self, value: float) -> None:
+    @classmethod
+    def cp(cls, value: float) -> float:
         """Set `Cp` axis."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

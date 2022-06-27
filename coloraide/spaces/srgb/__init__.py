@@ -63,41 +63,23 @@ class SRGB(Space):
         GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
     )
 
-    @property
-    def r(self) -> float:
+    @classmethod
+    def r(cls, value: float) -> float:
         """Adjust red."""
 
-        return self._coords[0]
+        return value
 
-    @r.setter
-    def r(self, value: float) -> None:
-        """Adjust red."""
-
-        self._coords[0] = value
-
-    @property
-    def g(self) -> float:
+    @classmethod
+    def g(cls, value: float) -> float:
         """Adjust green."""
 
-        return self._coords[1]
+        return value
 
-    @g.setter
-    def g(self, value: float) -> None:
-        """Adjust green."""
-
-        self._coords[1] = value
-
-    @property
-    def b(self) -> float:
+    @classmethod
+    def b(cls, value: float) -> float:
         """Adjust blue."""
 
-        return self._coords[2]
-
-    @b.setter
-    def b(self, value: float) -> None:
-        """Adjust blue."""
-
-        self._coords[2] = value
+        return value
 
     @classmethod
     def from_base(cls, coords: Vector) -> Vector:

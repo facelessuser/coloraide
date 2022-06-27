@@ -98,7 +98,7 @@ def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) ->
 def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool) -> Optional[float]:
     """Get the alpha if required."""
 
-    a = alg.no_nan(obj._space.alpha) if not none else obj._space.alpha
+    a = alg.no_nan(obj[-1]) if not none else obj[-1]
     alpha = alpha is not False and (alpha is True or a < 1.0 or alg.is_nan(a))
     return None if not alpha else a
 

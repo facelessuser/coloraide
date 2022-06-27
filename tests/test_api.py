@@ -272,7 +272,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             c1.get("bad")
 
     def test_bad_property(self):
@@ -288,7 +288,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             c1.get("hsl.hue.wrong")
 
     def test_set(self):
@@ -317,7 +317,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             c1.set("bad", 0.5)
 
     def test_set_bad_chain(self):
@@ -325,7 +325,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             c1.set("hsl.hue.wrong", 0.5)
 
     def test_set_bad_input(self):

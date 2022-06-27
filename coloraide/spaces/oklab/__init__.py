@@ -132,41 +132,23 @@ class Oklab(Labish, Space):
         GamutUnbound(-0.5, 0.5)
     )
 
-    @property
-    def l(self) -> float:
-        """L channel."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
+    @classmethod
+    def l(self, value: float) -> float:
         """Get true luminance."""
 
-        self._coords[0] = value
+        return value
 
-    @property
-    def a(self) -> float:
-        """A channel."""
-
-        return self._coords[1]
-
-    @a.setter
-    def a(self, value: float) -> None:
+    @classmethod
+    def a(self, value: float) -> float:
         """A axis."""
 
-        self._coords[1] = value
+        return value
 
-    @property
-    def b(self) -> float:
-        """B channel."""
-
-        return self._coords[2]
-
-    @b.setter
-    def b(self, value: float) -> None:
+    @classmethod
+    def b(self, value: float) -> float:
         """B axis."""
 
-        self._coords[2] = value
+        return value
 
     @classmethod
     def to_base(cls, oklab: Vector) -> Vector:
