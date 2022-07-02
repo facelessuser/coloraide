@@ -6,7 +6,7 @@ https://www.w3.org/TR/compositing/
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
-from ..spaces import Channel
+from ..channels import Channel
 from typing import Optional, Union, List, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover

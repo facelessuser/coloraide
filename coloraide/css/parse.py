@@ -4,12 +4,12 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
-from ..channels import FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from typing import Optional, Tuple
 from typing import Dict, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ..spaces import Space, Channel
+    from ..spaces import Space
 
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0
@@ -246,7 +246,7 @@ def parse_hex(color: str) -> Tuple[Vector, float]:
         )
 
 
-def parse_rgb_channels(color: str, boundry: Tuple['Channel', ...]) -> Tuple[Vector, float]:
+def parse_rgb_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
     channels = []
     alpha = 1.0
@@ -259,7 +259,7 @@ def parse_rgb_channels(color: str, boundry: Tuple['Channel', ...]) -> Tuple[Vect
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: Tuple['Channel', ...]) -> Tuple[Vector, float]:
+def parse_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
 
     channels = []
