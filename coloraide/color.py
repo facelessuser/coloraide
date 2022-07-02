@@ -278,7 +278,6 @@ class Color(metaclass=ColorMeta):
             # Handle a color instance
             if not filters or color.space() in filters:
                 space_class = cls.CS_MAP[color.space()]
-                print(color[:])
                 obj = space_class, color[:]
         elif isinstance(color, Mapping):
             # Handle a color dictionary

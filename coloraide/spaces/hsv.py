@@ -1,7 +1,7 @@
 """HSV class."""
-from ..spaces import Space, Cylindrical, Channel
+from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector

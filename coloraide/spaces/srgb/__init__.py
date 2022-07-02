@@ -1,7 +1,7 @@
 """SRGB color class."""
-from ...spaces import Space, Channel
+from ...spaces import Space
 from ...cat import WHITES
-from ...gamut.bounds import FLG_OPT_PERCENT
+from ...channels import Channel, FLG_OPT_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 import math

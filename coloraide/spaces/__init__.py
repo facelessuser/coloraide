@@ -1,26 +1,18 @@
 """Color base."""
 from abc import ABCMeta, abstractmethod
-from collections import UserString
-from .. import util
 from .. import cat
 from ..css import parse
-from ..gamut import bounds
+from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, Callable, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Any, List, cast, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 # TODO: Remove for before 1.0.
 # Here only to prevent breakage.
-FLG_ANGLE = bounds.FLG_ANGLE
-FLG_OPT_PERCENT = bounds.FLG_OPT_PERCENT
-FLG_PERCENT = bounds.FLG_PERCENT
-Bounds = bounds.Bounds
-GamutBound = bounds.GamutBound
-GamutUnbound = bounds.GamutUnbound
 RE_DEFAULT_MATCH = parse.RE_DEFAULT_MATCH
 WHITES = cat.WHITES
 
@@ -75,54 +67,6 @@ class Lchish(Cylindrical):
         return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
 
 
-def chroma_coord(value: float) -> float:
-    """Chroma coordinate handling (clamp chroma below zero)."""
-
-    return alg.clamp(value, 0.0)
-
-
-def default_coord(value: float) -> float:
-    """Default coordinate handling."""
-
-    return value
-
-
-def alpha_coord(value: float) -> float:
-    """Chroma coordinate handling (clamp chroma below zero)."""
-
-    return alg.clamp(value, 0.0, 1.0)
-
-
-class Channel(str):
-    """Channel."""
-
-    low: float
-    high: float
-    bound: bool
-    flags: int
-    limit: Tuple[Optional[float], Optional[float]]
-
-    def __new__(
-        cls,
-        name: str,
-        low: float,
-        high: float,
-        bound: bool = False,
-        flags: int = 0,
-        limit: Tuple[Optional[float], Optional[float]] = (None, None)
-    ) -> 'Channel':
-        """Initializ."""
-
-        obj = super().__new__(cls, name)
-        obj.low = low
-        obj.high = high
-        obj.bound = bound
-        obj.flags = flags
-        obj.limit = limit
-
-        return obj
-
-
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 
 
@@ -165,8 +109,6 @@ class Space(Plugin, metaclass=SpaceMeta):
     # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
     # space.
     EXTENDED_RANGE = False
-    # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
-    BOUNDS = tuple()  # type: Tuple[Bounds, ...]
     # White point
     WHITE = (0.0, 0.0)
 

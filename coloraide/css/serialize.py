@@ -4,7 +4,7 @@ from .. import util
 from .. import algebra as alg
 from . import parse
 from .color_names import to_name
-from ..gamut.bounds import FLG_PERCENT, FLG_OPT_PERCENT
+from ..channels import FLG_PERCENT, FLG_OPT_PERCENT
 from ..types import Vector
 from typing import Optional, Union, Match, cast, TYPE_CHECKING
 

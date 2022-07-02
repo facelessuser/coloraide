@@ -1,7 +1,7 @@
 """XYZ D65 class."""
-from ..spaces import Space, Channel
+from ..spaces import Space
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound
+from ..channels import Channel
 from ..types import Vector
 from typing import Tuple
 

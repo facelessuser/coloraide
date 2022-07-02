@@ -18,7 +18,7 @@ from collections import namedtuple
 from . import algebra as alg
 from .types import Vector
 from .spaces import Cylindrical
-from .gamut.bounds import FLG_ANGLE
+from .channels import FLG_ANGLE
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Union, cast, TYPE_CHECKING
 from .types import ColorInput
 

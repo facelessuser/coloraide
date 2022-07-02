@@ -57,7 +57,7 @@ def main():
 
     c1 = Color(args.color).convert(args.space)
 
-    names = set(c1._space.CHANNEL_NAMES + tuple(c1._space.CHANNEL_ALIASES.keys()))
+    names = set(c1._space.CHANNELS + tuple(c1._space.CHANNEL_ALIASES.keys()))
 
     for c_name in ('lightness', 'intensity', 'l', 'i'):
         if c_name in names:

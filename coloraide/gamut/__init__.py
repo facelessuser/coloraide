@@ -1,6 +1,6 @@
 """Gamut handling."""
 from .. import algebra as alg
-from .bounds import FLG_ANGLE, GamutBound
+from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
 from typing import TYPE_CHECKING, Optional, Any

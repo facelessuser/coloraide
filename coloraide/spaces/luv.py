@@ -3,9 +3,9 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, Labish, Channel
+from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import FLG_OPT_PERCENT
+from ..channels import Channel, FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg

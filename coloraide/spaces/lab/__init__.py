@@ -1,7 +1,7 @@
 """Lab class."""
-from ...spaces import Space, Labish, Channel
+from ...spaces import Space, Labish
 from ...cat import WHITES
-from ...gamut.bounds import FLG_OPT_PERCENT
+from ...channels import Channel, FLG_OPT_PERCENT
 from ... import util
 from ... import algebra as alg
 from ...types import VectorLike, Vector

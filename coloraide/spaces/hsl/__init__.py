@@ -1,7 +1,7 @@
 """HSL class."""
-from ...spaces import Space, Cylindrical, Channel
+from ...spaces import Space, Cylindrical
 from ...cat import WHITES
-from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
+from ...channels import Channel, FLG_ANGLE, FLG_PERCENT
 from ... import util
 from ... import algebra as alg
 from ...types import Vector
@@ -71,24 +71,6 @@ class HSL(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    @classmethod
-    def h(self, value: float) -> float:
-        """Shift the hue."""
-
-        return value
-
-    @classmethod
-    def s(self, value: float) -> float:
-        """Saturate or unsaturate the color by the given factor."""
-
-        return value
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Set lightness channel."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

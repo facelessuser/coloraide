@@ -25,9 +25,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, Cylindrical, Channel
+from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from .oklab import oklab_to_linear_srgb
 from .oklch import ACHROMATIC_THRESHOLD
 from .. import util

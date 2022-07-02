@@ -1,7 +1,7 @@
 """HWB class."""
-from ...spaces import Space, Cylindrical, Channel
+from ...spaces import Space, Cylindrical
 from ...cat import WHITES
-from ...gamut.bounds import FLG_ANGLE, FLG_PERCENT
+from ...channels import Channel, FLG_ANGLE, FLG_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 from typing import Tuple
@@ -51,24 +51,6 @@ class HWB(Cylindrical, Space):
     }
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
-
-    @classmethod
-    def h(self, value: float) -> float:
-        """Shift the hue."""
-
-        return value
-
-    @classmethod
-    def w(self, value: float) -> float:
-        """Set whiteness channel."""
-
-        return value
-
-    @classmethod
-    def b(self, value: float) -> float:
-        """Set blackness channel."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

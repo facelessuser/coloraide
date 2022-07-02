@@ -3,9 +3,9 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, Lchish, Channel, chroma_coord
+from ..spaces import Space, Lchish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 import math
 from .. import algebra as alg
