@@ -968,10 +968,10 @@ class Color(metaclass=ColorMeta):
         if not name.startswith('_'):
             # Try color space properties
             try:
-                value = sc.__getattribute__('_space').get(name)
+                value = self[name]
                 util.warn_deprecated(WARN_COORDS, 3)
                 return value
-            except AttributeError:
+            except ValueError:
                 pass
 
             # Try delta E methods
@@ -987,16 +987,20 @@ class Color(metaclass=ColorMeta):
     def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
         """Set attribute."""
 
+        index = None
         sc = super()
 
         if not name.startswith('_'):
             try:
                 # See if we need to set the space specific channel attributes.
-                sc.__getattribute__('_space').set(name, value)
+                index = sc.__getattribute__('_space').get_channel_index(name)
                 util.warn_deprecated(WARN_COORDS, 3)
-                return
-            except AttributeError:  # pragma: no cover
+            except ValueError:  # pragma: no cover
                 pass
+
+            if index is not None:
+                self[index] = value
+                return
 
         # Set all attributes on the Color class.
         sc.__setattr__(name, value)
