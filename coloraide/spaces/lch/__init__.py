@@ -1,5 +1,5 @@
 """Lch class."""
-from ...spaces import Space, Lchish
+from ...spaces import Space, Lchish, Channel, chroma_coord
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
@@ -47,36 +47,17 @@ class Lch(Lchish, Space):
     BASE = "lab"
     NAME = "lch"
     SERIALIZE = ("--lch",)
-    CHANNEL_NAMES = ("l", "c", "h")
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 100.0, limit=(0.0, None)),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D50']
-    BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 100.0),
-        GamutUnbound(0.0, 360.0, FLG_ANGLE)
-    )
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Get true luminance."""
-
-        return value
-
-    @classmethod
-    def c(self, value: float) -> float:
-        """chroma."""
-
-        return alg.clamp(value, 0.0)
-
-    @classmethod
-    def h(self, value: float) -> float:
-        """Shift the hue."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

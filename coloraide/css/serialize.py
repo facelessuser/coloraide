@@ -49,14 +49,15 @@ def named_color_function(
 
     # Iterate the coordinates formatting them for percent, not percent, and even scaling them (sRGB).
     coords = get_coords(obj, fit, none, legacy)
+    channels = obj._space.CHANNELS
     for idx, value in enumerate(coords):
-        bound = obj._space.BOUNDS[idx]
-        use_percent = bound.flags & FLG_PERCENT or (percent and bound.flags & FLG_OPT_PERCENT)
+        channel = channels[idx]
+        use_percent = channel.flags & FLG_PERCENT or (percent and channel.flags & FLG_OPT_PERCENT)
         if not use_percent:
             value *= scale
         if idx != 0:
             string.append(COMMA if legacy else SPACE)
-        string.append(util.fmt_float(value, precision, bound.upper if use_percent else 0))
+        string.append(util.fmt_float(value, precision, channel.high if use_percent else 0))
 
     # Add alpha if needed
     if a is not None:

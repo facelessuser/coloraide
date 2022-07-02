@@ -18,7 +18,7 @@ is almost certain that some scaling is being applied and that applying none is a
 
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
-from ..spaces import Space, Labish
+from ..spaces import Space, Labish, Channel
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
@@ -123,37 +123,17 @@ class Jzazbz(Labish, Space):
     BASE = "xyz-d65"
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
-    CHANNEL_NAMES = ("jz", "az", "bz")
+    CHANNELS = (
+        Channel("jz", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("az", -0.5, 0.5),
+        Channel("bz", -0.5, 0.5)
+    )
     CHANNEL_ALIASES = {
         "lightness": 'jz',
         "a": 'az',
         "b": 'bz'
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
-    )
-
-    @classmethod
-    def jz(cls, value: float) -> float:
-        """Set jz channel."""
-
-        return value
-
-    @classmethod
-    def az(cls, value: float) -> float:
-        """Az axis."""
-
-        return value
-
-    @classmethod
-    def bz(cls, value: float) -> float:
-        """Set bz axis."""
-
-        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

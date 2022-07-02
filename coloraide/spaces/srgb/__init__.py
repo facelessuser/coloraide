@@ -1,7 +1,7 @@
 """SRGB color class."""
-from ...spaces import Space
+from ...spaces import Space, Channel
 from ...cat import WHITES
-from ...gamut.bounds import GamutBound, FLG_OPT_PERCENT
+from ...gamut.bounds import FLG_OPT_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 import math
@@ -48,7 +48,11 @@ class SRGB(Space):
 
     BASE = "srgb-linear"
     NAME = "srgb"
-    CHANNEL_NAMES = ("r", "g", "b")
+    CHANNELS = (
+        Channel("r", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("g", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "red": 'r',
         "green": 'g',
@@ -57,29 +61,6 @@ class SRGB(Space):
     WHITE = WHITES['2deg']['D65']
 
     EXTENDED_RANGE = True
-    BOUNDS = (
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
-    )
-
-    @classmethod
-    def r(cls, value: float) -> float:
-        """Adjust red."""
-
-        return value
-
-    @classmethod
-    def g(cls, value: float) -> float:
-        """Adjust green."""
-
-        return value
-
-    @classmethod
-    def b(cls, value: float) -> float:
-        """Adjust blue."""
-
-        return value
 
     @classmethod
     def from_base(cls, coords: Vector) -> Vector:

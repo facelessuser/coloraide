@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, Lchish
+from ...spaces import Space, Lchish, Channel, chroma_coord
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
@@ -71,37 +71,17 @@ class Oklch(Lchish, Space):
     BASE = "oklab"
     NAME = "oklch"
     SERIALIZE = ("--oklch",)
-    CHANNEL_NAMES = ("l", "c", "h")
+    CHANNELS = (
+        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 1.0, limit=(0.0, None)),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 360.0, FLG_ANGLE)
-    )
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Get true luminance."""
-
-        return value
-
-    @classmethod
-    def c(self, value: float) -> float:
-        """chroma."""
-
-        return alg.clamp(value, 0.0)
-
-    @classmethod
-    def h(self, value: float) -> float:
-        """Shift the hue."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

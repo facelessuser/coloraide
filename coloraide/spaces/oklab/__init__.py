@@ -25,7 +25,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, Labish
+from ...spaces import Space, Labish, Channel
 from ...cat import WHITES
 from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from ... import algebra as alg
@@ -120,35 +120,15 @@ class Oklab(Labish, Space):
     BASE = "xyz-d65"
     NAME = "oklab"
     SERIALIZE = ("--oklab",)
-    CHANNEL_NAMES = ("l", "a", "b")
+    CHANNELS = (
+        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("a", -0.5, 0.5),
+        Channel("b", -0.5, 0.5)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
-    )
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Get true luminance."""
-
-        return value
-
-    @classmethod
-    def a(self, value: float) -> float:
-        """A axis."""
-
-        return value
-
-    @classmethod
-    def b(self, value: float) -> float:
-        """B axis."""
-
-        return value
 
     @classmethod
     def to_base(cls, oklab: Vector) -> Vector:

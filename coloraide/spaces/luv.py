@@ -3,9 +3,9 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELUV
 """
-from ..spaces import Space, Labish
+from ..spaces import Space, Labish, Channel
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ..gamut.bounds import FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg
@@ -60,17 +60,15 @@ class Luv(Labish, Space):
     BASE = "xyz-d65"
     NAME = "luv"
     SERIALIZE = ("--luv",)
-    CHANNEL_NAMES = ("l", "u", "v")
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("u", -175.0, 175.0),
+        Channel("v", -175.0, 175.0)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(-175.0, 175.0),
-        GamutUnbound(-175.0, 175.0)
-    )
 
     @classmethod
     def l(cls, value: float) -> float:

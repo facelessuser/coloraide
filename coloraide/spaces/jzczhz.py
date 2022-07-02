@@ -3,7 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, Lchish
+from ..spaces import Space, Lchish, Channel, chroma_coord
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
@@ -55,37 +55,17 @@ class JzCzhz(Lchish, Space):
     BASE = "jzazbz"
     NAME = "jzczhz"
     SERIALIZE = ("--jzczhz",)
-    CHANNEL_NAMES = ("jz", "cz", "hz")
+    CHANNELS = (
+        Channel("jz", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("cz", 0.0, 1.0, limit=(0.0, None)),
+        Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
+    )
     CHANNEL_ALIASES = {
         "lightness": "jz",
         "chroma": "cz",
         "hue": "hz"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 360.0, FLG_ANGLE)
-    )
-
-    @classmethod
-    def jz(cls, value: float) -> float:
-        """Set jz."""
-
-        return value
-
-    @classmethod
-    def cz(cls, value: float) -> float:
-        """Set chroma."""
-
-        return alg.clamp(value, 0.0)
-
-    @classmethod
-    def hz(cls, value: float) -> float:
-        """Set hue."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

@@ -1,7 +1,7 @@
 """Lab class."""
-from ...spaces import Space, Labish
+from ...spaces import Space, Labish, Channel
 from ...cat import WHITES
-from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ...gamut.bounds import FLG_OPT_PERCENT
 from ... import util
 from ... import algebra as alg
 from ...types import VectorLike, Vector
@@ -68,34 +68,15 @@ class Lab(Labish, Space):
     BASE = "xyz-d50"
     NAME = "lab"
     SERIALIZE = ("--lab",)
-    CHANNEL_NAMES = ("l", "a", "b")
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("a", -125, 125),
+        Channel("b", -125, 125)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D50']
-    BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(-125, 125),
-        GamutUnbound(-125, 125)
-    )
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Get true luminance."""
-
-        return value
-
-    @classmethod
-    def a(self, value: float) -> float:
-        """A axis."""
-
-        return value
-
-    @classmethod
-    def b(self, value: float) -> float:
-        """B axis."""
-
-        return value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

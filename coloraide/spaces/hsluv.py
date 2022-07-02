@@ -24,7 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, Cylindrical
+from ..spaces import Space, Cylindrical, Channel
 from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .lch import ACHROMATIC_THRESHOLD
@@ -114,7 +114,11 @@ class HSLuv(Cylindrical, Space):
     BASE = 'lchuv'
     NAME = "hsluv"
     SERIALIZE = ("--hsluv",)
-    CHANNEL_NAMES = ("h", "s", "l")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("s", 0.0, 100.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 100.0, bound=True, flags=FLG_OPT_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",
@@ -122,30 +126,6 @@ class HSLuv(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 100.0, FLG_OPT_PERCENT)
-    )
-
-    @classmethod
-    def h(self, value: float) -> float:
-        """Shift the hue."""
-
-        return value
-
-    @classmethod
-    def s(self, value: float) -> float:
-        """Saturate or unsaturate the color by the given factor."""
-
-        return value
-
-    @classmethod
-    def l(self, value: float) -> float:
-        """Set lightness channel."""
-
-        return value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

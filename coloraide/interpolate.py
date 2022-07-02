@@ -258,10 +258,11 @@ def postdivide(color: 'Color') -> None:
     if alg.is_nan(alpha) or alpha in (0.0, 1.0):
         return
 
+    channels = color._space.CHANNELS
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
-        if color._space.BOUNDS[i].flags & FLG_ANGLE:
+        if channels[i].flags & FLG_ANGLE:
             continue
         color[i] = value / alpha
 
@@ -274,10 +275,11 @@ def premultiply(color: 'Color') -> None:
     if alg.is_nan(alpha) or alpha == 1.0:
         return
 
+    channels = color._space.CHANNELS
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
-        if color._space.BOUNDS[i].flags & FLG_ANGLE:
+        if channels[i].flags & FLG_ANGLE:
             continue
         color[i] = value * alpha
 
@@ -490,7 +492,7 @@ def color_lerp(
     return InterpolateSingle(
         channels1=channels1,
         channels2=channels2,
-        names=color1._space.CHANNEL_NAMES + ('alpha',),
+        names=color1._space.CHANNELS + ('alpha',),
         create=type(color1),
         progress=process_mapping(progress, color1._space.CHANNEL_ALIASES),
         space=space,

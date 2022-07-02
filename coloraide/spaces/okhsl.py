@@ -25,7 +25,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ..spaces import Space, Cylindrical
+from ..spaces import Space, Cylindrical, Channel
 from ..cat import WHITES
 from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
 from .oklab import oklab_to_linear_srgb
@@ -418,7 +418,11 @@ class Okhsl(Cylindrical, Space):
     BASE = "oklab"
     NAME = "okhsl"
     SERIALIZE = ("--okhsl",)
-    CHANNEL_NAMES = ("h", "s", "l")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",
@@ -426,12 +430,6 @@ class Okhsl(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
-    )
 
     @classmethod
     def h(cls, value: float) -> float:

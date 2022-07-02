@@ -3,7 +3,7 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
-from ..spaces import Space, Labish
+from ..spaces import Space, Labish, Channel
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
 from .. import util
@@ -88,14 +88,12 @@ class ICtCp(Labish, Space):
     BASE = "xyz-d65"
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
-    CHANNEL_NAMES = ("i", "ct", "cp")
-    WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
+    CHANNELS = (
+        Channel("i", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("ct", -0.5, 0.5),
+        Channel("cp", -0.5, 0.5)
     )
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def i(cls, value: float) -> float:

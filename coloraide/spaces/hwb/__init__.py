@@ -1,7 +1,7 @@
 """HWB class."""
-from ...spaces import Space, Cylindrical
+from ...spaces import Space, Cylindrical, Channel
 from ...cat import WHITES
-from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
+from ...gamut.bounds import FLG_ANGLE, FLG_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 from typing import Tuple
@@ -39,7 +39,11 @@ class HWB(Cylindrical, Space):
     BASE = "hsv"
     NAME = "hwb"
     SERIALIZE = ("--hwb",)
-    CHANNEL_NAMES = ("h", "w", "b")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("w", 0.0, 1.0, bound=True, flags=FLG_PERCENT),
+        Channel("b", 0.0, 1.0, bound=True, flags=FLG_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "whiteness": "w",
@@ -47,12 +51,6 @@ class HWB(Cylindrical, Space):
     }
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_PERCENT),
-        GamutBound(0.0, 1.0, FLG_PERCENT)
-    )
 
     @classmethod
     def h(self, value: float) -> float:

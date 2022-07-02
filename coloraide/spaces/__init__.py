@@ -1,5 +1,6 @@
 """Color base."""
 from abc import ABCMeta, abstractmethod
+from collections import UserString
 from .. import util
 from .. import cat
 from ..css import parse
@@ -7,7 +8,7 @@ from ..gamut import bounds
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -37,7 +38,7 @@ class Cylindrical:
     def hue_index(cls) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES.index(cls.hue_name())
+        return cast(Type['Space'], cls).get_channel_index(cls.hue_name())
 
 
 class Labish:
@@ -47,14 +48,14 @@ class Labish:
     def labish_names(cls) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES
+        return cast(Type['Space'], cls).CHANNELS
 
     @classmethod
     def labish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.labish_names()
-        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
 
 
 class Lchish(Cylindrical):
@@ -64,14 +65,65 @@ class Lchish(Cylindrical):
     def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES
+        return cast(Type['Space'], cls).CHANNELS
 
     @classmethod
     def lchish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.lchish_names()
-        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
+
+
+def chroma_coord(value: float) -> float:
+    """Chroma coordinate handling (clamp chroma below zero)."""
+
+    return alg.clamp(value, 0.0)
+
+
+def default_coord(value: float) -> float:
+    """Default coordinate handling."""
+
+    return value
+
+
+def alpha_coord(value: float) -> float:
+    """Chroma coordinate handling (clamp chroma below zero)."""
+
+    return alg.clamp(value, 0.0, 1.0)
+
+
+class Channel(str):
+    """Channel."""
+
+    low: float
+    high: float
+    bound: bool
+    flags: int
+    limit: Tuple[Optional[float], Optional[float]]
+
+    def __new__(
+        cls,
+        name: str,
+        low: float,
+        high: float,
+        bound: bool = False,
+        flags: int = 0,
+        limit: Tuple[Optional[float], Optional[float]] = (None, None)
+    ) -> 'Channel':
+        """Initializ."""
+
+        obj = super().__new__(cls, name)
+        obj.low = low
+        obj.high = high
+        obj.bound = bound
+        obj.flags = flags
+        obj.limit = limit
+
+        return obj
+
+
+alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 
 
 class SpaceMeta(ABCMeta):
@@ -93,7 +145,7 @@ class Space(Plugin, metaclass=SpaceMeta):
     # Serialized name
     SERIALIZE = tuple()  # type: Tuple[str, ...]
     # Channel names
-    CHANNEL_NAMES = tuple()  # type: Tuple[str, ...]
+    CHANNELS = tuple()  # type: Tuple[Channel, ...]
     # Channel aliases
     CHANNEL_ALIASES = {}  # type: Dict[str, str]
     # Enable or disable default color format parsing and serialization.
@@ -118,34 +170,25 @@ class Space(Plugin, metaclass=SpaceMeta):
     # White point
     WHITE = (0.0, 0.0)
 
-    # def __init__(self, color: Union['Space', VectorLike], alpha: Optional[float] = None) -> None:
-    #     """Initialize."""
+    @classmethod
+    def get_channel_index(cls, name: str) -> int:
+        """Get channel index."""
 
-    #     num_channels = len(self.CHANNEL_NAMES)
-    #     self._coords = [alg.NaN] * (num_channels + 1)
-    #     self._chan_names = set(self.CHANNEL_NAMES)
-    #     self._chan_names.add('alpha')
-
-    #     if isinstance(color, Space):
-    #         self._coords[:] = color._coords[:]
-    #     elif isinstance(color, Sequence):
-    #         if len(color) != num_channels:
-    #             # Only likely to happen with direct usage internally.
-    #             raise ValueError(
-    #                 "{} accepts a list of {} channels".format(self.NAME, num_channels)
-    #             )
-    #         for name, value in zip(self.CHANNEL_NAMES, color):
-    #             setattr(self, name, float(value))
-    #         self.alpha = 1.0 if alpha is None else alpha
-    #     else:  # pragma: no cover
-    #         # Only likely to happen with direct usage internally.
-    #         raise TypeError("Unexpected type '{}' received".format(type(color)))
+        if name == 'alpha':
+            return len(cls.CHANNELS)
+        return cls.CHANNELS.index(cls.CHANNEL_ALIASES.get(name, name))
 
     @classmethod
-    def parse(cls, color: VectorLike, alpha: Optional[float] = None) -> None:
+    def get_channel(cls, index: int) -> Channel:
+        """Get channel index."""
+
+        return (cls.CHANNELS + (alpha_channel,))[index]
+
+    @classmethod
+    def parse(cls, color: VectorLike, alpha: Optional[float] = None) -> Vector:
         """Initialize."""
 
-        num_channels = len(cls.CHANNEL_NAMES)
+        num_channels = len(cls.CHANNELS)
         _coords = [alg.NaN] * (num_channels + 1)
 
         if len(color) != num_channels:
@@ -153,26 +196,10 @@ class Space(Plugin, metaclass=SpaceMeta):
             raise ValueError(
                 "{} accepts a list of {} channels".format(cls.NAME, num_channels)
             )
-        for i, pair in enumerate(zip(cls.CHANNEL_NAMES, color)):
-            _coords[i] = getattr(cls, pair[0])(float(pair[1]))
-        _coords[-1] = 1.0 if alpha is None else cls.alpha(alpha)
+        for i, value in enumerate(color):
+            _coords[i] = alg.clamp(float(value), *cls.CHANNELS[i].limit)
+        _coords[-1] = alg.clamp(1.0 if alpha is None else alpha, *alpha_channel.limit)
         return _coords
-
-    # def __repr__(self) -> str:
-    #     """Representation."""
-
-    #     return 'color({} {} / {})'.format(
-    #         self._serialize()[0],
-    #         ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]),
-    #         util.fmt_float(alg.no_nan(self.alpha), util.DEF_PREC)
-    #     )
-
-    # __str__ = __repr__
-
-    # def coords(self) -> Vector:
-    #     """Coordinates."""
-
-    #     return self._coords[:-1]
 
     @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
@@ -191,23 +218,6 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Adjust alpha."""
 
         return alg.clamp(value, 0.0, 1.0)
-
-    # @classmethod
-    # def set(cls, name: str, value: float) -> None:  # noqa: A003
-    #     """Set the given channel."""
-
-    #     name = cls.CHANNEL_ALIASES.get(name, name)
-    #     if name not in cls.CHANNEL_NAMES and name != 'alpha':
-    #         raise AttributeError("'{}' is an invalid channel name".format(name))
-    #     return getattr(cls, name)(float(value))
-
-    # def get(self, name: str) -> float:
-    #     """Get the given channel's value."""
-
-    #     name = self.CHANNEL_ALIASES.get(name, name)
-    #     if name not in self._chan_names:
-    #         raise AttributeError("'{}' is an invalid channel name".format(name))
-    #     return cast(float, getattr(self, name))
 
     @classmethod
     @abstractmethod

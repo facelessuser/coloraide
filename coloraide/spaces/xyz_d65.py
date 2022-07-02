@@ -1,5 +1,5 @@
 """XYZ D65 class."""
-from ..spaces import Space
+from ..spaces import Space, Channel
 from ..cat import WHITES
 from ..gamut.bounds import GamutUnbound
 from ..types import Vector
@@ -12,32 +12,12 @@ class XYZD65(Space):
     BASE = "xyz-d65"
     NAME = "xyz-d65"
     SERIALIZE = ("xyz-d65", 'xyz')  # type: Tuple[str, ...]
-    CHANNEL_NAMES = ("x", "y", "z")
-    WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 1.0),
-        GamutUnbound(0.0, 1.0)
+    CHANNELS = (
+        Channel("x", 0.0, 1.0),
+        Channel("y", 0.0, 1.0),
+        Channel("z", 0.0, 1.0)
     )
-
-    @classmethod
-    def x(cls, value: float) -> float:
-        """Shift the X."""
-
-        return value
-
-    @classmethod
-    def y(cls, value: float) -> float:
-        """Set Y."""
-
-        return value
-
-    @classmethod
-    def z(cls, value: float) -> float:
-        """Set Z channel."""
-
-        return value
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

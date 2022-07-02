@@ -202,7 +202,7 @@ class Color(metaclass=ColorMeta):
     def __len__(self) -> int:
         """Get number of channels."""
 
-        return len(self._space.CHANNEL_NAMES) + 1
+        return len(self._space.CHANNELS) + 1
 
     @overload
     def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
@@ -215,12 +215,7 @@ class Color(metaclass=ColorMeta):
     def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
         """Get channels."""
 
-        if isinstance(i, str):
-            space = self._space
-            name = space.CHANNEL_ALIASES.get(i, i)
-            index = -1 if name == 'alpha' else space.CHANNEL_NAMES.index(name)
-            return self._coords[index]
-        return self._coords[i]
+        return self._coords[self._space.get_channel_index(i)] if isinstance(i, str) else self._coords[i]
 
     @overload
     def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
@@ -233,19 +228,13 @@ class Color(metaclass=ColorMeta):
     def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
         """Set channels."""
 
+        space = self._space
         if isinstance(i, slice):
-            for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
-                self._coords[e] = getattr(self._space, name)(float(cast(Vector, v)[e]))
-        elif isinstance(i, int):
-            self._coords[i] = getattr(
-                self._space,
-                (self._space.CHANNEL_NAMES + ('alpha',))[i]
-            )(float(v))
+            for index, value in zip(range(len(self._coords))[i], cast(Vector, v)):
+                self._coords[index] = alg.clamp(float(value), *space.get_channel(index).limit)
         else:
-            space = self._space
-            name = space.CHANNEL_ALIASES.get(i, i)
-            index = -1 if name == 'alpha' else space.CHANNEL_NAMES.index(name)
-            self._coords[index] = getattr(space, name)(float(v))
+            index = space.get_channel_index(i) if isinstance(i, str) else i
+            self._coords[index] = alg.clamp(float(cast(float, v)), *space.get_channel(index).limit)
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -265,7 +254,7 @@ class Color(metaclass=ColorMeta):
         *,
         filters: Optional[Sequence[str]] = None,
         **kwargs: Any
-    ) -> Tuple[Space, List[float]]:
+    ) -> Tuple[Type[Space], List[float]]:
         """Parse the color."""
 
         obj = None
@@ -275,7 +264,7 @@ class Color(metaclass=ColorMeta):
                 s = color
                 space_class = cls.CS_MAP.get(s)
                 if space_class and (not filters or s in filters):
-                    num_channels = len(space_class.CHANNEL_NAMES)
+                    num_channels = len(space_class.CHANNELS)
                     if len(data) < num_channels:
                         data = list(data) + [alg.NaN] * (num_channels - len(data))
                     obj = space_class, space_class.parse(data, alpha)
@@ -297,9 +286,8 @@ class Color(metaclass=ColorMeta):
             if not filters or space in filters:
                 cs = cls.CS_MAP[space]
                 aliases = cs.CHANNEL_ALIASES
-                names = cs.CHANNEL_NAMES
                 color = {aliases.get(k, k): v for k, v in color.items()}
-                return cs, cs.parse([color[name] for name in names], color.get('alpha', 1))
+                return cs, cs.parse([color[name] for name in cs.CHANNELS], color.get('alpha', 1))
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
@@ -314,7 +302,7 @@ class Color(metaclass=ColorMeta):
         start: int = 0,
         fullmatch: bool = False,
         filters: Optional[Sequence[str]] = None
-    ) -> Optional[Tuple[Type['Space'], int, int]]:
+    ) -> Optional[Tuple[Tuple[Type['Space'], Vector], int, int]]:
         """
         Match a color in a buffer and return a color object.
 
@@ -473,7 +461,7 @@ class Color(metaclass=ColorMeta):
 
         data = {'space': self.space()}  # type: Dict[str, Any]
         coords = self[:-1]
-        for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
+        for i, name in enumerate(self._space.CHANNELS, 0):
             data[name] = coords[i]
         data['alpha'] = self[-1]
         return data
@@ -728,7 +716,7 @@ class Color(metaclass=ColorMeta):
         masks = set(
             [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
         )
-        for name in (self._space.CHANNEL_NAMES + ('alpha',)):
+        for name in (self._space.CHANNELS + ('alpha',)):
             if (not invert and name in masks) or (invert and name not in masks):
                 this[name] = alg.NaN
         return this

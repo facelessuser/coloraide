@@ -1,5 +1,5 @@
 """HSL class."""
-from ...spaces import Space, Cylindrical
+from ...spaces import Space, Cylindrical, Channel
 from ...cat import WHITES
 from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
 from ... import util
@@ -59,7 +59,11 @@ class HSL(Cylindrical, Space):
     BASE = "srgb"
     NAME = "hsl"
     SERIALIZE = ("--hsl",)
-    CHANNEL_NAMES = ("h", "s", "l")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("s", 0.0, 1.0, bound=True, flags=FLG_PERCENT),
+        Channel("l", 0.0, 1.0, bound=True, flags=FLG_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",
@@ -67,12 +71,6 @@ class HSL(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_PERCENT),
-        GamutBound(0.0, 1.0, FLG_PERCENT)
-    )
 
     @classmethod
     def h(self, value: float) -> float:

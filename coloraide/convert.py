@@ -1,5 +1,6 @@
 """Convert the color."""
 from . import algebra as alg
+from .types import Vector
 from typing import Type, Tuple, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -118,7 +119,7 @@ def get_convert_chain(
     return chain
 
 
-def convert(color: 'Color', space: str) -> 'Space':
+def convert(color: 'Color', space: str) -> Tuple[Type['Space'], Vector]:
     """Convert the color coordinates to the specified space."""
 
     # Grab the convert for the current space to the desired space
