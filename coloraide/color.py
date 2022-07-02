@@ -273,7 +273,7 @@ class Color(metaclass=ColorMeta):
                 m = cls._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
-                obj = m[0]
+                obj = m[:2]
         elif isinstance(color, Color):
             # Handle a color instance
             if not filters or color.space() in filters:
@@ -301,7 +301,7 @@ class Color(metaclass=ColorMeta):
         start: int = 0,
         fullmatch: bool = False,
         filters: Optional[Sequence[str]] = None
-    ) -> Optional[Tuple[Tuple[Type['Space'], Vector], int, int]]:
+    ) -> Optional[Tuple[Type['Space'], Vector, int, int]]:
         """
         Match a color in a buffer and return a color object.
 
@@ -314,7 +314,7 @@ class Color(metaclass=ColorMeta):
         m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
         if m is not None:
             if not filter_set or m[0].NAME in filter_set:
-                return (m[0], m[0].parse(*m[1])), start, m[2]
+                return m[0], m[0].parse(*m[1]), start, m[2]
             return None
 
         # Attempt color space specific match
@@ -323,8 +323,7 @@ class Color(metaclass=ColorMeta):
                 continue
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
-                obj = space_class, space_class.parse(*m2[0])
-                return obj, start, m2[1]
+                return space_class, space_class.parse(*m2[0]), start, m2[1]
         return None
 
     @classmethod
@@ -340,8 +339,7 @@ class Color(metaclass=ColorMeta):
 
         m = cls._match(string, start, fullmatch, filters=filters)
         if m is not None:
-            space, coords = m[0]
-            return ColorMatch(cls(space.NAME, coords[:-1], coords[-1]), m[1], m[2])
+            return ColorMatch(cls(m[0].NAME, m[1][:-1], m[1][-1]), m[2], m[3])
         return None
 
     @classmethod
