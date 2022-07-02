@@ -432,24 +432,6 @@ class Okhsl(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
 
     @classmethod
-    def h(cls, value: float) -> float:
-        """Shift the hue."""
-
-        return value
-
-    @classmethod
-    def s(cls, value: float) -> float:
-        """Saturate or unsaturate the color by the given factor."""
-
-        return value
-
-    @classmethod
-    def l(cls, value: float) -> float:
-        """Set lightness channel."""
-
-        return value
-
-    @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
         """On color update."""
 

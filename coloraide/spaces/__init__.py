@@ -155,12 +155,6 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return cls.WHITE
 
-    @staticmethod
-    def alpha(value: float) -> float:
-        """Adjust alpha."""
-
-        return alg.clamp(value, 0.0, 1.0)
-
     @classmethod
     @abstractmethod
     def to_base(cls, coords: Vector) -> Vector:  # pragma: no cover

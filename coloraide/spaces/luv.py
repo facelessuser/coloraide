@@ -71,24 +71,6 @@ class Luv(Labish, Space):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def l(cls, value: float) -> float:
-        """Get true luminance."""
-
-        return value
-
-    @classmethod
-    def u(cls, value: float) -> float:
-        """U axis."""
-
-        return value
-
-    @classmethod
-    def v(cls, value: float) -> float:
-        """V axis."""
-
-        return value
-
-    @classmethod
     def to_base(cls, coords: Vector) -> Vector:
         """To XYZ D50 from Luv."""
 

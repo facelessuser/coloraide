@@ -24,7 +24,7 @@ class Channel(str):
         flags: int = 0,
         limit: Tuple[Optional[float], Optional[float]] = (None, None)
     ) -> 'Channel':
-        """Initializ."""
+        """Initialize."""
 
         obj = super().__new__(cls, name)
         obj.low = low

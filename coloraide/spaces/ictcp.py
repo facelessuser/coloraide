@@ -96,24 +96,6 @@ class ICtCp(Labish, Space):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def i(cls, value: float) -> float:
-        """Set `I` channel."""
-
-        return value
-
-    @classmethod
-    def ct(cls, value: float) -> float:
-        """`Ct` axis."""
-
-        return value
-
-    @classmethod
-    def cp(cls, value: float) -> float:
-        """Set `Cp` axis."""
-
-        return value
-
-    @classmethod
     def to_base(cls, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
 
