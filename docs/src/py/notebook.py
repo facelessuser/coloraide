@@ -146,7 +146,6 @@ def execute(cmd, no_except=True, inline=False):
     """Execute color commands."""
 
     import coloraide
-    from pymdownx.inlinehilite import InlineHiliteException
     try:
         import coloraide_extras
     except ImportError:
@@ -180,6 +179,7 @@ def execute(cmd, no_except=True, inline=False):
                 from pymdownx.superfences import SuperFencesException
                 raise SuperFencesException from e
             else:
+                from pymdownx.inlinehilite import InlineHiliteException
                 raise InlineHiliteException from e
         import traceback
         return '{}'.format(traceback.format_exc()), colors
@@ -230,6 +230,7 @@ def execute(cmd, no_except=True, inline=False):
                     from pymdownx.superfences import SuperFencesException
                     raise SuperFencesException from e
                 else:
+                    from pymdownx.inlinehilite import InlineHiliteException
                     raise InlineHiliteException from e
             import traceback
             console += '{}\n{}'.format(command, traceback.format_exc())
