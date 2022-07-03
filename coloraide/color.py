@@ -10,6 +10,7 @@ from . import filters
 from . import harmonies
 from . import util
 from . import algebra as alg
+from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
 from .spaces import Space, Cylindrical
@@ -267,13 +268,17 @@ class Color(metaclass=ColorMeta):
                     num_channels = len(space_class.CHANNELS)
                     if len(data) < num_channels:
                         data = list(data) + [alg.NaN] * (num_channels - len(data))
-                    obj = space_class, space_class.parse(data, alpha)
+                    coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
+                    coords.append(alg.clamp(float(alpha), *space_class.get_channel(-1).limit))
+                    obj = space_class, coords
             # Parse a CSS string
             else:
                 m = cls._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
-                obj = m[:2]
+                coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(m[0].CHANNELS, m[1])]
+                coords.append(alg.clamp(float(m[2]), *m[0].get_channel(-1).limit))
+                obj = m[0], coords
         elif isinstance(color, Color):
             # Handle a color instance
             if not filters or color.space() in filters:
@@ -286,7 +291,12 @@ class Color(metaclass=ColorMeta):
                 cs = cls.CS_MAP[space]
                 aliases = cs.CHANNEL_ALIASES
                 color = {aliases.get(k, k): v for k, v in color.items()}
-                return cs, cs.parse([color[name] for name in cs.CHANNELS], color.get('alpha', 1))
+                coords = [color[name] for name in cs.CHANNELS]
+                coords.append(color.get('alpha', 1.0))
+                return (
+                    cs,
+                    [alg.clamp(float(v), *c.limit) for c, v in zipl(cs.get_all_channels(), coords)]
+                )
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
@@ -301,7 +311,7 @@ class Color(metaclass=ColorMeta):
         start: int = 0,
         fullmatch: bool = False,
         filters: Optional[Sequence[str]] = None
-    ) -> Optional[Tuple[Type['Space'], Vector, int, int]]:
+    ) -> Optional[Tuple[Type['Space'], Vector, float, int, int]]:
         """
         Match a color in a buffer and return a color object.
 
@@ -314,7 +324,7 @@ class Color(metaclass=ColorMeta):
         m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
         if m is not None:
             if not filter_set or m[0].NAME in filter_set:
-                return m[0], m[0].parse(*m[1]), start, m[2]
+                return m[0], m[1][0], m[1][1], start, m[2]
             return None
 
         # Attempt color space specific match
@@ -323,7 +333,7 @@ class Color(metaclass=ColorMeta):
                 continue
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
-                return space_class, space_class.parse(*m2[0]), start, m2[1]
+                return space_class, m2[0][0], m2[0][1], start, m2[1]
         return None
 
     @classmethod
@@ -339,7 +349,7 @@ class Color(metaclass=ColorMeta):
 
         m = cls._match(string, start, fullmatch, filters=filters)
         if m is not None:
-            return ColorMatch(cls(m[0].NAME, m[1][:-1], m[1][-1]), m[2], m[3])
+            return ColorMatch(cls(m[0].NAME, m[1], m[2]), m[3], m[4])
         return None
 
     @classmethod
@@ -457,10 +467,8 @@ class Color(metaclass=ColorMeta):
         """Return color as a data object."""
 
         data = {'space': self.space()}  # type: Dict[str, Any]
-        coords = self[:-1]
-        for i, name in enumerate(self._space.CHANNELS, 0):
-            data[name] = coords[i]
-        data['alpha'] = self[-1]
+        for channel, coord in zipl(self._space.get_all_channels(), self._coords):
+            data[str(channel)] = coord
         return data
 
     def normalize(self) -> 'Color':
@@ -713,7 +721,7 @@ class Color(metaclass=ColorMeta):
         masks = set(
             [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
         )
-        for name in (self._space.CHANNELS + ('alpha',)):
+        for name in self._space.get_all_channels():
             if (not invert and name in masks) or (invert and name not in masks):
                 this[name] = alg.NaN
         return this

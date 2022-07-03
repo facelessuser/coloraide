@@ -6,7 +6,7 @@ from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Any, List, cast, Type, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Any, List, cast, Type, Iterator, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -127,21 +127,11 @@ class Space(Plugin, metaclass=SpaceMeta):
         return (cls.CHANNELS + (alpha_channel,))[index]
 
     @classmethod
-    def parse(cls, color: VectorLike, alpha: Optional[float] = None) -> Vector:
-        """Initialize."""
+    def get_all_channels(cls) -> Iterator[Channel]:
+        """Get all channels."""
 
-        num_channels = len(cls.CHANNELS)
-        _coords = [alg.NaN] * (num_channels + 1)
-
-        if len(color) != num_channels:
-            # Only likely to happen with direct usage internally.
-            raise ValueError(
-                "{} accepts a list of {} channels".format(cls.NAME, num_channels)
-            )
-        for i, value in enumerate(color):
-            _coords[i] = alg.clamp(float(value), *cls.CHANNELS[i].limit)
-        _coords[-1] = alg.clamp(1.0 if alpha is None else alpha, *alpha_channel.limit)
-        return _coords
+        yield from cls.CHANNELS
+        yield alpha_channel
 
     @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
