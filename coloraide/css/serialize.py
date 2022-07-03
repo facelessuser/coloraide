@@ -57,7 +57,14 @@ def named_color_function(
             value *= scale
         if idx != 0:
             string.append(COMMA if legacy else SPACE)
-        string.append(util.fmt_float(value, precision, channel.high if use_percent else 0))
+        string.append(
+            util.fmt_float(
+                value,
+                precision,
+                channel.span if use_percent else 0.0,
+                channel.offset if use_percent else 0.0
+            )
+        )
 
     # Add alpha if needed
     if a is not None:

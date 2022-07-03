@@ -26,7 +26,7 @@ SOFTWARE.
 """
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE
 from .lch import ACHROMATIC_THRESHOLD
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
@@ -116,8 +116,8 @@ class HSLuv(Cylindrical, Space):
     SERIALIZE = ("--hsluv",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        Channel("s", 0.0, 100.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("l", 0.0, 100.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("s", 0.0, 100.0, bound=True),
+        Channel("l", 0.0, 100.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

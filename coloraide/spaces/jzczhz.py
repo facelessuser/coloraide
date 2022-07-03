@@ -5,7 +5,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from ..spaces import Space, Lchish
 from ..cat import WHITES
-from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE
 from .. import util
 import math
 from .. import algebra as alg
@@ -55,7 +55,7 @@ class JzCzhz(Lchish, Space):
     NAME = "jzczhz"
     SERIALIZE = ("--jzczhz",)
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("jz", 0.0, 1.0),
         Channel("cz", 0.0, 1.0, limit=(0.0, None)),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
     )

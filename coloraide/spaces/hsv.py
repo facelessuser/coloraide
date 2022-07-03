@@ -1,7 +1,7 @@
 """HSV class."""
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -50,8 +50,8 @@ class HSV(Cylindrical, Space):
     SERIALIZE = ("--hsv",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("v", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("s", 0.0, 1.0, bound=True),
+        Channel("v", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

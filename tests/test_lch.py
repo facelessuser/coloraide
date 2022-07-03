@@ -37,97 +37,97 @@ class TestLCHInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {}
 
-        color = "lch(20% 10 130)"
+        color = "lch(20 10 130)"
         lch = Color(color)
         self.assertEqual(color, lch.to_string(**args))
 
-        color = "lch(20% 10 130 / 1)"
+        color = "lch(20 10 130 / 1)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130)", lch.to_string(**args))
+        self.assertEqual("lch(20 10 130)", lch.to_string(**args))
 
-        color = "lch(20% 10 130 / 0.2)"
+        color = "lch(20 10 130 / 0.2)"
         lch = Color(color)
         self.assertEqual(color, lch.to_string(**args))
 
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {}
+        args = {'percent': True}
 
         color = "lch(20% 10 130 / 100%)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130)", lch.to_string(**args))
+        self.assertEqual("lch(20% 6.6667% 130)", lch.to_string(**args))
 
         color = "lch(20% 10 130 / 20%)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130 / 0.2)", lch.to_string(**args))
+        self.assertEqual("lch(20% 6.6667% 130 / 0.2)", lch.to_string(**args))
 
     def test_no_alpha(self):
         """Test no alpha."""
 
         args = {"alpha": False}
 
-        color = "lch(20% 10 130 / 0.2)"
+        color = "lch(20 10 130 / 0.2)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130)", lch.to_string(**args))
+        self.assertEqual("lch(20 10 130)", lch.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
         args = {"alpha": True}
 
-        color = "lch(20% 10 130 / 1)"
+        color = "lch(20 10 130 / 1)"
         lch = Color(color)
-        self.assertEqual("lch(20% 10 130 / 1)", lch.to_string(**args))
+        self.assertEqual("lch(20 10 130 / 1)", lch.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
 
-        color = 'color(--lch 20.1234567% 10.1234567 130.1234567)'
-        self.assertEqual(Color(color).to_string(), 'lch(20.123% 10.123 130.12)')
-        self.assertEqual(Color(color).to_string(precision=3), 'lch(20.1% 10.1 130)')
-        self.assertEqual(Color(color).to_string(precision=0), 'lch(20% 10 130)')
+        color = 'color(--lch 20.1234567 10.1234567 130.1234567)'
+        self.assertEqual(Color(color).to_string(), 'lch(20.123 10.123 130.12)')
+        self.assertEqual(Color(color).to_string(precision=3), 'lch(20.1 10.1 130)')
+        self.assertEqual(Color(color).to_string(precision=0), 'lch(20 10 130)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'lch(20.12345669999999842048055143095552921295166015625% 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
+            'lch(20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
         )
 
     def test_fit(self):
         """Test fit."""
 
         self.assertEqual(
-            Color('color(--lch 20% 200 120)').to_string(),
-            'lch(20% 200 120)'
+            Color('color(--lch 20 200 120)').to_string(),
+            'lch(20 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lch 20% 200 120)').to_string(fit="clip"),
-            'lch(20% 200 120)'
+            Color('color(--lch 20 200 120)').to_string(fit="clip"),
+            'lch(20 200 120)'
         )
 
         self.assertEqual(
-            Color('color(--lch 20% 200 120)').to_string(fit=False),
-            'lch(20% 200 120)'
+            Color('color(--lch 20 200 120)').to_string(fit=False),
+            'lch(20 200 120)'
         )
 
     def test_hue_inputs(self):
         """Test hue inputs."""
 
-        color = "lch(90% 50 90deg)"
+        color = "lch(90 50 90deg)"
         lch = Color(color)
-        self.assertEqual("lch(90% 50 90)", lch.to_string())
+        self.assertEqual("lch(90 50 90)", lch.to_string())
 
-        color = "lch(90% 50 {:f}rad)".format(math.radians(90))
+        color = "lch(90 50 {:f}rad)".format(math.radians(90))
         lch = Color(color)
-        self.assertEqual("lch(90% 50 90)", lch.to_string())
+        self.assertEqual("lch(90 50 90)", lch.to_string())
 
-        color = "lch(90% 50 100grad)"
+        color = "lch(90 50 100grad)"
         lch = Color(color)
-        self.assertEqual("lch(90% 50 90)", lch.to_string())
+        self.assertEqual("lch(90 50 90)", lch.to_string())
 
-        color = "lch(90% 50 0.25turn)"
+        color = "lch(90 50 0.25turn)"
         lch = Color(color)
-        self.assertEqual("lch(90% 50 90)", lch.to_string())
+        self.assertEqual("lch(90 50 90)", lch.to_string())
 
 
 class TestLCHProperties(util.ColorAsserts, unittest.TestCase):

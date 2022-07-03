@@ -1,7 +1,7 @@
 """Lab class."""
 from ...spaces import Space, Labish
 from ...cat import WHITES
-from ...channels import Channel, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_OPT_PERCENT, FLG_MIRROR_PERCENT
 from ... import util
 from ... import algebra as alg
 from ...types import VectorLike, Vector
@@ -70,8 +70,8 @@ class Lab(Labish, Space):
     SERIALIZE = ("--lab",)
     CHANNELS = (
         Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("a", -125, 125),
-        Channel("b", -125, 125)
+        Channel("a", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT),
+        Channel("b", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": "l"

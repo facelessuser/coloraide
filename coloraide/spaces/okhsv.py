@@ -27,7 +27,7 @@ SOFTWARE.
 """
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..channels import FLG_ANGLE, FLG_OPT_PERCENT, Channel
+from ..channels import FLG_ANGLE, Channel
 from .. import util
 from .oklab import oklab_to_linear_srgb
 from .okhsl import toe, toe_inv, find_cusp, to_st
@@ -143,8 +143,8 @@ class Okhsv(Cylindrical, Space):
     SERIALIZE = ("--okhsv",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("v", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("s", 0.0, 1.0, bound=True),
+        Channel("v", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

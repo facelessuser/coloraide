@@ -5,7 +5,7 @@ https://en.wikipedia.org/wiki/CIELUV
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..channels import Channel, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_MIRROR_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg
@@ -61,9 +61,9 @@ class Luv(Labish, Space):
     NAME = "luv"
     SERIALIZE = ("--luv",)
     CHANNELS = (
-        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("u", -175.0, 175.0),
-        Channel("v", -175.0, 175.0)
+        Channel("l", 0.0, 100.0),
+        Channel("u", -215.0, 215.0, flags=FLG_MIRROR_PERCENT),
+        Channel("v", -215.0, 215.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": "l"

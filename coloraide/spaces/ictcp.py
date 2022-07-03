@@ -5,7 +5,7 @@ https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..channels import Channel, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -89,9 +89,9 @@ class ICtCp(Labish, Space):
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
     CHANNELS = (
-        Channel("i", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("ct", -0.5, 0.5),
-        Channel("cp", -0.5, 0.5)
+        Channel("i", 0.0, 1.0),
+        Channel("ct", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
+        Channel("cp", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
     WHITE = WHITES['2deg']['D65']
 

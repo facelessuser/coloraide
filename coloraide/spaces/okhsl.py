@@ -27,7 +27,7 @@ SOFTWARE.
 """
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE
 from .oklab import oklab_to_linear_srgb
 from .oklch import ACHROMATIC_THRESHOLD
 from .. import util
@@ -420,8 +420,8 @@ class Okhsl(Cylindrical, Space):
     SERIALIZE = ("--okhsl",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("l", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("s", 0.0, 1.0, bound=True),
+        Channel("l", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

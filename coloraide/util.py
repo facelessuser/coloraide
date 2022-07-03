@@ -171,7 +171,7 @@ def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
         return all(map(lambda a, b: (math.isnan(a) and math.isnan(b)) or a == b, c1, c2))
 
 
-def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
+def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -> str:
     """
     Set float precision and trim precision zeros.
 
@@ -183,7 +183,7 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0) -> str:
     if alg.is_nan(f):
         return "none"
 
-    value = alg.round_to(f / (percent * 0.01) if percent else f, p)
+    value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
     string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
     s = string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
     return '{}%'.format(s) if percent else s
