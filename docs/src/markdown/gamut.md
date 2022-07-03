@@ -149,7 +149,7 @@ gamut.
 ```playground
 c1 = Color('color(display-p3 1 1 0)')
 c1.in_gamut('srgb')
-c1.fit('srgb', in_place=True)
+c1.fit('srgb')
 c1.in_gamut()
 ```
 

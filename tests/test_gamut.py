@@ -27,7 +27,7 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         color = Color('color(srgb 2 0.5 0.5)')
         self.assertFalse(color.in_gamut())
-        color2 = color.fit()
+        color2 = color.clone().fit()
         self.assertIsNot(color, color2)
         self.assertTrue(color2.in_gamut())
 
@@ -36,10 +36,10 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         color = Color('color(srgb 2 0.5 0.5)')
         self.assertFalse(color.in_gamut())
-        color2 = color.fit(method="clip")
+        color2 = color.clone().fit(method="clip")
         self.assertIsNot(color, color2)
         self.assertTrue(color2.in_gamut())
-        color3 = color.fit()
+        color3 = color.clone().fit()
         self.assertColorNotEqual(color2, color3)
 
     def test_clip(self):
@@ -47,10 +47,10 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         color = Color('color(srgb 2 0.5 0.5)')
         self.assertFalse(color.in_gamut())
-        color2 = color.clip()
+        color2 = color.clone().clip()
         self.assertIsNot(color, color2)
         self.assertTrue(color2.in_gamut())
-        color3 = color.fit()
+        color3 = color.clone().fit()
         self.assertColorNotEqual(color2, color3)
 
     def test_clip_in_place(self):
@@ -58,10 +58,10 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         color = Color('color(srgb 2 0.5 0.5)')
         self.assertFalse(color.in_gamut())
-        color2 = color.clip(in_place=True)
+        color2 = color.clip()
         self.assertIs(color, color2)
         self.assertTrue(color2.in_gamut())
-        color3 = color.fit()
+        color3 = color.clone().fit()
         self.assertColorEqual(color2, color3)
 
     def test_clip_other_space(self):
@@ -84,7 +84,7 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         color = Color('color(srgb 2 0.5 0.5)')
         self.assertFalse(color.in_gamut())
-        color2 = color.fit(in_place=True)
+        color2 = color.fit()
         self.assertIs(color, color2)
         self.assertTrue(color2.in_gamut())
 

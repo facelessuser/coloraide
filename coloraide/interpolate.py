@@ -470,9 +470,9 @@ def color_lerp(
     color2 = color1._handle_color_input(color2).convert(space)
     if not color1.CS_MAP[space].EXTENDED_RANGE:
         if not color1.in_gamut():
-            color1.fit(in_place=True)
+            color1.fit()
         if not color2.in_gamut():
-            color2.fit(in_place=True)
+            color2.fit()
 
     # Adjust hues if we have two valid hues
     if issubclass(color1._space, Cylindrical):

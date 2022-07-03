@@ -2,15 +2,19 @@
 
 ## 0.19.0
 
-- **NEW**: Refactor of `Space` plugins. `Space` plugins are no longer instantiated which cuts down on overhead lending
-  to better performance. `BOUNDS` and `CHANNEL_NAMES` attributes were combined into one attribute called `CHANNELS`
-  which serves the same purpose as the former attributes. `Space` plugins also no longer need to define channel
-  property accessors as those are handled through `CHANNELS` in a more generic way. This is a breaking change for any
-  custom plugins.
+- **BREAK**: New breaking change. Refactor of `Space` plugins. `Space` plugins are no longer instantiated which cuts
+  down on overhead lending to better performance. `BOUNDS` and `CHANNEL_NAMES` attributes were combined into one
+  attribute called `CHANNELS` which serves the same purpose as the former attributes. `Space` plugins also no longer
+  need to define channel property accessors as those are handled through `CHANNELS` in a more generic way. This is a
+  breaking change for any custom plugins.
 
     Additionally, the `Space` plugin's `null_adjust` method has been renamed as `normalize` matching its functionality
     and usage in regards to the `Color` object. It no longer accepts color coordinates and alpha channel coordinates
     separately, but will receive them as a single list and return them as such.
+
+- **BREAK**: `Color`'s `fit` and `clip` methods now perform the operation in place, modifying the current color
+  directly. The `in_place` parameter has been removed. To create a new color when performing these actions, simply clone
+  the color first: `#!py color.clone().clip()`.
 
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
