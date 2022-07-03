@@ -188,7 +188,7 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
 
     # Get names for
     target = Color.CS_MAP[space]
-    names = target.CHANNEL_NAMES
+    names = target.CHANNELS
     is_cyl = issubclass(target, Cylindrical)
     is_labish = issubclass(target, Labish)
     is_lchish = issubclass(target, Lchish)

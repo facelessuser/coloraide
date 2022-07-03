@@ -1,7 +1,7 @@
 """HWB class."""
 from ...spaces import Space, Cylindrical
 from ...cat import WHITES
-from ...gamut.bounds import GamutBound, FLG_ANGLE, FLG_PERCENT
+from ...channels import Channel, FLG_ANGLE, FLG_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 from typing import Tuple
@@ -39,7 +39,11 @@ class HWB(Cylindrical, Space):
     BASE = "hsv"
     NAME = "hwb"
     SERIALIZE = ("--hwb",)
-    CHANNEL_NAMES = ("h", "w", "b")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("w", 0.0, 1.0, bound=True, flags=FLG_PERCENT),
+        Channel("b", 0.0, 1.0, bound=True, flags=FLG_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "whiteness": "w",
@@ -47,48 +51,6 @@ class HWB(Cylindrical, Space):
     }
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_PERCENT),
-        GamutBound(0.0, 1.0, FLG_PERCENT)
-    )
-
-    @property
-    def h(self) -> float:
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @h.setter
-    def h(self, value: float) -> None:
-        """Shift the hue."""
-
-        self._coords[0] = value
-
-    @property
-    def w(self) -> float:
-        """Whiteness channel."""
-
-        return self._coords[1]
-
-    @w.setter
-    def w(self, value: float) -> None:
-        """Set whiteness channel."""
-
-        self._coords[1] = value
-
-    @property
-    def b(self) -> float:
-        """Blackness channel."""
-
-        return self._coords[2]
-
-    @b.setter
-    def b(self, value: float) -> None:
-        """Set blackness channel."""
-
-        self._coords[2] = value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

@@ -2,6 +2,11 @@
 
 ## 0.19.0
 
+- **NEW**: Refactor of `Space` plugins. `Space` plugins are no longer instantiated which cuts down on overhead lending
+  to better performance. `BOUNDS` and `CHANNEL_NAMES` attributes were combined into one attribute called `CHANNELS`
+  which serves the same purpose as the former attributes. `Space` plugins also no longer need to define channel
+  property accessors as those are handled through `CHANNELS` in a more generic way. This is a breaking change for any
+  custom plugins.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.

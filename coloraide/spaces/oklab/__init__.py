@@ -27,7 +27,7 @@ SOFTWARE.
 """
 from ...spaces import Space, Labish
 from ...cat import WHITES
-from ...gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_OPT_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 
@@ -120,53 +120,15 @@ class Oklab(Labish, Space):
     BASE = "xyz-d65"
     NAME = "oklab"
     SERIALIZE = ("--oklab",)
-    CHANNEL_NAMES = ("l", "a", "b")
+    CHANNELS = (
+        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("a", -0.5, 0.5),
+        Channel("b", -0.5, 0.5)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
-    )
-
-    @property
-    def l(self) -> float:
-        """L channel."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
-        """Get true luminance."""
-
-        self._coords[0] = value
-
-    @property
-    def a(self) -> float:
-        """A channel."""
-
-        return self._coords[1]
-
-    @a.setter
-    def a(self, value: float) -> None:
-        """A axis."""
-
-        self._coords[1] = value
-
-    @property
-    def b(self) -> float:
-        """B channel."""
-
-        return self._coords[2]
-
-    @b.setter
-    def b(self, value: float) -> None:
-        """B axis."""
-
-        self._coords[2] = value
 
     @classmethod
     def to_base(cls, oklab: Vector) -> Vector:

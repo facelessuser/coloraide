@@ -4,7 +4,7 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
-from ..gamut.bounds import Bounds, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
 from typing import Optional, Tuple
 from typing import Dict, Type, TYPE_CHECKING
 
@@ -246,20 +246,20 @@ def parse_hex(color: str) -> Tuple[Vector, float]:
         )
 
 
-def parse_rgb_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Vector, float]:
+def parse_rgb_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
     channels = []
     alpha = 1.0
     for i, c in enumerate(RE_CHAN_SPLIT.split(color.strip()), 0):
         c = c.lower()
         if i <= 2:
-            channels.append(norm_rgb_channel(c, boundry[i].upper))
+            channels.append(norm_rgb_channel(c, boundry[i].high))
         elif i == 3:
             alpha = norm_alpha_channel(c)
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Vector, float]:
+def parse_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
     """Parse CSS RGB format."""
 
     channels = []
@@ -272,7 +272,7 @@ def parse_channels(color: str, boundry: Tuple[Bounds, ...]) -> Tuple[Vector, flo
             if bound.flags & FLG_ANGLE:
                 channels.append(norm_angle_channel(c))
             else:
-                channels.append(norm_color_channel(c, bound.upper))
+                channels.append(norm_color_channel(c, bound.high))
         elif i == length:
             alpha = norm_alpha_channel(c)
     return channels, alpha
@@ -294,7 +294,7 @@ def parse_color(
         for space in spaces.values():
             if ident in space._serialize():
                 # Break channels up into a list
-                num_channels = len(space.CHANNEL_NAMES)
+                num_channels = len(space.CHANNELS)
                 split = RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
 
                 # Get alpha channel
@@ -303,11 +303,12 @@ def parse_color(
                 # Parse color channels
                 channels = []
                 i = -1
+                properties = space.CHANNELS
                 for i, c in enumerate(RE_CHAN_SPLIT.split(split[0]), 0):
                     if c and i < num_channels:
-                        bound = space.BOUNDS[i]
+                        channel = properties[i]
                         # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                        scale = bound.upper if bound.flags & PERCENT_CHANNEL else 1
+                        scale = channel.high if channel.flags & PERCENT_CHANNEL else 1
                         channels.append(norm_color_channel(c.lower(), scale))
                     else:
                         # Not the right amount of channels
@@ -343,11 +344,14 @@ def parse_css(
                     return (value[:3], value[3]), m.end(0)
             else:
                 offset = m.start(0)
-                return parse_rgb_channels(string[m.end(1) - offset + 1:m.end(0) - offset - 1], cspace.BOUNDS), m.end(0)
+                return (
+                    parse_rgb_channels(string[m.end(1) - offset + 1:m.end(0) - offset - 1], cspace.CHANNELS),
+                    m.end(0)
+                )
     else:
         m = CSS_MATCH[cspace.NAME].match(string, start)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.BOUNDS), m.end(0)
+            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.CHANNELS), m.end(0)
 
     # If we wanted to support per color matching of this format, we could enable this.
     # It is much faster to generically match all `color(space ...)` instances and then

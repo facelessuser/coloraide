@@ -5,7 +5,7 @@ https://en.wikipedia.org/wiki/CIELUV
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_OPT_PERCENT
 from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg
@@ -60,53 +60,15 @@ class Luv(Labish, Space):
     BASE = "xyz-d65"
     NAME = "luv"
     SERIALIZE = ("--luv",)
-    CHANNEL_NAMES = ("l", "u", "v")
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("u", -175.0, 175.0),
+        Channel("v", -175.0, 175.0)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(-175.0, 175.0),
-        GamutUnbound(-175.0, 175.0)
-    )
-
-    @property
-    def l(self) -> float:
-        """L channel."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
-        """Get true luminance."""
-
-        self._coords[0] = value
-
-    @property
-    def u(self) -> float:
-        """U channel."""
-
-        return self._coords[1]
-
-    @u.setter
-    def u(self, value: float) -> None:
-        """U axis."""
-
-        self._coords[1] = value
-
-    @property
-    def v(self) -> float:
-        """V channel."""
-
-        return self._coords[2]
-
-    @v.setter
-    def v(self, value: float) -> None:
-        """V axis."""
-
-        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

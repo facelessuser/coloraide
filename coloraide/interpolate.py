@@ -18,7 +18,7 @@ from collections import namedtuple
 from . import algebra as alg
 from .types import Vector
 from .spaces import Cylindrical
-from .gamut.bounds import FLG_ANGLE
+from .channels import FLG_ANGLE
 from typing import Optional, Callable, Sequence, Mapping, Type, Dict, List, Union, cast, TYPE_CHECKING
 from .types import ColorInput
 
@@ -258,10 +258,11 @@ def postdivide(color: 'Color') -> None:
     if alg.is_nan(alpha) or alpha in (0.0, 1.0):
         return
 
+    channels = color._space.CHANNELS
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
-        if color._space.BOUNDS[i].flags & FLG_ANGLE:
+        if channels[i].flags & FLG_ANGLE:
             continue
         color[i] = value / alpha
 
@@ -274,10 +275,11 @@ def premultiply(color: 'Color') -> None:
     if alg.is_nan(alpha) or alpha == 1.0:
         return
 
+    channels = color._space.CHANNELS
     for i, value in enumerate(color[:-1]):
 
         # Wrap the angle
-        if color._space.BOUNDS[i].flags & FLG_ANGLE:
+        if channels[i].flags & FLG_ANGLE:
             continue
         color[i] = value * alpha
 
@@ -288,7 +290,7 @@ def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     if hue == "specified":
         return
 
-    name = cast(Cylindrical, color1._space).hue_name()
+    name = cast(Type[Cylindrical], color1._space).hue_name()
     c1 = color1.get(name)
     c2 = color2.get(name)
 
@@ -473,7 +475,7 @@ def color_lerp(
             color2.fit(in_place=True)
 
     # Adjust hues if we have two valid hues
-    if isinstance(color1._space, Cylindrical):
+    if issubclass(color1._space, Cylindrical):
         adjust_hues(color1, color2, hue)
 
     if premultiplied:
@@ -490,7 +492,7 @@ def color_lerp(
     return InterpolateSingle(
         channels1=channels1,
         channels2=channels2,
-        names=color1._space.CHANNEL_NAMES + ('alpha',),
+        names=color1._space.CHANNELS + ('alpha',),
         create=type(color1),
         progress=process_mapping(progress, color1._space.CHANNEL_ALIASES),
         space=space,

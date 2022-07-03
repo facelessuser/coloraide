@@ -10,6 +10,7 @@ from . import filters
 from . import harmonies
 from . import util
 from . import algebra as alg
+from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
 from .spaces import Space, Cylindrical
@@ -197,12 +198,12 @@ class Color(metaclass=ColorMeta):
     ) -> None:
         """Initialize."""
 
-        self._space = self._parse(color, data, alpha, filters=filters, **kwargs)
+        self._space, self._coords = self._parse(color, data, alpha, filters=filters, **kwargs)
 
     def __len__(self) -> int:
         """Get number of channels."""
 
-        return len(self._space.CHANNEL_NAMES) + 1
+        return len(self._space.CHANNELS) + 1
 
     @overload
     def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
@@ -215,9 +216,7 @@ class Color(metaclass=ColorMeta):
     def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
         """Get channels."""
 
-        if isinstance(i, str):
-            return self._space.get(i)
-        return self._space._coords[i]
+        return self._coords[self._space.get_channel_index(i)] if isinstance(i, str) else self._coords[i]
 
     @overload
     def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
@@ -230,17 +229,13 @@ class Color(metaclass=ColorMeta):
     def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
         """Set channels."""
 
+        space = self._space
         if isinstance(i, slice):
-            for e, name in enumerate((self._space.CHANNEL_NAMES + ('alpha',))[i]):
-                setattr(self._space, name, cast(Vector, v)[e])
-        elif isinstance(i, int):
-            setattr(
-                self._space,
-                (self._space.CHANNEL_NAMES + ('alpha',))[i],
-                v
-            )
+            for index, value in zip(range(len(self._coords))[i], cast(Vector, v)):
+                self._coords[index] = alg.clamp(float(value), *space.get_channel(index).limit)
         else:
-            self._space.set(i, cast(float, v))
+            index = space.get_channel_index(i) if isinstance(i, str) else i
+            self._coords[index] = alg.clamp(float(cast(float, v)), *space.get_channel(index).limit)
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -260,7 +255,7 @@ class Color(metaclass=ColorMeta):
         *,
         filters: Optional[Sequence[str]] = None,
         **kwargs: Any
-    ) -> Space:
+    ) -> Tuple[Type[Space], List[float]]:
         """Parse the color."""
 
         obj = None
@@ -270,29 +265,38 @@ class Color(metaclass=ColorMeta):
                 s = color
                 space_class = cls.CS_MAP.get(s)
                 if space_class and (not filters or s in filters):
-                    num_channels = len(space_class.CHANNEL_NAMES)
+                    num_channels = len(space_class.CHANNELS)
                     if len(data) < num_channels:
                         data = list(data) + [alg.NaN] * (num_channels - len(data))
-                    obj = space_class(data, alpha)
+                    coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
+                    coords.append(alg.clamp(float(alpha), *space_class.get_channel(-1).limit))
+                    obj = space_class, coords
             # Parse a CSS string
             else:
                 m = cls._match(color, fullmatch=True, filters=filters)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
-                obj = m[0]
+                coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(m[0].CHANNELS, m[1])]
+                coords.append(alg.clamp(float(m[2]), *m[0].get_channel(-1).limit))
+                obj = m[0], coords
         elif isinstance(color, Color):
             # Handle a color instance
             if not filters or color.space() in filters:
-                obj = cls.CS_MAP[color.space()](color._space)
+                space_class = cls.CS_MAP[color.space()]
+                obj = space_class, color[:]
         elif isinstance(color, Mapping):
             # Handle a color dictionary
             space = color['space']
             if not filters or space in filters:
                 cs = cls.CS_MAP[space]
                 aliases = cs.CHANNEL_ALIASES
-                names = cs.CHANNEL_NAMES
                 color = {aliases.get(k, k): v for k, v in color.items()}
-                return cs([color[name] for name in names], color.get('alpha', 1))
+                coords = [color[name] for name in cs.CHANNELS]
+                coords.append(color.get('alpha', 1.0))
+                return (
+                    cs,
+                    [alg.clamp(float(v), *c.limit) for c, v in zipl(cs.get_all_channels(), coords)]
+                )
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
@@ -307,7 +311,7 @@ class Color(metaclass=ColorMeta):
         start: int = 0,
         fullmatch: bool = False,
         filters: Optional[Sequence[str]] = None
-    ) -> Optional[Tuple['Space', int, int]]:
+    ) -> Optional[Tuple[Type['Space'], Vector, float, int, int]]:
         """
         Match a color in a buffer and return a color object.
 
@@ -320,7 +324,7 @@ class Color(metaclass=ColorMeta):
         m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
         if m is not None:
             if not filter_set or m[0].NAME in filter_set:
-                return m[0](*m[1]), start, m[2]
+                return m[0], m[1][0], m[1][1], start, m[2]
             return None
 
         # Attempt color space specific match
@@ -329,8 +333,7 @@ class Color(metaclass=ColorMeta):
                 continue
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
-                color = space_class(*m2[0])
-                return color, start, m2[1]
+                return space_class, m2[0][0], m2[0][1], start, m2[1]
         return None
 
     @classmethod
@@ -346,8 +349,7 @@ class Color(metaclass=ColorMeta):
 
         m = cls._match(string, start, fullmatch, filters=filters)
         if m is not None:
-            space = m[0]
-            return ColorMatch(cls(space.NAME, space.coords(), space.alpha), m[1], m[2])
+            return ColorMatch(cls(m[0].NAME, m[1], m[2]), m[3], m[4])
         return None
 
     @classmethod
@@ -465,10 +467,8 @@ class Color(metaclass=ColorMeta):
         """Return color as a data object."""
 
         data = {'space': self.space()}  # type: Dict[str, Any]
-        coords = self[:-1]
-        for i, name in enumerate(self._space.CHANNEL_NAMES, 0):
-            data[name] = coords[i]
-        data['alpha'] = self[-1]
+        for channel, coord in zipl(self._space.get_all_channels(), self._coords):
+            data[str(channel)] = coord
         return data
 
     def normalize(self) -> 'Color':
@@ -527,9 +527,11 @@ class Color(metaclass=ColorMeta):
         if space == self.space():
             return self if in_place else self.clone()
 
-        c = convert.convert(self, space)
+        c, coords = convert.convert(self, space)
+        coords.append(self[-1])
         this = self if in_place else self.clone()
         this._space = c
+        this._coords = coords
 
         return this
 
@@ -544,8 +546,7 @@ class Color(metaclass=ColorMeta):
     ) -> 'Color':
         """Mutate the current color to a new color."""
 
-        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
-        self._space = c
+        self._space, self._coords = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
         return self
 
     def update(
@@ -559,10 +560,9 @@ class Color(metaclass=ColorMeta):
     ) -> 'Color':
         """Update the existing color space with the provided color."""
 
-        c = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
         space = self.space()
-        self._space = c
-        if c.NAME != space:
+        self._space, self._coords = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        if self._space.NAME != space:
             self.convert(space, in_place=True)
         return self
 
@@ -574,7 +574,11 @@ class Color(metaclass=ColorMeta):
     def __repr__(self) -> str:
         """Representation."""
 
-        return repr(self._space)
+        return 'color({} {} / {})'.format(
+            self._space._serialize()[0],
+            ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self[:-1]]),
+            util.fmt_float(self[-1], util.DEF_PREC)
+        )
 
     __str__ = __repr__
 
@@ -635,7 +639,7 @@ class Color(metaclass=ColorMeta):
 
         # If we are perfectly in gamut, don't waste time clipping.
         if c.in_gamut(tolerance=0.0):
-            if isinstance(c._space, Cylindrical):
+            if issubclass(c._space, Cylindrical):
                 name = c._space.hue_name()
                 c.set(name, util.constrain_hue(c[name]))
         else:
@@ -678,7 +682,7 @@ class Color(metaclass=ColorMeta):
         # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
         # If out of gamut, apply mapping/clipping/etc.
         if c.in_gamut(tolerance=0.0):
-            if isinstance(c._space, Cylindrical):
+            if issubclass(c._space, Cylindrical):
                 name = c._space.hue_name()
                 c.set(name, util.constrain_hue(c[name]))
         else:
@@ -717,9 +721,9 @@ class Color(metaclass=ColorMeta):
         masks = set(
             [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
         )
-        for name in (self._space.CHANNEL_NAMES + ('alpha',)):
+        for name in self._space.get_all_channels():
             if (not invert and name in masks) or (invert and name not in masks):
-                this.set(name, alg.NaN)
+                this[name] = alg.NaN
         return this
 
     def steps(
@@ -929,9 +933,9 @@ class Color(metaclass=ColorMeta):
         if '.' in name:
             space, channel = name.split('.', 1)
             obj = self.convert(space)
-            return obj._space.get(channel)
+            return obj[channel]
 
-        return self._space.get(name)
+        return self[name]
 
     def set(  # noqa: A003
         self,
@@ -944,12 +948,11 @@ class Color(metaclass=ColorMeta):
         if '.' in name:
             space, channel = name.split('.', 1)
             obj = self.convert(space)
-            obj._space.set(channel, value(obj._space.get(channel)) if callable(value) else value)
+            obj[channel] = value(obj[channel]) if callable(value) else value
             return self.update(obj)
 
         # Handle a function that modifies the value or a direct value
-        self._space.set(name, value(self._space.get(name)) if callable(value) else value)
-
+        self[name] = value(self[name]) if callable(value) else value
         return self
 
     @util.deprecated(WARN_COORDS)
@@ -960,7 +963,7 @@ class Color(metaclass=ColorMeta):
         TODO: remove before release of 1.0
         """
 
-        return self._space.coords()
+        return self._coords[:-1]
 
     def __getattr__(self, name: str) -> Any:  # pragma: no cover
         """Get attribute."""
@@ -971,10 +974,10 @@ class Color(metaclass=ColorMeta):
         if not name.startswith('_'):
             # Try color space properties
             try:
-                value = sc.__getattribute__('_space').get(name)
+                value = self[name]
                 util.warn_deprecated(WARN_COORDS, 3)
                 return value
-            except AttributeError:
+            except ValueError:
                 pass
 
             # Try delta E methods
@@ -990,16 +993,20 @@ class Color(metaclass=ColorMeta):
     def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
         """Set attribute."""
 
+        index = None
         sc = super()
 
         if not name.startswith('_'):
             try:
                 # See if we need to set the space specific channel attributes.
-                sc.__getattribute__('_space').set(name, value)
+                index = sc.__getattribute__('_space').get_channel_index(name)
                 util.warn_deprecated(WARN_COORDS, 3)
-                return
-            except AttributeError:  # pragma: no cover
+            except ValueError:  # pragma: no cover
                 pass
+
+            if index is not None:
+                self[index] = value
+                return
 
         # Set all attributes on the Color class.
         sc.__setattr__(name, value)

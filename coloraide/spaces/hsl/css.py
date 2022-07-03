@@ -12,8 +12,9 @@ if TYPE_CHECKING:  # pragma: no cover
 class HSL(base.HSL):
     """HSL class."""
 
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,

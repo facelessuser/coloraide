@@ -165,9 +165,9 @@ space, there are a couple things that must be defined. Using XYZ as an example, 
     automatically occur on transitions between two XYZ spaces with different white points white points, e.g., `xyz-d65`
     to `xyz-d50`.
 
-```py
+````py
 from coloraide import cat
-from coloraide.gamut import bounds
+from coloraide.channels import Channel
 
 
 class XYZD65(Space):
@@ -186,8 +186,48 @@ class XYZD65(Space):
     # As `xyz` is listed first, `xyz` is the default used when printing in this format.
     SERIALIZE = ("xyz-d65", "xyz")
 
-    # Channel names for non-alpha channels listed in order of how they are stored.
-    CHANNEL_NAMES = ("x", "y", "z")
+    # Specify channel attributes, bounds, etc. of the non-alpha color channels.
+    # Each channel is defined via a `Channel` object
+    #
+    #```
+    #class Channel(str):
+    #    """Channel."""
+    #
+    #    def __new__(
+    #        cls,
+    #        name: str,
+    #        low: float,
+    #        high: float,
+    #        bound: bool = False,
+    #        flags: int = 0,
+    #        limit: Tuple[Optional[float], Optional[float]] = (None, None)
+    #    ) -> 'Channel':
+    #```
+    #
+    # - `name`: The name of the channel.
+    # - `low`: Lower limit of the channel, for unbound channels, the value will be arbitrary.
+    # - `low`: Upper limit of the channel, for unbound channels, the value will be arbitrary.
+    # - `bound`: Whether the channel enforces the gamut range.
+    # - `limit`: Optional upper and lower limit. Used to define a hard limit for the channel that is clamped
+    #            when the channel is set. This differs from gamut boundaries which can be exceeded until gamut
+    #            mapping occurs. For instance, `chroma` often enforces no values below zero as these values
+    #            do not naturally occur, not even with normal out of gamut colors.
+    # - `flags`: Flags used to provide additional context for the channel.
+    #
+    # The following flags are supported:
+    # - FLG_ANGLE: denotes that channel is a angle or degree value.
+    # - FLG_PERCENT: denotes the value is considered a percent.
+    #                Channels with this expect the value to be between 0 - 100
+    # - FLG_OPT_PERCENT: denotes the value can optionally be considered as a percent.
+    #                    Channels with this are expected to be between 0 - 1.
+    #
+    # NOTE: Behavior of percent flags may change depending on how CSS Level 4 plans to handle non rectangular
+    #       colors in the `color(space ...)` format (if they handle them at all).
+    CHANNELS = (
+        Channel("x", 0.0, 1.0),
+        Channel("y", 0.0, 1.0),
+        Channel("z", 0.0, 1.0)
+    )
 
     # A dictionary containing a mapping of aliases to `CHANNEL_NAMES` found above.
     CHANNEL_ALIASES = {}
@@ -200,27 +240,6 @@ class XYZD65(Space):
     # Specify the white point that the color space uses
     # White point should be a `tuple` containing the x and y chromaticity points.
     WHITE = cat.WHITES['2deg']['D65']
-
-    # Specify the bounds of the non-alpha color channels.
-    # Each channel is specified with either a `GamutBound` or `GamutUnbound` object.
-    # "Bound" channels can be out of gamut and the actual minimum and maximum values
-    # have significant. "Unbound" channels have values that are more informational purposes
-    # and may be suggested ranges.
-    #
-    # Flags can also be provided: GamutBound(0.0, 360.0, FLG_ANGLE).
-    # - FLG_ANGLE: denotes that channel is a angle or degree value.
-    # - FLG_PERCENT: denotes the value is considered a percent.
-    #                Channels with this expect the value to be between 0 - 100
-    # - FLG_OPT_PERCENT: denotes the value can optionally be considered as a percent.
-    #                    Channels with this are expected to be between 0 - 1.
-    #
-    # NOTE: Behavior of percent flags may change depending on how CSS Level 4 plans to handle non rectangular
-    #       colors in the `color(space ...)` format (if they handle them at all).
-    BOUNDS = (
-        bounds.GamutUnbound(0.0, 1.0),
-        bounds.GamutUnbound(0.0, 1.0),
-        bounds.GamutUnbound(0.0, 1.0)
-    )
 
     # If `GAMUT_CHECK` is set to a color space name, the provided color space will be used to verify the an "in gamut"
     # check in addition to the current color space's channel ranges. This is often used with color spaces such as:
@@ -238,45 +257,6 @@ class XYZD65(Space):
     # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
     # space.
     EXTENDED_RANGE = False
-
-    ############################
-    # Getters and setters for non-alpha properties
-    ############################
-    @property
-    def x(self) -> float:
-        """X channel."""
-
-        return self._coords[0]
-
-    @x.setter
-    def x(self, value: float) -> None:
-        """Shift the X."""
-
-        self._coords[0] = self._handle_input(value)
-
-    @property
-    def y(self) -> float:
-        """Y channel."""
-
-        return self._coords[1]
-
-    @y.setter
-    def y(self, value: float) -> None:
-        """Set Y."""
-
-        self._coords[1] = self._handle_input(value)
-
-    @property
-    def z(self) -> float:
-        """Z channel."""
-
-        return self._coords[2]
-
-    @z.setter
-    def z(self, value: float) -> None:
-        """Set Z channel."""
-
-        self._coords[2] = self._handle_input(value)
 
     ############################
     # To and from conversion functions that transform the color to and from the `BASE` color.
@@ -300,7 +280,7 @@ class XYZD65(Space):
         """
 
         return coords
-```
+````
 
 In addition to the above methods, some color spaces, such as cylindrical spaces, have some additional logic that
 determines when a `hue` is undefined. This function provides access to this logic in case `normalize` is called from the
@@ -341,7 +321,7 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
         def hue_index(cls) -> int:
             """Get hue index."""
 
-            return cast(Type['Space'], cls).CHANNEL_NAMES.index(cls.hue_name())
+            return cls.get_channel_index(cls.hue_name())
     ```
 
 === "Labish"
@@ -354,14 +334,14 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
         def labish_names(cls) -> Tuple[str, ...]:
             """Return Lab-ish names in the order L a b."""
 
-            return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
+            return cls.CHANNELS
 
         @classmethod
         def labish_indexes(cls) -> List[int]:
             """Return the index of the Lab-ish channels."""
 
             names = cls.labish_names()
-            return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+            return [cls.get_channel_index(name) for name in names]
     ```
 
 === "Lchish"
@@ -374,14 +354,14 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
         def lchish_names(cls) -> Tuple[str, ...]:
             """Return Lch-ish names in the order L c h."""
 
-            return cast(Type['Space'], cls).CHANNEL_NAMES[:3]
+            return cls.CHANNELS
 
         @classmethod
         def lchish_indexes(cls) -> List[int]:
             """Return the index of the Lab-ish channels."""
 
             names = cls.lchish_names()
-            return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+            return [cls.get_channel_index(name) for name in names]
     ```
 
 Mix-in classes are mainly available so that a color space can be inspected to see if it falls into a specific generic
@@ -475,8 +455,9 @@ all the parameters we need, in our case we accept the common parameters and late
 
 
 ```py
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,

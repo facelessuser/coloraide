@@ -1,5 +1,6 @@
 """Convert the color."""
 from . import algebra as alg
+from .types import Vector
 from typing import Type, Tuple, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -118,19 +119,19 @@ def get_convert_chain(
     return chain
 
 
-def convert(color: 'Color', space: str) -> 'Space':
+def convert(color: 'Color', space: str) -> Tuple[Type['Space'], Vector]:
     """Convert the color coordinates to the specified space."""
 
     # Grab the convert for the current space to the desired space
     # Result is cached for quicker future conversions.
-    chain = color._get_convert_chain(type(color._space), space)
+    chain = color._get_convert_chain(color._space, space)
 
     # Get coordinates and convert NaN values to 0
     coords = alg.no_nans(color[:-1])
 
     # Navigate the conversion chain translated the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
-    last = type(color._space)
+    last = color._space
     for a, b, direction, adapt in chain:
         if direction and adapt:
             coords = color.chromatic_adaptation(
@@ -148,4 +149,4 @@ def convert(color: 'Color', space: str) -> 'Space':
             )
         last = b
 
-    return last(coords, color[-1])
+    return last, coords

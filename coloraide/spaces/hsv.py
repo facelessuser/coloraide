@@ -1,7 +1,7 @@
 """HSV class."""
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
-from ..gamut.bounds import GamutBound, FLG_ANGLE, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -49,7 +49,11 @@ class HSV(Cylindrical, Space):
     BASE = "hsl"
     NAME = "hsv"
     SERIALIZE = ("--hsv",)
-    CHANNEL_NAMES = ("h", "s", "v")
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("v", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+    )
     CHANNEL_ALIASES = {
         "hue": "h",
         "saturation": "s",
@@ -57,48 +61,6 @@ class HSV(Cylindrical, Space):
     }
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutBound(0.0, 360.0, FLG_ANGLE),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutBound(0.0, 1.0, FLG_OPT_PERCENT)
-    )
-
-    @property
-    def h(self) -> float:
-        """Hue channel."""
-
-        return self._coords[0]
-
-    @h.setter
-    def h(self, value: float) -> None:
-        """Shift the hue."""
-
-        self._coords[0] = value
-
-    @property
-    def s(self) -> float:
-        """Saturation channel."""
-
-        return self._coords[1]
-
-    @s.setter
-    def s(self, value: float) -> None:
-        """Saturate or unsaturate the color by the given factor."""
-
-        self._coords[1] = value
-
-    @property
-    def v(self) -> float:
-        """Value channel."""
-
-        return self._coords[2]
-
-    @v.setter
-    def v(self, value: float) -> None:
-        """Set value channel."""
-
-        self._coords[2] = value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

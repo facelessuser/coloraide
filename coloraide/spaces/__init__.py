@@ -1,25 +1,18 @@
 """Color base."""
 from abc import ABCMeta, abstractmethod
-from .. import util
 from .. import cat
 from ..css import parse
-from ..gamut import bounds
+from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Sequence, Any, List, cast, Type, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Any, List, cast, Type, Iterator, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 # TODO: Remove for before 1.0.
 # Here only to prevent breakage.
-FLG_ANGLE = bounds.FLG_ANGLE
-FLG_OPT_PERCENT = bounds.FLG_OPT_PERCENT
-FLG_PERCENT = bounds.FLG_PERCENT
-Bounds = bounds.Bounds
-GamutBound = bounds.GamutBound
-GamutUnbound = bounds.GamutUnbound
 RE_DEFAULT_MATCH = parse.RE_DEFAULT_MATCH
 WHITES = cat.WHITES
 
@@ -37,7 +30,7 @@ class Cylindrical:
     def hue_index(cls) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES.index(cls.hue_name())
+        return cast(Type['Space'], cls).get_channel_index(cls.hue_name())
 
 
 class Labish:
@@ -47,14 +40,14 @@ class Labish:
     def labish_names(cls) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES
+        return cast(Type['Space'], cls).CHANNELS
 
     @classmethod
     def labish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.labish_names()
-        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
 
 
 class Lchish(Cylindrical):
@@ -64,14 +57,17 @@ class Lchish(Cylindrical):
     def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return cast(Type['Space'], cls).CHANNEL_NAMES
+        return cast(Type['Space'], cls).CHANNELS
 
     @classmethod
     def lchish_indexes(cls) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
         names = cls.lchish_names()
-        return [cast(Type['Space'], cls).CHANNEL_NAMES.index(name) for name in names]
+        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
+
+
+alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 
 
 class SpaceMeta(ABCMeta):
@@ -93,7 +89,7 @@ class Space(Plugin, metaclass=SpaceMeta):
     # Serialized name
     SERIALIZE = tuple()  # type: Tuple[str, ...]
     # Channel names
-    CHANNEL_NAMES = tuple()  # type: Tuple[str, ...]
+    CHANNELS = tuple()  # type: Tuple[Channel, ...]
     # Channel aliases
     CHANNEL_ALIASES = {}  # type: Dict[str, str]
     # Enable or disable default color format parsing and serialization.
@@ -113,49 +109,29 @@ class Space(Plugin, metaclass=SpaceMeta):
     # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
     # space.
     EXTENDED_RANGE = False
-    # Bounds of channels. Range could be suggested or absolute as not all spaces have definitive ranges.
-    BOUNDS = tuple()  # type: Tuple[Bounds, ...]
     # White point
     WHITE = (0.0, 0.0)
 
-    def __init__(self, color: Union['Space', VectorLike], alpha: Optional[float] = None) -> None:
-        """Initialize."""
+    @classmethod
+    def get_channel_index(cls, name: str) -> int:
+        """Get channel index."""
 
-        num_channels = len(self.CHANNEL_NAMES)
-        self._coords = [alg.NaN] * (num_channels + 1)
-        self._chan_names = set(self.CHANNEL_NAMES)
-        self._chan_names.add('alpha')
+        if name == 'alpha':
+            return len(cls.CHANNELS)
+        return cls.CHANNELS.index(cls.CHANNEL_ALIASES.get(name, name))
 
-        if isinstance(color, Space):
-            self._coords[:] = color._coords[:]
-        elif isinstance(color, Sequence):
-            if len(color) != num_channels:
-                # Only likely to happen with direct usage internally.
-                raise ValueError(
-                    "{} accepts a list of {} channels".format(self.NAME, num_channels)
-                )
-            for name, value in zip(self.CHANNEL_NAMES, color):
-                setattr(self, name, float(value))
-            self.alpha = 1.0 if alpha is None else alpha
-        else:  # pragma: no cover
-            # Only likely to happen with direct usage internally.
-            raise TypeError("Unexpected type '{}' received".format(type(color)))
+    @classmethod
+    def get_channel(cls, index: int) -> Channel:
+        """Get channel index."""
 
-    def __repr__(self) -> str:
-        """Representation."""
+        return (cls.CHANNELS + (alpha_channel,))[index]
 
-        return 'color({} {} / {})'.format(
-            self._serialize()[0],
-            ' '.join([util.fmt_float(coord, util.DEF_PREC) for coord in self.coords()]),
-            util.fmt_float(alg.no_nan(self.alpha), util.DEF_PREC)
-        )
+    @classmethod
+    def get_all_channels(cls) -> Iterator[Channel]:
+        """Get all channels."""
 
-    __str__ = __repr__
-
-    def coords(self) -> Vector:
-        """Coordinates."""
-
-        return self._coords[:-1]
+        yield from cls.CHANNELS
+        yield alpha_channel
 
     @classmethod
     def _serialize(cls) -> Tuple[str, ...]:
@@ -169,34 +145,6 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return cls.WHITE
 
-    @property
-    def alpha(self) -> float:
-        """Alpha channel."""
-
-        return self._coords[-1]
-
-    @alpha.setter
-    def alpha(self, value: float) -> None:
-        """Adjust alpha."""
-
-        self._coords[-1] = alg.clamp(value, 0.0, 1.0)
-
-    def set(self, name: str, value: float) -> None:  # noqa: A003
-        """Set the given channel."""
-
-        name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self._chan_names:
-            raise AttributeError("'{}' is an invalid channel name".format(name))
-        setattr(self, name, float(value))
-
-    def get(self, name: str) -> float:
-        """Get the given channel's value."""
-
-        name = self.CHANNEL_ALIASES.get(name, name)
-        if name not in self._chan_names:
-            raise AttributeError("'{}' is an invalid channel name".format(name))
-        return cast(float, getattr(self, name))
-
     @classmethod
     @abstractmethod
     def to_base(cls, coords: Vector) -> Vector:  # pragma: no cover
@@ -207,8 +155,9 @@ class Space(Plugin, metaclass=SpaceMeta):
     def from_base(cls, coords: Vector) -> Vector:  # pragma: no cover
         """From base color."""
 
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,

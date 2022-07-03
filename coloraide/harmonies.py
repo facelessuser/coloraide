@@ -52,7 +52,7 @@ class Monochromatic(Harmony):
         orig_space = color.space()
         color0 = color.convert(space).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not issubclass(color0._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         # Trim off black and white unless the color is achromatic,
@@ -122,7 +122,7 @@ class Geometric(Harmony):
         orig_space = color.space()
         color0 = color.convert(space)
 
-        if not isinstance(color0._space, Cylindrical):
+        if not issubclass(color0._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         name = color0._space.hue_name()
@@ -171,7 +171,7 @@ class SplitComplementary(Harmony):
         orig_space = color.space()
         color0 = color.convert(space)
 
-        if not isinstance(color0._space, Cylindrical):
+        if not issubclass(color0._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         name = color0._space.hue_name()
@@ -200,7 +200,7 @@ class Analogous(Harmony):
         orig_space = color.space()
         color0 = color.convert(space)
 
-        if not isinstance(color0._space, Cylindrical):
+        if not issubclass(color0._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         name = color0._space.hue_name()
@@ -229,7 +229,7 @@ class TetradicRect(Harmony):
         orig_space = color.space()
         color0 = color.convert(space)
 
-        if not isinstance(color0._space, Cylindrical):
+        if not issubclass(color0._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         name = color0._space.hue_name()

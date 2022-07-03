@@ -1,7 +1,7 @@
 """Lch class."""
 from ...spaces import Space, Lchish
 from ...cat import WHITES
-from ...gamut.bounds import GamutUnbound, FLG_ANGLE, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ... import algebra as alg
@@ -47,54 +47,17 @@ class Lch(Lchish, Space):
     BASE = "lab"
     NAME = "lch"
     SERIALIZE = ("--lch",)
-    CHANNEL_NAMES = ("l", "c", "h")
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 100.0, limit=(0.0, None)),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
     CHANNEL_ALIASES = {
         "lightness": "l",
         "chroma": "c",
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D50']
-    BOUNDS = (
-        GamutUnbound(0.0, 100.0, FLG_OPT_PERCENT),
-        GamutUnbound(0.0, 100.0),
-        GamutUnbound(0.0, 360.0, FLG_ANGLE)
-    )
-
-    @property
-    def l(self) -> float:
-        """Lightness."""
-
-        return self._coords[0]
-
-    @l.setter
-    def l(self, value: float) -> None:
-        """Get true luminance."""
-
-        self._coords[0] = value
-
-    @property
-    def c(self) -> float:
-        """Chroma."""
-
-        return self._coords[1]
-
-    @c.setter
-    def c(self, value: float) -> None:
-        """chroma."""
-
-        self._coords[1] = alg.clamp(value, 0.0)
-
-    @property
-    def h(self) -> float:
-        """Hue."""
-
-        return self._coords[2]
-
-    @h.setter
-    def h(self, value: float) -> None:
-        """Shift the hue."""
-
-        self._coords[2] = value
 
     @classmethod
     def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:

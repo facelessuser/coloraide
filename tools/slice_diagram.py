@@ -87,11 +87,11 @@ def plot_slice(
 
     # Get the actual indexes of the specified channels
     name0 = c._space.CHANNEL_ALIASES.get(name0, name0)
-    index0 = c._space.CHANNEL_NAMES.index(name0)
+    index0 = c._space.get_channel_index(name0)
     name1 = c._space.CHANNEL_ALIASES.get(name1, name1)
-    index1 = c._space.CHANNEL_NAMES.index(name1)
+    index1 = c._space.get_channel_index(name1)
     name2 = c._space.CHANNEL_ALIASES.get(name2, name2)
-    index2 = c._space.CHANNEL_NAMES.index(name2)
+    index2 = c._space.get_channel_index(name2)
     hue_index = -1
 
     kwargs = {}

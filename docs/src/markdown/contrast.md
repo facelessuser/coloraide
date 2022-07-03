@@ -21,7 +21,7 @@ g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
 b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
 l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
 print(l)
-Color('purple').convert('xyz-d65').y
+Color('purple').convert('xyz-d65')['y']
 ```
 
 For convenience, the `luminance` method exposes access to this value to make it quick and easy query the relative

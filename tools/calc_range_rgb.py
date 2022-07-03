@@ -76,7 +76,7 @@ def run(target, rgb, res):
             z += 1
 
     print('')
-    chan_x, chan_y, chan_z = Color('white').convert(target)._space.CHANNEL_NAMES
+    chan_x, chan_y, chan_z = Color('white').convert(target)._space.CHANNELS
     print('---- {} range in {} ----'.format(target, rgb))
     print('{}: [{}, {}]'.format(chan_x, alg.round_half_up(min_x, 3), alg.round_half_up(max_x, 3)))
     print('{}: [{}, {}]'.format(chan_y, alg.round_half_up(min_y, 3), alg.round_half_up(max_y, 3)))

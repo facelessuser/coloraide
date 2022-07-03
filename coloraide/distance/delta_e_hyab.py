@@ -25,8 +25,8 @@ class DEHyAB(DeltaE):
         color = color.convert(space)
         sample = sample.convert(space)
 
-        if not isinstance(color._space, Labish):
-            raise ValueError("The space '{}' is not a 'lab-sh' color space and cannot use HyAB".format(space))
+        if not issubclass(color._space, Labish):
+            raise ValueError("The space '{}' is not a 'lab-ish' color space and cannot use HyAB".format(space))
 
         names = color._space.labish_names()
         l1, a1, b1 = alg.no_nans([color.get(names[0]), color.get(names[1]), color.get(names[2])])

@@ -5,7 +5,7 @@ https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -88,50 +88,12 @@ class ICtCp(Labish, Space):
     BASE = "xyz-d65"
     NAME = "ictcp"
     SERIALIZE = ("--ictcp",)
-    CHANNEL_NAMES = ("i", "ct", "cp")
-    WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
+    CHANNELS = (
+        Channel("i", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("ct", -0.5, 0.5),
+        Channel("cp", -0.5, 0.5)
     )
-
-    @property
-    def i(self) -> float:
-        """`I` channel."""
-
-        return self._coords[0]
-
-    @i.setter
-    def i(self, value: float) -> None:
-        """Set `I` channel."""
-
-        self._coords[0] = value
-
-    @property
-    def ct(self) -> float:
-        """`Ct` axis."""
-
-        return self._coords[1]
-
-    @ct.setter
-    def ct(self, value: float) -> None:
-        """`Ct` axis."""
-
-        self._coords[1] = value
-
-    @property
-    def cp(self) -> float:
-        """`Cp` axis."""
-
-        return self._coords[2]
-
-    @cp.setter
-    def cp(self, value: float) -> None:
-        """Set `Cp` axis."""
-
-        self._coords[2] = value
+    WHITE = WHITES['2deg']['D65']
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

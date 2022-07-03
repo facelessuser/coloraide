@@ -20,7 +20,7 @@ If at some time that these assumptions are incorrect, we will be happy to alter 
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..gamut.bounds import GamutUnbound, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -123,55 +123,17 @@ class Jzazbz(Labish, Space):
     BASE = "xyz-d65"
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
-    CHANNEL_NAMES = ("jz", "az", "bz")
+    CHANNELS = (
+        Channel("jz", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("az", -0.5, 0.5),
+        Channel("bz", -0.5, 0.5)
+    )
     CHANNEL_ALIASES = {
         "lightness": 'jz',
         "a": 'az',
         "b": 'bz'
     }
     WHITE = WHITES['2deg']['D65']
-
-    BOUNDS = (
-        GamutUnbound(0.0, 1.0, FLG_OPT_PERCENT),
-        GamutUnbound(-0.5, 0.5),
-        GamutUnbound(-0.5, 0.5)
-    )
-
-    @property
-    def jz(self) -> float:
-        """Jz channel."""
-
-        return self._coords[0]
-
-    @jz.setter
-    def jz(self, value: float) -> None:
-        """Set jz channel."""
-
-        self._coords[0] = value
-
-    @property
-    def az(self) -> float:
-        """Az axis."""
-
-        return self._coords[1]
-
-    @az.setter
-    def az(self, value: float) -> None:
-        """Az axis."""
-
-        self._coords[1] = value
-
-    @property
-    def bz(self) -> float:
-        """Bz axis."""
-
-        return self._coords[2]
-
-    @bz.setter
-    def bz(self, value: float) -> None:
-        """Set bz axis."""
-
-        self._coords[2] = value
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

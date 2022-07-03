@@ -12,8 +12,9 @@ if TYPE_CHECKING:  # pragma: no cover
 class HWB(base.HWB):
     """HWB class."""
 
+    @classmethod
     def to_string(
-        self,
+        cls,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,
