@@ -30,7 +30,6 @@ from ... import util
 import math
 from ... import algebra as alg
 from ...types import Vector
-from typing import Tuple
 
 ACHROMATIC_THRESHOLD = 0.000002
 
@@ -84,14 +83,14 @@ class Oklch(Lchish, Space):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
         if coords[1] < ACHROMATIC_THRESHOLD:
             coords[2] = alg.NaN
 
-        return coords, alg.no_nan(alpha)
+        return coords
 
     @classmethod
     def to_base(cls, oklch: Vector) -> Vector:

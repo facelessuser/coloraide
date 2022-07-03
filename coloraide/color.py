@@ -474,7 +474,7 @@ class Color(metaclass=ColorMeta):
     def normalize(self) -> 'Color':
         """Normalize the color."""
 
-        self[:-1], self[-1] = self._space.null_adjust(self[:-1], self[-1])
+        self[:] = self._space.normalize(self[:])
         return self
 
     def is_nan(self, name: str) -> bool:

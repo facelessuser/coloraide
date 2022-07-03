@@ -4,7 +4,6 @@ from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_PERCENT
 from ... import algebra as alg
 from ...types import Vector
-from typing import Tuple
 
 
 def hwb_to_hsv(hwb: Vector) -> Vector:
@@ -53,13 +52,13 @@ class HWB(Cylindrical, Space):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
         if coords[1] + coords[2] >= 1:
             coords[0] = alg.NaN
-        return coords, alg.no_nan(alpha)
+        return coords
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

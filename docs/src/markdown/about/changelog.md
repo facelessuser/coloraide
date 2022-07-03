@@ -7,6 +7,11 @@
   which serves the same purpose as the former attributes. `Space` plugins also no longer need to define channel
   property accessors as those are handled through `CHANNELS` in a more generic way. This is a breaking change for any
   custom plugins.
+
+    Additionally, the `Space` plugin's `null_adjust` method has been renamed as `normalize` matching its functionality
+    and usage in regards to the `Color` object. It no longer accepts color coordinates and alpha channel coordinates
+    separately, but will receive them as a single list and return them as such.
+
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.
