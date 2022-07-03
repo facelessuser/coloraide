@@ -285,19 +285,19 @@ class XYZD65(Space):
 In addition to the above methods, some color spaces, such as cylindrical spaces, have some additional logic that
 determines when a `hue` is undefined. This function provides access to this logic in case `normalize` is called from the
 the `Color` object. In the case of such color spaces, it may be necessary to define
-`null_adjust` as well. Below is an example from HSL that sets `hue` to undefined when `saturation` is `#!py3 0` or
-`lightness` is equal to `#!py3 0` or `#!py3 1`.
+`normalize` as well. Below is an example from HSL that sets `hue` to undefined when `saturation` is `#!py3 0` or
+`lightness` is equal to `#!py3 0` or `#!py3 1`. This logic should mirror what is performed in a normal conversion.
 
 ```py
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = util.no_nans(coords)
         if coords[1] == 0 or coords[2] in (0, 1):
             coords[0] = util.NaN
 
-        return coords, util.no_nan(alpha)
+        return coords
 ```
 
 ### Mix-ins

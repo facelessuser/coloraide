@@ -178,10 +178,10 @@ class Space(Plugin, metaclass=SpaceMeta):
         )
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
-        return alg.no_nans(coords), alg.no_nan(alpha)
+        return alg.no_nans(coords)
 
     @classmethod
     def match(

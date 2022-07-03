@@ -34,7 +34,7 @@ import math
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 
 def length_of_ray_until_intersect(theta: float, line: Dict[str, float]) -> float:
@@ -128,13 +128,13 @@ class HSLuv(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
         if coords[1] == 0 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
             coords[0] = alg.NaN
-        return coords, alg.no_nan(alpha)
+        return coords
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

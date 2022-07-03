@@ -35,7 +35,7 @@ import math
 import sys
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple, Optional
+from typing import Optional
 
 FLT_MAX = sys.float_info.max
 
@@ -432,13 +432,13 @@ class Okhsl(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
         if coords[2] in (0.0, 1.0) or coords[1] == 0.0:
             coords[0] = alg.NaN
-        return coords, alg.no_nan(alpha)
+        return coords
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

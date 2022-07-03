@@ -5,7 +5,6 @@ from ..channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple
 
 
 def hsv_to_hsl(hsv: Vector) -> Vector:
@@ -63,14 +62,14 @@ class HSV(Cylindrical, Space):
     WHITE = WHITES['2deg']['D65']
 
     @classmethod
-    def null_adjust(cls, coords: Vector, alpha: float) -> Tuple[Vector, float]:
+    def normalize(cls, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
         if coords[1] == 0:
             coords[0] = alg.NaN
 
-        return coords, alg.no_nan(alpha)
+        return coords
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:
