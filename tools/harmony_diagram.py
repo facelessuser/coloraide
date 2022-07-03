@@ -95,7 +95,7 @@ def main():
 
     colors = c1.harmony(args.harmony, space=args.space)
     if args.map_colors:
-        [c.fit(args.gamut, in_place=True) for c in colors]
+        [c.fit(args.gamut) for c in colors]
 
     for c in colors:
         plt.scatter(

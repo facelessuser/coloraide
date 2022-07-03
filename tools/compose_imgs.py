@@ -53,7 +53,7 @@ def apply_compositing(background, blend, operator, pixels):
     if background != 'transparent':
         color.compose(background, in_place=True)
     backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
-    color.compose(backdrops, blend=blend, operator=operator).clip(in_place=True)
+    color.compose(backdrops, blend=blend, operator=operator).clip()
     return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),))
 
 

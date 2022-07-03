@@ -57,7 +57,7 @@ def apply_filter(name, amount, space, method, p):
         # General filter.
         color.filter(name, amount, space=space, in_place=True)
     # We could gamut map or just do a simple clip, we've opted for a simple fast clip for now.
-    color.clip(in_place=True)
+    color.clip()
     return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),) if has_alpha else tuple())
 
 

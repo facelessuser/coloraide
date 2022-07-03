@@ -522,7 +522,7 @@ class Color(metaclass=ColorMeta):
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
                 converted = self.convert(space, in_place=in_place)
-                return converted.fit(space, method=method, in_place=True)
+                return converted.fit(space, method=method)
 
         if space == self.space():
             return self if in_place else self.clone()
@@ -627,7 +627,7 @@ class Color(metaclass=ColorMeta):
 
         return adapter.adapt(w1, w2, xyz)
 
-    def clip(self, space: Optional[str] = None, *, in_place: bool = False) -> 'Color':
+    def clip(self, space: Optional[str] = None) -> 'Color':
         """Clip the color channels."""
 
         orig_space = self.space()
@@ -635,7 +635,7 @@ class Color(metaclass=ColorMeta):
             space = self.space()
 
         # Convert to desired space
-        c = self.convert(space, in_place=in_place)
+        c = self.convert(space, in_place=True)
 
         # If we are perfectly in gamut, don't waste time clipping.
         if c.in_gamut(tolerance=0.0):
@@ -653,7 +653,6 @@ class Color(metaclass=ColorMeta):
         space: Optional[str] = None,
         *,
         method: Optional[str] = None,
-        in_place: bool = False,
         **kwargs: Any
     ) -> 'Color':
         """Fit the gamut using the provided method."""
@@ -661,7 +660,7 @@ class Color(metaclass=ColorMeta):
         # Dedicated clip method.
         orig_space = self.space()
         if method == 'clip' or (method is None and self.FIT == "clip"):
-            return self.clip(space, in_place=in_place)
+            return self.clip(space)
 
         if space is None:
             space = self.space()
@@ -677,7 +676,7 @@ class Color(metaclass=ColorMeta):
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        c = self.convert(space, in_place=in_place)
+        c = self.convert(space, in_place=True)
 
         # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
         # If out of gamut, apply mapping/clipping/etc.

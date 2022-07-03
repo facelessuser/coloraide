@@ -296,7 +296,7 @@ def _color_command_console(colors):
             style = "--swatch-stops: "
             stops = []
             for e, color in enumerate(item):
-                color.fit(WEBSPACE, in_place=True)
+                color.fit(WEBSPACE)
                 if current:
                     stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(last)))
                     stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(current)))
@@ -329,7 +329,7 @@ def _color_command_console(colors):
             for color in item:
                 if not color.color.in_gamut(WEBSPACE):
                     base_classes += " out-of-gamut"
-                color.color.fit(WEBSPACE, in_place=True)
+                color.color.fit(WEBSPACE)
                 srgb = color.color.convert(WEBSPACE)
                 value1 = srgb.to_string(alpha=False)
                 value2 = srgb.to_string()
@@ -419,7 +419,7 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
         el = Etree.Element('span')
         stops = []
         if not color.in_gamut(WEBSPACE):
-            color.fit(WEBSPACE, in_place=True)
+            color.fit(WEBSPACE)
             attributes = {'class': "swatch out-of-gamut", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
             stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))

@@ -882,9 +882,7 @@ Return
 ```py
 def clip(
     self,
-    space=None,
-    *,
-    in_place=False
+    space=None
 )
 ```
 
@@ -897,12 +895,10 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `space`    | `#!py3 None`  | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
-    `in_place` | `#!py3 False` | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
 : 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
-    `in_place` is `#!py3 True`.
+    Returns a reference to the current [`Color`](#color) after fitting its coordinates to the specified gamut.
 
 ## `Color.fit` {#fit}
 
@@ -912,7 +908,6 @@ def fit(
     space=None,
     *,
     method=None,
-    in_place=False,
     **kwargs
 ):
 ```
@@ -942,12 +937,10 @@ Parameters
     ---------- | ------------------ | -----------
     `space`    | `#!py3 None`       | The color space that the color must be mapped to. If space is `#!py3 None`, then the current color space will be used.
     `method`   | `#!py3 None`       | String that specifies which gamut mapping method to use. If `#!py3 None`, `oklch-chroma` will be used.
-    `in_place` | `#!py3 False`      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
 : 
-    Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
-    `in_place` is `#!py3 True`.
+    Returns a reference to the current [`Color`](#color) after fitting its coordinates to the specified gamut.
 
 ## `Color.in_gamut` {#in_gamut}
 

@@ -32,7 +32,7 @@ def main():
     if args.method == 'lch-chroma':
         space = 'lch'
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.method)
+        color2 = color.clone().fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160'
@@ -43,7 +43,7 @@ def main():
     elif args.method in ('oklch-chroma', 'css-color-4'):
         space = 'oklch'
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.method)
+        color2 = color.clone().fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:0.5'
@@ -59,7 +59,7 @@ def main():
         if space not in ('lch', 'oklch'):
             raise ValueError('"{}" is an unsupported clipping space'.format(space))
         color = Color(args.color).convert(space, in_place=True)
-        color2 = color.fit('srgb', method=args.method)
+        color2 = color.clone().fit('srgb', method=args.method)
         mapcolor = color.convert(space)
         mapcolor2 = color2.convert(space)
         xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'

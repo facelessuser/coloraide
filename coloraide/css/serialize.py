@@ -26,7 +26,7 @@ def named_color(obj: 'Color', alpha: Optional[bool], fit: Union[str, bool]) -> O
     if a is None:
         a = 1
     method = None if not isinstance(fit, str) else fit
-    coords = alg.no_nans(obj.fit(method=method)[:-1])
+    coords = alg.no_nans(obj.clone().fit(method=method)[:-1])
     return to_name(coords + [a])
 
 

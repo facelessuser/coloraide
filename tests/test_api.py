@@ -225,7 +225,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertFalse(c1.in_gamut())
         c2 = c1.convert("hsl", fit=True)
         self.assertTrue(c2.in_gamut())
-        c3 = c1.convert('hsl').fit()
+        c3 = c1.convert('hsl').clone().fit()
         self.assertColorEqual(c2, c3)
 
     def test_convert_fit_clip(self):
@@ -235,7 +235,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertFalse(c1.in_gamut())
         c2 = c1.convert("hsl", fit="clip")
         self.assertTrue(c2.in_gamut())
-        c3 = c1.convert('hsl').fit(method="clip")
+        c3 = c1.convert('hsl').clone().fit(method="clip")
         self.assertColorEqual(c2, c3)
         c4 = c1.convert("hsl", fit=True)
         self.assertColorNotEqual(c2, c4)
