@@ -84,8 +84,8 @@ def main():
     )
 
     plt.plot(
-        [mapcolor2.c, mapcolor.c],
-        [mapcolor2.l, mapcolor.l],
+        [mapcolor2['c'], mapcolor['c']],
+        [mapcolor2['l'], mapcolor['l']],
         color='black',
         marker="",
         linewidth=1.5,
@@ -94,8 +94,8 @@ def main():
     )
 
     plt.scatter(
-        mapcolor.c,
-        mapcolor.l,
+        mapcolor['c'],
+        mapcolor['l'],
         marker="o",
         color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
@@ -103,8 +103,8 @@ def main():
     )
 
     plt.scatter(
-        mapcolor2.c,
-        mapcolor2.l,
+        mapcolor2['c'],
+        mapcolor2['l'],
         marker="o",
         color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
