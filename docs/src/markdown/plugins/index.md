@@ -383,7 +383,7 @@ jzazbz = srgb.convert('jzazbz')
 ictcp = srgb.convert('ictcp')
 
 for c in (srgb, jzazbz, ictcp):
-    if isinstance(c._space, Labish):
+    if issubclass(c._space, Labish):
         print('color: ', c)
         l = c._space.labish_names()[0]
         print('channel: ', l)
