@@ -7,7 +7,7 @@ class OklchChroma(LchChroma):
 
     NAME = "oklch-chroma"
 
-    EPSILON = 0.001
+    EPSILON = 0.0001
     LIMIT = 0.02
     DE = "ok"
     SPACE = "oklch"

@@ -188,35 +188,15 @@ Method         | Description
 -------------- | -----------
 `clip`         | Simple, naive clipping.
 `lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCH color space to bring a color into gamut. This is the default method used.
-`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. Currently experimental and is meant to be similar to `css-color-4`, but provides better results at the cost of being a little slower.
-`css-color-4`  | This is the algorithm as currently specified by the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch). It is like `oklch-chroma`, but it is faster at the cost of providing slightly inferior results.
-
+`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. This is currently what the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) recommends.
 
 !!! note "CSS Level 4 Gamut Mapping"
     The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
-    Oklch as the gamut mapping color space and uses an algorithm very similar to what we use. But Oklch is a very new
-    color space to be used in the field of gamut mapping. While CIELCH is not perfect, its weakness are known. Oklch
-    may have quirks of its own, so usage is considered experimental and not used by default.
+    Oklch as the gamut mapping color space. `oklch-chroma` is our implementation of the CSS Level 4 color specification.
 
-    We currently provide `css-color-4` for CSS purists, but the spec could change as it is still not really finalized.
-    Additionally, some issues with it have been discovered which is why we currently offer both `oklch-chroma` and
-    `css-color-4`.
-
-    `css-color-4` seems to suffer from an issue that can cause color banding when doing interpolations. The way it kicks
-    out of the binary search when reducing chroma can lead to a worse case scenario were two adjacent, gamut mapped
-    colors can exaggerate their maximum color distance. This creates noticeable banding at some points. While maybe some
-    eyes may struggle to see the difference, others may notice some color banding. Below we illustrate the problem. The
-    CSS algorithm is used on top and our adjusted variant is used on the bottom.
-
-    ```playground
-    class ColorCss(Color):
-        FIT = 'css-color-4'
-    class ColorOk(Color):
-        FIT = 'oklch-chroma'
-
-    ColorCss("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')
-    ColorOk("lch(85% 80 310)").interpolate("lch(85% 100 85)", space='oklch')
-    ```
+    Oklch is a very new color space to be used in the field of gamut mapping. While CIELCH is not perfect, its weakness
+    are known. Oklch does seem to have certain quirks of its own, and may have may have more. While we have not made
+    `oklch-chroma` our default yet, we have exposed the algorithm so users can begin exploring it.
 
 ### Why Not Just Clip?
 

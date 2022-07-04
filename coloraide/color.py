@@ -54,7 +54,6 @@ from .distance.delta_e_ok import DEOK
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
 from .gamut.fit_oklch_chroma import OklchChroma
-from .gamut.fit_css_color_4 import CssColor4
 from .cat import CAT, Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -74,7 +73,7 @@ SUPPORTED_SPACES = (
 )
 
 SUPPORTED_FIT = (
-    LchChroma, OklchChroma, CssColor4
+    LchChroma, OklchChroma
 )
 
 SUPPORTED_CAT = (Bradford, VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16)
