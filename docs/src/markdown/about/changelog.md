@@ -2,6 +2,11 @@
 
 ## 0.19.0
 
+- **BREAK**: The CSS Level 4 Color spec has accepted our proposed changes to the gamut mapping algorithm. With this
+  change, the `oklch-chroma` gamut mapping algorithm is now compliant with the CSS spec, and `css-color-4` is no longer
+  needed. If you were experimenting with `css-color-4`, please use `oklch-chroma` instead. The algorithm is faster and
+  does not have the color banding issue that `css-color-4` had, and it is now exactly the same as the CSS spec.
+
 - **BREAK**: New breaking change. Refactor of `Space` plugins. `Space` plugins are no longer instantiated which cuts
   down on overhead lending to better performance. `BOUNDS` and `CHANNEL_NAMES` attributes were combined into one
   attribute called `CHANNELS` which serves the same purpose as the former attributes. `Space` plugins also no longer
