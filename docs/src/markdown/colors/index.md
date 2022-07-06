@@ -121,12 +121,13 @@ _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
 
 <figure markdown="1">
 
-![sRGB](../images/srgb-linear.png)
+![sRGB](../images/srgb.png)
 
 <figcaption>CIE 1931 xy Chromaticity -- sRGB Linear Chromaticities</figcaption>
 </figure>
 
-The sRGB Linear space is the same as [sRGB](#srgb) *except* that the transfer function is linear-light (there is no gamma-encoding).
+The sRGB Linear space is the same as [sRGB](#srgb) *except* that the transfer function is linear-light (there is no
+gamma-encoding).
 
 _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
 </div>
@@ -234,6 +235,74 @@ _[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
         Color("display-p3", [0, 0, 0], 1).to_string()
         ```
 
+### Display P3 Linear
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `display-p3-linear`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![Display P3](../images/display-p3.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Display P3 Chromaticities</figcaption>
+</figure>
+
+The Linear Display P3 space is the same as [Display P3](#display-p3) *except* that the transfer function is linear-light
+(there is no gamma-encoding).
+
+_[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs**
+    : 
+        Linear Display P3 is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --display-p3-linear`:
+
+        ```css-color
+        color(--display-p3-linear r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("display-p3-linear", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--display-p3-linear r g b / a)` form.
+
+        ```playground
+        Color("display-p3-linear", [0, 0, 0], 1)
+        Color("display-p3-linear", [0, 0, 0], 1).to_string()
+        ```
+
 ### A98 RGB
 
 <div class="info-container" markdown="1">
@@ -305,6 +374,75 @@ _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
         Color("a98-rgb", [0, 0, 0], 1).to_string()
         ```
 
+### A98 RGB Linear
+
+<div class="info-container" markdown="1">
+
+!!! info inline end "Properties"
+
+    **Name:** `a98-rgb-linear`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![A98 RGB](../images/a98-rgb.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Adobe RGB 1998 Chromaticities</figcaption>
+</figure>
+
+The Linear A98 RGB space is the same as [A98 RGB](#a98-rgb) *except* that the transfer function is linear-light (there
+is no gamma-encoding).
+
+_[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+        Linear A98 RGB is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --a98-rgb-linear`:
+
+        ```css-color
+        color(--a98-rgb-linear r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("a98-rgb-linear", [0, 0, 0], 1)
+        ```
+
+    **Output**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--a98-rgb-linear r g b / a)` form.
+
+        ```playground
+        Color("a98-rgb-linear", [0, 0, 0], 1)
+        Color("a98-rgb-linear", [0, 0, 0], 1).to_string()
+        ```
+
 ### REC. 2020
 
 <div class="info-container" markdown="1">
@@ -331,11 +469,10 @@ _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
 <figcaption>CIE 1931 xy Chromaticity -- Rec. 2020 Chromaticities</figcaption>
 </figure>
 
-The Rec. 2020 color space is a very wide gamut RGB color space which is used in 4k and 8k UHDTV. ITU-R Recommendation
-BT.2020, more commonly known by the abbreviations Rec. 2020 or BT.2020, defines various aspects of ultra-high-definition
-television (UHDTV) with standard dynamic range (SDR) and wide color gamut (WCG), including picture resolutions, frame
-rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations, chroma
-subsamplings, and an opto-electronic transfer function.
+ITU-R Recommendation BT.2020, more commonly known by the abbreviations Rec. 2020 or BT.2020, defines various aspects of
+ultra-high-definition television (UHDTV) with standard dynamic range (SDR) and wide color gamut (WCG), including picture
+resolutions, frame rates with progressive scan, bit depths, color primaries, RGB and luma-chroma color representations,
+chroma subsamplings, and an opto-electronic transfer function. The color is used in 4k and 8k UHDTV.
 
 _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 
@@ -377,6 +514,76 @@ _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
         Color("rec2020", [0, 0, 0], 1).to_string()
         ```
 
+### REC. 2020 Linear
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `rec2020-linear`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![Rec. 2020](../images/rec2020.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Rec. 2020 Chromaticities</figcaption>
+</figure>
+
+The Linear Rec. 2020 space is the same as [Rec. 2020](#rec-2020) *except* that the transfer function is linear-light
+(there is no gamma-encoding).
+
+_[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
+
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+
+        Linear Rec. 2020 is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --rec2020-linear`:
+
+        ```css-color
+        color(--rec2020-linear r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("rec2020-linear", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--rec2020-linear r g b / a)` form.
+
+        ```playground
+        Color("rec2020-linear", [0, 0, 0], 1)
+        Color("rec2020-linear", [0, 0, 0], 1).to_string()
+        ```
+
 ### ProPhoto
 
 <div class="info-container" markdown="1">
@@ -407,6 +614,9 @@ The ProPhoto RGB color space, also known as ROMM RGB (Reference Output Medium Me
 space developed by Kodak. It offers an especially large gamut designed for use with photographic output in mind. The
 ProPhoto RGB color space encompasses over 90% of possible surface colors in the [CIE L\*a\*b\*](#cielab) color space,
 and 100% of likely occurring real-world surface colors documented by Pointer in 1980.
+
+_[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
+</div>
 
 ??? abstract "ColorAide Details"
 
@@ -442,8 +652,144 @@ and 100% of likely occurring real-world surface colors documented by Pointer in 
         Color("prophoto-rgb", [0, 0, 0], 1).to_string()
         ```
 
+### ProPhoto Linear
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `prophoto-rgb-linear`
+
+    **White Point:** D50
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![ProPhoto RGB](../images/prophoto-rgb.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities</figcaption>
+</figure>
+
+The Linear ProPhoto space is the same as [ProPhoto](#prophoto) *except* that the transfer function is linear-light
+(there is no gamma-encoding).
+
 _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
 </div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+        Linear ProPhoto is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --prophoto-rgb-linear`:
+
+        ```css-color
+        color(--prophoto-rgb-linear r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("prophoto-rgb-linear", [0, 0, 0], 1)
+        ```
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--prophoto-rgb-linear r g b / a)` form.
+
+        ```playground
+        Color("prophoto-rgb-linear", [0, 0, 0], 1)
+        Color("prophoto-rgb-linear", [0, 0, 0], 1).to_string()
+        ```
+
+### REC. 2100 PQ
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `rec2100pq`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    r    | [0, 1]
+    g    | [0, 1]
+    b    | [0, 1]
+
+<figure markdown="1">
+
+![Rec. 2020](../images/rec2020.png)
+
+<figcaption>CIE 1931 xy Chromaticity -- Rec. 2100 Chromaticities (Same as Rec. 2020)</figcaption>
+</figure>
+
+BT.2100, more commonly known by the abbreviations Rec. 2100 or BT.2100, introduced high-dynamic-range television
+(HDR-TV) by recommending the use of the perceptual quantizer (PQ) or hybrid log–gamma (HLG) transfer functions instead
+of the traditional "gamma" previously used for SDR-TV. Rec. 2100 PQ specifically uses the perceptual quantizer.
+
+The actual gamut of Rec. 2100 uses the same wide color gamut of Rec. 2020, but the color space itself supports an HDR
+range.
+
+_[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2100)_
+
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs:**
+    : 
+
+        Rec. 2100 PQ is not supported via the CSS spec and the parser input and string output only supports the
+        `#!css-color color()` function format using the custom name `#!css-color --rec2100pq`:
+
+        ```css-color
+        color(--rec2100pq r g b / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("rec2100pq", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output will be in the
+        `#!css-color color(--rec2100pq r g b / a)` form.
+
+        ```playground
+        Color("rec2100pq", [0, 0, 0], 1)
+        Color("rec2100pq", [0, 0, 0], 1).to_string()
+        ```
 
 ## Cylindrical sRGB Spaces
 
@@ -913,7 +1259,7 @@ can be represented with other white points as well. CSS actually allows using ei
 
 ![XYZ D65 3D](../images/xyz-d65-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the XYZ D65 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the XYZ D65 color space.</figcaption>
 </figure>
 
 The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
@@ -986,7 +1332,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
 ![XYZ D50 3D](../images/xyz-d50-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the XYZ D50 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the XYZ D50 color space.</figcaption>
 </figure>
 
 XYZ D50 is the same as [XYZ D65](#xyz-d65) except it uses a D50 white point.
@@ -1061,7 +1407,7 @@ also included variants with D65 white points as well.
 
 ![CIELAB D50 3D](../images/lab-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
 </figure>
 
 The CIELAB color space also referred to as L\*a\*b\* is a color space defined by the International Commission on
@@ -1134,7 +1480,7 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
 ![CIELAB D65 3D](../images/lab-d65-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELAB D50 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELAB D50 color space.</figcaption>
 </figure>
 
 CIELAB D65 is the same as [CIELAB](#cielab-d50) except it uses a D65 white point.
@@ -1209,7 +1555,7 @@ D65 white point.
 
 ![CIELCH D50 3D](../images/lch-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH D50 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELCH D50 color space.</figcaption>
 </figure>
 
 The "CIELCH" or "CIEHLC" space is a color space based on [CIELAB](#cielab), which uses the polar coordinates C\*
@@ -1280,7 +1626,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ![CIELCH D65 3D](../images/lch-d65-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH D65 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELCH D65 color space.</figcaption>
 </figure>
 
 CIELCH D65 is the same as [CIELCH](#cielch-d50) except it uses a D65 white point.
@@ -1348,7 +1694,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
 ![Oklab](../images/oklab-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklab color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the Oklab color space.</figcaption>
 </figure>
 
 
@@ -1419,7 +1765,7 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
 ![Oklch](../images/oklch-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Oklch color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the Oklch color space.</figcaption>
 </figure>
 
 
@@ -1483,7 +1829,7 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 
 ![CIELUV 3D](../images/luv-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELUV D65 color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELUV D65 color space.</figcaption>
 </figure>
 
 CIELUV is similar to CIELAB as they were both developed in 1976 as perceptually uniform color spaces, both are derived
@@ -1559,7 +1905,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
 ![CIELCH~uv~](../images/lchuv-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the CIELCH~uv~ color space.</figcaption>
 </figure>
 
 [CIELUV](#cieluv) is not an intuitive space to work with directly and instead is often converted to cylindrical
@@ -1629,7 +1975,7 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
 ![Jzazbz](../images/jzazbz-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the Jzazbz color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the Jzazbz color space.</figcaption>
 </figure>
 
 Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
@@ -1703,7 +2049,7 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 ![JzCzhz](../images/jzczhz-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the JzCzhz color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the JzCzhz color space.</figcaption>
 </figure>
 
 JzCzhz is the cylindrical form of [Jzazbz](#jzazbz).
@@ -1771,7 +2117,7 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 ![ICtCp](../images/ictcp-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the ICtCp color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the ICtCp color space.</figcaption>
 </figure>
 
 ICtCp is a color space format with better perceptual uniformity than [CIELAB](#cielab) and is used as a part of the
@@ -1842,7 +2188,7 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 
 ![DIN99o](../images/din99o-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the DIN99o color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the DIN99o color space.</figcaption>
 </figure>
 
 The DIN99 color space system is a further development of the CIELAB color space system developed by the FNF / FNL 2
@@ -1914,7 +2260,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
 ![DIN99o Lch](../images/lch99o-3d.png)
 
-<figcaption markdown="1">Approximation[^1] of the sRGB gamut represented within the DIN99o Lch color space.</figcaption>
+<figcaption markdown="1">The sRGB gamut represented within the DIN99o Lch color space.</figcaption>
 </figure>
 
 DIN99o Lch is the cylindrical form of [DIN99o](#din99o).
@@ -1957,10 +2303,6 @@ _[Learn about DIN99o Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         Color("lch99o", [0, 0, 0], 1)
         Color("lch99o", [0, 0, 0], 1).to_string()
         ```
-
-[^1]: For the purposes of speed, 3D models are calculated by taking points on the outer shell of the sRGB gamut and
-mapping those points to the color space of interest. While a more accurate model could be made by taking all points into
-account, this approach gives a fairly good approximation of the shape of the sRGB gamut within the targeted color space.
 
 <style>
 .info-container {display: inline-block;}
