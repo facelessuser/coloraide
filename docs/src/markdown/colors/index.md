@@ -1622,8 +1622,8 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
     az   | [-0.5, 0.5]
     bz   | [-0.5, 0.5]
 
-    ^\*^ Space is not physically bound to the range, but represents the originally design limits per the spec and is
-    used to quantify percentage inputs/outputs.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1693,11 +1693,11 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
     Name | Range
     ---- | -----
     jz   | [0, 1]
-    cz   | [0, 1]
+    cz   | [0, 0.5]
     hz   | [0, 360)
 
-    ^\*^ Space is not physically bound to the range, but represents the originally design limits per the spec and is
-    used to quantify percentage inputs/outputs.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1764,8 +1764,8 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
     ct         | [-0.5, 0.5]
     cp         | [-0.5, 0.5]
 
-    ^\*^ Space is not bound to the range but is specified to enclose the full range of BT.2020 and allow for an HDR
-    luminance and is used to quantify percentage inputs/outputs.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
