@@ -21,7 +21,6 @@
   directly. The `in_place` parameter has been removed. To create a new color when performing these actions, simply clone
   the color first: `#!py color.clone().clip()`.
 
-
 - **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
   and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
   number by default instead. Optionally, these forms can force a percentage output with via the `to_string` method when
@@ -32,6 +31,8 @@
 
   Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
 
+- **NEW**: Add new color spaces: `display-p3-linear`, `a98-rgb-linear`, `rec2020-linear`, `prophoto-rgb-linear`, and
+  `rec2100pq`.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.
