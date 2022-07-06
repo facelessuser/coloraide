@@ -124,7 +124,7 @@ def convert(color: 'Color', space: str) -> Tuple[Type['Space'], Vector]:
 
     # Grab the convert for the current space to the desired space
     # Result is cached for quicker future conversions.
-    chain = color._get_convert_chain(color._space, space)
+    chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
 
     # Get coordinates and convert NaN values to 0
     coords = alg.no_nans(color[:-1])
