@@ -68,8 +68,10 @@ def add_rect_color(space, color, x, y, z, c):
     x.append(coords[0])
     y.append(coords[1])
     z.append(coords[2])
-    s = color.to_string(hex=True)
-    c.append(s)
+    if not color.in_gamut():
+        m = max(color[:-1])
+        color.update('srgb', [(i / m if m != 0 else 0) for i in color[:-1]], color[-1])
+    c.append(color.to_string(hex=True))
 
 
 def add_cyl_color(space, color, x, y, z, c):
@@ -91,8 +93,11 @@ def add_cyl_color(space, color, x, y, z, c):
     y.append(chroma * math.cos(math.radians(hue)))
     x.append(lightness)
 
-    s = color.convert('srgb').to_string(hex=True)
-    c.append(s)
+    s = color.convert('srgb')
+    if not color.in_gamut():
+        m = max(s[:-1])
+        s.update('srgb', [(i / m if m != 0 else 0) for i in s[:-1]], s[-1])
+    c.append(s.to_string(hex=True))
 
 
 def render_space(space, gamut, resolution, factor, data, c):

@@ -4,7 +4,7 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
-from ..channels import Channel, FLG_ANGLE, FLG_PERCENT, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_ANGLE
 from typing import Optional, Tuple
 from typing import Dict, Type, TYPE_CHECKING
 
@@ -14,7 +14,6 @@ if TYPE_CHECKING:  # pragma: no cover
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0
 SCALE_PERCENT = 1 / 100.0
-PERCENT_CHANNEL = FLG_PERCENT | FLG_OPT_PERCENT
 
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
@@ -98,7 +97,7 @@ CSS_MATCH = {
         \b(hwb)\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))?
+            {angle}(?:{space}{percent}){{2}}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -109,7 +108,8 @@ CSS_MATCH = {
             \b(lab)\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -120,7 +120,7 @@ CSS_MATCH = {
         \b(lch)\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -131,7 +131,8 @@ CSS_MATCH = {
             \b(oklab)\(\s*
             (?:
                 # Space separated format
-                {percent}{space}{float}{space}{float}(?:{slash}(?:{strict_percent}|{float}))?
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
         )
@@ -142,7 +143,7 @@ CSS_MATCH = {
         \b(oklch)\(\s*
         (?:
             # Space separated format
-            {percent}{space}{float}{space}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -166,24 +167,24 @@ def norm_hex_channel(string: str) -> float:
     return int(string, 16) * RGB_CHANNEL_SCALE
 
 
-def norm_percent_channel(string: str, scale: float = 100) -> float:
+def norm_percent_channel(string: str, scale: float = 100, offset: float = 0.0) -> float:
     """Normalize percent channel."""
 
     if string == 'none':  # pragma: no cover
         return norm_float(string)
     elif string.endswith('%'):
         value = norm_float(string[:-1])
-        return value * scale * 0.01 if scale != 100 else value
+        return (value * scale * 0.01) - offset if scale != 100 else value
     else:  # pragma: no cover
         # Should only occur internally if we are doing something wrong.
         raise ValueError("Unexpected value '{}'".format(string))
 
 
-def norm_color_channel(string: str, scale: float = 1) -> float:
+def norm_color_channel(string: str, scale: float = 1, offset: float = 0.0) -> float:
     """Normalize percent channel."""
 
     if string.endswith('%'):
-        return norm_percent_channel(string, scale)
+        return norm_percent_channel(string, scale, offset)
     else:
         return norm_float(string)
 
@@ -307,9 +308,7 @@ def parse_color(
                 for i, c in enumerate(RE_CHAN_SPLIT.split(split[0]), 0):
                     if c and i < num_channels:
                         channel = properties[i]
-                        # If the channel is a percentage, force it to scale from 0 - 100, not 0 - 1.
-                        scale = channel.high if channel.flags & PERCENT_CHANNEL else 1
-                        channels.append(norm_color_channel(c.lower(), scale))
+                        channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
                     else:
                         # Not the right amount of channels
                         break

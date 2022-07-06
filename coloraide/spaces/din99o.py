@@ -7,6 +7,7 @@ from ..cat import WHITES
 from .lab import Lab
 import math
 from ..types import Vector
+from ..channels import Channel, FLG_MIRROR_PERCENT
 
 KE = 1
 KCH = 1
@@ -96,6 +97,11 @@ class Din99o(Lab):
     NAME = "din99o"
     SERIALIZE = ("--din99o",)
     WHITE = WHITES['2deg']['D65']
+    CHANNELS = (
+        Channel("l", 0.0, 100.0),
+        Channel("a", -55.0, 55.0, flags=FLG_MIRROR_PERCENT),
+        Channel("b", -55.0, 55.0, flags=FLG_MIRROR_PERCENT)
+    )
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

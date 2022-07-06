@@ -20,7 +20,7 @@ If at some time that these assumptions are incorrect, we will be happy to alter 
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES
-from ..channels import Channel, FLG_OPT_PERCENT
+from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
@@ -124,9 +124,9 @@ class Jzazbz(Labish, Space):
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("az", -0.5, 0.5),
-        Channel("bz", -0.5, 0.5)
+        Channel("jz", 0.0, 1.0),
+        Channel("az", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
+        Channel("bz", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": 'jz',

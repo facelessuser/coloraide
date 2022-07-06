@@ -27,7 +27,7 @@ SOFTWARE.
 """
 from ...spaces import Space, Labish
 from ...cat import WHITES
-from ...channels import Channel, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_OPT_PERCENT, FLG_MIRROR_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 
@@ -122,8 +122,8 @@ class Oklab(Labish, Space):
     SERIALIZE = ("--oklab",)
     CHANNELS = (
         Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("a", -0.5, 0.5),
-        Channel("b", -0.5, 0.5)
+        Channel("a", -0.4, 0.4, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT),
+        Channel("b", -0.4, 0.4, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": "l"

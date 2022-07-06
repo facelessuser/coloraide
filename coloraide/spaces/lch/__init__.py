@@ -48,7 +48,7 @@ class Lch(Lchish, Space):
     SERIALIZE = ("--lch",)
     CHANNELS = (
         Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 100.0, limit=(0.0, None)),
+        Channel("c", 0.0, 150.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

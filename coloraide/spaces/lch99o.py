@@ -5,6 +5,7 @@ from .. import util
 import math
 from .. import algebra as alg
 from ..types import Vector
+from ..channels import Channel, FLG_ANGLE
 
 ACHROMATIC_THRESHOLD = 0.0000000002
 
@@ -45,6 +46,11 @@ class Lch99o(Lch):
     NAME = "lch99o"
     SERIALIZE = ("--lch99o",)
     WHITE = WHITES['2deg']['D65']
+    CHANNELS = (
+        Channel("l", 0.0, 100.0),
+        Channel("c", 0.0, 60.0, limit=(0.0, None)),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:

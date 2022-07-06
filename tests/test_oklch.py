@@ -45,77 +45,77 @@ class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):
 
         args = {}
 
-        color = "oklch(20% 0.1 130)"
+        color = "oklch(0.2 0.1 130)"
         lch = Color(color)
         self.assertEqual(color, lch.to_string(**args))
 
-        color = "oklch(20% 0.1 130 / 1)"
+        color = "oklch(0.2 0.1 130 / 1)"
         lch = Color(color)
-        self.assertEqual("oklch(20% 0.1 130)", lch.to_string(**args))
+        self.assertEqual("oklch(0.2 0.1 130)", lch.to_string(**args))
 
-        color = "oklch(20% 0.1 130 / 0.2)"
+        color = "oklch(0.2 0.1 130 / 0.2)"
         lch = Color(color)
         self.assertEqual(color, lch.to_string(**args))
 
     def test_percent(self):
         """Test that percents work properly."""
 
-        args = {}
+        args = {'percent': True}
 
-        color = "oklch(20% 0.1 130 / 100%)"
+        color = "oklch(0.2 0.1 130 / 100%)"
         lch = Color(color)
-        self.assertEqual("oklch(20% 0.1 130)", lch.to_string(**args))
+        self.assertEqual("oklch(20% 25% 130)", lch.to_string(**args))
 
-        color = "oklch(20% 0.1 130 / 20%)"
+        color = "oklch(0.2 0.1 130 / 20%)"
         lch = Color(color)
-        self.assertEqual("oklch(20% 0.1 130 / 0.2)", lch.to_string(**args))
+        self.assertEqual("oklch(20% 25% 130 / 0.2)", lch.to_string(**args))
 
     def test_no_alpha(self):
         """Test no alpha."""
 
         args = {"alpha": False}
 
-        color = "oklch(90% 0.5 270 / 0.5)"
+        color = "oklch(0.9 0.5 270 / 0.5)"
         oklch = Color(color)
-        self.assertEqual("oklch(90% 0.5 270)", oklch.to_string(**args))
+        self.assertEqual("oklch(0.9 0.5 270)", oklch.to_string(**args))
 
     def test_force_alpha(self):
         """Test force alpha."""
 
         args = {"alpha": True}
 
-        color = "oklch(90% 0.5 270 / 100%)"
+        color = "oklch(0.9 0.5 270 / 100%)"
         oklch = Color(color)
-        self.assertEqual("oklch(90% 0.5 270 / 1)", oklch.to_string(**args))
+        self.assertEqual("oklch(0.9 0.5 270 / 1)", oklch.to_string(**args))
 
     def test_precision(self):
         """Test precision."""
 
         color = 'color(--oklch 0.123456 0.123456 0.123456)'
-        self.assertEqual(Color(color).to_string(), 'oklch(12.346% 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'oklch(12.3% 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'oklch(12% 0 0)')
+        self.assertEqual(Color(color).to_string(), 'oklch(0.12346 0.12346 0.12346)')
+        self.assertEqual(Color(color).to_string(precision=3), 'oklch(0.123 0.123 0.123)')
+        self.assertEqual(Color(color).to_string(precision=0), 'oklch(0 0 0)')
         self.assertEqual(
             Color(color).to_string(precision=-1),
-            'oklch(12.3455999999999992411403582082130014896392822265625% 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
+            'oklch(0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
         )
 
     def test_fit(self):
         """Test fit."""
 
         self.assertEqual(
-            Color('oklch(90% 200 270)').to_string(),
-            'oklch(90% 200 270)'
+            Color('oklch(0.9 200 270)').to_string(),
+            'oklch(0.9 200 270)'
         )
 
         self.assertEqual(
             Color('oklch(90% 200 270)').to_string(fit="clip"),
-            'oklch(90% 200 270)'
+            'oklch(0.9 200 270)'
         )
 
         self.assertEqual(
             Color('oklch(90% 200 270)').to_string(fit=False),
-            'oklch(90% 200 270)'
+            'oklch(0.9 200 270)'
         )
 
 

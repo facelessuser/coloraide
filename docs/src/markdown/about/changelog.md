@@ -21,6 +21,17 @@
   directly. The `in_place` parameter has been removed. To create a new color when performing these actions, simply clone
   the color first: `#!py color.clone().clip()`.
 
+
+- **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
+  and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
+  number by default instead. Optionally, these forms can force a percentage output with via the `to_string` method when
+  using the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
+
+  Additionally, CSS color spaces using the `color()` format as an input will translate using these same ranges if the
+  channels are percentages. `hue` will also be respected and treated as 0 - 360 when using a percentage.
+
+  Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
+
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.

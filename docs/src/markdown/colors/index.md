@@ -38,11 +38,13 @@ the range of colors within its gamut can be quite different.
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -109,11 +111,13 @@ _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -173,11 +177,13 @@ _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -240,11 +246,13 @@ _[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -308,11 +316,13 @@ _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -378,11 +388,13 @@ _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 
     **Coordinates:**
 
-    Name | Range
+    Name | Range^\*^
     ---- | -----
     r    | [0, 1]
     g    | [0, 1]
     b    | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 
 <figure markdown="1">
 
@@ -889,13 +901,13 @@ can be represented with other white points as well. CSS actually allows using ei
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    x          | [0.0, 0.95]^\*^
-    y          | [0.0, 1.0]^\*^
-    z          | [0.0, 1.089]^\*^
+    Name       | Range^\*^
+    ---------- | ---------
+    x          | [0.0, 1.0]
+    y          | [0.0, 1.0]
+    z          | [0.0, 1.0]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -962,13 +974,13 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    x          | [0.0, 0.964]^\*^
-    y          | [0.0, 1.0]^\*^
-    z          | [0.0, 0.825]^\*^
+    Name       | Range^\*^
+    ---------- | ---------
+    x          | [0.0, 1.0]
+    y          | [0.0, 1.0]
+    z          | [0.0, 1.0]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1036,13 +1048,14 @@ also included variants with D65 white points as well.
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    a    | [-79.287, 93.55]^\*^
-    b    | [-112.029, 93.388]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    a    | [-125, 125]
+    b    | [-125, 125]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1108,13 +1121,14 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    a    | [-86.183, 98.234]^\*^
-    b    | [-107.86, 94.478]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    a    | [-130, 130]
+    b    | [-130, 130]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1182,13 +1196,14 @@ D65 white point.
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    c    | [0, 131.207]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    c    | [0, 150]
     h    | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1252,13 +1267,14 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    c    | [0.0, 133.808]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    c    | [0, 160]
     h    | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1319,13 +1335,14 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 1]^\*^
-    a    | [-0.234, 0.276]^\*^
-    b    | [-0.312, 0.198]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 1]
+    a    | [-0.4, 0.4]
+    b    | [-0.4, 0.4]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1389,13 +1406,14 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 1]^\*^
-    c    | [0, 0.323]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 1]
+    c    | [0, 0.4]
     h    | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1452,13 +1470,14 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    u    | [-83.067, 175.01]^\*^
-    v    | [-134.11, 107.418]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    u    | [-215, 215]
+    v    | [-215, 215]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1527,13 +1546,14 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    c    | [0, 179.038]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    c    | [0, 220]
     h    | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1596,13 +1616,14 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    jz   | [0, 0.222]^\*^
-    az   | [-0.109, 0.13]^\*^
-    bz   | [-0.186, 0.135]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    jz   | [0, 1]
+    az   | [-0.5, 0.5]
+    bz   | [-0.5, 0.5]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1671,11 +1692,12 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     Name | Range
     ---- | -----
-    jz   | [0, 0.222]^\*^
-    cz   | [0, 0.190]^\*^
+    jz   | [0, 1]
+    cz   | [0, 0.5]
     hz   | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1736,13 +1758,14 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
     **Coordinates:**
 
-    Name       | Range
-    ---------- | -----
-    i          | [0, 0.581]^\*^
-    ct         | [-0.281, 0.277]^\*^
-    cp         | [-0.161, 0.279]^\*^
+    Name       | Range^\*^
+    ---------- | ---------
+    i          | [0, 1]
+    ct         | [-0.5, 0.5]
+    cp         | [-0.5, 0.5]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+    to quantify percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1806,13 +1829,14 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    a    | [-40.09, 45.501]^\*^
-    b    | [-40.47, 44.344]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    a    | [-55, 55]
+    b    | [-55, 55]
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
@@ -1877,13 +1901,14 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
 
     **Coordinates:**
 
-    Name | Range
-    ---- | -----
-    l    | [0, 100]^\*^
-    c    | [0, 51.484]^\*^
+    Name | Range^\*^
+    ---- | ---------
+    l    | [0, 100]
+    c    | [0, 60]
     h    | [0, 360)
 
-    ^\*^ ≈ range in relation to sRGB rounded to 3 decimal places.
+    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    relation to the Display P3 color space.
 
 <figure markdown="1">
 
