@@ -144,16 +144,16 @@ def pq_st2084_eotf(
     return adjusted
 
 
-def xyz_d65_to_absxyzd65(xyzd65: VectorLike) -> Vector:
+def xyz_d65_to_absxyzd65(xyzd65: VectorLike, yw=YW) -> Vector:
     """XYZ D65 to Absolute XYZ D65."""
 
-    return [max(c * YW, 0) for c in xyzd65]
+    return [max(c * yw, 0) for c in xyzd65]
 
 
-def absxyzd65_to_xyz_d65(absxyzd65: VectorLike) -> Vector:
+def absxyzd65_to_xyz_d65(absxyzd65: VectorLike, yw=YW) -> Vector:
     """Absolute XYZ D65 XYZ D65."""
 
-    return [max(c / YW, 0) for c in absxyzd65]
+    return [max(c / yw, 0) for c in absxyzd65]
 
 
 def constrain_hue(hue: float) -> float:

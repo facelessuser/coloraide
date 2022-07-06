@@ -99,8 +99,8 @@ class Din99o(Lab):
     WHITE = WHITES['2deg']['D65']
     CHANNELS = (
         Channel("l", 0.0, 100.0),
-        Channel("a", -130.0, 130.0, flags=FLG_MIRROR_PERCENT),
-        Channel("b", -130.0, 130.0, flags=FLG_MIRROR_PERCENT)
+        Channel("a", -55.0, 55.0, flags=FLG_MIRROR_PERCENT),
+        Channel("b", -55.0, 55.0, flags=FLG_MIRROR_PERCENT)
     )
 
     @classmethod
