@@ -5,7 +5,7 @@ from . import distance
 from . import convert
 from . import gamut
 from . import compositing
-from . import interpolate
+from . import interpolate as interp
 from . import filters
 from . import harmonies
 from . import util
@@ -719,9 +719,25 @@ class Color(metaclass=ColorMeta):
                 this[name] = alg.NaN
         return this
 
+    @util.omnimethod
+    def steps(
+        cls,  # noqa: N805
+        colors: Union[Union[ColorInput, interp.Piecewise], Sequence[Union[ColorInput, interp.Piecewise]]],
+        *,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: Optional[str] = None,
+        **interpolate_args: Any
+    ) -> List['Color']:
+        """Create a set of discrete steps from a list of colors (`classmethod`)."""
+
+        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
+
+    @steps.instancemethod  # type: ignore[no-redef]
     def steps(
         self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        color: Union[Union[ColorInput, interp.Piecewise], Sequence[Union[ColorInput, interp.Piecewise]]],
         *,
         steps: int = 2,
         max_steps: int = 1000,
@@ -730,7 +746,7 @@ class Color(metaclass=ColorMeta):
         **interpolate_args: Any
     ) -> List['Color']:
         """
-        Discrete steps.
+        Create a list of discrete steps from the current color and one or more additional colors.
 
         This is built upon the interpolate function, and will return a list of
         colors containing a minimum of colors equal to `steps` or steps as specified
@@ -743,6 +759,24 @@ class Color(metaclass=ColorMeta):
 
         return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
 
+    @util.omnimethod
+    def mix(
+        cls,  # noqa: N805
+        color1: ColorInput,
+        color2: ColorInput,
+        percent: float = util.DEF_MIX,
+        **interpolate_args: Any
+    ) -> 'Color':
+        """
+        Mix colors using interpolation.
+
+        This uses the interpolate method to find the center point between the two colors.
+        The basic mixing logic is outlined in the CSS level 5 draft.
+        """
+
+        return cls.interpolate([color1, color2], **interpolate_args)(percent)
+
+    @mix.instancemethod  # type: ignore[no-redef]
     def mix(
         self,
         color: ColorInput,
@@ -758,14 +792,38 @@ class Color(metaclass=ColorMeta):
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
-            raise TypeError("Unexpected type '{}'".format(type(color)))
         mixed = self.interpolate(color, **interpolate_args)(percent)
         return self.mutate(mixed) if in_place else mixed
 
+    @util.omnimethod
+    def interpolate(
+        cls,  # noqa: N805
+        colors: Sequence[Union[ColorInput, interp.Piecewise]],
+        **interpolate_args: Any
+    ) -> interp.Interpolator:
+        """Return an interpolation function (`classmethod`)."""
+
+        if len(colors) < 2:
+            raise ValueError('Interpolation requires at least two or more colors')
+
+        color1 = colors[0]
+        if isinstance(color1, interp.Piecewise):
+            if color1.stop is not None:
+                interpolate_args['stop'] = color1.stop
+            color1 = color1.color
+
+        return cast(
+            interp.Interpolator,
+            (color1 if cls._is_this_color(color1) else cls(color1)).interpolate(
+                colors[1:],
+                **interpolate_args
+            )
+        )
+
+    @interpolate.instancemethod  # type: ignore[no-redef]
     def interpolate(
         self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        color: Union[Union[ColorInput, interp.Piecewise], Sequence[Union[ColorInput, interp.Piecewise]]],
         *,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
@@ -773,7 +831,7 @@ class Color(metaclass=ColorMeta):
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True
-    ) -> interpolate.Interpolator:
+    ) -> interp.Interpolator:
         """
         Return an interpolation function.
 
@@ -795,16 +853,16 @@ class Color(metaclass=ColorMeta):
         # A piecewise object was provided, so treat it as such,
         # or we've changed the stop of the base color, so run it through piecewise.
         if (
-            isinstance(color, interpolate.Piecewise) or
+            isinstance(color, interp.Piecewise) or
             (stop != 0 and (isinstance(color, (str, Mapping)) or self._is_color(color)))
         ):
-            color = cast(Sequence[Union['Color', str, Mapping[str, Any], interpolate.Piecewise]], [color])
+            color = cast(Sequence[Union['Color', str, Mapping[str, Any], interp.Piecewise]], [color])
 
         if not isinstance(color, str) and isinstance(color, Sequence):
             # We have a sequence, so use piecewise interpolation
             colors = list(color)
-            colors.insert(0, interpolate.Piecewise(self, stop=stop))
-            return interpolate.color_piecewise_lerp(
+            colors.insert(0, interp.Piecewise(self, stop=stop))
+            return interp.color_piecewise_lerp(
                 colors,
                 space,
                 out_space,
@@ -814,7 +872,7 @@ class Color(metaclass=ColorMeta):
             )
         else:
             # We have a sequence, so use piecewise interpolation
-            return interpolate.color_lerp(
+            return interp.color_lerp(
                 self,
                 color,
                 space,
@@ -847,6 +905,28 @@ class Color(metaclass=ColorMeta):
 
         return harmonies.harmonize(self, name, space)
 
+    @util.omnimethod
+    def compose(
+        cls,  # noqa: N805
+        source: ColorInput,
+        backdrop: Union[ColorInput, Sequence[ColorInput]],
+        *,
+        blend: Union[str, bool] = True,
+        operator: Union[str, bool] = True,
+        space: Optional[str] = None,
+        out_space: Optional[str] = None,
+    ) -> 'Color':
+        """Blend colors using the specified blend mode (`classmethod`)."""
+
+        return (source if cls._is_this_color(source) else cls(source)).compose(
+            backdrop,
+            blend=blend,
+            operator=operator,
+            space=space,
+            out_space=out_space
+        )
+
+    @compose.instancemethod  # type: ignore[no-redef]
     def compose(
         self,
         backdrop: Union[ColorInput, Sequence[ColorInput]],
@@ -872,6 +952,20 @@ class Color(metaclass=ColorMeta):
         color.convert(out_space, in_place=True)
         return self.mutate(color) if in_place else color
 
+    @util.omnimethod
+    def delta_e(
+        cls,  # noqa: N805
+        color1: ColorInput,
+        color2: ColorInput,
+        *,
+        method: Optional[str] = None,
+        **kwargs: Any
+    ) -> float:
+        """Delta E distance."""
+
+        return (color1 if cls._is_this_color(color1) else cls(color1)).delta_e(color2, method=method, **kwargs)
+
+    @delta_e.instancemethod  # type: ignore[no-redef]
     def delta_e(
         self,
         color: ColorInput,
@@ -890,11 +984,38 @@ class Color(metaclass=ColorMeta):
         except KeyError:
             raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
 
+    @util.omnimethod
+    def distance(
+        cls,  # noqa: N805
+        color1: ColorInput,
+        color2: ColorInput,
+        *,
+        space: str = "lab"
+    ) -> float:
+        """Delta."""
+
+        return (color1 if cls._is_this_color(color1) else cls(color1)).distance(color2, space=space)
+
+    @distance.instancemethod  # type: ignore[no-redef]
     def distance(self, color: ColorInput, *, space: str = "lab") -> float:
         """Delta."""
 
         return distance.distance_euclidean(self, self._handle_color_input(color), space=space)
 
+    @util.omnimethod
+    def closest(
+        cls,  # noqa: N805
+        target: ColorInput,
+        colors: Sequence[ColorInput],
+        *,
+        method: Optional[str] = None,
+        **kwargs: Any
+    ) -> 'Color':
+        """Find the closest color to the current base color."""
+
+        return (target if cls._is_this_color(target) else cls(target)).closest(colors, method=method, **kwargs)
+
+    @closest.instancemethod  # type: ignore[no-redef]
     def closest(
         self,
         colors: Sequence[ColorInput],
@@ -911,6 +1032,17 @@ class Color(metaclass=ColorMeta):
 
         return self.convert("xyz-d65")['y']
 
+    @util.omnimethod
+    def contrast(
+        cls,  # noqa: N805
+        color1: ColorInput,
+        color2: ColorInput
+    ) -> float:
+        """Compare the contrast ratio of this color and the provided color."""
+
+        return (color1 if cls._is_this_color(color1) else cls(color1)).contrast(color2)
+
+    @contrast.instancemethod  # type: ignore[no-redef]
     def contrast(self, color: ColorInput) -> float:
         """Compare the contrast ratio of this color and the provided color."""
 

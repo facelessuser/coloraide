@@ -72,10 +72,11 @@ class Monochromatic(Harmony):
         dw = w.delta_e(color0, method=cls.DELTA_E)
         steps_w = int(alg.round_half_up((dw / (db + dw)) * cls.RANGE))
         steps_b = cls.RANGE - steps_w
+        left = []  # type: List['Color']
+        right = []  # List['Color']
 
         # Very close to black or is black, no need to interpolate from black to current color
         if steps_b <= 1:
-            left = []
             if steps_b == 1:
                 left.extend(b.steps(color, steps=steps_b, space=space, out_space=orig_space))
             steps = min(cls.RANGE - (1 + steps_b), steps_w)
@@ -83,7 +84,6 @@ class Monochromatic(Harmony):
 
         # Very close to white or is white, no need to interpolate from current color to white
         elif steps_w <= 1:
-            right = []
             if steps_w == 1:
                 right.extend(color0.steps(w, steps=steps_w, space=space, out_space=orig_space))
             steps = min(cls.RANGE - (1 + steps_w), steps_b)

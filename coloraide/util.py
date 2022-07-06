@@ -4,7 +4,9 @@ import warnings
 from functools import wraps
 from . import algebra as alg
 from .types import Vector, VectorLike
-from typing import Any, Callable
+from typing import Any, Callable, TypeVar, Generic, Optional, cast
+
+_T = TypeVar("_T")
 
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
@@ -221,3 +223,48 @@ def warn_deprecated(message: str, stacklevel: int = 2) -> None:  # pragma: no co
         category=DeprecationWarning,
         stacklevel=stacklevel
     )
+
+
+class omnimethod(Generic[_T]):
+    """
+    Declare methods that can be both a `classmethod` and an `instancemethod`.
+
+    Signatures can be completely different.
+
+    ```
+    @omnimethod
+    def add(cls, param1, param2):
+        return param1 + param2
+
+    @a.instancemethod
+    def add(self, param):
+        return self + param
+    ```
+    """
+
+    def __init__(
+        self, class_func: Callable[..., _T],
+        instance_func: Optional[Callable[..., _T]] = None,
+        doc: Optional[str] = None
+    ) -> None:
+        """Initialize."""
+
+        self.class_func = class_func
+        self.instance_func = instance_func
+        self.__doc__ = doc or class_func.__doc__
+        self.__isabstractmethod__ = bool(getattr(class_func, '__isabstractmethod__', False))
+
+    def instancemethod(self, instance_func: Callable[..., _T]) -> 'omnimethod[_T]':
+        """Get the instance method."""
+
+        return type(self)(self.class_func, instance_func, self.__doc__)
+
+    def __get__(self, instance: Any, owner: Any) -> Callable[..., _T]:
+        """Get the method."""
+
+        if instance is None or self.instance_func is None:
+            # Must be a `classmethod`
+            return cast(Callable[..., _T], self.class_func.__get__(owner, None))
+
+        # An `instancemethod`
+        return cast(Callable[..., _T], self.instance_func.__get__(instance, owner))
