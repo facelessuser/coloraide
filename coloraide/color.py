@@ -24,9 +24,14 @@ from .spaces.lch.css import Lch
 from .spaces.lab_d65 import LabD65
 from .spaces.lch_d65 import LchD65
 from .spaces.display_p3 import DisplayP3
+from .spaces.display_p3_linear import DisplayP3Linear
 from .spaces.a98_rgb import A98RGB
+from .spaces.a98_rgb_linear import A98RGBLinear
 from .spaces.prophoto_rgb import ProPhotoRGB
+from .spaces.prophoto_rgb_linear import ProPhotoRGBLinear
 from .spaces.rec2020 import Rec2020
+from .spaces.rec2020_linear import Rec2020Linear
+from .spaces.rec2100pq import Rec2100PQ
 from .spaces.xyz_d65 import XYZD65
 from .spaces.xyz_d50 import XYZD50
 from .spaces.oklab.css import Oklab
@@ -66,10 +71,11 @@ SUPPORTED_DE = (
 )
 
 SUPPORTED_SPACES = (
-    HSL, HWB, Lab, Lch, LabD65, LchD65, SRGB, SRGBLinear, HSV,
-    DisplayP3, A98RGB, ProPhotoRGB, Rec2020, XYZD65, XYZD50,
-    Oklab, Oklch, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o, Luv, Lchuv,
-    Okhsl, Okhsv, HSLuv
+    XYZD65, XYZD50, SRGB, SRGBLinear, DisplayP3, DisplayP3Linear,
+    Oklab, Oklch, Lab, Lch, LabD65, LchD65, HSV, HSL, HWB, Rec2020, Rec2020Linear,
+    A98RGB, A98RGBLinear, ProPhotoRGB, ProPhotoRGBLinear,
+    Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o,
+    Luv, Lchuv, Okhsl, Okhsv, HSLuv
 )
 
 SUPPORTED_FIT = (
