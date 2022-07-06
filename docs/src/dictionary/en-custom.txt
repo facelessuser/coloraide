@@ -54,6 +54,7 @@ Fairchild
 Florian
 Formatter
 HDR
+HLG
 HSB
 HSL
 HSL

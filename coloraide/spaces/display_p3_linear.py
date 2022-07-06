@@ -1,4 +1,4 @@
-"""Display-p3 color class."""
+"""Linear Display-p3 color class."""
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
@@ -35,7 +35,7 @@ def xyz_to_lin_p3(xyz: Vector) -> Vector:
 
 
 class DisplayP3Linear(SRGB):
-    """Display-p3 class."""
+    """Linear Display-p3 class."""
 
     BASE = "xyz-d65"
     NAME = "display-p3-linear"
@@ -44,12 +44,12 @@ class DisplayP3Linear(SRGB):
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:
-        """To XYZ from Display P3."""
+        """To XYZ from Linear Display P3."""
 
         return lin_p3_to_xyz(coords)
 
     @classmethod
     def from_base(cls, coords: Vector) -> Vector:
-        """From XYZ to Display P3."""
+        """From XYZ to Linear Display P3."""
 
         return xyz_to_lin_p3(coords)

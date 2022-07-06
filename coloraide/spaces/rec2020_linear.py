@@ -1,4 +1,4 @@
-"""Rec 2020 color class."""
+"""Linear Rec 2020 color class."""
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
@@ -39,7 +39,7 @@ def xyz_to_lin_2020(xyz: Vector) -> Vector:
 
 
 class Rec2020Linear(SRGB):
-    """Rec 2020 linear class."""
+    """Linear Rec 2020 class."""
 
     BASE = "xyz-d65"
     NAME = "rec2020-linear"
@@ -48,12 +48,12 @@ class Rec2020Linear(SRGB):
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:
-        """To XYZ from Rec 2020."""
+        """To XYZ from Linear Rec 2020."""
 
         return lin_2020_to_xyz(coords)
 
     @classmethod
     def from_base(cls, coords: Vector) -> Vector:
-        """From XYZ to Rec 2020."""
+        """From XYZ to Linear Rec 2020."""
 
         return xyz_to_lin_2020(coords)

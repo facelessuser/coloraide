@@ -1,4 +1,4 @@
-"""Pro Photo RGB color class."""
+"""Linear Pro Photo RGB color class."""
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
@@ -35,7 +35,7 @@ def xyz_to_lin_prophoto(xyz: Vector) -> Vector:
 
 
 class ProPhotoRGBLinear(SRGB):
-    """Pro Photo RGB class."""
+    """Linear Pro Photo RGB class."""
 
     BASE = "xyz-d50"
     NAME = "prophoto-rgb-linear"
@@ -44,12 +44,12 @@ class ProPhotoRGBLinear(SRGB):
 
     @classmethod
     def to_base(cls, coords: Vector) -> Vector:
-        """To XYZ from Pro Photo RGB."""
+        """To XYZ from Linear Pro Photo RGB."""
 
         return lin_prophoto_to_xyz(coords)
 
     @classmethod
     def from_base(cls, coords: Vector) -> Vector:
-        """From XYZ to Pro Photo RGB."""
+        """From XYZ to Linear Pro Photo RGB."""
 
         return xyz_to_lin_prophoto(coords)

@@ -1,4 +1,4 @@
-"""A98 RGB color class."""
+"""Linear A98 RGB color class."""
 from ..cat import WHITES
 from .srgb import SRGB
 from .. import algebra as alg
@@ -37,7 +37,7 @@ def xyz_to_lin_a98rgb(xyz: Vector) -> Vector:
 
 
 class A98RGBLinear(SRGB):
-    """A98 RGB linear class."""
+    """Linear A98 RGB class."""
 
     BASE = "xyz-d65"
     NAME = "a98-rgb-linear"
