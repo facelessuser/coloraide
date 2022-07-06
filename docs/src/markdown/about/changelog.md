@@ -31,6 +31,8 @@
 
   Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
 
+- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
+  access.
 - **NEW**: Add new color spaces: `display-p3-linear`, `a98-rgb-linear`, `rec2020-linear`, `prophoto-rgb-linear`, and
   `rec2100pq`.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection

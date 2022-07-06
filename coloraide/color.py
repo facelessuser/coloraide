@@ -107,17 +107,6 @@ These changes were made in an effort to remove unnecessary overhead on every cla
 attribute get/set operation.
 """
 
-WARN_DE = """
-Use of delta_e_<method> is deprecated. Users should use delta_e(color, method=name)
-instead.
-
-Please consider updating usage to adhere to this guidance as this functionality will be
-removed at some time befor the 1.0 release.
-
-These changes were made in an effort to remove unnecessary overhead on every class
-attribute get/set operation.
-"""
-
 
 class ColorMatch:
     """Color match object."""
@@ -968,52 +957,6 @@ class Color(metaclass=ColorMeta):
         """
 
         return self._coords[:-1]
-
-    def __getattr__(self, name: str) -> Any:  # pragma: no cover
-        """Get attribute."""
-
-        sc = super()
-
-        # Skip private/protected names
-        if not name.startswith('_'):
-            # Try color space properties
-            try:
-                value = self[name]
-                util.warn_deprecated(WARN_COORDS, 3)
-                return value
-            except ValueError:
-                pass
-
-            # Try delta E methods
-            if name.startswith('delta_e_'):
-                de = name[8:]
-                if de in sc.__getattribute__('DE_MAP'):
-                    util.warn_deprecated(WARN_DE, 3)
-                    return functools.partial(sc.__getattribute__('delta_e'), method=de)
-
-        # Do the Color class methods
-        sc.__getattribute__(name)
-
-    def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
-        """Set attribute."""
-
-        index = None
-        sc = super()
-
-        if not name.startswith('_'):
-            try:
-                # See if we need to set the space specific channel attributes.
-                index = sc.__getattribute__('_space').get_channel_index(name)
-                util.warn_deprecated(WARN_COORDS, 3)
-            except ValueError:  # pragma: no cover
-                pass
-
-            if index is not None:
-                self[index] = value
-                return
-
-        # Set all attributes on the Color class.
-        sc.__setattr__(name, value)
 
 
 Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
