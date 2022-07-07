@@ -789,3 +789,38 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(len(colors) > 5)
         colors = Color('red').steps('blue', space="srgb", max_delta_e=10, max_steps=5)
         self.assertTrue(len(colors) == 5)
+
+    def test_omnimethod_interpolate(self):
+        """Test the interpolate `omnimethod`."""
+
+        self.assertEqual(
+            Color('red').interpolate('blue')(0.3),
+            Color.interpolate(['red', 'blue'])(0.3)
+        )
+
+    def test_omnimethod_steps(self):
+        """Test the steps `omnimethod`."""
+
+        self.assertEqual(
+            Color('red').steps('blue', steps=5),
+            Color.steps(['red', 'blue'], steps=5)
+        )
+
+    def test_omnimethod_mix(self):
+        """Test the mix `omnimethod`."""
+
+        self.assertEqual(
+            Color('red').mix('blue', 0.3),
+            Color.mix('red', 'blue', 0.3)
+        )
+
+    def test_omnimethod_not_enough_colors(self):
+        """Test the mix `omnimethod`."""
+
+        with self.assertRaises(ValueError):
+            Color.interpolate([])
+
+    def test_omnimethod_interpolation_stop(self):
+        """Test that we can set a stop to the first color with Piecewise objects."""
+
+        Color.interpolate([Piecewise('red', 0.6), 'blue'], space="srgb")(0.5), Color('red')

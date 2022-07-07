@@ -730,7 +730,7 @@ class Color(metaclass=ColorMeta):
         delta_e: Optional[str] = None,
         **interpolate_args: Any
     ) -> List['Color']:
-        """Create a set of discrete steps from a list of colors (`classmethod`)."""
+        """Create a set of discrete steps from a list of colors."""
 
         return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
 
@@ -768,7 +768,7 @@ class Color(metaclass=ColorMeta):
         **interpolate_args: Any
     ) -> 'Color':
         """
-        Mix colors using interpolation.
+        Mix the two provided colors using interpolation.
 
         This uses the interpolate method to find the center point between the two colors.
         The basic mixing logic is outlined in the CSS level 5 draft.
@@ -786,7 +786,7 @@ class Color(metaclass=ColorMeta):
         **interpolate_args: Any
     ) -> 'Color':
         """
-        Mix colors using interpolation.
+        Mix the current color with the provided color using interpolation.
 
         This uses the interpolate method to find the center point between the two colors.
         The basic mixing logic is outlined in the CSS level 5 draft.
@@ -799,24 +799,35 @@ class Color(metaclass=ColorMeta):
     def interpolate(
         cls,  # noqa: N805
         colors: Sequence[Union[ColorInput, interp.Piecewise]],
-        **interpolate_args: Any
+        *,
+        space: Optional[str] = None,
+        out_space: Optional[str] = None,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
+        hue: str = util.DEF_HUE_ADJ,
+        premultiplied: bool = True
     ) -> interp.Interpolator:
-        """Return an interpolation function (`classmethod`)."""
+        """Return an interpolation function that spans the list of colors."""
 
-        if len(colors) < 2:
+        if not colors:
             raise ValueError('Interpolation requires at least two or more colors')
 
         color1 = colors[0]
+        stop = 0
         if isinstance(color1, interp.Piecewise):
             if color1.stop is not None:
-                interpolate_args['stop'] = color1.stop
+                stop = color1.stop
             color1 = color1.color
 
         return cast(
             interp.Interpolator,
             (color1 if cls._is_this_color(color1) else cls(color1)).interpolate(
                 colors[1:],
-                **interpolate_args
+                space=space,
+                out_space=out_space,
+                stop=stop,
+                progress=progress,
+                hue=hue,
+                premultiplied=premultiplied,
             )
         )
 
@@ -908,18 +919,27 @@ class Color(metaclass=ColorMeta):
     @util.omnimethod
     def compose(
         cls,  # noqa: N805
-        source: ColorInput,
-        backdrop: Union[ColorInput, Sequence[ColorInput]],
+        colors: Sequence[ColorInput],
         *,
         blend: Union[str, bool] = True,
         operator: Union[str, bool] = True,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
     ) -> 'Color':
-        """Blend colors using the specified blend mode (`classmethod`)."""
+        """
+        Apply compositing to a sequence of colors using the specified blend mode and compositing operator.
 
+        Compositing treats the list of colors as a stack with the leftmost color as the top. Compositing
+        is applied from right to left with the rightmost as the backdrop and the left adjacent color as
+        the source.
+        """
+
+        if not colors:
+            raise ValueError('Compositing cannot be applied to an empty sequence')
+
+        source = colors[0]
         return (source if cls._is_this_color(source) else cls(source)).compose(
-            backdrop,
+            colors[1:],
             blend=blend,
             operator=operator,
             space=space,
@@ -937,7 +957,12 @@ class Color(metaclass=ColorMeta):
         out_space: Optional[str] = None,
         in_place: bool = False
     ) -> 'Color':
-        """Blend colors using the specified blend mode."""
+        """
+        Apply compositing using the current color as the source and a color or colors as the backdrop.
+
+        Compositing is applied from right to left with the rightmost as the backdrop and the left adjacent
+        color as the source. The current color is on the top of the stack and is applied on top at the end.
+        """
 
         if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
             bcolor = [self._handle_color_input(c) for c in backdrop]
@@ -961,7 +986,7 @@ class Color(metaclass=ColorMeta):
         method: Optional[str] = None,
         **kwargs: Any
     ) -> float:
-        """Delta E distance."""
+        """Apply Delta E distancing to the given two colors using the specified Delta E method."""
 
         return (color1 if cls._is_this_color(color1) else cls(color1)).delta_e(color2, method=method, **kwargs)
 
@@ -973,7 +998,11 @@ class Color(metaclass=ColorMeta):
         method: Optional[str] = None,
         **kwargs: Any
     ) -> float:
-        """Delta E distance."""
+        """
+        Apply Delta E distancing to the given two colors using the specified Delta E method.
+
+        Current color is applied as the first color.
+        """
 
         color = self._handle_color_input(color)
         if method is None:
@@ -992,13 +1021,17 @@ class Color(metaclass=ColorMeta):
         *,
         space: str = "lab"
     ) -> float:
-        """Delta."""
+        """Apply Euclidean distance to the given two colors using the supplied space as the working color space."""
 
         return (color1 if cls._is_this_color(color1) else cls(color1)).distance(color2, space=space)
 
     @distance.instancemethod  # type: ignore[no-redef]
     def distance(self, color: ColorInput, *, space: str = "lab") -> float:
-        """Delta."""
+        """
+        Apply Euclidean distance to the given two colors using the supplied space as the working color space.
+
+        Current color is applied as the first color.
+        """
 
         return distance.distance_euclidean(self, self._handle_color_input(color), space=space)
 
@@ -1011,7 +1044,7 @@ class Color(metaclass=ColorMeta):
         method: Optional[str] = None,
         **kwargs: Any
     ) -> 'Color':
-        """Find the closest color to the current base color."""
+        """Find the closest color to the provided target color."""
 
         return (target if cls._is_this_color(target) else cls(target)).closest(colors, method=method, **kwargs)
 

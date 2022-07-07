@@ -507,6 +507,22 @@ class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color('red').delta_e('orange', method="hyab", space="lch")
 
+    def test_omnimethod_delta_e(self):
+        """Test delta e `omnimethod`."""
+
+        self.assertEqual(
+            Color('red').delta_e('blue', method='2000'),
+            Color.delta_e('red', 'blue', method='2000')
+        )
+
+    def test_omnimethod_distance(self):
+        """Test distance `omnimethod`."""
+
+        self.assertEqual(
+            Color('red').distance('blue'),
+            Color.distance('red', 'blue')
+        )
+
 
 class TestClosest(util.ColorAsserts, unittest.TestCase):
     """Test closest implementation."""
@@ -544,3 +560,11 @@ class TestClosest(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('blue', method='bad')
+
+    def test_omnimethod(self):
+        """Test the `omnimethod`."""
+
+        self.assertEqual(
+            Color('aqua').closest(['pink', 'green', 'blue', 'orange', 'purple', 'maroon'], method='2000'),
+            Color.closest('aqua', ['pink', 'green', 'blue', 'orange', 'purple', 'maroon'], method='2000')
+        )

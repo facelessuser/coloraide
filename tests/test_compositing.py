@@ -136,3 +136,17 @@ class TestCompositing(util.ColorAsserts, unittest.TestCase):
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
         self.assertEqual(c1.compose(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+
+    def test_omnimethod(self):
+        """Test `omnimethod`."""
+
+        self.assertEqual(
+            Color('color(srgb 0 0 1 / 0.5)').compose(['color(srgb 0 1 0 / 0.25)', 'color(srgb 1 0 0 / 1)']),
+            Color.compose(['color(srgb 0 0 1 / 0.5)', 'color(srgb 0 1 0 / 0.25)', 'color(srgb 1 0 0 / 1)'])
+        )
+
+    def test_omnimethod_not_enough_colors(self):
+        """Test `omnimethod` with too few colors."""
+
+        with self.assertRaises(ValueError):
+            Color.compose([])

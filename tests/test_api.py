@@ -354,6 +354,14 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(Color('white').contrast('blue'), 8.59301)
 
+    def test_omnimethod_contrast(self):
+        """Test `omnimethod` contrast."""
+
+        self.assertEqual(
+            Color('white').contrast('blue'),
+            Color.contrast('white', 'blue')
+        )
+
     def test_repr(self):
         """Test string representation."""
 
