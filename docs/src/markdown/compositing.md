@@ -81,6 +81,18 @@ very top.
     c1.compose([c2, c3], blend='multiply', space="srgb")
     ```
 
+In case it is found to be less awkward, multiple colors can be composited together using the Color object's class
+method. The logic is the same, and the colors are evaluated the same way, from right to left, but all the colors
+can be sent through via a single list.
+
+```playground
+c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c3 = Color('#f5d311')
+c1, c2, c3
+Color.compose([c1, c2, c3], blend='multiply', space="display-p3")
+```
+
 Lastly, if for any reason, it is desired to compose with blending disabled (e.g. just run alpha compositing), then you
 can simply set `blend` to `#!py3 False`.
 
@@ -178,7 +190,7 @@ calculate the center color where all three layers overlap.
     c3 = Color('#f5d311').set('alpha', 0.5)
     bg = Color('white')
     c1, c2, c3, bg
-    c1.compose([c2, c3, bg], blend='normal', space="display-p3")
+    Color.compose([c1, c2, c3, bg], blend='normal', space="display-p3")
     ```
 
 === "sRGB"
@@ -188,7 +200,7 @@ calculate the center color where all three layers overlap.
     c3 = Color('#f5d311').set('alpha', 0.5)
     bg = Color('white')
     c1, c2, c3, bg
-    c1.compose([c2, c3, bg], blend='normal', space="srgb")
+    Color.compose([c1, c2, c3, bg], blend='normal', space="srgb")
     ```
 
 Lastly, if for any reason, it is desired to run compose with alpha compositing disabled (e.g. just run blending),
@@ -234,7 +246,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 
     r1, r2, r3
 
-    c1.compose([c2, cw3], blend='multiply', space='display-p3')
+    Color.compose([c1, c2, cw3], blend='multiply', space='display-p3')
     ```
 
 === "sRGB"
@@ -252,7 +264,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 
     r1, r2, r3
 
-    c1.compose([c2, cw3], blend='multiply', space='srgb')
+    Color.compose([c1, c2, cw3], blend='multiply', space='srgb')
     ```
 
 Results may vary depending on the browser, but we can see (ignoring rounding differences) that the colors match up. This

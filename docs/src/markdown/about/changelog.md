@@ -20,6 +20,8 @@
 - **BREAK**: `Color`'s `fit` and `clip` methods now perform the operation in place, modifying the current color
   directly. The `in_place` parameter has been removed. To create a new color when performing these actions, simply clone
   the color first: `#!py color.clone().clip()`.
+- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
+  access.
 
 - **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
   and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
@@ -31,8 +33,8 @@
 
   Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
 
-- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
-  access.
+- **NEW**: Added class method variants of `steps`, `interpolate`, `mix`, `compose`, `contrast`, `distance`,
+  and `delta_e`.
 - **NEW**: Add new color spaces: `display-p3-linear`, `a98-rgb-linear`, `rec2020-linear`, `prophoto-rgb-linear`, and
   `rec2100pq`.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection

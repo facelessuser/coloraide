@@ -178,7 +178,7 @@ Return
 : 
     Returns a `ColorMatch` object.
 
-## `Color.new` {#new}
+## `color.new` {#new}
 
 ```py3
 def new(
@@ -210,7 +210,7 @@ Return
 : 
     Returns a [`Color`](#color) object.
 
-## `Color.clone` {#clone}
+## `color.clone` {#clone}
 
 ```py3
 def clone(
@@ -227,7 +227,7 @@ Return
     Returns a [`Color`](#color) object.
 
 
-## `Color.update` {#update}
+## `color.update` {#update}
 
 ```py3
 def update(
@@ -261,7 +261,7 @@ Return
 : 
     Returns a reference to the current `Color` object.
 
-## `Color.mutate` {#mutate}
+## `color.mutate` {#mutate}
 
 
 ```py3
@@ -294,7 +294,7 @@ Return
 : 
     Returns a reference to the current [`Color`](#color) object.
 
-## `Color.convert` {#convert}
+## `color.convert` {#convert}
 
 ```py3
 def convert(
@@ -324,7 +324,7 @@ Return
     Returns a reference to the converted [`Color`](#color) object. If `in_place` is `True`, the return will be a
     reference to the current [`Color`](#color) object.
 
-## `Color.space` {#space}
+## `color.space` {#space}
 
 ```py3
 def space(
@@ -340,7 +340,7 @@ Return
 : 
     Returns a string with the name of the current color space.
 
-## `Color.normalize` {#normalize}
+## `color.normalize` {#normalize}
 
 ```py3
 def to_dict(
@@ -358,7 +358,7 @@ Return
 : 
     Returns a reference to the current [`Color`](#color) object after normalizing the channels for undefined hues.
 
-## `Color.to_dict` {#to_dict}
+## `color.to_dict` {#to_dict}
 
 ```py3
 def to_dict(
@@ -375,7 +375,7 @@ Return
 : 
     A dictionary containing the color space name, the channel name with their respective values.
 
-## `Color.to_string` {#to_string}
+## `color.to_string` {#to_string}
 
 ```py3
 def to_string(
@@ -419,7 +419,7 @@ Return
 : 
     Returns a string representation of the current color.
 
-## `Color.luminance` {#luminance}
+## `color.luminance` {#luminance}
 
 ```py3
 def luminance(
@@ -436,7 +436,33 @@ Return
 : 
     Returns an float indicating the relative luminance.
 
-## `Color.contrast`
+## `Color.contrast` {#color-contrast}
+
+```py3
+@classmethod
+def contrast(
+    cls,
+    color1,
+    color2
+):
+```
+
+Description
+: 
+    Get the contrast ratio based on the relative luminance between two colors.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `color1`   |              | A color string or [`Color`](#color) object representing a color.
+    `color2`   |              | A color string or [`Color`](#color) object representing a color.
+
+Return
+: 
+    Returns a float indicating the contrast ratio between two colors.
+
+## `color.contrast` {#contrast}
 
 ```py3
 def contrast(
@@ -459,7 +485,36 @@ Return
 : 
     Returns a float indicating the contrast ratio between two colors.
 
-## `Color.distance` {#distance}
+## `Color.distance` {#color-distance}
+
+```py3
+@classmethod
+def distance(
+    cls,
+    color1
+    color2,
+    *,
+    space=util.DEF_DISTANCE_SPACE
+):
+```
+
+Description
+: 
+    Performs a euclidean distance algorithm on two colors.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `color1`   |              | A color string or [`Color`](#color) object representing a color.
+    `color2`   |              | A color string or [`Color`](#color) object representing a color.
+    `space`    | `#!py3 "lab"`| Color space to perform distancing algorithm in.
+
+Return
+: 
+    Returns a float indicating euclidean distance between the two colors.
+
+## `color.distance` {#distance}
 
 ```py3
 def distance(
@@ -485,12 +540,14 @@ Return
 : 
     Returns a float indicating euclidean distance between the two colors.
 
-## `Color.delta_e` {#delta_e}
+## `Color.delta_e` {#color-delta_e}
 
 ```py3
+@classmethod
 def delta_e(
-    self,
-    color,
+    cls,
+    color1
+    color2,
     *,
     method=None,
     **kwargs
@@ -521,6 +578,39 @@ Parameters
 : 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
+    `color1`   |              | A color string or [`Color`](#color) object representing a color.
+    `color2`   |              | A color string or [`Color`](#color) object representing a color.
+    `method`   | `#!py3 None` | String that specifies the method to use. If `#!py3 None`, the default will be used.
+    `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
+
+Return
+: 
+    Returns a float indicating the delta E distance between the two colors.
+
+## `color.delta_e` {#delta_e}
+
+```py3
+def delta_e(
+    self,
+    color,
+    *,
+    method=None,
+    **kwargs
+):
+```
+
+Description
+: 
+    Performs a delta E distance algorithm on two colors. Default algorithm that is used is Delta E 1976 (`76`). Some
+    methods have additional weighting that can be configured through method specific options which are represented by
+    `**kwargs`.
+
+    See [`Color.delta_e`](#color-delta_e) for table of provided ∆E methods.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
     `color`    |              | A color string or [`Color`](#color) object representing a color.
     `method`   | `#!py3 None` | String that specifies the method to use. If `#!py3 None`, the default will be used.
     `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
@@ -528,6 +618,39 @@ Parameters
 Return
 : 
     Returns a float indicating the delta E distance between the two colors.
+
+## `Color.closest` {#color-closest}
+
+```py3
+@classmethod
+def closest(
+    cls,
+    target,
+    colors,
+    *,
+    method=None,
+    **kwargs
+):
+```
+
+Description
+: 
+    Given a color to compare against and a list of colors, the function calculates the closest color to target color
+    object.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `target`   |              | A string, [`Color`](#color) object, or dictionary representing a color.
+    `colors`   |              | A list of color strings, [`Color`](#color) object, or dictionary representing a color.
+    `method`   | `#!py3 None` | String that specifies the method of color distancing to use.
+    `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
+
+Return
+: 
+    The [`Color`](#color) that is closest to the calling color object. In the off chance that an empty list is passed in
+    `#!py3 None` will be returned.
 
 ## `color.closest` {#closest}
 
@@ -587,14 +710,14 @@ Return
     Returns a reference to the masked [`Color`](#color) object. If `in_place` is `True`, the return will be a
     reference to the current [`Color`](#color) object.
 
-## `Color.interpolate` {#interpolate}
+## `Color.interpolate` {#color-interpolate}
 
 ```py3
+@classmethod
 def interpolate(
-    self,
-    color,
+    cls,
+    colors,
     *,
-    stop=0,
     space="lab",
     progress=None,
     out_space=None,
@@ -629,6 +752,54 @@ Parameters
 : 
     Parameters      | Defaults          | Description
     --------------- | ----------------- | -----------
+    `colors`         |                  | A list of color strings, [`Color`](#color) objects, or [`Piecewise`](#piecewise) objects that represents colors.
+    `space`         | `#!py3 "lab"`     | Color space to interpolate in.
+    `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
+    `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
+    `hue`           | `#!py3 "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
+    `premultiplied` | `#!py3 True`      | Use premultiplied alpha when interpolating.
+
+Return
+: 
+    Returns a function that takes a range from `[0..1]`. The function returns a reference to the interpolated
+    [`Color`](#color) object.
+
+## `color.interpolate` {#interpolate}
+
+```py3
+def interpolate(
+    self,
+    color,
+    *,
+    stop=0,
+    space="lab",
+    progress=None,
+    out_space=None,
+    hue=util.DEF_HUE_ADJ,
+    premultiplied=True
+):
+```
+
+Description
+: 
+    The `interpolate` method creates a function that takes a value between 0 - 1 and interpolates a new color based on
+    the input value.
+
+    If more than one color is provided, the returned function will span the interpolations between all the provided
+    colors with the same range of 0 - 1.
+
+    Interpolation can be customized by limiting the interpolation to specific color channels, providing custom
+    interpolation functions, and even adjusting the hue logic used.
+
+    [`Piecewise`](#piecewise) objects can be used to specify stops or adjust the interpolation for itself and the
+    preceding color.
+
+    See [`Color.interpolate`](#color-interpolate) for a list of hue options.
+
+Parameters
+: 
+    Parameters      | Defaults          | Description
+    --------------- | ----------------- | -----------
     `color`         |                   | A color string, [`Color`](#color) object, or [`Piecewise`](#piecewise) object representing a color. Also, multiple can be provided via a list.
     `space`         | `#!py3 "lab"`     | Color space to interpolate in.
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
@@ -641,7 +812,51 @@ Return
     Returns a function that takes a range from `[0..1]`. The function returns a reference to the interpolated
     [`Color`](#color) object.
 
-## `Color.steps` {#steps}
+## `Color.steps` {#color-steps}
+
+```py3
+@classmethod
+def steps(
+    cls,
+    colors,
+    *,
+    steps=2,
+    max_steps=1000,
+    max_delta_e=0,
+    delta_e=None,
+    **interpolate_args
+):
+```
+
+Description
+: 
+    Creates an `interpolate` function and iterates through it with user defined step parameters to produce discrete
+    color steps. Will attempt to provide the minimum number of `steps` without exceeding `max_steps`. If `max_delta_e`
+    is provided, the distance between each stop will be cut in half until there are no colors with a distance greater
+    than the specified `max_delta_e`. The default ∆E method is used by default, but it can be changed with the `delta_e`
+    parameter.
+
+    If more than one color is provided, the steps will be returned from the interpolations between all the provided
+    colors.
+
+    Like [`interpolate`](#color-interpolate), the default interpolation space is `lab`.
+
+Parameters
+: 
+    Parameters                 | Defaults                                 | Description
+    -------------------------- | ---------------------------------------- | -----------
+    `colors`                   |                                          | A list of color strings, [`Color`](#color) objects, or [`Piecewise`](#piecewise) objects that represents colors.
+    `steps`                    | `#!py3 2`                                | Minimum number of steps.
+    `max_steps`                | `#!py3 1000`                             | Maximum number of steps.
+    `max_delta_e`              | `#!py3 0`                                | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `delta_e`                  | `#!py3 None`                             | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `#!py3 **interpolate_args` | See\ [`interpolate`](#color-interpolate) | Keyword arguments defined in [`interpolate`](#color-interpolate).
+
+Return
+: 
+    List of [`Color`](#color) objects.
+
+## `color.steps` {#steps}
 
 ```py3
 def steps(
@@ -684,7 +899,40 @@ Return
 : 
     List of [`Color`](#color) objects.
 
-## `Color.mix` {#mix}
+## `Color.mix` {#color-mix}
+
+```py3
+@classmethod
+def mix(
+    cls,
+    color1,
+    color2,
+    percent=util.DEF_MIX,
+    *,
+    **interpolate_args
+):
+```
+
+Description
+: 
+    Interpolates between two colors returning a color that represents the mixing of the base color and the provided
+    `color` mixed at the provided `percent`, where `percent` applies to how much the provided `color` contributes to the
+    the final result.
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `color1`                   |                                    | A color string or [`Color`](#color) object representing a color.
+    `color2`                   |                                    | A color string or [`Color`](#color) object representing a color.
+    `percent`                  | `#!py3 0.5`                        | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
+    `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object.
+
+## `color.mix` {#mix}
 
 ```py3
 def mix(
@@ -717,7 +965,7 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
-## `Color.filter` {#cvd}
+## `color.filter` {#cvd}
 
 ```py
 def filter(
@@ -779,7 +1027,7 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
-## `Color.harmony` {#harmony}
+## `color.harmony` {#harmony}
 
 ```py
 def harmony(
@@ -817,12 +1065,13 @@ Return
 : 
     Returns a list of [`Color`](#color) objects.
 
-## `Color.compose` {#compose}
+## `Color.compose` {#color-compose}
 
 ```py
+@classmethod
 def compose(
-    self,
-    backdrop,
+    cls,
+    colors,
     *,
     blend=None,
     operator=None,
@@ -865,7 +1114,49 @@ Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
+    `colors`                   |                                    | A list of strings, [`Color`](#color) objects, or mappings that represent colors.
+    `blend`                    | `#!py3 None`                       | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py3 None`, [`normal`](#normal) will be used. If `#!py3 False`, blending will be skipped.
+    `operator`                 | `#!py3 None`                       | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py3 None`, [`source-over`](#source-over) will be used. If `#!py3 False`, alpha compositing will be skipped.
+    `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
+    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to.
+    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+
+Return
+: 
+    Returns a reference to the new [`Color`](#color) object.
+
+## `color.compose` {#compose}
+
+```py
+def compose(
+    self,
+    backdrop,
+    *,
+    blend=None,
+    operator=None,
+    space=None,
+    out_space=None,
+    in_place=False
+):
+```
+
+Description
+: 
+    Apply compositing which consists of a [blend mode](../compositing.md#blend-modes) and a [Porter Duff operator](../compositing.md#compositing-operators) for alpha compositing. The current color is treated as the source (top
+    layer) and the provided color as the backdrop (bottom layer). Colors will be composited in the `srgb` color space
+    unless otherwise specified.
+
+    Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). Some non-RGB-ish colors may work okay,
+    with the defaults, but many the algorithm is really designed for RGB-ish colors. Non-RGB-ish colors are likely to
+    provide nonsense results.
+
+    For a list of blend modes and compositing modes, see [`Color.compose`](#color-compose).
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `backdrop`                 |                                    | A background color represented with either a string, [`Color`](#color) object, or color mapping. A list of colors can also be given.
     `blend`                    | `#!py3 None`                       | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py3 None`, [`normal`](#normal) will be used. If `#!py3 False`, blending will be skipped.
     `operator`                 | `#!py3 None`                       | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py3 None`, [`source-over`](#source-over) will be used. If `#!py3 False`, alpha compositing will be skipped.
     `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py3 None`, the base color's space will be used.
@@ -877,7 +1168,7 @@ Return
     Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
 
-## `Color.clip` {#clip}
+## `color.clip` {#clip}
 
 ```py
 def clip(
@@ -900,7 +1191,7 @@ Return
 : 
     Returns a reference to the current [`Color`](#color) after fitting its coordinates to the specified gamut.
 
-## `Color.fit` {#fit}
+## `color.fit` {#fit}
 
 ```py3
 def fit(
@@ -942,7 +1233,7 @@ Return
 : 
     Returns a reference to the current [`Color`](#color) after fitting its coordinates to the specified gamut.
 
-## `Color.in_gamut` {#in_gamut}
+## `color.in_gamut` {#in_gamut}
 
 ```py3
 def in_gamut(
@@ -968,7 +1259,7 @@ Return
 : 
     Returns a boolean indicating whether the color is in the specified gamut.
 
-## `Color.get` {#get}
+## `color.get` {#get}
 
 ```py3
 def get(
@@ -993,7 +1284,7 @@ Return
     Returns a numerical value that is stored internally for the specified channel, or a calculated value in the case
     that a channel in a different color space is requested.
 
-## `Color.set` {#set}
+## `color.set` {#set}
 
 ```py3
 def set(
@@ -1024,7 +1315,7 @@ Return
 : 
     Returns a reference to the current [`Color`](#color) object.
 
-## `Color.is_nan` {#is_nan}
+## `color.is_nan` {#is_nan}
 
 ```py3
 def is_nan(
@@ -1049,7 +1340,7 @@ Return
 : 
     Returns a boolean indicating whether the specified color space's channel is `NaN`.
 
-## `Color.white` {#white}
+## `color.white` {#white}
 
 ```py3
 def white(

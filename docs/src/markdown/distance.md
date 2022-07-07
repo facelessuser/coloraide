@@ -20,6 +20,11 @@ Color("red").distance("blue", space="srgb")
 Color("red").distance("blue", space="lab")
 ```
 
+Additionally, the Color object's class method can be used as well.
+
+```playground
+Color.distance("red", "blue")
+```
 ## Delta E
 
 The `delta_e` function gives access to various ∆E implementations, which are just different algorithms to calculate
@@ -39,6 +44,12 @@ being a little slower.
 
 ```playground
 Color("red").delta_e("blue", method="2000")
+```
+
+Additionally, the Color object's class method can be used as well.
+
+```playground
+Color.delta_e("red", "blue", method="2000")
 ```
 
 Below are all the supported ∆E methods. Follow relevant links to read the specs and find out more about a given ∆E
@@ -67,4 +78,16 @@ the colors, the closest ends up being `#!color maroon`.
 
 ```playground
 Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'])
+```
+
+`closest` uses the default ∆E method out of the box, but the method can be changed as needed.
+
+```playground
+Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], method='2000')
+```
+
+Additionally, the Color object's class method can be used as well if desired.
+
+```playground
+Color.closest("red", ['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'])
 ```

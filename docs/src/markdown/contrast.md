@@ -41,8 +41,14 @@ WCAG 2.0 spec specifies the contrast ratio using the equation below.
 # Where `l1` is the lighter luminance and `l2` the darker
 contrast_ratio = (l1 + 0.05) / (l2 + 0.05)
 ```
-To get the this contrast ratio between two colors, simply pass in the second color:
+To get the contrast ratio between two colors, simply pass in the second color:
 
 ```playground
 Color("blue").contrast("red")
+```
+
+Contrast can also be achieved using the Color object's class method.
+
+```playground
+Color.contrast("blue", "red")
 ```
