@@ -67,8 +67,8 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         """Test dictionary inputs."""
 
         c1 = Color('srgb', [1, 0, 1], 0.5)
-        c2 = Color({'space': 'srgb', 'r': 1, 'g': 0, 'b': 1, 'alpha': 0.5})
-        c3 = Color({'space': 'srgb', 'red': 1, 'green': 0, 'blue': 1, 'alpha': 0.5})
+        c2 = Color({'space': 'srgb', 'coords': [1, 0, 1], 'alpha': 0.5})
+        c3 = Color({'space': 'srgb', 'coords': [1, 0, 1], 'alpha': 0.5})
         self.assertColorEqual(c1, c2)
         self.assertColorEqual(c1, c3)
 
@@ -341,7 +341,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('white').contrast('blue'),
-            Color('white').contrast({"space": "srgb", "r": 0, "g": 0, "b": 1})
+            Color('white').contrast({"space": "srgb", "coords": [0, 0, 1]})
         )
 
     def test_contrast_one(self):

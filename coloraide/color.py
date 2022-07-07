@@ -254,6 +254,7 @@ class Color(metaclass=ColorMeta):
 
         obj = None
         if isinstance(color, str):
+
             # Parse a color space name and coordinates
             if data is not None:
                 s = color
@@ -281,16 +282,9 @@ class Color(metaclass=ColorMeta):
         elif isinstance(color, Mapping):
             # Handle a color dictionary
             space = color['space']
-            if not filters or space in filters:
-                cs = cls.CS_MAP[space]
-                aliases = cs.CHANNEL_ALIASES
-                color = {aliases.get(k, k): v for k, v in color.items()}
-                coords = [color[name] for name in cs.CHANNELS]
-                coords.append(color.get('alpha', 1.0))
-                return (
-                    cs,
-                    [alg.clamp(float(v), *c.limit) for c, v in zipl(cs.get_all_channels(), coords)]
-                )
+            coords = color['coords']
+            alpha = color.get('alpha', 1.0)
+            obj = cls._parse(space, coords, alpha)
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
@@ -460,10 +454,7 @@ class Color(metaclass=ColorMeta):
     def to_dict(self) -> Mapping[str, Any]:
         """Return color as a data object."""
 
-        data = {'space': self.space()}  # type: Dict[str, Any]
-        for channel, coord in zipl(self._space.get_all_channels(), self._coords):
-            data[str(channel)] = coord
-        return data
+        return {'space': self.space(), 'coords': self[:-1], 'alpha': self[-1]}
 
     def normalize(self) -> 'Color':
         """Normalize the color."""
