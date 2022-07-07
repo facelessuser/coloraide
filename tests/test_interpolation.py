@@ -22,7 +22,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c1 = Color('blue')
         self.assertEqual(
             c1.mix("yellow"),
-            c1.mix({"space": "srgb", "r": 1, "g": 1, "b": 0})
+            c1.mix({"space": "srgb", "coords": [1, 1, 0]})
         )
 
     def test_bad_mix_input(self):

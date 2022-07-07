@@ -2,6 +2,14 @@
 
 ## 0.19.0
 
+- **BREAK**: Dictionary input/output now matches the following format (where alpha is optional):
+
+    ```py
+    {"space": "name", "coords": [0, 0, 0], "alpha": 1}
+    ```
+
+    This allows for quicker processing and less complexity dealing with channel names and aliases.
+
 - **BREAK**: The CSS Level 4 Color spec has accepted our proposed changes to the gamut mapping algorithm. With this
   change, the `oklch-chroma` gamut mapping algorithm is now compliant with the CSS spec, and `css-color-4` is no longer
   needed. If you were experimenting with `css-color-4`, please use `oklch-chroma` instead. The algorithm is faster and
