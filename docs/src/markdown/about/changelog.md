@@ -2,6 +2,10 @@
 
 ## 0.19.0
 
+- **BREAK**: `interpolate` and `steps` no longer handle multiple colors. To interpolate between multiple colors,
+  `piecewise` and `piecewise_steps` should be used instead. These new methods are class methods that take a list of
+  colors. This simplifies the piecewise logic and that was more confusing when implemented as an instance method.
+
 - **BREAK**: Dictionary input/output now matches the following format (where alpha is optional):
 
     ```py
@@ -28,6 +32,8 @@
 - **BREAK**: `Color`'s `fit` and `clip` methods now perform the operation in place, modifying the current color
   directly. The `in_place` parameter has been removed. To create a new color when performing these actions, simply clone
   the color first: `#!py color.clone().clip()`.
+- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
+  access.
 
 - **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
   and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
@@ -39,8 +45,8 @@
 
   Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
 
-- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
-  access.
+- **NEW**: Add two new class methods to the Color object: `piecewise` and `discrete_piecewise`. These accept a list of
+  colors and simply interpolation logic as there is no base color that must be treated differently or special.
 - **NEW**: Add new color spaces: `display-p3-linear`, `a98-rgb-linear`, `rec2020-linear`, `prophoto-rgb-linear`, and
   `rec2100pq`.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection

@@ -216,6 +216,7 @@ tritanomaly
 tritanopia
 un
 uncomment
+unintuitive
 unsaturate
 uv
 validator

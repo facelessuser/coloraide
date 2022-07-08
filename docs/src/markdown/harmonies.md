@@ -67,9 +67,9 @@ mainly on the fact it keeps hue more consistent than some other options, and it 
 options like HSL.
 
 ```playground
-HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='oklch'))
-HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='hsl'))
-HtmlSteps(Color('black').steps(['blue', 'white'], steps=11, space='lch'))
+HtmlSteps(Color.piecewise_steps(['black', 'blue', 'white'], steps=11, space='oklch'))
+HtmlSteps(Color.piecewise_steps(['black', 'blue', 'white'], steps=11, space='hsl'))
+HtmlSteps(Color.piecewise_steps(['black', 'blue', 'white'], steps=11, space='lch'))
 ```
 
 While Oklch is the default, we understand that there are many reasons to use other spaces, so use what you like, we

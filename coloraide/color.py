@@ -710,9 +710,88 @@ class Color(metaclass=ColorMeta):
                 this[name] = alg.NaN
         return this
 
+    def mix(
+        self,
+        color: ColorInput,
+        percent: float = util.DEF_MIX,
+        *,
+        in_place: bool = False,
+        **interpolate_args: Any
+    ) -> 'Color':
+        """
+        Mix colors using interpolation.
+
+        This uses the interpolate method to find the center point between the two colors.
+        The basic mixing logic is outlined in the CSS level 5 draft.
+        """
+
+        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
+            raise TypeError("Unexpected type '{}'".format(type(color)))
+        mixed = self.interpolate(color, **interpolate_args)(percent)
+        return self.mutate(mixed) if in_place else mixed
+
+    @classmethod
+    def piecewise(
+        cls,
+        colors: Sequence[Union[ColorInput, interpolate.Piecewise]],
+        *,
+        space: Optional[str] = None,
+        out_space: Optional[str] = None,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
+        hue: str = util.DEF_HUE_ADJ,
+        premultiplied: bool = True
+    ) -> interpolate.Interpolator:
+        """Return an interpolation function that spans the list of colors."""
+
+        if len(colors) < 2:
+            raise ValueError('Interpolation requires at least two colors')
+
+        # We need to secure an instance in order to determine the default output
+        color = colors[0]  # type: Any
+        stop = 0
+        if isinstance(color, interpolate.Piecewise):
+            if color.stop is not None:
+                stop = color.stop
+            color = color.color
+        color = color if cls._is_this_color(color) else cls(color)
+
+        if space is None:
+            space = cls.INTERPOLATE
+
+        if out_space is None:
+            out_space = color.space()
+
+        # Ensure all colors are wrapped in Piecewise objects
+        pieces = [c if isinstance(c, interpolate.Piecewise) else interpolate.Piecewise(c) for c in colors[1:]]
+        pieces.insert(0, interpolate.Piecewise(color, stop))
+
+        return interpolate.color_piecewise_lerp(
+            pieces,
+            space,
+            out_space,
+            progress,
+            hue,
+            premultiplied
+        )
+
+    @classmethod
+    def piecewise_steps(
+        cls,
+        colors: Sequence[Union[ColorInput, interpolate.Piecewise]],
+        *,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: Optional[str] = None,
+        **interpolate_args: Any
+    ) -> List['Color']:
+        """Piecewise interpolation."""
+
+        return cls.piecewise(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
+
     def steps(
         self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        color: ColorInput,
         *,
         steps: int = 2,
         max_steps: int = 1000,
@@ -734,33 +813,12 @@ class Color(metaclass=ColorMeta):
 
         return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
 
-    def mix(
-        self,
-        color: ColorInput,
-        percent: float = util.DEF_MIX,
-        *,
-        in_place: bool = False,
-        **interpolate_args: Any
-    ) -> 'Color':
-        """
-        Mix colors using interpolation.
-
-        This uses the interpolate method to find the center point between the two colors.
-        The basic mixing logic is outlined in the CSS level 5 draft.
-        """
-
-        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
-            raise TypeError("Unexpected type '{}'".format(type(color)))
-        mixed = self.interpolate(color, **interpolate_args)(percent)
-        return self.mutate(mixed) if in_place else mixed
-
     def interpolate(
         self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        color: ColorInput,
         *,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
-        stop: float = 0,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True
@@ -783,37 +841,16 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = self.space()
 
-        # A piecewise object was provided, so treat it as such,
-        # or we've changed the stop of the base color, so run it through piecewise.
-        if (
-            isinstance(color, interpolate.Piecewise) or
-            (stop != 0 and (isinstance(color, (str, Mapping)) or self._is_color(color)))
-        ):
-            color = cast(Sequence[Union['Color', str, Mapping[str, Any], interpolate.Piecewise]], [color])
-
-        if not isinstance(color, str) and isinstance(color, Sequence):
-            # We have a sequence, so use piecewise interpolation
-            colors = list(color)
-            colors.insert(0, interpolate.Piecewise(self, stop=stop))
-            return interpolate.color_piecewise_lerp(
-                colors,
-                space,
-                out_space,
-                progress,
-                hue,
-                premultiplied
-            )
-        else:
-            # We have a sequence, so use piecewise interpolation
-            return interpolate.color_lerp(
-                self,
-                color,
-                space,
-                out_space,
-                progress,
-                hue,
-                premultiplied
-            )
+        # We have a sequence, so use piecewise interpolation
+        return interpolate.color_lerp(
+            self,
+            color,
+            space,
+            out_space,
+            progress,
+            hue,
+            premultiplied
+        )
 
     def filter(  # noqa: A003
         self,

@@ -34,7 +34,7 @@ the two colors, `0` returning `#!color rebeccapurple` and `1` returning `#!color
 
 ```playground
 i = Color("rebeccapurple").interpolate("lch(85% 100 85)", space='lch')
-[i(x/10).to_string() for x in range(10)]
+[i(x / 10).to_string() for x in range(10 + 1)]
 ```
 
 If we create enough steps, we can create a gradient.
@@ -53,21 +53,10 @@ Color("rebeccapurple").interpolate(
     in the requested color space and cannot properly be represented in that space or model, the colors will be gamut
     mapped before interpolation.
 
-Interpolation can also be done across multiple colors. The function, just like when interpolating between two colors,
-takes a range of 0 - 1, only this range now applies to the range that spans all the colors, not just two. As it may be
-impossible to draw a straight line that passes through a series of colors, [piecewise interpolation](#piecewise-interpolation)
-is used at anytime there is more than one color. As this type of interpolation will be cover more later, suffice it to
-say that this method breaks up the interpolation into individual segments/pieces consisting of only two of the colors
-in the series and applies linear interpolation to these segments/pieces individually.
-
-```playground
-Color('black').interpolate(['red', 'white'])
-```
-
 ## Hue Interpolation
 
 In interpolation, hues are handled special allowing us to control the way in which hues are evaluated. By default, the
-shortest angle between two hues is interpolated between, but the `hue` allows us to redefine this behavior in a number
+shortest angle between two hues is evaluated, but the `hue` parameter allows us to redefine this behavior in a number
 of different ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. Below, we can see how the
 interpolation varies using `shorter` vs `longer` (interpolate between the largest angle).
 
@@ -162,8 +151,8 @@ Color('white').interpolate('transparent', space='srgb')
 Premultiplication does better because it takes into account the differing amounts of transparency that each color has.
 Colors that are more opaque are "weighted" more, and contribute more to the overall color.
 
-Consider the example below. Orange is fully opaque while blue is quite transparent. Logically, the blue shouldn't have
-as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
+Consider the example below. Orange is fully opaque while blue is quite transparent. Logically, the blue color shouldn't
+have a large effect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
 colors equally, we see that the resultant color is also equally influenced by the hue of both colors. In the
 premultiplied example, we see that orange is still quite dominant at 50%.
 
@@ -205,7 +194,7 @@ i = Color("lch(52% 58.1 22.7)").interpolate(
     Color("lch(56% 49.1 257.1)").mask(['lightness', 'chroma', 'alpha']),
     space="lch"
 )
-[i(x/10).to_string() for x in range(10)]
+[i(x / 10).to_string() for x in range(10 + 1)]
 ```
 
 You can also create inverted masks. An inverted mask will mask all *except* the specified channel.
@@ -215,7 +204,7 @@ i = Color("lch(52% 58.1 22.7)").interpolate(
     Color("lch(56% 49.1 257.1)").mask('hue', invert=True),
     space="lch"
 )
-[i(x/10).to_string() for x in range(10)]
+[i(x / 10).to_string() for x in range(10 + 1)]
 ```
 
 !!! tip "Magic Behind Masking"
@@ -331,14 +320,6 @@ The `steps` method provides an intuitive interface to create lists of discrete c
 Color("red").steps("blue", steps=10)
 ```
 
-If desired, multiple colors can be provided, and steps will be returned for all the interpolated segments. When
-interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
-detail later).
-
-```playground
-Color("red").steps(["orange", "yellow", "green"], steps=10)
-```
-
 Steps can also be configured to return colors based on a maximum Delta E distance. This means you can ensure the
 distance between all colors is no greater than a certain value.
 
@@ -415,13 +396,35 @@ specifying the method via the `delta_e` parameter.
 
 ## Piecewise Interpolation
 
-The [`interploate`](#interpolating) and [`steps`](#steps) methods allow for piecewise interpolation across multiple
-color ranges. Anytime, multiple colors are provided via a list, the piecewise logic will be applied to the various
-segments.
+Piecewise interpolation allows for interpolating over multiple colors. As it is often impossible to draw a straight line
+through more than one color for the sake of interpolation, piecewise interpolation draws a line connecting each color
+in the chain and performs interpolation separately between each color. Essentially, the task of interpolation is broken
+up into separate pieces. The interpolation range is still done between 0 - 1, only this range now applies to the range
+that spans all the colors, not just two.
+
+Piecewise interpolation is implemented via the functions `piecewise` and `piecewise_steps`. These are piecewise
+alternatives to `interpolate` and `steps` which can take a list of colors. One difference that can be noted right away
+is that the functions are implemented class methods. The reasons why will become clear as we explore the features, but
+the important thing to note is that only the colors in the provided list are interpolated, even if these functions
+are called from an instantiated Color object, the calling object's color will not be included in the interpolation.
 
 ```playground
-Color('red').interpolate(['white', 'black', 'blue'])
+i = Color.piecewise(['orange', 'pink', 'blue'])
+HtmlRow([i(r / 9) for r in range(9 + 1)])
+HtmlRow(Color.piecewise_steps(['orange', 'pink', 'blue'], steps=10))
 ```
+
+The next difference is that any color in the provided list can be wrapped in Piecewise objects. Piecewise objects allow
+us to set color stops and control the easing functions and other features for a given piece of the interpolation. In the
+following example, we are able to set color stops on all the colors. This ensures the transition to each color does not
+complete until interpolation progress reaches the specified stop.
+
+```playground
+Color.piecewise([Piecewise('orange', 0.3), Piecewise('pink', 0.7), Piecewise('blue', 0.9)])
+```
+
+Because all colors must be contained in the list, we are able wrap any color, even the first. Using a class method saves
+us from having to do unintuitive workarounds in order to simulate wrapping a color instance if it was auto included.
 
 When interpolating between two colors, we showed that you can control the transition by setting easing functions to
 the `progress` parameter or control hue interpolation with the `hue` parameter. For piecewise interpolation, when
@@ -429,40 +432,16 @@ the `progress` parameter or control hue interpolation with the `hue` parameter. 
 the provided colors, but you can also setup specific interpolation configurations between any two colors by using the
 [`Piecewise`](./api/index.md#piecewise) object. For instance, in the example below, we can apply an easing between just
 the `#!color white` and `#!color black` colors. Notice that we wrap `#!color black` in a `Piecewise` object so that the
-easing function is applied to `#!color black` and the color immediately before it (`#!color white`).
+easing function is applied during the transition to `#!color black`.
 
 ```playground
-Color('red').interpolate(['white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'])
+Color.piecewise(['red', 'white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'])
 ```
 
-Additionally, you can set color stops using the `Piecewise` object's `stop` parameter. This will ensure that the given
-color is interpolated at 100% at that percentage of the total interpolation. In the example below, we specify that in
-the entire gradient that at 75% the color will be `#!color green`.
+As previously stated, both `piecewise` and `piecewise_steps` can utilize this logic.
 
 ```playground
-Color('orange').interpolate([Piecewise('green', 0.75), 'blue'])
-```
-
-As the base color cannot be wrapped in a `Piecewise` object, the `steps` and `interpolation` method provide a `stop`
-parameter that specifically sets a stop for the base color. In the example below, we specify that the base color's stop
-will be at 75%, but since the base is always the first color, what it really means is that the color will remain as the
-base color until 75% and then begin the transition to the next color. In this case, the gradient remains
-`#!color orange` until it reaches 75% and then transitions to `#!color green` completing the full transition at 100%.
-
-```playground
-Color('orange').interpolate('green', stop=0.75)
-```
-
-And when we put it all together:
-
-```playground
-Color('red').interpolate([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4)
-```
-
-As previously mentioned, this can also be applied to steps as well.
-
-```playground
-Color('red').steps([Piecewise('white', 0.6), Piecewise('black', 0.8), 'blue'], stop=0.4, steps=15)
+Color.piecewise_steps(['red', 'white', Piecewise('black', progress=lambda t: t * (2 - t)), 'blue'], steps=10)
 ```
 
 ## Undefined/NaN Handling {#null-handling}

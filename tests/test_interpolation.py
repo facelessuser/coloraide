@@ -31,13 +31,6 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             Color('red').mix(1)
 
-    def test_mix_input_piecewise(self):
-        """Test mix with piecewise."""
-
-        self.assertColorEqual(
-            Color('red').mix(Piecewise('blue'), 0.5, space="srgb"), Color("srgb", [0.5, 0, 0.5])
-        )
-
     def test_mix_space(self):
         """Test color mix in different space."""
 
@@ -374,21 +367,15 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color('rgb(239.13 82.5 64)')
         )
 
-    def test_interpolate_input_piecewise(self):
-        """Test interpolation with piecewise."""
-
-        self.assertColorEqual(
-            Color('red').interpolate(Piecewise('blue'), space="srgb")(0.5), Color("srgb", [0.5, 0, 0.5])
-        )
-
     def test_interpolate_stop(self):
         """Test interpolation with piecewise."""
 
         self.assertColorEqual(
-            Color('red').interpolate('blue', space="srgb", stop=0.6)(0.5), Color('red')
+            Color.piecewise([Piecewise('red', 0.6), 'blue'], space="srgb")(0.5), Color('red')
         )
+        # Instance color won't be counted
         self.assertColorEqual(
-            Color('red').interpolate('blue', space="srgb", stop=0.6)(0.7), Color('rgb(191.25 0 63.75)')
+            Color('green').piecewise([Piecewise('red', 0.6), 'blue'], space="srgb")(0.7), Color('rgb(191.25 0 63.75)')
         )
 
     def test_interpolate_space(self):
@@ -400,15 +387,10 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0.25), Color("rgb(226.89 -24.304 79.188)"))
         self.assertColorEqual(Color('red').interpolate('blue', space='lab')(0), Color("rgb(255 0 0)"))
 
-    def test_interpolate_empty_list(self):
-        """Test interpolate with empty list."""
-
-        self.assertColorEqual(Color('green').interpolate([])(0.5), Color('green'))
-
     def test_interpolate_piecewise(self):
         """Test multiple inputs for interpolation."""
 
-        func = Color('white').interpolate(['red', 'black'])
+        func = Color.piecewise(['white', 'red', 'black'])
         self.assertColorEqual(func(0), Color('white'))
         self.assertColorEqual(func(0.5), Color('red'))
         self.assertColorEqual(func(1), Color('black'))
@@ -563,13 +545,13 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test steps with piecewise."""
 
         self.assertColorEqual(
-            Color('red').steps(Piecewise('blue'), space="srgb", steps=5)[2], Color("srgb", [0.5, 0, 0.5])
+            Color.piecewise_steps(['red', Piecewise('blue')], space="srgb", steps=5)[2], Color("srgb", [0.5, 0, 0.5])
         )
 
     def test_steps_multi(self):
         """Test steps with multiple color ranges."""
 
-        colors = Color('white').steps(['red', 'black'], steps=3)
+        colors = Color.piecewise_steps(['white', 'red', 'black'], steps=3)
         self.assertColorEqual(colors[0], Color('white'))
         self.assertColorEqual(colors[1], Color('red'))
         self.assertColorEqual(colors[2], Color('black'))
@@ -577,13 +559,13 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_steps_multi_max_delta_e(self):
         """Test steps with multiple color ranges and max_delta_e."""
 
-        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=10)
+        colors = Color.piecewise_steps(['red', 'green', 'blue'], space="srgb", max_delta_e=10)
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
             self.assertTrue(color.delta_e(colors[index - 1]) <= 10)
 
-        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=3)
+        colors = Color.piecewise_steps(['red', 'green', 'blue'], space="srgb", max_delta_e=3)
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
@@ -592,13 +574,13 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_steps_custom_delta_e(self):
         """Test a custom delta E input."""
 
-        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=10, delta_e='99o')
+        colors = Color('red').piecewise_steps(['green', 'blue'], space="srgb", max_delta_e=10, delta_e='99o')
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
             self.assertTrue(color.delta_e(colors[index - 1]) <= 10)
 
-        colors = Color('red').steps(['green', 'blue'], space="srgb", max_delta_e=3, delta_e='99o')
+        colors = Color('red').piecewise_steps(['green', 'blue'], space="srgb", max_delta_e=3, delta_e='99o')
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
@@ -611,11 +593,6 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         colors2 = len(Color('orange').steps('red', space="srgb", max_delta_e=0.2, delta_e='ok'))
 
         self.assertNotEqual(colors1, colors2)
-
-    def test_steps_empty_list(self):
-        """Test steps with empty list."""
-
-        self.assertColorEqual(Color('green').steps([], steps=3)[1], Color('green'))
 
     def test_steps_space(self):
         """Test steps different space."""
@@ -789,3 +766,39 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(len(colors) > 5)
         colors = Color('red').steps('blue', space="srgb", max_delta_e=10, max_steps=5)
         self.assertTrue(len(colors) == 5)
+
+    def test_piecewise_interpolate(self):
+        """Test the piecewise interpolate."""
+
+        self.assertEqual(
+            Color('red').interpolate('blue')(0.3),
+            Color.piecewise(['red', 'blue'])(0.3)
+        )
+
+    def test_piecewise_interpolate_single(self):
+        """Test the piecewise interpolation with one color."""
+
+        with self.assertRaises(ValueError):
+            Color.piecewise(['red'])
+
+    def test_discrete_piecewise(self):
+        """Test the discrete piecewise interpolation."""
+
+        self.assertEqual(
+            Color('red').steps('blue', steps=5),
+            Color.piecewise_steps(['red', 'blue'], steps=5)
+        )
+
+    def test_piecewise_not_enough_colors(self):
+        """Test piecewise with not enough colors."""
+
+        with self.assertRaises(ValueError):
+            Color.piecewise([])
+
+    def test_piecewise_stop(self):
+        """Test that we can set a stop to the first color with Piecewise objects."""
+
+        self.assertEqual(
+            Color.piecewise([Piecewise('red', 0.6), 'blue'], space="srgb")(0.5),
+            Color('red')
+        )

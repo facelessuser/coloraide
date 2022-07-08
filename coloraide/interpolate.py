@@ -177,8 +177,7 @@ class InterpolatePiecewise(Interpolator):
 def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
     """Calculate stops."""
 
-    # Ensure the first stop is set to zero if not explicitly set
-    if 0 not in stops:
+    if 0 not in stops or stops[0] is None:
         stops[0] = 0
 
     last = stops[0] * 100
@@ -397,7 +396,7 @@ def color_steps(
 
 
 def color_piecewise_lerp(
-    pw: List[Union[ColorInput, Piecewise]],
+    pw: List[Piecewise],
     space: str,
     out_space: str,
     progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
@@ -406,41 +405,34 @@ def color_piecewise_lerp(
 ) -> InterpolatePiecewise:
     """Piecewise Interpolation."""
 
-    # Ensure we have something we can interpolate with
-    count = len(pw)
-    if count == 1:
-        pw.append(pw[0])
-        count += 1
+
 
     # Construct piecewise interpolation object
+    count = len(pw)
     stops = {}
     color_map = []
-    for i, x in enumerate(pw, 0):
+    current = cast('Color', pw[0].color)
+    stops[0] = pw[0].stop
+
+    for i in range(1, len(pw)):
 
         # Normalize all colors as Piecewise objects
-        if isinstance(x, Piecewise):
-            stops[i] = x.stop
-            p = x
-        else:
-            p = Piecewise(x)
-
-        # The first is the calling color which is already a Color object
-        if i == 0:
-            current = p.color
-            continue
+        p = pw[i]
+        stops[i] = p.stop
 
         # Ensure input provided via Piecewise object is a Color object
         color = current._handle_color_input(p.color)
 
         # Create an entry interpolating the current color and the next color
         color_map.append(
-            current.interpolate(
+            color_lerp(
+                current,
                 color,
-                space=space,
-                out_space=out_space,
-                progress=p.progress if p.progress is not None else progress,
-                hue=p.hue if p.hue is not None else hue,
-                premultiplied=p.premultiplied if p.premultiplied is not None else premultiplied
+                space,
+                out_space,
+                p.progress if p.progress is not None else progress,
+                p.hue if p.hue is not None else hue,
+                p.premultiplied if p.premultiplied is not None else premultiplied
             )
         )
 

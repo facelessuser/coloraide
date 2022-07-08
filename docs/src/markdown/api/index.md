@@ -13,7 +13,7 @@ Import path
     from coloraide import NaN
     ```
 
-## `coloraide.Piecewise` {#piecewise}
+## `coloraide.Piecewise` {#coloraide-piecewise}
 
 ```py3
 class Piecewise(
@@ -608,14 +608,8 @@ Description
     The `interpolate` method creates a function that takes a value between 0 - 1 and interpolates a new color based on
     the input value.
 
-    If more than one color is provided, the returned function will span the interpolations between all the provided
-    colors with the same range of 0 - 1.
-
     Interpolation can be customized by limiting the interpolation to specific color channels, providing custom
     interpolation functions, and even adjusting the hue logic used.
-
-    [`Piecewise`](#piecewise) objects can be used to specify stops or adjust the interpolation for itself and the
-    preceding color.
 
     Hue\ Evaluation | Description
     --------------- | -----------
@@ -629,7 +623,7 @@ Parameters
 : 
     Parameters      | Defaults          | Description
     --------------- | ----------------- | -----------
-    `color`         |                   | A color string, [`Color`](#color) object, or [`Piecewise`](#piecewise) object representing a color. Also, multiple can be provided via a list.
+    `color`         |                   | A color string, [`Color`](#color) object, or a color Mapping representing a color.
     `space`         | `#!py3 "lab"`     | Color space to interpolate in.
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
     `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
@@ -664,16 +658,97 @@ Description
     than the specified `max_delta_e`. The default ∆E method is used by default, but it can be changed with the `delta_e`
     parameter.
 
-    If more than one color is provided, the steps will be returned from the interpolations between all the provided
-    colors.
-
     Like [`interpolate`](#interpolate), the default interpolation space is `lab`.
 
 Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A color string or [`Color`](#color) object representing a color. Also, multiple can be provided via a list.
+    `color`                    |                                    | A color string, [`Color`](#color) object, or color Mapping representing a color.
+    `steps`                    | `#!py3 2`                          | Minimum number of steps.
+    `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
+    `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `delta_e`                  | `#!py3 None`                       | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `#!py3 **interpolate_args` | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
+
+Return
+: 
+    List of [`Color`](#color) objects.
+
+## `Color.piecewise` {#piecewise}
+
+```py3
+@classmethod
+def piecewise(
+    cls,
+    colors,
+    *,
+    space="lab",
+    progress=None,
+    out_space=None,
+    hue=util.DEF_HUE_ADJ,
+    premultiplied=True
+):
+```
+
+Description
+: 
+    The `piecewise` method creates a function that takes a value between 0 - 1 and interpolates a new color between
+    all the provided colors.
+
+    `piecewise` behaves just like [`interpolate`](#interpolate) except that colors can be wrapped in
+    [`Piecewise`](#coloraide-piecewise) objects allow a user to define color stops, easing functions between specific
+    colors, or control other various interpolation behaviors. Piecewise wrappers will override the default behaviors
+    as specified via the function parameters, but only for the specific interpolation "piece" that it is applied to.
+
+Parameters
+: 
+    Parameters      | Defaults          | Description
+    --------------- | ----------------- | -----------
+    `colors`        |                   | A list of color strings, [`Color`](#color) objects, color Mappings, or [`Piecewise`](#coloraide-piecewise) objects representing a color.
+    `space`         | `#!py3 "lab"`     | Color space to interpolate in.
+    `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
+    `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
+    `hue`           | `#!py3 "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
+    `premultiplied` | `#!py3 True`      | Use premultiplied alpha when interpolating.
+
+Return
+: 
+    Returns a function that takes a range from `[0..1]`. The function returns a reference to the interpolated
+    [`Color`](#color) object.
+
+## `Color.piecewise_steps` {#piecewise_steps}
+
+```py3
+@classmethod
+def piecewise_steps(
+    cls,
+    colors,
+    *,
+    steps=2,
+    max_steps=1000,
+    max_delta_e=0,
+    delta_e=None,
+    **interpolate_args
+):
+```
+
+Description
+: 
+    The `piecewise_steps` method generates a number of discrete steps just like [`steps`](#steps), except that it takes
+    a list of colors to interpolate between and uses [`piecewise`](#piecewise) under the hood instead of
+    [`interpolate`](#interpolate). The feature set and general behavior mirrors that of [`steps`](#steps).
+
+    Colors can be wrapped in [`Piecewise`](#coloraide-piecewise) objects which allow a user to define color stops,
+    easing functions between specific colors, or control other various interpolation behaviors. Piecewise wrappers will
+    override the default behaviors as specified via the function parameters for interpolation, but only for the specific
+    interpolation "piece" that it is applied to.
+
+Parameters
+: 
+    Parameters                 | Defaults                           | Description
+    -------------------------- | ---------------------------------- | -----------
+    `colors`                   |                                    | A list of color strings, [`Color`](#color) objects, color Mappings, or [`Piecewise`](#coloraide-piecewise) objects representing a color.
     `steps`                    | `#!py3 2`                          | Minimum number of steps.
     `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
     `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
