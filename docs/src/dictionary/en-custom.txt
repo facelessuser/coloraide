@@ -5,6 +5,7 @@ Achromatopsia
 Alvy
 Az
 BT
+Bezier
 Björn
 Boronine
 Brettel
@@ -144,6 +145,7 @@ achromatomaly
 achromatopsia
 async
 az
+bezier
 boolean
 broadcasted
 bz

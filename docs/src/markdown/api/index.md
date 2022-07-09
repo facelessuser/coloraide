@@ -13,41 +13,60 @@ Import path
     from coloraide import NaN
     ```
 
-## `coloraide.Piecewise` {#piecewise}
+## `coloraide.stop` {#stop}
 
 ```py3
-class Piecewise(
-    namedtuple('Piecewise',
-        [
-            'color',
-            'stop',
-            'progress',
-            'hue',
-            'premultiplied'
-        ]
-    )
+class stop(
+    color,
+    s
 ):
 ```
 
 Description
 : 
-    `Piecewise` objects are used in [`interpolate`](#interpolate) methods. They allow a user to control interpolation
-    `stops`, `progress`, `hue`, or `premultiplied` options for a specific interpolation piece when doing piecewise
-    interpolation.
+    `stop` objects are used in [`interpolate`](#interpolate) methods. They allow a user to control specify a color stop
+    for a given color during the interpolation process.
 
 Import Path
 : 
-    `Piecewise` is imported from `coloraide` library:
+    `stop` is imported from `coloraide` library:
 
     ```py3
-    from coloraide import Piecewise
+    from coloraide import stop
     ```
 
 Parameters
 : 
-   Input parameters match [`interpolate`](#interpolate) parameters of the same name. Only `color` is required and all
-   other parameters default to `#!py3 None`. If a parameter is `#!py3 None`, it will be ignored by
-   [`interpolate`](#interpolate).
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `color`    |              | A color string, a dictionary describing the color, or another `Color` class object.
+    `value`    |              | A numerical value specifying the new color stop for the given color.
+
+## `coloraide.hint` {#hint}
+
+```py3
+class hint(
+    mid,
+):
+```
+
+Description
+: 
+    `hint` returns an easing function that adjust the midpoint between two color stops.
+
+Import Path
+: 
+    `hint` is imported from `coloraide` library:
+
+    ```py3
+    from coloraide import hint
+    ```
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `mid`      |              | A numerical value, relative to the two color stops it occurs between, that will be used as the new midpoint.
 
 ## `coloraide.Color` {#color}
 
@@ -590,16 +609,18 @@ Return
 ## `Color.interpolate` {#interpolate}
 
 ```py3
+@classmethod
 def interpolate(
-    self,
-    color,
+    cls,
+    colors,
     *,
     stop=0,
     space="lab",
     progress=None,
     out_space=None,
     hue=util.DEF_HUE_ADJ,
-    premultiplied=True
+    premultiplied=True,
+    method='linear'
 ):
 ```
 
@@ -614,8 +635,8 @@ Description
     Interpolation can be customized by limiting the interpolation to specific color channels, providing custom
     interpolation functions, and even adjusting the hue logic used.
 
-    [`Piecewise`](#piecewise) objects can be used to specify stops or adjust the interpolation for itself and the
-    preceding color.
+    [`stop`](#stop) objects can wrapped around colors to specify new color stops and easing functions can be placed
+    between colors to alter the transition progress between the two colors.
 
     Hue\ Evaluation | Description
     --------------- | -----------
@@ -625,16 +646,24 @@ Description
     `decreasing`    | Angles are adjusted so that θ₂ - θ₁ ∈ (-360, 0]
     `specified`     | No fixup is performed. Angles are interpolated in the same way as every other component.
 
+    The method of interpolation to can also be selected via the `method` parameter.
+
+    Method   | Description
+    -------- | -----------
+    `linear` | An linear interpolation that employs piecewise logic to interpolate between two or more colors.
+    `bezier` | An interpolation method that employs Bezier curves to calculate an interpolation path through multiple colors.
+
 Parameters
 : 
     Parameters      | Defaults          | Description
     --------------- | ----------------- | -----------
-    `color`         |                   | A color string, [`Color`](#color) object, or [`Piecewise`](#piecewise) object representing a color. Also, multiple can be provided via a list.
+    `color`         |                   | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
     `space`         | `#!py3 "lab"`     | Color space to interpolate in.
     `progress`      | `#!py3 None`      | An optional function that that allows for custom logic to perform non-linear interpolation.
     `out_space`     | `#!py3 None`      | Color space that the new color should be in. If `#!py3 None`, the color will be in the same color space as the base color.
     `hue`           | `#!py3 "shorter"` | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
     `premultiplied` | `#!py3 True`      | Use premultiplied alpha when interpolating.
+    `method`        | `#!py3 "linear"`  | The interpolation method to use.
 
 Return
 : 
@@ -673,7 +702,7 @@ Parameters
 : 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A color string or [`Color`](#color) object representing a color. Also, multiple can be provided via a list.
+    `color`                    |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
     `steps`                    | `#!py3 2`                          | Minimum number of steps.
     `max_steps`                | `#!py3 1000`                       | Maximum number of steps.
     `max_delta_e`              | `#!py3 0`                          | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.

@@ -155,7 +155,8 @@ def execute(cmd, no_except=True, inline=False):
         'Color': coloraide.Color,
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
-        'Piecewise': coloraide.Piecewise,
+        'stop': coloraide.stop,
+        'hint': coloraide.hint,
         'HtmlRow': HtmlRow,
         'HtmlSteps': HtmlSteps,
         'HtmlGradient': HtmlGradient

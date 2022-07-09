@@ -11,7 +11,7 @@ ColorAide is a color library for Python with the intent of providing an easy to 
 
 ```playground
 from coloraide import Color
-Color('lch(75% 50 0)').steps('lch(75% 50 300)', steps=8, space='lch', hue='longer')
+Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=8, space='lch', hue='longer')
 ```
 
 ColorAide is a continually evolving project, but was created with a number of specific goals in mind:

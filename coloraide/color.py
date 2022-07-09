@@ -710,30 +710,6 @@ class Color(metaclass=ColorMeta):
                 this[name] = alg.NaN
         return this
 
-    def steps(
-        self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
-        *,
-        steps: int = 2,
-        max_steps: int = 1000,
-        max_delta_e: float = 0,
-        delta_e: Optional[str] = None,
-        **interpolate_args: Any
-    ) -> List['Color']:
-        """
-        Discrete steps.
-
-        This is built upon the interpolate function, and will return a list of
-        colors containing a minimum of colors equal to `steps` or steps as specified
-        derived from the `max_delta_e` parameter (whichever is greatest).
-
-        Number of colors can be capped with `max_steps`.
-
-        Default delta E method used is delta E 76.
-        """
-
-        return self.interpolate(color, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
-
     def mix(
         self,
         color: ColorInput,
@@ -749,22 +725,38 @@ class Color(metaclass=ColorMeta):
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
-        if not self._is_color(color) and not isinstance(color, (str, interpolate.Piecewise, Mapping)):
+        if not self._is_color(color) and not isinstance(color, (str, Mapping)):
             raise TypeError("Unexpected type '{}'".format(type(color)))
-        mixed = self.interpolate(color, **interpolate_args)(percent)
+        mixed = self.interpolate([self, color], **interpolate_args)(percent)
         return self.mutate(mixed) if in_place else mixed
 
+    @classmethod
+    def steps(
+        cls,
+        colors: Sequence[Union[ColorInput, interpolate.common.stop, Callable[..., float]]],
+        *,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: Optional[str] = None,
+        **interpolate_args: Any
+    ) -> List['Color']:
+        """Discrete steps."""
+
+        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
+
+    @classmethod
     def interpolate(
-        self,
-        color: Union[Union[ColorInput, interpolate.Piecewise], Sequence[Union[ColorInput, interpolate.Piecewise]]],
+        cls,
+        colors: Sequence[Union[ColorInput, interpolate.common.stop, Callable[..., float]]],
         *,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
-        stop: float = 0,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
-        premultiplied: bool = True
-    ) -> interpolate.Interpolator:
+        premultiplied: bool = True,
+        method: str = "linear"
+    ) -> interpolate.common.Interpolator:
         """
         Return an interpolation function.
 
@@ -777,43 +769,15 @@ class Color(metaclass=ColorMeta):
         mixing occurs.
         """
 
-        if space is None:
-            space = self.INTERPOLATE
-
-        if out_space is None:
-            out_space = self.space()
-
-        # A piecewise object was provided, so treat it as such,
-        # or we've changed the stop of the base color, so run it through piecewise.
-        if (
-            isinstance(color, interpolate.Piecewise) or
-            (stop != 0 and (isinstance(color, (str, Mapping)) or self._is_color(color)))
-        ):
-            color = cast(Sequence[Union['Color', str, Mapping[str, Any], interpolate.Piecewise]], [color])
-
-        if not isinstance(color, str) and isinstance(color, Sequence):
-            # We have a sequence, so use piecewise interpolation
-            colors = list(color)
-            colors.insert(0, interpolate.Piecewise(self, stop=stop))
-            return interpolate.color_piecewise_lerp(
-                colors,
-                space,
-                out_space,
-                progress,
-                hue,
-                premultiplied
-            )
-        else:
-            # We have a sequence, so use piecewise interpolation
-            return interpolate.color_lerp(
-                self,
-                color,
-                space,
-                out_space,
-                progress,
-                hue,
-                premultiplied
-            )
+        return interpolate.get_interpolator(method)(
+            cls,
+            colors=colors,
+            space=space,
+            out_space=out_space,
+            progress=progress,
+            hue=hue,
+            premultiplied=premultiplied
+        )
 
     def filter(  # noqa: A003
         self,
