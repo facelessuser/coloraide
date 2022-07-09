@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.19.0
+## 1.0a1
 
 - **BREAK**: Reworked interpolation:
 
