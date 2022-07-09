@@ -963,3 +963,15 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             )(0.75),
             Color('hsl(176.88 45.313% 47.813%)')
         )
+
+    def test_bezier_cylindrical_gamut(self):
+        """Test bezier with a cylindrical space with at least one color out of gamut."""
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['hsl(250 50% 30%)', 'hsl(none 0% 110%)'],
+                space='hsl',
+                method='bezier'
+            )(0.75),
+            Color('hsl(62.5 12.5% 82.5%)')
+        )
