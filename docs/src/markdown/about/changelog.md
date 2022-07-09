@@ -2,6 +2,21 @@
 
 ## 0.19.0
 
+- **BREAK**: Reworked interpolation:
+
+    - `interpolate` and `steps` functions are now `@classmethod`s. This alleviates the awkward handling of interpolating
+      colors greater than 2. Before, the first color always had to be an instance and then the rest had to be fed into
+      that instance, now the the methods can be called from the base class or an instance with all the colors fed in
+      via a list. Only the colors in the list will be evaluated during interpolation.
+    - `Piecewise` object has been removed.
+    - `stop` objects are used to wrap colors to apply a new color stop.
+    - easing functions can be supplied in the middle of two colors via the list input.
+    - `hint` function has been provided to simulate CSS color hinting. `hint` returns an easing function that modifies
+      the midpoint to the specified point between two color stops.
+    - A new bezier interpolation method has been provided. When using `interpolate`, `steps`, or `mix` the interpolation
+      style can be changed via the `method` parameter. `bezier` and `linear` are available with `linear` being the
+      default.
+
 - **BREAK**: Dictionary input/output now matches the following format (where alpha is optional):
 
     ```py
@@ -30,9 +45,9 @@
   the color first: `#!py color.clone().clip()`.
 
 - **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
-  and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces and will serialize as a
-  number by default instead. Optionally, these forms can force a percentage output with via the `to_string` method when
-  using the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
+  and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces will serialize as a
+  number by default instead. Optionally, these forms can force a percentage output via the `to_string` method when using
+  the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
 
   Additionally, CSS color spaces using the `color()` format as an input will translate using these same ranges if the
   channels are percentages. `hue` will also be respected and treated as 0 - 360 when using a percentage.
