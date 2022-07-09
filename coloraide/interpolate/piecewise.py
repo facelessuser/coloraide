@@ -159,6 +159,19 @@ class InterpolatePiecewise(Interpolator):
         raise RuntimeError('Iterpolation could not be found for {}'.format(percent))  # pragma: no cover
 
 
+def normalize_color(color: 'Color', space: str, premultiplied: bool) -> None:
+    """Normalize the color."""
+
+    # Adjust to color to space and ensure it fits
+    if not color.CS_MAP[space].EXTENDED_RANGE:
+        if not color.in_gamut():
+            color.fit()
+
+    # Premultiply
+    if premultiplied:
+        premultiply(color)
+
+
 def color_piecewise_lerp(
     create: Type['Color'],
     colors: List[Union[ColorInput, stop, Callable[..., float]]],
@@ -191,15 +204,7 @@ def color_piecewise_lerp(
         out_space = current.space()
 
     current.convert(space, in_place=True)
-
-    # Adjust to color to space and ensure it fits
-    if not current.CS_MAP[space].EXTENDED_RANGE:
-        if not current.in_gamut():
-            current.fit()
-
-    # Premultiply
-    if premultiplied:
-        premultiply(current)
+    normalize_color(current, space, premultiplied)
 
     easing = None  # type: Any
     easings = []  # type: Any
@@ -222,13 +227,7 @@ def color_piecewise_lerp(
 
         # Adjust to color to space and ensure it fits
         color = color.convert(space)
-        if not color.CS_MAP[space].EXTENDED_RANGE:
-            if not color.in_gamut():
-                color.fit()
-
-        # Premultiply
-        if premultiplied:
-            premultiply(color)
+        normalize_color(color, space, premultiplied)
 
         # Adjust hues if we have two valid hues
         color2 = color.clone()

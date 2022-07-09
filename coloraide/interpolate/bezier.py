@@ -69,15 +69,16 @@ class InterpolateBezier(Interpolator):
             elif alg.is_nan(b) and not alg.is_nan(a):
                 coords[x] = a
             elif alg.is_nan(a) and alg.is_nan(b):
-                backfill = True
+                # Multiple undefined values, mark the start
+                backfill = x - 1
+                continue
 
+            # Replace all undefined values that occurred prior to
+            # finding the current defined value
             if backfill is not None:
-                count = x - backfill - 1
-                coords[backfill:count] = [b] * count
+                coords[backfill:x - 1] = [b] * (x - 1 - backfill)
                 backfill = None
 
-        if backfill is not None:
-            coords[:] = [0.0] * len(coords)
         return coords
 
     def interpolate(
@@ -144,6 +145,24 @@ class InterpolateBezier(Interpolator):
         raise RuntimeError('Iterpolation could not be found for {}'.format(percent))  # pragma: no cover
 
 
+def normalize_color(color: 'Color', space: str, premultiplied: bool) -> None:
+    """Normalize color."""
+
+    # Adjust to color to space and ensure it fits
+    if not color.CS_MAP[space].EXTENDED_RANGE:
+        if not color.in_gamut():
+            color.fit()
+
+    # Premultiply
+    if premultiplied:
+        premultiply(color)
+
+    # Normalize hue
+    if issubclass(color._space, Cylindrical):
+        name = cast(Type[Cylindrical], color._space).hue_name()
+        color.set(name, lambda h: cast(float, h % 360))
+
+
 def color_bezier_lerp(
     create: Type['Color'],
     colors: List[ColorInput],
@@ -174,20 +193,7 @@ def color_bezier_lerp(
         out_space = current.space()
 
     current.convert(space, in_place=True)
-
-    # Adjust to color to space and ensure it fits
-    if not current.CS_MAP[space].EXTENDED_RANGE:
-        if not current.in_gamut():
-            current.fit()
-
-    # Premultiply
-    if premultiplied:
-        premultiply(current)
-
-    # Normalize hue
-    if issubclass(current._space, Cylindrical):
-        name = cast(Type[Cylindrical], current._space).hue_name()
-        current.set(name, lambda h: cast(float, h % 360))
+    normalize_color(current, space, premultiplied)
 
     easing = None  # type: Any
     easings = []  # type: Any
@@ -211,18 +217,7 @@ def color_bezier_lerp(
 
         # Adjust to color to space and ensure it fits
         color = color.convert(space)
-        if not color.CS_MAP[space].EXTENDED_RANGE:
-            if not color.in_gamut():
-                color.fit()
-
-        # Premultiply
-        if premultiplied:
-            premultiply(color)
-
-        # Adjust hues if we have two valid hues
-        if issubclass(current._space, Cylindrical):
-            name = cast(Type[Cylindrical], color._space).hue_name()
-            color.set(name, lambda h: cast(float, h % 360))
+        normalize_color(color, space, premultiplied)
 
         # Create an entry interpolating the current color and the next color
         coords.append(color[:])
