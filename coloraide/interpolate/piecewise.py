@@ -54,23 +54,6 @@ def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     color2.set(name, c2)
 
 
-class Lerp:
-    """Linear interpolation."""
-
-    def __init__(self, progress: Optional[Callable[..., float]]) -> None:
-        """Initialize."""
-
-        self.progress = progress
-
-    def __call__(self, a: float, b: float, t: float) -> float:
-        """Interpolate with period."""
-
-        if self.progress is not None:
-            t = alg.clamp(self.progress(t), 0.0, 1.0)
-
-        return alg.lerp(a, b, t)
-
-
 class InterpolatePiecewise(Interpolator):
     """Interpolate multiple ranges of colors."""
 
@@ -126,8 +109,8 @@ class InterpolatePiecewise(Interpolator):
                         progress = easing.get('all')
                 else:
                     progress = easing
-                lerper = progress if isinstance(progress, Lerp) else Lerp(progress)
-                value = lerper(c1, c2, p)
+                t = alg.clamp(progress(p), 0.0, 1.0) if progress is not None else p
+                value = alg.lerp(c1, c2, t)
             channels.append(value)
         color = self.create(self.space, channels[:-1], channels[-1])
         if self.premultiplied:
