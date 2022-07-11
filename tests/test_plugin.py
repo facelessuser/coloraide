@@ -310,6 +310,16 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         Custom.register(Jzazbz, overwrite=True)
 
+    def test_silent_registration_exists(self):
+        """Test silent handling of already registered plugin."""
+
+        from coloraide.spaces.jzazbz import Jzazbz
+
+        class Custom(Color):
+            pass
+
+        Custom.register(Jzazbz, silent=True)
+
     def test_bad_deregister_category(self):
         """Test bad deregistration category."""
 
@@ -336,3 +346,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Custom.deregister('fit:clip')
+
+    def test_silent_deregister_not_exists(self):
+        """Test if a non-existing plugin is removed from a proper category, that silent will cause no error."""
+
+        class Custom(Color):
+            pass
+
+        Custom.deregister('space:bad', silent=True)
