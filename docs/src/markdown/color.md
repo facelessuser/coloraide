@@ -4,7 +4,7 @@ The `Color` object is where all the magic of ColorAide happens. In order to mani
 action on a color, we must first create one. There are a number of ways to instantiate new colors. Here we will cover
 basic creating, cloning, and updating of the `Color` class object and a few other class specific topics.
 
-## Creating Colors
+## Importing
 
 The `Color` object contains all the logic to create and manipulate colors. It can be imported from `coloraide`.
 
@@ -12,8 +12,26 @@ The `Color` object contains all the logic to create and manipulate colors. It ca
 from coloraide import Color
 ```
 
-Afterwards, colors can be created using various, valid CSS syntax. Syntax includes legacy formats as defined in CSS
-Level 3, but also contains CSS Level 4!
+By default, the `Color` object contains only a subset of the available color spaces and related distancing algorithms in
+order to keep the object lighter. If desired, the `ColorAll` object can be used which includes _everything_. This is
+generally not recommended as most users do not need _everything_. In general, it is recommended to subclass the `Color`
+object and cherry pick any additional plugins that are required, but if you'd like to have access to all the color
+spaces that are available, along with any other optional plugins, you can import and use `ColorAll`.
+
+```py3
+from coloraide import ColorAll as Color
+```
+
+!!! tip "Custom Color Objects"
+    To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-color-classes) for more.
+
+## Creating Colors
+
+Once the `Color` class is imported, colors can be created using various forms of input. Colors can be created from
+strings, raw data input, and even simple raw data wrapped in dictionaries.
+
+As far as strings are concerned, ColorAide has the ability to parse valid CSS syntax. Syntax includes legacy formats as
+defined in CSS Level 3, but also contains CSS Level 4!
 
 ```playground
 Color("red")
@@ -23,15 +41,15 @@ Color("rgb(0 0 255 / 1)")
 
 !!! warning "Warning: CSS Level 4"
     Though CSS Level 4 is supported, the CSS spec is not finalized and there could be some churn in relation to the
-    syntax as browsers begin to implement the spec, there may be changes.
+    syntax as browsers begin to implement the spec.
 
 ColorAide not only supports colors in the CSS spec, but also some other additional color spaces as well. To bridge the
 gap with syntax, ColorAide allows all colors, whether in the CSS spec or not, to be recognized using the CSS color
 function (`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently
 specified to use the `#!css-color color()` function, we still allow it.
 
-Essentially, we've adopted the `#!css-color color()` function as the universal way in which to serialize colors. If the
-CSS spec does not formally recognize a color in this form, the color identifier will use the two dashes as a prefix
+Essentially, we've adopted the `#!css-color color()` function as the universal way in which to serialize color strings.
+If the CSS spec does not formally recognize a color in this form, the color identifier will use two dashes as a prefix
 (`--color-id`). Check the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS
 identifier name as the CSS identifier may not always match the color space name as specified in ColorAide.
 
@@ -47,8 +65,8 @@ Color("srgb", [0.5, 0, 1], 0.3)
 ```
 
 Colors can also be exported to and receive input from simple dictionaries. These can be useful when serializing to JSON
-or various other reasons. The `space` key and all relevant color channels must be specified when constructing a color
-object from a dictionary, `alpha` is the only optional channel and will be assumed as `1` if omitted.
+or various other reasons. Dictionaries include the `space` key and all relevant color channels as a list under the
+`coords` key, and an optional `alpha` key will be assumed as `1` if omitted.
 
 ```playground
 d = Color('red').to_dict()
@@ -73,9 +91,9 @@ color1
 color1.new("blue")
 ```
 
-If desired, all creation methods can be have a color space filter list passed in. The filter list will prevent an input
-which specifies a color space found in our list to not be accepted. Use a filter will constrain inputs to supported
-color spaces not found in the list.
+If desired, all creation methods can have a color space filter list passed in. The filter list will prevent an input
+which specifies a color space found in our list to not be accepted. Using a filter will constrain inputs to only the
+color spaces in the list.
 
 ```playground
 try:
@@ -89,7 +107,7 @@ Color("hsl(130 30% 75%)", filters=["hsl"])
 
 The `clone` method is an easy way to duplicate the current color object.
 
-Here we clone the `#!color green` object, giving us two.
+Here we clone the `#!color green` color object, giving us two.
 
 ```playground
 c1 = Color("green")
@@ -159,7 +177,6 @@ Color('yellow').convert("lab")
         as it adheres to an sRGB gamut that does not support HDR lightness.
 
         ```playground
-        from coloraide import ColorAll as Color
         jz = Color('color(--jzazbz 0.25 0 0)')
         jz
         hsluv = jz.convert('hsluv')
@@ -182,7 +199,7 @@ Color('yellow').convert("lab")
         What is more a problem is not that chroma doesn't resolve to `#!py3 0`, but that you can get nonsensical hues as
         chroma gets very close to zero. Because of this, we simply set hue to undefined when chroma is deemed very close
         for the color model. But this small change can affect the outcome slightly when doing a round trip back to the
-        original color, though, not usually enough to impact the value in any significantly meaningful way.
+        original color, though, not usually enough to impact the value in any significant, meaningful way.
 
         The definition of very close to `#!py3 0` can be different from color space to color space, so the impact of
         such a change can be more significant for certain color spaces.
@@ -190,7 +207,6 @@ Color('yellow').convert("lab")
         Consider the conversion of the color `#!color gray` to both Oklab and Jzazbz.
 
         ```playground
-        from coloraide import ColorAll as Color
         c1 = Color('gray').convert('oklab')
         c2 = Color('gray').convert('jzazbz')
         c1, c2
@@ -203,7 +219,6 @@ Color('yellow').convert("lab")
         the difference is still not perceivable to the human eye.
 
         ```playground
-        from coloraide import ColorAll as Color
         jz = Color('gray').convert('jzazbz')
         jz
         jz2 = jz.convert('jzczhz').convert('jzazbz')
@@ -289,16 +304,26 @@ for m in RE_COLOR_START.finditer(text):
 
 ## Custom Color Classes
 
-In general, it is always recommended to subclass the [`Color`](#color) object when setting up custom preferences or
-adding or removing plugins. This prevents modifying the base class which may affect other libraries relying on the
-module. When [`Color`](#color) is subclassed, it is safe to then update global overrides or register and deregister
-plugins without the worry of affecting the base class.
+The `Color` object was created to be extensible and has implemented various functionalities as plugins. Things like
+color spaces, distancing algorithms, filters, etc. are all implemented as plugins. In order to keep things light,
+ColorAide does not register all the of the plugins by default unless the user as imported the `ColorAll` object.
+
+Additionally, ColorAide as implemented a number of defaults that can be tweaked within the `Color` class to alter how
+things are handled.
+
+Creating a custom class allows for a user to change some of the default settings and add or remove plugins to gain
+access to more color spaces, distancing algorithms, filters, etc.
+
+In general, it is always recommended to subclass the `Color` object when setting up custom preferences or adding or
+removing plugins. This prevents modifying the base class which may affect other libraries relying on the module. When
+`Color` is subclassed, it is safe to then update global overrides or register and deregister plugins without the worry
+of affecting the base class.
 
 ### Override Default Settings
 
 ColorAide has a number of preferences that can be altered in the `Color` class. Most of these options can be configured
-on demand when calling into a function that uses theme, but it may be useful to setup a new defaults so that the `Color`
-object behaves how you prefer.
+on demand when calling into a related function that uses them, but it may be useful to set them up one time on a new
+`Color` object.
 
 ```playground
 class Color2(Color):
@@ -310,7 +335,7 @@ Color2('rgb(128.12345 0 128.12345)').to_string()
 
 Properties             | Defaults            | Description
 ---------------------- | ------------------- | -----------
-`FIT`                  | `#!py "lch-chroma"` | The default gamut mapping method used by the [`Color`](#color) object.
+`FIT`                  | `#!py "lch-chroma"` | The default gamut mapping method used by the `Color` object.
 `INTERPOLATE`          | `#!py "oklab"`      | The default color space used for interpolation.
 `DELTA_E`              | `#!py "76"`         | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
 `PRECISION`            | `#!py 5`            | The default precision for string outputs.
@@ -319,22 +344,12 @@ Properties             | Defaults            | Description
 
 ### Plugins
 
-Currently, only color spaces, delta E methods, chromatic adaptation, filters, and gamut mapping methods are exposed as
-plugins.
+Currently, color spaces, delta E methods, chromatic adaptation, filters, and gamut mapping methods are exposed as
+plugins. As previously mentioned, `Color` does not register all plugins, and `ColorAll` is often more than a user needs
+by default. Registering exactly what you need is normally the recommend way.
 
-Some potential, useful cases: register new color spaces that are not supported directly in ColorAide, test out a new ∆E
-algorithm, experiment with a potentially better gamut mapping algorithm, tweak an existing color space to accept and
-output color strings in a new format, create a variant of a color space that uses a different white point than is
-currently supported, etc.
-
-If you wanted a more lightweight [`Color`](#color) object, you could deregister color spaces you don't need. Though,
-keep in mind that some color spaces are essential, like XYZ D65 which is used in many color conversions. Removing some
-colors could also break functionality of certain features that are reliant on a specific color space, such as CIELAB
-which is used for ∆E^\*^~2000~ color distancing or CIELCH which is used in the the LCH Chroma gamut mapping, but both
-could also be deregistered to avoid issues.
-
-While we will not go into creating plugins here, we will go over how to register new plugins and deregister existing
-plugins. To learn more about creating plugins, checkout the [plugin documentation](./plugins/index.md).
+While we won't go into a lot of details about creating plugins here, we will go over how to register new plugins and
+deregister existing plugins. To learn more about creating plugins, checkout the [plugin documentation](./plugins/index.md).
 
 Registration is performed by the `register` method. It can take a single plugin or a list of plugins. Based on the
 plugin's type, The Color object will determine how to properly register the plugin. If the plugin attempts to overwrite
@@ -342,27 +357,32 @@ a plugin already registered with the same name (as dictated by the plugin) the o
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
 
-Here is an example creating a custom XYZ color space using the D55 white point.
+As previously mentioned, the `Color` object does not include all plugins. This example shows how to register one of the
+many additional color spaces provided by ColorAide.
 
 ```playground
-from coloraide.cat import WHITES
-from coloraide.spaces.xyz_d65 import XYZD65
+from coloraide import Color
+from coloraide.spaces.xyy import XyY
 
-class XYZD55(XYZD65):
-    BASE = "xyz-d65"
-    NAME = "xyz-d55"
-    SERIALIZE = ("xyz-d55",)
-    WHITE = WHITES['2deg']['D55']
+try:
+    Color('red').convert('xyy')
+except:
+    print('Nope')
 
 class Custom(Color): ...
-Custom.register(XYZD55)
-Custom('red').convert('xyz-d55')
+
+Custom.register(XyY)
+
+Custom('red').convert('xyy')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to
-deregister: `category:name`. Valid categories are `space`, `delta-e`, `cat`, `filter`, and `fit`. If the given plugin is
-not found, an error will be thrown, but if this notification is found to be unnecessary, `silent` can be enabled and the
-there will be no error thrown.
+deregister: `category:name`.
+
+Valid categories are `space`, `delta-e`, `cat`, `filter`, and `fit`.
+
+If the given plugin is not found, an error will be thrown, but if this notification is found to be unnecessary, `silent`
+can be enabled and the there will be no error thrown.
 
 ```playground
 class Custom(Color): ...

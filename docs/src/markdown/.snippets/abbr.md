@@ -9,3 +9,4 @@
 *[CVDs]: color vision deficiency
 *[HDR]: High Dynamic Range
 *[SDR]: Standard Dynamic Range
+*[HPE]: Hunt-Pointer-Estevez

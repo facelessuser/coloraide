@@ -1,6 +1,7 @@
 [brettel]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
 [colorio]: https://github.com/nschloe/colorio
 [colorjs]: https://github.com/LeaVerou/color.js
+[color-math]: https://github.com/gtaylor/python-colormath
 [colour-science]: https://github.com/colour-science/colour
 [compositing-level-1]: https://www.w3.org/TR/compositing-1/
 [css-spec-convert]: https://drafts.csswg.org/css-color/#color-conversion-code

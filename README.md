@@ -9,15 +9,13 @@
 
 # ColorAide
 
-> **This is still a work in progress.**
->
-> While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease > state. This simply means
-> the API could still be in flux to some degree. ColorAide is still technically waiting for > some issues related to CSS
-> color syntax and behavior to be decided by the CSS Working Group.
+> **Currently a Beta**
+> ColorAide is very close to a stable release and is currently in the Beta stage. While minor things could still change,
+> there are no plans for major API changes at this point.
 
 ## Overview
 
-ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.
+ColorAide is a pure Python, object oriented approach to colors.
 
 ```python
 >>> from coloraide import Color
@@ -32,15 +30,21 @@ ColorAide is a color library for Python with the intent of providing an easy to 
 'rgb(255 65.751 107.47)'
 ```
 
-ColorAide is a continually evolving project, but was created with a number of specific goals in mind:
+ColorAide particularly has a focus on the following:
+
+- Accurate colors.
+
+- Proper round tripping (where reasonable).
 
 - Be generally easy to pick up for the average user.
 
-- Support modern CSS color spaces and syntax as well as a number of popular non-CSS color spaces.
+- Support modern CSS color spaces and syntax.
 
-- Provide a plugin API to extend color spaces and more.
+- Make accessible many new and old non-CSS color spaces.
 
 - Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.
+
+- Provide a plugin API to extend supported color spaces and more.
 
 - Allow users to configure defaults to their liking.
 

@@ -70,6 +70,10 @@ markdown_extensions:
   - pymdownx.superfences:
       preserve_tabs: true
       custom_fences:
+        # Mermaid diagrams
+        - name: diagram
+          class: diagram
+          format: !!python/name:pymdownx.superfences.fence_code_format
         - name: playground
           class: playground
           format: !!python/name:docs.src.py.notebook.color_command_formatter
@@ -124,9 +128,10 @@ markdown_extensions:
 extra_css:
   - assets/coloraide-extras/extra-753860a807.css
 extra_javascript:
-  - playground-config-e4040a76.js
+  - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
+  - playground-config-50c86242.js
   - https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-fe4af16b.js
+  - assets/coloraide-extras/extra-notebook-1d173e7b.js
 
 extra:
   social:

@@ -152,7 +152,7 @@ def execute(cmd, no_except=True, inline=False):
         coloraide_extras = None
 
     g = {
-        'Color': coloraide.Color,
+        'Color': coloraide.ColorAll,
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
         'stop': coloraide.stop,

@@ -498,7 +498,7 @@ degrees, ColorAide will accept it, but the hue will not affect the color in any 
 
 During conversions, such context is lost, and if an achromatic color is converted to the color space like HSL, the
 resultant color will have a hue that is noted as undefined. This is simply because there is no good hue for achromatic
-colors as they play no part in the color. All hues actually incorrect as achromatic colors have no real hue. Instead,
+colors as they play no part in the color. Any hue is actually incorrect as achromatic colors have no real hue. Instead,
 colors will be returned with a value that represents that the hue is missing or undefined, or maybe better worded, could
 not be defined.
 
@@ -513,8 +513,22 @@ ColorAide also uses `NaN`, or in Python `#!py3 float('nan')`, to represent undef
 when a hue is deemed undefined, the hue value will be set to `coloraide.NaN`, which is just a constant containing
 `#!py3 float('nan')`.
 
-When interpolating, if one color's channel has a `NaN`, the other color's channel will be used as the result. If both
-colors have a `NaN` for the same channel, then `NaN` will be returned.
+When performing linear interpolation, where only two color's channels are ever being evaluated together at a given time,
+if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
+for the same channel, then `NaN` will be returned.
+
+!!! tip "NaN Handling in Bezier Interpolation"
+    This logic is similar for things like Bezier interpolation, but will be extended as Bezier interpolation can
+    evaluate multiple colors at a time. For instance if interpolating a single channel across three colors, `NaN` must
+    be resolved simultaneously across all three colors.
+
+    Here are some example resolutions for 3 values from one channel from three separate colors:
+
+    - `#!py3 [NaN, NaN, 1]` --> `#!py3 [1, 1, 1]`
+    - `#!py3 [NaN, 0.5, 1]` --> `#!py3 [0.5, 0.5, 1]`
+    - `#!py3 [1, 0.5, NaN]` --> `#!py3 [1, 0.5, 0.5]`
+    - `#!py3 [1, NaN, NaN]` --> `#!py3 [1, 1, 1]`.
+    - `#!py3 [NaN, NaN, NaN]` --> `#!py3 [NaN, NaN, NaN]`
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color green`), the hue of the second color is used.

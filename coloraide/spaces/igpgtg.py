@@ -67,8 +67,8 @@ class IgPgTg(Labish, Space):
     SERIALIZE = ("--igpgtg",)  # type: Tuple[str, ...]
     CHANNELS = (
         Channel("ig", 0.0, 1.0),
-        Channel("pg", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
-        Channel("tg", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
+        Channel("pg", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("tg", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     WHITE = WHITES['2deg']['D65']
 

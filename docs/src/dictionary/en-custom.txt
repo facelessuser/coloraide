@@ -5,6 +5,7 @@ Achromatopsia
 Alvy
 Az
 BT
+Berns
 Bezier
 Björn
 Boronine
@@ -19,6 +20,7 @@ CIELAB's
 CIELCH
 CIELCH's
 CIELUV
+CIEXYZ
 CMC
 CMCCAT
 CMF
@@ -57,6 +59,7 @@ Florian
 Formatter
 HDR
 HLG
+HPE
 HSB
 HSI
 HSL
@@ -141,8 +144,10 @@ Viénot
 Von
 WCAG
 WCG
+XD
 XYZ
 YCbCr
+ZD
 accessor
 accessors
 achromatomaly
@@ -156,6 +161,7 @@ bz
 cd
 chroma
 chromaticity
+colorimetrically
 colorimetry
 config
 coroutine
@@ -188,6 +194,7 @@ macOS
 memoization
 monochromacy
 oRGB
+oRGB's
 opRGB
 opto
 performant
