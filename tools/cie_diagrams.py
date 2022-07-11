@@ -14,7 +14,7 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import Color
+    from coloraide import ColorAll as Color
 from coloraide import util  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
 

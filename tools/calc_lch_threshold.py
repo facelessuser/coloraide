@@ -34,13 +34,17 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import Color
+    from coloraide import ColorAll as Color
 
 RE_LEAD_ZERO = re.compile(r'^0\.0+')
 
 
 def run(lch, lab):
     """Run the calculation."""
+
+    max_chroma = 0.0
+    max_a = 0.0
+    max_b = 0.0
 
     for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
         max_chroma = 0.0
@@ -49,7 +53,7 @@ def run(lch, lab):
 
         for x in range(-0x600, 0x600):
             # Create an achromatic RGB color
-            color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
+            color = Color(space, [x / 100] * 3)
             if lab:
                 labish = color.convert(lab)
                 a_name, b_name = labish._space.labish_names()[1:]

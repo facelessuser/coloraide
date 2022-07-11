@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import Color
+    from coloraide import ColorAll as Color
 from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
 from coloraide.algebra import is_nan  # noqa: E402
 
