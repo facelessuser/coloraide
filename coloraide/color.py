@@ -88,25 +88,6 @@ SUPPORTED_FILTERS = (
     Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert, Protan, Deutan, Tritan
 )
 
-WARN_COORDS = """
-Color channel access has changed. Dynamic channel properties have been deprecated.
-Usage of Color.coords() has also been deprecated. All channels can now easily be
-accessed with indexing.
-
-- You can index with numbers: Color[0]
-- You can index with channel names: Color['red']
-- You can slice to get specific color coordinates: Color[:-1]
-- You can get all coordinates: Color[:] or list(Color)
-- You can even iterate coordinates: [c for c in Color]
-- Indexing also supports assignment: Color[0] = 1 or Color[:3] = [1, 1, 1]
-
-Please consider updating usage to utilize this new functionality as Color.coords()
-and all other dynamic properties will be removed sometime before the 1.0 release.
-
-These changes were made in an effort to remove unnecessary overhead on every class
-attribute get/set operation.
-"""
-
 
 class ColorMatch:
     """Color match object."""
@@ -907,16 +888,6 @@ class Color(metaclass=ColorMeta):
         # Handle a function that modifies the value or a direct value
         self[name] = value(self[name]) if callable(value) else value
         return self
-
-    @util.deprecated(WARN_COORDS)
-    def coords(self) -> Vector:  # pragma: no cover
-        """
-        Coordinates.
-
-        TODO: remove before release of 1.0
-        """
-
-        return self._coords[:-1]
 
 
 Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
