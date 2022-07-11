@@ -93,7 +93,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(
             Color2('red').delta_e("blue"),
-            55.79977
+            52.8782
         )
 
     def test_plugin_registration_space(self):

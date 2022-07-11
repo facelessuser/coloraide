@@ -13,6 +13,15 @@ class DE2000(DeltaE):
 
     NAME = "2000"
 
+    # CSS uses D50 because that is the only Lab in the spec,
+    # but most implementation use D65. Typically D50 is the
+    # choice for reflective (i.e. Paper) or transmissive readings,
+    # while displays would typically use a measured white reference,
+    # or D65. If a CSS compliant variant is desired, simply subclass
+    # and set `LAB` to `lab-d50`. If the intent is not to override,
+    # then set `NAME` to something like `NAME="2000-D50"`.
+    LAB = "lab-d65"
+
     G_CONST = 25 ** 7
 
     @classmethod
@@ -34,8 +43,8 @@ class DE2000(DeltaE):
         http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
         """
 
-        l1, a1, b1 = alg.no_nans(color.convert("lab")[:-1])
-        l2, a2, b2 = alg.no_nans(sample.convert("lab")[:-1])
+        l1, a1, b1 = alg.no_nans(color.convert(cls.LAB)[:-1])
+        l2, a2, b2 = alg.no_nans(sample.convert(cls.LAB)[:-1])
 
         # Equation (2)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)
