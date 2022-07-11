@@ -66,6 +66,9 @@
   `rec2100pq`.
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
+- **NEW**: Use Lab D65 for ∆E 2000 as this is far more common. CSS uses Lab D50, seemingly because they have only
+  implemented Lab D50 in the spec. If a fully CSS compatible variant is desired, the method can be subclassed to use
+  Lab D50.
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.
 
 ## 0.18.1
