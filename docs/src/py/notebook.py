@@ -86,12 +86,12 @@ def std_output(stdout=None):
 def get_colors(result):
     """Get color from results."""
 
-    from coloraide import Color
+    from coloraide import Color, ColorAll
     from coloraide.interpolate import Interpolator
     try:
         from coloraide_extras import Color as Color2
     except ImportError:
-        Color2 = Color
+        Color2 = ColorAll
 
     colors = []
     if isinstance(result, HtmlRow):
@@ -131,7 +131,7 @@ def find_colors(text):
     try:
         from coloraide_extras import Color
     except ImportError:
-        from coloraide import Color
+        from coloraide import ColorAll as Color
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
@@ -400,7 +400,7 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
     try:
         from coloraide_extras import Color
     except ImportError:
-        from coloraide import Color
+        from coloraide import ColorAll as Color
 
     try:
         result = src.strip()
