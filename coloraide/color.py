@@ -356,7 +356,8 @@ class Color(metaclass=ColorMeta):
     def register(
         cls,
         plugin: Union[Type[Plugin], Sequence[Type[Plugin]]],
-        overwrite: bool = False
+        overwrite: bool = False,
+        silent: bool = False
     ) -> None:
         """Register the hook."""
 
@@ -381,7 +382,9 @@ class Color(metaclass=ColorMeta):
                 if p.NAME == 'clip':
                     if reset_convert_cache:  # pragma: no cover
                         cls._get_convert_chain.cache_clear()
-                    raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
+                    if not silent:
+                        raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
+                    continue  # pragma: no cover
             else:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()
@@ -392,7 +395,7 @@ class Color(metaclass=ColorMeta):
 
             if name != "*" and name not in mapping or overwrite:
                 cast(Dict[str, Type[Plugin]], mapping)[name] = value
-            else:
+            elif not silent:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()
                 raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
@@ -433,7 +436,9 @@ class Color(metaclass=ColorMeta):
                 if name == 'clip':
                     if reset_convert_cache:  # pragma: no cover
                         cls._get_convert_chain.cache_clear()
-                    raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
+                    if not silent:
+                        raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
+                    continue  # pragma: no cover
             else:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()

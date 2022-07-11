@@ -126,6 +126,7 @@ Parameters
     ----------- | ------------- | -----------
     `plugin`    |               | A plugin object or list of plugin objects to register.
     `overwrite` | `#!py3 False` | `overwrite` will avoid allow an already registered plugin to be overwritten if the plugin to register specifies a `name` that is already used for registration.
+    `silent`    | `#!py3 False` | `silent` will avoid throwing an error if the `name` is already found in the specified category.
 
 ## `Color.deregister` {#deregister}
 
