@@ -159,6 +159,7 @@ Color('yellow').convert("lab")
         as it adheres to an sRGB gamut that does not support HDR lightness.
 
         ```playground
+        from coloraide import ColorAll as Color
         jz = Color('color(--jzazbz 0.25 0 0)')
         jz
         hsluv = jz.convert('hsluv')
@@ -189,6 +190,7 @@ Color('yellow').convert("lab")
         Consider the conversion of the color `#!color gray` to both Oklab and Jzazbz.
 
         ```playground
+        from coloraide import ColorAll as Color
         c1 = Color('gray').convert('oklab')
         c2 = Color('gray').convert('jzazbz')
         c1, c2
@@ -201,6 +203,7 @@ Color('yellow').convert("lab")
         the difference is still not perceivable to the human eye.
 
         ```playground
+        from coloraide import ColorAll as Color
         jz = Color('gray').convert('jzazbz')
         jz
         jz2 = jz.convert('jzczhz').convert('jzazbz')
@@ -363,11 +366,11 @@ there will be no error thrown.
 
 ```playground
 class Custom(Color): ...
-Custom.deregister('space:jzazbz')
+Custom.deregister('space:lab-d65')
 try:
-    Custom('red').convert('jzazbz')
+    Custom('red').convert('lab-d65')
 except ValueError:
-    print('Could not convert to Jzazbz as it is no longer registered')
+    print('Could not convert to Lab D65 as it is no longer registered')
 ```
 
 Use of `*` with `deregister` will remove all plugins. Use of `category:*` will remove all plugins of that category.

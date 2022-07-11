@@ -1,7 +1,8 @@
 """Test LCHuv library."""
 import unittest
 from . import util
-from coloraide import Color, NaN
+from coloraide import ColorAll as Color
+from coloraide import NaN
 
 
 class TestLCHuvD65InputOutput(util.ColorAsserts, unittest.TestCase):

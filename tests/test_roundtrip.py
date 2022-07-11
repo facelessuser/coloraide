@@ -1,5 +1,5 @@
 """Sanity check that ensures all colors round trip back."""
-from coloraide import Color
+from coloraide import ColorAll as Color
 from coloraide.spaces import Cylindrical
 from coloraide import algebra as alg
 import pytest

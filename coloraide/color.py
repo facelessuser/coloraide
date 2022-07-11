@@ -46,6 +46,16 @@ from .spaces.lchuv import Lchuv
 from .spaces.hsluv import HSLuv
 from .spaces.okhsl import Okhsl
 from .spaces.okhsv import Okhsv
+from .spaces.hsi import HSI
+from .spaces.ipt import IPT
+from .spaces.igpgtg import IgPgTg
+from .spaces.cmy import CMY
+from .spaces.cmyk import CMYK
+from .spaces.xyy import XyY
+from .spaces.hunter_lab import HunterLab
+from .spaces.prismatic import Prismatic
+from .spaces.rlab import RLAB
+from .spaces.orgb import ORGB
 from .distance import DeltaE
 from .distance.delta_e_76 import DE76
 from .distance.delta_e_94 import DE94
@@ -67,15 +77,22 @@ from .types import Plugin
 from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
-    DE76, DE94, DECMC, DE2000, DEITP, DE99o, DEZ, DEHyAB, DEOK
+    DE76, DE94, DECMC, DE2000, DEHyAB, DEOK
+)
+
+EXTRA_DE = (
+    DEITP, DE99o, DEZ
 )
 
 SUPPORTED_SPACES = (
     XYZD65, XYZD50, SRGB, SRGBLinear, DisplayP3, DisplayP3Linear,
     Oklab, Oklch, Lab, Lch, LabD65, LchD65, HSV, HSL, HWB, Rec2020, Rec2020Linear,
-    A98RGB, A98RGBLinear, ProPhotoRGB, ProPhotoRGBLinear,
-    Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o,
-    Luv, Lchuv, Okhsl, Okhsv, HSLuv
+    A98RGB, A98RGBLinear, ProPhotoRGB, ProPhotoRGBLinear
+)
+
+EXTRA_SPACES = (
+    Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o, Luv, Lchuv, Okhsl, Okhsv, HSLuv,
+    HSI, IPT, IgPgTg, CMY, CMYK, XyY, HunterLab, Prismatic, RLAB, ORGB
 )
 
 SUPPORTED_FIT = (
@@ -891,3 +908,10 @@ class Color(metaclass=ColorMeta):
 
 
 Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
+
+
+class ColorAll(Color):
+    """Color derivative with all extra spaces."""
+
+
+ColorAll.register(EXTRA_DE + EXTRA_SPACES)

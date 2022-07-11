@@ -50,7 +50,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Color2(Color):
             """Color."""
 
-            INTERPOLATE = "din99o"
+            INTERPOLATE = "lab"
 
         self.assertEqual(
             Color('red').mix('green').to_string(),
@@ -58,7 +58,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         )
         self.assertEqual(
             Color2('red').mix('green').to_string(),
-            Color2('red').mix('green', space='din99o').to_string()
+            Color2('red').mix('green', space='lab').to_string()
         )
 
     def test_override_harmony(self):
@@ -99,46 +99,46 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_plugin_registration_space(self):
         """Test plugin registration of `Space`."""
 
-        from coloraide.spaces import jzazbz
+        from coloraide.spaces import lab_d65
 
-        expected = Color('red').convert('jzazbz').to_string()
+        expected = Color('red').convert('lab-d65').to_string()
 
         # Deregistration should have taken place
         class Custom(Color):
             pass
 
-        Custom.deregister('space:jzazbz')
+        Custom.deregister('space:lab-d65')
         with self.assertRaises(ValueError):
-            Custom('red').convert('jzazbz')
+            Custom('red').convert('lab-d65')
 
         # But it should not affect the base class
-        self.assertEqual(Color('red').convert('jzazbz').to_string(), expected)
+        self.assertEqual(Color('red').convert('lab-d65').to_string(), expected)
 
         # Now it is registered again
-        Custom.register(jzazbz.Jzazbz)
-        self.assertEqual(Custom('red').convert('jzazbz').to_string(), expected)
+        Custom.register(lab_d65.LabD65)
+        self.assertEqual(Custom('red').convert('lab-d65').to_string(), expected)
 
     def test_plugin_registration_delta_e(self):
         """Test plugin registration of `DeltaE`."""
 
-        from coloraide.distance import delta_e_z
+        from coloraide.distance import delta_e_2000
 
-        expected = Color('red').delta_e('green', method='jz')
+        expected = Color('red').delta_e('green', method='2000')
 
         # Deregistration should have taken place
         class Custom(Color):
             pass
 
-        Custom.deregister('delta-e:jz')
+        Custom.deregister('delta-e:2000')
         with self.assertRaises(ValueError):
-            Custom('red').delta_e('green', method='jz')
+            Custom('red').delta_e('green', method='2000')
 
         # But it should not affect the base class
-        self.assertEqual(Color('red').delta_e('green', method='jz'), expected)
+        self.assertEqual(Color('red').delta_e('green', method='2000'), expected)
 
         # Now it is registered again
-        Custom.register(delta_e_z.DEZ)
-        self.assertEqual(Custom('red').delta_e('green', method='jz'), expected)
+        Custom.register(delta_e_2000.DE2000)
+        self.assertEqual(Custom('red').delta_e('green', method='2000'), expected)
 
     def test_plugin_registration_fit(self):
         """Test plugin registration of `Fit`."""
@@ -300,15 +300,15 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_bad_registration_exists(self):
         """Test bad registration of plugin that exists."""
 
-        from coloraide.spaces.jzazbz import Jzazbz
+        from coloraide.spaces.lab_d65 import LabD65
 
         class Custom(Color):
             pass
 
         with self.assertRaises(ValueError):
-            Custom.register(Jzazbz)
+            Custom.register(LabD65)
 
-        Custom.register(Jzazbz, overwrite=True)
+        Custom.register(LabD65, overwrite=True)
 
     def test_silent_registration_exists(self):
         """Test silent handling of already registered plugin."""

@@ -787,6 +787,7 @@ _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2100)_
         `#!css-color color(--rec2100pq r g b / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("rec2100pq", [0, 0, 0], 1)
         Color("rec2100pq", [0, 0, 0], 1).to_string()
         ```
@@ -1078,6 +1079,7 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
         `#!css-color color(--okhsv h s l / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("okhsv", [0, 0, 0], 1)
         Color("okhsv", [0, 0, 0], 1).to_string()
         ```
@@ -1145,6 +1147,7 @@ _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
         `#!css-color color(--okhsl h s l / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("okhsl", [0, 0, 0], 1)
         Color("okhsl", [0, 0, 0], 1).to_string()
         ```
@@ -1212,6 +1215,7 @@ _[Learn about HSLuv](https://www.hsluv.org/)_
         `#!css-color color(--hsluv h s l / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("hsluv", [0, 0, 0], 1)
         Color("hsluv", [0, 0, 0], 1).to_string()
         ```
@@ -1877,6 +1881,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
         `#!css-color color(--luv l u v / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("luv", [0, 0, 0], 1)
         Color("luv", [0, 0, 0], 1).to_string()
         ```
@@ -1947,6 +1952,7 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
         `#!css-color color(--lchuv l c h / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("lchuv", [0, 0, 0], 1)
         Color("lchuv", [0, 0, 0], 1).to_string()
         ```
@@ -2021,6 +2027,7 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
         `#!css-color color(--jzazbz jz az bz / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("jzazbz", [0, 0, 0], 1)
         Color("jzazbz", [0, 0, 0], 1).to_string()
         ```
@@ -2089,6 +2096,7 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
         `#!css-color color(--jzczhz jz cz hz / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("jzczhz", [0, 0, 0], 1)
         Color("jzczhz", [0, 0, 0], 1).to_string()
         ```
@@ -2160,6 +2168,7 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
         `#!css-color color(--ictcp i ct cp / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("ictcp", [0, 0, 0], 1)
         Color("ictcp", [0, 0, 0], 1).to_string()
         ```
@@ -2232,6 +2241,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         `#!css-color color(--din99o l u v / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("din99o", [0, 0, 0], 1)
         Color("din99o", [0, 0, 0], 1).to_string()
         ```
@@ -2300,6 +2310,7 @@ _[Learn about DIN99o Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         `#!css-color color(--lch99o jz cz hz / a)` form.
 
         ```playground
+        from coloraide import ColorAll as Color
         Color("lch99o", [0, 0, 0], 1)
         Color("lch99o", [0, 0, 0], 1).to_string()
         ```

@@ -23,6 +23,7 @@ CMC
 CMCCAT
 CMF
 CMFs
+CMY
 CMYK
 CSS
 CVD
@@ -57,7 +58,7 @@ Formatter
 HDR
 HLG
 HSB
-HSL
+HSI
 HSL
 HSLuv
 HSV
@@ -69,6 +70,7 @@ ICtCp
 IPT
 ITP
 ITU
+IgPgTg
 Interpolator
 Iz
 Izazbz
@@ -117,6 +119,7 @@ Protanopia
 PyPI
 Pyodide
 RGB
+RLAB
 ROMM
 RYB
 SDR
@@ -132,6 +135,7 @@ Tritanopia
 Twemoji
 UCS
 UHDTV
+Uncalibrated
 Verou
 Viénot
 Von
@@ -183,6 +187,7 @@ luminance
 macOS
 memoization
 monochromacy
+oRGB
 opRGB
 opto
 performant

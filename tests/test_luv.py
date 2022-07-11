@@ -1,7 +1,7 @@
 """Test Luv library."""
 import unittest
 from . import util
-from coloraide import Color
+from coloraide import ColorAll as Color
 
 
 class TestLuvInputOutput(util.ColorAsserts, unittest.TestCase):

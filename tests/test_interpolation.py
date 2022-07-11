@@ -672,17 +672,17 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_steps_custom_delta_e(self):
         """Test a custom delta E input."""
 
-        colors = Color.steps(['red', 'green', 'blue'], space="srgb", max_delta_e=10, delta_e='99o')
+        colors = Color.steps(['red', 'green', 'blue'], space="srgb", max_delta_e=10, delta_e='2000')
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
-            self.assertTrue(color.delta_e(colors[index - 1]) <= 10)
+            self.assertTrue(color.delta_e(colors[index - 1], method='2000') <= 10)
 
-        colors = Color.steps(['red', 'green', 'blue'], space="srgb", max_delta_e=3, delta_e='99o')
+        colors = Color.steps(['red', 'green', 'blue'], space="srgb", max_delta_e=3, delta_e='2000')
         for index, color in enumerate(colors, 0):
             if not index:
                 continue
-            self.assertTrue(color.delta_e(colors[index - 1]) <= 3)
+            self.assertTrue(color.delta_e(colors[index - 1], method='2000') <= 3)
 
     def test_steps_custom_delta_compare(self):
         """Test a custom delta E input."""
