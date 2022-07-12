@@ -1,22 +1,117 @@
 # Supported Colors
 
 ColorAide aims to support all the color spaces and models currently offered in modern CSS, such as sRGB, Display P3,
-CIELAB, Oklab, etc. We also try to include a number of color spaces that are not available in CSS, but are generally
-popular.
+CIELAB, Oklab, etc. We also include a number of color spaces that are not available in CSS.
 
-It is doubtful that we'll ever include all available color spaces that exist, but ColorAide is extensible and allows for
-new color spaces and models to be added by anyone, even 3rd parties.
+While ColorAide supports a lot of color spaces, it is rare that a user would ever need every color space implemented by
+ColorAide available at all times, so to keep the Color object lighter, and color matching logic quicker, the
+`coloraide.Color` object does not register all color spaces by default.
 
-Currently, we also offer a separate package called [ColorAide Extras][extras] that provides some more color spaces:
-Hunter Lab, xyY, IPT, etc. We will most likely keep less common and experimental spaces/models over there and be very
-selective as to what we bring over here.
+The following color spaces are registered by default:
 
-!!! warning "Possible Relocation of Some Color Spaces for 1.0.0"
-    It is possible that before the 1.0.0 release that we may move some color spaces from ColorAide over to
-    [ColorAide Extras][extras]. Any color spaces and associated ∆E methods not considered part of the CSS spec could
-    could be considered for relocation. HSLuv, Jzazbz, DIN99o, CIELUV, and ICtCp are all examples of spaces that could
-    be moved to ColorAide Extras in the future. This would provide a leaner package with the option for users to install
-    the additional package and cherry pick the spaces of interest.
+&nbsp;                                | &nbsp;                                      | Default Color\ Spaces       | &nbsp;                                   | &nbsp;
+------------------------------------- | ------------------------------------------- | --------------------------- | ---------------------------------------- | -----
+[XYZ\ D65](#xyz-d65)                  | [XYZ\ D50](#xyz-d50)                        | [Linear sRGB](#linear-srgb) | [Linear Display\ P3](#linear-display-p3) | [Linear A98\ RGB](#linear-a98-rgb)
+[Linear Rec.\ 2020](#linear-rec-2020) | [Linear ProPhoto\ RGB](#linear-prohoto-rgb) | [sRGB](#srgb)               | [Display\ P3](#display-p3)               | [A98\ RGB](#a98-rgb)
+[Rec.\ 2020](#rec-2020)               | [ProPhoto\ RGB](#prophoto-rgb)              | [HSL](#hsl)                 | [HSV](#hsv)                              | [HWB](#hwb)
+[Lab](#cielab-d50)                    | [Lch](#cielch-d50)                          | [Lab\ D65](#cielab-d65)     | [Lch\ D65](#cielch-d65)                  | [Oklab](#oklab)
+[Oklch](#oklch)                       |                                             |                             |                                          |
+
+Normally, it is suggested that a user cherry pick any additional color spaces they need by subclassing the
+`coloraide.Color` object and registering any additional color spaces that are needed (and any other plugins that are
+desired). With that said, ColorAide does also provide `coloraide.ColorAll` which includes every implemented color space,
+∆E method, and other relevant plugins. In our live examples, it is the default color object we use to demonstrate
+features. Below we've provided a diagram of all the color spaces and how they translate to one another.
+
+```diagram
+flowchart TB;
+
+    oklch --- oklab ----- xyz-d65
+        okhsl --- oklab
+        okhsv --- oklab
+
+    display-p3 --- display-p3-linear --- xyz-d65;
+
+    a98-rgb --- a98-rgb-linear --- xyz-d65;
+
+    hwb --- hsv --- hsl --- srgb --- srgb-linear ----- xyz-d65;
+        orgb --- srgb;
+        prismatic --- srgb;
+        hsi --- srgb;
+        cmy --- srgb;
+        cmyk --- srgb;
+
+    rec2020 --- rec2020-linear --- xyz-d65;
+        rec2100pq --- rec2020-linear;
+
+    prophoto-rgb --- prophoto-rgb-linear --- xyz-d50 ----- xyz-d65;
+        lch --- lab --- xyz-d50;
+
+    xyz-d65 --- lab-d65 --- lch-d65;
+
+    xyz-d65 --- jzazbz --- jzczhz;
+
+    xyz-d65 --- ipt;
+
+    xyz-d65 --- ictcp;
+
+    xyz-d65 --- igpgtg
+
+    xyz-d65 --- din99o --- lch99o;
+
+    xyz-d65 --- hunter-lab;
+
+    xyz-d65 --- rlab;
+
+    xyz-d65 --- luv --- lchuv;
+
+        luv --- hsluv;
+
+    xyz-d65 --- xyy
+
+    xyz-d65(XYZ D65);
+    xyz-d50(XYZ D50);
+    rec2020(Rec. 2020);
+    rec2020-linear(Linear Rec. 2020);
+    rec2100pq(Rec. 2100 PQ);
+    srgb-linear(Linear sRGB);
+    srgb(sRGB);
+    hsl(HSL);
+    hsv(HSV);
+    hwb(HWB);
+    display-p3-linear(Linear Display P3);
+    display-p3(Display P3);
+    a98-rgb-linear(Linear A98 RGB);
+    a98-rgb(A98 RGB);
+    prophoto-rgb-linear(Linear ProPhoto RGB);
+    prophoto-rgb(ProPhoto RGB);
+    lab(Lab);
+    lch(Lch);
+    lab-d65(Lab D65);
+    lch-d65(Lch D65);
+    oklab(Oklab);
+    oklch(Oklch);
+    okhsl(Okhsl);
+    okhsv(Okhsv);
+    luv(Luv);
+    lchuv(LCHuv);
+    hsluv(HSLuv);
+    din99o(DIN99o);
+    lch99o(DIN99o Lch);
+    jzazbz(Jzazbz);
+    jzczhz(JzCzhz);
+    ictcp(ICtCp);
+    orgb(oRGB);
+    ipt(IPT);
+    igpgtg(IgPgTg);
+    hunter-lab(Hunter Lab);
+    rlab(RLAB);
+    hsi(HSI);
+    cmy(CMY);
+    cmyk(CMYK);
+    xyy(xyY);
+    prismatic(Prismatic);
+```
 
 ## RGB
 
@@ -100,7 +195,7 @@ _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
         Color("srgb", [0, 0, 0], 1).to_string()
         ```
 
-### sRGB Linear
+### Linear sRGB
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -235,7 +330,7 @@ _[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
         Color("display-p3", [0, 0, 0], 1).to_string()
         ```
 
-### Display P3 Linear
+### Linear Display P3
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -374,7 +469,7 @@ _[Learn about A98 RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space)_
         Color("a98-rgb", [0, 0, 0], 1).to_string()
         ```
 
-### A98 RGB Linear
+### Linear A98 RGB
 
 <div class="info-container" markdown="1">
 
@@ -514,7 +609,7 @@ _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
         Color("rec2020", [0, 0, 0], 1).to_string()
         ```
 
-### REC. 2020 Linear
+### Linear REC. 2020
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -652,7 +747,7 @@ _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
         Color("prophoto-rgb", [0, 0, 0], 1).to_string()
         ```
 
-### ProPhoto Linear
+### Linear ProPhoto
 
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
@@ -1216,6 +1311,205 @@ _[Learn about HSLuv](https://www.hsluv.org/)_
         Color("hsluv", [0, 0, 0], 1).to_string()
         ```
 
+### HSI
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hsi`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    `h`  | [0, 360)
+    `s`  | [0, 1]
+    `i`  | [0, 1]
+
+<figure markdown="1">
+
+![HSI](../images/hsi-3d.png)
+
+<figcaption>The sRGB gamut represented within the HSI color space.</figcaption>
+</figure>
+
+The HSI model is similar to models like HSL and HSV except that it uses I for intensity instead of Lightness or Value.
+It does not attempt to "fill" a cylinder by its definition of saturation leading to a very different look when we plot
+it.
+
+![HSI Slice](../images/hsi-slice.png)
+
+[Learn more](https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `h`      | `hue`
+        `s`      | `saturation`
+        `i`      | `intensity`
+
+    **Inputs**
+    : 
+
+        The HSI space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --hsi`:
+
+        ```css-color
+        color(--hsi h s i / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--hsi h s i / a)` form.
+
+        ```playground
+        Color("hsi", [0, 0, 0], 1)
+        Color("hsi", [0, 0, 0], 1).to_string()
+        ```
+
+## CMY(K)
+
+CMY and CMYK are subtractive color models. The CMY color model itself does not define what is meant by cyan, magenta and
+yellow colorimetrically, and so the results of mixing them are not specified as absolute. As far as ColorAide Extra is
+concerned, it has defined its primaries the same as sRGB making it an absolute color space.
+
+There are many places in which CMY or CMYK are used, often in device dependent applications. CMYK is used in all sorts
+of printing applications, and the exact definition of cyan, magenta, yellow, and black will differ depending on how the
+device has implemented it. Unless they are calibrated to the sRGB color space primaries, it is almost certain this will
+not match such implementations.
+
+### CMY
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `cmy`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    `c`  | [0, 1]
+    `m`  | [0, 1]
+    `y`  | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![CMY](../images/cmy-3d.png)
+
+<figcaption>The sRGB gamut represented within the CMY color space.</figcaption>
+</figure>
+
+The CMY color model is a subtractive color model in which cyan, magenta and yellow pigments or dyes are added together
+in various ways to reproduce a broad array of colors. The name of the model comes from the initials of the three
+subtractive primary colors: cyan, magenta, and yellow.
+
+The CMY color space, as ColorAide Extras has chosen to implement it, is directly calculated from the sRGB color space,
+and as such, is based off the sRGB primaries.
+
+[Learn more](https://en.wikipedia.org/wiki/CMY_color_model).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `c`      | `cyan`
+        `m`      | `magenta`
+        `y`      | `yellow`
+
+    **Inputs**
+    : 
+
+        CMY is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --cmy`:
+
+        ```css-color
+        color(--cmy c m y / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--cmy c m y / a)` form.
+
+        ```playground
+        Color("cmy", [0, 0, 0], 1)
+        Color("cmy", [0, 0, 0], 1).to_string()
+        ```
+
+### CMYK
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `cmyk`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    `c`  | [0, 1]
+    `m`  | [0, 1]
+    `y`  | [0, 1]
+    `k`  | [0, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+The CMYK color model is a just like [CMY](#cmy) except that it adds an additional channel `k` to control blackness.
+
+The CMYK color space, as ColorAide Extras has chosen to implement it, is directly calculated from the sRGB color space,
+and as such, is based off the sRGB primaries.
+
+[Learn more](https://en.wikipedia.org/wiki/CMY_color_model).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `c`      | `cyan`
+        `m`      | `magenta`
+        `y`      | `yellow`
+        `k`      | `black`
+
+    **Inputs**
+    : 
+
+        CMY is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --cmyk`:
+
+        ```css-color
+        color(--cmyk c m y k / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--cmyk c m y k / a)` form.
+
+        ```playground
+        Color("cmyk", [0, 0, 0, 0], 1)
+        Color("cmyk", [0, 0, 0, 0], 1).to_string()
+        ```
+
 ## XYZ
 
 The 1931 CIE XYZ color space encompasses all colors that are visible to a person with average eyesight. It also contains
@@ -1253,7 +1547,7 @@ can be represented with other white points as well. CSS actually allows using ei
     y          | [0.0, 1.0]
     z          | [0.0, 1.0]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs.
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1326,7 +1620,7 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
     y          | [0.0, 1.0]
     z          | [0.0, 1.0]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs.
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -1375,6 +1669,68 @@ _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
         Color("xyz-d50", [0, 0, 0], 1).to_string()
         ```
 
+## CIE xyY
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `xyy`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    `x`  | [0, 1]
+    `y`  | [0, 1]
+    `Y`  | [0, 1]
+
+    ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
+
+<figure markdown="1">
+
+![xyY](../images/xyy-3d.png)
+
+<figcaption>The sRGB gamut represented within the xyY color space.</figcaption>
+</figure>
+
+A derivative of the CIE 1931 XYZ space, the CIE xyY color space, is often used as a way to graphically present the
+chromaticity of colors.
+
+[Learn more](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `x`      |
+        `y`      |
+        `Y`      |
+
+    **Inputs**
+    : 
+
+        The xyY space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --xyy`:
+
+        ```css-color
+        color(--xyy x y Y / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--xyy x y Y / a)` form.
+
+        ```playground
+        Color("xyy", [0, 0, 0], 1)
+        Color("xyy", [0, 0, 0], 1).to_string()
+        ```
+
 ## CIELAB
 
 CIELAB -- also referred to as L\*a\*b\* -- is another CIE color space. it was created as a perceptually uniform color
@@ -1400,7 +1756,7 @@ also included variants with D65 white points as well.
     a    | [-125, 125]
     b    | [-125, 125]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1473,7 +1829,7 @@ _[Learn about CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space)_
     a    | [-130, 130]
     b    | [-130, 130]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1548,7 +1904,7 @@ D65 white point.
     c    | [0, 150]
     h    | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1619,7 +1975,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
     c    | [0, 160]
     h    | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1687,7 +2043,7 @@ _[Learn about CIELCH](https://en.wikipedia.org/wiki/CIELAB_color_space#Cylindric
     a    | [-0.4, 0.4]
     b    | [-0.4, 0.4]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1758,7 +2114,7 @@ _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
     c    | [0, 0.4]
     h    | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1822,7 +2178,7 @@ _[Learn about Oklch](https://bottosson.github.io/posts/oklab/)_
     u    | [-215, 215]
     v    | [-215, 215]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1898,7 +2254,7 @@ _[Learn about CIELUV](https://en.wikipedia.org/wiki/CIELUV)_
     c    | [0, 220]
     h    | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -1969,7 +2325,7 @@ _[Learn about CIELCH~uv~](https://en.wikipedia.org/wiki/CIELUV)_
     bz   | [-0.5, 0.5]
 
     ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to quantify percentage inputs/outputs.
+    to define percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -2043,7 +2399,7 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
     hz   | [0, 360)
 
     ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to quantify percentage inputs/outputs.
+    to define percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -2111,7 +2467,7 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
     cp         | [-0.5, 0.5]
 
     ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to quantify percentage inputs/outputs.
+    to define percentage inputs/outputs.
 
 <figure markdown="1">
 
@@ -2181,7 +2537,7 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
     a    | [-55, 55]
     b    | [-55, 55]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -2253,7 +2609,7 @@ _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
     c    | [0, 60]
     h    | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to quantify percentage inputs/outputs in
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
     relation to the Display P3 color space.
 
 <figure markdown="1">
@@ -2302,6 +2658,394 @@ _[Learn about DIN99o Lch](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
         ```playground
         Color("lch99o", [0, 0, 0], 1)
         Color("lch99o", [0, 0, 0], 1).to_string()
+        ```
+
+## oRGB
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `orgb`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name  | Range^\*^
+    ----- | -----
+    `l`   | [0, 1]
+    `cyb` | [-1, 1]
+    `crg` | [-1, 1]
+
+    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+
+<figure markdown="1">
+
+![oRGB](../images/orgb-3d.png)
+
+<figcaption>The sRGB gamut represented within the oRGB color space.</figcaption>
+</figure>
+
+A new color model that is based on opponent color theory. Like HSV, it is designed specifically for computer graphics.
+However, it is also designed to work well for computational applications such as color transfer, where HSV falters.
+Despite being geared towards computation, oRGB's natural axes facilitate HSV-style color selection and manipulation.
+oRGB also allows for new applications such as a quantitative cool-to-warm metric, intuitive color manipulations and
+variations, and simple gamut mapping. This new color model strikes a balance between simplicity and the computational
+qualities of color spaces such as CIELAB.
+
+[Learn more](https://graphics.stanford.edu/~boulos/papers/orgb_sig.pdf).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `luma`
+        `cyb`    |
+        `crb`    |
+
+    **Inputs**
+    : 
+
+        The oRGB space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --orgb`:
+
+        ```css-color
+        color(--orgb l cyb crb / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--orgb l cyb crg / a)` form.
+
+        ```playground
+        Color("orgb", [0, 0, 0], 1)
+        Color("orgb", [0, 0, 0], 1).to_string()
+        ```
+
+## Hunter Lab
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hunter-lab`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    `l`  | [0.0, 100]
+    `a`  | [-210, 210]
+    `b`  | [-210, 210]
+
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+    relation to the Display P3 color space.
+
+<figure markdown="1">
+
+![oRGB](../images/hunter-lab-3d.png)
+
+<figcaption>The sRGB gamut represented within the Hunter Lab color space.</figcaption>
+</figure>
+
+The Hunter Lab color space, defined in 1948 by Richard S. Hunter, is another color space referred to as "Lab". Like
+CIELAB, it was also designed to be computed via simple formulas from the CIEXYZ space, but to be more perceptually
+uniform than CIEXYZ. Hunter named his coordinates L, a, and b. The CIE named the coordinates for CIELAB as L*, a*, b* to
+distinguish them from Hunter's coordinates.
+
+[Learn more](https://support.hunterlab.com/hc/en-us/articles/203997095-Hunter-Lab-Color-Scale-an08-96a2).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs**
+    : 
+
+        The Hunter Lab space is not currently supported in the CSS spec, the parsed input and string output formats use
+        the `#!css-color color()` function format using the custom name `#!css-color --hunter-lab`:
+
+        ```css-color
+        color(--hunter-lab l a b / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--hunter-lab l a b / a)` form.
+
+        ```playground
+        Color("hunter-lab", [0, 0, 0], 1)
+        Color("hunter-lab", [0, 0, 0], 1).to_string()
+        ```
+
+## RLAB
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `rlab`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    `l`  | [0.0, 100.0]
+    `a`  | [-125, 125]
+    `b`  | [-125, 125]
+
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+    relation to the Display P3 color space.
+
+<figure markdown="1">
+
+![RLAB](../images/rlab-3d.png)
+
+<figcaption>The sRGB gamut represented within the RLAB color space.</figcaption>
+</figure>
+
+The RLAB color-appearance space was developed by Fairchild and Berns for cross-media color reproduction applications in
+which images are reproduced with differing white points, luminance levels, and/or surrounds.
+
+[Learn more](https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1153&context=article).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `a`      |
+        `b`      |
+
+    **Inputs**
+    : 
+
+        The RLAB space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --rlab`:
+
+        ```css-color
+        color(--rlab l a b / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--rlab l a b / a)` form.
+
+        ```playground
+        Color("rlab", [0, 0, 0], 1)
+        Color("rlab", [0, 0, 0], 1).to_string()
+        ```
+
+## IPT
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `ipt`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range^\*^
+    ---- | -----
+    `i`  | [0.0, 1.0]
+    `p`  | [-1, 1]
+    `t`  | [-1, 1]
+
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+
+<figure markdown="1">
+
+![IPT](../images/ipt-3d.png)
+
+<figcaption>The sRGB gamut represented within the IPT color space.</figcaption>
+</figure>
+
+Ebner and Fairchild addressed the issue of non-constant lines of hue in their color space dubbed IPT. The IPT color
+space converts D65-adapted XYZ data (XD65, YD65, ZD65) to long-medium-short cone response data (LMS) using an adapted
+form of the Hunt-Pointer-Estevez matrix (M~HPE~(D65)).
+
+The IPT color appearance model excels at providing a formulation for hue where a constant hue value equals a constant
+perceived hue independent of the values of lightness and chroma (which is the general ideal for any color appearance
+model, but hard to achieve). It is therefore well-suited for gamut mapping implementations.
+
+[Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `i`      |
+        `p`      |
+        `t`      |
+
+    **Inputs**
+    : 
+
+        The IPT space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --ipt`:
+
+        ```css-color
+        color(--ipt i p t / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--ipt i p t / a)` form.
+
+        ```playground
+        Color("ipt", [0, 0, 0], 1)
+        Color("ipt", [0, 0, 0], 1).to_string()
+        ```
+
+## IgPgTg
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `ipt`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    `ig` | [0.0, 1]
+    `pg` | [-1, 1]
+    `tg` | [-1, 1]
+
+    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+
+<figure markdown="1">
+
+![IgPgTg](../images/igpgtg-3d.png)
+
+<figcaption>The sRGB gamut represented within the IgPgTg color space.</figcaption>
+</figure>
+
+IgPgTg uses the same structure as IPT, an established hue-uniform color space utilized in gamut mapping applications.
+While IPT was fit to visual data on the perceived hue, IGPGTG was optimized based on evidence linking the peak
+wavelength of Gaussian-shaped light spectra to their perceived hues.
+
+[Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `ig`     |
+        `pg`     |
+        `tg`     |
+
+    **Inputs**
+    : 
+
+        The IgPgTg space is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --igpgtg`:
+
+        ```css-color
+        color(--igpgtg ig pg tg / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--igpgtg ig pg tg / a)` form.
+
+        ```playground
+        Color("igpgtg", [0, 0, 0], 1)
+        Color("igpgtg", [0, 0, 0], 1).to_string()
+        ```
+
+## Prismatic
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `prismatic`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    `l`  | [0, 1]
+    `r`  | [0, 1]
+    `g`  | [0, 1]
+    `b`  | [0, 1]
+
+<figure markdown="1">
+
+![Prismatic](../images/prismatic.png)
+
+<figcaption>Prismatic Illustrations</figcaption>
+</figure>
+
+The Prismatic model introduces a simple transform of the RGB color cube into a light/dark dimension and a 2D hue. The
+hue is a normalized (barycentric)triangle with pure red, green, and blue at the vertices, often called the Maxwell Color
+Triangle.  Each cross section of the space is the same barycentric triangle, and the light/dark dimension runs zero to
+one for each hue so the whole color volume takes the form of a prism.
+
+[Learn more](http://psgraphics.blogspot.com/2015/10/prismatic-color-model.html).
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels | Aliases
+        -------- | -------
+        `l`      | `lightness`
+        `r`      | `red`
+        `g`      | `green`
+        `b`      | `blue`
+
+    **Inputs**
+    : 
+
+        The Prismatic space is not currently supported in the CSS spec, the parsed input and string output formats use
+        the `#!css-color color()` function format using the custom name `#!css-color --prismatic`:
+
+        ```css-color
+        color(--prismatic l r g b / a)  // Color function
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--prismatic l r g b / a)` form.
+
+        ```playground
+        Color("prismatic", [0, 0, 0, 0], 1)
+        Color("prismatic", [0, 0, 0, 0], 1).to_string()
         ```
 
 <style>

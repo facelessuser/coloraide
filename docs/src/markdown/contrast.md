@@ -24,7 +24,7 @@ print(l)
 Color('purple').convert('xyz-d65')['y']
 ```
 
-For convenience, the `luminance` method exposes access to this value to make it quick and easy query the relative
+For convenience, the `luminance` method exposes access to this value to make it quick and easy to query the relative
 luminance, or Y parameter from XYZ D65, for a given color.
 
 ```playground

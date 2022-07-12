@@ -1,20 +1,19 @@
 # Introduction
 
-!!! warning "Currently a Prerelease"
-    While ColorAide is very usable and out of the alpha stage, it is currently in a prerelease state. This simply means
-    the API could still be in flux to some degree. ColorAide is still technically waiting for some issues related to CSS
-    color syntax and behavior to be decided by the CSS Working Group.
+!!! warning "Currently a Beta"
+    ColorAide is very close to a stable release and is currently in the Beta stage. While minor things could still
+    change, there are no plans for major API changes at this point.
 
 ## What is ColorAide?
 
-ColorAide is a color library for Python with the intent of providing an easy to use interface to work with colors.
+ColorAide is a pure Python, object oriented approach to colors.
 
 ```playground
 from coloraide import Color
 Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=8, space='lch', hue='longer')
 ```
 
-ColorAide is a continually evolving project, but was created with a number of specific goals in mind:
+ColorAide particularly has a focus on the following:
 
 - [x] Accurate colors.
 
@@ -22,7 +21,9 @@ ColorAide is a continually evolving project, but was created with a number of sp
 
 - [x] Be generally easy to pick up for the average user.
 
-- [x] Support modern CSS color spaces and syntax as well as a number of popular non-CSS color spaces.
+- [x] Support modern CSS color spaces and syntax.
+
+- [x] Make accessible many new and old non-CSS color spaces.
 
 - [x] Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.
 
@@ -30,21 +31,16 @@ ColorAide is a continually evolving project, but was created with a number of sp
 
 - [x] Allow users to configure defaults to their liking.
 
-There are many color libraries out there, and ColorAide is not meant to be the _one_ library to replace all other color
-libraries. ColorAide focuses on not only trying to be accurate with its colors, but also to be easy to use. Not all
-color libraries are easy to pick up and use and can require a user to manage a color's illuminant, be aware of and
-manage the full conversion chain to get one color converted to another, and other various intricacies. ColorAide tries
-to handle a lot of this so you can go straight to using the colors.
+ColorAide is not meant to be the _one_ library to replace all other color libraries. There are many great libraries out
+there such such as: [Colour Science][colour-science], [Colorio][colorio], [`python-colormath`][color-math], and many
+others. Some focus on the scientific aspects of colors and provide a wealth of various spaces, illuminants, access to
+complex color space visualizers, and numerous esoteric tools. Some are highly focused on speed. Some are more complex
+and more difficult to pick up and use for newcomers, and others are more accessible.
 
-There are some great scientific libraries out there for working with colors. Two libraries that stand out are
-[Colour Science][colour-science] and [Colorio][colorio], both of which are fantastic libraries, but are definitely more
-geared towards scientific endeavors. They provide a wealth of various spaces, illuminants, access to complex color space
-visualizers, and numerous esoteric tools. They use Numpy to greatly speed up calculations as well. If you want to learn
-more about colors, these are great libraries to play with, but they can be a little more cumbersome to use for the
-average user.
-
-While ColorAide could certainly be used to analyze colors, it does not aim to provide scientific tools and mainly
-focuses on making color usage easy and accessible in projects using colors.
+At its heart, ColorAide was designed for convenience, flexibility, and to be very easy to pick up and work with. There
+are, of course, some trade offs with speed when using a pure Python, object oriented approach, but there are also many
+advantages as well. ColorAide might not always be the tool for **every** job, but hopefully it is a great tool all the
+same.
 
 ## Installation
 

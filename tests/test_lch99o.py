@@ -1,7 +1,8 @@
 """Test DIN99o LCH library."""
 import unittest
 from . import util
-from coloraide import Color, NaN
+from coloraide import ColorAll as Color
+from coloraide import NaN
 
 
 class TestLch99oInputOutput(util.ColorAsserts, unittest.TestCase):

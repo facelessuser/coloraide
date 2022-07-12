@@ -41,8 +41,8 @@ being a little slower.
 Color("red").delta_e("blue", method="2000")
 ```
 
-Below are all the supported ∆E methods. Follow relevant links to read the specs and find out more about a given ∆E
-method.
+Below are all the supported ∆E methods that are included in the default `coloraide.Color` object. Follow relevant links
+to read the specs and find out more about a given ∆E method.
 
 Delta\ E                                 | Name            | Parameters
 ---------------------------------------- | --------------- | --------------------
@@ -53,8 +53,9 @@ Delta\ E                                 | Name            | Parameters
 [∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab-d65"`
 ∆E~ok~                                   | `ok`            | `scalar=1`
 
-The following are also available, but they must be manually registered, or can be accessed by use `coloraide.ColorAll`
-instead of `coloraide.Color`. The associated color space must be registered as well.
+The following are also available, but they must be manually registered by creating a
+[custom class](./color.md#custom-color-classes), or can be accessed by use `coloraide.ColorAll` instead of
+`coloraide.Color`. The associated color space must be registered as well.
 
 Delta\ E                                 | Name            | Parameters
 ---------------------------------------- | --------------- | --------------------
@@ -73,4 +74,10 @@ the colors, the closest ends up being `#!color maroon`.
 
 ```playground
 Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'])
+```
+
+The default distancing method is used if one is not supplied, but others can be used:
+
+```playground
+Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], method='2000')
 ```

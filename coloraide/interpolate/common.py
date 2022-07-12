@@ -213,13 +213,13 @@ def color_steps(
 
         # If we currently have delta over our limit inject more stops.
         # If inserting between every color would push us over the max_steps, halt.
-        while m_delta > max_delta_e and (len(ret) * 2 - 1 <= max_steps):
+        total = len(ret)
+        while m_delta > max_delta_e and (total * 2 - 1 <= max_steps):
             # Inject stops while measuring again to see if it was sufficient
             m_delta = 0.0
             i = 1
-            offset = 0
-            for i in range(1, len(ret)):
-                index = i + offset
+            index = 1
+            while index < total:
                 prev = ret[index - 1]
                 cur = ret[index]
                 p = (cast(float, cur['p']) + cast(float, prev['p'])) / 2
@@ -230,6 +230,7 @@ def color_steps(
                     color.delta_e(cast('Color', cur['color']), method=delta_e)
                 )
                 ret.insert(index, {'p': p, 'color': color})
-                offset += 1
+                total += 1
+                index += 2
 
     return [cast('Color', i['color']) for i in ret]

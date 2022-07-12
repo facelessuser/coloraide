@@ -151,7 +151,8 @@ All color spaces supported by ColorAide are specified via color space plugins. T
 channel properties, gamut bounds, input matching/parsing logic, string output logic, conversion to and from a specified
 base color, etc.
 
-Color space plugins are a little more complex compared to [Delta E](#delta-e) and [Fit](#fitgamut-mapping) plugins.
+Color space plugins are a little more complex compared to [Delta E](#delta-e), [Fit](#fitgamut-mapping), and other
+plugins.
 
 ### Plugin Class
 
@@ -206,39 +207,48 @@ class XYZD65(Space):
     #
     # - `name`: The name of the channel.
     # - `low`: Lower limit of the channel, for unbound channels, the value will be arbitrary.
-    # - `low`: Upper limit of the channel, for unbound channels, the value will be arbitrary.
+    # - `high`: Upper limit of the channel, for unbound channels, the value will be arbitrary.
     # - `bound`: Whether the channel enforces the gamut range.
     # - `limit`: Optional upper and lower limit. Used to define a hard limit for the channel that is clamped
     #            when the channel is set. This differs from gamut boundaries which can be exceeded until gamut
     #            mapping occurs. For instance, `chroma` often enforces no values below zero as these values
-    #            do not naturally occur, not even with normal out of gamut colors.
+    #            do not naturally occur, not even with normal out of gamut colors. So, we could clamp the lower
+    #            bound: `(0, None)`.
     # - `flags`: Flags used to provide additional context for the channel.
     #
     # The following flags are supported:
     # - FLG_ANGLE: denotes that channel is a angle or degree value.
-    # - FLG_PERCENT: denotes the value is considered a percent.
-    #                Channels with this expect the value to be between 0 - 100
+    # - FLG_PERCENT: denotes the value is considered a percent input. This is usually used in named CSS functions
+    #                like `hsl()` which require string inputs for saturation and lightness to always be in a
+    #                percentage format. The CSS `color()` function ignores this flags as no channels are always
+    #                required to be percentages. Percentage range will be determined by `high` and `low`.
     # - FLG_OPT_PERCENT: denotes the value can optionally be considered as a percent.
-    #                    Channels with this are expected to be between 0 - 1.
-    #
-    # NOTE: Behavior of percent flags may change depending on how CSS Level 4 plans to handle non rectangular
-    #       colors in the `color(space ...)` format (if they handle them at all).
+    #                    This is also only used for CSS string input and output. CSS `oklab`, `lab()`, `oklch`,
+    #                    `lch()`, and `srgb()` allow for channels to be provided as percentages or normal
+    #                    numbers in certain cases. This tells the parser and serializer which channels allow this.
+    #                    Percentage range will be determined by `high` and `low`.
+    # - FLG_MIRROR_PERCENT: The channel, when importing or exporting to a percent should mirror the percentage
+    #                       for negative values. This is used mainly in Lab and Lab like spaces which have `a`
+    #                       `b` channels that allow for both negative and positive values. If set, `high` and `low`
+    #                       should fulfill `abs(low) == high`.
     CHANNELS = (
         Channel("x", 0.0, 1.0),
         Channel("y", 0.0, 1.0),
         Channel("z", 0.0, 1.0)
     )
 
-    # A dictionary containing a mapping of aliases to `CHANNEL_NAMES` found above.
+    # A dictionary containing a mapping of aliases to `name` attribute of `CHANNELS` found above.
     CHANNEL_ALIASES = {}
 
-    # If you'd like this color space to parse as a `color(space ...)` format.
+    # If you'd like this color space to parse as and export a `color(space ...)` format.
     # If set to `False` the space will not recognize the color format as an input.
-    # To override output of the color format, you will also need to override the `to_string` method.
+    # This only affects input matching. To override output of the color format, you will also
+    # need to override the `to_string` method.
     COLOR_FORMAT = True
 
     # Specify the white point that the color space uses
     # White point should be a `tuple` containing the x and y chromaticity points.
+    # Some basic ones are provided in the `cat` module for both 2 degree and 10 degree observer.
     WHITE = cat.WHITES['2deg']['D65']
 
     # If `GAMUT_CHECK` is set to a color space name, the provided color space will be used to verify the an "in gamut"
@@ -253,9 +263,9 @@ class XYZD65(Space):
     GAMUT_CHECK = None
     # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
     # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
-    # interpolated, the colors will usually be gamut mapped, but if the interpolation space happens to support extended
-    # ranges, then the colors will not be gamut mapped even if their gamut is larger than the target interpolation
-    # space.
+    # interpolated, and that color is "bound" to a gamut, the colors will usually be gamut mapped, but if the
+    # interpolation space happens to support extended ranges, then the colors will not be gamut mapped even if their
+    # gamut is larger than the target interpolation space.
     EXTENDED_RANGE = False
 
     ############################
@@ -283,10 +293,16 @@ class XYZD65(Space):
 ````
 
 In addition to the above methods, some color spaces, such as cylindrical spaces, have some additional logic that
-determines when a `hue` is undefined. This function provides access to this logic in case `normalize` is called from the
-the `Color` object. In the case of such color spaces, it may be necessary to define
-`normalize` as well. Below is an example from HSL that sets `hue` to undefined when `saturation` is `#!py3 0` or
-`lightness` is equal to `#!py3 0` or `#!py3 1`. This logic should mirror what is performed in a normal conversion.
+determines when a `hue` is undefined. During conversion, undefined channels are usually thrown away, and a color may be
+returned with undefined hues if the color is achromatic.a
+
+The `Space.normalize` function is not used during conversion, but provides logic for specifically normalizing an exiting
+color when `Color.normalize` is called. Logic should generally match whatever occurs during conversion.conversion
+
+Usually, for rectangular spaces, it simply eliminates undefined channels. For cylindrical spaces, it will also set the
+hue to undefined if the color meets the criteria of the color space. This may be when chroma zero, or maybe even every
+close to zero, maybe even when lightness is equal to `#!py3 0` or `#!py3 1`. This can vary from color space to color
+space.
 
 ```py
     @classmethod
@@ -433,10 +449,11 @@ from coloraide.css import parse
 class SRGB(base.SRGB):
     """SRGB class."""
 
-    # This color class should opt into the generic `color(space ...)` format.
+    # This color class should opt into the generic `color(space ...)` input format.
     # This is `True` by default, but shown for demonstration purposes.
     COLOR_FORMAT: True
 
+    # If the color format above is not found, continue with our custom match to handle all other formats.
     @classmethod
     def match(
         cls,

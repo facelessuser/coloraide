@@ -1,6 +1,17 @@
 # Changelog
 
-## 1.0a1
+## 1.0b1
+
+!!! warning "Breaking Changes"
+    1.0b1 introduces a number of breaking changes. As we are very close to releasing the first stable release, we've
+    taken opportunity to address any issues related to speed and usability. While this is unfortunate for early
+    adopters, we feel that in the long run that these changes will make ColorAide a better library. We've also added new
+    a new Bezier interpolation method and added many more color spaces!
+
+- **BREAK**: The `coloraide.Color` object now only registers a subset of the available color spaces and ∆E algorithms in
+  order to create a lighter default color object. `coloraide.ColorAll` has been provided for a quick way to get access
+  to all available color spaces and plugins. Generally, it is recommend to subclass `Color` and register just what is
+  desired.
 
 - **BREAK**: Reworked interpolation:
 
@@ -47,29 +58,37 @@
 - **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
   access.
 
+- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
+  access. Use indexing instead: `color['red']` or `color[0]`.
+
+- **BREAK**: Remove deprecated `coords()` method. Use indexing and slices instead: `color[:-1]`.
+
 - **NEW**: Update `lch()`, `lab()`, `oklch()`, and `oklab()` to optionally support percentages for lightness, chroma, a,
   and b. Lightness is no longer enforced to be a percentage in the CSS syntax and these spaces will serialize as a
   number by default instead. Optionally, these forms can force a percentage output via the `to_string` method when using
   the `percentage` option. Percent ranges roughly correspond with the Display P3 gamut per the CSS specification.
 
-  Additionally, CSS color spaces using the `color()` format as an input will translate using these same ranges if the
-  channels are percentages. `hue` will also be respected and treated as 0 - 360 when using a percentage.
+    Additionally, CSS color spaces using the `color()` format as an input will translate using these same ranges if the
+    channels are percentages. `hue` will also be respected and treated as 0 - 360 when using a percentage.
 
-  Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
+    Non-CSS color spaces will also respect their defined ranges when using percentages in the `color()` form.
 
-- **BREAK**: Remove deprecated dynamic properties which helps to increase speed by removing overhead on class property
-  access. Use indexing instead: `color['red']` or `color[0]`.
-- **BREAK**: Remove deprecated `coords()` method. Use indexing and slices instead: `color[:-1]`.
 - **NEW**: Add `silent` option to `deregister` so that if a proper category is specified, and the plugin does not exit,
   the operation will not throw an error.
+
 - **NEW**: Add new color spaces: `display-p3-linear`, `a98-rgb-linear`, `rec2020-linear`, `prophoto-rgb-linear`, and
-  `rec2100pq`.
+  `rec2100pq`, `hsi`, `rlab`, `hunter-lab`, `xyy`, `prismatic`, `orgb`, `cmy`, `cmyk`, `ipt`, and `igpgtg`.
+
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
+
 - **NEW**: Use Lab D65 for ∆E 2000, ∆E 76, ∆E HyAB, Euclidean distance, and Lch D65 for Lch Chroma gamut mapping. Lab
   D65 is far more commonly used for the aforementioned ∆E methods. Lch Chroma gamut mapping, which uses ∆E 2000 needs to
   use the same D65 white point to avoid wasting conversion time.
+
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.
+
+- **FIX**: Small fix to `steps` ∆E logic.
 
 ## 0.18.1
 

@@ -84,9 +84,10 @@ class Color:
 
 Description
 : 
-    The `Color` class object is a wrapper around the internal color space objects. It provides an API interface to allow
-    users to specify and manipulate colors. Color objects can be iterated, which will return each color channel. They
-    are also indexable by channel name or by channel index.
+    The `Color` class object is a wrapper around the internal color space objects. `Color` is the base Color object
+    and only registers a select number of color spaces. It provides an API interface to allow users to specify and
+    manipulate colors. Color objects can be iterated, which will return each color channel. They are also indexable by
+    channel name or by channel index.
 
 Import path
 : 
@@ -104,6 +105,43 @@ Parameters
     `data`     | `#!py3 None` | `data` accepts a list of numbers representing the coordinates of the color. If provided, `color` must be a string specifying the color space.
     `alpha`    | `#!py3 1`    | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
     `filters`  | `#!py3 None` | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
+
+## `coloraide.ColorAll` {#colorall}
+
+```py3
+class ColorAll(Color):
+    def __init__(
+        self,
+        color,
+        data=None,
+        alpha=util.DEF_ALPHA,
+        *,
+        filters=None, **kwargs
+    ):
+```
+
+Description
+: 
+    The `ColorAll` class object is derived from [`Color`](#color) and extends the registered color spaces to include all
+    offered by ColorAide.
+
+Import path
+: 
+    `ColorAll` is imported from the `coloraide` library:
+
+    ```py3
+    from coloraide import ColorAll
+    ```
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `color`    |              | A color string, a dictionary describing the color, or another `ColorAll` class object. If given `data`, a string must be used and should represent the color space to use.
+    `data`     | `#!py3 None` | `data` accepts a list of numbers representing the coordinates of the color. If provided, `color` must be a string specifying the color space.
+    `alpha`    | `#!py3 1`    | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
+    `filters`  | `#!py3 None` | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
+
 
 ## `Color.register` {#register}
 

@@ -238,7 +238,7 @@ HtmlRow(Color.steps([yellow, lightness_mask], steps=10, space='lch'))
 # Clipping
 yellow = ColorClip('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow(Color.steps([yellow, lightness_mask], steps=10, space='lch'))
+HtmlRow(ColorClip.steps([yellow, lightness_mask], steps=10, space='lch'))
 ```
 
 There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is

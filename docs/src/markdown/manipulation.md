@@ -93,39 +93,40 @@ As with coordinate retrieval, a number of ways can be used set coordinates as we
     c.set('hsl.hue', lambda x: x + 180)
     ```
 
-## Modifying Coordinates in Other Spaces
+    ??? note "Notes on Modifying Coordinates in Other Spaces"
 
-As previously mentioned, coordinates in other spaces can be modified with the `set` function. Here we alter the color
-`#!color blue` by editing the `hue` channel in the CIELCH color space and get `#!color Color("blue").set('lch.hue', 130)`.
-Keep in mind that the colors are being converted to the specified space under the hood, set, and then converted back, so
-if you have multiple operations to apply in a given color space, it may be more efficient to convert to that space,
-apply the set operations directly, and then convert back.
+        As previously mentioned, coordinates in other spaces can be modified with the `set` function. Here we alter the
+        color `#!color blue` by editing the `hue` channel in the CIELCH color space and get
+        `#!color Color("blue").set('lch.hue', 130)`. Keep in mind that the colors are being converted to the specified
+        space under the hood, set, and then converted back, so if you have multiple operations to apply in a given color
+        space, it may be more efficient to convert to that space, apply the set operations directly, and then convert
+        back.
 
-```playground
-Color("blue").set('lch.hue', 130)
-```
+        ```playground
+        Color("blue").set('lch.hue', 130)
+        ```
 
-When setting a color in another color space, the final value is subject to any rounding errors that may occur in the
-round trip to and from the specified color space. Also, depending on the transform functions of the spaces involved, and
-whether the original color is on the edge of its own gamut, this can lead to a color going slightly out of gamut, and if
-one of the spaces involved in the conversion doesn't handle out of gamut colors with sensible values, you may get
-something unexpected back.
+        When setting a color in another color space, the final value is subject to any rounding errors that may occur in
+        the round trip to and from the specified color space. Also, depending on the transform functions of the spaces
+        involved, and whether the original color is on the edge of its own gamut, this can lead to a color going
+        slightly out of gamut, and if one of the spaces involved in the conversion doesn't handle out of gamut colors
+        with sensible values, you may get something unexpected back.
 
-Consider the following example comparing the modification of an HSL color in HWB vs Oklab.
+        Consider the following example comparing the modification of an HSL color in HWB vs Oklab.
 
-```playground
-Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
-Color('hsl(0 0% 50%)').set('oklab.lightness', 1)
-Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb')[:]
-```
+        ```playground
+        Color('hsl(0 0% 50%)').set('hwb.blackness', 0).set('hwb.whiteness', 100)
+        Color('hsl(0 0% 50%)').set('oklab.lightness', 1)
+        Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb')[:]
+        ```
 
-The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise, but the
-Oklab example is not quite as precise and returns a color with a saturation that is way out of bounds. This is partly
-because the Oklab max whiteness isn't exactly `1`, but more like `~0.999...`, The HSL model doesn't really represent out
-of gamut colors in a logical way and, in this case, creates a color with a negative saturation. It looks worse than it
-really is as when we convert it to sRGB, we see it is barely off. None of this is a bug, it is just the nature of the
-algorithms we are using to convert, the precision of the floats, and the slight rounding errors that occur when
-using [floating-point arithmetic][floating-point], etc.
+        The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise,
+        but the Oklab example is not quite as precise and returns a color with a saturation that is way out of bounds.
+        This is partly because the Oklab max whiteness isn't exactly `1`, but more like `~0.999...`, The HSL model
+        doesn't really represent out of gamut colors in a logical way and, in this case, creates a color with a negative
+        saturation. It looks worse than it really is as when we convert it to sRGB, we see it is barely off. None of
+        this is a bug, it is just the nature of the algorithms we are using to convert, the precision of the floats, and
+        the slight rounding errors that occur when using [floating-point arithmetic][floating-point], etc.
 
 ## Undefined Values
 
@@ -135,10 +136,12 @@ Colors in general can sometimes have undefined channels. This can actually happe
 with hues will have powerless hues when the color is achromatic. This can occur if saturation or chroma is zero, or
 when a color has no lightness, etc.
 
-    Normally, if a hue is defined manually defined on an achromatic color they are considered defined even if the
-    defined value is powerless, but during the conversion process, the algorithm won't know what to assign as a hue. For
-    instance, if saturation is zero, one could argue the hue should be `0`, but that is actually a red hue, and
-    achromatic colors have no hue. In the end, no hue is actually satisfactory, so an undefined hue is applied.
+    If a hue is manually defined to an achromatic color hue is considered defined, though that value will still be
+    powerless during conversion. But lets considered an achromatic color in a rectangular color space being converted to
+    a cylindrical color space with hue. During the conversion process, there is nothing to suggest to the algorithm what
+    the hue should be. For instance, if saturation is zero, one could argue the hue should be `0`, but that is actually
+    a red hue, and achromatic colors have no hue. In the end, no hue is actually satisfactory, so an undefined hue is
+    applied.
 
     ```playground
     color = Color('white').convert('hsl')
@@ -146,7 +149,7 @@ when a color has no lightness, etc.
     ```
 
 2. When specifying raw data, and an insufficient amount of channel data is provided, the missing channels will be
-assumed as undefined, the exception is the `alpha` channel which is assumed to be `1` unless explicitly defined or
+assumed as undefined, the exception is that `alpha` channel which is assumed to be `1` unless explicitly defined or
 explicitly set as undefined.
 
     ```playground
@@ -154,9 +157,9 @@ explicitly set as undefined.
     Color('srgb', [1, 0, 0], NaN)[:]
     ```
 
-3. Undefined values can also occur when a user specifies a channel with the `none` keyword. This can also be done in raw
-color data by directly passing `#!py3 float('nan')` -- the provided `NaN` constant is essentially an alias for
-`#!py3 float('nan')`.
+3. Undefined values can also occur when a user specifies a channel with the `none` keyword in CSS syntax. This can also
+be done in raw color data by directly passing `#!py3 float('nan')` -- the provided `NaN` constant is essentially an
+alias for this.
 
     One may question why such a thing would ever be desired, but this can be quite useful when interpolating as
     undefined channels will not be interpolated. It can be thought of as a way to mask off channels. Checkout the

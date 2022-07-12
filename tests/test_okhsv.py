@@ -1,7 +1,8 @@
 """Test Okhsv library."""
 import unittest
 from . import util
-from coloraide import Color, NaN
+from coloraide import ColorAll as Color
+from coloraide import NaN
 
 
 class TestOkhsvInputOutput(util.ColorAsserts, unittest.TestCase):

@@ -2,7 +2,7 @@
 from coloraide import NaN
 import unittest
 from . import util
-from coloraide import Color
+from coloraide import ColorAll as Color
 
 
 class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
