@@ -49,12 +49,18 @@ Delta\ E                                 | Name            | Parameters
 [∆E^\*^~ab~][de76]\ (CIE76)              | `76`            |
 [∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | `cmc`           | `l=2, c=1`
 [∆E^\*^~94~][de94]\ (CIE94)              | `94`            | `kl=1, k1=0.045, k2=0.015`
-[∆E^\*^~00~ ][de2000]\ (CIEDE2000)       | `2000`          | `kl=1, kc=1, kh=1`
+[∆E^\*^~00~][de2000]\ (CIEDE2000)        | `2000`          | `kl=1, kc=1, kh=1`
+[∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab-d65"`
+∆E~ok~                                   | `ok`            | `scalar=1`
+
+The following are also available, but they must be manually registered, or can be accessed by use `coloraide.ColorAll`
+instead of `coloraide.Color`. The associated color space must be registered as well.
+
+Delta\ E                                 | Name            | Parameters
+---------------------------------------- | --------------- | --------------------
 [∆E~itp~][deitp]\ (ICtCp)                | `itp`           | `scalar=720`
 [∆E~z~][dez]\ (Jzazbz)                   | `jz`            |
 [∆E~99o~][de99o]\ (DIN99o)               | `99o`           |
-[∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab"`
-∆E~ok~                                   | `ok`            | `scalar=1`
 
 ## Finding Closest Color
 
