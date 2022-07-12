@@ -10,7 +10,7 @@ class DE76(DeltaE):
     """Delta E 76 class."""
 
     NAME = "76"
-    SPACE = "lab"
+    SPACE = "lab-d65"
 
     @classmethod
     def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:

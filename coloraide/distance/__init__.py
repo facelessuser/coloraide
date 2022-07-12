@@ -35,7 +35,7 @@ def closest(color: 'Color', colors: Sequence[ColorInput], method: Optional[str] 
     return closest
 
 
-def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab") -> float:
+def distance_euclidean(color: 'Color', sample: 'Color', space: str = "lab-d65") -> float:
     """
     Euclidean distance.
 

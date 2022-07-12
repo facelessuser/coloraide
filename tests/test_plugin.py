@@ -36,7 +36,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').fit().to_string(),
-            'rgb(255 118.31 100.77)'
+            'rgb(255 101.26 98.291)'
         )
 
         self.assertEqual(
@@ -88,7 +88,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         self.assertCompare(
             Color('red').delta_e("blue"),
-            184.01905
+            176.3085
         )
 
         self.assertCompare(

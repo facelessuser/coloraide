@@ -324,7 +324,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(['color(display-p3 0 1 1)', 'color(display-p3 0 0 1)'], space='hsl')(0.5),
-            Color('color(display-p3 0.21789 0.49793 0.96522)')
+            Color('color(display-p3 0.21779 0.49774 0.96566)')
         )
 
     def test_interpolate(self):

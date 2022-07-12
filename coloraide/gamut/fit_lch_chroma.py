@@ -35,7 +35,7 @@ class LchChroma(Fit):
     EPSILON = 0.1
     LIMIT = 2.0
     DE = "2000"
-    SPACE = "lch"
+    SPACE = "lch-d65"
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100
 
