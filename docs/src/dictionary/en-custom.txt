@@ -154,6 +154,7 @@ achromatomaly
 achromatopsia
 async
 az
+barycentric
 bezier
 boolean
 broadcasted
