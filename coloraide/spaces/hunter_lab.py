@@ -3,12 +3,12 @@ Hunter Lab class.
 
 https://support.hunterlab.com/hc/en-us/articles/203997095-Hunter-Lab-Color-Scale-an08-96a2
 """
-from coloraide.cat import WHITES
-from coloraide.spaces.lab import Lab
-from coloraide import algebra as alg
-from coloraide import util
-from coloraide.types import Vector, VectorLike
-from coloraide.channels import Channel, FLG_MIRROR_PERCENT
+from ..cat import WHITES
+from ..spaces.lab import Lab
+from .. import algebra as alg
+from .. import util
+from ..types import Vector, VectorLike
+from ..channels import Channel, FLG_MIRROR_PERCENT
 
 # Values for the original Hunter Lab with illuminant C.
 # Used to calculate an appropriate `Ka` and `Kb` for whatever white point we are using.
