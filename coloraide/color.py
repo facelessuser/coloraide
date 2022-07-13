@@ -7,6 +7,7 @@ from . import gamut
 from . import compositing
 from . import interpolate
 from . import filters
+from . import contrast
 from . import harmonies
 from . import util
 from . import algebra as alg
@@ -67,6 +68,8 @@ from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
 from .distance.delta_e_hyab import DEHyAB
 from .distance.delta_e_ok import DEOK
+from .contrast import ColorContrast
+from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LchChroma
 from .gamut.fit_oklch_chroma import OklchChroma
@@ -106,6 +109,119 @@ SUPPORTED_FILTERS = (
     Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert, Protan, Deutan, Tritan
 )
 
+SUPPORTED_CONTRAST = (
+    WCAG21Contrast,
+)
+
+
+def register_plugin(
+    color: Type['Color'],
+    plugin: Union[Type[Plugin], Sequence[Type[Plugin]]],
+    overwrite: bool = False,
+    silent: bool = False
+) -> None:
+    """Register the hook."""
+
+    reset_convert_cache = False
+
+    if not isinstance(plugin, Sequence):
+        plugin = [plugin]
+
+    mapping = None  # type: Optional[Dict[str, Type[Any]]]
+    for p in plugin:
+        if issubclass(p, Space):
+            mapping = color.CS_MAP
+            reset_convert_cache = True
+        elif issubclass(p, DeltaE):
+            mapping = color.DE_MAP
+        elif issubclass(p, CAT):
+            mapping = color.CAT_MAP
+        elif issubclass(p, Filter):
+            mapping = color.FILTER_MAP
+        elif issubclass(p, ColorContrast):
+            mapping = color.CONTRAST_MAP
+        elif issubclass(p, Fit):
+            mapping = color.FIT_MAP
+            if p.NAME == 'clip':
+                if reset_convert_cache:  # pragma: no cover
+                    color._get_convert_chain.cache_clear()
+                if not silent:
+                    raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
+                continue  # pragma: no cover
+        else:
+            if reset_convert_cache:  # pragma: no cover
+                color._get_convert_chain.cache_clear()
+            raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
+
+        name = p.NAME
+        value = p
+
+        if name != "*" and name not in mapping or overwrite:
+            cast(Dict[str, Type[Plugin]], mapping)[name] = value
+        elif not silent:
+            if reset_convert_cache:  # pragma: no cover
+                color._get_convert_chain.cache_clear()
+            raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
+
+    if reset_convert_cache:
+        color._get_convert_chain.cache_clear()
+
+
+def deregister_plugin(color: Type['Color'], plugin: Union[str, Sequence[str]], silent: bool = False) -> None:
+    """Deregister a plugin by name of specified plugin type."""
+
+    reset_convert_cache = False
+
+    if isinstance(plugin, str):
+        plugin = [plugin]
+
+    mapping = None  # type: Optional[Dict[str, Type[Any]]]
+    for p in plugin:
+        if p == '*':
+            color.CS_MAP.clear()
+            color.DE_MAP.clear()
+            color.FIT_MAP.clear()
+            color.CAT_MAP.clear()
+            color.CONTRAST_MAP.clear()
+            return
+
+        ptype, name = p.split(':', 1)
+        if ptype == 'space':
+            mapping = color.CS_MAP
+            reset_convert_cache = True
+        elif ptype == "delta-e":
+            mapping = color.DE_MAP
+        elif ptype == 'cat':
+            mapping = color.CAT_MAP
+        elif ptype == 'filter':
+            mapping = color.FILTER_MAP
+        elif ptype == 'contrast':
+            mapping = color.CONTRAST_MAP
+        elif ptype == "fit":
+            mapping = color.FIT_MAP
+            if name == 'clip':
+                if reset_convert_cache:  # pragma: no cover
+                    color._get_convert_chain.cache_clear()
+                if not silent:
+                    raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
+                continue  # pragma: no cover
+        else:
+            if reset_convert_cache:  # pragma: no cover
+                color._get_convert_chain.cache_clear()
+            raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
+
+        if name == '*':
+            mapping.clear()
+        elif name in mapping:
+            del mapping[name]
+        elif not silent:
+            if reset_convert_cache:
+                color._get_convert_chain.cache_clear()
+            raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
+
+    if reset_convert_cache:
+        color._get_convert_chain.cache_clear()
+
 
 class ColorMatch:
     """Color match object."""
@@ -138,6 +254,7 @@ class ColorMeta(abc.ABCMeta):
             cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Type[Fit]]
             cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, Type[CAT]]
             cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: Dict[str, Type[Filter]]
+            cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: Dict[str, Type[ColorContrast]]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -162,6 +279,7 @@ class Color(metaclass=ColorMeta):
     DE_MAP = {}  # type: Dict[str, Type[DeltaE]]
     FIT_MAP = {}  # type: Dict[str, Type[Fit]]
     CAT_MAP = {}  # type: Dict[str, Type[CAT]]
+    CONTRAST_MAP = {}  # type: Dict[str, Type[ColorContrast]]
     FILTER_MAP = {}  # type: Dict[str, Type[Filter]]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
@@ -169,6 +287,7 @@ class Color(metaclass=ColorMeta):
     DELTA_E = util.DEF_DELTA_E
     HARMONY = util.DEF_HARMONY
     CHROMATIC_ADAPTATION = 'bradford'
+    CONTRAST = 'wcag21'
 
     # It is highly unlikely that a user would ever need to override this, but
     # just in case, it is exposed, but undocumented.
@@ -360,100 +479,13 @@ class Color(metaclass=ColorMeta):
     ) -> None:
         """Register the hook."""
 
-        reset_convert_cache = False
-
-        if not isinstance(plugin, Sequence):
-            plugin = [plugin]
-
-        mapping = None  # type: Optional[Dict[str, Type[Any]]]
-        for p in plugin:
-            if issubclass(p, Space):
-                mapping = cls.CS_MAP
-                reset_convert_cache = True
-            elif issubclass(p, DeltaE):
-                mapping = cls.DE_MAP
-            elif issubclass(p, CAT):
-                mapping = cls.CAT_MAP
-            elif issubclass(p, Filter):
-                mapping = cls.FILTER_MAP
-            elif issubclass(p, Fit):
-                mapping = cls.FIT_MAP
-                if p.NAME == 'clip':
-                    if reset_convert_cache:  # pragma: no cover
-                        cls._get_convert_chain.cache_clear()
-                    if not silent:
-                        raise ValueError("'{}' is a reserved name for gamut mapping/reduction and cannot be overridden")
-                    continue  # pragma: no cover
-            else:
-                if reset_convert_cache:  # pragma: no cover
-                    cls._get_convert_chain.cache_clear()
-                raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
-
-            name = p.NAME
-            value = p
-
-            if name != "*" and name not in mapping or overwrite:
-                cast(Dict[str, Type[Plugin]], mapping)[name] = value
-            elif not silent:
-                if reset_convert_cache:  # pragma: no cover
-                    cls._get_convert_chain.cache_clear()
-                raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
-
-        if reset_convert_cache:
-            cls._get_convert_chain.cache_clear()
+        register_plugin(cls, plugin, overwrite, silent)
 
     @classmethod
     def deregister(cls, plugin: Union[str, Sequence[str]], silent: bool = False) -> None:
         """Deregister a plugin by name of specified plugin type."""
 
-        reset_convert_cache = False
-
-        if isinstance(plugin, str):
-            plugin = [plugin]
-
-        mapping = None  # type: Optional[Dict[str, Type[Any]]]
-        for p in plugin:
-            if p == '*':
-                cls.CS_MAP.clear()
-                cls.DE_MAP.clear()
-                cls.FIT_MAP.clear()
-                cls.CAT_MAP.clear()
-                return
-
-            ptype, name = p.split(':', 1)
-            if ptype == 'space':
-                mapping = cls.CS_MAP
-                reset_convert_cache = True
-            elif ptype == "delta-e":
-                mapping = cls.DE_MAP
-            elif ptype == 'cat':
-                mapping = cls.CAT_MAP
-            elif ptype == 'filter':
-                mapping = cls.FILTER_MAP
-            elif ptype == "fit":
-                mapping = cls.FIT_MAP
-                if name == 'clip':
-                    if reset_convert_cache:  # pragma: no cover
-                        cls._get_convert_chain.cache_clear()
-                    if not silent:
-                        raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
-                    continue  # pragma: no cover
-            else:
-                if reset_convert_cache:  # pragma: no cover
-                    cls._get_convert_chain.cache_clear()
-                raise ValueError("The plugin category of '{}' is not recognized".format(ptype))
-
-            if name == '*':
-                mapping.clear()
-            elif name in mapping:
-                del mapping[name]
-            elif not silent:
-                if reset_convert_cache:
-                    cls._get_convert_chain.cache_clear()
-                raise ValueError("A plugin of name '{}' under category '{}' could not be found".format(name, ptype))
-
-        if reset_convert_cache:
-            cls._get_convert_chain.cache_clear()
+        deregister_plugin(cls, plugin, silent)
 
     def to_dict(self) -> Mapping[str, Any]:
         """Return color as a data object."""
@@ -870,13 +902,11 @@ class Color(metaclass=ColorMeta):
 
         return self.convert("xyz-d65")['y']
 
-    def contrast(self, color: ColorInput) -> float:
+    def contrast(self, color: ColorInput, method: Optional[str] = None) -> float:
         """Compare the contrast ratio of this color and the provided color."""
 
         color = self._handle_color_input(color)
-        lum1 = self.luminance()
-        lum2 = color.luminance()
-        return (lum1 + 0.05) / (lum2 + 0.05) if (lum1 > lum2) else (lum2 + 0.05) / (lum1 + 0.05)
+        return contrast.contrast(method, self, color)
 
     def get(self, name: str) -> float:
         """Get channel."""
@@ -908,7 +938,7 @@ class Color(metaclass=ColorMeta):
         return self
 
 
-Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS)
+Color.register(SUPPORTED_SPACES + SUPPORTED_DE + SUPPORTED_FIT + SUPPORTED_CAT + SUPPORTED_FILTERS + SUPPORTED_CONTRAST)
 
 
 class ColorAll(Color):

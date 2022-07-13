@@ -7,6 +7,7 @@ methods or even new color spaces quite easy. Currently, ColorAide implements the
 - [Gamut mapping](#fitgamut-mapping)
 - [Chromatic adaptation](#chromatic-adaptation)
 - [Filters](#filters)
+- [Contrast](#contrast)
 - [Color spaces](#color-spaces)
 
 ## Delta E
@@ -144,6 +145,32 @@ All of ColorAide's default filters use the sRGB Linear color space as their defa
 colors in a non-gamma encoded color space such as sRGB Linear, but their may be some existing filters out their
 specifically designed for other color spaces such as the gamma encoded sRGB space. The provided W3C Filter Effects that
 ship with ColorAide also support sRGB as the specification allows them for legacy purposes.
+
+## Contrast
+
+Contrast returns a numerical value that is meant to determine how much visual contrast exists between two colors.
+
+### Plugin Class
+
+```py
+class ColorContrast(Plugin, metaclass=ABCMeta):
+    """Color contrast plugin class."""
+
+    NAME = ''
+
+    @classmethod
+    @abstractmethod
+    def contrast(cls, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
+        """Get the contrast of the two provided colors."""
+
+```
+
+The plugin should provide a `NAME` with the contrast logic under `contrast`. Contrast is calculated from the two
+provided colors.
+
+`kwargs` is provided in case additional parameter support is added in the future.
+
+A numerical value representing the "contrast" is returned.
 
 ## Color Space
 

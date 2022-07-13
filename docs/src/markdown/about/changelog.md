@@ -3,6 +3,8 @@
 ## 1.0b2
 
 - **NEW**: Added HPLuv space described in the HSLuv spec.
+- **NEW**: Contrast is now exposed as a plugin to allow for future expansion of approaches. While there is currently
+  only one approach, methods can be selected via the `method` attribute.
 
 ## 1.0b1
 
