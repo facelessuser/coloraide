@@ -1,9 +1,16 @@
 """Sanity check that ensures all colors round trip back."""
-from coloraide import ColorAll as Color
+from coloraide import ColorAll
 from coloraide.spaces import Cylindrical
 from coloraide import algebra as alg
 import pytest
 
+
+class Color(ColorAll):
+    """Test color for round trip."""
+
+
+# This color's gamut is less than the sRGB gamut we use to round trip, so we cannot test it.
+Color.deregister('space:hpluv')
 SPACES = Color.CS_MAP.keys()
 
 

@@ -44,6 +44,7 @@ from .spaces.lch99o import Lch99o
 from .spaces.luv import Luv
 from .spaces.lchuv import Lchuv
 from .spaces.hsluv import HSLuv
+from .spaces.hpluv import HPLuv
 from .spaces.okhsl import Okhsl
 from .spaces.okhsv import Okhsv
 from .spaces.hsi import HSI
@@ -91,8 +92,8 @@ SUPPORTED_SPACES = (
 )
 
 EXTRA_SPACES = (
-    Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o, Luv, Lchuv, Okhsl, Okhsv, HSLuv,
-    HSI, IPT, IgPgTg, CMY, CMYK, XyY, HunterLab, Prismatic, RLAB, ORGB
+    Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o, Luv, Lchuv, Okhsl, Okhsv,
+    HSLuv, HPLuv, HSI, IPT, IgPgTg, CMY, CMYK, XyY, HunterLab, Prismatic, RLAB, ORGB
 )
 
 SUPPORTED_FIT = (

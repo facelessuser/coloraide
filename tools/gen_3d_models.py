@@ -74,6 +74,12 @@ plot_model(
 )
 
 plot_model(
+    'hpluv',
+    'HPLuv Color Space',
+    'hpluv-3d.png'
+)
+
+plot_model(
     'xyz-d50',
     TEMPLATE.format('XYZ D50'),
     'xyz-d50-3d.png'
