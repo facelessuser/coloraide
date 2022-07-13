@@ -103,11 +103,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         expected = Color('red').convert('lab-d65').to_string()
 
-        # Deregistration should have taken place
         class Custom(Color):
             pass
 
         Custom.deregister('space:lab-d65')
+        # Deregistration should have taken place
         with self.assertRaises(ValueError):
             Custom('red').convert('lab-d65')
 
@@ -125,11 +125,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         expected = Color('red').delta_e('green', method='2000')
 
-        # Deregistration should have taken place
         class Custom(Color):
             pass
 
         Custom.deregister('delta-e:2000')
+        # Deregistration should have taken place
         with self.assertRaises(ValueError):
             Custom('red').delta_e('green', method='2000')
 
@@ -147,11 +147,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         expected = Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string()
 
-        # Deregistration should have taken place
         class Custom(Color):
             pass
 
         Custom.deregister('fit:lch-chroma')
+        # Deregistration should have taken place
         with self.assertRaises(ValueError):
             Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma')
 
@@ -161,6 +161,28 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         # Now it is registered again
         Custom.register(fit_lch_chroma.LchChroma)
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
+
+    def test_plugin_registration_contrast(self):
+        """Test plugin registration of `ColorContrast`."""
+
+        from coloraide.contrast import wcag21
+
+        expected = Color('red').contrast('blue', method='wcag21')
+
+        class Custom(Color):
+            pass
+
+        Custom.deregister('contrast:wcag21')
+        # Deregistration should have taken place
+        with self.assertRaises(ValueError):
+            Custom('red').contrast('blue', method='wcag21')
+
+        # But it should not affect the base class
+        self.assertEqual(Color('red').contrast('blue', method='wcag21'), expected)
+
+        # Now it is registered again
+        Custom.register(wcag21.WCAG21Contrast)
+        self.assertEqual(Custom('red').contrast('blue', method='wcag21'), expected)
 
     def test_plugin_registration_cat(self):
         """Test plugin registration of `cat`."""

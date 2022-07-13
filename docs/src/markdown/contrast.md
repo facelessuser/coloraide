@@ -1,7 +1,6 @@
 # Contrast
 
-ColorAide provides a number of utilities related to luminance and contrast, or better put, contrast as defined by
-[Web Content Accessibility Guidelines (WCAG) 2.0 specification](https://www.w3.org/TR/WCAG20/).
+ColorAide provides a number of utilities related to luminance and contrast.
 
 ## Relative Luminance
 
@@ -9,23 +8,8 @@ In the CIE XYZ and xyY color spaces, the Y parameter is linear to changes in the
 refers to the amount of reflected light where 1.0 is assumed to be a perfect reflector in relation to the reference
 white.
 
-The WCAG in the 2.0 specification provides the following formula to acquire the relative luminance from an sRGB
-color. What is not explicitly said, but is happening, is the formula removes the gamut correction from each of the color
-channels and then calculates the luminance. What we end up with is actually the Y channel of the XYZ color space with a
-D65 white point.
-
-```playground
-r, g, b = Color('purple')[:-1]
-r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
-g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
-b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
-l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
-print(l)
-Color('purple').convert('xyz-d65')['y']
-```
-
-For convenience, the `luminance` method exposes access to this value to make it quick and easy to query the relative
-luminance, or Y parameter from XYZ D65, for a given color.
+The `luminance` method exposes access to this value to make it quick and easy to query the relative luminance, or Y
+parameter from XYZ D65 after converting the current color.
 
 ```playground
 Color("black").luminance()
@@ -33,9 +17,26 @@ Color("white").luminance()
 Color("blue").luminance()
 ```
 
-## Contrast Ratio
+!!! tip "Luminance and WCAG 2.1"
+    Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
+    only difference is the lower precision by which they calculate the value:
 
-WCAG 2.0 spec specifies the contrast ratio using the equation below.
+    ```playground
+    r, g, b = Color('purple')[:-1]
+    r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
+    g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
+    b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
+    l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
+    print(l)
+    Color('purple').convert('xyz-d65')['y']
+    ```
+
+## Contrast
+
+There have actually been numerous approaches to determining reliable contrast. ColorAide currently only implements the
+color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio), but has done
+so as a plugin to allow for expanding implementations in the future to allow for more reliable approaches as the WCAG
+2.1 approach is not without flaws.
 
 ```py
 # Where `l1` is the lighter luminance and `l2` the darker
@@ -45,4 +46,17 @@ To get the this contrast ratio between two colors, simply pass in the second col
 
 ```playground
 Color("blue").contrast("red")
+```
+
+!!! warning "Distancing and Symmetry"
+    It should be noted that not all contrast algorithms are symmetrical. Some are order dependent.
+
+Methods  | Symmetrical         | Description
+-------- | ------------------  | -----------
+`wcag21` | :octicons-check-16: | WCAG 2.1 contrast ratio.
+
+To use different methods, simply specify the method via the `method` parameter:
+
+```playground
+Color("blue").contrast("red", method='wcag21')
 ```

@@ -341,12 +341,13 @@ Properties             | Defaults            | Description
 `PRECISION`            | `#!py 5`            | The default precision for string outputs.
 `CHROMATIC_ADAPTATION` | `#!py "bradford"`   | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
 `HARMONY`              | `#!py "oklch"`      | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
+`CONTRAST`             | `#!py "wcag21"`     | Default contrast algorithm.
 
 ### Plugins
 
-Currently, color spaces, delta E methods, chromatic adaptation, filters, and gamut mapping methods are exposed as
-plugins. As previously mentioned, `Color` does not register all plugins, and `ColorAll` is often more than a user needs
-by default. Registering exactly what you need is normally the recommend way.
+Currently, color spaces, delta E methods, chromatic adaptation, filters, contrast, and gamut mapping methods are exposed
+as plugins. As previously mentioned, `Color` does not register all plugins, and `ColorAll` is often more than a user
+needs by default. Registering exactly what you need is normally the recommend way.
 
 While we won't go into a lot of details about creating plugins here, we will go over how to register new plugins and
 deregister existing plugins. To learn more about creating plugins, checkout the [plugin documentation](./plugins/index.md).

@@ -106,12 +106,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(TypeError):
             Color(3)
 
-    def test_bad_indirect_input(self):
-        """Test bad input when it is done indirectly through a method."""
-
-        with self.assertRaises(TypeError):
-            Color("red").contrast(3)
-
     def test_bad_sytnax_input(self):
         """Test bad string syntax input."""
 
@@ -335,24 +329,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             c1.set("red", "bad")
-
-    def test_contrast_dict(self):
-        """Test contrast with a dictionary mapping."""
-
-        self.assertEqual(
-            Color('white').contrast('blue'),
-            Color('white').contrast({"space": "srgb", "coords": [0, 0, 1]})
-        )
-
-    def test_contrast_one(self):
-        """Test contrast of one."""
-
-        self.assertEqual(Color('blue').contrast('blue'), 1)
-
-    def test_contrast_bigger(self):
-        """Test greater contrast."""
-
-        self.assertCompare(Color('white').contrast('blue'), 8.59301)
 
     def test_repr(self):
         """Test string representation."""

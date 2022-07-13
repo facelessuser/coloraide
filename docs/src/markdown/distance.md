@@ -41,27 +41,30 @@ being a little slower.
 Color("red").delta_e("blue", method="2000")
 ```
 
+!!! warning "Distancing and Symmetry"
+    It should be noted that not all distancing algorithms are symmetrical. Some are order dependent.
+
 Below are all the supported ∆E methods that are included in the default `coloraide.Color` object. Follow relevant links
 to read the specs and find out more about a given ∆E method.
 
-Delta\ E                                 | Name            | Parameters
----------------------------------------- | --------------- | --------------------
-[∆E^\*^~ab~][de76]\ (CIE76)              | `76`            |
-[∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | `cmc`           | `l=2, c=1`
-[∆E^\*^~94~][de94]\ (CIE94)              | `94`            | `kl=1, k1=0.045, k2=0.015`
-[∆E^\*^~00~][de2000]\ (CIEDE2000)        | `2000`          | `kl=1, kc=1, kh=1`
-[∆E~HyAB~][dehyab]\ (HyAB)               | `hyab`          | `space="lab-d65"`
-∆E~ok~                                   | `ok`            | `scalar=1`
+Delta\ E                                 | Symmetrical           | Name            | Parameters
+---------------------------------------- | --------------------- | --------------- | ----------
+[∆E^\*^~ab~][de76]\ (CIE76)              | :octicons-check-16:   | `76`            |
+[∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | :octicons-check-16:   | `cmc`           | `l=2, c=1`
+[∆E^\*^~94~][de94]\ (CIE94)              | :octicons-x-16:       | `94`            | `kl=1, k1=0.045, k2=0.015`
+[∆E^\*^~00~][de2000]\ (CIEDE2000)        | :octicons-check-16:   | `2000`          | `kl=1, kc=1, kh=1`
+[∆E~HyAB~][dehyab]\ (HyAB)               | :octicons-check-16:   | `hyab`          | `space="lab-d65"`
+∆E~ok~                                   | :octicons-check-16:   | `ok`            | `scalar=1`
 
 The following are also available, but they must be manually registered by creating a
 [custom class](./color.md#custom-color-classes), or can be accessed by use `coloraide.ColorAll` instead of
 `coloraide.Color`. The associated color space must be registered as well.
 
-Delta\ E                                 | Name            | Parameters
----------------------------------------- | --------------- | --------------------
-[∆E~itp~][deitp]\ (ICtCp)                | `itp`           | `scalar=720`
-[∆E~z~][dez]\ (Jzazbz)                   | `jz`            |
-[∆E~99o~][de99o]\ (DIN99o)               | `99o`           |
+Delta\ E                                 | Symmetrical           | Name            | Parameters
+---------------------------------------- | --------------------- | --------------- | --------------------
+[∆E~itp~][deitp]\ (ICtCp)                | :octicons-check-16:   | `itp`           | `scalar=720`
+[∆E~z~][dez]\ (Jzazbz)                   | :octicons-check-16:   | `jz`            |
+[∆E~99o~][de99o]\ (DIN99o)               | :octicons-check-16:   | `99o`           |
 
 ## Finding Closest Color
 
