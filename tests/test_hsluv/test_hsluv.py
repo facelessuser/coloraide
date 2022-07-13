@@ -24,10 +24,12 @@ class TestHSLuvSnapshot(util.ColorAsserts, unittest.TestCase):
         https://github.com/hsluv/hsluv/tree/master/snapshots.
 
         The snapshot contains a number of unnecessary tests, at least for our purposes. It is sufficient to verify that
-        our path from sRGB to HSLuv is correct, both forward and backwards, as our conversion path is noted below:
+        our path from sRGB to HSLuv and HPLuv is correct, both forward and backwards, as our conversion path is noted
+        below:
 
             ```
             srgb -> srgb-linear -> xyz-d65 -> luv -> lchuv -> hsluv
+            srgb -> srgb-linear -> xyz-d65 -> luv -> lchuv -> hpluv
             ```
 
         Verifying each step in the chain makes no sense. If we are able to get through this entire chain and the sRGB
@@ -45,6 +47,16 @@ class TestHSLuvSnapshot(util.ColorAsserts, unittest.TestCase):
 
             self.assertColorEqual(
                 Color('hsluv', colors['hsluv']).convert('srgb'),
+                Color('srgb', colors['rgb'])
+            )
+
+            self.assertColorEqual(
+                Color(rgb).convert('hpluv'),
+                Color('hpluv', colors['hpluv'])
+            )
+
+            self.assertColorEqual(
+                Color('hpluv', colors['hpluv']).convert('srgb'),
                 Color('srgb', colors['rgb'])
             )
 
@@ -122,6 +134,79 @@ class TestHSLuvInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
+class TestHPLuvInputOutput(util.ColorAsserts, unittest.TestCase):
+    """Test HSLuv."""
+
+    def test_input_raw(self):
+        """Test raw input."""
+
+        self.assertColorEqual(Color("hpluv", [20, 50, 0.75]), Color('color(--hpluv 20 50 0.75)'))
+
+    def test_color_class(self):
+        """Test raw input."""
+
+        self.assertColorEqual(Color(Color("hpluv", [20, 50, 75])), Color('color(--hpluv 20 50 75)'))
+
+    def test_percent(self):
+        """Test that percents work properly."""
+
+        color = "color(--hpluv 20 50% 75% / 100%)"
+        hsluv = Color(color)
+        self.assertEqual("color(--hpluv 20 50 75)", hsluv.to_string())
+
+        color = "color(--hpluv 20 50 75 / 20%)"
+        hsluv = Color(color)
+        self.assertEqual("color(--hpluv 20 50 75 / 0.2)", hsluv.to_string())
+
+    def test_no_alpha(self):
+        """Test no alpha."""
+
+        args = {"alpha": False}
+
+        color = "color(--hpluv 20 50% 75% / 0.2)"
+        hsluv = Color(color)
+        self.assertEqual("color(--hpluv 20 50 75)", hsluv.to_string(**args))
+
+    def test_force_alpha(self):
+        """Test force alpha."""
+
+        args = {"alpha": True}
+
+        color = "color(--hpluv 20 50% 75% / 1)"
+        hsluv = Color(color)
+        self.assertEqual("color(--hpluv 20 50 75 / 1)", hsluv.to_string(**args))
+
+    def test_precision(self):
+        """Test precision."""
+
+        color = 'color(--hpluv 20.1234567 0.1234567 0.1234567)'
+        self.assertEqual(Color(color).to_string(), 'color(--hpluv 20.123 0.12346 0.12346)')
+        self.assertEqual(Color(color).to_string(precision=3), 'color(--hpluv 20.1 0.123 0.123)')
+        self.assertEqual(Color(color).to_string(precision=0), 'color(--hpluv 20 0 0)')
+        self.assertEqual(
+            Color(color).to_string(precision=-1),
+            'color(--hpluv 20.12345669999999842048055143095552921295166015625 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
+        )
+
+    def test_fit(self):
+        """Test fit."""
+
+        self.assertEqual(
+            Color('color(--hpluv 50 40% 110%)').to_string(),
+            'color(--hpluv 0 0 100)'
+        )
+
+        self.assertEqual(
+            Color('color(--hpluv 50 40% 110%)').to_string(fit="clip"),
+            'color(--hpluv 50 40 100)'
+        )
+
+        self.assertEqual(
+            Color('color(--hpluv 50 40% 110%)').to_string(fit=False),
+            'color(--hpluv 50 40 110)'
+        )
+
+
 class TestHSluvProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSLuv."""
 
@@ -158,8 +243,44 @@ class TestHSluvProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 0.5)
 
 
-class TestNull(util.ColorAsserts, unittest.TestCase):
-    """Test Null cases."""
+class TestHPluvProperties(util.ColorAsserts, unittest.TestCase):
+    """Test HPLuv."""
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['hue'], 120)
+        c['hue'] = 110
+        self.assertEqual(c['hue'], 110)
+
+    def test_perpendiculars(self):
+        """Test `perpendiculars`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['perpendiculars'], 50)
+        c['perpendiculars'] = 60
+        self.assertEqual(c['perpendiculars'], 60)
+
+    def test_lightness(self):
+        """Test `lightness`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['lightness'], 90)
+        c['lightness'] = 80
+        self.assertEqual(c['lightness'], 80)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
+
+
+class TestHSLuvNulls(util.ColorAsserts, unittest.TestCase):
+    """Test HSLuv Null cases."""
 
     def test_null_input(self):
         """Test null input."""
@@ -189,4 +310,38 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test minimum lightness."""
 
         c = Color('color(--hsluv 270 20% 0% / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+
+class TestHPLuvNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('hpluv', [NaN, 0.5, 1], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_none_input(self):
+        """Test `none` null."""
+
+        c = Color('color(--hpluv none 0% 75% / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_sat(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--hpluv 270 0% 0.75 / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_max_light(self):
+        """Test maximum lightness."""
+
+        c = Color('color(--hpluv 270 20% 100% / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_light(self):
+        """Test minimum lightness."""
+
+        c = Color('color(--hpluv 270 20% 0% / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))

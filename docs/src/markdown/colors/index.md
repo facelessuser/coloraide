@@ -64,8 +64,8 @@ flowchart TB;
     xyz-d65 --- rlab;
 
     xyz-d65 --- luv --- lchuv;
-
         luv --- hsluv;
+        luv --- hpluv;
 
     xyz-d65 --- xyy
 
@@ -96,6 +96,7 @@ flowchart TB;
     luv(Luv);
     lchuv(LCHuv);
     hsluv(HSLuv);
+    hpluv(HPLuv);
     din99o(DIN99o);
     lch99o(DIN99o Lch);
     jzazbz(Jzazbz);
@@ -1309,6 +1310,72 @@ _[Learn about HSLuv](https://www.hsluv.org/)_
         ```playground
         Color("hsluv", [0, 0, 0], 1)
         Color("hsluv", [0, 0, 0], 1).to_string()
+        ```
+
+### HPLuv
+
+<div class="info-container" markdown="1">
+!!! info inline end "Properties"
+
+    **Name:** `hpluv`
+
+    **White Point:** D65
+
+    **Coordinates:**
+
+    Name | Range
+    ---- | -----
+    h    | [0, 360)
+    p    | [0, 100]
+    l    | [0, 100]
+
+<figure markdown="1">
+
+![HPLuv 3D](../images/hpluv-3d.png)
+
+<figcaption>HSLuv color space in 3D</figcaption>
+</figure>
+
+HPLuv is similar to [HSLuv](#hsluv) but takes as many colors as it can from [CIELCH~uv~](#cielchuv) without distorting
+the chroma. This ends up reducing the gamut to a subset of the sRGB gamut. In the end, only more pastel colors remain.
+
+_[Learn about HSLuv](https://www.hsluv.org/)_
+</div>
+
+??? abstract "ColorAide Details"
+
+    **Channel Aliases:**
+    : 
+        Channels    | Aliases
+        ----------- | -------
+        `h`         | `hue`
+        `s`         | `perpendiculars`
+        `l`         | `lightness`
+
+    **Inputs:**
+    : 
+        HPLuv is not currently supported in the CSS spec, the parsed input and string output formats use the
+        `#!css-color color()` function format using the custom name `#!css-color --hpluv`:
+
+        ```css-color
+        color(--hpluv h p l / a)  // Color function
+        ```
+
+        When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+        space name is always used:
+
+        ```py
+        Color("hpluv", [0, 0, 0], 1)
+        ```
+
+    **Output:**
+    : 
+        The string representation of the color object and the default string output use the
+        `#!css-color color(--hpluv h p l / a)` form.
+
+        ```playground
+        Color("hpluv", [0, 0, 0], 1)
+        Color("hpluv", [0, 0, 0], 1).to_string()
         ```
 
 ### HSI

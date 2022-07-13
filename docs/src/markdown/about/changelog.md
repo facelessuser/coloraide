@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0b2
+
+- **NEW**: Added HPLuv space described in the HSLuv spec.
+
 ## 1.0b1
 
 !!! warning "Breaking Changes"

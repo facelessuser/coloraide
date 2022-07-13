@@ -26,38 +26,66 @@ from coloraide.algebra import is_nan  # noqa: E402
 
 # Special cases for certain color spaces
 color_options = {
-    'hsluv': {'factor': 100, 'chroma': 's', 'force_top': True, 'force_bottom': True},
+    'hsluv': {'factor': 100, 'chroma': 's', 'force_top': True, 'force_bottom': True, 'is_hsl': True},
+    'hpluv': {'factor': 100, 'chroma': 'p', 'force_top': True, 'force_bottom': True, 'is_hsl': True},
     'hsl': {'chroma': 's', 'force_top': True, 'force_bottom': True},
-    'okhsl': {'chroma': 's', 'force_top': True, 'force_bottom': True},
-    'hsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True},
-    'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True},
+    'okhsl': {'chroma': 's', 'force_top': True, 'force_bottom': True, "is_hsl": True},
+    'hsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
+    'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
     'hsi': {'chroma': 's', 'lightness': 'i', 'force_bottom': True},
     'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True}
 }
 
 
-def create_custom_hsv(gamut):
+def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
     """Create a custom color object that has access to special `hsv-gamut` space to map surface in."""
 
-    # Create custom cylindrical spaces based on the specified gamut
-    gamut_space = Color.CS_MAP[gamut]
+    cs = Color.CS_MAP[space]
 
-    class HSV(Color.CS_MAP['hsv']):
-        NAME = 'hsv-{}'.format(gamut)
-        BASE = 'hsl-{}'.format(gamut)
-        GAMUT_CHECK = gamut
-        WHITE = gamut_space.WHITE
+    if is_hsl:
+        # Create a custom HSV space based off the HSL space
+        class HSV(Color.CS_MAP['hsv']):
+            NAME = 'hsv-{}'.format(gamut)
+            BASE = space
+            GAMUT_CHECK = cs.GAMUT_CHECK
+            WHITE = cs.WHITE
 
-    class HSL(Color.CS_MAP['hsl']):
-        NAME = 'hsl-{}'.format(gamut)
-        BASE = gamut
-        GAMUT_CHECK = gamut
-        WHITE = gamut_space.WHITE
+            @classmethod
+            def to_base(cls, coords):
+                """To HSL from HSV."""
 
-    class ColorCyl(Color):
-        """Custom color."""
+                coords = super().to_base(coords)
+                return [coords[0], coords[1] * factor, coords[2] * factor]
 
-    ColorCyl.register([HSV, HSL])
+            @classmethod
+            def from_base(cls, coords):
+                """From HSL to HSV."""
+
+                return super().from_base([coords[0], coords[1] / factor, coords[2] / factor])
+
+        class ColorCyl(Color):
+            """Custom color."""
+
+        ColorCyl.register(HSV)
+    else:
+        # Create custom cylindrical spaces based on the specified gamut
+        class HSV(Color.CS_MAP['hsv']):
+            NAME = 'hsv-{}'.format(gamut)
+            BASE = 'hsl-{}'.format(gamut)
+            GAMUT_CHECK = gamut
+            WHITE = cs.WHITE
+
+        class HSL(Color.CS_MAP['hsl']):
+            NAME = 'hsl-{}'.format(gamut)
+            BASE = gamut
+            GAMUT_CHECK = gamut
+            WHITE = cs.WHITE
+
+        class ColorCyl(Color):
+            """Custom color."""
+
+        ColorCyl.register([HSV, HSL])
+
     return ColorCyl
 
 
@@ -121,8 +149,14 @@ def render_space(space, gamut, resolution, factor, data, c):
 
     x, y, z = data
 
-    ColorCyl = create_custom_hsv(gamut)
-    gamut_space = 'hsv-{}'.format(gamut)
+    is_hsv = color_options.get(space, {}).get('is_hsv', False)
+    is_hsl = color_options.get(space, {}).get('is_hsl', False)
+    if not is_hsv:
+        ColorCyl = create_custom_hsv(space, gamut, is_hsl, factor)
+        gamut_space = 'hsv-{}'.format(gamut)
+    else:
+        ColorCyl = Color
+        gamut_space = space
 
     # Resolution increase in non-hue channels helps smooth out some spaces a bit more.
     res2 = int(resolution * 1.5)
@@ -199,7 +233,9 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     is_lchish = issubclass(target, Lchish)
 
     if not is_lchish and is_cyl:
-        gamut = Color.CS_MAP[space].GAMUT_CHECK
+        g = Color.CS_MAP[space].GAMUT_CHECK
+        if g is not None:
+            gamut = g
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
