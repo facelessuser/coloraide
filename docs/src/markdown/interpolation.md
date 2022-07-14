@@ -281,7 +281,7 @@ Color.interpolate(
 )
 ```
 
-While `progress` sets an easing function for the all interpolation operation, we can set easing functions between two
+While `progress` sets an easing function for all interpolation operation, we can also set easing functions between two
 specific colors as well:
 
 ```playground
