@@ -58,6 +58,10 @@ from .spaces.hunter_lab import HunterLab
 from .spaces.prismatic import Prismatic
 from .spaces.rlab import RLAB
 from .spaces.orgb import ORGB
+from .spaces.aces2065_1 import ACES20651
+from .spaces.acescg import ACEScg
+from .spaces.acescc import ACEScc
+from .spaces.acescct import ACEScct
 from .distance import DeltaE
 from .distance.delta_e_76 import DE76
 from .distance.delta_e_94 import DE94
@@ -96,7 +100,8 @@ SUPPORTED_SPACES = (
 
 EXTRA_SPACES = (
     Rec2100PQ, Jzazbz, JzCzhz, ICtCp, Din99o, Lch99o, Luv, Lchuv, Okhsl, Okhsv,
-    HSLuv, HPLuv, HSI, IPT, IgPgTg, CMY, CMYK, XyY, HunterLab, Prismatic, RLAB, ORGB
+    HSLuv, HPLuv, HSI, IPT, IgPgTg, CMY, CMYK, XyY, HunterLab, Prismatic, RLAB, ORGB,
+    ACES20651, ACEScg, ACEScc, ACEScct
 )
 
 SUPPORTED_FIT = (

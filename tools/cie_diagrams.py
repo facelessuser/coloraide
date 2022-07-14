@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import argparse
 import matplotlib.patheffects as path_effects
 import sys
+import copy
 import os
 import numpy as np
 from scipy import interpolate
@@ -17,6 +18,9 @@ except ImportError:
     from coloraide import ColorAll as Color
 from coloraide import util  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
+
+ALL_WHITES = copy.deepcopy(WHITES)
+ALL_WHITES['2deg']['D60'] = Color.CS_MAP['aces2065-1'].WHITE
 
 # How dense do we scatter plot the diagram background colors?
 RESOLUTION = 800
@@ -592,6 +596,8 @@ def cie_diagram(
 
     # Generate fill colors for inside the spectral locus
     if colorize:
+        [plt.fill(s[0], s[1], '#888888') for s in spaces]
+
         px = []
         py = []
         c = []
@@ -620,13 +626,7 @@ def cie_diagram(
                 m = max(srgb[:-1])
                 srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb[:-1]], srgb[-1])
                 c.append(srgb.to_string(hex=True, fit="clip"))
-            elif spaces:
-                for s in spaces:
-                    if s[-1].contains_point(r):
-                        px.append(r[0])
-                        py.append(r[1])
-                        srgb[:] = ([0.5] * 3) + [1]
-                        c.append(srgb.to_string(hex=True))
+
         plt.scatter(
             px, py,
             edgecolors=None,
@@ -676,7 +676,7 @@ def cie_diagram(
         wy = []
         annot = []
         for wp in white_points:
-            w = WHITES[observer][wp]
+            w = ALL_WHITES[observer][wp]
             annot.append(wp)
             if opt.mode == '1931':
                 wx.append(w[0])
