@@ -30,7 +30,8 @@ But there are many blend modes that could be used, all of which yield different 
 </span>
 
 When composing, the blend mode can be controlled separately in ColorAide. Here, we again use the `multiply` example
-and replicate it in ColorAide.
+and replicate it in ColorAide. To apply blending in ColorAide, simply call `compose` with a backdrop color, and the
+calling color will be used as the source.
 
 === "Display P3"
     ```playground
@@ -52,9 +53,9 @@ and replicate it in ColorAide.
     As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
     and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 
-ColorAide allows you to blend multiple colors quite easily as well. Simply send in a list, and the colors will be
-blended from right to left with the right most color being on the bottom of the stack, and the base color being on the
-very top.
+ColorAide allows you to blend a source over multiple backdrops quite easily as well. Simply send in a list, and the
+colors will be blended from right to left with the right most color being on the bottom of the stack, and the base color
+being used as the source (on the very top).
 
 
 <span class="isolate blend-multiply">
@@ -157,8 +158,9 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
     c1.compose(c2, operator='destination-over', space="srgb")
     ```
 
-You can also apply alpha compositing to multiple layers at once. Simply send in a list, and the colors will be composed
-from right to left with the right most color being on the bottom of the stack and the base color being on the very top.
+You can also apply alpha compositing to multiple layers at once. Simply send in a list of colors as the backdrop, and
+the colors will be composed from right to left with the right most color being on the bottom of the stack and the base
+color (the source) being on the very top.
 
 Here we are using the normal blend mode and 50% transparency on all the circles with an opaque white background. We will
 calculate the center color where all three layers overlap.

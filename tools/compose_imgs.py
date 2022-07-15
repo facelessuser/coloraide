@@ -45,19 +45,19 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_compositing(background, blend, operator, pixels):
+def apply_compositing(background, blend, operator, pixels, fit):
     """Apply compositing."""
 
-    color = Color('srgb', [x / 255 for x in pixels[0][:3]], pixels[0][3] / 255)
+    color = Color('srgb', [x / 255 for x in pixels[0][:-1]], pixels[0][3] / 255)
     # Overlay first layer on background color in isolation
     if background != 'transparent':
         color.compose(background, in_place=True)
     backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
-    color.compose(backdrops, blend=blend, operator=operator).clip()
-    return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),))
+    color.compose(backdrops, blend=blend, operator=operator, in_place=True).clip()
+    return tuple([int(x * 255) for x in color.fit(method=fit)[:4]])
 
 
-def process_image(imgs, bg, output, blend, porter_duff):
+def process_image(imgs, bg, output, blend, porter_duff, fit):
     """Process the image applying the requested blend mode and compositing operator."""
 
     images = []
@@ -90,7 +90,7 @@ def process_image(imgs, bg, output, blend, porter_duff):
     print('> 0%', end='\r')
     for e, i in enumerate(range(x)):
         for j in range(y):
-            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]))
+            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit)
         print('> {}%'.format(int((e * j) * factor)), end="\r")
     print('> 100%')
     t = time.perf_counter_ns() - start
@@ -114,9 +114,17 @@ def main():
         default='transparent',
         help="Background color. Blended in source-over in isolation."
     )
+    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
     args = parser.parse_args()
 
-    process_image(args.image, args.background_color, args.output, args.blend, args.porter_duff)
+    process_image(
+        args.image,
+        args.background_color,
+        args.output,
+        args.blend,
+        args.porter_duff,
+        args.gamut_map
+    )
 
     return 0
 
