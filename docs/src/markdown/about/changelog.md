@@ -2,6 +2,7 @@
 
 ## 1.0b2
 
+- **NEW**: Added new migration guide to the documentation to help early adopters move to the 1.0 release.
 - **NEW**: Added HPLuv space described in the HSLuv spec.
 - **NEW**: Added new color spaces: ACES 2065-1, ACEScg, ACEScc, and ACEScct.
 - **NEW**: Contrast is now exposed as a plugin to allow for future expansion of approaches. While there is currently

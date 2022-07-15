@@ -51,6 +51,8 @@ nav:
       - Contributing &amp; Support: about/contributing.md
       - Acknowledgments: about/acknowledgments.md
       - Changelog: about/changelog.md
+      - Migration Notes:
+          - '1.0': about/releases/1.0.md
       - License: about/license.md
 
 markdown_extensions:

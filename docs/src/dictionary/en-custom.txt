@@ -190,6 +190,7 @@ indexable
 interpolator
 io
 ish
+iterable
 ixora
 js
 jz
@@ -236,6 +237,7 @@ tritanomaly
 tritanopia
 un
 uncomment
+unintuitive
 unsaturate
 uv
 validator
