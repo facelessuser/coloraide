@@ -45,7 +45,7 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_filter(name, amount, space, method, p):
+def apply_filter(name, amount, space, method, p, fit):
     """Apply filter."""
 
     has_alpha = len(p) > 3
@@ -56,12 +56,11 @@ def apply_filter(name, amount, space, method, p):
     else:
         # General filter.
         color.filter(name, amount, space=space, in_place=True)
-    # We could gamut map or just do a simple clip, we've opted for a simple fast clip for now.
-    color.clip()
-    return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),) if has_alpha else tuple())
+    # Fit the color back into the color gamut and return the results
+    return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
 
 
-def process_image(img, output, name, amount, space, cvd_approach):
+def process_image(img, output, name, amount, space, cvd_approach, fit):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
@@ -81,7 +80,7 @@ def process_image(img, output, name, amount, space, cvd_approach):
         print('> 0%', end='\r')
         for e, i in enumerate(range(im.size[0])):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_filter(name, amount, space, cvd_approach, pixels[i, j])
+                pixels[i, j] = apply_filter(name, amount, space, cvd_approach, pixels[i, j], fit)
             print('> {}%'.format(int((e * j) * factor)), end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
@@ -99,9 +98,18 @@ def main():
     parser.add_argument('--amount', '-a', type=float, help='Amount to filter the image.')
     parser.add_argument('--cvd-approach', '-c', help='CVD approach to use.')
     parser.add_argument('--space', '-s', default='srgb-linear', help='Color space to filter in.')
+    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
     args = parser.parse_args()
 
-    process_image(args.input, args.output, args.filter, args.amount, args.space, args.cvd_approach)
+    process_image(
+        args.input,
+        args.output,
+        args.filter,
+        args.amount,
+        args.space,
+        args.cvd_approach,
+        args.gamut_map
+    )
 
     return 0
 

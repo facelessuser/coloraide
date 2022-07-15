@@ -208,20 +208,22 @@ HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
     One logical application for filters is to apply them directly to images. If you are performing these operations on
     millions of pixels, you may notice that ColorAide, with all of its convenience, may not always be the fastest. There
     is a cost due to the overhead of convenience and a cost due to the pure Python approach as well. With that said,
-    there are tricks that can dramatically make things much faster!
+    there are tricks that can dramatically make things much faster in most cases!
 
     `functools.lru_cache` is your friend in such cases. We actually process all the images on this page with ColorAide
     to demonstrate the filters. The key to making it a quick and painless process was to cache repetitive operations.
     When processing images, it is highly likely that you will be performing the same operations on thousands of
-    identical pixels. Caching the work you've already done can speed this process up exponentially in most cases.
-    Though, images with an abnormal amount of unique, non consecutive pixels may not perform as well.
+    identical pixels. Caching the work you've already done can speed this process up exponentially.
+
+    There are certainly some images that could be constructed in such a way to elicit a worse case scenario where the
+    cache would not be able to compensate as well, but for most images, caching dramatically reduces processing time.
 
     We can crawl the pixels in a file, and using a simple function like below, we will only process a pixel once (at
     least until our cache fills and we start having to overwrite existing colors).
 
     ```py
     @lru_cache(maxsize=1024 * 1024)
-    def apply_filter(name, amount, space, method, p):
+    def apply_filter(name, amount, space, method, p, fit):
         """Apply filter."""
 
         has_alpha = len(p) > 3
@@ -232,14 +234,15 @@ HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
         else:
             # General filter.
             color.filter(name, amount, space=space, in_place=True)
-        # We could gamut map or just do a simple clip, we've opted for a simple fast clip for now.
-        color.clip(in_place=True)
-        return tuple([int(x * 255) for x in color[:-1]]) + ((int(color[-1] * 255),) if has_alpha else tuple())
+        # Fit the color back into the color gamut and return the results
+        return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
     ```
 
-    For us, it turned a ~8 minute process into a ~35 second process^\*^.
+    When processing a 4608x2456 image (15,925,248 pixels) during our testing, it turned a ~7 minute process into a ~25
+    second process^\*^. Using gamut mapping opposed to simple clipping only increases time by to about ~56 seconds. The
+    much smaller images shown on this page process much, much faster.
 
-    The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filters.py).
+    The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filter_img.py).
 
     \* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
     pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
