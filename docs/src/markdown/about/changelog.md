@@ -7,6 +7,7 @@
 - **NEW**: Added new color spaces: ACES 2065-1, ACEScg, ACEScc, and ACEScct.
 - **NEW**: Contrast is now exposed as a plugin to allow for future expansion of approaches. While there is currently
   only one approach, methods can be selected via the `method` attribute.
+- **NEW**: Add new `random` method for generating a random color for a given color space.
 
 ## 1.0b1
 

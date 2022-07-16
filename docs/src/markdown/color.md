@@ -103,6 +103,32 @@ except ValueError:
 Color("hsl(130 30% 75%)", filters=["hsl"])
 ```
 
+## Random
+
+If you'd like to generate a random color, simply call `Color.random` with a given color space and one will be generated.
+
+```playground
+[Color.random('srgb') for _ in range(10)]
+```
+
+Ranges are based on the color space's defined channel range. For color spaces with defined gamuts, the values will be
+confined to appropriate ranges. For color space's without defined gamuts, the ranges may be quite arbitrary. For color
+spaces with no hard, defined gamut, it is recommend to fit the colors to whatever gamut you'd like, or simply use a
+target space with a clear defined gamut.
+
+```playground
+Color.random('lab').fit('srgb')
+```
+
+Lastly, if you'd like to further constrain the limits, you can provide a list of constraints. A constraint should be
+a sequence of two values specifying the minimum and maximum for the channel. If `#!py None` is provided, that constraint
+will be ignored. If the list doesn't have enough values, those missing indexes will be ignored. If the list has too many
+values, those extra values will be ignored.
+
+```playground
+Color.random('srgb', limits=[(0.25, 0.75)] * 3)
+```
+
 ## Cloning
 
 The `clone` method is an easy way to duplicate the current color object.

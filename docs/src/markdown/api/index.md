@@ -268,6 +268,35 @@ Return
 : 
     Returns a [`Color`](#color) object.
 
+## `Color.random` {#random}
+
+```py3
+@classmethod
+def random(
+    cls,
+    space,
+    *,
+    limits=None
+):
+```
+
+Description
+: 
+    Generate a random color in the provided `space`. The color space's channel range will be used as a limit for the
+    channel. For color spaces with no clearly defined gamut, these values can be arbitrary. In such cases, it may be
+    advisable to fit the returned color space to a displayable gamut.
+
+Parameters
+: 
+    Parameters | Defaults     | Description
+    ---------- | -------------| -----------
+    `space`    |              | The color space name in which to generate a random color in.
+    `limits`   | `#!py3 None` | An optional list of constraints for various color channels. Each entry should either be a sequence contain a minimum and maximum value, or should be `#!py3 None`. `#!py3 None` values will be ignored and the color space's specified channel range will be used instead. Any missing entries will be treated as `#!py3 None`.
+
+Return
+: 
+    Returns a [`Color`](#color) object.
+
 ## `Color.clone` {#clone}
 
 ```py3

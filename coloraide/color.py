@@ -1,6 +1,7 @@
 """Colors."""
 import abc
 import functools
+import random
 from . import distance
 from . import convert
 from . import gamut
@@ -474,6 +475,34 @@ class Color(metaclass=ColorMeta):
 
         if reset_convert_cache:
             cls._get_convert_chain.cache_clear()
+
+    @classmethod
+    def random(cls, space: str, *, limits: Optional[Sequence[Optional[Sequence[float]]]] = None) -> 'Color':
+        """Get a random color."""
+
+        # Get the color space and number of channels
+        cs = cls.CS_MAP[space]
+        num_chan = len(cs.CHANNELS)
+
+        # Initialize constraints if none were provided
+        if limits is None:
+            limits = []
+
+        # Acquire the minimum and maximum for the channel and get a random value value between
+        length = len(limits)
+        coords = []
+        for i in range(num_chan):
+            chan = limits[i] if i < length else None  # type: Any
+            if chan is None:
+                chan = cs.get_channel(i)
+                a, b = chan.low, chan.high
+            else:
+                a, b = chan
+
+            coords.append(random.uniform(a, b))
+
+        # Create the color
+        return cls(space, coords)
 
     def to_dict(self) -> Mapping[str, Any]:
         """Return color as a data object."""
