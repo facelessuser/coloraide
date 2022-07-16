@@ -423,3 +423,29 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color("color(srgb 3.2e-2 0.1e+1 0.1e1 / 0.5e-)"), Color("color(srgb 0.032 1 1 / 0.5)"))
         self.assertColorEqual(Color("color(srgb +3.2e-2 +0.1e+1 +0.1e1 / 0.5e+)"), Color("color(srgb 0.032 1 1 / 0.5)"))
         self.assertColorEqual(Color("color(srgb 0.032e 1e 1e / 0.5e)"), Color("color(srgb 0.032 1 1 / 0.5)"))
+
+    def test_random_space(self):
+        """Test that random colors are generated in the specified space."""
+
+        c = Color.random('srgb')
+        self.assertEqual(c.space(), 'srgb')
+
+        c = Color.random('display-p3')
+        self.assertEqual(c.space(), 'display-p3')
+
+    def test_random_range(self):
+        """Test that random colors are generated within the space's range."""
+
+        for _ in range(10):
+            for c in Color.random('srgb'):
+                self.assertTrue(0 <= c <= 1)
+
+    def test_random_limits(self):
+        """Test random limits."""
+
+        for _ in range(10):
+            for i, c in enumerate(Color.random('srgb', limits=[None, (0, 0.5)])):
+                if i == 1:
+                    self.assertTrue(0 <= c <= 0.5)
+                else:
+                    self.assertTrue(0 <= c <= 1)
