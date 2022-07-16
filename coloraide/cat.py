@@ -64,8 +64,8 @@ def calc_adaptation_matrices(
     return adapt, alg.inv(adapt)
 
 
-class CATMeta(ABCMeta):
-    """Meta class for CAT plugin."""
+class VonKriesMeta(ABCMeta):
+    """Meta class for VonKries style CAT plugin."""
 
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Cache best filter."""
@@ -73,7 +73,7 @@ class CATMeta(ABCMeta):
         @classmethod  # type: ignore[misc]
         @functools.lru_cache(maxsize=6)
         def get_adaptation_matrices(
-            cls: Type['CAT'],
+            cls: Type['VonKries'],
             w1: Tuple[float, float],
             w2: Tuple[float, float]
         ) -> Tuple[Matrix, Matrix]:
@@ -84,10 +84,10 @@ class CATMeta(ABCMeta):
         cls.get_adaptation_matrices = get_adaptation_matrices
 
 
-class CAT(Plugin, metaclass=CATMeta):
+class CAT(Plugin, metaclass=ABCMeta):
     """Chromatic adaptation."""
 
-    MATRIX = [[]]  # type: Matrix
+    NAME = ''
 
     @classmethod
     @abstractmethod
@@ -95,7 +95,7 @@ class CAT(Plugin, metaclass=CATMeta):
         """Adapt a given XYZ color using the provided white points."""
 
 
-class VonKries(CAT):
+class VonKries(CAT, metaclass=VonKriesMeta):
     """
     Von Kries CAT.
 
@@ -109,7 +109,7 @@ class VonKries(CAT):
         [0.4002400, 0.7076000, -0.0808100],
         [-0.2263000, 1.1653200, 0.0457000],
         [0.0000000, 0.0000000, 0.9182200]
-    ]
+    ]  # type: Matrix
 
     @classmethod
     def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:

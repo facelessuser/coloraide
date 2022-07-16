@@ -93,8 +93,8 @@ The plugin should provide a `NAME` with the adaptation logic under `#!py3 adapt(
 
 Currently, ColorAide only ships with Von Kries based adaptation methods. If it is desired to create a Von Kries based
 plugin, it is recommended to subclass the `VonKries` class which is based on `CAT`. When subclassing a `VonKries` based
-cat, `NAME` and a `MATRIX` must be provided. The inverted matrix will be automatically calculated based on the white
-points.
+CAT, `NAME` and a `MATRIX` must be provided. The general calculations, related to the source and target white point,
+will automatically be calculated and an appropriate matrix and inverted matrix will be returned.
 
 ```py
 class Bradford(VonKries):

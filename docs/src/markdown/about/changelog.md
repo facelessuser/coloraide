@@ -3,6 +3,7 @@
 ## 1.0b3
 
 - **FIX**: Fixed the bad `CAT16` matrix for chromatic adaptation.
+- **FIX**: Small fix related to how `CAT` plugin classes are defined for better abstraction.
 
 ## 1.0b2
 
