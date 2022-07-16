@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0b3
+
+- **FIX**: Fixed the bad `CAT16` matrix for chromatic adaptation.
+
 ## 1.0b2
 
 !!! warning "Breaking Changes"
