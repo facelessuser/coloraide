@@ -187,6 +187,7 @@ hz
 illuminant
 illuminants
 indexable
+instantiation
 interpolator
 io
 ish

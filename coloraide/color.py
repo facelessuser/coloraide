@@ -83,7 +83,7 @@ from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
 from .types import Plugin
-from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Set, Tuple, Type, Mapping
+from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Tuple, Type, Mapping
 
 SUPPORTED_DE = (
     DE76, DE94, DECMC, DE2000, DEHyAB, DEOK
@@ -201,13 +201,11 @@ class Color(metaclass=ColorMeta):
         color: ColorInput,
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
-        *,
-        filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> None:
         """Initialize."""
 
-        self._space, self._coords = self._parse(color, data, alpha, filters=filters, **kwargs)
+        self._space, self._coords = self._parse(color, data, alpha, **kwargs)
 
     def __len__(self) -> int:
         """Get number of channels."""
@@ -261,29 +259,27 @@ class Color(metaclass=ColorMeta):
         color: ColorInput,
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
-        *,
-        filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> Tuple[Type[Space], List[float]]:
         """Parse the color."""
 
-        obj = None
         if isinstance(color, str):
 
             # Parse a color space name and coordinates
             if data is not None:
                 s = color
                 space_class = cls.CS_MAP.get(s)
-                if space_class and (not filters or s in filters):
-                    num_channels = len(space_class.CHANNELS)
-                    if len(data) < num_channels:
-                        data = list(data) + [alg.NaN] * (num_channels - len(data))
-                    coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
-                    coords.append(alg.clamp(float(alpha), *space_class.get_channel(-1).limit))
-                    obj = space_class, coords
+                if not space_class:
+                    raise ValueError("'{}' is not a registered color space")
+                num_channels = len(space_class.CHANNELS)
+                if len(data) < num_channels:
+                    data = list(data) + [alg.NaN] * (num_channels - len(data))
+                coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
+                coords.append(alg.clamp(float(alpha), *space_class.get_channel(-1).limit))
+                obj = space_class, coords
             # Parse a CSS string
             else:
-                m = cls._match(color, fullmatch=True, filters=filters)
+                m = cls._match(color, fullmatch=True)
                 if m is None:
                     raise ValueError("'{}' is not a valid color".format(color))
                 coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(m[0].CHANNELS, m[1])]
@@ -291,9 +287,10 @@ class Color(metaclass=ColorMeta):
                 obj = m[0], coords
         elif isinstance(color, Color):
             # Handle a color instance
-            if not filters or color.space() in filters:
-                space_class = cls.CS_MAP[color.space()]
-                obj = space_class, color[:]
+            space_class = cls.CS_MAP.get(color.space())
+            if not space_class:
+                raise ValueError("'{}' is not a registered color space")
+            obj = space_class, color[:]
         elif isinstance(color, Mapping):
             # Handle a color dictionary
             space = color['space']
@@ -303,8 +300,6 @@ class Color(metaclass=ColorMeta):
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
-        if obj is None:
-            raise ValueError("Could not process the provided color")
         return obj
 
     @classmethod
@@ -312,8 +307,7 @@ class Color(metaclass=ColorMeta):
         cls,
         string: str,
         start: int = 0,
-        fullmatch: bool = False,
-        filters: Optional[Sequence[str]] = None
+        fullmatch: bool = False
     ) -> Optional[Tuple[Type['Space'], Vector, float, int, int]]:
         """
         Match a color in a buffer and return a color object.
@@ -321,19 +315,13 @@ class Color(metaclass=ColorMeta):
         This must return the color space, not the Color object.
         """
 
-        filter_set = set(filters) if filters is not None else set()  # type: Set[str]
-
         # Attempt color match
         m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
         if m is not None:
-            if not filter_set or m[0].NAME in filter_set:
-                return m[0], m[1][0], m[1][1], start, m[2]
-            return None
+            return m[0], m[1][0], m[1][1], start, m[2]
 
         # Attempt color space specific match
         for space, space_class in cls.CS_MAP.items():
-            if filter_set and space not in filter_set:
-                continue
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
                 return space_class, m2[0][0], m2[0][1], start, m2[1]
@@ -344,13 +332,11 @@ class Color(metaclass=ColorMeta):
         cls,
         string: str,
         start: int = 0,
-        fullmatch: bool = False,
-        *,
-        filters: Optional[Sequence[str]] = None
+        fullmatch: bool = False
     ) -> Optional[ColorMatch]:
         """Match color."""
 
-        m = cls._match(string, start, fullmatch, filters=filters)
+        m = cls._match(string, start, fullmatch)
         if m is not None:
             return ColorMatch(cls(m[0].NAME, m[1], m[2]), m[3], m[4])
         return None
@@ -540,13 +526,11 @@ class Color(metaclass=ColorMeta):
         color: ColorInput,
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
-        *,
-        filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> 'Color':
         """Create new color object."""
 
-        return type(self)(color, data, alpha, filters=filters, **kwargs)
+        return type(self)(color, data, alpha, **kwargs)
 
     def clone(self) -> 'Color':
         """Clone."""
@@ -578,13 +562,11 @@ class Color(metaclass=ColorMeta):
         color: ColorInput,
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
-        *,
-        filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> 'Color':
         """Mutate the current color to a new color."""
 
-        self._space, self._coords = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._space, self._coords = self._parse(color, data=data, alpha=alpha, **kwargs)
         return self
 
     def update(
@@ -592,14 +574,12 @@ class Color(metaclass=ColorMeta):
         color: Union['Color', str, Mapping[str, Any]],
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
-        *,
-        filters: Optional[Sequence[str]] = None,
         **kwargs: Any
     ) -> 'Color':
         """Update the existing color space with the provided color."""
 
         space = self.space()
-        self._space, self._coords = self._parse(color, data=data, alpha=alpha, filters=filters, **kwargs)
+        self._space, self._coords = self._parse(color, data=data, alpha=alpha, **kwargs)
         if self._space.NAME != space:
             self.convert(space, in_place=True)
         return self
