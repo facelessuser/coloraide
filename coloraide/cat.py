@@ -65,7 +65,7 @@ def calc_adaptation_matrices(
 
 
 class VonKriesMeta(ABCMeta):
-    """Meta class for VonKries style CAT plugin."""
+    """Meta class for Von Kries style CAT plugin."""
 
     def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
         """Cache best filter."""
