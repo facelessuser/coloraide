@@ -91,18 +91,6 @@ color1
 color1.new("blue")
 ```
 
-If desired, all creation methods can have a color space filter list passed in. The filter list will prevent an input
-which specifies a color space found in our list to not be accepted. Using a filter will constrain inputs to only the
-color spaces in the list.
-
-```playground
-try:
-    Color("red", filters=["hsl"])
-except ValueError:
-    print('Not a valid color')
-Color("hsl(130 30% 75%)", filters=["hsl"])
-```
-
 ## Random
 
 If you'd like to generate a random color, simply call `Color.random` with a given color space and one will be generated.
@@ -275,14 +263,6 @@ later, we will match `#!color yellow` instead of `#!color red`.
 
 ```playground
 Color.match("red and yellow", start=8)
-```
-
-Filtering unwanted color spaces is also available via the `filter` parameter, and is typically how creation methods
-avoid parsing unwanted color spaces.
-
-```playground
-Color.match("red and yellow", filters=["hsl"])
-Color.match("hsl(130 30% 75%)", filters=["hsl"])
 ```
 
 A method to find all colors in a buffer is not currently provided as looping through all the color spaces and matching

@@ -1,6 +1,6 @@
 """Test miscellaneous API features."""
 import unittest
-from coloraide import Color, NaN
+from coloraide import Color, ColorAll, NaN
 from . import util
 import math
 
@@ -112,6 +112,16 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color("nope")
 
+        with self.assertRaises(ValueError):
+            Color("nope", [0, 0, 0])
+
+    def test_bad_class(self):
+        """Test bad class."""
+
+        c = ColorAll('hunter-lab', [0, 0, 0])
+        with self.assertRaises(ValueError):
+            Color(c)
+
     def test_bad_data_input(self):
         """Test bad data input."""
 
@@ -123,34 +133,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('color(srgb)')
-
-    def test_filtered_input(self):
-        """Test filtered input."""
-
-        self.assertTrue(isinstance(Color("red", filters=['srgb']), Color))
-        with self.assertRaises(ValueError):
-            Color("hsl(20 100% 50%)", filters=['srgb'])
-
-    def test_filtered_color_syntax_input(self):
-        """Test filtered input with color syntax."""
-
-        self.assertTrue(isinstance(Color("red", filters=['srgb']), Color))
-        with self.assertRaises(ValueError):
-            Color("color(--hsl 20 100% 50%)", filters=['srgb'])
-
-    def test_filtered_color_input(self):
-        """Test filtered Color input."""
-
-        self.assertTrue(isinstance(Color(Color("red"), filters=['srgb']), Color))
-        with self.assertRaises(ValueError):
-            Color(Color("hsl(20 100% 50%)"), filters=['srgb'])
-
-    def test_filtered_raw_input(self):
-        """Test filtered raw input."""
-
-        self.assertTrue(isinstance(Color(Color("srgb", [1, 1, 1]), filters=['srgb']), Color))
-        with self.assertRaises(ValueError):
-            Color(Color("hsl", [20, 100, 50]), filters=['srgb'])
 
     def test_missing_inputs(self):
         """Test missing inputs."""
@@ -399,12 +381,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(obj.color, Color('red'))
         self.assertEqual(obj.start, 21)
         self.assertEqual(obj.end, 35)
-
-    def test_match_filters(self):
-        """Test match with filters."""
-
-        self.assertIsNotNone(Color.match('lab(100% 0 0)'))
-        self.assertIsNone(Color.match('lab(100% 0 0)', filters=['srgb']))
 
     def test_mask_in_place(self):
         """Test masking "in place"."""
