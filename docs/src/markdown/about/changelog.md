@@ -4,6 +4,7 @@
 
 - **FIX**: Fixed the bad `CAT16` matrix for chromatic adaptation.
 - **FIX**: Small fix related to how `CAT` plugin classes are defined for better abstraction.
+- **FIX**: Restrict optional keywords in `Color.register()` and `Color.deregister()` to keyword _only_ parameters.
 
 ## 1.0b2
 

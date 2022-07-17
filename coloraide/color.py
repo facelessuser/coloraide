@@ -357,6 +357,7 @@ class Color(metaclass=ColorMeta):
     def register(
         cls,
         plugin: Union[Type[Plugin], Sequence[Type[Plugin]]],
+        *,
         overwrite: bool = False,
         silent: bool = False
     ) -> None:
@@ -407,7 +408,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def deregister(cls, plugin: Union[str, Sequence[str]], silent: bool = False) -> None:
+    def deregister(cls, plugin: Union[str, Sequence[str]], *, silent: bool = False) -> None:
         """Deregister a plugin by name of specified plugin type."""
 
         reset_convert_cache = False

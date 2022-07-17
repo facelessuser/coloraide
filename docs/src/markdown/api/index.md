@@ -150,7 +150,9 @@ Parameters
 def register(
     cls,
     plugin,
-    overwrite=False
+    *,
+    overwrite=False,
+    silent=False
 ):
 ```
 
@@ -173,6 +175,7 @@ Parameters
 def deregister(
     cls,
     plugin,
+    *,
     silent=False
 ):
 ```
