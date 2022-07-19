@@ -26,9 +26,8 @@ class DeltaE(Plugin, metaclass=ABCMeta):
 
     NAME = ''
 
-    @classmethod
     @abstractmethod
-    def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(self, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """Get distance between color and sample."""
 ```
 
@@ -54,9 +53,8 @@ class Fit(Plugin, metaclass=ABCMeta):
 
     NAME = ''
 
-    @classmethod
     @abstractmethod
-    def fit(cls, color: 'Color', **kwargs) -> None:
+    def fit(self, color: 'Color', **kwargs) -> None:
         """Get coordinates of the new gamut mapped color."""
 ```
 
@@ -83,9 +81,8 @@ class CAT(Plugin, metaclass=ABCMeta):
 
     NAME = ""
 
-    @classmethod
     @abstractmethod
-    def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 ```
 
@@ -128,9 +125,8 @@ class Filter(Plugin, metaclass=ABCMeta):
     DEFAULT_SPACE = 'srgb-linear'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
     @abstractmethod
-    def filter(color: 'Color', amount: Optional[float], **kwargs: Any) -> None:
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:
         """Filter the given color."""
 ```
 
@@ -158,9 +154,8 @@ class ColorContrast(Plugin, metaclass=ABCMeta):
 
     NAME = ''
 
-    @classmethod
     @abstractmethod
-    def contrast(cls, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
+    def contrast(self, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
         """Get the contrast of the two provided colors."""
 
 ```
@@ -185,13 +180,6 @@ plugins.
 
 In general, a color space plugin is created by subclassing from `#!py3 coloraide.spaces.Space`. When defining a color
 space, there are a couple things that must be defined. Using XYZ as an example, we will go over them.
-
-!!! tip "Chromatic Adaptation"
-    Color spaces do **not** perform chromatic adaptation. That is handled by the `Color` object. Color spaces should
-    never change the white point, but simply provide the appropriate `BASE` linkage so that the color can resolve
-    eventually to XYZ D65. Other XYZ color spaces should all have `xyz-d65` as their base. Chromatic adaptation should
-    automatically occur on transitions between two XYZ spaces with different white points white points, e.g., `xyz-d65`
-    to `xyz-d50`.
 
 ````py
 from coloraide import cat
@@ -298,8 +286,7 @@ class XYZD65(Space):
     ############################
     # To and from conversion functions that transform the color to and from the `BASE` color.
     ############################
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """
         To XYZ (no change).
 
@@ -308,8 +295,7 @@ class XYZD65(Space):
 
         return coords
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """
         From XYZ (no change).
 
@@ -319,9 +305,40 @@ class XYZD65(Space):
         return coords
 ````
 
+!!! warning "Important"
+    When subclassing existing color spaces, if changes in the derived class are superficial, such as changing accepted
+    string input or output, they can usually be used as drop in replacements for the original, but if there are any
+    changes that affect how the coordinates are calculated, it is advised that the plugin specifies a new `Space.NAME`
+    value.
+
+    For example, a color space which requires certain viewing conditions to be specified may calculate very different
+    coordinates if viewing conditions are altered. If registered as a direct replacement of the original, this could
+    not only break conversion to or from that specific color space, but it could break conversion of color spaces
+    that pass through that color space in the conversion chain.
+
+    It is expected that color space plugins with the same name will have compatible coordinates. That is why we have
+    color spaces like: `lab` and `lab-d65`. As they have completely different white spaces, even if they are based on
+    the exact same color model, they will not render colors identically, so they should not be treated as equivalent.
+
+!!! tip "Chromatic Adaptation"
+    Chromatic adaptation between different XYZ color spaces is not generally handled by the color space directly, but
+    is handled by ColorAide in general. By simply providing the appropriate `BASE` linkage, ColorAide will know how to
+    get to and from that color space and will utilize the `to_base` and `from_base` functions in order to apply the
+    conversion.
+
+    All conversion chains are required to pass through XYZ D65. Chromatic adaptation will occur any time the white
+    point changes and XYZ D65 is one of the colors in the conversion.
+
+    If there is no registered XYZ with your required white point, you do not **need** to register a new XYZ color space
+    unless you plan to work in that XYZ variant directly. All a color space needs to do is set `Space.BASE` to `xyz-d65`
+    and specify the white point via `Space.WHITE`. The XYZ D65 coordinates will be adapted to the appropriate white
+    point during conversion to and from the targeted color space.
+
+### Color Normalization
+
 In addition to the above methods, some color spaces, such as cylindrical spaces, have some additional logic that
 determines when a `hue` is undefined. During conversion, undefined channels are usually thrown away, and a color may be
-returned with undefined hues if the color is achromatic.a
+returned with undefined hues if the color is achromatic.
 
 The `Space.normalize` function is not used during conversion, but provides logic for specifically normalizing an exiting
 color when `Color.normalize` is called. Logic should generally match whatever occurs during conversion.conversion
@@ -332,13 +349,12 @@ close to zero, maybe even when lightness is equal to `#!py3 0` or `#!py3 1`. Thi
 space.
 
 ```py
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
-        """On color update."""
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize color."""
 
-        coords = util.no_nans(coords)
+        coords = alg.no_nans(coords)
         if coords[1] == 0 or coords[2] in (0, 1):
-            coords[0] = util.NaN
+            coords[0] = alg.NaN
 
         return coords
 ```
@@ -354,17 +370,15 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
     class Cylindrical:
         """Cylindrical space."""
 
-        @classmethod
-        def hue_name(cls) -> str:
+        def hue_name(self) -> str:
             """Hue channel name."""
 
             return "h"
 
-        @classmethod
-        def hue_index(cls) -> int:
+        def hue_index(self) -> int:  # pragma: no cover
             """Get hue index."""
 
-            return cls.get_channel_index(cls.hue_name())
+            return cast('Space', self).get_channel_index(self.hue_name())
     ```
 
 === "Labish"
@@ -373,18 +387,15 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
     class Labish:
         """Lab-ish color spaces."""
 
-        @classmethod
-        def labish_names(cls) -> Tuple[str, ...]:
+        def labish_names(self) -> Tuple[str, ...]:
             """Return Lab-ish names in the order L a b."""
 
-            return cls.CHANNELS
+            return cast('Space', self).channels[:-1]
 
-        @classmethod
-        def labish_indexes(cls) -> List[int]:
+        def labish_indexes(self) -> List[int]:  # pragma: no cover
             """Return the index of the Lab-ish channels."""
 
-            names = cls.labish_names()
-            return [cls.get_channel_index(name) for name in names]
+            return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
     ```
 
 === "Lchish"
@@ -393,18 +404,15 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
     class Lchish(Cylindrical):
         """Lch-ish color spaces."""
 
-        @classmethod
-        def lchish_names(cls) -> Tuple[str, ...]:
+        def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
             """Return Lch-ish names in the order L c h."""
 
-            return cls.CHANNELS
+            return cast('Space', self).channels[:-1]
 
-        @classmethod
-        def lchish_indexes(cls) -> List[int]:
+        def lchish_indexes(self) -> List[int]:  # pragma: no cover
             """Return the index of the Lab-ish channels."""
 
-            names = cls.lchish_names()
-            return [cls.get_channel_index(name) for name in names]
+            return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
     ```
 
 Mix-in classes are mainly available so that a color space can be inspected to see if it falls into a specific generic
@@ -426,7 +434,7 @@ jzazbz = srgb.convert('jzazbz')
 ictcp = srgb.convert('ictcp')
 
 for c in (srgb, jzazbz, ictcp):
-    if issubclass(c._space, Labish):
+    if isinstance(c._space, Labish):
         print('color: ', c)
         l = c._space.labish_names()[0]
         print('channel: ', l)
@@ -481,16 +489,15 @@ class SRGB(base.SRGB):
     COLOR_FORMAT: True
 
     # If the color format above is not found, continue with our custom match to handle all other formats.
-    @classmethod
     def match(
-        cls,
+        self,
         string: str,
         start: int = 0,
         fullmatch: bool = True
     ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
-        return parse.parse_css(cls, string, start, fullmatch)
+        return parse.parse_css(self, string, start, fullmatch)
 ```
 
 Additionally, we control the output formats by overriding the `#!py3 to_string()` function. We ensure that it accepts
@@ -499,15 +506,21 @@ all the parameters we need, in our case we accept the common parameters and late
 
 
 ```py
-    @classmethod
     def to_string(
-        cls,
+        self,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
         fit: Union[bool, str] = True,
         none: bool = False,
+        color: bool = False,
+        hex: bool = False,
+        names: bool = False,
+        comma: bool = False,
+        upper: bool = False,
+        percent: bool = False,
+        compress: bool = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -519,13 +532,13 @@ all the parameters we need, in our case we accept the common parameters and late
             precision=precision,
             fit=fit,
             none=none,
-            color=kwargs.get('color', False),
-            hexa=kwargs.get('hex', False),
-            name=kwargs.get('names', False),
-            legacy=kwargs.get('comma', False),
-            upper=kwargs.get('upper', False),
-            percent=kwargs.get('percent', False),
-            compress=kwargs.get('compress', False),
+            color=color,
+            hexa=hex,
+            name=names,
+            legacy=comma,
+            upper=upper,
+            percent=percent,
+            compress=compress,
             scale=255
         )
 ```

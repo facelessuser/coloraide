@@ -222,52 +222,46 @@ class Protan(Filter):
     VIENOT = VIENOT_PROTAN
     MACHADO = MACHADO_PROTAN
 
-    @classmethod
-    def brettel(cls, color: 'Color', severity: float) -> None:
+    def brettel(self, color: 'Color', severity: float) -> None:
         """Tritanopia vision deficiency using Brettel method."""
 
-        brettel(color, severity, cls.BRETTEL)
+        brettel(color, severity, self.BRETTEL)
 
-    @classmethod
-    def vienot(cls, color: 'Color', severity: float) -> None:
+    def vienot(self, color: 'Color', severity: float) -> None:
         """Tritanopia vision deficiency using Viénot method."""
 
-        vienot(color, severity, cls.VIENOT)
+        vienot(color, severity, self.VIENOT)
 
-    @classmethod
-    def machado(cls, color: 'Color', severity: float) -> None:
+    def machado(self, color: 'Color', severity: float) -> None:
         """Tritanopia vision deficiency using Machado method."""
 
-        machado(color, severity, cls.MACHADO)
+        machado(color, severity, self.MACHADO)
 
-    @classmethod
-    def select_filter(cls, method: str) -> Callable[..., None]:
+    def select_filter(self, method: str) -> Callable[..., None]:
         """Select the best filter."""
 
         if method == 'brettel':
-            return cls.brettel
+            return self.brettel
         elif method == 'vienot':
-            return cls.vienot
+            return self.vienot
         elif method == 'machado':
-            return cls.machado
+            return self.machado
         else:
             raise ValueError("Unrecognized CVD filter method '{}'".format(method))
 
-    @classmethod
-    def get_best_filter(cls, method: Optional[str], max_severity: bool) -> Callable[..., None]:
+    def get_best_filter(self, method: Optional[str], max_severity: bool) -> Callable[..., None]:
         """Get the best filter based on the situation."""
 
         if method is None:
             method = 'vienot' if max_severity else 'machado'
-        return cls.select_filter(method)
+        return self.select_filter(method)
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
         """Filter the color."""
 
         method = kwargs.get('method')  # type: Optional[str]
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
-        cls.get_best_filter(method, amount == 1)(color, amount)
+        self.get_best_filter(method, amount == 1)(color, amount)
 
 
 class Deutan(Protan):
@@ -289,8 +283,7 @@ class Tritan(Protan):
     VIENOT = VIENOT_TRITAN
     MACHADO = MACHADO_TRITAN
 
-    @classmethod
-    def get_best_filter(cls, method: Optional[str], amount: float) -> Callable[..., None]:
+    def get_best_filter(self, method: Optional[str], amount: float) -> Callable[..., None]:
         """Get the best filter based on the situation."""
 
-        return cls.select_filter('brettel' if method is None else method)
+        return self.select_filter('brettel' if method is None else method)

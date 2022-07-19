@@ -62,14 +62,12 @@ class SRGB(Space):
 
     EXTENDED_RANGE = True
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From sRGB Linear to sRGB."""
 
         return gam_srgb(coords)
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To sRGB Linear from sRGB."""
 
         return lin_srgb(coords)

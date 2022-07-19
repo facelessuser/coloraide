@@ -44,14 +44,12 @@ class A98RGBLinear(SRGB):
     SERIALIZE = ('--a98-rgb-linear',)
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from A98 RGB."""
 
         return lin_a98rgb_to_xyz(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to A98 RGB."""
 
         return xyz_to_lin_a98rgb(coords)

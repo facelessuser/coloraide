@@ -19,9 +19,9 @@ The following color spaces are registered by default:
 
 Normally, it is suggested that a user cherry pick any additional color spaces they need by subclassing the
 `coloraide.Color` object and registering any additional color spaces that are needed (and any other plugins that are
-desired). With that said, ColorAide does also provide `coloraide.ColorAll` which includes every implemented color space,
-∆E method, and other relevant plugins. In our live examples, it is the default color object we use to demonstrate
-features. Below we've provided a diagram of all the color spaces and how they translate to one another.
+desired). With that said, ColorAide does also provide `coloraide.everything.ColorAll` which includes every implemented
+color space, ∆E method, and other relevant plugins. In our live examples, it is the default color object we use to
+demonstrate features. Below we've provided a diagram of all the color spaces and how they translate to one another.
 
 ```diagram
 flowchart TB

@@ -61,14 +61,12 @@ class HunterLab(Lab):
         Channel("b", -210.0, 210.0, flags=FLG_MIRROR_PERCENT)
     )
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Hunter Lab."""
 
-        return hlab_to_xyz(coords, cls.white())
+        return hlab_to_xyz(coords, self.white())
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Hunter Lab."""
 
-        return xyz_to_hlab(coords, cls.white())
+        return xyz_to_hlab(coords, self.white())

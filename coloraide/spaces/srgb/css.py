@@ -12,15 +12,21 @@ if TYPE_CHECKING:  # pragma: no cover
 class SRGB(base.SRGB):
     """SRGB class."""
 
-    @classmethod
     def to_string(
-        cls,
+        self,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
         fit: Union[bool, str] = True,
         none: bool = False,
+        color: bool = False,
+        hex: bool = False,  # noqa: A002
+        names: bool = False,
+        comma: bool = False,
+        upper: bool = False,
+        percent: bool = False,
+        compress: bool = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -32,23 +38,22 @@ class SRGB(base.SRGB):
             precision=precision,
             fit=fit,
             none=none,
-            color=kwargs.get('color', False),
-            hexa=kwargs.get('hex', False),
-            name=kwargs.get('names', False),
-            legacy=kwargs.get('comma', False),
-            upper=kwargs.get('upper', False),
-            percent=kwargs.get('percent', False),
-            compress=kwargs.get('compress', False),
+            color=color,
+            hexa=hex,
+            name=names,
+            legacy=comma,
+            upper=upper,
+            percent=percent,
+            compress=compress,
             scale=255
         )
 
-    @classmethod
     def match(
-        cls,
+        self,
         string: str,
         start: int = 0,
         fullmatch: bool = True
     ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
-        return parse.parse_css(cls, string, start, fullmatch)
+        return parse.parse_css(self, string, start, fullmatch)

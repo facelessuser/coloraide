@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import ColorAll as Color
+    from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
 from coloraide.algebra import is_nan  # noqa: E402
 
@@ -162,9 +162,9 @@ def render_space(space, gamut, resolution, factor, data, c):
     res2 = int(resolution * 1.5)
 
     color = ColorCyl('srgb', [])
-    is_cyl = issubclass(ColorCyl.CS_MAP[space], Cylindrical)
-    is_labish = issubclass(ColorCyl.CS_MAP[space], Labish)
-    is_lchish = issubclass(ColorCyl.CS_MAP[space], Lchish)
+    is_cyl = isinstance(ColorCyl.CS_MAP[space], Cylindrical)
+    is_labish = isinstance(ColorCyl.CS_MAP[space], Labish)
+    is_lchish = isinstance(ColorCyl.CS_MAP[space], Lchish)
     add = add_rect_color if not is_cyl or is_labish else add_cyl_color
     force_max_radius = not is_lchish and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
     force_bottom = color_options.get(space, {}).get('force_bottom', False)
@@ -228,9 +228,9 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     # Get names for
     target = Color.CS_MAP[space]
     names = target.CHANNELS
-    is_cyl = issubclass(target, Cylindrical)
-    is_labish = issubclass(target, Labish)
-    is_lchish = issubclass(target, Lchish)
+    is_cyl = isinstance(target, Cylindrical)
+    is_labish = isinstance(target, Labish)
+    is_lchish = isinstance(target, Lchish)
 
     if not is_lchish and is_cyl:
         g = Color.CS_MAP[space].GAMUT_CHECK

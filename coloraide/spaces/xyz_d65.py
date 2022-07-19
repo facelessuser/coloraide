@@ -19,8 +19,7 @@ class XYZD65(Space):
     )
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """
         To XYZ (no change).
 
@@ -29,8 +28,7 @@ class XYZD65(Space):
 
         return coords
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """
         From XYZ (no change).
 

@@ -6,7 +6,7 @@ from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Any, List, cast, Type, Iterator, TYPE_CHECKING
+from typing import Tuple, Dict, Optional, Union, Any, List, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -20,51 +20,43 @@ WHITES = cat.WHITES
 class Cylindrical:
     """Cylindrical space."""
 
-    @classmethod
-    def hue_name(cls) -> str:
+    def hue_name(self) -> str:
         """Hue channel name."""
 
         return "h"
 
-    @classmethod
-    def hue_index(cls) -> int:  # pragma: no cover
+    def hue_index(self) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cast(Type['Space'], cls).get_channel_index(cls.hue_name())
+        return cast('Space', self).get_channel_index(self.hue_name())
 
 
 class Labish:
     """Lab-ish color spaces."""
 
-    @classmethod
-    def labish_names(cls) -> Tuple[str, ...]:
+    def labish_names(self) -> Tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast(Type['Space'], cls).CHANNELS
+        return cast('Space', self).channels[:-1]
 
-    @classmethod
-    def labish_indexes(cls) -> List[int]:  # pragma: no cover
+    def labish_indexes(self) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        names = cls.labish_names()
-        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
+        return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
 
 
 class Lchish(Cylindrical):
     """Lch-ish color spaces."""
 
-    @classmethod
-    def lchish_names(cls) -> Tuple[str, ...]:  # pragma: no cover
+    def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
         """Return Lch-ish names in the order L c h."""
 
-        return cast(Type['Space'], cls).CHANNELS
+        return cast('Space', self).channels[:-1]
 
-    @classmethod
-    def lchish_indexes(cls) -> List[int]:  # pragma: no cover
+    def lchish_indexes(self) -> List[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        names = cls.lchish_names()
-        return [cast(Type['Space'], cls).get_channel_index(name) for name in names]
+        return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
 
 
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
@@ -87,9 +79,9 @@ class Space(Plugin, metaclass=SpaceMeta):
     # Color space name
     NAME = ""
     # Serialized name
-    SERIALIZE = tuple()  # type: Tuple[str, ...]
+    SERIALIZE = ()  # type: Tuple[str, ...]
     # Channel names
-    CHANNELS = tuple()  # type: Tuple[Channel, ...]
+    CHANNELS = ()  # type: Tuple[Channel, ...]
     # Channel aliases
     CHANNEL_ALIASES = {}  # type: Dict[str, str]
     # Enable or disable default color format parsing and serialization.
@@ -112,32 +104,21 @@ class Space(Plugin, metaclass=SpaceMeta):
     # White point
     WHITE = (0.0, 0.0)
 
-    @classmethod
-    def get_channel_index(cls, name: str) -> int:
+    def __init__(self, **kwargs: Any) -> None:
+        """Initialize."""
+
+        self.channels = self.CHANNELS + (alpha_channel,)
+        self._color_ids = (self.NAME,) if not self.SERIALIZE else self.SERIALIZE
+
+    def get_channel_index(self, name: str) -> int:
         """Get channel index."""
 
-        if name == 'alpha':
-            return len(cls.CHANNELS)
-        return cls.CHANNELS.index(cls.CHANNEL_ALIASES.get(name, name))
+        return self.channels.index(self.CHANNEL_ALIASES.get(name, name))
 
-    @classmethod
-    def get_channel(cls, index: int) -> Channel:
-        """Get channel index."""
-
-        return (cls.CHANNELS + (alpha_channel,))[index]
-
-    @classmethod
-    def get_all_channels(cls) -> Iterator[Channel]:
-        """Get all channels."""
-
-        yield from cls.CHANNELS
-        yield alpha_channel
-
-    @classmethod
-    def _serialize(cls) -> Tuple[str, ...]:
+    def _serialize(self) -> Tuple[str, ...]:
         """Get the serialized name."""
 
-        return (cls.NAME,) if not cls.SERIALIZE else cls.SERIALIZE
+        return self._color_ids
 
     @classmethod
     def white(cls) -> VectorLike:
@@ -145,19 +126,16 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return cls.WHITE
 
-    @classmethod
     @abstractmethod
-    def to_base(cls, coords: Vector) -> Vector:  # pragma: no cover
+    def to_base(self, coords: Vector) -> Vector:  # pragma: no cover
         """To base color."""
 
-    @classmethod
     @abstractmethod
-    def from_base(cls, coords: Vector) -> Vector:  # pragma: no cover
+    def from_base(self, coords: Vector) -> Vector:  # pragma: no cover
         """From base color."""
 
-    @classmethod
     def to_string(
-        cls,
+        self,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,
@@ -177,15 +155,13 @@ class Space(Plugin, metaclass=SpaceMeta):
             none=none
         )
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """Process coordinates and adjust any channels to null/NaN if required."""
 
         return alg.no_nans(coords)
 
-    @classmethod
     def match(
-        cls,
+        self,
         string: str,
         start: int = 0,
         fullmatch: bool = True

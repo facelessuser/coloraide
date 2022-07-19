@@ -14,9 +14,8 @@ class Filter(Plugin, metaclass=ABCMeta):
     DEFAULT_SPACE = 'srgb-linear'
     ALLOWED_SPACES = ('srgb-linear',)  # type: Tuple[str, ...]
 
-    @classmethod
     @abstractmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Filter the given color."""
 
 

@@ -24,7 +24,7 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import ColorAll as Color
+    from coloraide.everything import ColorAll as Color
 from coloraide import NaN  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402

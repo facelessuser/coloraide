@@ -1,5 +1,5 @@
 """Sanity check that ensures all colors round trip back."""
-from coloraide import ColorAll
+from coloraide.everything import ColorAll
 from coloraide.spaces import Cylindrical
 from coloraide import algebra as alg
 import pytest
@@ -59,7 +59,7 @@ class TestRoundTrip:
             c2.convert(c1.space(), in_place=True)
             # Catch cases where we are really close to 360 which should wrap to 0
             for c in (c1, c2):
-                if issubclass(c._space, Cylindrical):
+                if isinstance(c._space, Cylindrical):
                     if alg.round_half_up(alg.no_nan(c['hue']), c.PRECISION) == 360:
                         c.set('hue', 0)
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.

@@ -74,14 +74,12 @@ class ORGB(Labish, Space):
         "luma": "l"
     }
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To base from oRGB."""
 
         return orgb_to_srgb(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From base to oRGB."""
 
         return srgb_to_orgb(coords)

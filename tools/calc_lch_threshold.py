@@ -34,7 +34,7 @@ sys.path.insert(0, os.getcwd())
 try:
     from coloraide_extras import Color
 except ImportError:
-    from coloraide import ColorAll as Color
+    from coloraide.everything import ColorAll as Color
 
 RE_LEAD_ZERO = re.compile(r'^0\.0+')
 

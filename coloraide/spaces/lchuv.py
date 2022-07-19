@@ -52,14 +52,12 @@ class Lchuv(Lch, Space):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To Luv from Lch(uv)."""
 
         return lchuv_to_luv(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From Luv to Lch(uv)."""
 
         return luv_to_lchuv(coords)

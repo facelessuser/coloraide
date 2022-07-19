@@ -1,7 +1,7 @@
 """Test DIN99o library."""
 import unittest
 from . import util
-from coloraide import ColorAll as Color
+from coloraide.everything import ColorAll as Color
 
 
 class TestDIN99oInputOutput(util.ColorAsserts, unittest.TestCase):

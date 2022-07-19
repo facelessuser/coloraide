@@ -103,14 +103,12 @@ class Din99o(Lab):
         Channel("b", -55.0, 55.0, flags=FLG_MIRROR_PERCENT)
     )
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Din99o."""
 
         return super().to_base(din99o_to_lab(coords))
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Din99o."""
 
         return lab_to_din99o(super().from_base(coords))

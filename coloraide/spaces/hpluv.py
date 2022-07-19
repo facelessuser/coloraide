@@ -124,8 +124,7 @@ class HPLuv(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -133,14 +132,12 @@ class HPLuv(Cylindrical, Space):
             coords[0] = alg.NaN
         return coords
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To LCHuv from HPLuv."""
 
         return hpluv_to_lch(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From LCHuv to HPLuv."""
 
         return lch_to_hpluv(coords)

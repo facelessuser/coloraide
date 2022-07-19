@@ -1,7 +1,7 @@
 """Test Rec. 2100 PQ."""
 import unittest
 from . import util
-from coloraide import ColorAll as Color
+from coloraide.everything import ColorAll as Color
 import pytest
 
 

@@ -12,9 +12,8 @@ class ColorContrast(Plugin, metaclass=ABCMeta):
 
     NAME = ''
 
-    @classmethod
     @abstractmethod
-    def contrast(cls, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
+    def contrast(self, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
         """Get the contrast of the two provided colors."""
 
 

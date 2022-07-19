@@ -2,7 +2,7 @@
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Optional, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -13,14 +13,25 @@ class DE94(DeltaE):
 
     NAME = "94"
 
-    @classmethod
-    def distance(
-        cls,
-        color: 'Color',
-        sample: 'Color',
+    def __init__(
+        self,
         kl: float = 1,
         k1: float = 0.045,
-        k2: float = 0.015,
+        k2: float = 0.015
+    ):
+        """Initialize."""
+
+        self.kl = kl
+        self.k1 = k1
+        self.k2 = k2
+
+    def distance(
+        self,
+        color: 'Color',
+        sample: 'Color',
+        kl: Optional[float] = None,
+        k1: Optional[float] = None,
+        k2: Optional[float] = None,
         **kwargs: Any
     ) -> float:
         """
@@ -28,6 +39,15 @@ class DE94(DeltaE):
 
         http://www.brucelindbloom.com/Eqn_DeltaE_CIE94.html
         """
+
+        if kl is None:
+            kl = self.kl
+
+        if k1 is None:
+            k1 = self.k1
+
+        if k2 is None:
+            k2 = self.k2
 
         l1, a1, b1 = alg.no_nans(color.convert("lab")[:-1])
         l2, a2, b2 = alg.no_nans(sample.convert("lab")[:-1])

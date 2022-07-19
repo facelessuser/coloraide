@@ -12,14 +12,14 @@ The `Color` object contains all the logic to create and manipulate colors. It ca
 from coloraide import Color
 ```
 
-By default, the `Color` object contains only a subset of the available color spaces and related distancing algorithms in
-order to keep the object lighter. If desired, the `ColorAll` object can be used which includes _everything_. This is
-generally not recommended as most users do not need _everything_. In general, it is recommended to subclass the `Color`
-object and cherry pick any additional plugins that are required, but if you'd like to have access to all the color
-spaces that are available, along with any other optional plugins, you can import and use `ColorAll`.
+By default, the `Color` object contains only a subset of the available color spaces, related distancing algorithms, etc.
+This is done in order to keep the `Color` object lighter. If desired, the `ColorAll` object can be used which includes
+_everything_. This is generally not recommended as most users do not need _everything_. In general, it is recommended to
+subclass the `Color` object and cherry pick any additional plugins that are required, but if you'd like to have access
+to all the color spaces that are available, along with any other optional plugins, you can import and use `ColorAll`.
 
 ```py3
-from coloraide import ColorAll as Color
+from coloraide.everything import ColorAll as Color
 ```
 
 !!! tip "Custom Color Objects"
@@ -378,9 +378,21 @@ except:
 
 class Custom(Color): ...
 
-Custom.register(XyY)
+Custom.register(XyY())
 
 Custom('red').convert('xyy')
+```
+
+Used in conjunction with [default settings override](#override-default-settings), we can not only change a default ∆E,
+but we can alter a ∆E method's configuration by registering it with different defaults:
+
+```playground
+Color('red').delta_e('blue', method='cmc')
+from coloraide.distance.delta_e_cmc import DECMC
+class Custom(Color):
+    DELTA_E = "cmc"
+Custom.register(DECMC(l=1, c=1), overwrite=True)
+Custom('red').delta_e('blue')
 ```
 
 If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to

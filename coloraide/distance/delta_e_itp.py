@@ -6,7 +6,7 @@ https://kb.portrait.com/help/ictcp-color-difference-metric
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -17,9 +17,16 @@ class DEITP(DeltaE):
 
     NAME = "itp"
 
-    @classmethod
-    def distance(cls, color: 'Color', sample: 'Color', scalar: float = 720, **kwargs: Any) -> float:
+    def __init__(self, scalar: float = 720) -> None:
+        """Initialize."""
+
+        self.scalar = scalar
+
+    def distance(self, color: 'Color', sample: 'Color', scalar: Optional[float] = None, **kwargs: Any) -> float:
         """Delta E ITP color distance formula."""
+
+        if scalar is None:
+            scalar = self.scalar
 
         i1, t1, p1 = alg.no_nans(color.convert('ictcp')[:-1])
         i2, t2, p2 = alg.no_nans(sample.convert('ictcp')[:-1])

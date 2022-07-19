@@ -7,7 +7,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from typing import Optional, Union, List, Type, TYPE_CHECKING
+from typing import Optional, Union, List, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -33,7 +33,7 @@ def clip_channel(coord: float, channel: Channel) -> float:
 def apply_compositing(
     color1: 'Color',
     color2: 'Color',
-    blender: Optional[Type[blend_modes.Blend]],
+    blender: Optional[blend_modes.Blend],
     operator: Union[str, bool]
 ) -> 'Color':
     """Perform the actual blending."""
@@ -84,7 +84,7 @@ def compose(
         blender = blend_modes.get_blender(blend)
     elif blend is True:
         blender = blend_modes.get_blender('normal')
-    is_seperable = blender is not None and issubclass(blender, blend_modes.NonSeperableBlend)
+    is_seperable = blender is not None and isinstance(blender, blend_modes.NonSeperableBlend)
 
     # If we are doing non-separable, we are converting to a special space that
     # can only be done from sRGB, so we have to force sRGB anyway.

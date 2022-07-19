@@ -61,8 +61,7 @@ class HSV(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -71,14 +70,12 @@ class HSV(Cylindrical, Space):
 
         return coords
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""
 
         return hsv_to_hsl(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From HSL to HSV."""
 
         return hsl_to_hsv(coords)

@@ -89,9 +89,8 @@ class CAT(Plugin, metaclass=ABCMeta):
 
     NAME = ''
 
-    @classmethod
     @abstractmethod
-    def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 
 
@@ -111,8 +110,7 @@ class VonKries(CAT, metaclass=VonKriesMeta):
         [0.0000000, 0.0000000, 0.9182200]
     ]  # type: Matrix
 
-    @classmethod
-    def adapt(cls, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 
         # We are already using the correct white point
@@ -120,7 +118,7 @@ class VonKries(CAT, metaclass=VonKriesMeta):
             return list(xyz)
 
         a, b = sorted([w1, w2])
-        m, mi = cls.get_adaptation_matrices(a, b)
+        m, mi = cast(Type['VonKries'], self).get_adaptation_matrices(a, b)
         return alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1)
 
 

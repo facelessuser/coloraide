@@ -42,14 +42,12 @@ class SRGBLinear(SRGB):
     SERIALIZE = ("srgb-linear",)
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from SRGB Linear."""
 
         return lin_srgb_to_xyz(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to SRGB Linear."""
 
         return xyz_to_lin_srgb(coords)

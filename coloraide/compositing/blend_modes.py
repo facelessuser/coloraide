@@ -2,7 +2,7 @@
 import math
 from abc import ABCMeta, abstractmethod
 from operator import itemgetter
-from typing import Dict, Type
+from typing import Dict
 from ..types import Vector
 
 
@@ -66,9 +66,8 @@ def set_sat(rgb: Vector, s: float) -> Vector:
 class Blend(metaclass=ABCMeta):
     """Blend base class."""
 
-    @classmethod
     @abstractmethod
-    def blend(cls, coords1: Vector, coords2: Vector) -> Vector:  # pragma: no cover
+    def blend(self, coords1: Vector, coords2: Vector) -> Vector:  # pragma: no cover
         """Blend coordinates."""
 
         raise NotImplementedError('blend is not implemented')
@@ -77,42 +76,37 @@ class Blend(metaclass=ABCMeta):
 class SeperableBlend(Blend):
     """Blend coordinates."""
 
-    @classmethod
     @abstractmethod
-    def apply(cls, cb: float, cs: float) -> float:  # pragma: no cover
+    def apply(self, cb: float, cs: float) -> float:  # pragma: no cover
         """Blend two values."""
 
         raise NotImplementedError('apply is not implemented')
 
-    @classmethod
-    def blend(cls, coords1: Vector, coords2: Vector) -> Vector:
+    def blend(self, coords1: Vector, coords2: Vector) -> Vector:
         """Apply blending logic."""
 
-        return [cls.apply(cb, cs) for cb, cs in zip(coords1, coords2)]
+        return [self.apply(cb, cs) for cb, cs in zip(coords1, coords2)]
 
 
 class NonSeperableBlend(Blend):
     """Non seperable blend method."""
 
-    @classmethod
     @abstractmethod
-    def apply(cls, cb: Vector, cs: Vector) -> Vector:  # pragma: no cover
+    def apply(self, cb: Vector, cs: Vector) -> Vector:  # pragma: no cover
         """Blend two vectors."""
 
         raise NotImplementedError('apply is not implemented')
 
-    @classmethod
-    def blend(cls, coords_backgrond: Vector, coords_source: Vector) -> Vector:
+    def blend(self, coords_backgrond: Vector, coords_source: Vector) -> Vector:
         """Apply blending logic."""
 
-        return cls.apply(coords_backgrond, coords_source)
+        return self.apply(coords_backgrond, coords_source)
 
 
 class BlendNormal(SeperableBlend):
     """Normal blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return cs
@@ -121,8 +115,7 @@ class BlendNormal(SeperableBlend):
 class BlendMultiply(SeperableBlend):
     """Multiply blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return cb * cs
@@ -131,8 +124,7 @@ class BlendMultiply(SeperableBlend):
 class BlendScreen(SeperableBlend):
     """Screen blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return cb + cs - (cb * cs)
@@ -141,8 +133,7 @@ class BlendScreen(SeperableBlend):
 class BlendDarken(SeperableBlend):
     """Darken blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return min(cb, cs)
@@ -151,8 +142,7 @@ class BlendDarken(SeperableBlend):
 class BlendLighten(SeperableBlend):
     """Lighten blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return max(cb, cs)
@@ -161,8 +151,7 @@ class BlendLighten(SeperableBlend):
 class BlendColorDodge(SeperableBlend):
     """Color dodge blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         if cb == 0:
@@ -176,8 +165,7 @@ class BlendColorDodge(SeperableBlend):
 class BlendColorBurn(SeperableBlend):
     """Color Burn blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         if cb == 1:
@@ -191,21 +179,25 @@ class BlendColorBurn(SeperableBlend):
 class BlendOverlay(SeperableBlend):
     """Overlay blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def __init__(self) -> None:
+        """Initialize."""
+
+        self.screen = BlendScreen()
+        self.multiply = BlendMultiply()
+
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         if cb >= 0.5:
-            return BlendScreen.apply(cb, 2 * cs - 1)
+            return self.screen.apply(cb, 2 * cs - 1)
         else:
-            return BlendMultiply.apply(cb, cs * 2)
+            return self.multiply.apply(cb, cs * 2)
 
 
 class BlendDifference(SeperableBlend):
     """Difference blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return abs(cb - cs)
@@ -214,8 +206,7 @@ class BlendDifference(SeperableBlend):
 class BlendExclusion(SeperableBlend):
     """Exclusion blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         return cb + cs - 2 * cb * cs
@@ -224,21 +215,25 @@ class BlendExclusion(SeperableBlend):
 class BlendHardLight(SeperableBlend):
     """Hard light blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def __init__(self) -> None:
+        """Initialize."""
+
+        self.screen = BlendScreen()
+        self.multiply = BlendMultiply()
+
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         if cs <= 0.5:
-            return BlendMultiply.apply(cb, cs * 2)
+            return self.multiply.apply(cb, cs * 2)
         else:
-            return BlendScreen.apply(cb, 2 * cs - 1)
+            return self.screen.apply(cb, 2 * cs - 1)
 
 
 class BlendSoftLight(SeperableBlend):
     """Soft light blend mode."""
 
-    @classmethod
-    def apply(cls, cb: float, cs: float) -> float:
+    def apply(self, cb: float, cs: float) -> float:
         """Blend two values."""
 
         if cs <= 0.5:
@@ -254,8 +249,7 @@ class BlendSoftLight(SeperableBlend):
 class BlendHue(NonSeperableBlend):
     """Hue blend mode."""
 
-    @classmethod
-    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+    def apply(self, cb: Vector, cs: Vector) -> Vector:
         """Blend two vectors."""
 
         return set_lum(set_sat(cs, sat(cb)), lum(cb))
@@ -264,8 +258,7 @@ class BlendHue(NonSeperableBlend):
 class BlendSaturation(NonSeperableBlend):
     """Saturation blend mode."""
 
-    @classmethod
-    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+    def apply(self, cb: Vector, cs: Vector) -> Vector:
         """Blend two vectors."""
 
         return set_lum(set_sat(cb, sat(cs)), lum(cb))
@@ -274,8 +267,7 @@ class BlendSaturation(NonSeperableBlend):
 class BlendLuminosity(NonSeperableBlend):
     """Luminosity blend mode."""
 
-    @classmethod
-    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+    def apply(self, cb: Vector, cs: Vector) -> Vector:
         """Blend two vectors."""
         return set_lum(cb, lum(cs))
 
@@ -283,34 +275,33 @@ class BlendLuminosity(NonSeperableBlend):
 class BlendColor(NonSeperableBlend):
     """Color blend mode."""
 
-    @classmethod
-    def apply(cls, cb: Vector, cs: Vector) -> Vector:
+    def apply(self, cb: Vector, cs: Vector) -> Vector:
         """Blend two vectors."""
 
         return set_lum(cs, lum(cb))
 
 
 SUPPORTED = {
-    "normal": BlendNormal,
-    "multiply": BlendMultiply,
-    "screen": BlendScreen,
-    "darken": BlendDarken,
-    "lighten": BlendLighten,
-    "color-dodge": BlendColorDodge,
-    "color-burn": BlendColorBurn,
-    "overlay": BlendOverlay,
-    "difference": BlendDifference,
-    "exclusion": BlendExclusion,
-    "hard-light": BlendHardLight,
-    "soft-light": BlendSoftLight,
-    "hue": BlendHue,
-    "saturation": BlendSaturation,
-    "luminosity": BlendLuminosity,
-    "color": BlendColor,
-}  # type: Dict[str, Type[Blend]]
+    "normal": BlendNormal(),
+    "multiply": BlendMultiply(),
+    "screen": BlendScreen(),
+    "darken": BlendDarken(),
+    "lighten": BlendLighten(),
+    "color-dodge": BlendColorDodge(),
+    "color-burn": BlendColorBurn(),
+    "overlay": BlendOverlay(),
+    "difference": BlendDifference(),
+    "exclusion": BlendExclusion(),
+    "hard-light": BlendHardLight(),
+    "soft-light": BlendSoftLight(),
+    "hue": BlendHue(),
+    "saturation": BlendSaturation(),
+    "luminosity": BlendLuminosity(),
+    "color": BlendColor(),
+}  # type: Dict[str, Blend]
 
 
-def get_blender(blend: str) -> Type[Blend]:
+def get_blender(blend: str) -> Blend:
     """Get desired blend mode."""
 
     try:

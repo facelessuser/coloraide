@@ -51,14 +51,12 @@ class Prismatic(Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To sRGB."""
 
         return lrgb_to_srgb(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From sRGB."""
 
         return srgb_to_lrgb(coords)
