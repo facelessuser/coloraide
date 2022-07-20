@@ -16,16 +16,6 @@ DEF_FIT = "lch-chroma"
 DEF_HARMONY = "oklch"
 DEF_DELTA_E = "76"
 
-ERR_MAP_MSG = """
-    To add or remove items from this mapping, please subclass the
-    'Color' object and replace the entire mapping by either copying
-    this mapping and then altering it or by creating an entirely
-    new mapping. Example:
-
-    class MyNewClass(Color):
-        {name} = {{**Color.{name}, **my_override_map}}
-"""
-
 # Maximum luminance in PQ is 10,000 cd/m^2
 # Relative XYZ has Y=1 for media white
 # BT.2048 says media white Y=203 at PQ 58
