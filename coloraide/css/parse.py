@@ -6,7 +6,7 @@ from ..types import Vector
 from . import color_names
 from ..channels import Channel, FLG_ANGLE
 from typing import Optional, Tuple
-from typing import Dict, Type, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..spaces import Space
@@ -281,10 +281,10 @@ def parse_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, fl
 
 def parse_color(
     string: str,
-    spaces: Dict[str, Type['Space']],
+    spaces: Dict[str, 'Space'],
     start: int,
     fullmatch: bool = False
-) -> Optional[Tuple[Type['Space'], Tuple[Vector, float], int]]:
+) -> Optional[Tuple['Space', Tuple[Vector, float], int]]:
     """Perform default color matching."""
 
     m = RE_COLOR_MATCH.match(string, start)
@@ -322,7 +322,7 @@ def parse_color(
 
 
 def parse_css(
-    cspace: Type['Space'],
+    cspace: 'Space',
     string: str,
     start: int = 0,
     fullmatch: bool = True,

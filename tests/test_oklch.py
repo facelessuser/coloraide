@@ -2,15 +2,7 @@
 import unittest
 from . import util
 from coloraide import NaN
-from coloraide import Color as ColorOrig
-from coloraide.spaces.oklch.css import Oklch
-
-
-class Color(ColorOrig):
-    """Utilize Oklab CSS (currently) experimental."""
-
-
-Color.register(Oklch, overwrite=True)
+from coloraide import Color
 
 
 class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):

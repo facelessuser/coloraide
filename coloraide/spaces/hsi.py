@@ -91,8 +91,7 @@ class HSI(Cylindrical, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         h, s, i = alg.no_nans(coords[:-1])
@@ -106,14 +105,12 @@ class HSI(Cylindrical, Space):
 
         return coords
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""
 
         return hsi_to_srgb(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From sRGB to HSI."""
 
         return srgb_to_hsi(coords)

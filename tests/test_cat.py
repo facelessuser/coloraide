@@ -1,5 +1,5 @@
 """Test chromatic adaptation."""
-from coloraide import Color
+from coloraide.everything import ColorAll as Color
 from coloraide import cat
 from coloraide import util as cutil
 from . import util

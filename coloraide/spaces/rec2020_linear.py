@@ -46,14 +46,12 @@ class Rec2020Linear(SRGB):
     SERIALIZE = ('--rec2020-linear',)
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Linear Rec 2020."""
 
         return lin_2020_to_xyz(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to Linear Rec 2020."""
 
         return xyz_to_lin_2020(coords)

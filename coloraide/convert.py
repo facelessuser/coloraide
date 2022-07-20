@@ -15,7 +15,7 @@ ABSOLUTE_BASE = 'xyz-d65'
 def calc_path_to_xyz(
     color: Type['Color'],
     space: str
-) -> Tuple[List[Type['Space']], Dict[str, int]]:
+) -> Tuple[List['Space'], Dict[str, int]]:
     """
     Calculate the conversion path between a given color space and XYZ D65.
 
@@ -54,9 +54,9 @@ def calc_path_to_xyz(
 
 def get_convert_chain(
     color: Type['Color'],
-    space: Type['Space'],
+    space: 'Space',
     target: str
-) -> List[Tuple[Type['Space'], Type['Space'], int, bool]]:
+) -> List[Tuple['Space', 'Space', int, bool]]:
     """
     Create a conversion chain.
 
@@ -74,7 +74,7 @@ def get_convert_chain(
     # If the color space we are converting to is not between
     # the current space and XYZ D65, nothing will get added.
     current = space
-    chain = []  # type: List[Tuple[Type['Space'], Type['Space'], int, bool]]
+    chain = []  # type: List[Tuple['Space', 'Space', int, bool]]
     if current.NAME != ABSOLUTE_BASE:
         count = 0
         while current.NAME not in from_color_index:
@@ -119,7 +119,7 @@ def get_convert_chain(
     return chain
 
 
-def convert(color: 'Color', space: str) -> Tuple[Type['Space'], Vector]:
+def convert(color: 'Color', space: str) -> Tuple['Space', Vector]:
     """Convert the color coordinates to the specified space."""
 
     # Grab the convert for the current space to the desired space

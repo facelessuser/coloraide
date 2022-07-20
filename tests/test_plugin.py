@@ -115,7 +115,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('red').convert('lab-d65').to_string(), expected)
 
         # Now it is registered again
-        Custom.register(lab_d65.LabD65)
+        Custom.register(lab_d65.LabD65())
         self.assertEqual(Custom('red').convert('lab-d65').to_string(), expected)
 
     def test_plugin_registration_delta_e(self):
@@ -137,7 +137,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('red').delta_e('green', method='2000'), expected)
 
         # Now it is registered again
-        Custom.register(delta_e_2000.DE2000)
+        Custom.register(delta_e_2000.DE2000())
         self.assertEqual(Custom('red').delta_e('green', method='2000'), expected)
 
     def test_plugin_registration_fit(self):
@@ -159,7 +159,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
         # Now it is registered again
-        Custom.register(fit_lch_chroma.LchChroma)
+        Custom.register(fit_lch_chroma.LchChroma())
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
     def test_plugin_registration_contrast(self):
@@ -181,7 +181,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('red').contrast('blue', method='wcag21'), expected)
 
         # Now it is registered again
-        Custom.register(wcag21.WCAG21Contrast)
+        Custom.register(wcag21.WCAG21Contrast())
         self.assertEqual(Custom('red').contrast('blue', method='wcag21'), expected)
 
     def test_plugin_registration_cat(self):
@@ -195,8 +195,30 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
-        Custom.deregister('cat:von-kries')
         c1 = Custom('red').convert('xyz-d65')
+
+        # Register the plugin
+        Custom.register(VonKries())
+        self.assertEqual(
+            Custom.chromatic_adaptation(
+                WHITES['2deg']['D65'],
+                WHITES['2deg']['D50'],
+                c1[:-1],
+                method='von-kries'
+            ),
+            expected
+        )
+
+        # But it should not affect the base class
+        with self.assertRaises(ValueError):
+            Color.chromatic_adaptation(
+                WHITES['2deg']['D65'],
+                WHITES['2deg']['D50'],
+                c1[:-1],
+                method='von-kries'
+            )
+
+        Custom.deregister('cat:von-kries')
         with self.assertRaises(ValueError):
             Custom.chromatic_adaptation(
                 WHITES['2deg']['D65'],
@@ -204,29 +226,6 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
                 c1[:-1],
                 method='von-kries'
             )
-
-        # But it should not affect the base class
-        self.assertEqual(
-            Color.chromatic_adaptation(
-                WHITES['2deg']['D65'],
-                WHITES['2deg']['D50'],
-                c1[:-1],
-                method='von-kries'
-            ),
-            expected
-        )
-
-        # Now it is registered again
-        Custom.register(VonKries)
-        self.assertEqual(
-            Custom.chromatic_adaptation(
-                WHITES['2deg']['D65'],
-                WHITES['2deg']['D50'],
-                c1[:-1],
-                method='von-kries'
-            ),
-            expected
-        )
 
     def test_plugin_registration_filter(self):
         """Test plugin registration of `filter`."""
@@ -244,7 +243,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             Custom('red').filter('sepia')
 
         # Now it is registered again
-        Custom.register(Sepia)
+        Custom.register(Sepia())
         self.assertColorEqual(
             Custom('red').filter('sepia'),
             color
@@ -287,7 +286,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
                 return [0, 0, 0]
 
         with self.assertRaises(ValueError):
-            Custom.register(CustomFit, overwrite=True)
+            Custom.register(CustomFit(), overwrite=True)
 
     def test_bad_registration_type(self):
         """Test bad registration type."""
@@ -299,7 +298,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         with self.assertRaises(TypeError):
-            Custom.register(BadClass)
+            Custom.register(BadClass())
 
     def test_bad_registration_star(self):
         """Test bad registration type."""
@@ -317,7 +316,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
                 return 0
 
         with self.assertRaises(ValueError):
-            Custom.register(CustomDE)
+            Custom.register(CustomDE())
 
     def test_bad_registration_exists(self):
         """Test bad registration of plugin that exists."""
@@ -328,9 +327,9 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         with self.assertRaises(ValueError):
-            Custom.register(LabD65)
+            Custom.register(LabD65())
 
-        Custom.register(LabD65, overwrite=True)
+        Custom.register(LabD65(), overwrite=True)
 
     def test_silent_registration_exists(self):
         """Test silent handling of already registered plugin."""
@@ -340,7 +339,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
-        Custom.register(Jzazbz, silent=True)
+        Custom.register(Jzazbz(), silent=True)
 
     def test_bad_deregister_category(self):
         """Test bad deregistration category."""

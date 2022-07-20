@@ -2,7 +2,7 @@
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -13,13 +13,22 @@ class DECMC(DeltaE):
 
     NAME = "cmc"
 
-    @classmethod
+    def __init__(
+        self,
+        l: float = 2,
+        c: float = 1
+    ):
+        """Initialize."""
+
+        self.l = l
+        self.c = c
+
     def distance(
-        cls,
+        self,
         color: 'Color',
         sample: 'Color',
-        l: float = 2,
-        c: float = 1,
+        l: Optional[float] = None,
+        c: Optional[float] = None,
         **kwargs: Any
     ) -> float:
         """
@@ -27,6 +36,12 @@ class DECMC(DeltaE):
 
         http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html
         """
+
+        if l is None:
+            l = self.l
+
+        if c is None:
+            c = self.c
 
         l1, a1, b1 = alg.no_nans(color.convert("lab")[:-1])
         l2, a2, b2 = alg.no_nans(sample.convert("lab")[:-1])

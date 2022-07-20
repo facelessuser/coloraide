@@ -1,6 +1,7 @@
 """Test miscellaneous API features."""
 import unittest
-from coloraide import Color, ColorAll, NaN
+from coloraide import Color, NaN
+from coloraide.everything import ColorAll
 from . import util
 import math
 

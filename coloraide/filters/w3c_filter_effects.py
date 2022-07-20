@@ -24,8 +24,7 @@ class Sepia(Filter):
     NAME = 'sepia'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a sepia filter to the color."""
 
         amount = 1 - alg.clamp(1 if amount is None else amount, 0, 1)
@@ -45,8 +44,7 @@ class Grayscale(Filter):
     NAME = 'grayscale'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a grayscale filter to the color."""
 
         amount = 1 - alg.clamp(1 if amount is None else amount, 0, 1)
@@ -66,8 +64,7 @@ class Saturate(Filter):
     NAME = 'saturate'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a saturation filter to the color."""
 
         amount = alg.clamp(1 if amount is None else amount, 0)
@@ -87,8 +84,7 @@ class Invert(Filter):
     NAME = 'invert'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply an invert filter."""
 
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
@@ -102,8 +98,7 @@ class Opacity(Filter):
     NAME = 'opacity'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply an opacity filter."""
 
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
@@ -116,8 +111,7 @@ class Brightness(Filter):
     NAME = 'brightness'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a brightness filter."""
 
         amount = alg.clamp(1 if amount is None else amount, 0)
@@ -131,8 +125,7 @@ class Contrast(Filter):
     NAME = 'contrast'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a contrast filter."""
 
         amount = alg.clamp(1 if amount is None else amount, 0)
@@ -146,8 +139,7 @@ class HueRotate(Filter):
     NAME = 'hue-rotate'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
 
-    @classmethod
-    def filter(cls, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Apply a hue rotation filter."""
 
         rad = math.radians(0 if amount is None else amount)

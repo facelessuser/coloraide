@@ -17,8 +17,7 @@ class DEZ(DeltaE):
 
     NAME = "jz"
 
-    @classmethod
-    def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(self, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
         jz1, az1, bz1 = alg.no_nans(color.convert('jzazbz')[:-1])

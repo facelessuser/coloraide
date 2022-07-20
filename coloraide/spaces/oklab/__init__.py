@@ -130,14 +130,12 @@ class Oklab(Labish, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, oklab: Vector) -> Vector:
+    def to_base(self, oklab: Vector) -> Vector:
         """To XYZ."""
 
         return oklab_to_xyz_d65(oklab)
 
-    @classmethod
-    def from_base(cls, xyz: Vector) -> Vector:
+    def from_base(self, xyz: Vector) -> Vector:
         """From XYZ."""
 
         return xyz_d65_to_oklab(xyz)

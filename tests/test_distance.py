@@ -1,5 +1,5 @@
 """Test distance methods."""
-from coloraide import ColorAll as Color
+from coloraide.everything import ColorAll as Color
 from . import util
 import pytest
 import unittest

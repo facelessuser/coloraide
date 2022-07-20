@@ -47,14 +47,12 @@ class ACEScg(SRGB):
         Channel("b", 0.0, 65504.0, bound=True)
     )
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""
 
         return acescg_to_xyz(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ."""
 
         return xyz_to_acescg(coords)

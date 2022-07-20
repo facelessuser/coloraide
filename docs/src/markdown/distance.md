@@ -57,7 +57,7 @@ Delta\ E                                 | Symmetrical           | Name         
 ∆E~ok~                                   | :octicons-check-16:   | `ok`            | `scalar=1`
 
 The following are also available, but they must be manually registered by creating a
-[custom class](./color.md#custom-color-classes), or can be accessed by use `coloraide.ColorAll` instead of
+[custom class](./color.md#custom-color-classes), or can be accessed by use `coloraide.everything.ColorAll` instead of
 `coloraide.Color`. The associated color space must be registered as well.
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters

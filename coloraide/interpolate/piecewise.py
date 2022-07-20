@@ -15,7 +15,7 @@ def adjust_hues(color1: 'Color', color2: 'Color', hue: str) -> None:
     if hue == "specified":
         return
 
-    name = cast(Type[Cylindrical], color1._space).hue_name()
+    name = cast(Cylindrical, color1._space).hue_name()
     c1 = color1.get(name)
     c2 = color2.get(name)
 
@@ -214,7 +214,7 @@ def color_piecewise_lerp(
 
         # Adjust hues if we have two valid hues
         color2 = color.clone()
-        if issubclass(current._space, Cylindrical):
+        if isinstance(current._space, Cylindrical):
             adjust_hues(current, color2, hue)
 
         # Create an entry interpolating the current color and the next color
@@ -235,7 +235,7 @@ def color_piecewise_lerp(
     # Send the interpolation list along with the stop map to the Piecewise interpolator
     return InterpolatePiecewise(
         color_map,
-        [str(c) for c in current._space.get_all_channels()],
+        current._space.channels,
         create,
         easings,
         stops,

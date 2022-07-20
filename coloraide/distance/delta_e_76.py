@@ -12,8 +12,7 @@ class DE76(DeltaE):
     NAME = "76"
     SPACE = "lab-d65"
 
-    @classmethod
-    def distance(cls, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(self, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
         """
         Delta E 1976 color distance formula.
 
@@ -23,4 +22,4 @@ class DE76(DeltaE):
         """
 
         # Equation (1)
-        return distance_euclidean(color, sample, space=cls.SPACE)
+        return distance_euclidean(color, sample, space=self.SPACE)

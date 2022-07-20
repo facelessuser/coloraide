@@ -86,7 +86,8 @@ def std_output(stdout=None):
 def get_colors(result):
     """Get color from results."""
 
-    from coloraide import Color, ColorAll
+    from coloraide import Color
+    from coloraide.everything import ColorAll
     from coloraide.interpolate import Interpolator
     try:
         from coloraide_extras import Color as Color2
@@ -131,7 +132,7 @@ def find_colors(text):
     try:
         from coloraide_extras import Color
     except ImportError:
-        from coloraide import ColorAll as Color
+        from coloraide.everything import ColorAll as Color
 
     colors = []
     for m in RE_COLOR_START.finditer(text):
@@ -146,13 +147,14 @@ def execute(cmd, no_except=True, inline=False):
     """Execute color commands."""
 
     import coloraide
+    from coloraide.everything import ColorAll
     try:
         import coloraide_extras
     except ImportError:
         coloraide_extras = None
 
     g = {
-        'Color': coloraide.ColorAll,
+        'Color': ColorAll,
         'coloraide': coloraide,
         'NaN': coloraide.NaN,
         'stop': coloraide.stop,
@@ -400,7 +402,7 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
     try:
         from coloraide_extras import Color
     except ImportError:
-        from coloraide import ColorAll as Color
+        from coloraide.everything import ColorAll as Color
 
     try:
         result = src.strip()

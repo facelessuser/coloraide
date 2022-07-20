@@ -154,8 +154,7 @@ class Okhsv(Cylindrical, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -163,14 +162,12 @@ class Okhsv(Cylindrical, Space):
             coords[0] = alg.NaN
         return coords
 
-    @classmethod
-    def to_base(cls, okhsv: Vector) -> Vector:
+    def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""
 
         return okhsv_to_oklab(okhsv)
 
-    @classmethod
-    def from_base(cls, oklab: Vector) -> Vector:
+    def from_base(self, oklab: Vector) -> Vector:
         """From Oklab to Okhsv."""
 
         return oklab_to_okhsv(oklab)

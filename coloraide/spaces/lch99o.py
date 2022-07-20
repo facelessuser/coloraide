@@ -52,14 +52,12 @@ class Lch99o(Lch):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To Din99o from Din99o Lch."""
 
         return lch_to_lab(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From Din99o to Din99o Lch."""
 
         return lab_to_lch(coords)

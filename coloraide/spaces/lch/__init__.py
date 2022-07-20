@@ -58,8 +58,7 @@ class Lch(Lchish, Space):
     }
     WHITE = WHITES['2deg']['D50']
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -67,14 +66,12 @@ class Lch(Lchish, Space):
             coords[2] = alg.NaN
         return coords
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To Lab from Lch."""
 
         return lch_to_lab(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From Lab to Lch."""
 
         return lab_to_lch(coords)

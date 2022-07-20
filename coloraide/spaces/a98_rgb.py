@@ -24,14 +24,12 @@ class A98RGB(SRGB):
     NAME = "a98-rgb"
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from A98 RGB."""
 
         return lin_a98rgb(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to A98 RGB."""
 
         return gam_a98rgb(coords)

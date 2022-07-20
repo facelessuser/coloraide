@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.0b4
+
+!!! warning "Plugin Refactor"
+    For more flexibility there was one final rework of plugins. Registering requires all plugins to be instantiated
+    before being passed into `Color.register`, but this allows a user redefine some defaults of certain plugins.
+
+    `coloraide.ColorAll` was moved to `coloraide.everythng.ColorAll` to avoid allocating plugins when they are not
+    desired.
+
+- **NEW**: Updated migration guide with recent plugin changes.
+- **NEW**: `coloraide.ColorAll` renamed and moved to `coloraide.everything.ColorAll`. This prevents unnecessary
+  inclusion and allocation of objects that are not desired.
+- **NEW**: Default `Color` object now only registers `bradford` CAT by default, all others must be registered
+  separately, or `coloraide.everything.Color` could be used.
+- **NEW**: All plugin classes must be instantiated when being registered. This allows some plugins to be instantiated
+  with different defaults. This allows some plugins to be configured with different defaults.
+
+    ```py
+    # Before change:
+    Color.register([Plugin1, Plugin2])
+
+    # After change:
+    Color.register([Plugin1(), Plugin2(optional_parm=True)])
+    ```
+
 ## 1.0b3
 
 - **FIX**: Fixed the bad `CAT16` matrix for chromatic adaptation.

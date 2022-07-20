@@ -15,8 +15,7 @@ class WCAG21Contrast(ColorContrast):
 
     NAME = "wcag21"
 
-    @classmethod
-    def contrast(cls, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
+    def contrast(self, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
         """Contrast."""
 
         lum1 = color1.luminance()

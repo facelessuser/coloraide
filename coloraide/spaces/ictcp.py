@@ -95,14 +95,12 @@ class ICtCp(Labish, Space):
     )
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
 
         return ictcp_to_xyz_d65(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ to ICtCp."""
 
         return xyz_d65_to_ictcp(coords)

@@ -12,15 +12,16 @@ if TYPE_CHECKING:  # pragma: no cover
 class HSL(base.HSL):
     """HSL class."""
 
-    @classmethod
     def to_string(
-        cls,
+        self,
         parent: 'Color',
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
         fit: Union[str, bool] = True,
         none: bool = False,
+        color: bool = False,
+        comma: bool = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -32,17 +33,16 @@ class HSL(base.HSL):
             precision=precision,
             fit=fit,
             none=none,
-            color=kwargs.get('color', False),
-            legacy=kwargs.get('comma', False)
+            color=color,
+            legacy=comma
         )
 
-    @classmethod
     def match(
-        cls,
+        self,
         string: str,
         start: int = 0,
         fullmatch: bool = True
     ) -> Optional[Tuple[Tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
-        return parse.parse_css(cls, string, start, fullmatch)
+        return parse.parse_css(self, string, start, fullmatch)

@@ -158,8 +158,8 @@ def normalize_color(color: 'Color', space: str, premultiplied: bool) -> None:
         premultiply(color)
 
     # Normalize hue
-    if issubclass(color._space, Cylindrical):
-        name = cast(Type[Cylindrical], color._space).hue_name()
+    if isinstance(color._space, Cylindrical):
+        name = cast(Cylindrical, color._space).hue_name()
         color.set(name, lambda h: cast(float, h % 360))
 
 
@@ -237,7 +237,7 @@ def color_bezier_lerp(
     # Send the interpolation list along with the stop map to the Piecewise interpolator
     return InterpolateBezier(
         coords,
-        [str(c) for c in current._space.get_all_channels()],
+        current._space.channels,
         create,
         easings,
         stops,

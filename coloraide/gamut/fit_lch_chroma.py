@@ -39,16 +39,15 @@ class LchChroma(Fit):
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100
 
-    @classmethod
-    def fit(cls, color: 'Color', **kwargs: Any) -> None:
+    def fit(self, color: 'Color', **kwargs: Any) -> None:
         """Gamut mapping via CIELCH chroma."""
 
         space = color.space()
-        mapcolor = color.convert(cls.SPACE)
+        mapcolor = color.convert(self.SPACE)
         lightness = mapcolor['lightness']
 
         # Return white or black if lightness is out of range
-        if lightness >= cls.MAX_LIGHTNESS or lightness <= cls.MIN_LIGHTNESS:
+        if lightness >= self.MAX_LIGHTNESS or lightness <= self.MIN_LIGHTNESS:
             mapcolor['chroma'] = 0
             mapcolor['hue'] = NaN
             clip_channels(color.update(mapcolor))
@@ -60,7 +59,7 @@ class LchChroma(Fit):
         clip_channels(color.update(mapcolor))
 
         # Adjust chroma if we are not under the JND yet.
-        if mapcolor.delta_e(color, method=cls.DE) >= cls.LIMIT:
+        if mapcolor.delta_e(color, method=self.DE) >= self.LIMIT:
             # Perform "in gamut" checks until we know our lower bound is no longer in gamut.
             lower_in_gamut = True
 
@@ -72,11 +71,11 @@ class LchChroma(Fit):
                     low = mapcolor['chroma']
                 else:
                     clip_channels(color.update(mapcolor))
-                    de = mapcolor.delta_e(color, method=cls.DE)
-                    if de < cls.LIMIT:
+                    de = mapcolor.delta_e(color, method=self.DE)
+                    if de < self.LIMIT:
                         # Kick out as soon as we are close enough to the JND.
                         # Too far below and we may reduce chroma too aggressively.
-                        if (cls.LIMIT - de) < cls.EPSILON:
+                        if (self.LIMIT - de) < self.EPSILON:
                             break
 
                         # Our lower bound is now out of gamut, so all future searches are

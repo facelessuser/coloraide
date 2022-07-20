@@ -106,7 +106,7 @@ Parameters
     `alpha`    | `#!py3 1`    | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
     `filters`  | `#!py3 None` | `filters` accepts a list of color spaces to allow. When `#!py3 None` is provided (the default) all supported color spaces are accepted.
 
-## `coloraide.ColorAll` {#colorall}
+## `coloraide.everything.ColorAll` {#colorall}
 
 ```py3
 class ColorAll(Color):
@@ -130,7 +130,7 @@ Import path
     `ColorAll` is imported from the `coloraide` library:
 
     ```py3
-    from coloraide import ColorAll
+    from coloraide.everything import ColorAll
     ```
 
 Parameters

@@ -66,8 +66,7 @@ class JzCzhz(Lchish, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    @classmethod
-    def normalize(cls, coords: Vector) -> Vector:
+    def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
         coords = alg.no_nans(coords)
@@ -76,20 +75,17 @@ class JzCzhz(Lchish, Space):
 
         return coords
 
-    @classmethod
-    def hue_name(cls) -> str:
+    def hue_name(self) -> str:
         """Hue name."""
 
         return "hz"
 
-    @classmethod
-    def to_base(cls, coords: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To Jzazbz from JzCzhz."""
 
         return jzczhz_to_jzazbz(coords)
 
-    @classmethod
-    def from_base(cls, coords: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From Jzazbz to JzCzhz."""
 
         return jzazbz_to_jzczhz(coords)
