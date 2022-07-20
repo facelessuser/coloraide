@@ -38,8 +38,17 @@ color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WC
 so as a plugin to allow for expanding implementations in the future to allow for more reliable approaches as the WCAG
 2.1 approach is not without flaws.
 
-!!! note "Negative Luminance"
-    It should be noted that negative luminance will be clamped to zero.
+It should be noted that as we talk about contrast, we will refer to the colors as the **text** and **background** as
+this is generally the context in which such a function is used. The **text** is always the calling color and the
+**background** is the input parameter. Not all contrast algorithms care about such details, but it is important to note
+as some future algorithms assuredly will.
+
+```py
+text.contrast(background)
+```
+
+While in all normal circumstances a negative luminance should not occur, if one does occur, the luminance will be
+clamped to zero.
 
 ```py
 # Where `l1` is the lighter luminance and `l2` the darker
