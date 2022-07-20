@@ -25,6 +25,8 @@
     Color.register([Plugin1(), Plugin2(optional_parm=True)])
     ```
 
+- **FIX**: Negative luminance is now clamped during contrast calculations.
+
 ## 1.0b3
 
 - **FIX**: Fixed the bad `CAT16` matrix for chromatic adaptation.
