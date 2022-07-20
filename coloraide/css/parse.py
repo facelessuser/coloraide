@@ -37,18 +37,17 @@ COLOR_PARTS = {
     "hex": r"[a-f0-9]"
 }
 
-# TODO: Before 1.0, merge this with the statement below as color spaces will not need this moving forward.
-RE_DEFAULT_MATCH = r"""(?xi)
-color\(\s*
-({{color_space}})
-((?:{space}(?:{strict_percent}|{float})){{{{{{channels}}}}}}(?:{slash}(?:{strict_percent}|{float}))?)
-\s*\)
-""".format(
-    **COLOR_PARTS
-)
-
 # Allow 10 channels maximum. This should be able to handle any colors we throw at it.
-RE_COLOR_MATCH = re.compile(RE_DEFAULT_MATCH.format(color_space='-{0,2}[a-z][-a-z0-9_]*', channels='1,10'))
+RE_COLOR_MATCH = re.compile(
+    r"""(?xi)
+    color\(\s*
+    (-{{0,2}}[a-z][-a-z0-9_]*)
+    ((?:{space}(?:{strict_percent}|{float})){{1,10}}(?:{slash}(?:{strict_percent}|{float}))?)
+    \s*\)
+    """.format(
+        **COLOR_PARTS
+    )
+)
 
 CSS_MATCH = {
     'srgb': re.compile(

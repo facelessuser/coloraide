@@ -1,7 +1,5 @@
 """Color base."""
 from abc import ABCMeta, abstractmethod
-from .. import cat
-from ..css import parse
 from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
@@ -10,11 +8,6 @@ from typing import Tuple, Dict, Optional, Union, Any, List, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
-
-# TODO: Remove for before 1.0.
-# Here only to prevent breakage.
-RE_DEFAULT_MATCH = parse.RE_DEFAULT_MATCH
-WHITES = cat.WHITES
 
 
 class Cylindrical:

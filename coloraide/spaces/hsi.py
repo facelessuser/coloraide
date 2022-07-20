@@ -3,7 +3,8 @@ HSI class.
 
 https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
 """
-from ..spaces import Space, Cylindrical, WHITES
+from ..spaces import Space, Cylindrical
+from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import algebra as alg
 from .. import util
