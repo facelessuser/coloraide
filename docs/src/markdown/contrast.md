@@ -38,6 +38,9 @@ color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WC
 so as a plugin to allow for expanding implementations in the future to allow for more reliable approaches as the WCAG
 2.1 approach is not without flaws.
 
+!!! note "Negative Luminance"
+    It should be noted that negative luminance will be clamped to zero.
+
 ```py
 # Where `l1` is the lighter luminance and `l2` the darker
 contrast_ratio = (l1 + 0.05) / (l2 + 0.05)
