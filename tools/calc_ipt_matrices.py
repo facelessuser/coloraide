@@ -37,7 +37,7 @@ def white_space_fixup(m):
     But what we got was:
 
     ```
-    >>> from coloraide_extras import Color
+    >>> from coloraide_extras.everything import ColorAll as Color
     >>> Color('white').convert('ipt')[:-1]
     [1.0000046779854483, 0.00011652905964981697, -0.00010857262923669175]
     ```
@@ -46,7 +46,7 @@ def white_space_fixup(m):
     previous white point and adding ours in, we get comparable results.
 
     ```
-    >>> from coloraide_extras import Color
+    >>> from coloraide_extras.everything import ColorAll as Color
     >>> Color('white').convert('ipt')[:-1]
     [0.9999910919149725, 6.69113462008486e-05, -3.900547708157731e-05]
     ```

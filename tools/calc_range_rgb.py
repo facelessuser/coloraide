@@ -6,7 +6,7 @@ import os
 sys.path.insert(0, os.getcwd())
 
 try:
-    from coloraide_extras import Color
+    from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide import algebra as alg  # noqa: E402
