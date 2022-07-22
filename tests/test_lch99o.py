@@ -1,4 +1,4 @@
-"""Test DIN99o LCH library."""
+"""Test DIN99o LCh library."""
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
@@ -6,7 +6,7 @@ from coloraide import NaN
 
 
 class TestLch99oInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test DIN99o LCH."""
+    """Test DIN99o LCh."""
 
     def test_input_raw(self):
         """Test raw input."""
@@ -91,8 +91,8 @@ class TestLch99oInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestLch99oProperties(util.ColorAsserts, unittest.TestCase):
-    """Test LCH99o."""
+class TestLCh99oProperties(util.ColorAsserts, unittest.TestCase):
+    """Test LCh99o."""
 
     def test_lightness(self):
         """Test `lightness`."""
@@ -162,7 +162,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c2.is_nan('hue'))
 
     def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to DIN99o LCH with a null hue."""
+        """Test that all RGB-ish colors convert to DIN99o LCh with a null hue."""
 
         for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
             for x in range(0, 256):

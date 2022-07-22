@@ -4,7 +4,7 @@ ACEScg color space.
 https://www.oscars.org/science-technology/aces/aces-documentation
 """
 from ..channels import Channel
-from ..spaces.srgb import SRGB
+from ..spaces.srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
 from typing import Tuple
@@ -34,7 +34,7 @@ def xyz_to_acescg(xyz: Vector) -> Vector:
     return alg.dot(XYZ_TO_AP1, xyz, dims=alg.D2_D1)
 
 
-class ACEScg(SRGB):
+class ACEScg(sRGB):
     """The ACEScg color class."""
 
     BASE = "xyz-d65"

@@ -38,11 +38,11 @@ class Labish:
         return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
 
 
-class Lchish(Cylindrical):
-    """Lch-ish color spaces."""
+class LChish(Cylindrical):
+    """LCh-ish color spaces."""
 
     def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
-        """Return Lch-ish names in the order L c h."""
+        """Return LCh-ish names in the order L c h."""
 
         return cast('Space', self).channels[:-1]
 

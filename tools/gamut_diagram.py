@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--method', '-m', default='lch-chroma', help="Gamut map method")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
-    parser.add_argument('--clip-space', '-p', default='lch', help="Lch space to show clipping in.")
+    parser.add_argument('--clip-space', '-p', default='lch', help="LCh space to show clipping in.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
@@ -38,7 +38,7 @@ def main():
         xaxis = 'c:0:160'
         yaxis = 'l:0:100'
         constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        title = 'MINDE and Chroma Reduction in CIELCH'
+        title = 'MINDE and Chroma Reduction in CIELCh'
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
     elif args.method in ('oklch-chroma', 'css-color-4'):
         space = 'oklch'
@@ -49,7 +49,7 @@ def main():
         xaxis = 'c:0:0.5'
         yaxis = 'l:0:1'
         constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        t = 'MINDE and Chroma Reduction in Oklch'
+        t = 'MINDE and Chroma Reduction in OkLCh'
         if args.method == 'css-color-4':
             t += ' (CSS Color Level 4)'
         title = '{}'.format(t)
@@ -65,7 +65,7 @@ def main():
         xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'
         yaxis = 'l:0:100' if space == 'lch' else 'l:0:1'
         constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        t_space = 'CIELCH' if space == 'lch' else 'Oklch'
+        t_space = 'CIELCh' if space == 'lch' else 'OkLCh'
         title = 'Clipping shown in {}'.format(t_space)
         subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
     else:

@@ -4,10 +4,10 @@ from .spaces.rec2100pq import Rec2100PQ
 from .spaces.jzazbz import Jzazbz
 from .spaces.jzczhz import JzCzhz
 from .spaces.ictcp import ICtCp
-from .spaces.din99o import Din99o
-from .spaces.lch99o import Lch99o
+from .spaces.din99o import DIN99o
+from .spaces.lch99o import LCh99o
 from .spaces.luv import Luv
-from .spaces.lchuv import Lchuv
+from .spaces.lchuv import LChuv
 from .spaces.hsluv import HSLuv
 from .spaces.hpluv import HPLuv
 from .spaces.okhsl import Okhsl
@@ -17,11 +17,11 @@ from .spaces.ipt import IPT
 from .spaces.igpgtg import IgPgTg
 from .spaces.cmy import CMY
 from .spaces.cmyk import CMYK
-from .spaces.xyy import XyY
+from .spaces.xyy import xyY
 from .spaces.hunter_lab import HunterLab
 from .spaces.prismatic import Prismatic
 from .spaces.rlab import RLAB
-from .spaces.orgb import ORGB
+from .spaces.orgb import oRGB
 from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
@@ -48,10 +48,10 @@ ColorAll.register(
         Jzazbz(),
         JzCzhz(),
         ICtCp(),
-        Din99o(),
-        Lch99o(),
+        DIN99o(),
+        LCh99o(),
         Luv(),
-        Lchuv(),
+        LChuv(),
         Okhsl(),
         Okhsv(),
         HSLuv(),
@@ -61,11 +61,11 @@ ColorAll.register(
         IgPgTg(),
         CMY(),
         CMYK(),
-        XyY(),
+        xyY(),
         HunterLab(),
         Prismatic(),
         RLAB(),
-        ORGB(),
+        oRGB(),
         ACES20651(),
         ACEScg(),
         ACEScc(),

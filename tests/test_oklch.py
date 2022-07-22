@@ -1,12 +1,12 @@
-"""Test Oklch library."""
+"""Test OkLCh library."""
 import unittest
 from . import util
 from coloraide import NaN
 from coloraide import Color
 
 
-class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test Oklch."""
+class TestOkLChInputOutput(util.ColorAsserts, unittest.TestCase):
+    """Test OkLCh."""
 
     def test_input_raw(self):
         """Test raw input."""
@@ -111,8 +111,8 @@ class TestOklchInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestOklchProperties(util.ColorAsserts, unittest.TestCase):
-    """Test Oklch."""
+class TestOkLChProperties(util.ColorAsserts, unittest.TestCase):
+    """Test OkLCh."""
 
     def test_lightness(self):
         """Test `lightness`."""
@@ -188,7 +188,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c2.is_nan('hue'))
 
     def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to Oklch with a null hue."""
+        """Test that all RGB-ish colors convert to OkLCh with a null hue."""
 
         for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
             for x in range(0, 256):

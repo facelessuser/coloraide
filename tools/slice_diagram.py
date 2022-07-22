@@ -32,10 +32,10 @@ from coloraide.spaces import Cylindrical  # noqa: E402
 
 def needs_lchuv_workaround(color):
     """
-    Check if LCHuv has high chroma and no lightness.
+    Check if LChuv has high chroma and no lightness.
 
-    LCHuv will have such values all in gamut and create weird graphs.
-    This is just due to how LCHuv algorithm handles high chroma and zero lightness,
+    LChuv will have such values all in gamut and create weird graphs.
+    This is just due to how LChuv algorithm handles high chroma and zero lightness,
     it all gets treated as black which is in gamut for almost any color.
     """
 

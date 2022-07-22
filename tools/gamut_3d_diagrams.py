@@ -21,7 +21,7 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import Cylindrical, Lchish, Labish  # noqa: E402
+from coloraide.spaces import Cylindrical, LChish, Labish  # noqa: E402
 from coloraide.algebra import is_nan  # noqa: E402
 
 # Special cases for certain color spaces
@@ -143,7 +143,7 @@ def render_space(space, gamut, resolution, factor, data, c):
     There are a number of special options to handle RGB cylinder spaces.
     Some require us to generate top and bottom caps, some require us to
     force a max radius. This is mainly because these models are special
-    and don't quite fit generically with things like Lab, Lch, and rectangular
+    and don't quite fit generically with things like Lab, LCh, and rectangular
     spaces.
     """
 
@@ -164,7 +164,7 @@ def render_space(space, gamut, resolution, factor, data, c):
     color = ColorCyl('srgb', [])
     is_cyl = isinstance(ColorCyl.CS_MAP[space], Cylindrical)
     is_labish = isinstance(ColorCyl.CS_MAP[space], Labish)
-    is_lchish = isinstance(ColorCyl.CS_MAP[space], Lchish)
+    is_lchish = isinstance(ColorCyl.CS_MAP[space], LChish)
     add = add_rect_color if not is_cyl or is_labish else add_cyl_color
     force_max_radius = not is_lchish and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
     force_bottom = color_options.get(space, {}).get('force_bottom', False)
@@ -230,7 +230,7 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     names = target.CHANNELS
     is_cyl = isinstance(target, Cylindrical)
     is_labish = isinstance(target, Labish)
-    is_lchish = isinstance(target, Lchish)
+    is_lchish = isinstance(target, LChish)
 
     if not is_lchish and is_cyl:
         g = Color.CS_MAP[space].GAMUT_CHECK

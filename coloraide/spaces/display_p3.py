@@ -1,10 +1,10 @@
 """Display-p3 color class."""
 from ..cat import WHITES
-from .srgb import SRGB, lin_srgb, gam_srgb
+from .srgb import sRGB, lin_srgb, gam_srgb
 from ..types import Vector
 
 
-class DisplayP3(SRGB):
+class DisplayP3(sRGB):
     """Display-p3 class."""
 
     BASE = "display-p3-linear"

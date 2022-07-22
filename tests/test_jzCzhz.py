@@ -158,7 +158,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c2.is_nan('hue'))
 
     def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to Oklch with a null hue."""
+        """Test that all RGB-ish colors convert to OkLCh with a null hue."""
 
         for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
             for x in range(0, 256):

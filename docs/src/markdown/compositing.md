@@ -264,14 +264,14 @@ was performed on Chrome in macOS using a display that uses `display-p3`.
 
 ## Blend Modes
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-normal">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Normal
 
@@ -283,14 +283,14 @@ _Specified as `#!py3 'normal'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-multiply">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Multiply
 
@@ -304,14 +304,14 @@ _Specified as `#!py3 'multiply'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-screen">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Screen
 
@@ -326,14 +326,14 @@ _Specified as `#!py3 'screen'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-overlay">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Overlay
 
@@ -347,14 +347,14 @@ _Specified as `#!py3 'overlay'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-darken">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Darken
 
@@ -367,14 +367,14 @@ _Specified as `#!py3 'darken'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-lighten">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Lighten
 
@@ -387,14 +387,14 @@ _Specified as `#!py3 'lighten'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-color-dodge">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Color Dodge
 
@@ -406,14 +406,14 @@ _Specified as `#!py3 'color-dodge'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-color-burn">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Color Burn
 
@@ -425,14 +425,14 @@ _Specified as `#!py3 'color-burn'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-hard-light">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Hard Light
 
@@ -445,14 +445,14 @@ _Specified as `#!py3 'hard-light'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-soft-light">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Soft Light
 
@@ -465,14 +465,14 @@ _Specified as `#!py3 'soft-light'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-difference">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Difference
 
@@ -485,14 +485,14 @@ _Specified as `#!py3 'difference'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-exclusion">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Exclusion
 
@@ -505,14 +505,14 @@ _Specified as `#!py3 'exclusion'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-hue">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Hue
 
@@ -524,14 +524,14 @@ _Specified as `#!py3 'hue'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-saturation">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Saturation
 
@@ -544,14 +544,14 @@ _Specified as `#!py3 'saturation'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-luminosity">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Luminosity
 
@@ -565,14 +565,14 @@ _Specified as `#!py3 'luminosity'`_.
 
 ---
 
-<div class="blend-wrap" markdown="1">
+<div class="blend-wrap" markdown>
 <span class="isolate blend-color">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown="1">
+<div class="blend-content" markdown>
 
 ### Color
 

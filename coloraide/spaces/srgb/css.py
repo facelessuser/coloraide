@@ -1,4 +1,4 @@
-"""SRGB color class."""
+"""sRGB color class."""
 from .. import srgb as base
 from ...css import parse
 from ...css import serialize
@@ -9,8 +9,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 
-class SRGB(base.SRGB):
-    """SRGB class."""
+class sRGB(base.sRGB):
+    """sRGB class."""
 
     def to_string(
         self,

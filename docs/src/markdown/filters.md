@@ -46,7 +46,7 @@ color spaces will throw an error.
 
     ![Grayscale](./images/color-wheel-grayscale.png)
 
-In ColorAide, just call the `filter` method and provide the name of the filter. If not `amount` is provided, the default
+In ColorAide, just call the `filter` method and provide the name of the filter. If `amount` is not provided, the default
 according to the W3C spec will be used instead.
 
 ```playground

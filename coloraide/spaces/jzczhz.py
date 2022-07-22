@@ -3,7 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
-from ..spaces import Space, Lchish
+from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
@@ -44,7 +44,7 @@ def jzczhz_to_jzazbz(jzczhz: Vector) -> Vector:
     ]
 
 
-class JzCzhz(Lchish, Space):
+class JzCzhz(LChish, Space):
     """
     JzCzhz class.
 

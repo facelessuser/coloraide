@@ -361,8 +361,8 @@ space.
 
 ### Mix-ins
 
-If the color is a cylindrical space, Lab-ish space, or Lch-ish space, you can additionally add in the respective
-mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lchish` is subclassed from `Cylindrical`.
+If the color is a cylindrical space, Lab-ish space, or LCh-ish space, you can additionally add in the respective
+mix-in class: `Cylindrical`, `Labish`, or `LChish`. It should be noted that `LChish` is subclassed from `Cylindrical`.
 
 === "Cylindrical"
 
@@ -398,14 +398,14 @@ mix-in class: `Cylindrical`, `Labish`, or `Lchish`. It should be noted that `Lch
             return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
     ```
 
-=== "Lchish"
+=== "LChish"
 
     ```py
-    class Lchish(Cylindrical):
-        """Lch-ish color spaces."""
+    class LChish(Cylindrical):
+        """LCh-ish color spaces."""
 
         def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
-            """Return Lch-ish names in the order L c h."""
+            """Return LCh-ish names in the order L c h."""
 
             return cast('Space', self).channels[:-1]
 
@@ -442,7 +442,7 @@ for c in (srgb, jzazbz, ictcp):
 ```
 
 It should be noted that just because a color space identifies in a specific, generic category, it doesn't mean it is
-precisely that thing. For instance, the color space CIELAB is clearly a Lab-ish space, or more precisely, it is a Lab
+precisely that thing. For instance, the color space CIELab is clearly a Lab-ish space, or more precisely, it is a Lab
 color space. Oklab, DIN99o, and others are very much Lab spaces as well. ICtCp, on the other hand, is very Lab *like* as
 its `Ct` and `Cp` channels control redness/greenness and blueness/yellowness, but the `I` channel represents intensity,
 not lightness which is similar but not precisely the same thing.
@@ -481,8 +481,8 @@ from coloraide.spaces import srgb as base
 from coloraide.css import parse
 
 
-class SRGB(base.SRGB):
-    """SRGB class."""
+class sRGB(base.sRGB):
+    """sRGB class."""
 
     # This color class should opt into the generic `color(space ...)` input format.
     # This is `True` by default, but shown for demonstration purposes.

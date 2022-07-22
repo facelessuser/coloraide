@@ -894,7 +894,7 @@ Description
 : 
     The `harmony` method uses the current color and returns a set of harmonious colors (including the current color).
     The color harmonies are based on the classical color harmonies of color theory. By default, harmonious colors are
-    performed under the perceptually uniform Oklch color space, but other cylindrical color spaces can be used.
+    performed under the perceptually uniform OkLCh color space, but other cylindrical color spaces can be used.
 
     Harmony             | Name
     ------------------- | ------------
@@ -1017,7 +1017,7 @@ Description
     Fits color to the current or specified color gamut.
 
     By default, `oklch-chroma` gamut mapping is used. This is essentially an approach that holds lightness and hue
-    constant in the Oklch color space while reducing chroma until the color is in gamut. Clipping is done at each step
+    constant in the OkLCh color space while reducing chroma until the color is in gamut. Clipping is done at each step
     of the way and the color distance measured to see how close our color is to the intended color.
 
     The supported gamut mapping methods are:
@@ -1025,8 +1025,8 @@ Description
     Name         | Input
     ------------ | -----
     Clipping     | `clip`
-    Oklch Chroma | `oklch-chroma`
-    LCH Chroma   | `lch-chroma`
+    OkLCh Chroma | `oklch-chroma`
+    LCh Chroma   | `lch-chroma`
 
 Parameters
 : 

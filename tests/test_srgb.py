@@ -1,11 +1,11 @@
-"""Test SRGB library."""
+"""Test sRGB library."""
 import unittest
 from . import util
 from coloraide import Color
 
 
-class TestSRGBInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test SRGB."""
+class TestsRGBInputOutput(util.ColorAsserts, unittest.TestCase):
+    """Test sRGB."""
 
     def test_input_raw(self):
         """Test raw input."""
@@ -313,7 +313,7 @@ class TestSRGBInputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestSRGBProperties(util.ColorAsserts, unittest.TestCase):
+class TestsRGBProperties(util.ColorAsserts, unittest.TestCase):
     """Test sRGB."""
 
     def test_red(self):

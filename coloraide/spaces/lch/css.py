@@ -1,4 +1,4 @@
-"""Lch class."""
+"""LCh class."""
 from .. import lch as base
 from ...css import parse
 from ...css import serialize
@@ -9,8 +9,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 
-class Lch(base.Lch):
-    """Lch class."""
+class LCh(base.LCh):
+    """LCh class."""
 
     def to_string(
         self,

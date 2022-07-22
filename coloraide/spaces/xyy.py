@@ -11,7 +11,7 @@ from ..types import Vector
 from typing import Tuple
 
 
-class XyY(Space):
+class xyY(Space):
     """The xyY class."""
 
     BASE = "xyz-d65"

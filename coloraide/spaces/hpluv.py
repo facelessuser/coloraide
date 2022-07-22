@@ -73,7 +73,7 @@ def max_safe_chroma_for_l(l: float) -> float:
 
 
 def hpluv_to_lch(hpluv: Vector) -> Vector:
-    """Convert HPLuv to Lch."""
+    """Convert HPLuv to LCh."""
 
     h, s, l = hpluv
     c = 0.0
@@ -90,7 +90,7 @@ def hpluv_to_lch(hpluv: Vector) -> Vector:
 
 
 def lch_to_hpluv(lch: Vector) -> Vector:
-    """Convert Lch to HPLuv."""
+    """Convert LCh to HPLuv."""
 
     l, c, h = lch
     s = 0.0
@@ -133,11 +133,11 @@ class HPLuv(Cylindrical, Space):
         return coords
 
     def to_base(self, coords: Vector) -> Vector:
-        """To LCHuv from HPLuv."""
+        """To LChuv from HPLuv."""
 
         return hpluv_to_lch(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From LCHuv to HPLuv."""
+        """From LChuv to HPLuv."""
 
         return lch_to_hpluv(coords)

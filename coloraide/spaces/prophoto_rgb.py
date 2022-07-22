@@ -1,6 +1,6 @@
 """Pro Photo RGB color class."""
 from ..cat import WHITES
-from .srgb import SRGB
+from .srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -46,7 +46,7 @@ def gam_prophoto(rgb: Vector) -> Vector:
     return result
 
 
-class ProPhotoRGB(SRGB):
+class ProPhotoRGB(sRGB):
     """Pro Photo RGB class."""
 
     BASE = "prophoto-rgb-linear"

@@ -1,5 +1,5 @@
 """
-Calculate the Lch threshold of Lch-ish colors.
+Calculate the LCh threshold of LCh-ish colors.
 
 Particularly, we are interested in seeing the greatest
 chroma deviation from zero for achromatic colors.
@@ -8,11 +8,11 @@ We simply will take a number of RGB color spaces and loop
 through all achromatic colors, significantly past white
 to see how far from zero chroma deviates.
 
-This is mainly due to the fact that many of these Lch-ish
+This is mainly due to the fact that many of these LCh-ish
 color spaces, as they get close to zero, whether due to
 the algorithm, the precision, floating point math, or
 whatever the reason, the conversion to an achromatic color
-in the Lch-ish space often is very, very close to zero, but
+in the LCh-ish space often is very, very close to zero, but
 not quite.
 
 The threshold is essentially used during conversion to round
@@ -108,12 +108,12 @@ def main():
     """Main."""
 
     parser = argparse.ArgumentParser(
-        prog='calc_lch_threshold.py', description='Calculate achromatic threshold for Lch-ish colors.'
+        prog='calc_lch_threshold.py', description='Calculate achromatic threshold for LCh-ish colors.'
     )
     # Flag arguments
     parser.add_argument(
         '--lch', '-c', action='store', default='',
-        help="The Lch color whose 'chroma' values you'd like to evaluate."
+        help="The LCh color whose 'chroma' values you'd like to evaluate."
     )
     parser.add_argument(
         '--lab', '-l', action='store', default='',

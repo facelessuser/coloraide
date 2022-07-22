@@ -96,7 +96,7 @@ As with coordinate retrieval, a number of ways can be used set coordinates as we
     ??? note "Notes on Modifying Coordinates in Other Spaces"
 
         As previously mentioned, coordinates in other spaces can be modified with the `set` function. Here we alter the
-        color `#!color blue` by editing the `hue` channel in the CIELCH color space and get
+        color `#!color blue` by editing the `hue` channel in the CIELCh color space and get
         `#!color Color("blue").set('lch.hue', 130)`. Keep in mind that the colors are being converted to the specified
         space under the hood, set, and then converted back, so if you have multiple operations to apply in a given color
         space, it may be more efficient to convert to that space, apply the set operations directly, and then convert

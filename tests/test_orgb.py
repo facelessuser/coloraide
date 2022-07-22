@@ -5,7 +5,7 @@ from coloraide.everything import ColorAll as Color
 import pytest
 
 
-class TestORGB(util.ColorAssertsPyTest):
+class TestoRGB(util.ColorAssertsPyTest):
     """Test oRGB."""
 
     COLORS = [
@@ -28,7 +28,7 @@ class TestORGB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('orgb'), Color(color2))
 
 
-class TestORGBPoperties(util.ColorAsserts, unittest.TestCase):
+class TestoRGBPoperties(util.ColorAsserts, unittest.TestCase):
     """Test oRGB."""
 
     def test_l(self):

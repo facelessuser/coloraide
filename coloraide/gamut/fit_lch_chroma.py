@@ -1,4 +1,4 @@
-"""Fit by compressing chroma in Lch."""
+"""Fit by compressing chroma in LCh."""
 from ..gamut import Fit, clip_channels
 from ..algebra import NaN
 from typing import TYPE_CHECKING, Any
@@ -7,9 +7,9 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-class LchChroma(Fit):
+class LChChroma(Fit):
     """
-    Lch chroma gamut mapping class.
+    LCh chroma gamut mapping class.
 
     Adjust chroma (using binary search).
     This helps preserve the other attributes of the color.
@@ -40,7 +40,7 @@ class LchChroma(Fit):
     MAX_LIGHTNESS = 100
 
     def fit(self, color: 'Color', **kwargs: Any) -> None:
-        """Gamut mapping via CIELCH chroma."""
+        """Gamut mapping via CIELCh chroma."""
 
         space = color.space()
         mapcolor = color.convert(self.SPACE)

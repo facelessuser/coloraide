@@ -46,7 +46,7 @@ From this we can construct an sRGB color wheel.
 This is different from the RYB color wheel, and more accurate in relation to how light works, but does it yield better
 harmonies for colors?
 
-If we were to select the perceptually uniform Oklch color space, and seed it with red's lightness and chroma, we'd get:
+If we were to select the perceptually uniform OkLCh color space, and seed it with red's lightness and chroma, we'd get:
 
 ```playground
 c = Color('red').convert('oklch', in_place=True)
@@ -62,7 +62,7 @@ Many artists swear by the classical color wheel, others are fine with using the 
 with in CSS via the HSL color space, and there are still others that are more interested in perceptually uniform color
 spaces that aim for more consistent hues and predictable lightness.
 
-As far as ColorAide is concerned, we've chosen to use Oklch as the color space in which we work in. This is based
+As far as ColorAide is concerned, we've chosen to use OkLCh as the color space in which we work in. This is based
 mainly on the fact it keeps hue more consistent than some other options, and it allows us to support a wider gamut than
 options like HSL.
 
@@ -72,7 +72,7 @@ HtmlSteps(Color.steps(['black', 'blue', 'white'], steps=11, space='hsl'))
 HtmlSteps(Color.steps(['black', 'blue', 'white'], steps=11, space='lch'))
 ```
 
-While Oklch is the default, we understand that there are many reasons to use other spaces, so use what you like, we
+While OkLCh is the default, we understand that there are many reasons to use other spaces, so use what you like, we
 won't judge :smile:.
 
 ```playground
@@ -85,15 +85,15 @@ HtmlSteps(Color('red').harmony('complement', space='hsl'))
 ColorAide currently supports 7 theorized color harmonies: [monochromatic](#monochromatic),
 [complementary](#complementary), [split complementary](#split-complementary), [analogous](#analogous),
 [triadic](#triadic), [square](#tetradic-square), and [rectangular](#tetradic-rectangular). By default, all color
-harmonies are calculated with the perceptually uniform Oklch color space, but other color spaces can be used if desired.
+harmonies are calculated with the perceptually uniform OkLCh color space, but other color spaces can be used if desired.
 
-While we use Oklch, we will actually visualize the examples in Okhsl. Oklch is a derivative of Oklch with the lightness
-adjusted to match CIELCH and reshaped in a cylindrical form. It is limited to the sRGB gamut only, but it can help
+While we use OkLCh, we will actually visualize the examples in Okhsl. OkLCh is a derivative of OkLCh with the lightness
+adjusted to match CIELCh and reshaped in a cylindrical form. It is limited to the sRGB gamut only, but it can help
 visualize better what is happening in a familiar color wheel format. You can see the difference below:
 
-=== "Oklch Color Slice"
+=== "OkLCh Color Slice"
 
-    ![Oklch Color Wheel](images/oklch-color-wheel.png)
+    ![OkLCh Color Wheel](images/oklch-color-wheel.png)
 
 === "Okhsl Color Slice"
 

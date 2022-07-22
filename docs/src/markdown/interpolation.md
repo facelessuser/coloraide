@@ -181,7 +181,7 @@ The example below transitions from white to a fully transparent color for both n
 interpolation. We've forced a white background (_for dark theme users_) to make the grayish transition of the
 non-premultiplied results easy to see.
 
-<div style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%) " markdown="1">
+<div style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%) " markdown>
 
 ```playground
 Color.interpolate(['white', 'transparent'], space='srgb', premultiplied=False)

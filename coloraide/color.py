@@ -17,14 +17,14 @@ from .css import parse
 from .types import VectorLike, Vector, ColorInput
 from .spaces import Space, Cylindrical
 from .spaces.hsv import HSV
-from .spaces.srgb.css import SRGB
-from .spaces.srgb_linear import SRGBLinear
+from .spaces.srgb.css import sRGB
+from .spaces.srgb_linear import sRGBLinear
 from .spaces.hsl.css import HSL
 from .spaces.hwb.css import HWB
 from .spaces.lab.css import Lab
-from .spaces.lch.css import Lch
+from .spaces.lch.css import LCh
 from .spaces.lab_d65 import LabD65
-from .spaces.lch_d65 import LchD65
+from .spaces.lch_d65 import LChD65
 from .spaces.display_p3 import DisplayP3
 from .spaces.display_p3_linear import DisplayP3Linear
 from .spaces.a98_rgb import A98RGB
@@ -36,7 +36,7 @@ from .spaces.rec2020_linear import Rec2020Linear
 from .spaces.xyz_d65 import XYZD65
 from .spaces.xyz_d50 import XYZD50
 from .spaces.oklab.css import Oklab
-from .spaces.oklch.css import Oklch
+from .spaces.oklch.css import OkLCh
 from .distance import DeltaE
 from .distance.delta_e_76 import DE76
 from .distance.delta_e_94 import DE94
@@ -47,8 +47,8 @@ from .distance.delta_e_ok import DEOK
 from .contrast import ColorContrast
 from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
-from .gamut.fit_lch_chroma import LchChroma
-from .gamut.fit_oklch_chroma import OklchChroma
+from .gamut.fit_lch_chroma import LChChroma
+from .gamut.fit_oklch_chroma import OkLChChroma
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -878,16 +878,16 @@ Color.register(
         # Spaces
         XYZD65(),
         XYZD50(),
-        SRGB(),
-        SRGBLinear(),
+        sRGB(),
+        sRGBLinear(),
         DisplayP3(),
         DisplayP3Linear(),
         Oklab(),
-        Oklch(),
+        OkLCh(),
         Lab(),
-        Lch(),
+        LCh(),
         LabD65(),
-        LchD65(),
+        LChD65(),
         HSV(),
         HSL(),
         HWB(),
@@ -910,8 +910,8 @@ Color.register(
         DEOK(),
 
         # Fit
-        LchChroma(),
-        OklchChroma(),
+        LChChroma(),
+        OkLChChroma(),
 
         # Filters
         Sepia(),

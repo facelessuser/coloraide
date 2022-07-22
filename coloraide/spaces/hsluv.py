@@ -75,7 +75,7 @@ def max_chroma_for_lh(l: float, h: float) -> float:
 
 
 def hsluv_to_lch(hsluv: Vector) -> Vector:
-    """Convert HSLuv to Lch."""
+    """Convert HSLuv to LCh."""
 
     h, s, l = hsluv
     c = 0.0
@@ -92,7 +92,7 @@ def hsluv_to_lch(hsluv: Vector) -> Vector:
 
 
 def lch_to_hsluv(lch: Vector) -> Vector:
-    """Convert Lch to HSLuv."""
+    """Convert LCh to HSLuv."""
 
     l, c, h = lch
     s = 0.0
@@ -136,11 +136,11 @@ class HSLuv(Cylindrical, Space):
         return coords
 
     def to_base(self, coords: Vector) -> Vector:
-        """To LCHuv from HSLuv."""
+        """To LChuv from HSLuv."""
 
         return hsluv_to_lch(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From LCHuv to HSLuv."""
+        """From LChuv to HSLuv."""
 
         return lch_to_hsluv(coords)

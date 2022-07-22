@@ -159,7 +159,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
         # Now it is registered again
-        Custom.register(fit_lch_chroma.LchChroma())
+        Custom.register(fit_lch_chroma.LChChroma())
         self.assertEqual(Custom('color(srgb 110% 140% 20%)').fit(method='lch-chroma').to_string(), expected)
 
     def test_plugin_registration_contrast(self):

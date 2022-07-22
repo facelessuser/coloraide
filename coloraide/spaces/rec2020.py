@@ -1,6 +1,6 @@
 """Rec 2020 color class."""
 from ..cat import WHITES
-from .srgb import SRGB
+from .srgb import sRGB
 import math
 from .. import algebra as alg
 from ..types import Vector
@@ -46,7 +46,7 @@ def gam_2020(rgb: Vector) -> Vector:
     return result
 
 
-class Rec2020(SRGB):
+class Rec2020(sRGB):
     """Rec 2020 class."""
 
     BASE = "rec2020-linear"

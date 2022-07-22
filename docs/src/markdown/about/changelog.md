@@ -9,6 +9,15 @@
     `coloraide.ColorAll` was moved to `coloraide.everythng.ColorAll` to avoid allocating plugins when they are not
     desired.
 
+    In the process, we also renamed a number of plugin classes for consistency and predictability, details found below.
+
+- **NEW**: Updated some class names for consistency and predictability. `XyY` --> `xyY`, `Din99o` --> `DIN99o`, `SRGB`
+  --> `sRGB`, and `ORGB` --> `oRGB`.
+
+    Lastly, `LCh` should be the default casing convention. This convention will be followed unless a spec mentions
+  otherwise. Changes: `Lch` --> `LCh`, `LchD65` --> `LChD65`, `Oklch` --> `OkLCh`, `Lchuv` --> `LChuv`, `Lch99o` -->
+  `LCh99o`, `LchChroma` --> `LChChroma`, `OklchChroma` --> `OkLChChroma`, and `Lchish` --> `LChish`.
+
 - **NEW**: Updated migration guide with recent plugin changes.
 - **NEW**: `coloraide.ColorAll` renamed and moved to `coloraide.everything.ColorAll`. This prevents unnecessary
   inclusion and allocation of objects that are not desired.
@@ -128,8 +137,8 @@
 - **NEW**: Monochromatic color harmony must also be performed in a cylindrical color space to make achromatic detection
   easier. This means all color harmonies now must be performed under a cylindrical color space.
 
-- **NEW**: Use Lab D65 for ∆E 2000, ∆E 76, ∆E HyAB, Euclidean distance, and Lch D65 for Lch Chroma gamut mapping. Lab
-  D65 is far more commonly used for the aforementioned ∆E methods. Lch Chroma gamut mapping, which uses ∆E 2000 needs to
+- **NEW**: Use Lab D65 for ∆E 2000, ∆E 76, ∆E HyAB, Euclidean distance, and LCh D65 for LCh Chroma gamut mapping. Lab
+  D65 is far more commonly used for the aforementioned ∆E methods. LCh Chroma gamut mapping, which uses ∆E 2000 needs to
   use the same D65 white point to avoid wasting conversion time.
 
 - **FIX**: Better handling of monochromatic harmonies that are near white or black.
@@ -316,18 +325,18 @@
        ultimately the decision was to avoid adding such support. We've updated our input and output support to reflect
        this. Color spaces can always be subclassed and have this support added back, if desired, but will not be shipped
        as the default anymore.
-    3. The D65 form of Luv and LCHuv is now the only supported Luv based color spaces by default now. D50 Luv and LCHuv
+    3. The D65 form of Luv and LChuv is now the only supported Luv based color spaces by default now. D50 Luv and LChuv
        have been dropped and `luv` and `lchuv` now refers to the D65 version. In most places, the D65 is the most common
-       used white space as most monitors are calibrated for this white point. The only reason CIELAB and CIELCH are D50
+       used white space as most monitors are calibrated for this white point. The only reason CIELab and CIELCh are D50
        by default is that CSS requires it. Anyone interested in using Luv with a different white point can easily
        subclass the current Luv and create a new plugin color space that uses the new white point.
-    4. Renamed DIN99o Lch identifier to the short name of `lch99o`.
+    4. Renamed DIN99o LCh identifier to the short name of `lch99o`.
 
-- **NEW**: ColorAide now only ships with the D65 version Luv and LCHuv as D65, in most places is the expected white
+- **NEW**: ColorAide now only ships with the D65 version Luv and LChuv as D65, in most places is the expected white
   space. Now, the identifier `luv` and `lchuv` will refer to the D65 version of the respective color spaces. D50
   variants are no longer available by default.
 - **NEW**: Add the HSLuv color space.
-- **NEW**: DIN99o Lch identifier was renamed from `din99o-lch` to `lch99o`. To use in CSS `color()` form, use
+- **NEW**: DIN99o LCh identifier was renamed from `din99o-lch` to `lch99o`. To use in CSS `color()` form, use
   `--lch99o`.
 - **NEW**: Refactor chroma reduction/MINDE logic to cut processing time in half. Gamut mapping results remain very
   similar.
@@ -341,7 +350,7 @@
 
 ## 0.10.0
 
-- **NEW**: Switch back to using CIELCH for gamut mapping (`lch-chroma`). There are still some edge cases that make
+- **NEW**: Switch back to using CIELCh for gamut mapping (`lch-chroma`). There are still some edge cases that make
   `oklch-chroma` less desirable.
 - **FIX**: Fix an issue where when attempting to generate steps some ∆E distance apart, the maximum step range was not
   respected and could result in large hangs.
@@ -394,7 +403,7 @@
     Color('color(xyz-d65 0 0 0)')  # Okay
     ```
 
-- **NEW**: Add the official CSS syntax `oklab()` and `oklch()` for the Oklab and Oklch color spaces respectively.
+- **NEW**: Add the official CSS syntax `oklab()` and `oklch()` for the Oklab and OkLCh color spaces respectively.
 - **NEW**: Custom fit plugin's `fit` method now allows additional `kwargs` in its signature. The API will accept
   `kwargs` allowing a custom fit plugin to have configurable parameters. None of the current built-in plugins provide
   additional parameters, but this is provided in case it is found useful in the future.
@@ -412,7 +421,7 @@
 - **NEW**: Formally expose `srgb-linear` as a valid color space.
 - **NEW**: Distance plugins and gamut mapping plugins now use `classmethod` instead of `staticmethod`. This allows for
   inheritance from other classes and the overriding of plugin options included as class members.
-- **NEW**: Tweak Lch chroma gamut mapping threshold.
+- **NEW**: Tweak LCh chroma gamut mapping threshold.
 - **FIX**: Issue where it is possible, when generating steps, to cause a shift in midpoint of colors if exceeding the
   maximum steps. Ensure that no stops are injected if injecting a stop between every color would exceed the max steps.
 
@@ -454,7 +463,7 @@
 - **NEW**: `xyz` now refers to XYZ D65. CSS `#!css-color color()` function now specifies D65 color as either
   `#!css-color color(xyz x y z)` or `#!css-color color(xyz-d65 x y z)`. XYZ D50 is now specified as
   `#!css-color color(xyz-D50 x y z)`.
-- **NEW**: Add CIELUV and CIELCH~uv~ D65 variants.
+- **NEW**: Add CIELuv and CIELCh~uv~ D65 variants.
 
 ## 0.2.0
 

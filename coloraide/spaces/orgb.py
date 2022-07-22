@@ -1,5 +1,5 @@
 """
-ORGB color space.
+oRGB color space.
 
 https://graphics.stanford.edu/~boulos/papers/orgb_sig.pdf
 """
@@ -29,7 +29,7 @@ def rotate(v: Vector, d: float) -> Vector:
 
 
 def srgb_to_orgb(rgb: Vector) -> Vector:
-    """SRGB to ORGB."""
+    """sRGB to oRGB."""
 
     lcc = alg.dot(RGB_TO_LC1C2, rgb, dims=alg.D2_D1)
     theta = math.atan2(lcc[2], lcc[1])
@@ -44,7 +44,7 @@ def srgb_to_orgb(rgb: Vector) -> Vector:
 
 
 def orgb_to_srgb(lcc: Vector) -> Vector:
-    """ORGB to sRGB."""
+    """oRGB to sRGB."""
 
     theta0 = math.atan2(lcc[2], lcc[1])
     theta = theta0
@@ -57,8 +57,8 @@ def orgb_to_srgb(lcc: Vector) -> Vector:
     return alg.dot(LC1C2_TO_RGB, rotate(lcc, theta - theta0))
 
 
-class ORGB(Labish, Space):
-    """ORGB color class."""
+class oRGB(Labish, Space):
+    """oRGB color class."""
 
     BASE = 'srgb'
     NAME = "orgb"

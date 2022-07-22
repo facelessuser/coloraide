@@ -1,8 +1,8 @@
-"""LCH class."""
+"""LChuv class."""
 from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .lch import Lch, ACHROMATIC_THRESHOLD
+from .lch import LCh, ACHROMATIC_THRESHOLD
 from .. import util
 import math
 from .. import algebra as alg
@@ -10,7 +10,7 @@ from ..types import Vector
 
 
 def luv_to_lchuv(luv: Vector) -> Vector:
-    """Luv to Lch(uv)."""
+    """Luv to LChuv."""
 
     l, u, v = luv
 
@@ -26,7 +26,7 @@ def luv_to_lchuv(luv: Vector) -> Vector:
 
 
 def lchuv_to_luv(lchuv: Vector) -> Vector:
-    """Lch(uv) to Luv."""
+    """LChuv to Luv."""
 
     l, c, h = lchuv
     if alg.is_nan(h):  # pragma: no cover
@@ -39,8 +39,8 @@ def lchuv_to_luv(lchuv: Vector) -> Vector:
     ]
 
 
-class Lchuv(Lch, Space):
-    """Lch(uv) class."""
+class LChuv(LCh, Space):
+    """LChuv class."""
 
     BASE = "luv"
     NAME = "lchuv"
@@ -53,11 +53,11 @@ class Lchuv(Lch, Space):
     )
 
     def to_base(self, coords: Vector) -> Vector:
-        """To Luv from Lch(uv)."""
+        """To Luv from LChuv."""
 
         return lchuv_to_luv(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From Luv to Lch(uv)."""
+        """From Luv to LChuv."""
 
         return luv_to_lchuv(coords)

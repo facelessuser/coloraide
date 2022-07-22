@@ -4,13 +4,13 @@ Rec 2100 PQ color class.
 https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2100-2-201807-I!!PDF-E.pdf
 """
 from ..cat import WHITES
-from .srgb import SRGB
+from .srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
 from .. import util
 
 
-class Rec2100PQ(SRGB):
+class Rec2100PQ(sRGB):
     """Rec 2100 PQ class."""
 
     BASE = "rec2020-linear"

@@ -1,6 +1,6 @@
-"""Din99o Lch class."""
+"""DIN99o LCh class."""
 from ..cat import WHITES
-from .lch import Lch
+from .lch import LCh
 from .. import util
 import math
 from .. import algebra as alg
@@ -11,7 +11,7 @@ ACHROMATIC_THRESHOLD = 0.0000000002
 
 
 def lch_to_lab(lch: Vector) -> Vector:
-    """Din99o Lch to lab."""
+    """DIN99o LCh to lab."""
 
     l, c, h = lch
     if alg.is_nan(h):  # pragma: no cover
@@ -25,7 +25,7 @@ def lch_to_lab(lch: Vector) -> Vector:
 
 
 def lab_to_lch(lab: Vector) -> Vector:
-    """Din99o Lab to Lch."""
+    """DIN99o Lab to LCh."""
 
     l, a, b = lab
     h = math.degrees(math.atan2(b, a))
@@ -39,8 +39,8 @@ def lab_to_lch(lab: Vector) -> Vector:
     return [l, c, util.constrain_hue(h)]
 
 
-class Lch99o(Lch):
-    """Din99o Lch class."""
+class LCh99o(LCh):
+    """DIN99o LCh class."""
 
     BASE = 'din99o'
     NAME = "lch99o"
@@ -53,11 +53,11 @@ class Lch99o(Lch):
     )
 
     def to_base(self, coords: Vector) -> Vector:
-        """To Din99o from Din99o Lch."""
+        """To DIN99o from DIN99o LCh."""
 
         return lch_to_lab(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From Din99o to Din99o Lch."""
+        """From DIN99o to DIN99o LCh."""
 
         return lab_to_lch(coords)

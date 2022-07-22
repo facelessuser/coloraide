@@ -93,26 +93,26 @@ plot_model(
 
 plot_model(
     'lab',
-    TEMPLATE.format('CIELAB D50'),
+    TEMPLATE.format('CIELab D50'),
     'lab-3d.png'
 )
 
 plot_model(
     'lab-d65',
-    TEMPLATE.format('CIELAB D65'),
+    TEMPLATE.format('CIELab D65'),
     'lab-d65-3d.png'
 )
 
 plot_model(
     'lch',
-    TEMPLATE.format('CIELCH D50'),
+    TEMPLATE.format('CIELCh D50'),
     'lch-3d.png',
     azim=120
 )
 
 plot_model(
     'lch-d65',
-    TEMPLATE.format('CIELCH D65'),
+    TEMPLATE.format('CIELCh D65'),
     'lch-d65-3d.png',
     azim=120
 )
@@ -125,20 +125,20 @@ plot_model(
 
 plot_model(
     'oklch',
-    TEMPLATE.format('Oklch'),
+    TEMPLATE.format('OkLCh'),
     'oklch-3d.png',
     azim=120
 )
 
 plot_model(
     'luv',
-    TEMPLATE.format('CIELUV'),
+    TEMPLATE.format('CIELuv'),
     'luv-3d.png'
 )
 
 plot_model(
     'lchuv',
-    TEMPLATE.format('LCHuv'),
+    TEMPLATE.format('LChuv'),
     'lchuv-3d.png',
     azim=120
 )
@@ -171,7 +171,7 @@ plot_model(
 
 plot_model(
     'lch99o',
-    TEMPLATE.format('DIN99o Lch'),
+    TEMPLATE.format('DIN99o LCh'),
     'lch99o-3d.png',
     azim=120
 )

@@ -33,7 +33,7 @@ class Monochromatic(Harmony):
     The current `RANGE` was chosen as 12 as it seems to to provide OK contrast in most cases for the monochromatic
     colors. The one exception is with a target color of black or very near black which may return at least one color
     with very low contrast to black. Generally, extremely dark colors do not make a good target for color harmonies,
-    but it should be noted that Oklch's lightness tends to the more darker side. The poor contrast may be
+    but it should be noted that OkLCh's lightness tends to the more darker side. The poor contrast may be
     less with other color spaces.
     """
 

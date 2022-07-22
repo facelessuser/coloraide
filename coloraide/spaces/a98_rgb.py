@@ -1,6 +1,6 @@
 """A98 RGB color class."""
 from ..cat import WHITES
-from .srgb import SRGB
+from .srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -17,7 +17,7 @@ def gam_a98rgb(rgb: Vector) -> Vector:
     return [alg.npow(val, 256 / 563) for val in rgb]
 
 
-class A98RGB(SRGB):
+class A98RGB(sRGB):
     """A98 RGB class."""
 
     BASE = "a98-rgb-linear"

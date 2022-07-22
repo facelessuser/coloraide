@@ -1,9 +1,9 @@
-"""Fit by compressing chroma in Oklch."""
-from .fit_lch_chroma import LchChroma
+"""Fit by compressing chroma in OkLCh."""
+from .fit_lch_chroma import LChChroma
 
 
-class OklchChroma(LchChroma):
-    """Lch chroma gamut mapping class."""
+class OkLChChroma(LChChroma):
+    """OkLCh chroma gamut mapping class."""
 
     NAME = "oklch-chroma"
 

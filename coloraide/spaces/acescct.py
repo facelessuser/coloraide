@@ -5,7 +5,7 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 """
 import math
 from ..channels import Channel
-from ..spaces.srgb import SRGB
+from ..spaces.srgb import sRGB
 from ..types import Vector
 from typing import Tuple
 from .acescc import CC_MAX
@@ -45,7 +45,7 @@ def acescg_to_acescct(acescg: Vector) -> Vector:
     return acescc
 
 
-class ACEScct(SRGB):
+class ACEScct(sRGB):
     """The ACEScct color class."""
 
     BASE = "acescg"

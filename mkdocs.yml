@@ -23,6 +23,8 @@ theme:
     - navigation.tabs
     - navigation.top
     - navigation.instant
+    - navigation.sections
+    - navigation.indexes
   pymdownx:
     sponsor: "https://github.com/sponsors/facelessuser"
 
@@ -40,8 +42,71 @@ nav:
       - Color Harmonies: harmonies.md
       - Filters: filters.md
       - String Output: strings.md
+
   - Color Spaces:
-      - Supported Colors: colors/index.md
+      - colors/index.md
+
+      - RGB Color Spaces:
+        - sRGB: colors/srgb.md
+        - Display P3: colors/display_p3.md
+        - A98 RGB: colors/a98_rgb.md
+        - Rec. 2020: colors/rec2020.md
+        - ProPhoto RGB: colors/prophoto_rgb.md
+        - Rec. 2100 PQ: colors/rec2100pq.md
+        - Linear sRGB: colors/srgb_linear.md
+        - Linear Display P3: colors/display_p3_linear.md
+        - Linear A98 RGB: colors/a98_rgb_linear.md
+        - Linear Rec. 2020: colors/rec2020_linear.md
+        - Linear ProPhoto RGB: colors/prophoto_rgb_linear.md
+
+      - Cylindrical sRGB Spaces:
+        - HSV: colors/hsv.md
+        - HSL: colors/hsl.md
+        - HWB: colors/hwb.md
+        - HSI: colors/hsi.md
+        - Okhsv: colors/okhsv.md
+        - Okhsl: colors/okhsl.md
+        - HSLuv: colors/hsluv.md
+        - HPLuv: colors/hpluv.md
+
+      - XYZ Spaces:
+        - XYZ D65: colors/xyz_d65.md
+        - XYZ D50: colors/xyz_d50.md
+
+      - Lab Like Spaces:
+        - Lab D50: colors/lab.md
+        - Lab D65: colors/lab_d65.md
+        - Oklab: colors/oklab.md
+        - Luv: colors/luv.md
+        - DIN99o: colors/din99o.md
+        - Jzazbz: colors/jzazbz.md
+        - Hunter Lab: colors/hunter_lab.md
+        - RLAB: colors/rlab.md
+        - IPT: colors/ipt.md
+        - ICtCp: colors/ictcp.md
+        - IgPgTg: colors/igpgtg.md
+
+      - LCh Like Spaces:
+        - LCh D50: colors/lch.md
+        - LCh D65: colors/lch_d65.md
+        - OkLCh: colors/oklch.md
+        - LCh(uv): colors/lchuv.md
+        - DIN99 LCh: colors/lch99o.md
+        - JzCzhz: colors/jzczhz.md
+
+      - ACES Spaces:
+        - ACES 2065-1: colors/aces2065_1.md
+        - ACEScg: colors/acescg.md
+        - ACEScc: colors/acescc.md
+        - ACEScct: colors/acescct.md
+
+      - Miscellaneous Spaces:
+        - xyY: colors/xyy.md
+        - CMY: colors/cmy.md
+        - CMYK: colors/cmyk.md
+        - oRGB: colors/orgb.md
+        - Prismatic: colors/prismatic.md
+
   - Plugins:
       - ColorAide Plugins: plugins/index.md
   - API:

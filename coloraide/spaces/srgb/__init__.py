@@ -1,4 +1,4 @@
-"""SRGB color class."""
+"""sRGB color class."""
 from ...spaces import Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_OPT_PERCENT
@@ -43,8 +43,8 @@ def gam_srgb(rgb: Vector) -> Vector:
     return result
 
 
-class SRGB(Space):
-    """SRGB class."""
+class sRGB(Space):
+    """sRGB class."""
 
     BASE = "srgb-linear"
     NAME = "srgb"

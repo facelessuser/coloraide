@@ -1,5 +1,5 @@
 """
-Din99o class.
+DIN99o class.
 
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
@@ -35,7 +35,7 @@ C4 = 0.0435
 
 
 def lab_to_din99o(lab: Vector) -> Vector:
-    """XYZ to Din99o."""
+    """XYZ to DIN99o."""
 
     l, a, b = lab
     val = 1 + C2 * l
@@ -59,7 +59,7 @@ def lab_to_din99o(lab: Vector) -> Vector:
 
 def din99o_lab_to_lch(lab: Vector) -> Vector:
     """
-    Convert Din99o Lab to Lch.
+    Convert DIN99o Lab to LCh.
 
     Hue is in radians.
     """
@@ -72,7 +72,7 @@ def din99o_lab_to_lch(lab: Vector) -> Vector:
 
 
 def din99o_to_lab(din99o: Vector) -> Vector:
-    """Din99o to XYZ."""
+    """DIN99o to XYZ."""
 
     l99o, c99o, h99o = din99o_lab_to_lch(din99o)
     val = C4 * c99o * KCH * KE
@@ -90,8 +90,8 @@ def din99o_to_lab(din99o: Vector) -> Vector:
     ]
 
 
-class Din99o(Lab):
-    """Din99o class."""
+class DIN99o(Lab):
+    """DIN99o class."""
 
     BASE = 'xyz-d65'
     NAME = "din99o"
@@ -104,11 +104,11 @@ class Din99o(Lab):
     )
 
     def to_base(self, coords: Vector) -> Vector:
-        """To XYZ from Din99o."""
+        """To XYZ from DIN99o."""
 
         return super().to_base(din99o_to_lab(coords))
 
     def from_base(self, coords: Vector) -> Vector:
-        """From XYZ to Din99o."""
+        """From XYZ to DIN99o."""
 
         return lab_to_din99o(super().from_base(coords))

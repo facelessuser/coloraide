@@ -1,6 +1,6 @@
 """Linear Pro Photo RGB color class."""
 from ..cat import WHITES
-from .srgb import SRGB
+from .srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
 
@@ -34,7 +34,7 @@ def xyz_to_lin_prophoto(xyz: Vector) -> Vector:
     return alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class ProPhotoRGBLinear(SRGB):
+class ProPhotoRGBLinear(sRGB):
     """Linear Pro Photo RGB class."""
 
     BASE = "xyz-d50"

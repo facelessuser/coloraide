@@ -1,7 +1,7 @@
 """
 Luv class.
 
-https://en.wikipedia.org/wiki/CIELUV
+https://en.wikipedia.org/wiki/CIELuv
 """
 from ..spaces import Space, Labish
 from ..cat import WHITES

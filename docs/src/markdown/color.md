@@ -156,7 +156,7 @@ Color("red").update("lch(80% 50 130)")
 color. The input parameters are identical to the `new` method, so we can use a color object, a color string, dictionary,
 or even raw data points.
 
-In this example, the `#!color red` color object literally becomes the specified CIELCH color of
+In this example, the `#!color red` color object literally becomes the specified CIELCh color of
 `#!color lch(80% 50 130)`.
 
 ```playground
@@ -169,7 +169,7 @@ Colors can be converted to other color spaces as needed. Converting will always 
 parameter is set to `#!py3 True`, in which case, the current color will be mutated to the new converted color and a
 reference to itself is returned.
 
-For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELAB,
+For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELab,
 we could simply call the `convert` method with the desired color space.
 
 ```playground
@@ -199,10 +199,10 @@ Color('yellow').convert("lab")
         ```
 
     2. Sometimes, round tripping can be compromised for practical reasons. This does not mean round tripping breaks, but
-       the high degree of accuracy can drop some. A common case where this happens is with Lch-like color models: Lch,
-       Oklch, JzCzhz, etc.
+       the high degree of accuracy can drop some. A common case where this happens is with LCh-like color models: LCh,
+       OkLCh, JzCzhz, etc.
 
-        By definition, a color within an Lch-like color model is determined to be achromatic when chroma is `#!py3 0`.
+        By definition, a color within an LCh-like color model is determined to be achromatic when chroma is `#!py3 0`.
         These color models usually calculate chroma by taking a Lab-like color space's `a` and `b` components (or some
         equivalent) and calculating the chroma with `#!py3 chroma = math.sqrt(a ** 2 + b ** 2)`. This requires both `a`
         and `b` to be exactly `#!py3 0` or chroma will not be `#!py3 0`. Many of these Lab-like color spaces do not
@@ -229,7 +229,7 @@ Color('yellow').convert("lab")
         ```
 
         Jzazbz simply doesn't resolve as close to zero as Oklab; therefore, it's cylindrical counter part (JzCzhz) will
-        be more sensitive during the round trip than Oklab's cylindrical counterpart (Oklch). It should be noted that
+        be more sensitive during the round trip than Oklab's cylindrical counterpart (OkLCh). It should be noted that
         the difference is still not perceivable to the human eye.
 
         ```playground
@@ -369,7 +369,7 @@ many additional color spaces provided by ColorAide.
 
 ```playground
 from coloraide import Color
-from coloraide.spaces.xyy import XyY
+from coloraide.spaces.xyy import xyY
 
 try:
     Color('red').convert('xyy')
@@ -378,7 +378,7 @@ except:
 
 class Custom(Color): ...
 
-Custom.register(XyY())
+Custom.register(xyY())
 
 Custom('red').convert('xyy')
 ```

@@ -5,7 +5,7 @@ from coloraide.everything import ColorAll as Color
 import pytest
 
 
-class TestXyY(util.ColorAssertsPyTest):
+class TestxyY(util.ColorAssertsPyTest):
     """Test xyY."""
 
     COLORS = [
@@ -28,7 +28,7 @@ class TestXyY(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('xyy'), Color(color2))
 
 
-class TestXyYPoperties(util.ColorAsserts, unittest.TestCase):
+class TestxyYPoperties(util.ColorAsserts, unittest.TestCase):
     """Test xyY."""
 
     def test_x(self):

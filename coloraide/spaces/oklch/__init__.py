@@ -1,5 +1,5 @@
 """
-LCH class.
+OkLCh class.
 
 ---- License ----
 
@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from ...spaces import Space, Lchish
+from ...spaces import Space, LChish
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
@@ -35,7 +35,7 @@ ACHROMATIC_THRESHOLD = 0.000002
 
 
 def oklab_to_oklch(oklab: Vector) -> Vector:
-    """Oklab to Oklch."""
+    """Oklab to OkLCh."""
 
     l, a, b = oklab
 
@@ -51,7 +51,7 @@ def oklab_to_oklch(oklab: Vector) -> Vector:
 
 
 def oklch_to_oklab(oklch: Vector) -> Vector:
-    """Oklch to Oklab."""
+    """OkLCh to Oklab."""
 
     l, c, h = oklch
     if alg.is_nan(h):  # pragma: no cover
@@ -64,8 +64,8 @@ def oklch_to_oklab(oklch: Vector) -> Vector:
     ]
 
 
-class Oklch(Lchish, Space):
-    """Oklch class."""
+class OkLCh(LChish, Space):
+    """OkLCh class."""
 
     BASE = "oklab"
     NAME = "oklch"

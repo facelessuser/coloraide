@@ -123,7 +123,7 @@ Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 
 ### Percent
 
-RGB, CIELAB, CIELCH, Oklab, and Oklch can receive and output colors with optional percents for certain channels. This
+RGB, CIELab, CIELCh, Oklab, and OkLCh can receive and output colors with optional percents for certain channels. This
 will output those channels in the range of [0%,100%] instead of their usual numeric value.
 
 ```playground

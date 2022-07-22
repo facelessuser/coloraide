@@ -31,7 +31,7 @@ class TestRoundTrip:
     # Except for black, it can be very difficult to get perfect round tripping
     # on achromatic colors unless we do absolutely no hue adjustments near achromatic.
     # Many algorithms do not exactly land on what is expected for achromatic. For
-    # instance CIELAB rarely resolves to `a = b = 0` except in the case of black.
+    # instance CIELab rarely resolves to `a = b = 0` except in the case of black.
     # For cylindrical spaces that pass through a Lab-like spaces during conversion,
     # you can often get wild hues near achromatic values because the saturation or
     # chroma never quite gets to zero. In these case, we often set hue as undefined when

@@ -12,7 +12,7 @@ from ..types import Vector
 
 
 def srgb_to_hsi(rgb: Vector) -> Vector:
-    """SRGB to HSI."""
+    """sRGB to HSI."""
 
     r, g, b = rgb
     h = alg.NaN

@@ -1,12 +1,12 @@
-"""Test LCHuv library."""
+"""Test LChuv library."""
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN
 
 
-class TestLCHuvD65InputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test LCHuv."""
+class TestLChuvD65InputOutput(util.ColorAsserts, unittest.TestCase):
+    """Test LChuv."""
 
     def test_input_raw(self):
         """Test raw input."""
@@ -91,8 +91,8 @@ class TestLCHuvD65InputOutput(util.ColorAsserts, unittest.TestCase):
         )
 
 
-class TestLCHuvD65Properties(util.ColorAsserts, unittest.TestCase):
-    """Test LCHuv."""
+class TestLChuvD65Properties(util.ColorAsserts, unittest.TestCase):
+    """Test LChuv."""
 
     def test_lightness(self):
         """Test `lightness`."""
@@ -168,7 +168,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to LCHuv with a null hue."""
+        """Test that all RGB-ish colors convert to LChuv with a null hue."""
 
         for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
             for x in range(0, 256):

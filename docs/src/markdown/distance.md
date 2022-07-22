@@ -10,7 +10,7 @@ colors are close enough or far enough away from each other.
 
 ## Color Distance
 
-ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELAB color
+ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELab color
 space, but it can be configured to evaluate in any color space, such as Oklab, etc. It may be less useful in some color
 spaces compared to others. Some spaces may not be well suited, such as cylindrical spaces. Some spaces might not be as
 very perceptually uniform as others requiring more complex algorithms.
@@ -26,15 +26,15 @@ The `delta_e` function gives access to various ∆E implementations, which are j
 distance. Some are simply Euclidean distance withing a certain color space, some are far more complex.
 
 If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) which uses a simple Euclidean distancing
-algorithm on the CIELAB color space. It is fast, but not as accurate as later iterations of the algorithm as CIELAB is
-not actually as perceptually uniform as it was thought when CIELAB was originally developed.
+algorithm on the CIELab color space. It is fast, but not as accurate as later iterations of the algorithm as CIELab is
+not actually as perceptually uniform as it was thought when CIELab was originally developed.
 
 ```playground
 Color("red").delta_e("blue")
 ```
 
 When `method` is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E~00~ which is a
-more complex algorithm that accounts for the CIELAB's weakness in perceptually uniformity. It does come at the cost of
+more complex algorithm that accounts for the CIELab's weakness in perceptually uniformity. It does come at the cost of
 being a little slower.
 
 ```playground

@@ -31,18 +31,18 @@ the channel's limit of `#!py3 100%`. When we execute `in_gamut`, we can see that
 Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
-On the other hand, some color spaces do not have a limit. CIELAB is one such color space. Sometimes limits will be
-placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELAB
+On the other hand, some color spaces do not have a limit. CIELab is one such color space. Sometimes limits will be
+placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELab
 color, we will find that it is always considered in gamut.
 
 ```playground
 Color("lab(200% -20 40 / 1)").in_gamut()
 ```
 
-While checking CIELAB's own gamut isn't very useful, we can test it against a different color space's gamut. By simply
+While checking CIELab's own gamut isn't very useful, we can test it against a different color space's gamut. By simply
 passing in the name of a different color space, the current color will be converted to the provided space and then
 will run `in_gamut` on the new color. You could do this manually, but using `in_gamut` in this manner can be very
-convenient. In the example below, we can see that the CIELAB color of `#!color lab(200% -20 40 / 1)` is outside the
+convenient. In the example below, we can see that the CIELab color of `#!color lab(200% -20 40 / 1)` is outside the
 narrow gamut of sRGB.
 
 ```playground
@@ -56,7 +56,7 @@ due to [limitations of floating-point arithmetic][floating-point] and precision 
 edge cases where colors don't round trip perfectly. By default, `in_gamut` allows for a tolerance of `#!py3 0.000075` to
 account for such cases where a color is "close enough". If desired, this "tolerance" can be adjusted.
 
-Let's consider CIELAB with a D65 white point. The sRGB round trip through CIELAB D65 for `#!color white` does not
+Let's consider CIELab with a D65 white point. The sRGB round trip through CIELab D65 for `#!color white` does not
 perfectly convert back to the original color. This is due to the perils of floating point arithmetic.
 
 ```playground
@@ -65,7 +65,7 @@ Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
 ```
 
 We can see that when using a tolerance of zero, and gamut checking in sRGB, that the color is considered out of gamut.
-This makes sense as the round trip through CIELAB D65 and back is so very close, but ever so slightly off. Depending on
+This makes sense as the round trip through CIELab D65 and back is so very close, but ever so slightly off. Depending on
 what you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be
 desirable to have some tolerance, and other times not.
 
@@ -187,15 +187,15 @@ some are better than others. ColorAide currently only offers a couple simple met
 Method         | Description
 -------------- | -----------
 `clip`         | Simple, naive clipping.
-`lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCH color space to bring a color into gamut. This is the default method used.
-`oklch-chroma` | Like `lch-chroma`, but uses the Oklch color space instead. This is currently what the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) recommends.
+`lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCh color space to bring a color into gamut. This is the default method used.
+`oklch-chroma` | Like `lch-chroma`, but uses the OkLCh color space instead. This is currently what the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) recommends.
 
 !!! note "CSS Level 4 Gamut Mapping"
     The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
-    Oklch as the gamut mapping color space. `oklch-chroma` is our implementation of the CSS Level 4 color specification.
+    OkLCh as the gamut mapping color space. `oklch-chroma` is our implementation of the CSS Level 4 color specification.
 
-    Oklch is a very new color space to be used in the field of gamut mapping. While CIELCH is not perfect, its weakness
-    are known. Oklch does seem to have certain quirks of its own, and may have may have more. While we have not made
+    OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness
+    are known. OkLCh does seem to have certain quirks of its own, and may have may have more. While we have not made
     `oklch-chroma` our default yet, we have exposed the algorithm so users can begin exploring it.
 
 ### Why Not Just Clip?
@@ -205,7 +205,7 @@ generally been fine as most browsers have been constrained to using sRGB. But as
 wide gamut monitors such as Display P3, and CSS grows to support an assortment of wide and ultra wide color spaces,
 representing the best intent of an out of gamut color becomes more important.
 
-ColorAide uses a default gamut mapping algorithm that performs gamut mapping in the CIELCH color space using chroma
+ColorAide uses a default gamut mapping algorithm that performs gamut mapping in the CIELCh color space using chroma
 reduction coupled with minimum ∆E (MINDE). This approach is meant to preserve enough of the important attributes of the
 out of gamut color as is possible, mostly preserving both lightness and hue, hue being the attribute that people are
 most sensitive to. MINDE is used to abandon chroma reduction and clip the color when the color is very close to being in
@@ -216,11 +216,11 @@ Below we have an example of using chroma reduction with MINDE. It can be noted t
 close to being in gamut. The MINDE helps us catch the peak of the yellow shape as, otherwise, we would have continued
 reducing chroma until we were at a very chroma reduced, pale yellow.
 
-![Gamut Lch Chroma - yellow](images/gamut-lch-chroma-yellow.png)
+![Gamut LCh Chroma - yellow](images/gamut-lch-chroma-yellow.png)
 
 One might see some cases of clipping and think it does a fine job and question why any of this complexity is necessary.
 In order to demonstrate the differences in gamut mapping vs clipping, see the example below. We start with the color
-`#!color color(display-p3 1 1 0)` and interpolate with it in the CIELCH color space reducing just the lightness. This
+`#!color color(display-p3 1 1 0)` and interpolate with it in the CIELCh color space reducing just the lightness. This
 will leave both chroma and hue intact. The Interactive playground below automatically gamut maps the color previews to
 sRGB, but we'll control the method being used by providing two different `#!py Color` objects: one that uses
 `lch-chroma` (the default) for gamut mapping, and one that uses `clip`. Notice how clipping, the bottom color set, clips
@@ -230,7 +230,7 @@ these dark colors and makes them reddish. This is a very undesirable outcome.
 class ColorClip(Color):
     FIT = 'clip'
 
-# Gamut mapping in Lch
+# Gamut mapping in LCh
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
 HtmlRow(Color.steps([yellow, lightness_mask], steps=10, space='lch'))
