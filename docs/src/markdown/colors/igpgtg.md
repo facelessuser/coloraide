@@ -1,4 +1,4 @@
-## IgPgTg
+# IgPgTg
 
 !!! fail "The IgPgTg color space is not registered in `Color` by default"
 

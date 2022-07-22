@@ -1,4 +1,4 @@
-### LAB D50
+# LAB D50
 
 !!! success "The Lab D50 color space is registered in `Color` by default"
 
