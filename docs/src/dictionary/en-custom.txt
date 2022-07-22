@@ -219,6 +219,7 @@ prophoto
 protanomaly
 protanopia
 quantizer
+rc
 repurpose
 rgb
 sRGB

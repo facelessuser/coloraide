@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0b4
+## 1.0rc1
 
 !!! warning "Plugin Refactor"
     For more flexibility there was one final rework of plugins. Registering requires all plugins to be instantiated
