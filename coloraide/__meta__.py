@@ -69,9 +69,9 @@ class Version(namedtuple("Version", ["major", "minor", "micro", "release", "pre"
     Version(1, 0, 0, "final")                    1.0
     Version(1, 2, 0, "final")                    1.2
     Version(1, 2, 3, "final")                    1.2.3
-    Version(1, 2, 0, ".dev-alpha", pre=4)        1.2a4
-    Version(1, 2, 0, ".dev-beta", pre=4)         1.2b4
-    Version(1, 2, 0, ".dev-candidate", pre=4)    1.2rc4
+    Version(1, 2, 0, "alpha", pre=4)             1.2a4
+    Version(1, 2, 0, "beta", pre=4)              1.2b4
+    Version(1, 2, 0, "candidate", pre=4)         1.2rc4
     Version(1, 2, 0, "final", post=1)            1.2.post1
     Version(1, 2, 3, ".dev")                     1.2.3.dev0
     Version(1, 2, 3, ".dev", dev=1)              1.2.3.dev1
@@ -192,5 +192,5 @@ def parse_version(ver: str) -> Version:
     return Version(major, minor, micro, release, pre, post, dev)
 
 
-__version_info__ = Version(1, 0, 0, "beta", 4)
+__version_info__ = Version(1, 0, 0, "candidate", 1)
 __version__ = __version_info__._get_canonical()
