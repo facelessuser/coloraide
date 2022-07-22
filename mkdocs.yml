@@ -108,7 +108,14 @@ nav:
         - Prismatic: colors/prismatic.md
 
   - Plugins:
-      - ColorAide Plugins: plugins/index.md
+      - plugins/index.md
+      - Delta E: plugins/delta_e.md
+      - Fit/Gamut Mapping: plugins/fit.md
+      - Chromatic Adaptation: plugins/cat.md
+      - Filters: plugins/filter.md
+      - Contrast: plugins/contrast.md
+      - Color Spaces: plugins/space.md
+
   - API:
       - Color API: api/index.md
   - Playground: playground.md

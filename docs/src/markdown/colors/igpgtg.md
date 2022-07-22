@@ -29,7 +29,7 @@ The sRGB gamut represented within the IgPgTg color space.
 </figure>
 
 IgPgTg uses the same structure as IPT, an established hue-uniform color space utilized in gamut mapping applications.
-While IPT was fit to visual data on the perceived hue, IGPGTG was optimized based on evidence linking the peak
+While IPT was fit to visual data on the perceived hue, IgPgTg was optimized based on evidence linking the peak
 wavelength of Gaussian-shaped light spectra to their perceived hues.
 
 [Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
