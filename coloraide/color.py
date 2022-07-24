@@ -53,6 +53,9 @@ from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
+from .interpolate import Interpolator, Interpolate
+from .interpolate.bezier import InterpolateBezier
+from .interpolate.piecewise import InterpolatePiecewise
 from .types import Plugin
 from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Tuple, Type, Mapping
 
@@ -89,6 +92,7 @@ class ColorMeta(abc.ABCMeta):
             cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, CAT]
             cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: Dict[str, Filter]
             cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: Dict[str, ColorContrast]
+            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: Dict[str, Interpolate]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -115,6 +119,7 @@ class Color(metaclass=ColorMeta):
     CAT_MAP = {}  # type: Dict[str, CAT]
     CONTRAST_MAP = {}  # type: Dict[str, ColorContrast]
     FILTER_MAP = {}  # type: Dict[str, Filter]
+    INTERPOLATE_MAP = {}  # type: Dict[str, Interpolate]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
@@ -318,6 +323,8 @@ class Color(metaclass=ColorMeta):
                 mapping = cls.FILTER_MAP
             elif isinstance(p, ColorContrast):
                 mapping = cls.CONTRAST_MAP
+            elif isinstance(p, Interpolate):
+                mapping = cls.INTERPOLATE_MAP
             elif isinstance(p, Fit):
                 mapping = cls.FIT_MAP
                 if p.NAME == 'clip':
@@ -361,6 +368,7 @@ class Color(metaclass=ColorMeta):
                 cls.FIT_MAP.clear()
                 cls.CAT_MAP.clear()
                 cls.CONTRAST_MAP.clear()
+                cls.INTERPOLATE_MAP.clear()
                 return
 
             ptype, name = p.split(':', 1)
@@ -375,6 +383,8 @@ class Color(metaclass=ColorMeta):
                 mapping = cls.FILTER_MAP
             elif ptype == 'contrast':
                 mapping = cls.CONTRAST_MAP
+            elif ptype == 'interpolate':
+                mapping = cls.INTERPOLATE_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
                 if name == 'clip':
@@ -704,7 +714,7 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def steps(
         cls,
-        colors: Sequence[Union[ColorInput, interpolate.common.stop, Callable[..., float]]],
+        colors: Sequence[Union[ColorInput, interpolate.stop, Callable[..., float]]],
         *,
         steps: int = 2,
         max_steps: int = 1000,
@@ -719,15 +729,16 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def interpolate(
         cls,
-        colors: Sequence[Union[ColorInput, interpolate.common.stop, Callable[..., float]]],
+        colors: Sequence[Union[ColorInput, interpolate.stop, Callable[..., float]]],
         *,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
-        method: str = "linear"
-    ) -> interpolate.common.Interpolator:
+        method: str = "linear",
+        **kwargs: Any
+    ) -> Interpolator:
         """
         Return an interpolation function.
 
@@ -740,14 +751,16 @@ class Color(metaclass=ColorMeta):
         mixing occurs.
         """
 
-        return interpolate.get_interpolator(method)(
+        return interpolate.get_interpolator(
+            method,
             cls,
             colors=colors,
             space=space,
             out_space=out_space,
             progress=progress,
             hue=hue,
-            premultiplied=premultiplied
+            premultiplied=premultiplied,
+            **kwargs
         )
 
     def filter(  # noqa: A003
@@ -927,6 +940,10 @@ Color.register(
         Tritan(),
 
         # Contrast
-        WCAG21Contrast()
+        WCAG21Contrast(),
+
+        # Interpolation
+        InterpolateBezier(),
+        InterpolatePiecewise()
     ]
 )

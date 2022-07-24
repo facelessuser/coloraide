@@ -115,6 +115,7 @@ nav:
       - Filters: plugins/filter.md
       - Contrast: plugins/contrast.md
       - Color Spaces: plugins/space.md
+      - Interpolation: plugins/interpolate.md
 
   - API:
       - Color API: api/index.md
