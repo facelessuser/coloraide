@@ -2,6 +2,11 @@
 
 Interpolation is a type of estimation that finds new data points based on the range of a discrete set of known data
 points. When used in the context of color, it is finding one or more colors that reside between any two given colors.
+This is often used to simulate mixing colors, creating gradients, or even create color palettes.
+
+ColorAide provides a number of useful utilities based on interpolation.
+
+## Linear Interpolation
 
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
@@ -9,16 +14,12 @@ We could then navigate up and down that line and return colors at different poin
 percentages or return the whole range and create a gradient.
 
 To further illustrate this point, the example below shows a slice of the Oklab color space at a lightness of 70%. On
-this 2D plane, we select two colors: `#!color oklab(70% 0.2 -0.1)` and `#!color oklab(70% 0 0.1)`. We then connect these
-two colors with a line. We can then select any point on the line to simulate the mixing of these colors. 0% would yield
-the first color, 100% would yield the second color, and 50% would yield a new color:
-`#!color Color.interpolate(['oklab(70% 0.2 -0.1)', 'oklab(70% 0 0.1)'])(0.5)`.
+this 2D plane, we select two colors: `#!color oklab(0.7 0.15 0.1)` and `#!color oklab(0.7 -0.03 -0.12)`. We then connect
+these two colors with a line. We can then select any point on the line to simulate the mixing of these colors. 0% would
+yield the first color, 100% would yield the second color, and 50% would yield a new color:
+`#!color Color.interpolate(['oklab(0.7 0.15 0.1)', 'oklab(0.7 -0.03 -0.12)'])(0.5)`.
 
-![Interpolation Cartesian](images/interp.png)
-
-Using this simple method as a foundation, ColorAide provides a number of useful utilities to mix colors.
-
-## Linear Interpolation
+![Linear Interpolation](images/linear-interpolation.png)
 
 The `interpolate` method allows a user to create a linear interpolation function using two or more colors. A returned
 interpolation function accepts an input between 0 - 1 and will cause a new color between the specified colors to be
@@ -55,16 +56,17 @@ Color.interpolate(
 
 ## Piecewise Interpolation
 
-Interpolation is not just limited to two colors, if more colors are provided, the interpolation will span all the
-colors. The function, just like when interpolating between two colors, still takes a range of 0 - 1, only it will now
-apply to the entire range that spans all the colors.
+Piecewise interpolation takes the idea of linear interpolation, and then applies it to multiple colors. As drawing a
+straight line through a series of points greater than two can be problematic to achieve, piecewise interpolation creates
+straight lines between each color.
 
-When using more than two colors, it becomes far less likely that a straight line could pass through all the colors, so
-in order to interpolate between all the colors, [piecewise interpolation](#piecewise-interpolation) is used.
+![Piecewise Interpolation](images/piecewise-interpolation.png)
+
+When the `interpolate` method receives more that two colors, the interpolation will utilize piecewise interpolation
+and interpolation will be broken up between each pair of colors. The function, just like when interpolating between two
+colors, still takes a range of 0 - 1, only it will now apply to the entire range that spans all the colors.
 
 Piecewise interpolation is simply a method of breaking up a data set and performing interpolation over small segments.
-In the context of color, when more than two colors are given, a separate interpolation (in our case linear) is performed
-between each color.
 
 ```playground
 Color.interpolate(['black', 'red', 'white'])
@@ -75,10 +77,13 @@ have pivot points and the transition may not be quite as smooth.
 
 ## Bezier Interpolation
 
-There are many non-linear alternatives for interpolation. One way is to use a Bezier curve instead of using multiple
-straight lines between sets of colors. A Bezier curve will essentially draw a line that roughly follows the shape of the
-points. It is not guarantee that this curve will pass through all the points, but this allows for smoother transitions
-across all the colors.
+Not all interpolation methods are linear, and ColorAide implements one such approach called Bezier interpolation.
+Instead of trying to draw a straight line or series of straight lines through a series of points, a Bezier curve will
+essentially draw a line that roughly follows the shape of the points. It is not guarantee that this curve will pass
+through all the points, but each point will have influence on the curvature of the line. This allows for smoother
+transitions across multiple colors.
+
+![Bezier Interpolation](images/bezier-interpolation.png)
 
 By simply passing the `method='bezier`, we can interpolate using this method. Below we can see the difference between
 linear and the Bezier method. Notice in the linear interpolation the pivot point where the gradient fully transitions to

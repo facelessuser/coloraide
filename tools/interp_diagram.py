@@ -48,14 +48,15 @@ def main():
 
     parser = argparse.ArgumentParser(prog='gamut_diagrams', description='Demonstrate gamut mapping.')
     parser.add_argument('--space', '-s', default='srgb', help="Space to interpolate in.")
-    parser.add_argument('--color1', '-a', help="Starting color.")
-    parser.add_argument('--color2', '-b', help="Ending color.")
+    parser.add_argument('--color', '-c', action='append', help="Color.")
     parser.add_argument('--position', '-p', default=0.5, type=float, help="Position between to show interpolated.")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
-    parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
+    parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
+    parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
+    parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
         '--constant',
-        '-c',
+        '-k',
         help=(
             "The channel to hold constant and the value to use 'name:value'. This will overwrite whatever the start"
             " and end color specifies as the plot must fit in the 2D plane."
@@ -72,19 +73,16 @@ def main():
 
     c_name, c_value = args.constant.split(':')
     c_value = float(c_value)
-    c1 = Color(args.color1).convert(args.space)
-    c2 = Color(args.color2).convert(args.space)
-    if c1.get(c_name) != c_value:
-        c1.set(c_name, c_value)
-    if c2.get(c_name) != c_value:
-        c2.set(c_name, c_value)
+    colors = []
+    for color in args.color:
+        c = Color(color).convert(args.space)
+        c.set(c_name, c_value)
+        colors.append(c)
 
     if not args.title:
         title = "Interpolation in the {} Color Space Using the {} Gamut".format(args.space, args.gamut)
     else:
         title = args.title
-
-    subtitle = '{} and {} @ {}%'.format(c1.to_string(), c2.to_string(), fmt_float(args.position * 100, 5))
 
     plot_slice(
         args.space,
@@ -94,12 +92,13 @@ def main():
         gamut=args.gamut,
         resolution=int(args.resolution),
         title=title,
-        subtitle=subtitle,
+        subtitle=args.subtitle,
         dark=args.dark,
         polar=True
     )
 
     # Get the actual indexes of the specified channels
+    c1 = colors[0]
     name1 = args.xaxis.split(":", 1)[0]
     name2 = args.yaxis.split(":", 1)[0]
     name1 = c1._space.CHANNEL_ALIASES.get(name1, name1)
@@ -112,11 +111,11 @@ def main():
         if index == index1:
             hue_index = index
 
-    c3 = c1.interpolate(c2, space=args.space)(float(args.position))
+    cp = Color.interpolate(colors, space=args.space, method=args.method)(float(args.position))
 
     xs = []
     ys = []
-    for item in c1.steps(c2, steps=100, space=args.space):
+    for item in Color.steps(colors, steps=100, space=args.space, method=args.method):
         xs.append(item.get(name1) if hue_index == -1 else math.radians(item.get(name1)))
         ys.append(item.get(name2))
 
@@ -132,30 +131,23 @@ def main():
         antialiased=True
     )
 
-    plt.scatter(
-        c1.get(name1) if hue_index == -1 else math.radians(c1.get(name1)),
-        c1.get(name2),
-        marker="o",
-        color=c1.convert('srgb').to_string(hex=True),
-        edgecolor='black',
-        zorder=100
-    )
+    for c in colors:
+        plt.scatter(
+            c.get(name1) if hue_index == -1 else math.radians(c.get(name1)),
+            c.get(name2),
+            marker="o",
+            color=c.convert('srgb').to_string(hex=True),
+            edgecolor='black',
+            zorder=100
+        )
 
     plt.scatter(
-        c2.get(name1) if hue_index == -1 else math.radians(c2.get(name1)),
-        c2.get(name2),
+        cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1)),
+        cp.get(name2),
         marker="o",
-        color=c2.convert('srgb').to_string(hex=True),
+        color=cp.convert('srgb').to_string(hex=True),
         edgecolor='black',
-        zorder=100
-    )
-
-    plt.scatter(
-        c3.get(name1) if hue_index == -1 else math.radians(c3.get(name1)),
-        c3.get(name2),
-        marker="o",
-        color=c3.convert('srgb').to_string(hex=True),
-        edgecolor='black',
+        s=64,
         zorder=100
     )
 
