@@ -9,3 +9,4 @@ methods or even new color spaces quite easy. Currently, ColorAide implements the
 - [Filters](./filter.md)
 - [Contrast](./contrast.md)
 - [Color spaces](./space.md)
+- [Interpolation](./interpolate.md)

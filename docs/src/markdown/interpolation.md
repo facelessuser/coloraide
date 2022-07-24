@@ -116,9 +116,10 @@ To help visualize the different hue methods, consider the following evaluation b
 `#!color lch(85% 85 805)`. Below we will demonstrate each of the different hue evaluations. To learn more, check out the
 [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) which describes each one.
 
-!!! warning "Hue Fix-ups"
-    Hue "fix-ups" via the `hue` parameter currently only apply to linear interpolation, not Bezier. Bezier interpolation
-    will simply normalize the hues to be between 0˚ - 360˚.
+!!! tip "Interpolating Multiple Colors"
+    The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
+    each other. This is a requirement for interpolation methods such as Bezier that evaluate all hues at the same time
+    as opposed to the linear, piecewise interpolation that only evaluates two hues at any given time.
 
 === "shorter"
     ```playground

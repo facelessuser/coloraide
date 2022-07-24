@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0rc2
+
+- **NEW**: Bezier interpolation now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,
+  and `specified`.
+- **NEW**: Interpolation is now exposed as a plugin to allow for expansion.
+
 ## 1.0rc1
 
 !!! warning "Plugin Refactor"
