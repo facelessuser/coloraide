@@ -75,25 +75,24 @@ Color.interpolate(['black', 'red', 'white'])
 This approach generally works well, but since the placement of colors may not be in a straight line, you will often
 have pivot points and the transition may not be quite as smooth.
 
-## Bezier Interpolation
+## B-Spline Interpolation
 
-Not all interpolation methods are linear, and ColorAide implements one such approach called Bezier interpolation.
-Instead of trying to draw a straight line or series of straight lines through a series of points, a Bezier curve will
-essentially draw a line that roughly follows the shape of the points. It is not guarantee that this curve will pass
+Not all interpolation methods are linear, and ColorAide implements one such approach called B-spline interpolation.
+Instead of trying to draw a straight line or series of straight lines through a series of points, a B-Spline curve will
+essentially draw a line that roughly follows the shape of the points. It is not guaranteed that this curve will pass
 through all the points, but each point will have influence on the curvature of the line. This allows for smoother
 transitions across multiple colors.
 
-![Bezier Interpolation](images/bezier-interpolation.png)
+![B-Spline Interpolation](images/bspline-interpolation.png)
 
-By simply passing the `method='bezier`, we can interpolate using this method. Below we can see the difference between
-linear and the Bezier method. Notice in the linear interpolation the pivot point where the gradient fully transitions to
-purple and then begins the transition to green  the linear example the the point. The Bezier curve doesn't have the
-pivot point as the curve bends towards purple smoothly, without passing directly through it, and then away towards
-green.
+By simply passing the `method='b-spline`, we can interpolate using this method. Below we can see the difference between
+linear and the B-spline method. Notice in the linear interpolation the pivot point where the gradient fully transitions
+to purple and then begins the transition to green. The B-spline curve doesn't have the pivot point as the curve bends
+towards purple smoothly, without passing directly through it at a harsh angle.
 
 ```playground
 Color.interpolate(['orange', 'purple', 'green'])
-Color.interpolate(['orange', 'purple', 'green'], method='bezier')
+Color.interpolate(['orange', 'purple', 'green'], method='b-spline')
 ```
 
 ## Hue Interpolation
@@ -123,7 +122,7 @@ To help visualize the different hue methods, consider the following evaluation b
 
 !!! tip "Interpolating Multiple Colors"
     The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
-    each other. This is a requirement for interpolation methods such as Bezier that evaluate all hues at the same time
+    each other. This is a requirement for interpolation methods such as B-spline that evaluate all hues at the same time
     as opposed to the linear, piecewise interpolation that only evaluates two hues at any given time.
 
 === "shorter"
@@ -261,7 +260,7 @@ i = Color.interpolate(
 
 ## Easing Functions
 
-When interpolating, whether it using linear interpolation or something like Bezier interpolation, the transitioning of
+When interpolating, whether it using linear interpolation or something like B-Spline interpolation, the transitioning of
 a color from one to another is done in linear time. For example, if you are translating between 2 colors and you request
 the `#!py3 0.5` point in the interpolation process, you will get a color exactly in the middle of the transition. With
 easing functions, you can completely change the progress in relation to time by compressing the rate of change at the
@@ -379,7 +378,7 @@ parameter or even a different interpolation method via `method`. `mix` accepts a
 `interpolate`, though concepts like [stops and hints](#color-stops-and-hints) are not allowed with mixing.
 
 ```playground
-Color("red").mix(Color("blue"), space="hsl", method='bezier')
+Color("red").mix(Color("blue"), space="hsl", method='b-spline')
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
@@ -486,11 +485,11 @@ specifying the method via the `delta_e` parameter.
     )
     ```
 
-And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and of
-the supported `interpolate` parameters as well.
+And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and any
+of the other supported `interpolate` features as well.
 
 ```playground
-Color.steps(['orange', stop('purple', 0.25), 'green'], method='bezier', steps=10)
+Color.steps(['orange', stop('purple', 0.25), 'green'], method='b-spline', steps=10)
 ```
 
 ## Undefined/NaN Handling {#null-handling}
@@ -523,8 +522,8 @@ When performing linear interpolation, where only two color's channels are ever b
 if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
 for the same channel, then `NaN` will be returned.
 
-!!! tip "NaN Handling in Bezier Interpolation"
-    This logic is similar for things like Bezier interpolation, but will be extended as Bezier interpolation can
+!!! tip "NaN Handling in B-Spline Interpolation"
+    This logic is similar for things like B-spline interpolation, but will be extended as B-spline interpolation can
     evaluate multiple colors at a time. For instance if interpolating a single channel across three colors, `NaN` must
     be resolved simultaneously across all three colors.
 

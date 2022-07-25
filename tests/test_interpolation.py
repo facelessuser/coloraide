@@ -336,23 +336,23 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color.interpolate(['red', 'blue'], space="srgb")(0.25), Color("srgb", [0.75, 0, 0.25]))
         self.assertColorEqual(Color.interpolate(['red', 'blue'], space="srgb")(0), Color("srgb", [1, 0, 0]))
 
-    def test_interpolate_bezier(self):
-        """Test interpolation bezier."""
+    def test_interpolate_bspline(self):
+        """Test interpolation B-spline."""
 
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="bezier")(1), Color("srgb", [0, 0, 1])
+            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(1), Color("srgb", [0, 0, 1])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="bezier")(0.75), Color("srgb", [0.25, 0, 0.75])
+            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.75), Color("srgb", [0.25, 0, 0.75])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="bezier")(0.5), Color("srgb", [0.5, 0, 0.5])
+            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.5), Color("srgb", [0.5, 0, 0.5])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="bezier")(0.25), Color("srgb", [0.75, 0, 0.25])
+            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.25), Color("srgb", [0.75, 0, 0.25])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="bezier")(0), Color("srgb", [1, 0, 0])
+            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0), Color("srgb", [1, 0, 0])
         )
 
     def test_interpolate_channel(self):
@@ -363,12 +363,12 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color('rgb(119.63 0 0 / 0.875)')
         )
 
-    def test_interpolate_channel_bezier(self):
+    def test_interpolate_channel_bspline(self):
         """Test interpolating a specific channel differently."""
 
         self.assertColorEqual(
             Color.interpolate(
-                ['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3}, method='bezier'
+                ['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3}, method='b-spline'
             )(0.5),
             Color('rgb(119.63 0 0 / 0.875)')
         )
@@ -425,11 +425,12 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(['red', stop('blue', 0.5)], space="srgb")(0.5), Color("srgb", [0, 0, 1])
         )
 
-    def test_interpolate_input_bezier(self):
+    def test_interpolate_input_bspline(self):
         """Test interpolation with piecewise."""
 
         self.assertColorEqual(
-            Color.interpolate(['red', stop('blue', 0.5)], space="srgb", method='bezier')(0.5), Color("srgb", [0, 0, 1])
+            Color.interpolate(['red', stop('blue', 0.5)], space="srgb", method='b-spline')(0.5),
+            Color("srgb", [0, 0, 1])
         )
 
     def test_interpolate_stop(self):
@@ -442,11 +443,11 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate([stop('red', 0.6), 'blue'], space="srgb")(0.7), Color('rgb(191.25 0 63.75)')
         )
 
-    def test_interpolate_stop_bezier(self):
+    def test_interpolate_stop_bspline(self):
         """Test interpolation with piecewise."""
 
         self.assertColorEqual(
-            Color.interpolate([stop('red', 0.6), 'blue'], space="srgb", method='bezier')(0.5), Color('red')
+            Color.interpolate([stop('red', 0.6), 'blue'], space="srgb", method='b-spline')(0.5), Color('red')
         )
 
     def test_interpolate_space(self):
@@ -478,12 +479,12 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
         self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
 
-    def test_interpolate_multi_bezier(self):
-        """Test multiple inputs for bezier interpolation."""
+    def test_interpolate_multi_bspline(self):
+        """Test multiple inputs for B-spline interpolation."""
 
-        func = Color.interpolate(['white', 'red', 'black'], method='bezier')
+        func = Color.interpolate(['white', 'red', 'black'], method='b-spline')
         self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.5), Color('rgb(180.88 83.809 71.264)'))
+        self.assertColorEqual(func(0.5), Color('rgb(205.87 72.188 58.186)'))
         self.assertColorEqual(func(1), Color('black'))
         self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
         self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
@@ -639,11 +640,12 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.steps(['red', stop('blue', 0.5)], space="srgb", steps=5)[2], Color("srgb", [0, 0, 1])
         )
 
-    def test_steps_input_bezier(self):
-        """Test steps with bezier."""
+    def test_steps_input_bspline(self):
+        """Test steps with B-spline."""
 
         self.assertColorEqual(
-            Color.steps(['red', stop('blue', 0.5)], space="srgb", steps=5, method='bezier')[2], Color("srgb", [0, 0, 1])
+            Color.steps(['red', stop('blue', 0.5)], space="srgb", steps=5, method='b-spline')[2],
+            Color("srgb", [0, 0, 1])
         )
 
     def test_steps_multi(self):
@@ -892,11 +894,11 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color.interpolate(['green', lambda t: t * 3])
 
-    def test_too_few_colors_bezier(self):
-        """Test too few colors during bezier interpolation."""
+    def test_too_few_colors_bspline(self):
+        """Test too few colors during B-spline interpolation."""
 
         with self.assertRaises(ValueError):
-            Color.interpolate(['green', lambda t: t * 3], method='bezier')
+            Color.interpolate(['green', lambda t: t * 3], method='b-spline')
 
     def test_bad_method(self):
         """Test bad interpolation method."""
@@ -910,68 +912,68 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color.interpolate([lambda t: t * 3, 'green'])
 
-    def test_bad_color_input_bezier(self):
-        """Test bad color easing bezier."""
+    def test_bad_color_input_bspline(self):
+        """Test bad color easing B-spline."""
 
         with self.assertRaises(ValueError):
-            Color.interpolate([lambda t: t * 3, 'green'], method='bezier')
+            Color.interpolate([lambda t: t * 3, 'green'], method='b-spline')
 
-    def test_bezier_all_none(self):
-        """Test multiple bezier inputs with the same channel all none."""
+    def test_bspline_all_none(self):
+        """Test multiple B-spline inputs with the same channel all none."""
 
         self.assertColorEqual(
             Color.interpolate(
                 ['Color(srgb 1 none 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 none 0.9)'],
                 space='srgb',
-                method='bezier'
+                method='b-spline'
             )(0.5),
-            Color('rgb(89.25 none 178.5)')
+            Color('rgb(68 none 178.5)')
         )
 
-    def test_bezier_most_none(self):
-        """Test multiple bezier inputs with the same channel with most none."""
+    def test_bspline_most_none(self):
+        """Test multiple B-spline inputs with the same channel with most none."""
 
         self.assertColorEqual(
             Color.interpolate(
                 ['Color(srgb 1 none 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 0.8 0.9)'],
                 space='srgb',
-                method='bezier'
+                method='b-spline'
             )(0.5),
-            Color('rgb(89.25 204 178.5)')
+            Color('rgb(68 204 178.5)')
         )
 
-    def test_bezier_none_after(self):
-        """Test multiple bezier inputs with the same channel with most none but not none at the start."""
+    def test_bspline_none_after(self):
+        """Test multiple B-spline inputs with the same channel with most none but not none at the start."""
 
         self.assertColorEqual(
             Color.interpolate(
                 ['Color(srgb 1 0.8 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 none 0.9)'],
                 space='srgb',
-                method='bezier'
+                method='b-spline'
             )(0.5),
-            Color('rgb(89.25 204 178.5)')
+            Color('rgb(68 204 178.5)')
         )
 
-    def test_bezier_cylindrical(self):
-        """Test bezier with a cylindrical space."""
+    def test_bspline_cylindrical(self):
+        """Test B-spline with a cylindrical space."""
 
         self.assertColorEqual(
             Color.interpolate(
                 ['hsl(250 50% 30%)', 'hsl(none 0% 10%)', 'hsl(120 75% 75%)'],
                 space='hsl',
-                method='bezier'
+                method='b-spline'
             )(0.75),
-            Color('hsl(176.88 45.313% 47.813%)')
+            Color('hsl(182.29 40.104% 44.271%)')
         )
 
-    def test_bezier_cylindrical_gamut(self):
-        """Test bezier with a cylindrical space with at least one color out of gamut."""
+    def test_bspline_cylindrical_gamut(self):
+        """Test B-spline with a cylindrical space with at least one color out of gamut."""
 
         self.assertColorEqual(
             Color.interpolate(
                 ['hsl(250 50% 30%)', 'hsl(none 0% 110%)'],
                 space='hsl',
-                method='bezier'
+                method='b-spline'
             )(0.75),
             Color('hsl(332.5 12.5% 82.5%)')
         )

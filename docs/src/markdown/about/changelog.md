@@ -2,7 +2,8 @@
 
 ## 1.0rc2
 
-- **NEW**: Bezier interpolation now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,
+- **NEW**: Bezier interpolation dropped for B-spline which provides much better interpolation.
+- **NEW**: All new interpolation methods now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,
   and `specified`.
 - **NEW**: Interpolation is now exposed as a plugin to allow for expansion.
 

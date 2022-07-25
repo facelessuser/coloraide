@@ -18,7 +18,6 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from tools.slice_diagram import plot_slice  # noqa: E402
-from coloraide.util import fmt_float  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402
 
 

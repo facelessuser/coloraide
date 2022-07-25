@@ -54,8 +54,8 @@ from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
 from .interpolate import Interpolator, Interpolate
-from .interpolate.bezier import InterpolateBezier
-from .interpolate.piecewise import InterpolatePiecewise
+from .interpolate.bspline import BSpline
+from .interpolate.linear import Linear
 from .types import Plugin
 from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Tuple, Type, Mapping
 
@@ -751,7 +751,7 @@ class Color(metaclass=ColorMeta):
         mixing occurs.
         """
 
-        return interpolate.get_interpolator(
+        return interpolate.interpolator(
             method,
             cls,
             colors=colors,
@@ -943,7 +943,7 @@ Color.register(
         WCAG21Contrast(),
 
         # Interpolation
-        InterpolateBezier(),
-        InterpolatePiecewise()
+        Linear(),
+        BSpline()
     ]
 )
