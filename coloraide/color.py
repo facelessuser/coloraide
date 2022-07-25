@@ -55,6 +55,7 @@ from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, O
 from .filters.cvd import Protan, Deutan, Tritan
 from .interpolate import Interpolator, Interpolate
 from .interpolate.bezier import InterpolateBezier
+from .interpolate.bspline import InterpolateBSpline
 from .interpolate.piecewise import InterpolatePiecewise
 from .types import Plugin
 from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Tuple, Type, Mapping
@@ -944,6 +945,7 @@ Color.register(
 
         # Interpolation
         InterpolateBezier(),
-        InterpolatePiecewise()
+        InterpolatePiecewise(),
+        InterpolateBSpline()
     ]
 )

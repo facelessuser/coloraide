@@ -63,6 +63,7 @@ class InterpolatorBezier(Interpolator):
         piece = 1 / (self.length - 1)
         first = (index - 1) * piece
         last = index * piece
+        self.index = index
 
         # Get row from Pascal's Triangle
         n = self.length - 1
@@ -86,12 +87,11 @@ class InterpolatorBezier(Interpolator):
             t = alg.clamp(point if progress is None else progress(point), 0.0, 1.0)
             t = t * (last - first) + first
 
-            # Find new points using a bezier curve, but ensure we handle undefined
-            # values in a sane way.
             x = 1 - t
             s = 0.0
             for j, c in enumerate(handle_undefined(list(coords)), 0):
                 s += row[j] * (x ** (n - j)) * (t ** j) * c
+
             channels.append(s)
 
         return channels
