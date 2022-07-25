@@ -1,11 +1,37 @@
 """B-Spline interpolation."""
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
-from ..types import Vector
+from ..types import VectorLike, Vector
 from typing import Optional, Callable, Mapping, List, Union, Sequence, Dict, Any, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
+
+
+def handle_undefined(coords: VectorLike) -> Vector:
+    """Handle null values."""
+
+    backfill = None
+    adjusted = list(coords)
+    for x in range(1, len(adjusted)):
+        a = adjusted[x - 1]
+        b = adjusted[x]
+        if alg.is_nan(a) and not alg.is_nan(b):
+            adjusted[x - 1] = b
+        elif alg.is_nan(b) and not alg.is_nan(a):
+            adjusted[x] = a
+        elif alg.is_nan(a) and alg.is_nan(b):
+            # Multiple undefined values, mark the start
+            backfill = x - 1
+            continue
+
+        # Replace all undefined values that occurred prior to
+        # finding the current defined value
+        if backfill is not None:
+            adjusted[backfill:x - 1] = [b] * (x - 1 - backfill)
+            backfill = None
+
+    return adjusted
 
 
 class InterpolatorBspline(Interpolator):
@@ -39,6 +65,9 @@ class InterpolatorBspline(Interpolator):
             **kwargs
         )
 
+        # Process undefined values
+        self.coordinates = [list(x) for x in zip(*[handle_undefined(c) for c in zip(*self.coordinates)])]
+
         # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional points
         # to coax the curve through the end points. Generate a point at both ends so that we can
         # properly evaluate the spline.
@@ -61,7 +90,7 @@ class InterpolatorBspline(Interpolator):
 
             # Do we have an easing function, or mapping with a channel easing function?
             progress = None
-            name = self.names[i]
+            name = self.channel_names[i]
             if isinstance(easing, Mapping):
                 progress = easing.get(name)
                 if progress is None:
@@ -87,12 +116,34 @@ class InterpolatorBspline(Interpolator):
         return channels
 
 
-class InterpolateBSpline(Interpolate):
-    """Bezier interpolation plugin."""
+class BSpline(Interpolate):
+    """B-spline interpolation plugin."""
 
-    NAME = "bspline"
+    NAME = "b-spline"
 
-    def get_interpolator(self) -> Type[Interpolator]:
-        """Return the Bezier interpolator."""
+    def interpolator(
+        self,
+        coordinates: List[Vector],
+        channel_names: Sequence[str],
+        create: Type['Color'],
+        easings: List[Optional[Callable[..., float]]],
+        stops: Dict[int, float],
+        space: str,
+        out_space: str,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        premultiplied: bool,
+        **kwargs: Any
+    ) -> Interpolator:
+        """Return the B-spline interpolator."""
 
-        return InterpolatorBspline
+        return InterpolatorBspline(
+            coordinates,
+            channel_names,
+            create,
+            easings,
+            stops,
+            space,
+            out_space,
+            progress,
+            premultiplied
+        )

@@ -58,7 +58,7 @@ class Interpolator(metaclass=ABCMeta):
     def __init__(
         self,
         coordinates: List[Vector],
-        names: Sequence[str],
+        channel_names: Sequence[str],
         create: Type['Color'],
         easings: List[Optional[Callable[..., float]]],
         stops: Dict[int, float],
@@ -76,7 +76,7 @@ class Interpolator(metaclass=ABCMeta):
         self.easings = easings
         self.coordinates = coordinates
         self.length = len(self.coordinates)
-        self.names = names
+        self.channel_names = channel_names
         self.create = create
         self.progress = progress
         self.space = space
@@ -228,32 +228,20 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     NAME = ""
 
     @abstractmethod
-    def get_interpolator(self) -> Type[Interpolator]:
-        """Get the interpolator object."""
-
-    def interpolate(
+    def interpolator(
         self,
+        coordinates: List[Vector],
+        channel_names: Sequence[str],
         create: Type['Color'],
-        colors: Sequence[Union[ColorInput, stop, Callable[..., float]]],
-        space: Optional[str],
-        out_space: Optional[str],
+        easings: List[Optional[Callable[..., float]]],
+        stops: Dict[int, float],
+        space: str,
+        out_space: str,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
-        hue: str,
         premultiplied: bool,
         **kwargs: Any
     ) -> Interpolator:
-        """Return an interpolator object."""
-
-        return color_interpolator(
-            self.get_interpolator(),
-            create,
-            colors,
-            space,
-            out_space,
-            progress,
-            hue,
-            premultiplied
-        )
+        """Get the interpolator object."""
 
 
 def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
@@ -449,8 +437,8 @@ def normalize_hue(
     return color2, offset
 
 
-def color_interpolator(
-    plugin: Type[Interpolator],
+def interpolator(
+    interpolator: str,
     create: Type['Color'],
     colors: Sequence[Union[ColorInput, stop, Callable[..., float]]],
     space: Optional[str],
@@ -460,7 +448,12 @@ def color_interpolator(
     premultiplied: bool,
     **kwargs: Any
 ) -> Interpolator:
-    """Bezier interpolation."""
+    """Get desired blend mode."""
+
+    try:
+        plugin = create.INTERPOLATE_MAP[interpolator]
+    except KeyError:
+        raise ValueError("'{}' is not a recognized interpolator".format(interpolator))
 
     # Construct piecewise interpolation object
     stops = {}  # type: Any
@@ -527,7 +520,7 @@ def color_interpolator(
     stops = calc_stops(stops, i)
 
     # Send the interpolation list along with the stop map to the Piecewise interpolator
-    return plugin(
+    return plugin.interpolator(
         coords,
         current._space.channels,
         create,
@@ -539,24 +532,3 @@ def color_interpolator(
         premultiplied,
         **kwargs
     )
-
-
-def get_interpolator(
-    interpolator: str,
-    create: Type['Color'],
-    colors: Sequence[Union[ColorInput, stop, Callable[..., float]]],
-    space: Optional[str],
-    out_space: Optional[str],
-    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
-    hue: str,
-    premultiplied: bool,
-    **kwargs: Any
-) -> Interpolator:
-    """Get desired blend mode."""
-
-    try:
-        i = create.INTERPOLATE_MAP[interpolator]
-    except KeyError:
-        raise ValueError("'{}' is not a recognized interpolator".format(interpolator))
-
-    return i.interpolate(create, colors, space, out_space, progress, hue, premultiplied, **kwargs)

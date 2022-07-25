@@ -252,22 +252,22 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
     def test_plugin_registration_interpolate(self):
         """Test plugin registration of `interpolate`."""
 
-        from coloraide.interpolate.bezier import InterpolateBezier
+        from coloraide.interpolate.bspline import BSpline
 
         # Deregistration should have taken place
         class Custom(Color):
             pass
 
-        Custom.deregister('interpolate:bezier')
-        color = Color('red').mix('blue', method='bezier')
+        Custom.deregister('interpolate:b-spline')
+        color = Color('red').mix('blue', method='b-spline')
 
         with self.assertRaises(ValueError):
-            Custom('red').mix('blue', method='bezier')
+            Custom('red').mix('blue', method='b-spline')
 
         # Now it is registered again
-        Custom.register(InterpolateBezier())
+        Custom.register(BSpline())
         self.assertColorEqual(
-            Custom('red').mix('blue', method='bezier'),
+            Custom('red').mix('blue', method='b-spline'),
             color
         )
 

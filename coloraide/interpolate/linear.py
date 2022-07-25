@@ -2,11 +2,14 @@
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
-from typing import Optional, Callable, Mapping, Union, Type
+from typing import Optional, Callable, Mapping, Union, Any, Type, Sequence, List, Dict, TYPE_CHECKING
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..color import Color
 
 
-class InterpolatorPiecewise(Interpolator):
-    """Interpolate multiple ranges of colors."""
+class InterpolatorLinear(Interpolator):
+    """Interpolate multiple ranges of colors using linear, Piecewise interpolation."""
 
     def interpolate(
         self,
@@ -35,7 +38,7 @@ class InterpolatorPiecewise(Interpolator):
             else:
                 # Do we have an easing function, or mapping with a channel easing function?
                 progress = None
-                name = self.names[i]
+                name = self.channel_names[i]
                 if isinstance(easing, Mapping):
                     progress = easing.get(name)
                     if progress is None:
@@ -53,12 +56,34 @@ class InterpolatorPiecewise(Interpolator):
         return channels
 
 
-class InterpolatePiecewise(Interpolate):
-    """Linear piecewise interpolation plugin."""
+class Linear(Interpolate):
+    """Linear interpolation plugin."""
 
     NAME = "linear"
 
-    def get_interpolator(self) -> Type[Interpolator]:
-        """Return the linear piecewise interpolator."""
+    def interpolator(
+        self,
+        coordinates: List[Vector],
+        channel_names: Sequence[str],
+        create: Type['Color'],
+        easings: List[Optional[Callable[..., float]]],
+        stops: Dict[int, float],
+        space: str,
+        out_space: str,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        premultiplied: bool,
+        **kwargs: Any
+    ) -> Interpolator:
+        """Return the linear interpolator."""
 
-        return InterpolatorPiecewise
+        return InterpolatorLinear(
+            coordinates,
+            channel_names,
+            create,
+            easings,
+            stops,
+            space,
+            out_space,
+            progress,
+            premultiplied
+        )

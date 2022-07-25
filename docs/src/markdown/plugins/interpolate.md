@@ -16,7 +16,19 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     NAME = ""
 
     @abstractmethod
-    def get_interpolator(self) -> Type[Interpolator]:
+    def interpolator(
+        self,
+        coordinates: List[Vector],
+        channel_names: Sequence[str],
+        create: Type['Color'],
+        easings: List[Optional[Callable[..., float]]],
+        stops: Dict[int, float],
+        space: str,
+        out_space: str,
+        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        premultiplied: bool,
+        **kwargs: Any
+    ) -> Interpolator:
         """Get the interpolator object."""
 ```
 
@@ -29,7 +41,7 @@ color.interpolate(colors, method=NAME)
 ```
 
 In general, the `Interpolate` plugin is mainly a wrapper to ensure the interpolation setup uses an appropriate
-`Interpolator` object which does the actual work. An interpolation plugin should derive their `Interpolate` class from
+`Interpolator` object which does the actual work. An interpolation plugin should derive their `Interpolator` class from
 `coloraide.interpolate.Interpolator`. While we won't show all the methods of the class, we will show the one function
 that must be defined.
 
