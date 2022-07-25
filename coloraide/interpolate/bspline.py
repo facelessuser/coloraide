@@ -1,37 +1,38 @@
 """B-Spline interpolation."""
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
-from ..types import VectorLike, Vector
+from ..types import Vector
 from typing import Optional, Callable, Mapping, List, Union, Sequence, Dict, Any, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def handle_undefined(coords: VectorLike) -> Vector:
+def handle_undefined(coords: List[Vector]) -> None:
     """Handle null values."""
 
-    backfill = None
-    adjusted = list(coords)
-    for x in range(1, len(adjusted)):
-        a = adjusted[x - 1]
-        b = adjusted[x]
-        if alg.is_nan(a) and not alg.is_nan(b):
-            adjusted[x - 1] = b
-        elif alg.is_nan(b) and not alg.is_nan(a):
-            adjusted[x] = a
-        elif alg.is_nan(a) and alg.is_nan(b):
-            # Multiple undefined values, mark the start
-            backfill = x - 1
-            continue
+    # Process each set of coordinates
+    for i in range(len(coords[0])):
+        backfill = None
+        # Process a specific channel for all coordinates sets
+        for x in range(1, len(coords)):
+            c1, c2 = coords[x - 1:x + 1]
+            a, b = c1[i], c2[i]
+            if alg.is_nan(a) and not alg.is_nan(b):
+                c1[i] = b
+            elif alg.is_nan(b) and not alg.is_nan(a):
+                c2[i] = a
+            elif alg.is_nan(a) and alg.is_nan(b):
+                # Multiple undefined values, mark the start
+                backfill = x - 1
+                continue
 
-        # Replace all undefined values that occurred prior to
-        # finding the current defined value
-        if backfill is not None:
-            adjusted[backfill:x - 1] = [b] * (x - 1 - backfill)
-            backfill = None
-
-    return adjusted
+            # Replace all undefined values that occurred prior to
+            # finding the current defined value
+            if backfill is not None:
+                for c in coords[backfill:x - 1]:
+                    c[i] = b
+                backfill = None
 
 
 class InterpolatorBspline(Interpolator):
@@ -66,7 +67,7 @@ class InterpolatorBspline(Interpolator):
         )
 
         # Process undefined values
-        self.coordinates = [list(x) for x in zip(*[handle_undefined(c) for c in zip(*self.coordinates)])]
+        handle_undefined(self.coordinates)
 
         # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional points
         # to coax the curve through the end points. Generate a point at both ends so that we can
