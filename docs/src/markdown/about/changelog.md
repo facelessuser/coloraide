@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.0rc2
+## 1.0
+
+!!! success "Stable Release!"
 
 - **NEW**: Bezier interpolation dropped for B-spline which provides much better interpolation.
 - **NEW**: All new interpolation methods now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,

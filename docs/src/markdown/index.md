@@ -1,9 +1,5 @@
 # Introduction
 
-!!! warning "Currently a Beta"
-    ColorAide is very close to a stable release and is currently in the Beta stage. While minor things could still
-    change, there are no plans for major API changes at this point.
-
 ## What is ColorAide?
 
 ColorAide is a pure Python, object oriented approach to colors.
