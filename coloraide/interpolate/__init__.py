@@ -426,8 +426,7 @@ def normalize_hue(
     else:
         raise ValueError("Unknown hue adjuster '{}'".format(hue))
 
-    offset = 0
-    c1 = color1[index]
+    c1 = color1[index] + offset
     c2 = (color2[index] % 360) + offset
 
     # Adjust hue, handle gaps across `NaN`s

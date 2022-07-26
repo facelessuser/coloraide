@@ -258,16 +258,16 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         class Custom(Color):
             pass
 
-        Custom.deregister('interpolate:b-spline')
-        color = Color('red').mix('blue', method='b-spline')
+        Custom.deregister('interpolate:bspline')
+        color = Color('red').mix('blue', method='bspline')
 
         with self.assertRaises(ValueError):
-            Custom('red').mix('blue', method='b-spline')
+            Custom('red').mix('blue', method='bspline')
 
         # Now it is registered again
         Custom.register(BSpline())
         self.assertColorEqual(
-            Custom('red').mix('blue', method='b-spline'),
+            Custom('red').mix('blue', method='bspline'),
             color
         )
 

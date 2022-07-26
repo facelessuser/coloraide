@@ -10,3 +10,6 @@ methods or even new color spaces quite easy. Currently, ColorAide implements the
 - [Contrast](./contrast.md)
 - [Color spaces](./space.md)
 - [Interpolation](./interpolate.md)
+
+While these documents will touch on each plugin, looking at the source code will provide a better view on how plugins
+are actually used as all functionality for all of these categories are implemented as plugins in ColorAide.
