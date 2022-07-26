@@ -159,6 +159,8 @@ achromatomaly
 achromatopsia
 async
 az
+backfill
+backfilled
 barycentric
 bezier
 boolean
@@ -212,6 +214,7 @@ precalculated
 preformatted
 premultiplication
 premultiplied
+premultiply
 prepended
 prerelease
 prereleases

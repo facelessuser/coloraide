@@ -963,7 +963,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='hsl',
                 method='b-spline'
             )(0.75),
-            Color('hsl(182.29 40.104% 44.271%)')
+            Color('hsl(152.5 40.104% 44.271%)')
         )
 
     def test_bspline_cylindrical_gamut(self):

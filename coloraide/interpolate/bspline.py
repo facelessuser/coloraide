@@ -8,66 +8,85 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def handle_undefined(coords: List[Vector]) -> None:
-    """Handle null values."""
-
-    # Process each set of coordinates
-    for i in range(len(coords[0])):
-        backfill = None
-        # Process a specific channel for all coordinates sets
-        for x in range(1, len(coords)):
-            c1, c2 = coords[x - 1:x + 1]
-            a, b = c1[i], c2[i]
-            if alg.is_nan(a) and not alg.is_nan(b):
-                c1[i] = b
-            elif alg.is_nan(b) and not alg.is_nan(a):
-                c2[i] = a
-            elif alg.is_nan(a) and alg.is_nan(b):
-                # Multiple undefined values, mark the start
-                backfill = x - 1
-                continue
-
-            # Replace all undefined values that occurred prior to
-            # finding the current defined value
-            if backfill is not None:
-                for c in coords[backfill:x - 1]:
-                    c[i] = b
-                backfill = None
-
-
 class InterpolatorBspline(Interpolator):
     """Interpolate with B-spline."""
 
-    def __init__(
-        self,
-        coordinates: List[Vector],
-        names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
-        space: str,
-        out_space: str,
-        progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
-        premultiplied: bool,
-        **kwargs: Any
-    ):
-        """Initialize."""
+    def handle_undefined(self, coords: List[Vector]) -> None:
+        """Handle null values."""
 
-        super().__init__(
-            coordinates,
-            names,
-            create,
-            easings,
-            stops,
-            space,
-            out_space,
-            progress,
-            premultiplied,
-            **kwargs
-        )
+        # Process each set of coordinates
+        alpha = len(coords[0]) - 1
+        for i in range(len(coords[0])):
+            backfill = None
+            last = None
+
+            # Process a specific channel for all coordinates sets
+            for x in range(1, len(coords)):
+                c1, c2 = coords[x - 1:x + 1]
+                a, b = c1[i], c2[i]
+                a_nan, b_nan = alg.is_nan(a), alg.is_nan(b)
+
+                # Two good values, store the last good value and continue
+                if not a_nan and not b_nan:
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c1)
+                        self.premultiply(c2)
+                    last = b
+                    continue
+
+                # Found a gap
+                if a_nan:
+                    # First color starts an undefined gap
+                    if backfill is None:
+                        backfill = x - 1
+
+                    # Gap continues
+                    if b_nan:
+                        continue
+
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c2)
+
+                    # If we've seen a good coordinate before the undefined gap,
+                    # linearly interpolate the two good values on either side,
+                    # else just backfill the current value. This is the only
+                    # way to have sane interpolation with achromatic hues.
+                    point = 1 / (x - backfill + 1)
+                    for e, c in enumerate(coords[backfill:x], 1):
+                        p = alg.lerp(last, b, point * e) if last is not None else b
+                        c[i] = p
+
+                        # We just filled an alpha hole, premultiply the coordinates
+                        if self.premultiplied and i == alpha:
+                            self.premultiply(c)
+
+                    backfill = None
+                    last = b
+                else:
+                    # Started a new gap after a good value
+                    # This always starts a new gap and never finishes one
+                    if backfill is None:
+                        backfill = x
+
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c1)
+                    last = a
+
+            # Replace all undefined values that occurred prior to
+            # finding the current defined value that have not been backfilled
+            if backfill is not None and last is not None:
+                for c in coords[backfill:]:
+                    c[i] = last
+
+                    # We just filled an alpha hole, premultiply the coordinates
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c)
+
+    def setup(self) -> None:
+        """Optional setup."""
 
         # Process undefined values
-        handle_undefined(self.coordinates)
+        self.handle_undefined(self.coordinates)
 
         # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional points
         # to coax the curve through the end points. Generate a point at both ends so that we can
