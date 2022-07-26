@@ -977,3 +977,33 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             )(0.75),
             Color('hsl(332.5 12.5% 82.5%)')
         )
+
+    def test_bspline_undefined_alpha(self):
+        """Test some cases related to undefined alpha and B-spline."""
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / none)', 'color(srgb 0 1 0 / 0.5)', 'color(srgb 0 0 1 / 1)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(3.4932 38.425 174.66 / 0.76042)')
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / 1)', 'color(srgb 0 1 0 / 0.5)', 'color(srgb 0 0 1 / none)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(10.408 57.245 130.1 / 0.51042)')
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / 1)', 'color(srgb 0 1 0 / none)', 'color(srgb 0 0 1 / 0.5)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(8.5 140.25 106.25 / 0.625)')
+        )
