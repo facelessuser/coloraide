@@ -18,7 +18,6 @@ import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
 from ..spaces import Cylindrical
-from ..channels import FLG_ANGLE
 from ..types import Vector, ColorInput, Plugin
 from typing import Callable, Dict, Tuple, Optional, Type, Sequence, Union, Mapping, List, Any, cast, TYPE_CHECKING
 
@@ -83,10 +82,15 @@ class Interpolator(metaclass=ABCMeta):
         self.out_space = out_space
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
-            self.hue_name = cast(Cylindrical, cs).hue_name()
+            self.hue_index = cast(Cylindrical, cs).hue_index()
         else:
-            self.hue_name = ''
+            self.hue_index = -1
         self.premultiplied = premultiplied
+
+        self.setup()
+
+    def setup(self) -> None:
+        """Optional setup."""
 
     @abstractmethod
     def interpolate(
@@ -164,21 +168,39 @@ class Interpolator(metaclass=ABCMeta):
 
         return [cast('Color', i['color']) for i in ret]
 
-    def postdivide(self, color: 'Color') -> None:
+    def premultiply(self, coords: Vector, alpha: Optional[float] = None) -> None:
+
+        if alpha is not None:
+            coords[-1] = alpha
+        else:
+            alpha = coords[-1]
+
+        if alg.is_nan(alpha) or alpha == 1.0:
+            return
+
+        for i, value in enumerate(coords[:-1]):
+
+            # Wrap the angle
+            if i == self.hue_index:
+                continue
+
+            coords[i] = value * alpha
+
+    def postdivide(self, coords: Vector) -> None:
         """Undo premultiplication of semi-transparent colors."""
 
-        alpha = color[-1]
+        alpha = coords[-1]
 
         if alg.is_nan(alpha) or alpha in (0.0, 1.0):
             return
 
-        channels = color._space.CHANNELS
-        for i, value in enumerate(color[:-1]):
+        for i, value in enumerate(coords[:-1]):
 
             # Wrap the angle
-            if channels[i].flags & FLG_ANGLE:
+            if i == self.hue_index:
                 continue
-            color[i] = value / alpha
+
+            coords[i] = value / alpha
 
     def __call__(self, point: float) -> 'Color':
         """Interpolate."""
@@ -209,11 +231,13 @@ class Interpolator(metaclass=ABCMeta):
 
                 # Interpolate color and return it
                 coords = self.interpolate(easing, adjusted_time, i)
-                color = self.create(self.space, coords[:-1], coords[-1])
                 if self.premultiplied:
-                    self.postdivide(color)
+                    self.postdivide(coords)
+
+                color = self.create(self.space, coords[:-1], coords[-1])
                 if self.out_space != color.space():
                     color.convert(self.out_space, in_place=True)
+
                 return color
             last = s
 
@@ -320,34 +344,13 @@ def process_mapping(
     return {aliases.get(k, k): v for k, v in progress.items()}
 
 
-def premultiply(color: 'Color') -> None:
-    """Premultiply the given transparent color."""
-
-    alpha = color[-1]
-
-    if alg.is_nan(alpha) or alpha == 1.0:
-        return
-
-    channels = color._space.CHANNELS
-    for i, value in enumerate(color[:-1]):
-
-        # Wrap the angle
-        if channels[i].flags & FLG_ANGLE:
-            continue
-        color[i] = value * alpha
-
-
-def normalize_color(color: 'Color', space: str, premultiplied: bool) -> None:
+def normalize_color(color: 'Color', space: str) -> None:
     """Normalize color."""
 
     # Adjust to color to space and ensure it fits
     if not color.CS_MAP[space].EXTENDED_RANGE:
         if not color.in_gamut():
             color.fit()
-
-    # Premultiply
-    if premultiplied:
-        premultiply(color)
 
 
 def adjust_shorter(h1: float, h2: float, offset: float) -> Tuple[float, float]:
@@ -399,7 +402,8 @@ def normalize_hue(
     color2: Optional[Vector],
     index: int,
     offset: float,
-    hue: str
+    hue: str,
+    fallback: Optional[float]
 ) -> Tuple[Vector, float]:
     """Normalize hues according the hue specifier."""
 
@@ -422,17 +426,14 @@ def normalize_hue(
     else:
         raise ValueError("Unknown hue adjuster '{}'".format(hue))
 
-    offset = 0
-    c1 = color1[index]
+    c1 = color1[index] + offset
     c2 = (color2[index] % 360) + offset
 
-    # Undefined hue, can't resolve
-    if alg.is_nan(c1) or alg.is_nan(c2):
-        color2[index] = c2
-        return color2, offset
+    # Adjust hue, handle gaps across `NaN`s
+    c1_nan = alg.is_nan(c1)
+    if (not c1_nan or fallback is not None) and not alg.is_nan(c2):
+        c2, offset = adjuster(cast(float, fallback) if c1_nan else c1, c2, offset)
 
-    # Adjust hues
-    c2, offset = adjuster(c1, c2, offset)
     color2[index] = c2
     return color2, offset
 
@@ -476,8 +477,14 @@ def interpolator(
     current.convert(space, in_place=True)
     offset = 0.0
     hue_index = cast(Cylindrical, current._space).hue_index() if isinstance(current._space, Cylindrical) else -1
-    normalize_color(current, space, premultiplied)
-    norm, offset = normalize_hue(current[:], None, hue_index, offset, hue)
+    normalize_color(current, space)
+    norm = current[:]
+    fallback = None
+    if hue_index >= 0:
+        h = norm[hue_index]
+        norm, offset = normalize_hue(norm, None, hue_index, offset, hue, fallback)
+        if not alg.is_nan(h):
+            fallback = h
 
     easing = None  # type: Any
     easings = []  # type: Any
@@ -501,8 +508,13 @@ def interpolator(
 
         # Adjust to color to space and ensure it fits
         color = color.convert(space)
-        normalize_color(color, space, premultiplied)
-        norm, offset = normalize_hue(current[:], color[:], hue_index, offset, hue)
+        normalize_color(color, space)
+        norm = color[:]
+        if hue_index >= 0:
+            h = norm[hue_index]
+            norm, offset = normalize_hue(current[:], norm, hue_index, offset, hue, fallback)
+            if not alg.is_nan(h):
+                fallback = h
 
         # Create an entry interpolating the current color and the next color
         coords.append(norm)

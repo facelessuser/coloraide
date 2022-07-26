@@ -49,6 +49,9 @@ that must be defined.
 class Interpolator(metaclass=ABCMeta):
     """Interpolator."""
 
+    def setup(self) --> None:
+        """Setup."""
+
     @abstractmethod
     def interpolate(
         self,
@@ -63,5 +66,10 @@ class Interpolator(metaclass=ABCMeta):
 easing functions for specific color channels. Additionally, it accepts a user defined `point` indicating where between
 the colors the user is requesting the new color and the `index`, within the list of colors to be interpolated,
 of the color to the right of the `point`. The function should return the interpolated coordinates for the color.
+
+Additionally, an optional `Interpolator.setup` method is provided to allow for any additional setup required.
+Premultiplication is usually done in `setup` ahead of time. Resolution of undefined values can be recalculated here
+as well as it is usually needed so that premultiplication can be done on coordinates that contain undefined values.
+With that said, such calculations can also be deferred and handled on the fly if desired.
 
 Check out the source code to see some example plugins.

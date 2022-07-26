@@ -1,76 +1,112 @@
-"""B-Spline interpolation."""
+"""
+B-Spline interpolation.
+
+https://en.wikipedia.org/wiki/B-spline
+https://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
+http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/UniformBSpline.htm
+"""
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
-from ..types import VectorLike, Vector
+from ..types import Vector
 from typing import Optional, Callable, Mapping, List, Union, Sequence, Dict, Any, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def handle_undefined(coords: VectorLike) -> Vector:
-    """Handle null values."""
-
-    backfill = None
-    adjusted = list(coords)
-    for x in range(1, len(adjusted)):
-        a = adjusted[x - 1]
-        b = adjusted[x]
-        if alg.is_nan(a) and not alg.is_nan(b):
-            adjusted[x - 1] = b
-        elif alg.is_nan(b) and not alg.is_nan(a):
-            adjusted[x] = a
-        elif alg.is_nan(a) and alg.is_nan(b):
-            # Multiple undefined values, mark the start
-            backfill = x - 1
-            continue
-
-        # Replace all undefined values that occurred prior to
-        # finding the current defined value
-        if backfill is not None:
-            adjusted[backfill:x - 1] = [b] * (x - 1 - backfill)
-            backfill = None
-
-    return adjusted
-
-
-class InterpolatorBspline(Interpolator):
+class InterpolatorBSpline(Interpolator):
     """Interpolate with B-spline."""
 
-    def __init__(
-        self,
-        coordinates: List[Vector],
-        names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
-        space: str,
-        out_space: str,
-        progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
-        premultiplied: bool,
-        **kwargs: Any
-    ):
-        """Initialize."""
+    def handle_undefined(self, coords: List[Vector]) -> None:
+        """
+        Handle null values.
 
-        super().__init__(
-            coordinates,
-            names,
-            create,
-            easings,
-            stops,
-            space,
-            out_space,
-            progress,
-            premultiplied,
-            **kwargs
-        )
+        Resolve any undefined alpha values and apply premultiplication if necessary.
+
+        Additionally, any undefined value have a new control point generated via
+        linear interpolation. This is the only approach to provide a non-bias, non-breaking
+        way to handle things like achromatic hues in a cylindrical space. It also balances
+        not cylindrical values. Since the B-spline needs a a continual path and since we
+        have a sliding window that takes into account 4 points at a time, we must consider
+        a more broad context than what is done in piecewise linear.
+        """
+
+        # Process each set of coordinates
+        alpha = len(coords[0]) - 1
+        for i in range(len(coords[0])):
+            backfill = None
+            last = None
+
+            # Process a specific channel for all coordinates sets
+            for x in range(1, len(coords)):
+                c1, c2 = coords[x - 1:x + 1]
+                a, b = c1[i], c2[i]
+                a_nan, b_nan = alg.is_nan(a), alg.is_nan(b)
+
+                # Two good values, store the last good value and continue
+                if not a_nan and not b_nan:
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c1)
+                        self.premultiply(c2)
+                    last = b
+                    continue
+
+                # Found a gap
+                if a_nan:
+                    # First color starts an undefined gap
+                    if backfill is None:
+                        backfill = x - 1
+
+                    # Gap continues
+                    if b_nan:
+                        continue
+
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c2)
+
+                    # Generate new control points for the undefined value. Use linear
+                    # interpolation if two known values bookend the undefined gap,
+                    # else just backfill the current known value.
+                    point = 1 / (x - backfill + 1)
+                    for e, c in enumerate(coords[backfill:x], 1):
+                        p = alg.lerp(last, b, point * e) if last is not None else b
+                        c[i] = p
+
+                        # We just filled an alpha hole, premultiply the coordinates
+                        if self.premultiplied and i == alpha:
+                            self.premultiply(c)
+
+                    backfill = None
+                    last = b
+                else:
+                    # Started a new gap after a good value
+                    # This always starts a new gap and never finishes one
+                    if backfill is None:
+                        backfill = x
+
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c1)
+                    last = a
+
+            # Replace all undefined values that occurred prior to
+            # finding the current defined value that have not been backfilled
+            if backfill is not None and last is not None:
+                for c in coords[backfill:]:
+                    c[i] = last
+
+                    # We just filled an alpha hole, premultiply the coordinates
+                    if self.premultiplied and i == alpha:
+                        self.premultiply(c)
+
+    def setup(self) -> None:
+        """Optional setup."""
 
         # Process undefined values
-        self.coordinates = [list(x) for x in zip(*[handle_undefined(c) for c in zip(*self.coordinates)])]
+        self.handle_undefined(self.coordinates)
 
-        # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional points
-        # to coax the curve through the end points. Generate a point at both ends so that we can
-        # properly evaluate the spline.
+        # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional control
+        # points to coax the curve through the end points. Generate a point at both ends so that we
+        # can properly evaluate the spline from start to finish.
         c1 = self.coordinates[1]
         c2 = self.coordinates[-2]
         self.coordinates.insert(0, [2 * a - b for a, b in zip(self.coordinates[0], c1)])
@@ -100,9 +136,12 @@ class InterpolatorBspline(Interpolator):
 
             # Apply easing and scale properly between the colors
             t = alg.clamp(point if progress is None else progress(point), 0.0, 1.0)
+
+            # Save some time calculating this once
             t2 = t ** 2
             t3 = t2 * t
 
+            # Insert control points to algorithm
             p0, p1, p2, p3 = coords[index - 1:index + 3]
             channels.append(
                 (
@@ -119,7 +158,7 @@ class InterpolatorBspline(Interpolator):
 class BSpline(Interpolate):
     """B-spline interpolation plugin."""
 
-    NAME = "b-spline"
+    NAME = "bspline"
 
     def interpolator(
         self,
@@ -136,7 +175,7 @@ class BSpline(Interpolate):
     ) -> Interpolator:
         """Return the B-spline interpolator."""
 
-        return InterpolatorBspline(
+        return InterpolatorBSpline(
             coordinates,
             channel_names,
             create,

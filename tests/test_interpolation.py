@@ -340,19 +340,19 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test interpolation B-spline."""
 
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(1), Color("srgb", [0, 0, 1])
+            Color.interpolate(['red', 'blue'], space="srgb", method="bspline")(1), Color("srgb", [0, 0, 1])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.75), Color("srgb", [0.25, 0, 0.75])
+            Color.interpolate(['red', 'blue'], space="srgb", method="bspline")(0.75), Color("srgb", [0.25, 0, 0.75])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.5), Color("srgb", [0.5, 0, 0.5])
+            Color.interpolate(['red', 'blue'], space="srgb", method="bspline")(0.5), Color("srgb", [0.5, 0, 0.5])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0.25), Color("srgb", [0.75, 0, 0.25])
+            Color.interpolate(['red', 'blue'], space="srgb", method="bspline")(0.25), Color("srgb", [0.75, 0, 0.25])
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space="srgb", method="b-spline")(0), Color("srgb", [1, 0, 0])
+            Color.interpolate(['red', 'blue'], space="srgb", method="bspline")(0), Color("srgb", [1, 0, 0])
         )
 
     def test_interpolate_channel(self):
@@ -368,7 +368,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(
-                ['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3}, method='b-spline'
+                ['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3}, method='bspline'
             )(0.5),
             Color('rgb(119.63 0 0 / 0.875)')
         )
@@ -429,7 +429,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test interpolation with piecewise."""
 
         self.assertColorEqual(
-            Color.interpolate(['red', stop('blue', 0.5)], space="srgb", method='b-spline')(0.5),
+            Color.interpolate(['red', stop('blue', 0.5)], space="srgb", method='bspline')(0.5),
             Color("srgb", [0, 0, 1])
         )
 
@@ -447,7 +447,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test interpolation with piecewise."""
 
         self.assertColorEqual(
-            Color.interpolate([stop('red', 0.6), 'blue'], space="srgb", method='b-spline')(0.5), Color('red')
+            Color.interpolate([stop('red', 0.6), 'blue'], space="srgb", method='bspline')(0.5), Color('red')
         )
 
     def test_interpolate_space(self):
@@ -482,7 +482,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_interpolate_multi_bspline(self):
         """Test multiple inputs for B-spline interpolation."""
 
-        func = Color.interpolate(['white', 'red', 'black'], method='b-spline')
+        func = Color.interpolate(['white', 'red', 'black'], method='bspline')
         self.assertColorEqual(func(0), Color('white'))
         self.assertColorEqual(func(0.5), Color('rgb(205.87 72.188 58.186)'))
         self.assertColorEqual(func(1), Color('black'))
@@ -644,7 +644,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test steps with B-spline."""
 
         self.assertColorEqual(
-            Color.steps(['red', stop('blue', 0.5)], space="srgb", steps=5, method='b-spline')[2],
+            Color.steps(['red', stop('blue', 0.5)], space="srgb", steps=5, method='bspline')[2],
             Color("srgb", [0, 0, 1])
         )
 
@@ -898,7 +898,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test too few colors during B-spline interpolation."""
 
         with self.assertRaises(ValueError):
-            Color.interpolate(['green', lambda t: t * 3], method='b-spline')
+            Color.interpolate(['green', lambda t: t * 3], method='bspline')
 
     def test_bad_method(self):
         """Test bad interpolation method."""
@@ -916,7 +916,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test bad color easing B-spline."""
 
         with self.assertRaises(ValueError):
-            Color.interpolate([lambda t: t * 3, 'green'], method='b-spline')
+            Color.interpolate([lambda t: t * 3, 'green'], method='bspline')
 
     def test_bspline_all_none(self):
         """Test multiple B-spline inputs with the same channel all none."""
@@ -925,7 +925,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['Color(srgb 1 none 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 none 0.9)'],
                 space='srgb',
-                method='b-spline'
+                method='bspline'
             )(0.5),
             Color('rgb(68 none 178.5)')
         )
@@ -937,7 +937,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['Color(srgb 1 none 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 0.8 0.9)'],
                 space='srgb',
-                method='b-spline'
+                method='bspline'
             )(0.5),
             Color('rgb(68 204 178.5)')
         )
@@ -949,7 +949,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['Color(srgb 1 0.8 0.5)', 'Color(srgb 0.1 none 0.7)', 'Color(srgb 0.2 none 0.9)'],
                 space='srgb',
-                method='b-spline'
+                method='bspline'
             )(0.5),
             Color('rgb(68 204 178.5)')
         )
@@ -961,9 +961,9 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['hsl(250 50% 30%)', 'hsl(none 0% 10%)', 'hsl(120 75% 75%)'],
                 space='hsl',
-                method='b-spline'
+                method='bspline'
             )(0.75),
-            Color('hsl(182.29 40.104% 44.271%)')
+            Color('hsl(152.5 40.104% 44.271%)')
         )
 
     def test_bspline_cylindrical_gamut(self):
@@ -973,7 +973,37 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['hsl(250 50% 30%)', 'hsl(none 0% 110%)'],
                 space='hsl',
-                method='b-spline'
+                method='bspline'
             )(0.75),
             Color('hsl(332.5 12.5% 82.5%)')
+        )
+
+    def test_bspline_undefined_alpha(self):
+        """Test some cases related to undefined alpha and B-spline."""
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / none)', 'color(srgb 0 1 0 / 0.5)', 'color(srgb 0 0 1 / 1)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(3.4932 38.425 174.66 / 0.76042)')
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / 1)', 'color(srgb 0 1 0 / 0.5)', 'color(srgb 0 0 1 / none)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(10.408 57.245 130.1 / 0.51042)')
+        )
+
+        self.assertColorEqual(
+            Color.interpolate(
+                ['color(srgb 1 0 0 / 1)', 'color(srgb 0 1 0 / none)', 'color(srgb 0 0 1 / 0.5)'],
+                space='srgb',
+                method='bspline'
+            )(0.75),
+            Color('rgb(8.5 140.25 106.25 / 0.625)')
         )

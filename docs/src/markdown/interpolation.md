@@ -85,14 +85,14 @@ transitions across multiple colors.
 
 ![B-Spline Interpolation](images/bspline-interpolation.png)
 
-By simply passing the `method='b-spline`, we can interpolate using this method. Below we can see the difference between
+By simply passing the `method='bspline'`, we can interpolate using this method. Below we can see the difference between
 linear and the B-spline method. Notice in the linear interpolation the pivot point where the gradient fully transitions
 to purple and then begins the transition to green. The B-spline curve doesn't have the pivot point as the curve bends
 towards purple smoothly, without passing directly through it at a harsh angle.
 
 ```playground
 Color.interpolate(['orange', 'purple', 'green'])
-Color.interpolate(['orange', 'purple', 'green'], method='b-spline')
+Color.interpolate(['orange', 'purple', 'green'], method='bspline')
 ```
 
 ## Hue Interpolation
@@ -378,7 +378,7 @@ parameter or even a different interpolation method via `method`. `mix` accepts a
 `interpolate`, though concepts like [stops and hints](#color-stops-and-hints) are not allowed with mixing.
 
 ```playground
-Color("red").mix(Color("blue"), space="hsl", method='b-spline')
+Color("red").mix(Color("blue"), space="hsl", method='bspline')
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
@@ -489,7 +489,7 @@ And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `h
 of the other supported `interpolate` features as well.
 
 ```playground
-Color.steps(['orange', stop('purple', 0.25), 'green'], method='b-spline', steps=10)
+Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
 ```
 
 ## Undefined/NaN Handling {#null-handling}
