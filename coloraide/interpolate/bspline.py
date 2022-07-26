@@ -1,4 +1,10 @@
-"""B-Spline interpolation."""
+"""
+B-Spline interpolation.
+
+https://en.wikipedia.org/wiki/B-spline
+https://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
+http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/UniformBSpline.htm
+"""
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
@@ -130,9 +136,12 @@ class InterpolatorBSpline(Interpolator):
 
             # Apply easing and scale properly between the colors
             t = alg.clamp(point if progress is None else progress(point), 0.0, 1.0)
+
+            # Save some time calculating this once
             t2 = t ** 2
             t3 = t2 * t
 
+            # Insert control points to algorithm
             p0, p1, p2, p3 = coords[index - 1:index + 3]
             channels.append(
                 (
