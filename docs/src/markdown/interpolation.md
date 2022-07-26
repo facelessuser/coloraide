@@ -85,7 +85,7 @@ transitions across multiple colors.
 
 ![B-Spline Interpolation](images/bspline-interpolation.png)
 
-By simply passing the `method='b-spline`, we can interpolate using this method. Below we can see the difference between
+By simply passing the `method='bspline'`, we can interpolate using this method. Below we can see the difference between
 linear and the B-spline method. Notice in the linear interpolation the pivot point where the gradient fully transitions
 to purple and then begins the transition to green. The B-spline curve doesn't have the pivot point as the curve bends
 towards purple smoothly, without passing directly through it at a harsh angle.

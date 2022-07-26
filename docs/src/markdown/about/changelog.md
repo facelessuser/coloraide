@@ -8,6 +8,7 @@
 - **NEW**: All new interpolation methods now supports hue fix-ups: `shorter`, `longer`, `increasing`, `decreasing`,
   and `specified`.
 - **NEW**: Interpolation is now exposed as a plugin to allow for expansion.
+- **FIX**: Fixed an issue related to premultiplication and undefined alpha channels.
 
 ## 1.0rc1
 
