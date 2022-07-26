@@ -432,7 +432,7 @@ def normalize_hue(
     # Adjust hue, handle gaps across `NaN`s
     c1_nan = alg.is_nan(c1)
     if (not c1_nan or fallback is not None) and not alg.is_nan(c2):
-        c2, offset = adjuster(fallback if c1_nan else c1, c2, offset)
+        c2, offset = adjuster(cast(float, fallback) if c1_nan else c1, c2, offset)
 
     color2[index] = c2
     return color2, offset

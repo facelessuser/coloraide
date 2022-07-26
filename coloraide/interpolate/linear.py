@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class InterpolatorLinear(Interpolator):
     """Interpolate multiple ranges of colors using linear, Piecewise interpolation."""
 
-    def setup(self):
+    def setup(self) -> None:
         """Setup for linear interpolation."""
 
         end = self.length - 2
