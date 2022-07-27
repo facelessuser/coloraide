@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- **NEW**: Interpolator plugins now send the requested `point` along the interpolation line un-clamped so that an
+  interpolation plugin could potentially allow values beyond the domain of 0 - 1. No default plugin extrapolates, or
+  provides periodic interpolation, but we do not want to make it difficult to do so in the future.
+
 ## 1.0
 
 !!! success "Stable Release!"

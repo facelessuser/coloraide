@@ -202,44 +202,55 @@ class Interpolator(metaclass=ABCMeta):
 
             coords[i] = value / alpha
 
-    def __call__(self, point: float) -> 'Color':
-        """Interpolate."""
+    def begin(self, point: float, s: float, last: float, index: int) -> 'Color':
+        """
+        Begin interpolation.
 
-        # Ensure point is within range
-        point = alg.clamp(point, 0.0, 1.0)
+        - Ensure point is relative to the stops.
+        - Get the appropriate easing function.
+        - Call interpolation.
+        - Return a color
+        """
+
+        # Adjust stop to be relative to the given stops
+        r = s - last
+        adjusted_time = (point - last) / r if r else 1
+
+        # Do we have an easing function between these stops?
+        easing = self.easings[index - 1]  # type: Any
+        if easing is None:
+            easing = self.progress
+
+        # Interpolate color and return it
+        coords = self.interpolate(easing, adjusted_time, index)
+        if self.premultiplied:
+            self.postdivide(coords)
+
+        # Create the color and ensure it is in the correct color space.
+        color = self.create(self.space, coords[:-1], coords[-1])
+        if self.out_space != color.space():
+            color.convert(self.out_space, in_place=True)
+
+        return color
+
+    def __call__(self, point: float) -> 'Color':
+        """Find which leg of the interpolation the request is between."""
 
         # See if point extends past either the first or last stop
-        if point > self.end:
-            point = self.end
-        elif point < self.start:
-            point = self.start
-
-        # Iterate stops to find where our point falls between
-        last = self.start
-        for i in range(1, self.length):
-            s = self.stops[i]
-            if point <= s:
-
-                # Adjust stop to be relative to the given stops
-                r = s - last
-                adjusted_time = (point - last) / r if r else 1
-
-                # Do we have an easing function between these stops?
-                easing = self.easings[i - 1]  # type: Any
-                if easing is None:
-                    easing = self.progress
-
-                # Interpolate color and return it
-                coords = self.interpolate(easing, adjusted_time, i)
-                if self.premultiplied:
-                    self.postdivide(coords)
-
-                color = self.create(self.space, coords[:-1], coords[-1])
-                if self.out_space != color.space():
-                    color.convert(self.out_space, in_place=True)
-
-                return color
-            last = s
+        if point < self.start:
+            last, s = self.start, self.stops[1]
+            return self.begin(point, s, last, 1)
+        elif point > self.end:
+            last, s = self.stops[self.length - 2], self.end
+            return self.begin(point, s, last, self.length - 1)
+        else:
+            # Iterate stops to find where our point falls between
+            last = self.start
+            for i in range(1, self.length):
+                s = self.stops[i]
+                if point <= s:
+                    return self.begin(point, s, last, i)
+                last = s
 
         # We shouldn't ever hit this, but provided for typing.
         # If we do hit this, it would be a bug.
