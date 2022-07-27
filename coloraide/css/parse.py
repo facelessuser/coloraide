@@ -37,12 +37,12 @@ COLOR_PARTS = {
     "hex": r"[a-f0-9]"
 }
 
-# Allow 10 channels maximum. This should be able to handle any colors we throw at it.
+# Allow 15 channels maximum. This should be able to handle any colors we throw at it.
 RE_COLOR_MATCH = re.compile(
     r"""(?xi)
     color\(\s*
     (-{{0,2}}[a-z][-a-z0-9_]*)
-    ((?:{space}(?:{strict_percent}|{float})){{1,10}}(?:{slash}(?:{strict_percent}|{float}))?)
+    ((?:{space}(?:{strict_percent}|{float})){{1,15}}(?:{slash}(?:{strict_percent}|{float}))?)
     \s*\)
     """.format(
         **COLOR_PARTS
