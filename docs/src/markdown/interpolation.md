@@ -122,8 +122,8 @@ To help visualize the different hue methods, consider the following evaluation b
 
 !!! tip "Interpolating Multiple Colors"
     The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
-    each other. This is a requirement for interpolation methods such as B-spline that evaluate all hues at the same time
-    as opposed to the linear, piecewise interpolation that only evaluates two hues at any given time.
+    each other. This is a requirement for interpolation methods such as B-spline that evaluate many hues at the same
+    time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
 
 === "shorter"
     ```playground
@@ -523,17 +523,10 @@ if one color's channel has a `NaN`, the other color's channel will be used as th
 for the same channel, then `NaN` will be returned.
 
 !!! tip "NaN Handling in B-Spline Interpolation"
-    This logic is similar for things like B-spline interpolation, but will be extended as B-spline interpolation can
-    evaluate multiple colors at a time. For instance if interpolating a single channel across three colors, `NaN` must
-    be resolved simultaneously across all three colors.
-
-    Here are some example resolutions for 3 values from one channel from three separate colors:
-
-    - `#!py3 [NaN, NaN, 1]` --> `#!py3 [1, 1, 1]`
-    - `#!py3 [NaN, 0.5, 1]` --> `#!py3 [0.5, 0.5, 1]`
-    - `#!py3 [1, 0.5, NaN]` --> `#!py3 [1, 0.5, 0.5]`
-    - `#!py3 [1, NaN, NaN]` --> `#!py3 [1, 1, 1]`.
-    - `#!py3 [NaN, NaN, NaN]` --> `#!py3 [NaN, NaN, NaN]`
+    `NaN` handling is a bit different for B-spline interpolation. Linear only evaluates colors at a given time, while
+    B-spline uses a sliding window on four colors. Because the context is much wider and more complicated, `NaN` values
+    will often get contexts from both side and create a new "control point" for the curve using linear interpolation.
+    So the curve will use data from the defined points while ignoring the point that is undefined.
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color green`), the hue of the second color is used.
