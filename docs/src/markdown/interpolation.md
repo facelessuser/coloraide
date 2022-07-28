@@ -19,7 +19,13 @@ these two colors with a line. We can then select any point on the line to simula
 yield the first color, 100% would yield the second color, and 50% would yield a new color:
 `#!color Color.interpolate(['oklab(0.7 0.15 0.1)', 'oklab(0.7 -0.03 -0.12)'])(0.5)`.
 
+<figure markdown>
 ![Linear Interpolation](images/linear-interpolation.png)
+
+<figcaption markdown>
+Interpolation performed at 50%
+</figcaption>
+</figure>
 
 The `interpolate` method allows a user to create a linear interpolation function using two or more colors. A returned
 interpolation function accepts an input between 0 - 1 and will cause a new color between the specified colors to be
@@ -60,7 +66,13 @@ Piecewise interpolation takes the idea of linear interpolation, and then applies
 straight line through a series of points greater than two can be problematic to achieve, piecewise interpolation creates
 straight lines between each color.
 
+<figure markdown>
 ![Piecewise Interpolation](images/piecewise-interpolation.png)
+
+<figcaption markdown>
+Interpolation performed at 75%
+</figcaption>
+</figure>
 
 When the `interpolate` method receives more that two colors, the interpolation will utilize piecewise interpolation
 and interpolation will be broken up between each pair of colors. The function, just like when interpolating between two
@@ -79,11 +91,20 @@ have pivot points and the transition may not be quite as smooth.
 
 Not all interpolation methods are linear, and ColorAide implements one such approach called B-spline interpolation.
 Instead of trying to draw a straight line or series of straight lines through a series of points, a B-Spline curve will
-essentially draw a line that roughly follows the shape of the points. It is not guaranteed that this curve will pass
-through all the points, but each point will have influence on the curvature of the line. This allows for smoother
-transitions across multiple colors.
+essentially draw a line that roughly follows the shape of the points. This is done with a cubic spline and it allows for
+smoother transitions across multiple colors.
 
+As this particular implementation is not a natural spline, the line is not guaranteed to pass through all the points.
+The end points are clamped though, so the line will start and end at two end colors. This allows for smoother
+transitions between multiple colors.
+
+<figure markdown>
 ![B-Spline Interpolation](images/bspline-interpolation.png)
+
+<figcaption markdown>
+Interpolation performed at 75%
+</figcaption>
+</figure>
 
 By simply passing the `method='bspline'`, we can interpolate using this method. Below we can see the difference between
 linear and the B-spline method. Notice in the linear interpolation the pivot point where the gradient fully transitions
