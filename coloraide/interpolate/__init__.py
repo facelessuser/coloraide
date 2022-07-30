@@ -82,7 +82,7 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
-        self.current_easing = None
+        self.current_easing = None  # type: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]]
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cast(Cylindrical, cs).hue_index()
@@ -219,7 +219,7 @@ class Interpolator(metaclass=ABCMeta):
         adjusted_time = (point - last) / r if r else 1
 
         # Do we have an easing function between these stops?
-        self.current_easing = self.easings[index - 1]  # type: Any
+        self.current_easing = self.easings[index - 1]
         if self.current_easing is None:
             self.current_easing = self.progress
 
