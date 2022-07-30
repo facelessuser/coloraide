@@ -65,6 +65,7 @@ class Interpolator(metaclass=ABCMeta):
         out_space: str,
         progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
         premultiplied: bool,
+        extrapolate: bool = False,
         **kwargs: Any
     ):
         """Initialize."""
@@ -80,6 +81,8 @@ class Interpolator(metaclass=ABCMeta):
         self.progress = progress
         self.space = space
         self.out_space = out_space
+        self.extrapolate = extrapolate
+        self.current_easing = None
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cast(Cylindrical, cs).hue_index()
@@ -95,7 +98,6 @@ class Interpolator(metaclass=ABCMeta):
     @abstractmethod
     def interpolate(
         self,
-        easing: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         point: float,
         index: int,
     ) -> Vector:
@@ -217,12 +219,12 @@ class Interpolator(metaclass=ABCMeta):
         adjusted_time = (point - last) / r if r else 1
 
         # Do we have an easing function between these stops?
-        easing = self.easings[index - 1]  # type: Any
-        if easing is None:
-            easing = self.progress
+        self.current_easing = self.easings[index - 1]  # type: Any
+        if self.current_easing is None:
+            self.current_easing = self.progress
 
         # Interpolate color and return it
-        coords = self.interpolate(easing, adjusted_time, index)
+        coords = self.interpolate(adjusted_time, index)
         if self.premultiplied:
             self.postdivide(coords)
 
@@ -232,6 +234,25 @@ class Interpolator(metaclass=ABCMeta):
             color.convert(self.out_space, in_place=True)
 
         return color
+
+    def ease(self, t: float, channel_index: int) -> float:
+        """Provide a progression time and channel index."""
+
+        progress = None
+        if self.current_easing is not None:
+            # Do we have an easing function, or mapping with a channel easing function?
+            name = self.channel_names[channel_index]
+            if isinstance(self.current_easing, Mapping):
+                progress = self.current_easing.get(name)
+                if progress is None:
+                    progress = self.current_easing.get('all')
+            else:
+                progress = self.current_easing
+
+        if progress is not None:
+            t = progress(t)
+
+        return alg.clamp(t, 0.0, 1.0) if not self.extrapolate else t
 
     def __call__(self, point: float) -> 'Color':
         """Find which leg of the interpolation the request is between."""

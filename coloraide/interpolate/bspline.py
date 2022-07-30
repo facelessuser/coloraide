@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class InterpolatorBSpline(Interpolator):
     """Interpolate with B-spline."""
 
-    def handle_undefined(self, coords: List[Vector]) -> None:
+    def handle_undefined(self) -> None:
         """
         Handle null values.
 
@@ -30,6 +30,8 @@ class InterpolatorBSpline(Interpolator):
         have a sliding window that takes into account 4 points at a time, we must consider
         a more broad context than what is done in piecewise linear.
         """
+
+        coords = self.coordinates
 
         # Process each set of coordinates
         alpha = len(coords[0]) - 1
@@ -98,59 +100,67 @@ class InterpolatorBSpline(Interpolator):
                     if self.premultiplied and i == alpha:
                         self.premultiply(c)
 
+    def adjust_endpoints(self) -> None:
+        """Adjust endpoints such that they are clamped and can handle extrapolation."""
+
+        # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional control
+        # points to coax the curve through the end points. Generate a point at both ends so that we
+        # can properly evaluate the spline from start to finish. Additionally, when the extrapolating
+        # past the 0 - 1 boundary, provide some linear behavior
+        self.extrapolated = [
+            list(zip(self.coordinates[0], self.coordinates[0], self.coordinates[0], self.coordinates[1])),
+            list(zip(self.coordinates[-2], self.coordinates[-1], self.coordinates[-1], self.coordinates[-1]))
+        ]
+        self.coordinates.insert(0, [2 * a - b for a, b in zip(self.coordinates[0], self.coordinates[1])])
+        self.coordinates.append([2 * a - b for a, b in zip(self.coordinates[-1], self.coordinates[-2])])
+
     def setup(self) -> None:
         """Optional setup."""
 
         # Process undefined values
-        self.handle_undefined(self.coordinates)
+        self.handle_undefined()
+        self.adjust_endpoints()
 
-        # We cannot interpolate all the way to `coord[0]` and `coord[-1]` without additional control
-        # points to coax the curve through the end points. Generate a point at both ends so that we
-        # can properly evaluate the spline from start to finish.
-        c1 = self.coordinates[1]
-        c2 = self.coordinates[-2]
-        self.coordinates.insert(0, [2 * a - b for a, b in zip(self.coordinates[0], c1)])
-        self.coordinates.append([2 * a - b for a, b in zip(self.coordinates[-1], c2)])
+    def calculate(self, p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+        """Calculate the new point using the provided values."""
+
+        # Save some time calculating this once
+        t2 = t ** 2
+        t3 = t2 * t
+
+        # Insert control points to algorithm
+        return (
+            ((1 - t) ** 3) * p0 +  # B0
+            (3 * t3 - 6 * t2 + 4) * p1 +  # B1
+            (-3 * t3 + 3 * t2 + 3 * t + 1) * p2 +  # B2
+            t3 * p3  # B3
+        ) / 6
 
     def interpolate(
         self,
-        easing: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         point: float,
         index: int
     ) -> Vector:
         """Interpolate."""
 
-        # Use Bezier interpolation of all color for each channel
+        # Prepare in-boundary coordinates
+        coords = list(zip(*self.coordinates[index - 1:index + 3]))
+
+        # Apply interpolation to each channel
         channels = []
-        for i, coords in enumerate(zip(*self.coordinates)):
+        for i in range(len(self.coordinates[0])):
 
-            # Do we have an easing function, or mapping with a channel easing function?
-            progress = None
-            name = self.channel_names[i]
-            if isinstance(easing, Mapping):
-                progress = easing.get(name)
-                if progress is None:
-                    progress = easing.get('all')
+            t = self.ease(point, i)
+
+            # If `t` ends up spilling out past our boundaries, we need to extrapolate
+            if self.extrapolate and t > 1.0:
+                p0, p1, p2, p3 = self.extrapolated[1][i]
+            elif self.extrapolate and t < 0.0:
+                p0, p1, p2, p3 = self.extrapolated[0][i]
             else:
-                progress = easing
+                p0, p1, p2, p3 = coords[i]
 
-            # Apply easing and scale properly between the colors
-            t = alg.clamp(point if progress is None else progress(point), 0.0, 1.0)
-
-            # Save some time calculating this once
-            t2 = t ** 2
-            t3 = t2 * t
-
-            # Insert control points to algorithm
-            p0, p1, p2, p3 = coords[index - 1:index + 3]
-            channels.append(
-                (
-                    ((1 - t) ** 3) * p0 +  # B0
-                    (3 * t3 - 6 * t2 + 4) * p1 +  # B1
-                    (-3 * t3 + 3 * t2 + 3 * t + 1) * p2 +  # B2
-                    t3 * p3  # B3
-                ) / 6
-            )
+            channels.append(self.calculate(p0, p1, p2, p3, t))
 
         return channels
 
@@ -171,6 +181,7 @@ class BSpline(Interpolate):
         out_space: str,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         premultiplied: bool,
+        extrapolate: bool = False,
         **kwargs: Any
     ) -> Interpolator:
         """Return the B-spline interpolator."""
@@ -184,5 +195,6 @@ class BSpline(Interpolate):
             space,
             out_space,
             progress,
-            premultiplied
+            premultiplied,
+            extrapolate
         )

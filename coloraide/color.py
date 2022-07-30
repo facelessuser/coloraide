@@ -736,6 +736,7 @@ class Color(metaclass=ColorMeta):
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
+        extrapolate: bool = False,
         method: str = "linear",
         **kwargs: Any
     ) -> Interpolator:
@@ -760,6 +761,7 @@ class Color(metaclass=ColorMeta):
             progress=progress,
             hue=hue,
             premultiplied=premultiplied,
+            extrapolate=extrapolate,
             **kwargs
         )
 

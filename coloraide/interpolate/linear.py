@@ -54,7 +54,6 @@ class InterpolatorLinear(Interpolator):
 
     def interpolate(
         self,
-        easing: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
         point: float,
         index: int
     ) -> Vector:
@@ -79,21 +78,8 @@ class InterpolatorLinear(Interpolator):
 
             # Using linear interpolation between the two points
             else:
-                # Do we have an easing function, or mapping with a channel easing function?
-                progress = None
-                name = self.channel_names[i]
-                if isinstance(easing, Mapping):
-                    progress = easing.get(name)
-                    if progress is None:
-                        progress = easing.get('all')
-                else:
-                    progress = easing
-
-                # Apply easing and scale properly between the colors
-                t = alg.clamp(point if progress is None else progress(point), 0.0, 1.0)
-
                 # Interpolate
-                value = alg.lerp(a, b, t)
+                value = alg.lerp(a, b, self.ease(point, i))
             channels.append(value)
 
         return channels
@@ -115,6 +101,7 @@ class Linear(Interpolate):
         out_space: str,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         premultiplied: bool,
+        extrapolate: bool = False,
         **kwargs: Any
     ) -> Interpolator:
         """Return the linear interpolator."""
@@ -128,5 +115,6 @@ class Linear(Interpolate):
             space,
             out_space,
             progress,
-            premultiplied
+            premultiplied,
+            extrapolate
         )
