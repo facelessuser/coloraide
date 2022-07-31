@@ -32,6 +32,7 @@ CMYK
 CSS
 CVD
 CVDs
+Catmull
 Changelog
 Chroma
 Chromaticities

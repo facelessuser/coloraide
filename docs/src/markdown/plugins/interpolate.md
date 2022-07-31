@@ -27,6 +27,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         out_space: str,
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         premultiplied: bool,
+        extrapolate: bool = False,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -55,17 +56,24 @@ class Interpolator(metaclass=ABCMeta):
     @abstractmethod
     def interpolate(
         self,
-        easing: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         point: float,
         index: int,
     ) -> Vector:
         """Interpolate."""
 ```
 
-`Interpolator.interpolate` expects an optional `easing` method that can be either a callback, or a dictionary of
-easing functions for specific color channels. Additionally, it accepts a user defined `point` indicating where between
-the colors the user is requesting the new color and the `index`, within the list of colors to be interpolated,
-of the color to the right of the `point`. The function should return the interpolated coordinates for the color.
+`Interpolator.interpolate` expects an `index` (1 - n) indicating which pair of color stops a given `point` refers to. It
+is possible that `point` could exceed the normal range, in which case `index` will still refer to to either the minimum
+or maximum color stop pair, whichever the point exceeds.
+
+`point` is usually a value between 0 - 1, where 0 would be the color stop to the left, and 1 would be the color stop to
+the right. If `point` exceeds the range of 0 and 1, it can be assumed that the request is on the far left or far right
+of all color stops, and could be beyond the absolute range of the entire color interpolation chain.
+
+By default, extrapolation is disabled between all colors in an interpolation chain, and any `point` that exceeds the
+range of 0 - 1, after easing functions are applied, will be clamped. If `extrapolate` is set to `$!py True`, the points
+will not be clamped between any colors, in which case, it is an easing functions responsibility to ensure a value
+between 0 or 1 if extreme values are not desired.
 
 Additionally, an optional `Interpolator.setup` method is provided to allow for any additional setup required.
 Premultiplication is usually done in `setup` ahead of time. Resolution of undefined values can be recalculated here

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0
+
+- **NEW**: Interpolator plugins now send the requested `point` along the interpolation line un-clamped so that an
+  interpolation plugin can conditionally allow values to be extrapolated beyond the domain of 0 - 1.
+- **NEW**: Slight refactor of interpolation plugin so that common code does not need to be duplicated, and the
+  `interpolate` method no longer needs to accept an `easing` parameter as the plugin class exposes a new `ease` method
+  to automatically acquire the proper, specified easing function and apply it.
+- **NEW**: Functions built upon interpolation can now use a new `extrapolate` parameter to enable extrapolation if
+  interpolation inputs exceed 0 - 1.
+- **FIX**: Due to floating point math, B-spline will sometimes return an interpolation of fully opaque colors with an
+  imperceptible amount of transparency. If alpha is very close (`#!py3 1e-6`) to being opaque, just round it to opaque.
+
 ## 1.0
 
 !!! success "Stable Release!"

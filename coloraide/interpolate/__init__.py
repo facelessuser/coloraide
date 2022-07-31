@@ -65,6 +65,7 @@ class Interpolator(metaclass=ABCMeta):
         out_space: str,
         progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
         premultiplied: bool,
+        extrapolate: bool = False,
         **kwargs: Any
     ):
         """Initialize."""
@@ -80,6 +81,8 @@ class Interpolator(metaclass=ABCMeta):
         self.progress = progress
         self.space = space
         self.out_space = out_space
+        self.extrapolate = extrapolate
+        self.current_easing = None  # type: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]]
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cast(Cylindrical, cs).hue_index()
@@ -95,7 +98,6 @@ class Interpolator(metaclass=ABCMeta):
     @abstractmethod
     def interpolate(
         self,
-        easing: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         point: float,
         index: int,
     ) -> Vector:
@@ -202,44 +204,74 @@ class Interpolator(metaclass=ABCMeta):
 
             coords[i] = value / alpha
 
-    def __call__(self, point: float) -> 'Color':
-        """Interpolate."""
+    def begin(self, point: float, s: float, last: float, index: int) -> 'Color':
+        """
+        Begin interpolation.
 
-        # Ensure point is within range
-        point = alg.clamp(point, 0.0, 1.0)
+        - Ensure point is relative to the stops.
+        - Get the appropriate easing function.
+        - Call interpolation.
+        - Return a color
+        """
+
+        # Adjust stop to be relative to the given stops
+        r = s - last
+        adjusted_time = (point - last) / r if r else 1
+
+        # Do we have an easing function between these stops?
+        self.current_easing = self.easings[index - 1]
+        if self.current_easing is None:
+            self.current_easing = self.progress
+
+        # Interpolate color and return it
+        coords = self.interpolate(adjusted_time, index)
+        if self.premultiplied:
+            self.postdivide(coords)
+
+        # Create the color and ensure it is in the correct color space.
+        color = self.create(self.space, coords[:-1], coords[-1])
+        if self.out_space != color.space():
+            color.convert(self.out_space, in_place=True)
+
+        return color
+
+    def ease(self, t: float, channel_index: int) -> float:
+        """Provide a progression time and channel index."""
+
+        progress = None
+        if self.current_easing is not None:
+            # Do we have an easing function, or mapping with a channel easing function?
+            name = self.channel_names[channel_index]
+            if isinstance(self.current_easing, Mapping):
+                progress = self.current_easing.get(name)
+                if progress is None:
+                    progress = self.current_easing.get('all')
+            else:
+                progress = self.current_easing
+
+        if progress is not None:
+            t = progress(t)
+
+        return alg.clamp(t, 0.0, 1.0) if not self.extrapolate else t
+
+    def __call__(self, point: float) -> 'Color':
+        """Find which leg of the interpolation the request is between."""
 
         # See if point extends past either the first or last stop
-        if point > self.end:
-            point = self.end
-        elif point < self.start:
-            point = self.start
-
-        # Iterate stops to find where our point falls between
-        last = self.start
-        for i in range(1, self.length):
-            s = self.stops[i]
-            if point <= s:
-
-                # Adjust stop to be relative to the given stops
-                r = s - last
-                adjusted_time = (point - last) / r if r else 1
-
-                # Do we have an easing function between these stops?
-                easing = self.easings[i - 1]  # type: Any
-                if easing is None:
-                    easing = self.progress
-
-                # Interpolate color and return it
-                coords = self.interpolate(easing, adjusted_time, i)
-                if self.premultiplied:
-                    self.postdivide(coords)
-
-                color = self.create(self.space, coords[:-1], coords[-1])
-                if self.out_space != color.space():
-                    color.convert(self.out_space, in_place=True)
-
-                return color
-            last = s
+        if point < self.start:
+            last, s = self.start, self.stops[1]
+            return self.begin(point, s, last, 1)
+        elif point > self.end:
+            last, s = self.stops[self.length - 2], self.end
+            return self.begin(point, s, last, self.length - 1)
+        else:
+            # Iterate stops to find where our point falls between
+            last = self.start
+            for i in range(1, self.length):
+                s = self.stops[i]
+                if point <= s:
+                    return self.begin(point, s, last, i)
+                last = s
 
         # We shouldn't ever hit this, but provided for typing.
         # If we do hit this, it would be a bug.

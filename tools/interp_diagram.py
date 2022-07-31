@@ -51,6 +51,7 @@ def main():
     parser.add_argument('--position', '-p', default=0.5, type=float, help="Position between to show interpolated.")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
+    parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
@@ -114,9 +115,15 @@ def main():
 
     xs = []
     ys = []
-    for item in Color.steps(colors, steps=100, space=args.space, method=args.method):
-        xs.append(item.get(name1) if hue_index == -1 else math.radians(item.get(name1)))
-        ys.append(item.get(name2))
+    i = Color.interpolate(colors, space=args.space, method=args.method, extrapolate=args.extrapolate)
+    if not args.extrapolate:
+        offset, factor = 0, 100
+    else:
+        offset, factor = 25, 50
+    for r in range(101):
+        c = i((r - offset) / factor)
+        xs.append(c.get(name1) if hue_index == -1 else math.radians(c.get(name1)))
+        ys.append(c.get(name2))
 
     xs, ys = get_spline(xs, ys, len(xs) * 3)
 
