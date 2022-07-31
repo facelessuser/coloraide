@@ -162,6 +162,10 @@ class InterpolatorBSpline(Interpolator):
 
             channels.append(self.calculate(p0, p1, p2, p3, t))
 
+        # Small adjustment for floating point math and alpha channels
+        if 1 - channels[-1] < 1e-6:
+            channels[-1] = 1
+
         return channels
 
 

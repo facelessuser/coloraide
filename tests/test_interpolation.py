@@ -1007,3 +1007,34 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             )(0.75),
             Color('rgb(8.5 140.25 106.25 / 0.625)')
         )
+
+    def test_extrapolate_bspline(self):
+        """
+        Test that extrapolation of B-spline is linear after the first and last control point.
+
+        Values have been vetted by plotting a complete curve that extrapolates past the endpoints.
+        """
+
+        i = Color.interpolate(
+            ["oklab(0.7 0.15 0.1)", "oklab(0.7 -0.05 0.1)", "oklab(0.7 -0.09 0.02)", "oklab(0.7 -0.03 -0.12)"],
+            method='bspline',
+            extrapolate=True
+        )
+        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.2625 0.1)'))
+        print(i(1.5)[:], Color('oklab(0.7 0.00375 -0.19875 / 1)')[:])
+        self.assertColorEqual(i(1.5), Color('oklab(0.7 0.00375 -0.19875 / 1)'))
+
+    def test_extrapolate_linear(self):
+        """
+        Test that extrapolation of linear makes sense.
+
+        Values have been vetted by plotting a complete curve that extrapolates past the endpoints.
+        """
+
+        i = Color.interpolate(
+            ["oklab(0.7 0.15 0.1)", "oklab(0.7 -0.05 0.1)", "oklab(0.7 -0.09 0.02)", "oklab(0.7 -0.03 -0.12)"],
+            method='linear',
+            extrapolate=True
+        )
+        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.45 0.1)'))
+        self.assertColorEqual(i(1.5), Color('oklab(0.7 0.06 -0.33)'))
