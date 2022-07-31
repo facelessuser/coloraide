@@ -147,7 +147,7 @@ def execute(cmd, no_except=True, inline=False):
     """Execute color commands."""
 
     import coloraide
-    from coloraide.everything import ColorAll
+    import coloraide.everything as everything
     try:
         import coloraide_extras
         import coloraide_extras.everything as extras
@@ -155,20 +155,15 @@ def execute(cmd, no_except=True, inline=False):
         coloraide_extras = None
         extras = None
 
-    g = {
-        'Color': ColorAll,
-        'coloraide': coloraide,
-        'NaN': coloraide.NaN,
-        'stop': coloraide.stop,
-        'hint': coloraide.hint,
-        'HtmlRow': HtmlRow,
-        'HtmlSteps': HtmlSteps,
-        'HtmlGradient': HtmlGradient
-    }
+    g = {k: getattr(coloraide, k) for k in coloraide.__all__}
+    g['Color'] = everything.ColorAll
+    g['HtmlRow'] = HtmlRow
+    g['HtmlSteps'] = HtmlSteps
+    g['HtmlGradient'] = HtmlGradient
 
     if extras is not None:
-        g['coloraide_extras'] = coloraide_extras
         g['Color'] = extras.ColorAll
+        g['coloraide_extras'] = coloraide_extras
 
     console = ''
     colors = []
