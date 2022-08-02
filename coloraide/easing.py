@@ -39,7 +39,6 @@ x'(t) = 3axt2 + 2bxt + cx
 This greatly simplifies things and makes it faster.
 """
 import functools
-from . import algebra as alg
 from typing import Tuple, Callable
 
 EPSILON = 1e-6
@@ -107,7 +106,53 @@ def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
     return t
 
 
-def _calc_bezier(target: float, a: Tuple[float, float], b: Tuple[float, float], c: Tuple[float, float]) -> float:
+def _extrapolate(t: float, p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
+    """
+    Extrapolate.
+
+    Try to use the closest tangent to the endpoint, but if we can't,
+    we'll just end up returning the same `t`.
+    """
+
+    # See if we can use the tangent of a point closest to P3
+    if t > 1:
+        slope = 1.0
+
+        # Use a straight line through P2 and P3
+        if p2[0] < 1:
+            slope = (p2[1] - 1.0) / (p2[0] - 1.0)
+
+        # Use a straight line through P1 and P3
+        elif p1[0] < 1:
+            slope = (p1[1] - 1.0) / (p1[0] - 1.0)
+
+        intercept = 1.0 - slope
+
+    # See if we can use the tangent of a point closest to P0
+    else:
+        slope = 1.0
+
+        # Use a straight line through P1 and P0
+        if p1[0] > 0.0:
+            slope = p1[1] / p1[0]
+
+        # Use a straight line through P2 and P0
+        elif p2[0] > 0:
+            slope = p2[1] / p2[0]
+
+        intercept = 0.0
+
+    return slope * t + intercept
+
+
+def _calc_bezier(
+    target: float,
+    a: Tuple[float, float],
+    b: Tuple[float, float],
+    c: Tuple[float, float],
+    p1: Tuple[float, float],
+    p2: Tuple[float, float]
+) -> float:
     """
     Calculate the y value of the bezier curve with the given `x`.
 
@@ -115,11 +160,15 @@ def _calc_bezier(target: float, a: Tuple[float, float], b: Tuple[float, float], 
     `t` that satisfies the `x` so that we can find the `y`.
     """
 
-    # We'll never get a nice round 0 or 1 using the methods below,
-    # but we know 0 and 1 should yield 0 and 1. Also, anything
-    # beyond these bounds cannot be achieved.
-    if target <= 0 or target >= 1:
-        return alg.clamp(target, 0.0, 1.0)
+    # We'll likely not get a nice round 0 or 1 using the methods below,
+    # but we know 0 and 1 should yield 0 and 1, so shortcut out and
+    # same some calculations.
+    if target in (0, 1):
+        return target
+
+    # Extrapolate per the spec
+    if target > 1 or target < 0:
+        return _extrapolate(target, p1, p2)
 
     # Solve for `t` in relation to `x`
     t = _solve_bezier_x(target, a[0], b[0], c[0])
@@ -144,11 +193,15 @@ def cubic_bezier(x1: float, y1: float, x2: float, y2: float) -> Callable[..., fl
     by = 3.0 * (y2 - y1) - cy
     ay = 1.0 - cy - by
 
-    return functools.partial(_calc_bezier, a=(ax, ay), b=(bx, by), c=(cx, cy))
+    return functools.partial(_calc_bezier, a=(ax, ay), b=(bx, by), c=(cx, cy), p1=(x1, y1), p2=(x2, y2))
 
+
+def linear(t: float) -> float:
+    """Linear."""
+
+    return t
 
 # CSS Easings Level 2
-linear = cubic_bezier(0.25, 0.25, 0.75, 0.75)
 ease = cubic_bezier(0.25, 0.1, 0.25, 1.0)
 ease_in = cubic_bezier(0.42, 0.0, 1.0, 1.0)
 ease_out = cubic_bezier(0.0, 0.0, 0.58, 1.0)

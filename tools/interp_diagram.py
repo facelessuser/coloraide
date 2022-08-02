@@ -117,11 +117,11 @@ def main():
     ys = []
     i = Color.interpolate(colors, space=args.space, method=args.method, extrapolate=args.extrapolate)
     if not args.extrapolate:
-        offset, factor = 0, 100
+        offset, factor = 0, 1
     else:
-        offset, factor = 25, 50
+        offset, factor = 1, 3
     for r in range(101):
-        c = i((r - offset) / factor)
+        c = i((r * factor / 100) - offset)
         xs.append(c.get(name1) if hue_index == -1 else math.radians(c.get(name1)))
         ys.append(c.get(name2))
 
