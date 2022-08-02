@@ -53,6 +53,7 @@ Deuteranopia
 Dichromacy
 Dormont
 EOTF
+Easings
 Ebner
 Estevez
 FNF
@@ -71,6 +72,7 @@ HSLuv
 HSV
 HUSL
 HWB
+Horner's
 HyAB
 Hz
 ICtCp
@@ -121,6 +123,7 @@ PQ
 Piecewise
 Planckian
 Pokorny
+Precalculate
 Premultiply
 ProPhoto
 Protan
@@ -184,6 +187,7 @@ deuteranomaly
 deuteranopia
 dichromacy
 dyad
+easings
 fixup
 formatter
 grayscale
@@ -212,6 +216,7 @@ performant
 piecewise
 pre
 precalculated
+precalculating
 preformatted
 premultiplication
 premultiplied

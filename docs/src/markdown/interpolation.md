@@ -281,63 +281,128 @@ i = Color.interpolate(
 
 ## Easing Functions
 
-When interpolating, whether it using linear interpolation or something like B-Spline interpolation, the transitioning of
-a color from one to another is done in linear time. For example, if you are translating between 2 colors and you request
-the `#!py3 0.5` point in the interpolation process, you will get a color exactly in the middle of the transition. With
-easing functions, you can completely change the progress in relation to time by compressing the rate of change at the
-start or end of the interpolation process or even elongating them; the possibilities are endless.
+When interpolating, whether using linear interpolation or something like B-Spline interpolation, the transitioning
+between colors is always linear in time, even if the path to those colors is not. For example, if you are interpolating
+between 2 colors and you request a `#!py3 0.5` point on that line, it will always be in the middle. This is because, no
+matter how crooked the path, the rate of change on that path is always linear.
 
-Sometimes, it is easier to visualize what something means than to just have it explained. Here we apply an easing
-function by setting `progress`. Here we change the rate of progress along the line using different easing functions.
+By default, ColorAide always uses linear transitions when interpolating, but there are times that a different, more
+dynamic transition may be desired. This can be achieved by using the `progress` parameter on any of the interpolation
+related functions provided by ColorAide. `progress` accepts an easing function that takes a single `time` input and
+returns a new `time` input. This allows for a user to augment the rate of change when transition from one color to
+another. Inputs are almost always between 0 - 1 unless [`extrapolate`](#extrapolation) is enabled and the user has
+manually input a range beyond 0 - 1.
+
+ColorAide provides 5 basic easing functions out of the box along with `cubic_bezier` which is used to create all of the
+aforementioned easing function except `linear`, which simply returns what is given as an input.
+
+!!! tip "Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com"
+
+??? tip "More Common Cubic Bezier Easings"
+    The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
+
+    ```py3
+    ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
+    ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
+    ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
+    ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
+    ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
+    ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
+    ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
+    ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
+
+    ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
+    ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
+    ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
+    ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
+    ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
+    ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
+    ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
+    ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
+
+    ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
+    ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
+    ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
+    ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
+    ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
+    ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
+    ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
+    ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
+    ```
+
+=== "Linear"
+
+    ![Linear](./images/easing_linear.png)
+
+=== "Ease"
+
+    ![Ease](./images/easing_ease.png)
+
+=== "Ease In"
+
+    ![Ease In](./images/easing_ease_in.png)
+
+=== "Ease Out"
+
+    ![Ease Out](./images/easing_ease_out.png)
+
+=== "Ease In/Out"
+
+    ![Ease In/Out](./images/easing_ease_in_out.png)
+
+=== "Cubic Bezier"
+
+    ![Ease Cubic Bezier](./images/easing_cubic.png)
+
+Here, we are using the default "ease in" and "ease out" easing functions provided by ColorAide.
 
 ```playground
-import math
+from coloraide import ease_in, ease_out
 
 Color.interpolate(
     ["green", "blue"],
-    progress=lambda t: t ** 3
+    progress=ease_in
+)
+Color.interpolate(
+    ["green", "blue"]
 )
 Color.interpolate(
     ["green", "blue"],
-    progress=lambda t: 8 * t ** 4 if t < 0.5 else 1 - ((-2 * t + 2) ** 4) / 2
-)
-Color.interpolate(
-    ["green", "blue"],
-    progress=lambda t: math.sin((t * math.pi) / 2)
+    progress=ease_out
 )
 ```
 
-While `progress` sets an easing function for all interpolation operation, we can also set easing functions between two
-specific colors as well:
+Additionally, easing functions can be injected inline which allows a user to control how easing is performed between
+specific sub-interpolations within piecewise interpolation.
 
 ```playground
-Color.interpolate(["red", "green", lambda t: t ** 3, "blue"])
+Color.interpolate(["red", "green", ease_out, "blue"])
 ```
 
 ColorAide even lets you apply easing functions to specific channels, though they can only be done this way for the
-entire operation. This can be done to one or more channels at a time. Below, we apply `#!py3 t ** 3` to `alpha` while
-allowing all other channels to interpolate normally.
+entire operation. This can be done to one or more channels at a time. Below, we apply an exponential "ease in" to
+`alpha` while allowing all other channels to interpolate normally.
 
 ```playground
+ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
 Color.interpolate(
-    ["lch(50% 50 0)", "lch(90% 50 20 / 0)"],
+    ["lch(50% 50 0)", "lch(90% 50 260 / 0.5)"],
     progress={
-        'alpha': lambda t: t ** 3
+        'alpha': ease_in_expo
     }
 )
 ```
 
 We can also set all the channels to an easing function via `all` and then override specific channels. In this case,
-we take two colors: `#!color color(srgb 0 1 1)` and `#!color color(srgb 1 0 0)`. We ramp down color channels to half the
-distance between the two colors, but then target `red` to ramp all the way up from 0 to 1. This results in a final color
-of `#!color color(srgb 1 0.5 0.5)`.
+we exponentially "ease out" on all channels except the red channel, which we then force to be linear.
 
 ```playground
+ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
 Color.interpolate(
     ["color(srgb 0 1 1)", "color(srgb 1 0 0)"],
     progress={
-        'all': lambda t: t / 2,
-        'r': lambda t: t
+        'all': ease_out_expo,
+        'r': linear
     },
     space='srgb'
 )
@@ -511,6 +576,40 @@ of the other supported `interpolate` features as well.
 
 ```playground
 Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
+```
+
+## Extrapolation
+
+By default, ColorAide clamps the entire progress of an interpolation to always be between 0 and 1. In most cases, this
+is more what most user expects and why this is the default. It should be noted that this does not affect easing
+functions, as the clamping is done prior to any easing function calls.
+
+If it is desired to extrapolate past 0 and 1, `extrapolate` can set to `#!py3 True` on all interpolation methods.
+
+```playground
+Color('red').mix('blue', 0.5)
+Color('red').mix('blue', -0.5, extrapolate=True)
+```
+
+As a larger example, we can purposely interpolate over a range with values beyond 0 and 1. Here we extended the range
+to -0.5 and 1.5.
+
+```playground
+offset, factor = 0.25, 1.5
+i = Color.interpolate(['red', 'blue'])
+HtmlGradient([i((r * factor / 100) - offset) for r in range(101)])
+i = Color.interpolate(['red', 'blue'], extrapolate=True)
+HtmlGradient([i((r * factor / 100) - offset) for r in range(101)])
+```
+
+Lastly, it is important to note that this affects stops as well, mainly stops applied to interpolation endpoints. When
+an endpoint is moved inwards via a color stop, the end range of the interpolation is clamped, extending the star and
+end color. But when extrapolation is enabled, a color stop on an endpoint essentially moves the start and end
+interpolation. And since there are no other colors on either end to interpolate with, extrapolation occurs.
+
+```playground
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)])
+Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], extrapolate=True)
 ```
 
 ## Undefined/NaN Handling {#null-handling}

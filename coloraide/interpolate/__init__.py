@@ -216,7 +216,12 @@ class Interpolator(metaclass=ABCMeta):
 
         # Adjust stop to be relative to the given stops
         r = s - last
-        adjusted_time = (point - last) / r if r else 1
+        if point < last:
+            adjusted_time = point - last if self.extrapolate else 0
+        elif point > s:
+            adjusted_time = 1 + point - s if self.extrapolate else 1
+        else:
+            adjusted_time = (point - last) / r if r else 1
 
         # Do we have an easing function between these stops?
         self.current_easing = self.easings[index - 1]
@@ -249,10 +254,7 @@ class Interpolator(metaclass=ABCMeta):
             else:
                 progress = self.current_easing
 
-        if progress is not None:
-            t = progress(t)
-
-        return alg.clamp(t, 0.0, 1.0) if not self.extrapolate else t
+        return progress(t) if progress is not None else t
 
     def __call__(self, point: float) -> 'Color':
         """Find which leg of the interpolation the request is between."""
