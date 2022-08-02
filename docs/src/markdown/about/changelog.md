@@ -7,11 +7,11 @@
   to automatically acquire the proper, specified easing function and apply it.
 - **NEW**: Functions built upon interpolation can now use a new `extrapolate` parameter to enable extrapolation if
   interpolation inputs exceed 0 - 1. `point` will be passed to `Interpolator.interpolate` un-clamped if `extrapolate` is
-  enabled. If an interpolation plugin needs to do additional work, in regards to extrapolation, they can check
+  enabled. If a particular interpolation plugin needs to do additional work to handle extrapolation, they can check
   `self.extrapolate` to know whether extrapolation is enabled.
 - **NEW**: Implement and provide the following easing functions as described in the CSS Easing Level 1 spec:
   `cubic_bezier`, `ease`, `ease_in`, `ease_out`, and `ease_in_out`. Also provide a simple `linear` easing function.
-- **FIX**: Due to floating point math, B-spline will sometimes return an interpolation of fully opaque colors with an
+- **FIX**: Due to floating point math, B-spline could sometimes return an interpolation of fully opaque colors with an
   imperceptible amount of transparency. If alpha is very close (`#!py3 1e-6`) to being opaque, just round it to opaque.
 - **FIX**: An easing function's output should not be clamped, only the input, and that only **needs** to occur on the
   the outer range of an entire interpolation.

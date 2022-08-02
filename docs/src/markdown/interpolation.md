@@ -282,25 +282,89 @@ i = Color.interpolate(
 ## Easing Functions
 
 When interpolating, whether using linear interpolation or something like B-Spline interpolation, the transitioning
-between colors is linear in time. For example, if you are translating between 2 colors and you request the `#!py3 0.5`
-point, you will get a color exactly in the middle of the transition. With easing functions, you can completely change
-the progress in relation to time by compressing or elongating the rate of change at the start, end, or middle of the
-interpolation process.
+between colors is always linear in time, even if the path to those colors is not. For example, if you are interpolating
+between 2 colors and you request a `#!py3 0.5` point on that line, it will always be in the middle. This is because, no
+matter how crooked the path, the rate of change on that path is always linear.
 
-To illustrate, here are a couple of easing functions. Each one is provided via the `progress` parameter. The only rules
-are that the value needs to be a callable function that accepts a `#!py3 float` input (usually between 0 - 1) and the
-return must be a float.
+By default, ColorAide always uses linear transitions when interpolating, but there are times that a different, more
+dynamic transition may be desired. This can be achieved by using the `progress` parameter on any of the interpolation
+related functions provided by ColorAide. `progress` accepts an easing function that takes a single `time` input and
+returns a new `time` input. This allows for a user to augment the rate of change when transition from one color to
+another. Inputs are almost always between 0 - 1 unless [`extrapolate`](#extrapolation) is enabled and the user has
+manually input a range beyond 0 - 1.
+
+ColorAide provides 5 basic easing functions out of the box along with `cubic_bezier` which is used to create all of the
+aforementioned easing function except `linear`, which simply returns what is given as an input.
+
+!!! tip "Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com"
+
+??? tip "More Common Cubic Bezier Easings"
+    The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
+
+    ```py3
+    ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
+    ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
+    ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
+    ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
+    ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
+    ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
+    ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
+    ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
+
+    ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
+    ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
+    ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
+    ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
+    ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
+    ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
+    ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
+    ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
+
+    ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
+    ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
+    ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
+    ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
+    ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
+    ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
+    ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
+    ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
+    ```
+
+=== "Linear"
+
+    ![Linear](./images/easing_linear.png)
+
+=== "Ease"
+
+    ![Ease](./images/easing_ease.png)
+
+=== "Ease In"
+
+    ![Ease In](./images/easing_ease_in.png)
+
+=== "Ease Out"
+
+    ![Ease Out](./images/easing_ease_out.png)
+
+=== "Ease In/Out"
+
+    ![Ease In/Out](./images/easing_ease_in_out.png)
+
+=== "Cubic Bezier"
+
+    ![Ease Cubic Bezier](./images/easing_cubic.png)
+
+Here, we are using the default "ease in" and "ease out" easing functions provided by ColorAide.
 
 ```playground
-import math
+from coloraide import ease_in, ease_out
 
 Color.interpolate(
     ["green", "blue"],
     progress=ease_in
 )
 Color.interpolate(
-    ["green", "blue"],
-    progress=linear
+    ["green", "blue"]
 )
 Color.interpolate(
     ["green", "blue"],
@@ -308,17 +372,16 @@ Color.interpolate(
 )
 ```
 
-When setting `progress`, it will set the provided easing function as the default easing for all color interpolations
-done with the returned interpolator. Additionally, easing functions can be injected inline, between colors in order
-to specify an easing only for when those two colors are interpolated together.
+Additionally, easing functions can be injected inline which allows a user to control how easing is performed between
+specific sub-interpolations within piecewise interpolation.
 
 ```playground
 Color.interpolate(["red", "green", ease_out, "blue"])
 ```
 
 ColorAide even lets you apply easing functions to specific channels, though they can only be done this way for the
-entire operation. This can be done to one or more channels at a time. Below, we apply `#!py3 t ** 3` to `alpha` while
-allowing all other channels to interpolate normally.
+entire operation. This can be done to one or more channels at a time. Below, we apply an exponential "ease in" to
+`alpha` while allowing all other channels to interpolate normally.
 
 ```playground
 ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
@@ -331,9 +394,7 @@ Color.interpolate(
 ```
 
 We can also set all the channels to an easing function via `all` and then override specific channels. In this case,
-we take two colors: `#!color color(srgb 0 1 1)` and `#!color color(srgb 1 0 0)`. We ramp down color channels to half the
-distance between the two colors, but then target `red` to ramp all the way up from 0 to 1. This results in a final color
-of `#!color color(srgb 1 0.5 0.5)`.
+we exponentially "ease out" on all channels except the red channel, which we then force to be linear.
 
 ```playground
 ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
@@ -345,59 +406,6 @@ Color.interpolate(
     },
     space='srgb'
 )
-```
-
-The CSS Easing Level 1 spec has outlined a couple easing functions, most derived from a single easing function called
-`cubic-bezier()`. The reason is that a cubic Bezier curve can be manipulated into a variety of shapes, making it perfect
-way to represent and manipulate the progress of motion, or in our case, the rate at which color interpolates.
-
-For convenience, ColorAide has implemented the following easing functions from the CSS spec: `cubic_bezier`, `ease_in`,
-`ease_out`, and `ease_in_out`. In addition, we've implemented a simple `linear` easing as well in case it is desired to
-override a non-linear default with linear behavior. While `linear` can certainly be implemented via `cubic_bezier`, we
-do not as the overhead is unnecessary for something so simple.
-
-Name          | Cubic\ Bezier\ Equivalent
-------------- | ------------------------
-`linear`      | `#!py3 cubic_bezier(0.0, 0.0, 1.0, 1.0)`
-`ease`        | `#!py3 cubic_bezier(0.25, 0.1, 0.25, 1.0)`
-`ease_in`     | `#!py3 cubic_bezier(0.42, 0.0, 1.0, 1.0)`
-`ease_out`    | `#!py3 cubic_bezier(0.0, 0.0, 0.58, 1.0)`
-`ease_in_out` | `#!py3 cubic_bezier(0.42, 0.0, 0.58, 1.0)`
-
-ColorAide's intention is not to provide every easing function that might be needed, but to provide the most common, and
-easy ways to implement more if needed.
-
-For creating more easings, there are plenty of resources available. https://cubic-bezier.com allows you to intuitively
-create more cubic Bezier easing functions. A number of pre-created easing functions can be found online as well. The
-follow were all acquired from from https://matthewlein.com/tools/ceaser.js.
-
-```py3
-ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
-ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
-ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
-ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
-ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
-ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
-ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
-ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
-
-ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
-ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
-ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
-ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
-ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
-ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
-ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
-ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
-
-ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
-ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
-ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
-ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
-ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
-ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
-ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
-ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
 ```
 
 ## Color Stops and Hints

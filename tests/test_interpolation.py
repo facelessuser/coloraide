@@ -1,6 +1,6 @@
 """Test Interpolation."""
 import unittest
-from coloraide import Color, NaN, stop, hint
+from coloraide import Color, NaN, stop, hint, ease_in
 from . import util
 
 
@@ -297,26 +297,32 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_mix_progress(self):
         """Test custom progress."""
 
-        progress = lambda x: x * 3  # noqa: E731
+        results = [
+            Color('color(--lab 54.291 80.805 69.891 / 1)'),
+            Color('color(--lab 51.98 79.635 52.888 / 1)'),
+            Color('color(--lab 46.494 76.857 12.521 / 1)'),
+            Color('color(--lab 38.917 73.021 -43.239 / 1)'),
+            Color('color(--lab 29.568 68.287 -112.03 / 1)')
+        ]
         self.assertColorEqual(
-            Color('red').mix('blue', 1, out_space="lab", space="lab", progress=progress),
-            Color("lab(29.568 68.287 -112.03)")
+            Color('red').mix('blue', 1, out_space="lab", space="lab", progress=ease_in),
+            results[4]
         )
         self.assertColorEqual(
-            Color('red').mix('blue', 0.75, out_space="lab", space="lab", progress=progress),
-            Color("lab(29.568 68.287 -112.03)")
+            Color('red').mix('blue', 0.75, out_space="lab", space="lab", progress=ease_in),
+            results[3]
         )
         self.assertColorEqual(
-            Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress=progress),
-            Color("lab(29.568 68.287 -112.03)")
+            Color('red').mix('blue', 0.5, out_space="lab", space="lab", progress=ease_in),
+            results[2]
         )
         self.assertColorEqual(
-            Color('red').mix('blue', 0.25, out_space="lab", space="lab", progress=progress),
-            Color("lab(35.749 71.417 -66.55)")
+            Color('red').mix('blue', 0.25, out_space="lab", space="lab", progress=ease_in),
+            results[1]
         )
         self.assertColorEqual(
-            Color('red').mix('blue', 0, out_space="lab", space="lab", progress=progress),
-            Color("lab(54.291 80.805 69.891)")
+            Color('red').mix('blue', 0, out_space="lab", space="lab", progress=ease_in),
+            results[0]
         )
 
     def test_interpolate_fit_required(self):
@@ -601,26 +607,32 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_interpolate_progress(self):
         """Test custom progress."""
 
-        progress = lambda x: x * 3  # noqa: E731
+        results = [
+            Color('color(--lab 54.291 80.805 69.891 / 1)'),
+            Color('color(--lab 51.98 79.635 52.888 / 1)'),
+            Color('color(--lab 46.494 76.857 12.521 / 1)'),
+            Color('color(--lab 38.917 73.021 -43.239 / 1)'),
+            Color('color(--lab 29.568 68.287 -112.03 / 1)')
+        ]
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=progress)(1),
-            Color("lab(29.568 68.287 -112.03)")
+            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=ease_in)(1),
+            results[4]
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=progress)(0.75),
-            Color("lab(29.568 68.287 -112.03)")
+            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=ease_in)(0.75),
+            results[3]
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=progress)(0.5),
-            Color("lab(29.568 68.287 -112.03)")
+            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=ease_in)(0.5),
+            results[2]
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=progress)(0.25),
-            Color("lab(35.749 71.417 -66.55)")
+            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=ease_in)(0.25),
+            results[1]
         )
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=progress)(0),
-            Color("lab(54.291 80.805 69.891)")
+            Color.interpolate(['red', 'blue'], out_space="lab", space="lab", progress=ease_in)(0),
+            results[0]
         )
 
     def test_steps(self):
@@ -836,27 +848,33 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_steps_progress(self):
         """Test custom progress."""
 
-        progress = lambda x: x * 3  # noqa: E731
-        colors = Color.steps(['red', 'blue'], steps=5, out_space="lab", space="lab", progress=progress)
+        results = [
+            Color('color(--lab 54.291 80.805 69.891 / 1)'),
+            Color('color(--lab 51.98 79.635 52.888 / 1)'),
+            Color('color(--lab 46.494 76.857 12.521 / 1)'),
+            Color('color(--lab 38.917 73.021 -43.239 / 1)'),
+            Color('color(--lab 29.568 68.287 -112.03 / 1)')
+        ]
+        colors = Color.steps(['red', 'blue'], steps=5, out_space="lab", space="lab", progress=ease_in)
         self.assertColorEqual(
             colors[4],
-            Color("lab(29.568 68.287 -112.03)")
+            results[4]
         )
         self.assertColorEqual(
             colors[3],
-            Color("lab(29.568 68.287 -112.03)")
+            results[3]
         )
         self.assertColorEqual(
             colors[2],
-            Color("lab(29.568 68.287 -112.03)")
+            results[2]
         )
         self.assertColorEqual(
             colors[1],
-            Color("lab(35.749 71.417 -66.55)")
+            results[1]
         )
         self.assertColorEqual(
             colors[0],
-            Color("lab(54.291 80.805 69.891)")
+            results[0]
         )
 
     def test_steps_max_delta_e(self):
@@ -1020,9 +1038,8 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             method='bspline',
             extrapolate=True
         )
-        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.2625 0.1)'))
-        print(i(1.5)[:], Color('oklab(0.7 0.00375 -0.19875 / 1)')[:])
-        self.assertColorEqual(i(1.5), Color('oklab(0.7 0.00375 -0.19875 / 1)'))
+        self.assertColorEqual(i(-0.5), Color('color(--oklab 0.7 0.15417 0.1 / 1)'))
+        self.assertColorEqual(i(1.5), Color('color(--oklab 0.7 -0.02875 -0.12292 / 1)'))
 
     def test_extrapolate_linear(self):
         """
@@ -1036,5 +1053,5 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             method='linear',
             extrapolate=True
         )
-        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.45 0.1)'))
-        self.assertColorEqual(i(1.5), Color('oklab(0.7 0.06 -0.33)'))
+        self.assertColorEqual(i(-0.5), Color('color(--oklab 0.7 0.25 0.1 / 1)'))
+        self.assertColorEqual(i(1.5), Color('color(--oklab 0.7 0 -0.19 / 1)'))

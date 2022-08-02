@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import easing # noqa: E402
+from coloraide import easing  # noqa: E402
 
 RE_BEZIER = re.compile(
     r'''(?x)
@@ -32,13 +32,11 @@ def main():
 
     m = RE_BEZIER.match(args.easing.strip())
     if m is not None:
-        print(m.group(1))
-        print(m.group(2))
-        ease = getattr(easing, m.group(1))(*[float(v.strip()) for v in m.group(2).split(',')])
-        name = 'cubic_bezier'
+        function = m.group(0).strip()
+        ease = getattr(easing, 'cubic_bezier')(*[float(v.strip()) for v in m.group(2).split(',')])
     else:
-        name = args.easing.strip()
-        ease = getattr(easing, name)
+        function = args.easing.strip()
+        ease = getattr(easing, function)
 
     xs = []
     ys = []
@@ -67,14 +65,14 @@ def main():
     # Create titles
     title = args.title
     if not title:
-        title = "Plot of {}".format(name)
+        title = function
     ax.set_title(title)
 
     figure.add_axes(ax)
 
     p0 = [0, 0]
     p3 = [1, 1]
-    if name == 'linear':
+    if function == 'linear':
         p1 = [0.0, 0.0]
         p2 = [1.0, 1.0]
     else:

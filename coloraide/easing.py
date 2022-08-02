@@ -42,7 +42,9 @@ import functools
 from typing import Tuple, Callable
 
 EPSILON = 1e-6
-MAX_ITER = 10
+# This value is honestly pretty arbitrary (was 10, now 8),
+# probably would be good to test and find the optimal value.
+MAX_ITER = 8
 
 
 def _bezier(t: float, a: float, b: float, c: float) -> float:
@@ -82,7 +84,9 @@ def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
         # Get the derivative, but bail if it is too small,
         # we will just keep looping otherwise.
         d = _derivative_x(t, a, b, c)
-        if abs(d) < EPSILON:
+
+        # Getting too close zero or is zero
+        if abs(d) < EPSILON:  # pragma: no cover
             break
 
         # Calculate new time and try again
@@ -103,7 +107,8 @@ def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
         t = (high + low) * 0.5
 
     # Just return whatever we got closest to
-    return t
+    # TODO: Is this needed? Can we actually ever hit this?
+    return t  # pragma: no cover
 
 
 def _extrapolate(t: float, p1: Tuple[float, float], p2: Tuple[float, float]) -> float:
@@ -200,6 +205,7 @@ def linear(t: float) -> float:
     """Linear."""
 
     return t
+
 
 # CSS Easings Level 2
 ease = cubic_bezier(0.25, 0.1, 0.25, 1.0)

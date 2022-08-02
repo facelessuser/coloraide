@@ -155,7 +155,7 @@ class InterpolatorBSpline(Interpolator):
             # If `t` ends up spilling out past our boundaries, we need to extrapolate
             if self.extrapolate and index == 1 and point < 0.0:
                 p0, p1, p2, p3 = self.extrapolated[0][i]
-            elif self.extrapolate and index == self.length -1 and point > 1.0:
+            elif self.extrapolate and index == self.length - 1 and point > 1.0:
                 p0, p1, p2, p3 = self.extrapolated[1][i]
             else:
                 p0, p1, p2, p3 = coords[i]
