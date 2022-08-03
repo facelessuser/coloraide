@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0
+## 1.1
 
 - **NEW**: Slight refactor of interpolation plugin so that common code does not need to be duplicated, and the
   `interpolate` method no longer needs to accept an `easing` parameter as the plugin class exposes a new `ease` method
@@ -11,6 +11,8 @@
   `self.extrapolate` to know whether extrapolation is enabled.
 - **NEW**: Implement and provide the following easing functions as described in the CSS Easing Level 1 spec:
   `cubic_bezier`, `ease`, `ease_in`, `ease_out`, and `ease_in_out`. Also provide a simple `linear` easing function.
+- **New**: Add `natural` and `catrom` cubic spline options for interpolation. The `catrom` (Catmull-Rom) spline requires
+  the plugin to be registered in order to use it.
 - **FIX**: Due to floating point math, B-spline could sometimes return an interpolation of fully opaque colors with an
   imperceptible amount of transparency. If alpha is very close (`#!py3 1e-6`) to being opaque, just round it to opaque.
 - **FIX**: An easing function's output should not be clamped, only the input, and that only **needs** to occur on the

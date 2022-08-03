@@ -1,6 +1,7 @@
 """Test Interpolation."""
 import unittest
-from coloraide import Color, NaN, stop, hint, ease_in
+from coloraide.everything import ColorAll as Color
+from coloraide import NaN, stop, hint, ease_in
 from . import util
 
 
@@ -480,7 +481,9 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         func = Color.interpolate(['white', 'red', 'black'])
         self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(266.95 161.01 145.22)'))
         self.assertColorEqual(func(0.5), Color('red'))
+        self.assertColorEqual(func(0.75), Color('rgb(99.086 0 0)'))
         self.assertColorEqual(func(1), Color('black'))
         self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
         self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
@@ -490,7 +493,57 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         func = Color.interpolate(['white', 'red', 'black'], method='bspline')
         self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(259.69 162.64 147.89)'))
         self.assertColorEqual(func(0.5), Color('rgb(205.87 72.188 58.186)'))
+        self.assertColorEqual(func(0.75), Color('rgb(93.946 7.74 4.4259)'))
+        self.assertColorEqual(func(1), Color('black'))
+        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
+        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+
+    def test_interpolate_multi_natural(self):
+        """Test multiple inputs for Natural B-spline interpolation."""
+
+        func = Color.interpolate(['white', 'red', 'black'], method='natural')
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(299 152.05 132.27)'))
+        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
+        self.assertColorEqual(func(0.75), Color('rgb(122.19 -30.589 -18.259)'))
+        self.assertColorEqual(func(1), Color('black'))
+        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
+        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+
+    def test_interpolate_multi_natural_more(self):
+        """Test more inputs for Natural B-spline interpolation."""
+
+        func = Color.interpolate(['white', 'red', 'black', 'purple'], method='natural')
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(303.04 93.841 78.947)'))
+        self.assertColorEqual(func(0.5), Color('rgb(83.613 -20.05 -14.914)'))
+        self.assertColorEqual(func(0.75), Color('rgb(0.08759 -0.13753 0.7319)'))
+        self.assertColorEqual(func(1), Color('purple'))
+        self.assertColorEqual(func(-0.1), Color('white'))
+        self.assertColorEqual(func(1.1), Color('purple'))
+
+    def test_interpolate_multi_natural_even_more(self):
+        """Test even more inputs for Natural B-spline interpolation."""
+
+        func = Color.interpolate(['white', 'red', 'black', 'purple', 'green'], method='natural')
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('red'))
+        self.assertColorEqual(func(0.5), Color('black'))
+        self.assertColorEqual(func(0.75), Color('purple'))
+        self.assertColorEqual(func(1), Color('green'))
+        self.assertColorEqual(func(-0.1), Color('white'))
+        self.assertColorEqual(func(1.1), Color('green'))
+
+    def test_interpolate_multi_catmull_rom(self):
+        """Test multiple inputs for Catmull-Rom spline interpolation."""
+
+        func = Color.interpolate(['white', 'red', 'black'], method='catrom')
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(288.41 155.36 136.77)'))
+        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
+        self.assertColorEqual(func(0.75), Color('rgb(114.48 -22.696 -13.176)'))
         self.assertColorEqual(func(1), Color('black'))
         self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
         self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))

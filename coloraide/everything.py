@@ -29,6 +29,7 @@ from .spaces.acescct import ACEScct
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
+from .interpolate.catmull_rom import CatmullRom
 from .cat import VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
 from .color import ColorMatch
 from .interpolate import stop, hint
@@ -84,5 +85,8 @@ ColorAll.register(
         Sharp(),
         CMCCAT2000(),
         CAT16(),
+
+        # Interpolation
+        CatmullRom()
     ]
 )

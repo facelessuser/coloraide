@@ -43,6 +43,7 @@ ColorHelper
 Colorimetry
 Colorio
 Ctrl
+Culori
 Cz
 DCI
 Deprecations
