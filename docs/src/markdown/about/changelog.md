@@ -1,5 +1,9 @@
 # Changelog
 
+## x.x.x
+
+- **FIX**: Small speed up in natural spline calculation.
+
 ## 1.1
 
 - **NEW**: Slight refactor of interpolation plugin so that common code does not need to be duplicated, and the

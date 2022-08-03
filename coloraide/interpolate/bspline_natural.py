@@ -68,7 +68,7 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline):
                     c.append([a * 6 for a in self.coordinates[r]])
 
             # Dot M^-1 and C to get B (control points)
-            v = alg.dot(m, c)
+            v = alg.dot(m, c, dims=alg.D2)
             for r in range(1, n + 1):
                 self.coordinates[r] = v[r - 1]
 

@@ -32,7 +32,7 @@ class TestCubicBezier(unittest.TestCase):
         """
 
         ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
-        self.assertEquals(ease_in_out_expo(0.43), 0.14556343840627634)
+        self.assertEqual(ease_in_out_expo(0.43), 0.14556343840627634)
 
 
 class TestEasingMethods(unittest.TestCase):
@@ -46,7 +46,7 @@ class TestEasingMethods(unittest.TestCase):
         while i < 1.6:
             results.append(method(i))
             i += 0.1
-        self.assertEquals(results, expected)
+        self.assertEqual(results, expected)
 
     def test_linear(self):
         """Test linear."""
