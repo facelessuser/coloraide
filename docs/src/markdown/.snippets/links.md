@@ -1,4 +1,5 @@
 [brettel]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
+[catmull-observe]: https://observablehq.com/@mattdesl/perceptually-smooth-multi-color-linear-gradients
 [colorio]: https://github.com/nschloe/colorio
 [colorjs]: https://github.com/LeaVerou/color.js
 [color-math]: https://github.com/gtaylor/python-colormath

@@ -48,7 +48,7 @@ def main():
     parser = argparse.ArgumentParser(prog='gamut_diagrams', description='Demonstrate gamut mapping.')
     parser.add_argument('--space', '-s', default='srgb', help="Space to interpolate in.")
     parser.add_argument('--color', '-c', action='append', help="Color.")
-    parser.add_argument('--position', '-p', default=0.5, type=float, help="Position between to show interpolated.")
+    parser.add_argument('--position', '-p', type=float, help="Position between to show interpolated.")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
@@ -111,8 +111,6 @@ def main():
         if index == index1:
             hue_index = index
 
-    cp = Color.interpolate(colors, space=args.space, method=args.method)(float(args.position))
-
     xs = []
     ys = []
     i = Color.interpolate(colors, space=args.space, method=args.method, extrapolate=args.extrapolate)
@@ -147,15 +145,17 @@ def main():
             zorder=100
         )
 
-    plt.scatter(
-        cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1)),
-        cp.get(name2),
-        marker="o",
-        color=cp.convert('srgb').to_string(hex=True),
-        edgecolor='black',
-        s=64,
-        zorder=100
-    )
+    if args.position is not None:
+        cp = Color.interpolate(colors, space=args.space, method=args.method)(float(args.position))
+        plt.scatter(
+            cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1)),
+            cp.get(name2),
+            marker="o",
+            color=cp.convert('srgb').to_string(hex=True),
+            edgecolor='black',
+            s=64,
+            zorder=100
+        )
 
     if args.output:
         plt.savefig(args.output, dpi=args.dpi)

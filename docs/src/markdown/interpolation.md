@@ -66,13 +66,7 @@ Piecewise interpolation takes the idea of linear interpolation, and then applies
 straight line through a series of points greater than two can be problematic to achieve, piecewise interpolation creates
 straight lines between each color.
 
-<figure markdown>
 ![Piecewise Interpolation](images/piecewise-interpolation.png)
-
-<figcaption markdown>
-Interpolation performed at 75%
-</figcaption>
-</figure>
 
 When the `interpolate` method receives more that two colors, the interpolation will utilize piecewise interpolation
 and interpolation will be broken up between each pair of colors. The function, just like when interpolating between two
@@ -87,33 +81,74 @@ Color.interpolate(['black', 'red', 'white'])
 This approach generally works well, but since the placement of colors may not be in a straight line, you will often
 have pivot points and the transition may not be quite as smooth.
 
-## B-Spline Interpolation
+## Cubic Spline Interpolation
 
-Not all interpolation methods are linear, and ColorAide implements one such approach called B-spline interpolation.
-Instead of trying to draw a straight line or series of straight lines through a series of points, a B-Spline curve will
-essentially draw a line that roughly follows the shape of the points. This is done with a cubic spline and it allows for
-smoother transitions across multiple colors.
+Linear interpolation is nice because it is easy to implement, and due to its straight forward nature, pretty fast. With
+that said, it doesn't always have the smoothest transitions. It turns out that there are other piecewise ways to
+interpolate that can yield smoother results.
 
-As this particular implementation is not a natural spline, the line is not guaranteed to pass through all the points.
-The end points are clamped though, so the line will start and end at two end colors. This allows for smoother
-transitions between multiple colors.
+Inspired by some efforts seen on the [web](catmull-observe) and in the great JavaScript library
+[Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods. ColorAide
+implements 3 piecewise, cubic splines.
 
-<figure markdown>
-![B-Spline Interpolation](images/bspline-interpolation.png)
+!!! note "Monotone?"
+    Monotonic splines is on our list to explore. These our great because they pass through all the data points and
+    greatly minimize overshoot and undershoot.
 
-<figcaption markdown>
-Interpolation performed at 75%
-</figcaption>
-</figure>
+### B-Spline
 
-By simply passing the `method='bspline'`, we can interpolate using this method. Below we can see the difference between
-linear and the B-spline method. Notice in the linear interpolation the pivot point where the gradient fully transitions
-to purple and then begins the transition to green. The B-spline curve doesn't have the pivot point as the curve bends
-towards purple smoothly, without passing directly through it at a harsh angle.
+![B-spline](images/bspline-interpolation.png)
+
+B-spline is a piecewise spline similar to Bezier curves. It utilizes "control points" that help shape the interpolation
+path through two or more colors. Like Bezier Curves, the path does not pass through all the colors, but it is clamped at
+the start and end.
+
+It can be used by specifying `bspline` as the interpolation method.
 
 ```playground
-Color.interpolate(['orange', 'purple', 'green'])
-Color.interpolate(['orange', 'purple', 'green'], method='bspline')
+Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
+```
+
+### Natural
+
+![Natural](images/natural-interpolation.png)
+
+The "natural" spline is an the same B-spline approach except an algorithm is applied that uses the colors as data
+points and calculates control points such that the interpolation passes through all the data points. The resultant
+spline has the continuity and properties of a natural spline, hence the name.
+
+One down side is that it can overshoot or undershoot a bit, and can occasionally cause the interpolation path to pass
+out of gamut if interpolating on an edge.
+
+It can be used by specifying `natural` as the interpolation method.
+
+```playground
+Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
+```
+
+### Catmull-Rom
+
+!!! fail "Catmull-Rom is Not Registered By Default"
+
+![Catmull-Rom](images/catmull-rom-interpolation.png)
+
+Lastly, the Catmull-Rom spline is another "interpolating" spline that passes through all of its data points, similar to
+the "natural" spline, but it but does not share the same continuity and properties of a "natural" spline.
+
+Much like the "natural" spline, it can overshoot or undershoot.
+
+Catmull-Rom is not registered by default, but can be registered as shown below and then used by specifying `catrom`
+as the interpolation method.
+
+```playground
+from coloraide import Color
+from coloraide.interpolate.catmull_rom import CatmullRom
+
+class Custom(Color): ...
+
+Custom.register(CatmullRom())
+
+Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
 ```
 
 ## Hue Interpolation
@@ -143,8 +178,8 @@ To help visualize the different hue methods, consider the following evaluation b
 
 !!! tip "Interpolating Multiple Colors"
     The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
-    each other. This is a requirement for interpolation methods such as B-spline that evaluate many hues at the same
-    time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
+    each other. This is a requirement for interpolation methods that use cubic splines that evaluate many hues at the
+    same time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
 
 === "shorter"
     ```playground
