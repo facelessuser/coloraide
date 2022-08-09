@@ -3,6 +3,7 @@
 ## x.x.x
 
 - **FIX**: Small speed up in natural spline calculation.
+- **FIX**: Fix import that should have been relative, not absolute.
 
 ## 1.1
 

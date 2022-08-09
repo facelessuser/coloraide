@@ -6,7 +6,7 @@ https://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf.
 from .. interpolate import Interpolate, Interpolator
 from functools import lru_cache
 from .bspline import InterpolatorBSpline
-from coloraide import algebra as alg
+from .. import algebra as alg
 from ..types import Vector, Matrix
 from typing import List, Sequence, Any, Optional, Union, Mapping, Callable, Dict, Type, TYPE_CHECKING
 
