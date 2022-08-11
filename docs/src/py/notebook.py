@@ -156,6 +156,7 @@ def execute(cmd, no_except=True, inline=False):
         extras = None
 
     g = {k: getattr(coloraide, k) for k in coloraide.__all__}
+    g['coloraide'] = coloraide
     g['Color'] = everything.ColorAll
     g['HtmlRow'] = HtmlRow
     g['HtmlSteps'] = HtmlSteps

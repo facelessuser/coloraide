@@ -1091,8 +1091,8 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             method='bspline',
             extrapolate=True
         )
-        self.assertColorEqual(i(-0.5), Color('color(--oklab 0.7 0.15417 0.1 / 1)'))
-        self.assertColorEqual(i(1.5), Color('color(--oklab 0.7 -0.02875 -0.12292 / 1)'))
+        self.assertColorEqual(i(-0.5), Color('oklab(0.7 0.25 0.1)'))
+        self.assertColorEqual(i(1.5), Color('oklab(0.7 0 -0.19)'))
 
     def test_extrapolate_linear(self):
         """

@@ -108,8 +108,8 @@ class InterpolatorBSpline(Interpolator):
         # can properly evaluate the spline from start to finish. Additionally, when the extrapolating
         # past the 0 - 1 boundary, provide some linear behavior
         self.extrapolated = [
-            list(zip(self.coordinates[0], self.coordinates[0], self.coordinates[0], self.coordinates[1])),
-            list(zip(self.coordinates[-2], self.coordinates[-1], self.coordinates[-1], self.coordinates[-1]))
+            list(zip(self.coordinates[0], self.coordinates[1])),
+            list(zip(self.coordinates[-2], self.coordinates[-1]))
         ]
         self.coordinates.insert(0, [2 * a - b for a, b in zip(self.coordinates[0], self.coordinates[1])])
         self.coordinates.append([2 * a - b for a, b in zip(self.coordinates[-1], self.coordinates[-2])])
@@ -154,13 +154,14 @@ class InterpolatorBSpline(Interpolator):
 
             # If `t` ends up spilling out past our boundaries, we need to extrapolate
             if self.extrapolate and index == 1 and point < 0.0:
-                p0, p1, p2, p3 = self.extrapolated[0][i]
+                p0, p1 = self.extrapolated[0][i]
+                channels.append(alg.lerp(p0, p1, t))
             elif self.extrapolate and index == self.length - 1 and point > 1.0:
-                p0, p1, p2, p3 = self.extrapolated[1][i]
+                p0, p1 = self.extrapolated[1][i]
+                channels.append(alg.lerp(p0, p1, t))
             else:
                 p0, p1, p2, p3 = coords[i]
-
-            channels.append(self.calculate(p0, p1, p2, p3, t))
+                channels.append(self.calculate(p0, p1, p2, p3, t))
 
         # Small adjustment for floating point math and alpha channels
         if 1 - channels[-1] < 1e-6:

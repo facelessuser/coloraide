@@ -1,7 +1,8 @@
 # Changelog
 
-## x.x.x
+## 1.2.0
 
+- **Enhance**: Better extrapolation past end of spline.
 - **FIX**: Small speed up in natural spline calculation.
 - **FIX**: Fix import that should have been relative, not absolute.
 
