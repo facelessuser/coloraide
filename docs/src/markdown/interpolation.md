@@ -91,10 +91,6 @@ Inspired by some efforts seen on the [web](catmull-observe) and in the great Jav
 [Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods. ColorAide
 implements 3 piecewise, cubic splines.
 
-!!! note "Monotone?"
-    Monotonic splines is on our list to explore. These our great because they pass through all the data points and
-    greatly minimize overshoot and undershoot.
-
 ### B-Spline
 
 ![B-spline](images/bspline-interpolation.png)
