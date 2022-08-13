@@ -87,7 +87,7 @@ ColorAide currently supports 7 theorized color harmonies: [monochromatic](#monoc
 [triadic](#triadic), [square](#tetradic-square), and [rectangular](#tetradic-rectangular). By default, all color
 harmonies are calculated with the perceptually uniform OkLCh color space, but other color spaces can be used if desired.
 
-While we use OkLCh, we will actually visualize the examples in Okhsl. OkLCh is a derivative of OkLCh with the lightness
+While we use OkLCh, we will actually visualize the examples in Okhsl. Okhsl is a derivative of OkLCh with the lightness
 adjusted to match CIELCh and reshaped in a cylindrical form. It is limited to the sRGB gamut only, but it can help
 visualize better what is happening in a familiar color wheel format. You can see the difference below:
 
