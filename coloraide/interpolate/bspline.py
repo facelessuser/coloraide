@@ -118,13 +118,9 @@ class InterpolatorBSpline(Interpolator):
         """Optional setup."""
 
         # Process undefined values
+        self.spline = alg.bspline
         self.handle_undefined()
         self.adjust_endpoints()
-
-    def calculate(self, p0: float, p1: float, p2: float, p3: float, t: float) -> float:
-        """Calculate spline."""
-
-        return alg.bspline(p0, p1, p2, p3, t)
 
     def interpolate(
         self,
@@ -151,7 +147,7 @@ class InterpolatorBSpline(Interpolator):
                 channels.append(alg.lerp(p0, p1, t))
             else:
                 p0, p1, p2, p3 = coords[i]
-                channels.append(self.calculate(p0, p1, p2, p3, t))
+                channels.append(self.spline(p0, p1, p2, p3, t))
 
         # Small adjustment for floating point math and alpha channels
         if 1 - channels[-1] < 1e-6:

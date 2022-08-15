@@ -27,6 +27,7 @@ class InterpolatorNaturalBSpline(InterpolatorBSpline):
         """
 
         # Use the same logic as normal B-spline for handling undefined values and applying premultiplication
+        self.spline = alg.bspline
         self.handle_undefined()
         alg.naturalize_bspline_controls(self.coordinates)
         self.adjust_endpoints()

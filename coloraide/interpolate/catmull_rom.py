@@ -16,10 +16,11 @@ if TYPE_CHECKING:  # pragma: no cover
 class InterpolatorCatmullRom(InterpolatorBSpline):
     """Interpolate with Catmull-Rom spline."""
 
-    def calculate(self, p0: float, p1: float, p2: float, p3: float, t: float) -> float:
-        """Calculate spline."""
+    def setup(self) -> None:
+        """Setup."""
 
-        return alg.catrom(p0, p1, p2, p3, t)
+        super().setup()
+        self.spline = alg.catrom
 
 
 class CatmullRom(Interpolate):

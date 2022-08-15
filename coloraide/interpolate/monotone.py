@@ -12,10 +12,11 @@ if TYPE_CHECKING:  # pragma: no cover
 class InterpolatorMonotone(InterpolatorBSpline):
     """Interpolate with monotone spline based on Hermite."""
 
-    def calculate(self, p0: float, p1: float, p2: float, p3: float, t: float) -> float:
-        """Calculate spline."""
+    def setup(self) -> None:
+        """Setup."""
 
-        return alg.monotone(p0, p1, p2, p3, t)
+        super().setup()
+        self.spline = alg.monotone
 
 
 class Monotone(Interpolate):
