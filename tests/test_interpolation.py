@@ -548,6 +548,18 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
         self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
 
+    def test_interpolate_multi_monotone(self):
+        """Test multiple inputs for monotone interpolation."""
+
+        func = Color.interpolate(['white', 'red', 'black'], method='monotone')
+        self.assertColorEqual(func(0), Color('white'))
+        self.assertColorEqual(func(0.25), Color('rgb(288.41 155.36 136.77)'))
+        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
+        self.assertColorEqual(func(0.75), Color('rgb(114.48 -22.696 -13.176)'))
+        self.assertColorEqual(func(1), Color('black'))
+        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
+        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+
     def test_interpolate_out_space(self):
         """Test interpolation."""
 

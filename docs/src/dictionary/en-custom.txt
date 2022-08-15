@@ -209,6 +209,7 @@ luminance
 macOS
 memoization
 monochromacy
+monotonicity
 oRGB
 oRGB's
 opRGB
@@ -223,6 +224,7 @@ premultiplication
 premultiplied
 premultiply
 prepended
+preprocessing
 prerelease
 prereleases
 prophoto

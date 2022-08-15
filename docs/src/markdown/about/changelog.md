@@ -1,8 +1,9 @@
 # Changelog
 
-## 1.2.0
+## 1.2
 
-- **Enhance**: Better extrapolation past end of spline.
+- **NEW**: Add new monotone interpolation method.
+- **ENHANCE**: Better extrapolation past end of spline.
 - **FIX**: Small speed up in natural spline calculation.
 - **FIX**: Fix import that should have been relative, not absolute.
 

@@ -122,6 +122,17 @@ It can be used by specifying `natural` as the interpolation method.
 Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 ```
 
+### Monotone
+
+![Monotone](images/monotone-interpolation.png)
+
+The "monotone" spline is a piecewise interpolation spline that preserves monotonicity. As far as we are concerned, the
+important thing to note is that it greatly reduces any overshoot or undershoot in the interpolation.
+
+```playground
+Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
+```
+
 ### Catmull-Rom
 
 !!! fail "Catmull-Rom is Not Registered By Default"
