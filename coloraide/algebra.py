@@ -26,7 +26,7 @@ import operator
 import functools
 from itertools import zip_longest as zipl
 from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
-from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, Any, Iterable, overload, cast
+from typing import Optional, Callable, Sequence, List, Union, Iterator, Tuple, Any, Iterable, overload, Dict, cast
 
 NaN = float('nan')
 INF = float('inf')
@@ -65,6 +65,9 @@ D1_D2 = (1, 2)
 D2_SC = (2, 0)
 D2_D1 = (2, 1)
 DN_DM = (3, 3)
+
+# Vector used to create a special matrix used in natural splines
+M141 = [1, 4, 1]
 
 
 ################################
@@ -155,10 +158,257 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
-def lerp(a: float, b: float, t: float) -> float:
+################################
+# Interpolation and splines
+################################
+def lerp(p0: float, p1: float, t: float) -> float:
     """Linear interpolation."""
 
-    return a + (b - a) * t
+    return p0 + (p1 - p0) * t
+
+
+@functools.lru_cache(maxsize=10)
+def _matrix_141(n: int) -> Matrix:
+    """Get matrix '1 4 1'."""
+
+    m = [[0] * n for _ in range(n)]  # type: Matrix
+    m[0][0:2] = M141[1:]
+    m[-1][-2:] = M141[:-1]
+    for x in range(n - 2):
+        m[x + 1][x:x + 3] = M141
+    return inv(m)
+
+
+def naturalize_bspline_controls(coordinates: List[Vector]) -> None:
+    """
+    Given a set of B-spline control points in the Nth dimension, create new naturalized interpolation control points.
+
+    Using the color points as `S0...Sn`, calculate `B0...Bn`, such that interpolation will
+    pass through `S0...Sn`.
+
+    When given 2 data points, the operation will be returned as linear, so there is nothing to do.
+    """
+
+    n = len(coordinates) - 2
+
+    # Special case 3 data points
+    if n == 1:
+        coordinates[1] = [
+            (a * 6 - (b + c)) / 4 for a, b, c in zip(coordinates[1], coordinates[0], coordinates[2])
+        ]
+
+    # Handle all other cases where n does not result in linear interpolation
+    elif n > 1:
+        # Create [1, 4, 1] matrix for size `n` set of control points
+        m = _matrix_141(n)
+
+        # Create C matrix from the data points
+        c = []
+        for r in range(1, n + 1):
+            if r == 1:
+                c.append([a * 6 - b for a, b in zip(coordinates[r], coordinates[r - 1])])
+            elif r == n:
+                c.append([a * 6 - b for a, b in zip(coordinates[n], coordinates[n + 1])])
+            else:
+                c.append([a * 6 for a in coordinates[r]])
+
+        # Dot M^-1 and C to get B (control points)
+        v = dot(m, c, dims=D2)
+        for r in range(1, n + 1):
+            coordinates[r] = v[r - 1]
+
+
+def bspline(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+    """Calculate the new point using the provided values."""
+
+    # Save some time calculating this once
+    t2 = t ** 2
+    t3 = t2 * t
+
+    # Insert control points to algorithm
+    return (
+        ((1 - t) ** 3) * p0 +  # B0
+        (3 * t3 - 6 * t2 + 4) * p1 +  # B1
+        (-3 * t3 + 3 * t2 + 3 * t + 1) * p2 +  # B2
+        t3 * p3  # B3
+    ) / 6
+
+
+def catrom(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+    """Calculate the new point using the provided values."""
+
+    # Save some time calculating this once
+    t2 = t ** 2
+    t3 = t2 * t
+
+    # Insert control points to algorithm
+    return (
+        (-t3 + 2 * t2 - t) * p0 +  # B0
+        (3 * t3 - 5 * t2 + 2) * p1 +  # B1
+        (-3 * t3 + 4 * t2 + t) * p2 +  # B2
+        (t3 - t2) * p3  # B3
+    ) / 2
+
+
+def monotone(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+    """
+    Monotone spline based on Hermite.
+
+    We calculate our secants for our four samples (the center pair being our interpolation target).
+
+    From those, we calculate an initial gradient, and test to see if it is needed. In the event
+    that our there is no increase or decrease between the point, we can infer that the gradient
+    should be horizontal. We also test if they have opposing signs, if so, we also consider the
+    gradient to be zero.
+
+    Lastly, we ensure that the gradient is confined within a circle with radius 3 as it has been
+    observed that such a circle encapsulates the entire monotonicity region.
+
+    Once gradients are calculated, we simply perform the Hermite spline calculation and clean up
+    floating point math errors to ensure monotonicity.
+
+    We could build up secant and gradient info ahead of time, but currently we do it on the fly.
+
+    http://jbrd.github.io/2020/12/27/monotone-cubic-interpolation.html
+    https://ui.adsabs.harvard.edu/abs/1990A%26A...239..443S/abstract
+    https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.39.6720
+    https://en.wikipedia.org/w/index.php?title=Monotone_cubic_interpolation&oldid=950478742
+    """
+
+    # Save some time calculating this once
+    t2 = t ** 2
+    t3 = t2 * t
+
+    # Calculate the secants for the differing segments
+    s0 = p1 - p0
+    s1 = p2 - p1
+    s2 = p3 - p2
+
+    # Calculate initial gradients
+    m1 = (s0 + s1) * 0.5
+    m2 = (s1 + s2) * 0.5
+
+    # Center segment should be horizontal as there is no increase/decrease between the two points
+    if math.isclose(p1, p2):
+        m1 = m2 = 0.0
+    else:
+
+        # Gradient is zero if segment is horizontal or if the left hand secant differs in sign from current.
+        if math.isclose(p0, p1) or (math.copysign(1.0, s0) != math.copysign(1.0, s1)):
+            m1 = 0.0
+
+        # Ensure gradient magnitude is either 3 times the left or current secant (smaller being preferred).
+        else:
+            m1 *= min(3.0 * s0 / m1, min(3.0 * s1 / m1, 1.0))
+
+        # Gradient is zero if segment is horizontal or if the right hand secant differs in sign from current.
+        if math.isclose(p2, p3) or (math.copysign(1.0, s1) != math.copysign(1.0, s2)):
+            m2 = 0.0
+
+        # Ensure gradient magnitude is either 3 times the current or right secant (smaller being preferred).
+        else:
+            m2 *= min(3.0 * s1 / m2, min(3.0 * s2 / m2, 1.0))
+
+    # Now we can evaluate the Hermite spline
+    result = (
+        (m1 + m2 - 2 * s1) * t3 +
+        (3.0 * s1 - 2.0 * m1 - m2) * t2 +
+        m1 * t +
+        p1
+    )
+
+    # As the spline is monotonic, all interpolated values should be confined between the endpoints.
+    # Floating point arithmetic can cause this to be out of bounds on occasions.
+    mn = min(p1, p2)
+    mx = max(p1, p2)
+    return min(max(result, mn), mx)
+
+
+SPLINES = {
+    'natural': bspline,
+    'bspline': bspline,
+    'catrom': catrom,
+    'monotone': monotone,
+    'linear': lerp
+}  # type: Dict[str, Callable[..., float]]
+
+
+class Interpolate:
+    """Interpolation object."""
+
+    def __init__(
+        self,
+        points: List[Vector],
+        callback: Callable[..., float],
+        length: int,
+        linear: bool = False
+    ) -> None:
+        """Initialize."""
+
+        self.length = length
+        self.num_coords = len(points[0])
+        self.points = list(zip(*points))
+        self.callback = callback
+        self.linear = linear
+
+    def steps(self, count: int) -> List[Vector]:
+        """Generate steps."""
+
+        divisor = count - 1
+        return [self(r / divisor) for r in range(0, count)]
+
+    def __call__(self, t: float) -> Vector:
+        """Interpolate."""
+
+        n = self.length - 1
+        i = max(min(math.floor(t * n), n - 1), 0)
+        t = (t - i / n) * n if 0 <= t <= 1 else t
+        if not self.linear:
+            i += 1
+
+        # Iterate the coordinates and apply the spline to each component
+        # returning the completed, interpolated coordinate set.
+        coord = []
+        for idx in range(self.num_coords):
+            c = self.points[idx]
+            if self.linear or t < 0 or t > 1:
+                coord.append(lerp(c[i], c[i + 1], t))
+            else:
+                coord.append(
+                    self.callback(
+                        c[i - 1],
+                        c[i],
+                        c[i + 1],
+                        c[i + 2],
+                        t
+                    )
+                )
+
+        return coord
+
+
+def interpolate(points: List[Vector], method: str = 'linear') -> Interpolate:
+    """Generic interpolation method."""
+
+    points = points[:]
+    length = len(points)
+
+    # Natural requires some preprocessing of the B-spline points.
+    if method == 'natural':
+        naturalize_bspline_controls(points)
+
+    # Get the spline method
+    s = SPLINES[method]
+    linear = method == 'linear'
+
+    # Clamp end points
+    if not linear:
+        start = [2 * a - b for a, b in zip(points[0], points[1])]
+        end = [2 * a - b for a, b in zip(points[-1], points[-2])]
+        points.insert(0, start)
+        points.append(end)
+
+    return Interpolate(points, s, length, linear)
 
 
 ################################

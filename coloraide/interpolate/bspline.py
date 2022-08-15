@@ -122,19 +122,9 @@ class InterpolatorBSpline(Interpolator):
         self.adjust_endpoints()
 
     def calculate(self, p0: float, p1: float, p2: float, p3: float, t: float) -> float:
-        """Calculate the new point using the provided values."""
+        """Calculate spline."""
 
-        # Save some time calculating this once
-        t2 = t ** 2
-        t3 = t2 * t
-
-        # Insert control points to algorithm
-        return (
-            ((1 - t) ** 3) * p0 +  # B0
-            (3 * t3 - 6 * t2 + 4) * p1 +  # B1
-            (-3 * t3 + 3 * t2 + 3 * t + 1) * p2 +  # B2
-            t3 * p3  # B3
-        ) / 6
+        return alg.bspline(p0, p1, p2, p3, t)
 
     def interpolate(
         self,

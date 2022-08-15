@@ -8,8 +8,6 @@ import os
 import matplotlib.pyplot as plt
 import argparse
 import math
-import numpy as np
-from scipy import interpolate
 
 sys.path.insert(0, os.getcwd())
 
@@ -19,27 +17,13 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from tools.slice_diagram import plot_slice  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402
+from coloraide import algebra as alg  # noqa: E402
 
 
-def get_spline(x, y, points=100):
+def get_spline(x, y, steps=100):
     """Get spline."""
 
-    # Setup as `numpy` arrays
-    x2 = np.asarray(x, dtype=float)
-    y2 = np.asarray(y, dtype=float)
-
-    # Create a linear spaces between 0 and 1 for our curve
-    path = np.linspace(0, 1, x2.size)
-
-    # Create the position vectors using x and y coordinates
-    vec = np.vstack((x2.reshape((1, x2.size)), y2.reshape((1, y2.size))))
-
-    # Create the spline function
-    spline = interpolate.interp1d(path, vec, kind='cubic')
-
-    # Get the actual spline curve between 0 and 1 with number of points
-    x2, y2 = spline(np.linspace(np.min(path), np.max(path), points))
-    return x2.tolist(), y2.tolist()
+    return tuple([list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='monotone').steps(steps))])
 
 
 def main():

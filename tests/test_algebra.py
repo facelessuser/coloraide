@@ -1273,3 +1273,19 @@ class TestAlgebra(unittest.TestCase):
                 [6.0, 6.0, 6.0]
             ]
         )
+
+    def test_interpolate(self):
+        """Test interpolation."""
+
+        self.assertEqual(
+            alg.interpolate([[3, 4], [6, 8], [9, 2]]).steps(5),
+            [[3.0, 4.0], [4.5, 6.0], [6.0, 8.0], [7.5, 5.0], [9.0, 2.0]]
+        )
+
+    def test_interpolate_natural(self):
+        """Test interpolation with a natural spline."""
+
+        self.assertEqual(
+            alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural').steps(5),
+            [[3.0, 4.0], [4.5, 6.9375], [6.0, 8.0], [7.5, 5.9375], [9.0, 2.0]]
+        )
