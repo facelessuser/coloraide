@@ -326,8 +326,8 @@ def _color_command_console(colors):
                 bar = False
 
             bar = True
-            base_classes = "swatch"
             for color in item:
+                base_classes = "swatch"
                 if not color.color.in_gamut(WEBSPACE):
                     base_classes += " out-of-gamut"
                 color.color.fit(WEBSPACE)
