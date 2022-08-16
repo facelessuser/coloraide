@@ -720,10 +720,13 @@ Description
 
     The method of interpolation to can also be selected via the `method` parameter.
 
-    Method   | Description
-    -------- | -----------
-    `linear` | An linear interpolation that employs piecewise logic to interpolate between two or more colors.
-    `bezier` | An interpolation method that employs Bezier curves to calculate an interpolation path through multiple colors.
+    Method     | Description
+    ---------- | -----------
+    `linear`   | An linear interpolation that employs piecewise logic to interpolate between two or more colors.
+    `bspline`  | An interpolation method that employs cubic B-spline curves to calculate an interpolation path through multiple colors.
+    `natural`  | A natural interpolation spline based on the cubic B-spline curve.
+    `monotone` | An interpolation method that utilizes a monotonic cubic spline based on the Hermite spline.
+    `catrom`   | Interpolation based on the Catmull-Rom cubic spline.
 
 Parameters
 : 
