@@ -41,7 +41,7 @@ else:
         if not values:
             return 1
 
-        return functools.reduce(lambda x, y: x * y, values)
+        return functools.reduce(operator.mul, values)
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
@@ -417,7 +417,10 @@ def interpolate(points: List[Vector], method: str = 'linear') -> Interpolate:
 def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
-    return sum([x * y for x, y in zipl(a, b)])
+    s = 0.0
+    for x, y in zipl(a, b):
+        s += x * y
+    return s
 
 
 def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
