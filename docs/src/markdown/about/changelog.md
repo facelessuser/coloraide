@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3
+
+- **ENHANCE**: Color vision deficiency filters can now be instantiated with different default methods for severe and
+  anomalous cases.
+
 ## 1.2
 
 - **NEW**: Add new monotone interpolation method.
