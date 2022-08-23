@@ -75,7 +75,7 @@ quite different from person to person in severity.
 
 The human eye has 3 types of cones that are used to perceive colors. Each of these cones can become deficient, either
 through genetics, or other means. Each type of cone is responsible for perceiving either red, green, or blue colors. A
-CVD occurs when one or more of these cones are missing or not functioning properly. There are sever cases where one of
+CVD occurs when one or more of these cones are missing or not functioning properly. There are severe cases where one of
 the three cones will not perceive color at all, and there are others were the cones may just be less sensitive.
 
 ### Dichromacy
@@ -130,7 +130,7 @@ HtmlRow([c.filter('tritan', method='machado').clip() for c in colors])
 
 ### Anomalous Trichromacy
 
-While Dichromacy is probably the more sever case with only two functional cones, a more common CVD type is anomalous
+While Dichromacy is probably the more severe case with only two functional cones, a more common CVD type is anomalous
 trichromacy. In this case, a person will have three functioning cones, but not all of the cones function with full
 sensitivity. Sometimes, the sensitivity can be so low, that their ability to perceive color may be close to someone with
 dichromacy.

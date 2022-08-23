@@ -222,6 +222,12 @@ class Protan(Filter):
     VIENOT = VIENOT_PROTAN
     MACHADO = MACHADO_PROTAN
 
+    def __init__(self, severe: str = 'vienot', anomalous: str = 'machado') -> None:
+        """Initialize."""
+
+        self.severe = severe
+        self.anomalous = anomalous
+
     def brettel(self, color: 'Color', severity: float) -> None:
         """Tritanopia vision deficiency using Brettel method."""
 
@@ -253,7 +259,7 @@ class Protan(Filter):
         """Get the best filter based on the situation."""
 
         if method is None:
-            method = 'vienot' if max_severity else 'machado'
+            method = self.severe if max_severity else self.anomalous
         return self.select_filter(method)
 
     def filter(self, color: 'Color', amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
@@ -283,7 +289,7 @@ class Tritan(Protan):
     VIENOT = VIENOT_TRITAN
     MACHADO = MACHADO_TRITAN
 
-    def get_best_filter(self, method: Optional[str], amount: float) -> Callable[..., None]:
-        """Get the best filter based on the situation."""
+    def __init__(self, severe: str = 'brettel', anomalous: str = 'brettel') -> None:
+        """Initialize."""
 
-        return self.select_filter('brettel' if method is None else method)
+        super().__init__(severe, anomalous)
