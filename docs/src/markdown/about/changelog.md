@@ -4,6 +4,7 @@
 
 - **ENHANCE**: Color vision deficiency filters can now be instantiated with different default methods for severe and
   anomalous cases.
+- **FIX**: Fix premultiplication handling when using `compose`.
 
 ## 1.2
 

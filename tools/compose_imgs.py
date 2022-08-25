@@ -45,19 +45,19 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_compositing(background, blend, operator, pixels, fit):
+def apply_compositing(background, blend, operator, pixels, fit, space):
     """Apply compositing."""
 
     color = Color('srgb', [x / 255 for x in pixels[0][:-1]], pixels[0][3] / 255)
+    backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
+    color.compose(backdrops, blend=blend, operator=operator, in_place=True, space=space, out_space='srgb').clip()
     # Overlay first layer on background color in isolation
     if background != 'transparent':
-        color.compose(background, in_place=True)
-    backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
-    color.compose(backdrops, blend=blend, operator=operator, in_place=True).clip()
+        color.compose(background, in_place=True).clip()
     return tuple([int(x * 255) for x in color.fit(method=fit)[:4]])
 
 
-def process_image(imgs, bg, output, blend, porter_duff, fit):
+def process_image(imgs, bg, output, blend, porter_duff, fit, space):
     """Process the image applying the requested blend mode and compositing operator."""
 
     images = []
@@ -90,7 +90,7 @@ def process_image(imgs, bg, output, blend, porter_duff, fit):
     print('> 0%', end='\r')
     for e, i in enumerate(range(x)):
         for j in range(y):
-            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit)
+            pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit, space)
         print('> {}%'.format(int((e * j) * factor)), end="\r")
     print('> 100%')
     t = time.perf_counter_ns() - start
@@ -109,6 +109,7 @@ def main():
     parser.add_argument('--output', '-o', help='Output file.')
     parser.add_argument('--porter-duff', '-p', default='source-over', help='Porter Duff compositing operator.')
     parser.add_argument('--blend', '-b', default='normal', help="The blend mode.")
+    parser.add_argument('--space', '-s', default='srgb-linear', help="Space to compose in.")
     parser.add_argument(
         '--background-color', '-c',
         default='transparent',
@@ -123,7 +124,8 @@ def main():
         args.output,
         args.blend,
         args.porter_duff,
-        args.gamut_map
+        args.gamut_map,
+        args.space
     )
 
     return 0

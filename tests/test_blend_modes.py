@@ -22,7 +22,7 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         )
         self.assertColorEqual(
             Color('color(srgb 0 0 1 / 0.5)').compose('color(srgb 1 0 0 / 0.5)', blend='normal'),
-            Color('color(srgb 0.25 0 0.5 / 0.75)')
+            Color('color(srgb 0.333333 0 0.666667 / 0.75)')
         )
 
     def test_normal(self):
