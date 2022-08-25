@@ -49,10 +49,10 @@ def apply_compositing(
     cra = csa
     if isinstance(operator, str):
         compositor = porter_duff.compositor(operator)(cba, csa)
-        cra = compositor.ao()
+        cra = alg.clamp(compositor.ao(), 0, 1)
     elif operator is True:
         compositor = porter_duff.compositor('source-over')(cba, csa)
-        cra = compositor.ao()
+        cra = alg.clamp(compositor.ao(), 0, 1)
 
     # Perform compositing
     channels = color1._space.CHANNELS
@@ -60,9 +60,13 @@ def apply_compositing(
     # Blend each channel. Afterward, clip and apply alpha compositing.
     i = 0
     for cb, cr in zip(coords2, blender.blend(coords2, coords1) if blender else coords1):
-        cr = (1 - cba) * cr + cba * cr if blender else cr
         cr = clip_channel(cr, channels[i])
-        color1[i] = compositor.co(cb, cr) if compositor else cr
+        if compositor:
+            color1[i] = compositor.co(cb, cr)
+            if cra not in (0, 1):
+                color1[i] /= cra
+        else:
+            color1[i] = cr
         i += 1
 
     color1[-1] = cra
