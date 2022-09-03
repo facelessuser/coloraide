@@ -44,11 +44,12 @@ def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
 
     if is_hsl:
         # Create a custom HSV space based off the HSL space
-        class HSV(Color.CS_MAP['hsv']):
+        class HSV(type(Color.CS_MAP['hsv'])):
             NAME = 'hsv-{}'.format(gamut)
             BASE = space
             GAMUT_CHECK = cs.GAMUT_CHECK
             WHITE = cs.WHITE
+            DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
             @classmethod
             def to_base(cls, coords):
@@ -66,25 +67,27 @@ def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
         class ColorCyl(Color):
             """Custom color."""
 
-        ColorCyl.register(HSV)
+        ColorCyl.register(HSV())
     else:
         # Create custom cylindrical spaces based on the specified gamut
-        class HSV(Color.CS_MAP['hsv']):
+        class HSV(type(Color.CS_MAP['hsv'])):
             NAME = 'hsv-{}'.format(gamut)
             BASE = 'hsl-{}'.format(gamut)
             GAMUT_CHECK = gamut
             WHITE = cs.WHITE
+            DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
-        class HSL(Color.CS_MAP['hsl']):
+        class HSL(type(Color.CS_MAP['hsl'])):
             NAME = 'hsl-{}'.format(gamut)
             BASE = gamut
             GAMUT_CHECK = gamut
             WHITE = cs.WHITE
+            DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
         class ColorCyl(Color):
             """Custom color."""
 
-        ColorCyl.register([HSV, HSL])
+        ColorCyl.register([HSV(), HSL()])
 
     return ColorCyl
 
