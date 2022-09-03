@@ -1,7 +1,7 @@
 """
 Oklab class.
 
-Adapted to ColorAide Python and ColorAide by Isaac Muse (2021)
+Adapted to Python for ColorAide by Isaac Muse (2021)
 
 ---- License ----
 
