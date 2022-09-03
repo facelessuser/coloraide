@@ -71,6 +71,15 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         self.assertFalse(color.in_gamut('srgb'))
         self.assertTrue(color.clip('srgb').in_gamut('srgb'))
 
+    def test_clip_undefined(self):
+        """Test that clip leaves undefined channels alone."""
+
+        color = Color('rgb(none 255.1 -0.1)')
+        self.assertFalse(color.in_gamut('srgb'))
+        color2 = color.clone().clip('srgb')
+        self.assertColorEqual(color2, Color('rgb(0 255 0)'))
+        self.assertTrue(color2.in_gamut('srgb'))
+
     def test_sdr_extremes_low(self):
         """Test SDR extreme low case."""
 
