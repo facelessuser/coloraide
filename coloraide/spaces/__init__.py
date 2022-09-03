@@ -96,6 +96,8 @@ class Space(Plugin, metaclass=SpaceMeta):
     EXTENDED_RANGE = False
     # White point
     WHITE = (0.0, 0.0)
+    # What is the color space's dynamic range
+    DYNAMIC_RANGE = 'sdr'
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize."""

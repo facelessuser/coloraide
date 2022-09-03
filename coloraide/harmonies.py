@@ -62,8 +62,8 @@ class Monochromatic(Harmony):
 
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
-        w = color.new('color(srgb 1 1 1 / none)').convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
-        b = color.new('color(srgb 0 0 0 / none)').convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
+        w = color.new('srgb', [1, 1, 1], alg.NaN).convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
+        b = color.new('srgb', [0, 0, 0], alg.NaN).convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
 
         # Calculate how many tints and shades we need to generate
         db = b.delta_e(color0, method=self.DELTA_E)

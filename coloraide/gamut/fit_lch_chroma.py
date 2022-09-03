@@ -1,6 +1,5 @@
 """Fit by compressing chroma in LCh."""
 from ..gamut import Fit, clip_channels
-from ..algebra import NaN
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -38,6 +37,7 @@ class LChChroma(Fit):
     SPACE = "lch-d65"
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100
+    MIN_CONVERGENCE = 0.0001
 
     def fit(self, color: 'Color', **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
@@ -45,12 +45,15 @@ class LChChroma(Fit):
         space = color.space()
         mapcolor = color.convert(self.SPACE)
         lightness = mapcolor['lightness']
+        sdr = color._space.DYNAMIC_RANGE.lower() == 'sdr'
 
-        # Return white or black if lightness is out of range
-        if lightness >= self.MAX_LIGHTNESS or lightness <= self.MIN_LIGHTNESS:
-            mapcolor['chroma'] = 0
-            mapcolor['hue'] = NaN
-            clip_channels(color.update(mapcolor))
+        # Return white or black if lightness is out of dynamic range for lightness.
+        # Extreme light case only applies to SDR, but dark case applies to all ranges.
+        if sdr and lightness >= self.MAX_LIGHTNESS:
+            clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1]))
+            return
+        elif lightness <= self.MIN_LIGHTNESS:
+            clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1]))
             return
 
         # Set initial chroma boundaries
@@ -63,7 +66,9 @@ class LChChroma(Fit):
             # Perform "in gamut" checks until we know our lower bound is no longer in gamut.
             lower_in_gamut = True
 
-            while True:
+            # If high and low get too close to converging,
+            # we need to quit in order to prevent infinite looping.
+            while (high - low) > self.MIN_CONVERGENCE:
                 mapcolor['chroma'] = (high + low) * 0.5
 
                 # Avoid doing expensive delta E checks if in gamut

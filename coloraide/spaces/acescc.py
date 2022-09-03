@@ -62,6 +62,7 @@ class ACEScc(sRGB):
         Channel("g", CC_MIN, CC_MAX, bound=True),
         Channel("b", CC_MIN, CC_MAX, bound=True)
     )
+    DYNAMIC_RANGE = 'hdr'
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

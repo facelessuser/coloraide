@@ -94,6 +94,7 @@ class ICtCp(Labish, Space):
         Channel("cp", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
     WHITE = WHITES['2deg']['D65']
+    DYNAMIC_RANGE = 'hdr'
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
