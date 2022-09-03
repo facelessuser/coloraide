@@ -17,16 +17,9 @@ class LChChroma(Fit):
     Lower the upper chroma bound anytime we are out of gamut and above the JND.
     Too far under the JND we'll reduce chroma too aggressively.
 
-    This is a compromise between the CSS algorithm as described in: https://www.w3.org/TR/css-color-4/#binsearch
-    and what is used in https://github.com/LeaVerou/color.js. It optimizes the use of delta E calls to get somewhere
-    in between CSS algorithm performance and the Color.js performance, but gets pretty close to the better chroma
-    reduction.
-
-    ---
-
-    Based on the algorithm from from https://colorjs.io/docs/gamut-mapping.html.
-    Original Authors: Lea Verou, Chris Lilley
-    License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json).
+    This is the same as the CSS algorithm as described here: https://www.w3.org/TR/css-color-4/#binsearch.
+    There are some small adjustments to handle HDR colors as the CSS algorithm assumes SDR color spaces.
+    Additionally, this uses LCh instead of OkLCh, but we also offer a derived version that uses OkLCh.
     """
 
     NAME = "lch-chroma"
