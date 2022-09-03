@@ -2,8 +2,8 @@
 
 ## 1.4
 
-- **NEW**: A color space can now declare its dynamic range. By default, spaces are assumed to be SDR, but declare
-  themselves as HDR, or something else. This allows ColorAide to make decisions based on a colors dynamic range.
+- **NEW**: A color space can now declare its dynamic range. By default, spaces are assumed to be SDR, but can declare
+  themselves as HDR, or something else. This allows ColorAide to make decisions based on a color's dynamic range.
 - **FIX**: When gamut mapping/clipping a color, undefined channels should be preserved if possible.
 - **FIX**: Do not apply SDR shortcuts in gamut mapping when fitting in a non-SDR color gamut, such as HDR.
 
