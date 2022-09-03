@@ -65,6 +65,7 @@ class JzCzhz(LChish, Space):
         "hue": "hz"
     }
     WHITE = WHITES['2deg']['D65']
+    DYNAMIC_RANGE = 'hdr'
 
     def normalize(self, coords: Vector) -> Vector:
         """On color update."""

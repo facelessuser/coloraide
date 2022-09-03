@@ -12,9 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def clip_channels(color: 'Color') -> None:
     """Clip channels."""
 
-    channels = alg.no_nans(color[:-1])
-
-    for i, value in enumerate(channels):
+    for i, value in enumerate(color[:-1]):
         chan = color._space.CHANNELS[i]
         a = chan.low  # type: Optional[float]
         b = chan.high  # type: Optional[float]
@@ -22,6 +20,9 @@ def clip_channels(color: 'Color') -> None:
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
         if chan.flags & FLG_ANGLE:
             color[i] = value % 360.0
+            continue
+
+        if alg.is_nan(value):
             continue
 
         # These parameters are unbounded
@@ -37,14 +38,13 @@ def clip_channels(color: 'Color') -> None:
 def verify(color: 'Color', tolerance: float) -> bool:
     """Verify the values are in bound."""
 
-    channels = alg.no_nans(color[:-1])
-    for i, value in enumerate(channels):
+    for i, value in enumerate(color[:-1]):
         chan = color._space.CHANNELS[i]
         a = chan.low  # type: Optional[float]
         b = chan.high  # type: Optional[float]
 
         # Angles will wrap, so no sense checking them
-        if chan.flags & FLG_ANGLE:
+        if chan.flags & FLG_ANGLE or alg.is_nan(value):
             continue
 
         # These parameters are unbounded

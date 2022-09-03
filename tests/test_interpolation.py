@@ -1058,7 +1058,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='hsl',
                 method='bspline'
             )(0.75),
-            Color('hsl(332.5 12.5% 82.5%)')
+            Color('hsl(250 12.5% 82.5%)')
         )
 
     def test_bspline_undefined_alpha(self):

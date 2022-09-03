@@ -134,6 +134,7 @@ class Jzazbz(Labish, Space):
         "b": 'bz'
     }
     WHITE = WHITES['2deg']['D65']
+    DYNAMIC_RANGE = 'hdr'
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Jzazbz."""
