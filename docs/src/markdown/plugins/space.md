@@ -115,6 +115,8 @@ class XYZD65(Space):
     # interpolation space happens to support extended ranges, then the colors will not be gamut mapped even if their
     # gamut is larger than the target interpolation space.
     EXTENDED_RANGE = False
+    # What is the color space's dynamic range
+    DYNAMIC_RANGE = 'sdr'
 
     ############################
     # To and from conversion functions that transform the color to and from the `BASE` color.
