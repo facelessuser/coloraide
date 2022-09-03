@@ -47,10 +47,11 @@ class LChChroma(Fit):
         lightness = mapcolor['lightness']
 
         # Return white or black if lightness is out of range
-        if lightness >= self.MAX_LIGHTNESS or lightness <= self.MIN_LIGHTNESS:
-            mapcolor['chroma'] = 0
-            mapcolor['hue'] = NaN
-            clip_channels(color.update(mapcolor))
+        if lightness >= self.MAX_LIGHTNESS:
+            clip_channels(color.update('srgb', [1.0, 1.0, 1.0]))
+            return
+        elif lightness <= self.MIN_LIGHTNESS:
+            clip_channels(color.update('srgb', [0.0, 0.0, 0.0]))
             return
 
         # Set initial chroma boundaries

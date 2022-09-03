@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1
+
+- **FIX**: Tweak how the gamut mapping algorithm returns white and black for extreme light and dark colors. Improves
+  results for `oklch-chroma` when fitting extreme lightness values for certain cylindrical color spaces.
+
 ## 1.3
 
 - **ENHANCE**: Color vision deficiency filters can now be instantiated with different default methods for severe and
