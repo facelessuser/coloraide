@@ -128,7 +128,7 @@ class Geometric(Harmony):
 
         degree = current = 360 / self.COUNT
         colors = [color]
-        for r in range(self.COUNT - 1):
+        for _ in range(self.COUNT - 1):
             colors.append(
                 color0.clone().set(
                     name,
