@@ -6,8 +6,9 @@
   themselves as HDR, or something else. This allows ColorAide to make decisions based on a color's dynamic range.
 - **NEW**: Add channel aliases for IPT and IPT-like color spaces (IgPgTg and ICtCp): `intensity`, `protan`, and
   `tritan`.
-- **FIX**: The ICtCp space, whose channels `ct` and `cp` are similar to `b` and `a` in a Lab color space, would return
-  these channels in the wrong order when calling `Labish.labish_names`.
+- **FIX**: The ICtCp and oRGB space would return the Lab-ish equivalents for `a` and `b` in reverse order if calling
+  `Labish.labish_names`. This was not actually called anywhere in the code, but is now fixed for any future cases that
+  may require calling it.
 - **FIX**: When gamut mapping/clipping a color, undefined channels should be preserved if possible.
 - **FIX**: Do not apply SDR shortcuts in gamut mapping when fitting in a non-SDR color gamut, such as HDR.
 
