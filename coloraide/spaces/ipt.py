@@ -78,6 +78,11 @@ class IPT(Labish, Space):
         Channel("p", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT),
         Channel("t", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT)
     )
+    CHANNEL_ALIASES = {
+        "intensity": "i",
+        "protan": "cp",
+        "tritan": "ct"
+    }
     WHITE = WHITES['2deg']['D65']
 
     def to_base(self, coords: Vector) -> Vector:

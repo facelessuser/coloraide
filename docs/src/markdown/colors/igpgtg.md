@@ -39,9 +39,9 @@ wavelength of Gaussian-shaped light spectra to their perceived hues.
 
 Channels | Aliases
 -------- | -------
-`ig`     |
-`pg`     |
-`tg`     |
+`ig`     | `intensity`
+`pg`     | `protan`
+`tg`     | `tritan`
 
 ## Input/Output
 

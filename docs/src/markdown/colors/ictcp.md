@@ -41,9 +41,9 @@ _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
 
 Channels | Aliases
 -------- | -------
-`i`      |
-`ct`     |
-`cp`     |
+`i`      | `intensity`
+`ct`     | `tritan`
+`cp`     | `protan`
 
 ## Input/Output
 

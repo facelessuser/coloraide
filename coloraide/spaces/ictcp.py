@@ -9,6 +9,7 @@ from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
+from typing import cast, Tuple
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -93,8 +94,24 @@ class ICtCp(Labish, Space):
         Channel("ct", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
         Channel("cp", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
+    CHANNEL_ALIASES = {
+        "intensity": "i",
+        "protan": "cp",
+        "tritan": "ct"
+    }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
+
+    def labish_names(self) -> Tuple[str, ...]:
+        """
+        Return Lab-ish names in the order L a b.
+
+        ICtCp flips protan and tritan (which corresponds to `a` and `b`).
+        Interestingly, the polarity of tritan (yellow/blue) is also flipped.
+        """
+
+        channels = cast(Space, self).channels
+        return channels[0], channels[2], channels[1]
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""

@@ -228,6 +228,7 @@ preprocessing
 prerelease
 prereleases
 prophoto
+protan
 protanomaly
 protanopia
 quantizer
@@ -248,6 +249,7 @@ th
 transmissive
 triadic
 trichromacy
+tritan
 tritanomaly
 tritanopia
 un

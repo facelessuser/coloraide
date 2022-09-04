@@ -43,9 +43,9 @@ model, but hard to achieve). It is therefore well-suited for gamut mapping imple
 
 Channels | Aliases
 -------- | -------
-`i`      |
-`p`      |
-`t`      |
+`i`      | `intensity`
+`p`      | `protan`
+`t`      | `tritan`
 
 **Inputs**
 
