@@ -1312,8 +1312,8 @@ class BroadcastTo:
                     self._loop2 = self.expand
 
                     if self._chunk_index >= self._chunk_max:
-                        # We are actually at then of all the data, let's see
-                        # if we need to process all the data again.
+                        # We are actually at the end of all the data,
+                        # let's see if we need to process all the data again.
                         self._loop1 -= 1
                         if self._loop1:
                             # We need to keep going
