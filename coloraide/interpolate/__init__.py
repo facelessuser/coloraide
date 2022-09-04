@@ -378,11 +378,11 @@ def process_mapping(
     return {aliases.get(k, k): v for k, v in progress.items()}
 
 
-def normalize_color(color: 'Color', space: str) -> None:
+def normalize_color(color: 'Color') -> None:
     """Normalize color."""
 
     # Adjust to color to space and ensure it fits
-    if not color.CS_MAP[space].EXTENDED_RANGE:
+    if not color._space.EXTENDED_RANGE:
         if not color.in_gamut():
             color.fit()
 
@@ -511,7 +511,7 @@ def interpolator(
     current.convert(space, in_place=True)
     offset = 0.0
     hue_index = cast(Cylindrical, current._space).hue_index() if isinstance(current._space, Cylindrical) else -1
-    normalize_color(current, space)
+    normalize_color(current)
     norm = current[:]
     fallback = None
     if hue_index >= 0:
@@ -542,7 +542,7 @@ def interpolator(
 
         # Adjust to color to space and ensure it fits
         color = color.convert(space)
-        normalize_color(color, space)
+        normalize_color(color)
         norm = color[:]
         if hue_index >= 0:
             h = norm[hue_index]
