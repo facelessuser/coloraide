@@ -21,7 +21,7 @@ def clip_channels(color: 'Color') -> None:
             color[i] = value % 360.0
 
         # Ignore undefined or unbounded channels
-        if alg.is_nan(value) or not chan.bound:
+        if not chan.bound or alg.is_nan(value):
             continue
 
         # Fit value in bounds.
