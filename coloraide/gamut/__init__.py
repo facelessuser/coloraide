@@ -13,26 +13,19 @@ def clip_channels(color: 'Color') -> None:
     """Clip channels."""
 
     for i, value in enumerate(color[:-1]):
+
         chan = color._space.CHANNELS[i]
-        a = chan.low  # type: Optional[float]
-        b = chan.high  # type: Optional[float]
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
         if chan.flags & FLG_ANGLE:
             color[i] = value % 360.0
-            continue
 
-        if alg.is_nan(value):
+        # Ignore undefined or unbounded channels
+        if alg.is_nan(value) or not chan.bound:
             continue
-
-        # These parameters are unbounded
-        if not chan.bound:  # pragma: no cover
-            # Will not execute unless we have a space that defines some coordinates
-            # as bound and others as not. We do not currently have such spaces.
-            a = b = None
 
         # Fit value in bounds.
-        color[i] = alg.clamp(value, a, b)
+        color[i] = alg.clamp(value, chan.low, chan.high)
 
 
 def verify(color: 'Color', tolerance: float) -> bool:
@@ -40,16 +33,13 @@ def verify(color: 'Color', tolerance: float) -> bool:
 
     for i, value in enumerate(color[:-1]):
         chan = color._space.CHANNELS[i]
-        a = chan.low  # type: Optional[float]
-        b = chan.high  # type: Optional[float]
 
-        # Angles will wrap, so no sense checking them
-        if chan.flags & FLG_ANGLE or alg.is_nan(value):
+        # Ignore undefined channels, angles which wrap, and unbounded channels
+        if chan.flags & FLG_ANGLE or not chan.bound or alg.is_nan(value):
             continue
 
-        # These parameters are unbounded
-        if not chan.bound:
-            a = b = None
+        a = chan.low  # type: Optional[float]
+        b = chan.high  # type: Optional[float]
 
         # Check if bounded values are in bounds
         if (a is not None and value < (a - tolerance)) or (b is not None and value > (b + tolerance)):
