@@ -1220,9 +1220,8 @@ class BroadcastTo:
     By flattening the data, we are able to slice out the bits we need in the order we need
     and duplicate them to expand the matrix to fit the provided shape.
 
-    We need 4 things to do this:
+    We need 3 things to do this:
     - The original array.
-    - The original array shape.
     - The stage 1 array shape (with prepended 1s). This helps us calculate our loop iterations.
     - The new shape.
     """
