@@ -23,9 +23,8 @@ def contrast(name: Optional[str], color1: 'Color', color2: 'Color', **kwargs: An
     if name is None:
         name = color1.CONTRAST
 
-    try:
-        func = color1.CONTRAST_MAP[name].contrast
-    except KeyError:
+    method = color1.CONTRAST_MAP.get(name)
+    if not method:
         raise ValueError("'{}' contrast method is not supported".format(name))
 
-    return func(color1, color2, **kwargs)
+    return method.contrast(color1, color2, **kwargs)

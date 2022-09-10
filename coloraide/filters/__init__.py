@@ -29,9 +29,8 @@ def filters(
 ) -> 'Color':
     """Filter."""
 
-    try:
-        f = color.FILTER_MAP[name]
-    except KeyError:
+    f = color.FILTER_MAP.get(name)
+    if not f:
         raise ValueError("'{}' filter is not supported".format(name))
 
     if space is None:

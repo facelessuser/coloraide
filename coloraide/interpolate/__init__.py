@@ -485,9 +485,8 @@ def interpolator(
 ) -> Interpolator:
     """Get desired blend mode."""
 
-    try:
-        plugin = create.INTERPOLATE_MAP[interpolator]
-    except KeyError:
+    plugin = create.INTERPOLATE_MAP.get(interpolator)
+    if not plugin:
         raise ValueError("'{}' is not a recognized interpolator".format(interpolator))
 
     # Construct piecewise interpolation object

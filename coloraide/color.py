@@ -15,7 +15,7 @@ from . import algebra as alg
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
-from .spaces import Space, Cylindrical
+from .spaces import Space
 from .spaces.hsv import HSV
 from .spaces.srgb.css import sRGB
 from .spaces.srgb_linear import sRGBLinear
@@ -588,9 +588,8 @@ class Color(metaclass=ColorMeta):
     ) -> Vector:
         """Chromatic adaptation."""
 
-        try:
-            adapter = cls.CAT_MAP[method if method is not None else cls.CHROMATIC_ADAPTATION]
-        except KeyError:
+        adapter = cls.CAT_MAP.get(method if method is not None else cls.CHROMATIC_ADAPTATION)
+        if not adapter:
             raise ValueError("'{}' is not a supported CAT".format(method))
 
         return adapter.adapt(w1, w2, xyz)
@@ -604,14 +603,7 @@ class Color(metaclass=ColorMeta):
 
         # Convert to desired space
         c = self.convert(space, in_place=True)
-
-        # If we are perfectly in gamut, don't waste time clipping.
-        if c.in_gamut(tolerance=0.0):
-            if isinstance(c._space, Cylindrical):
-                name = c._space.hue_name()
-                c.set(name, util.constrain_hue(c[name]))
-        else:
-            gamut.clip_channels(c)
+        gamut.clip_channels(c)
 
         # Adjust "this" color
         return c.convert(orig_space, in_place=True)
@@ -625,39 +617,31 @@ class Color(metaclass=ColorMeta):
     ) -> 'Color':
         """Fit the gamut using the provided method."""
 
-        # Dedicated clip method.
-        orig_space = self.space()
-        if method == 'clip' or (method is None and self.FIT == "clip"):
-            return self.clip(space)
-
-        if space is None:
-            space = self.space()
-
         if method is None:
             method = self.FIT
 
+        # Dedicated clip method.
+        if method == 'clip':
+            return self.clip(space)
+
+        orig_space = self.space()
+        if space is None:
+            space = self.space()
+
         # Select appropriate mapping algorithm
-        if method in self.FIT_MAP:
-            func = self.FIT_MAP[method].fit
-        else:
+        mapping = self.FIT_MAP.get(method)
+        if not mapping:
             # Unknown fit method
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        c = self.convert(space, in_place=True)
+        self.convert(space, in_place=True)
 
-        # If we are perfectly in gamut, don't waste time fitting, just normalize hues.
-        # If out of gamut, apply mapping/clipping/etc.
-        if c.in_gamut(tolerance=0.0):
-            if isinstance(c._space, Cylindrical):
-                name = c._space.hue_name()
-                c.set(name, util.constrain_hue(c[name]))
-        else:
-            # Doesn't seem to be an easy way that `mypy` can know whether this is the ABC class or not
-            func(c, **kwargs)
+        # Call the appropriate gamut mapping algorithm
+        mapping.fit(self, **kwargs)
 
-        # Adjust "this" color
-        return c.convert(orig_space, in_place=True)
+        # Convert back to the original color space
+        return self.convert(orig_space, in_place=True)
 
     def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
@@ -665,20 +649,16 @@ class Color(metaclass=ColorMeta):
         if space is None:
             space = self.space()
 
-        # Check gamut in the provided space
-        if space is not None and space != self.space():
-            c = self.convert(space)
-            return c.in_gamut(tolerance=tolerance)
+        # Check if gamut is in the provided space
+        c = self.convert(space) if space is not None and space != self.space() else self
 
         # Check the color space specified for gamut checking.
         # If it proves to be in gamut, we will then test if the current
         # space is constrained properly.
-        if self._space.GAMUT_CHECK is not None:
-            c = self.convert(self._space.GAMUT_CHECK)
-            if not c.in_gamut(tolerance=tolerance):
-                return False
+        if c._space.GAMUT_CHECK is not None and not c.convert(c._space.GAMUT_CHECK).in_gamut(tolerance=tolerance):
+            return False
 
-        return gamut.verify(self, tolerance)
+        return gamut.verify(c, tolerance)
 
     def mask(self, channel: Union[str, Sequence[str]], *, invert: bool = False, in_place: bool = False) -> 'Color':
         """Mask color channels."""
@@ -828,10 +808,10 @@ class Color(metaclass=ColorMeta):
         if method is None:
             method = self.DELTA_E
 
-        try:
-            return self.DE_MAP[method].distance(self, color, **kwargs)
-        except KeyError:
+        delta = self.DE_MAP.get(method)
+        if not delta:
             raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
+        return delta.distance(self, color, **kwargs)
 
     def distance(self, color: ColorInput, *, space: str = "lab") -> float:
         """Delta."""
