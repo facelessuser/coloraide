@@ -35,10 +35,15 @@ class LChChroma(Fit):
     def fit(self, color: 'Color', **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
 
+        # If within gamut, just normalize hues by calling clip
+        if color.in_gamut(tolerance=0):
+            clip_channels(color)
+            return
+
         space = color.space()
         mapcolor = color.convert(self.SPACE)
         lightness = mapcolor['lightness']
-        sdr = color._space.DYNAMIC_RANGE.lower() == 'sdr'
+        sdr = color._space.DYNAMIC_RANGE == 'sdr'
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.

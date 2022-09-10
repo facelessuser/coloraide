@@ -237,7 +237,7 @@ SUPPORTED = {
 def compositor(name: str) -> Type[PorterDuff]:
     """Get the requested compositor."""
 
-    try:
-        return SUPPORTED[name]
-    except KeyError:
+    composite = SUPPORTED.get(name)
+    if not composite:
         raise ValueError("'{}' compositing is not supported".format(name))
+    return composite

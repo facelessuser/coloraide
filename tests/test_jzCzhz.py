@@ -116,6 +116,12 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
 
+    def test_hue_name(self):
+        """Test `hue_name`."""
+
+        c = Color('color(--jzczhz 0.22 0.5 270 / 1)')
+        self.assertEqual(c._space.hue_name(), 'hz')
+
 
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""

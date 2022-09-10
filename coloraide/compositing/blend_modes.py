@@ -304,7 +304,7 @@ SUPPORTED = {
 def get_blender(blend: str) -> Blend:
     """Get desired blend mode."""
 
-    try:
-        return SUPPORTED[blend]
-    except KeyError:
+    blender = SUPPORTED.get(blend)
+    if not blender:
         raise ValueError("'{}' is not a recognized blend mode".format(blend))
+    return blender
