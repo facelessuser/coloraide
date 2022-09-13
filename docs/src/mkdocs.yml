@@ -25,6 +25,7 @@ theme:
     - navigation.instant
     - navigation.sections
     - navigation.indexes
+    - toc.follow
   pymdownx:
     sponsor: "https://github.com/sponsors/facelessuser"
 
