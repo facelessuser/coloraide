@@ -583,6 +583,9 @@ def render_notebook(*args):
         },
         'pymdownx.keys': {
             'separator': "\uff0b"
+        },
+        'pymdownx.tabbed': {
+            'alternate_style': True
         }
     }
 

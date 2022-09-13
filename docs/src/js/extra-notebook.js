@@ -374,8 +374,10 @@ ${content}
           pathname = `/${base}/playground/`
         }
         const path = `${loc.protocol}//${loc.host}${pathname}?code=${uri}`
-        if (uri.length > 1000) {
-          alert("Code must be under a 1000 characters to generate a URL!") // eslint-disable-line no-alert
+        if (path.length > 2000) {
+          alert( // eslint-disable-line no-alert
+            "Code must be small enough to generate a shareable URL under 2000 characters!"
+          )
         } else {
           navigator.clipboard.writeText(path).then(async() => {
             alert("Link copied to clipboard :)") // eslint-disable-line no-alert
