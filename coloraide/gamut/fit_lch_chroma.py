@@ -1,4 +1,5 @@
 """Fit by compressing chroma in LCh."""
+from __future__ import annotations
 from ..gamut import Fit, clip_channels
 from typing import TYPE_CHECKING, Any
 
@@ -32,7 +33,7 @@ class LChChroma(Fit):
     MAX_LIGHTNESS = 100
     MIN_CONVERGENCE = 0.0001
 
-    def fit(self, color: 'Color', **kwargs: Any) -> None:
+    def fit(self, color: Color, **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
 
         # If within gamut, just normalize hues by calling clip

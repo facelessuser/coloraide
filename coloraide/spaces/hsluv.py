@@ -24,6 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
@@ -34,16 +35,15 @@ import math
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import List, Dict
 
 
-def length_of_ray_until_intersect(theta: float, line: Dict[str, float]) -> float:
+def length_of_ray_until_intersect(theta: float, line: dict[str, float]) -> float:
     """Length of ray until intersect."""
 
     return line['intercept'] / (math.sin(theta) - line['slope'] * math.cos(theta))
 
 
-def get_bounds(l: float) -> List[Dict[str, float]]:
+def get_bounds(l: float) -> list[dict[str, float]]:
     """Get bounds."""
 
     result = []

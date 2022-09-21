@@ -3,11 +3,12 @@ Catmull-Rom interpolation.
 
 http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/Parameterized-Curves-Summary.htm
 """
+from __future__ import annotations
 from .bspline import InterpolatorBSpline
 from ..interpolate import Interpolator, Interpolate
 from .. import algebra as alg
 from ..types import Vector
-from typing import Optional, Callable, Mapping, List, Union, Sequence, Dict, Any, Type, TYPE_CHECKING
+from typing import Optional, Callable, Mapping, Sequence, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -30,14 +31,14 @@ class CatmullRom(Interpolate):
 
     def interpolator(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
+        create: type[Color],
+        easings: list[Optional[Callable[..., float]]],
+        stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         extrapolate: bool = False,
         **kwargs: Any

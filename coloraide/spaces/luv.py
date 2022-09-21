@@ -3,6 +3,7 @@ Luv class.
 
 https://en.wikipedia.org/wiki/CIELuv
 """
+from __future__ import annotations
 from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -10,10 +11,9 @@ from .lab import KAPPA, EPSILON, KE
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple
 
 
-def xyz_to_luv(xyz: Vector, white: Tuple[float, float]) -> Vector:
+def xyz_to_luv(xyz: Vector, white: tuple[float, float]) -> Vector:
     """XYZ to Luv."""
 
     u, v = util.xy_to_uv(util.xyz_to_xyY(xyz, white)[:2])
@@ -30,7 +30,7 @@ def xyz_to_luv(xyz: Vector, white: Tuple[float, float]) -> Vector:
     ]
 
 
-def luv_to_xyz(luv: Vector, white: Tuple[float, float]) -> Vector:
+def luv_to_xyz(luv: Vector, white: tuple[float, float]) -> Vector:
     """Luv to XYZ."""
 
     l, u, v = luv

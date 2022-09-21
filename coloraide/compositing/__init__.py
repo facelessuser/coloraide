@@ -3,11 +3,12 @@ Compositing and RGB blend modes.
 
 https://www.w3.org/TR/compositing/
 """
+from __future__ import annotations
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from typing import Optional, Union, List, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -31,11 +32,11 @@ def clip_channel(coord: float, channel: Channel) -> float:
 
 
 def apply_compositing(
-    color1: 'Color',
-    color2: 'Color',
+    color1: Color,
+    color2: Color,
     blender: Optional[blend_modes.Blend],
-    operator: Union[str, bool]
-) -> 'Color':
+    operator: str | bool
+) -> Color:
     """Perform the actual blending."""
 
     # Get the color coordinates
@@ -74,12 +75,12 @@ def apply_compositing(
 
 
 def compose(
-    color: 'Color',
-    backdrop: List['Color'],
-    blend: Union[str, bool] = True,
-    operator: Union[str, bool] = True,
+    color: Color,
+    backdrop: list[Color],
+    blend: str | bool = True,
+    operator: str | bool = True,
     space: Optional[str] = None
-) -> 'Color':
+) -> Color:
     """Blend colors using the specified blend mode."""
 
     # We need to go ahead and grab the blender as we need to check what type of blender it is.

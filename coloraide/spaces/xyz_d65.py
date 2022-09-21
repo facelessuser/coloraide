@@ -1,9 +1,9 @@
 """XYZ D65 class."""
+from __future__ import annotations
 from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel
 from ..types import Vector
-from typing import Tuple
 
 
 class XYZD65(Space):
@@ -11,7 +11,7 @@ class XYZD65(Space):
 
     BASE = "xyz-d65"
     NAME = "xyz-d65"
-    SERIALIZE = ("xyz-d65", 'xyz')  # type: Tuple[str, ...]
+    SERIALIZE = ("xyz-d65", 'xyz')  # type: tuple[str, ...]
     CHANNELS = (
         Channel("x", 0.0, 1.0),
         Channel("y", 0.0, 1.0),

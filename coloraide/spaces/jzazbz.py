@@ -18,6 +18,7 @@ is almost certain that some scaling is being applied and that applying none is a
 
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
+from __future__ import annotations
 from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT

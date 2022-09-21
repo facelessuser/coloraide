@@ -1,4 +1,5 @@
 """HyAB distance."""
+from __future__ import annotations
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
@@ -19,7 +20,7 @@ class DEHyAB(DeltaE):
 
         self.space = space
 
-    def distance(self, color: 'Color', sample: 'Color', space: Optional[str] = None, **kwargs: Any) -> float:
+    def distance(self, color: Color, sample: Color, space: Optional[str] = None, **kwargs: Any) -> float:
         """
         HyAB distance for Lab-ish spaces.
 

@@ -1,9 +1,9 @@
 """Uncalibrated, naive CMY color space."""
+from __future__ import annotations
 from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
-from typing import Tuple
 
 
 def srgb_to_cmy(rgb: Vector) -> Vector:
@@ -23,7 +23,7 @@ class CMY(Space):
 
     BASE = "srgb"
     NAME = "cmy"
-    SERIALIZE = ("--cmy",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--cmy",)  # type: tuple[str, ...]
     CHANNELS = (
         Channel("c", 0.0, 1.0, bound=True),
         Channel("m", 0.0, 1.0, bound=True),

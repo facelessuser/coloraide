@@ -1,4 +1,5 @@
 """Delta E 76."""
+from __future__ import annotations
 from ..distance import DeltaE, distance_euclidean
 from typing import TYPE_CHECKING, Any
 
@@ -12,7 +13,7 @@ class DE76(DeltaE):
     NAME = "76"
     SPACE = "lab-d65"
 
-    def distance(self, color: 'Color', sample: 'Color', **kwargs: Any) -> float:
+    def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """
         Delta E 1976 color distance formula.
 

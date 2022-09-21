@@ -1,4 +1,5 @@
 """Fit by compressing chroma in OkLCh."""
+from __future__ import annotations
 from .fit_lch_chroma import LChChroma
 
 

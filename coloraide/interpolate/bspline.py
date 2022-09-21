@@ -5,10 +5,11 @@ https://en.wikipedia.org/wiki/B-spline
 https://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
 http://www2.cs.uregina.ca/~anima/408/Notes/Interpolation/UniformBSpline.htm
 """
+from __future__ import annotations
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
-from typing import Optional, Callable, Mapping, List, Union, Sequence, Dict, Any, Type, TYPE_CHECKING
+from typing import Optional, Callable, Mapping, Sequence, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -163,14 +164,14 @@ class BSpline(Interpolate):
 
     def interpolator(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
+        create: type[Color],
+        easings: list[Optional[Callable[..., float]]],
+        stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         extrapolate: bool = False,
         **kwargs: Any

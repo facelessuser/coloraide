@@ -3,6 +3,7 @@ Delta E ITP.
 
 https://kb.portrait.com/help/ictcp-color-difference-metric
 """
+from __future__ import annotations
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
@@ -22,7 +23,7 @@ class DEITP(DeltaE):
 
         self.scalar = scalar
 
-    def distance(self, color: 'Color', sample: 'Color', scalar: Optional[float] = None, **kwargs: Any) -> float:
+    def distance(self, color: Color, sample: Color, scalar: Optional[float] = None, **kwargs: Any) -> float:
         """Delta E ITP color distance formula."""
 
         if scalar is None:

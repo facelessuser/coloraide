@@ -3,13 +3,14 @@ ICtCp class.
 
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
+from __future__ import annotations
 from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast, Tuple
+from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -102,7 +103,7 @@ class ICtCp(Labish, Space):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
-    def labish_names(self) -> Tuple[str, ...]:
+    def labish_names(self) -> tuple[str, ...]:
         """
         Return Lab-ish names in the order L a b.
 

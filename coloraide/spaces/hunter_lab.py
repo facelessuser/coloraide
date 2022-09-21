@@ -3,6 +3,7 @@ Hunter Lab class.
 
 https://support.hunterlab.com/hc/en-us/articles/203997095-Hunter-Lab-Color-Scale-an08-96a2
 """
+from __future__ import annotations
 from ..cat import WHITES
 from ..spaces.lab import Lab
 from .. import algebra as alg

@@ -3,6 +3,7 @@ DIN99o class.
 
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
+from __future__ import annotations
 from ..cat import WHITES
 from .lab import Lab
 import math

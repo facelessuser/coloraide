@@ -1,10 +1,11 @@
 """Chromatic adaptation transforms."""
+from __future__ import annotations
 from . import util
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 import functools
 from .types import Matrix, VectorLike, Vector, Plugin
-from typing import Any, Type, Dict, Tuple, cast
+from typing import Any, cast
 
 # From CIE 2004 Colorimetry T.3 and T.8
 # B from https://en.wikipedia.org/wiki/Standard_illuminant#White_point
@@ -40,10 +41,10 @@ WHITES = {
 
 
 def calc_adaptation_matrices(
-    w1: Tuple[float, float],
-    w2: Tuple[float, float],
+    w1: tuple[float, float],
+    w2: tuple[float, float],
     m: Matrix,
-) -> Tuple[Matrix, Matrix]:
+) -> tuple[Matrix, Matrix]:
     """
     Get the von Kries based adaptation matrix based on the method and illuminants.
 
@@ -67,16 +68,16 @@ def calc_adaptation_matrices(
 class VonKriesMeta(ABCMeta):
     """Meta class for Von Kries style CAT plugin."""
 
-    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
+    def __init__(cls, name: str, bases: tuple[object, ...], clsdict: dict[str, Any]) -> None:
         """Cache best filter."""
 
         @classmethod  # type: ignore[misc]
         @functools.lru_cache(maxsize=6)
         def get_adaptation_matrices(
-            cls: Type['VonKries'],
-            w1: Tuple[float, float],
-            w2: Tuple[float, float]
-        ) -> Tuple[Matrix, Matrix]:
+            cls: type[VonKries],
+            w1: tuple[float, float],
+            w2: tuple[float, float]
+        ) -> tuple[Matrix, Matrix]:
             """Get the adaptation matrices."""
 
             return calc_adaptation_matrices(w1, w2, cls.MATRIX)
@@ -90,7 +91,7 @@ class CAT(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: tuple[float, float], w2: tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 
 
@@ -110,7 +111,7 @@ class VonKries(CAT, metaclass=VonKriesMeta):
         [0.0000000, 0.0000000, 0.9182200]
     ]  # type: Matrix
 
-    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: tuple[float, float], w2: tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 
         # We are already using the correct white point
@@ -118,7 +119,7 @@ class VonKries(CAT, metaclass=VonKriesMeta):
             return list(xyz)
 
         a, b = sorted([w1, w2])
-        m, mi = cast(Type['VonKries'], self).get_adaptation_matrices(a, b)
+        m, mi = cast('type[VonKries]', self).get_adaptation_matrices(a, b)
         return alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1)
 
 

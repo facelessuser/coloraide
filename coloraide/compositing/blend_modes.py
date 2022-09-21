@@ -1,8 +1,8 @@
 """Blend modes."""
+from __future__ import annotations
 import math
 from abc import ABCMeta, abstractmethod
 from operator import itemgetter
-from typing import Dict
 from ..types import Vector
 
 
@@ -298,7 +298,7 @@ SUPPORTED = {
     "saturation": BlendSaturation(),
     "luminosity": BlendLuminosity(),
     "color": BlendColor(),
-}  # type: Dict[str, Blend]
+}  # type: dict[str, Blend]
 
 
 def get_blender(blend: str) -> Blend:

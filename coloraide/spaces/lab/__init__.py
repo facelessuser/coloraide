@@ -1,4 +1,5 @@
 """Lab class."""
+from __future__ import annotations
 from ...spaces import Space, Labish
 from ...cat import WHITES
 from ...channels import Channel, FLG_OPT_PERCENT, FLG_MIRROR_PERCENT

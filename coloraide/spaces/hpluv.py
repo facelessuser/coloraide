@@ -24,6 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
@@ -34,16 +35,15 @@ import math
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import List, Tuple
 
 
-def distance_line_from_origin(line: Tuple[float, float]) -> float:
+def distance_line_from_origin(line: tuple[float, float]) -> float:
     """Distance line from origin."""
 
     return abs(line[1]) / math.sqrt(line[0] ** 2 + 1)
 
 
-def get_bounds(l: float) -> List[Tuple[float, float]]:
+def get_bounds(l: float) -> list[tuple[float, float]]:
     """Get bounds."""
 
     result = []

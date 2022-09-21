@@ -1,4 +1,5 @@
 """Everything and the kitchen sink."""
+from __future__ import annotations
 from .color import Color as Base
 from .spaces.rec2100pq import Rec2100PQ
 from .spaces.jzazbz import Jzazbz

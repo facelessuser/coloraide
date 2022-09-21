@@ -3,12 +3,12 @@ The IgPgTg color space.
 
 https://www.ingentaconnect.com/content/ist/jpi/2020/00000003/00000002/art00002#
 """
+from __future__ import annotations
 from ..spaces import Space, Labish
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..cat import WHITES
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple
 
 XYZ_TO_LMS = [
     [2.968, 2.741, -0.649],
@@ -64,7 +64,7 @@ class IgPgTg(Labish, Space):
 
     BASE = "xyz-d65"
     NAME = "igpgtg"
-    SERIALIZE = ("--igpgtg",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--igpgtg",)  # type: tuple[str, ...]
     CHANNELS = (
         Channel("ig", 0.0, 1.0),
         Channel("pg", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),

@@ -1,4 +1,5 @@
 """Typing."""
+from __future__ import annotations
 from typing import Union, Any, Mapping, Sequence, List, TypeVar, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover

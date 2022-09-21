@@ -1,4 +1,5 @@
 """String serialization."""
+from __future__ import annotations
 import re
 from .. import util
 from .. import algebra as alg
@@ -6,7 +7,7 @@ from . import parse
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT
 from ..types import Vector
-from typing import Optional, Union, Match, cast, TYPE_CHECKING
+from typing import Optional, Match, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -19,7 +20,7 @@ SPACE = ' '
 EMPTY = ''
 
 
-def named_color(obj: 'Color', alpha: Optional[bool], fit: Union[str, bool]) -> Optional[str]:
+def named_color(obj: 'Color', alpha: Optional[bool], fit: str | bool) -> Optional[str]:
     """Get the CSS color name."""
 
     a = get_alpha(obj, alpha, False)
@@ -35,7 +36,7 @@ def named_color_function(
     func: str,
     alpha: Optional[bool],
     precision: int,
-    fit: Union[str, bool],
+    fit: str | bool,
     none: bool,
     percent: bool,
     legacy: bool,
@@ -78,7 +79,7 @@ def color_function(
     obj: 'Color',
     alpha: Optional[bool],
     precision: int,
-    fit: Union[str, bool],
+    fit: str | bool,
     none: bool
 ) -> str:
     """Color format."""
@@ -95,7 +96,7 @@ def color_function(
     )
 
 
-def get_coords(obj: 'Color', fit: Union[str, bool], none: bool, legacy: bool) -> Vector:
+def get_coords(obj: 'Color', fit: str | bool, none: bool, legacy: bool) -> Vector:
     """Get the coordinates."""
 
     method = None if not isinstance(fit, str) else fit
@@ -114,7 +115,7 @@ def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool) -> Optional[float
 def hexadecimal(
     obj: 'Color',
     alpha: Optional[bool] = None,
-    fit: Union[str, bool] = True,
+    fit: str | bool = True,
     upper: bool = False,
     compress: bool = False
 ) -> str:
@@ -154,7 +155,7 @@ def serialize_css(
     color: bool = False,
     alpha: Optional[bool] = None,
     precision: Optional[int] = None,
-    fit: Union[str, bool] = True,
+    fit: str | bool = True,
     none: bool = False,
     percent: bool = False,
     hexa: bool = False,

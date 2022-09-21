@@ -3,11 +3,11 @@ Uncalibrated, naive CMYK color space.
 
 https://www.w3.org/TR/css-color-5/#cmyk-rgb
 """
+from __future__ import annotations
 from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
-from typing import Tuple
 
 
 def srgb_to_cmyk(rgb: Vector) -> Vector:
@@ -40,7 +40,7 @@ class CMYK(Space):
 
     BASE = "srgb"
     NAME = "cmyk"
-    SERIALIZE = ("--cmyk",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--cmyk",)  # type: tuple[str, ...]
     CHANNELS = (
         Channel("c", 0.0, 1.0, bound=True),
         Channel("m", 0.0, 1.0, bound=True),

@@ -1,4 +1,5 @@
 """Colors."""
+from __future__ import annotations
 import abc
 import functools
 import random
@@ -59,13 +60,13 @@ from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .interpolate.linear import Linear
 from .types import Plugin
-from typing import overload, Union, Sequence, Dict, List, Optional, Any, cast, Callable, Tuple, Type, Mapping
+from typing import overload, Sequence, Optional, Any, cast, Callable, Mapping
 
 
 class ColorMatch:
     """Color match object."""
 
-    def __init__(self, color: 'Color', start: int, end: int) -> None:
+    def __init__(self, color: Color, start: int, end: int) -> None:
         """Initialize."""
 
         self.color = color
@@ -83,28 +84,28 @@ class ColorMatch:
 class ColorMeta(abc.ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
-    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
+    def __init__(cls, name: str, bases: tuple[object, ...], clsdict: dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         # Ensure subclassed Color objects do not use the same plugin mappings
         if len(cls.mro()) > 2:
-            cls.CS_MAP = cls.CS_MAP.copy()  # type: Dict[str, Space]
-            cls.DE_MAP = cls.DE_MAP.copy()  # type: Dict[str, DeltaE]
-            cls.FIT_MAP = cls.FIT_MAP.copy()  # type: Dict[str, Fit]
-            cls.CAT_MAP = cls.CAT_MAP.copy()  # type: Dict[str, CAT]
-            cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: Dict[str, Filter]
-            cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: Dict[str, ColorContrast]
-            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: Dict[str, Interpolate]
+            cls.CS_MAP = cls.CS_MAP.copy()  # type: dict[str, Space]
+            cls.DE_MAP = cls.DE_MAP.copy()  # type: dict[str, DeltaE]
+            cls.FIT_MAP = cls.FIT_MAP.copy()  # type: dict[str, Fit]
+            cls.CAT_MAP = cls.CAT_MAP.copy()  # type: dict[str, CAT]
+            cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: dict[str, Filter]
+            cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: dict[str, ColorContrast]
+            cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
         @classmethod  # type: ignore[misc]
         @functools.lru_cache(maxsize=256)
         def _get_convert_chain(
-            cls: Type['Color'],
-            space: 'Space',
+            cls: type[Color],
+            space: Space,
             target: str
-        ) -> List[Tuple['Space', 'Space', int, bool]]:
+        ) -> list[tuple[Space, Space, int, bool]]:
             """Resolve a conversion chain, cache it for speed."""
 
             return convert.get_convert_chain(cls, space, target)
@@ -115,13 +116,13 @@ class ColorMeta(abc.ABCMeta):
 class Color(metaclass=ColorMeta):
     """Color class object which provides access and manipulation of color spaces."""
 
-    CS_MAP = {}  # type: Dict[str, Space]
-    DE_MAP = {}  # type: Dict[str, DeltaE]
-    FIT_MAP = {}  # type: Dict[str, Fit]
-    CAT_MAP = {}  # type: Dict[str, CAT]
-    CONTRAST_MAP = {}  # type: Dict[str, ColorContrast]
-    FILTER_MAP = {}  # type: Dict[str, Filter]
-    INTERPOLATE_MAP = {}  # type: Dict[str, Interpolate]
+    CS_MAP = {}  # type: dict[str, Space]
+    DE_MAP = {}  # type: dict[str, DeltaE]
+    FIT_MAP = {}  # type: dict[str, Fit]
+    CAT_MAP = {}  # type: dict[str, CAT]
+    CONTRAST_MAP = {}  # type: dict[str, ColorContrast]
+    FILTER_MAP = {}  # type: dict[str, Filter]
+    INTERPOLATE_MAP = {}  # type: dict[str, Interpolate]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
@@ -157,27 +158,27 @@ class Color(metaclass=ColorMeta):
         return len(self._space.CHANNELS) + 1
 
     @overload
-    def __getitem__(self, i: Union[str, int]) -> float:  # noqa: D105
+    def __getitem__(self, i: str | int) -> float:  # noqa: D105
         ...
 
     @overload
     def __getitem__(self, i: slice) -> Vector:  # noqa: D105
         ...
 
-    def __getitem__(self, i: Union[str, int, slice]) -> Union[float, Vector]:
+    def __getitem__(self, i: str | int | slice) -> float | Vector:
         """Get channels."""
 
         return self._coords[self._space.get_channel_index(i)] if isinstance(i, str) else self._coords[i]
 
     @overload
-    def __setitem__(self, i: Union[str, int], v: float) -> None:  # noqa: D105
+    def __setitem__(self, i: str | int, v: float) -> None:  # noqa: D105
         ...
 
     @overload
     def __setitem__(self, i: slice, v: Vector) -> None:  # noqa: D105
         ...
 
-    def __setitem__(self, i: Union[str, int, slice], v: Union[float, Vector]) -> None:
+    def __setitem__(self, i: str | int | slice, v: float | Vector) -> None:
         """Set channels."""
 
         space = self._space
@@ -204,9 +205,10 @@ class Color(metaclass=ColorMeta):
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
-    ) -> Tuple[Space, List[float]]:
+    ) -> tuple[Space, list[float]]:
         """Parse the color."""
 
+        # Parse a color string or color space name and coordinates
         if isinstance(color, str):
 
             # Parse a color space name and coordinates
@@ -216,11 +218,13 @@ class Color(metaclass=ColorMeta):
                 if not space_class:
                     raise ValueError("'{}' is not a registered color space")
                 num_channels = len(space_class.CHANNELS)
-                if len(data) < num_channels:
-                    data = list(data) + [alg.NaN] * (num_channels - len(data))
+                num_data = len(data)
+                if num_data < num_channels:
+                    data = list(data) + [alg.NaN] * (num_channels - num_data)
                 coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
                 coords.append(alg.clamp(float(alpha), *space_class.channels[-1].limit))
                 obj = space_class, coords
+
             # Parse a CSS string
             else:
                 m = cls._match(color, fullmatch=True)
@@ -229,18 +233,18 @@ class Color(metaclass=ColorMeta):
                 coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(m[0].CHANNELS, m[1])]
                 coords.append(alg.clamp(float(m[2]), *m[0].channels[-1].limit))
                 obj = m[0], coords
+
+        # Handle a color instance
         elif isinstance(color, Color):
-            # Handle a color instance
             space_class = cls.CS_MAP.get(color.space())
             if not space_class:
                 raise ValueError("'{}' is not a registered color space")
             obj = space_class, color[:]
+
+        # Handle a color dictionary
         elif isinstance(color, Mapping):
-            # Handle a color dictionary
-            space = color['space']
-            coords = color['coords']
-            alpha = color.get('alpha', 1.0)
-            obj = cls._parse(space, coords, alpha)
+            obj = cls._parse(color['space'], color['coords'], color.get('alpha', 1.0))
+
         else:
             raise TypeError("'{}' is an unrecognized type".format(type(color)))
 
@@ -252,7 +256,7 @@ class Color(metaclass=ColorMeta):
         string: str,
         start: int = 0,
         fullmatch: bool = False
-    ) -> Optional[Tuple['Space', Vector, float, int, int]]:
+    ) -> Optional[tuple[Space, Vector, float, int, int]]:
         """
         Match a color in a buffer and return a color object.
 
@@ -300,7 +304,7 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def register(
         cls,
-        plugin: Union[Plugin, Sequence[Plugin]],
+        plugin: Plugin | Sequence[Plugin],
         *,
         overwrite: bool = False,
         silent: bool = False
@@ -312,7 +316,7 @@ class Color(metaclass=ColorMeta):
         if not isinstance(plugin, Sequence):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[Dict[str, Any]]
+        mapping = None  # type: Optional[dict[str, Any]]
         for p in plugin:
             if isinstance(p, Space):
                 mapping = cls.CS_MAP
@@ -344,7 +348,7 @@ class Color(metaclass=ColorMeta):
             value = p
 
             if name != "*" and name not in mapping or overwrite:
-                cast(Dict[str, Plugin], mapping)[name] = value
+                cast('dict[str, Plugin]', mapping)[name] = value
             elif not silent:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()
@@ -354,7 +358,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def deregister(cls, plugin: Union[str, Sequence[str]], *, silent: bool = False) -> None:
+    def deregister(cls, plugin: str | Sequence[str], *, silent: bool = False) -> None:
         """Deregister a plugin by name of specified plugin type."""
 
         reset_convert_cache = False
@@ -362,7 +366,7 @@ class Color(metaclass=ColorMeta):
         if isinstance(plugin, str):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[Dict[str, Any]]
+        mapping = None  # type: Optional[dict[str, Any]]
         for p in plugin:
             if p == '*':
                 cls.CS_MAP.clear()
@@ -413,7 +417,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def random(cls, space: str, *, limits: Optional[Sequence[Optional[Sequence[float]]]] = None) -> 'Color':
+    def random(cls, space: str, *, limits: Optional[Sequence[Optional[Sequence[float]]]] = None) -> Color:
         """Get a random color."""
 
         # Get the color space and number of channels
@@ -445,7 +449,7 @@ class Color(metaclass=ColorMeta):
 
         return {'space': self.space(), 'coords': self[:-1], 'alpha': self[-1]}
 
-    def normalize(self) -> 'Color':
+    def normalize(self) -> Color:
         """Normalize the color."""
 
         self[:] = self._space.normalize(self[:])
@@ -456,7 +460,7 @@ class Color(metaclass=ColorMeta):
 
         return alg.is_nan(self.get(name))
 
-    def _handle_color_input(self, color: ColorInput) -> 'Color':
+    def _handle_color_input(self, color: ColorInput) -> Color:
         """Handle color input."""
 
         if isinstance(color, (str, Mapping)):
@@ -477,17 +481,17 @@ class Color(metaclass=ColorMeta):
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Create new color object."""
 
         return type(self)(color, data, alpha, **kwargs)
 
-    def clone(self) -> 'Color':
+    def clone(self) -> Color:
         """Clone."""
 
         return self.new(self.space(), self[:-1], self[-1])
 
-    def convert(self, space: str, *, fit: Union[bool, str] = False, in_place: bool = False) -> 'Color':
+    def convert(self, space: str, *, fit: bool | str = False, in_place: bool = False) -> Color:
         """Convert to color space."""
 
         if fit:
@@ -513,7 +517,7 @@ class Color(metaclass=ColorMeta):
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Mutate the current color to a new color."""
 
         self._space, self._coords = self._parse(color, data=data, alpha=alpha, **kwargs)
@@ -521,11 +525,11 @@ class Color(metaclass=ColorMeta):
 
     def update(
         self,
-        color: Union['Color', str, Mapping[str, Any]],
+        color: ColorInput,
         data: Optional[VectorLike] = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Update the existing color space with the provided color."""
 
         space = self.space()
@@ -580,8 +584,8 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def chromatic_adaptation(
         cls,
-        w1: Tuple[float, float],
-        w2: Tuple[float, float],
+        w1: tuple[float, float],
+        w2: tuple[float, float],
         xyz: VectorLike,
         *,
         method: Optional[str] = None
@@ -594,7 +598,7 @@ class Color(metaclass=ColorMeta):
 
         return adapter.adapt(w1, w2, xyz)
 
-    def clip(self, space: Optional[str] = None) -> 'Color':
+    def clip(self, space: Optional[str] = None) -> Color:
         """Clip the color channels."""
 
         orig_space = self.space()
@@ -614,7 +618,7 @@ class Color(metaclass=ColorMeta):
         *,
         method: Optional[str] = None,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Fit the gamut using the provided method."""
 
         if method is None:
@@ -660,7 +664,7 @@ class Color(metaclass=ColorMeta):
 
         return gamut.verify(c, tolerance)
 
-    def mask(self, channel: Union[str, Sequence[str]], *, invert: bool = False, in_place: bool = False) -> 'Color':
+    def mask(self, channel: str | Sequence[str], *, invert: bool = False, in_place: bool = False) -> Color:
         """Mask color channels."""
 
         this = self if in_place else self.clone()
@@ -680,7 +684,7 @@ class Color(metaclass=ColorMeta):
         *,
         in_place: bool = False,
         **interpolate_args: Any
-    ) -> 'Color':
+    ) -> Color:
         """
         Mix colors using interpolation.
 
@@ -696,14 +700,14 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def steps(
         cls,
-        colors: Sequence[Union[ColorInput, interpolate.stop, Callable[..., float]]],
+        colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
         *,
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
         delta_e: Optional[str] = None,
         **interpolate_args: Any
-    ) -> List['Color']:
+    ) -> list[Color]:
         """Discrete steps."""
 
         return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
@@ -711,11 +715,11 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def interpolate(
         cls,
-        colors: Sequence[Union[ColorInput, interpolate.stop, Callable[..., float]]],
+        colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
         *,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]] = None,
+        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]] = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
         extrapolate: bool = False,
@@ -755,7 +759,7 @@ class Color(metaclass=ColorMeta):
         space: Optional[str] = None,
         in_place: bool = False,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Filter."""
 
         return filters.filters(self, name, amount, space, in_place, **kwargs)
@@ -765,21 +769,21 @@ class Color(metaclass=ColorMeta):
         name: str,
         *,
         space: Optional[str] = None
-    ) -> List['Color']:
+    ) -> list[Color]:
         """Acquire the specified color harmonies."""
 
         return harmonies.harmonize(self, name, space)
 
     def compose(
         self,
-        backdrop: Union[ColorInput, Sequence[ColorInput]],
+        backdrop: ColorInput | Sequence[ColorInput],
         *,
-        blend: Union[str, bool] = True,
-        operator: Union[str, bool] = True,
+        blend: str | bool = True,
+        operator: str | bool = True,
         space: Optional[str] = None,
         out_space: Optional[str] = None,
         in_place: bool = False
-    ) -> 'Color':
+    ) -> Color:
         """Blend colors using the specified blend mode."""
 
         if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
@@ -824,7 +828,7 @@ class Color(metaclass=ColorMeta):
         *,
         method: Optional[str] = None,
         **kwargs: Any
-    ) -> 'Color':
+    ) -> Color:
         """Find the closest color to the current base color."""
 
         return distance.closest(self, colors, method=method, **kwargs)
@@ -854,8 +858,8 @@ class Color(metaclass=ColorMeta):
     def set(  # noqa: A003
         self,
         name: str,
-        value: Union[float, Callable[..., float]]
-    ) -> 'Color':
+        value: float | Callable[..., float]
+    ) -> Color:
         """Set channel."""
 
         # Handle space.attribute

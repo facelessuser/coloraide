@@ -1,9 +1,10 @@
 """Lab class."""
+from __future__ import annotations
 from .. import lab as base
 from ...css import parse
 from ...css import serialize
 from ...types import Vector
-from typing import Union, Optional, Tuple, Any, TYPE_CHECKING
+from typing import Optional, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
@@ -14,11 +15,11 @@ class Lab(base.Lab):
 
     def to_string(
         self,
-        parent: 'Color',
+        parent: Color,
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
-        fit: Union[str, bool] = True,
+        fit: str | bool = True,
         none: bool = False,
         color: bool = False,
         percent: bool = False,
@@ -42,7 +43,7 @@ class Lab(base.Lab):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
+    ) -> Optional[tuple[tuple[Vector, float], int]]:
         """Match a CSS color string."""
 
         return parse.parse_css(self, string, start, fullmatch)

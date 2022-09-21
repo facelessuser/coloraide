@@ -1,7 +1,8 @@
 """Color harmonies."""
+from __future__ import annotations
 from . import algebra as alg
 from .spaces import Cylindrical
-from typing import Optional, Dict, List, cast, TYPE_CHECKING
+from typing import Optional, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
@@ -10,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Harmony:
     """Color harmony."""
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
 
@@ -41,7 +42,7 @@ class Monochromatic(Harmony):
     RANGE = 12
     STEPS = 5
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
         if space is None:
@@ -112,7 +113,7 @@ class Geometric(Harmony):
 
     COUNT = 0
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
         if space is None:
@@ -160,7 +161,7 @@ class TetradicSquare(Geometric):
 class SplitComplementary(Harmony):
     """Split Complementary colors."""
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
         if space is None:
@@ -188,7 +189,7 @@ class SplitComplementary(Harmony):
 class Analogous(Harmony):
     """Analogous colors."""
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
         if space is None:
@@ -216,7 +217,7 @@ class Analogous(Harmony):
 class TetradicRect(Harmony):
     """Tetradic (rectangular) colors."""
 
-    def harmonize(self, color: 'Color', space: Optional[str]) -> List['Color']:
+    def harmonize(self, color: Color, space: Optional[str]) -> list[Color]:
         """Get color harmonies."""
 
         if space is None:
@@ -252,10 +253,10 @@ SUPPORTED = {
     'rectangle': TetradicRect(),
     'analogous': Analogous(),
     'mono': Monochromatic()
-}  # type: Dict[str, Harmony]
+}  # type: dict[str, Harmony]
 
 
-def harmonize(color: 'Color', name: str, space: Optional[str]) -> List['Color']:
+def harmonize(color: Color, name: str, space: Optional[str]) -> list[Color]:
     """Get specified color harmonies."""
 
     try:

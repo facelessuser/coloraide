@@ -1,4 +1,5 @@
 """DIN99o LCh class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .lch import LCh
 from .. import util

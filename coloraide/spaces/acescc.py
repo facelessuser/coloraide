@@ -3,11 +3,11 @@ ACEScc color space.
 
 https://www.oscars.org/science-technology/aces/aces-documentation
 """
+from __future__ import annotations
 import math
 from ..channels import Channel
 from ..spaces.srgb import sRGB
 from ..types import Vector
-from typing import Tuple
 
 CC_MIN = (math.log2(2 ** -16) + 9.72) / 17.52
 CC_MAX = (math.log2(65504) + 9.72) / 17.52
@@ -55,7 +55,7 @@ class ACEScc(sRGB):
 
     BASE = "acescg"
     NAME = "acescc"
-    SERIALIZE = ("--acescc",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--acescc",)  # type: tuple[str, ...]
     WHITE = (0.32168, 0.33767)
     CHANNELS = (
         Channel("r", CC_MIN, CC_MAX, bound=True),
