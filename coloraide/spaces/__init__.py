@@ -1,10 +1,11 @@
 """Color base."""
+from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Tuple, Dict, Optional, Union, Any, List, cast, TYPE_CHECKING
+from typing import Optional, Any, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -21,35 +22,35 @@ class Cylindrical:
     def hue_index(self) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cast('Space', self).get_channel_index(self.hue_name())
+        return cast(Space, self).get_channel_index(self.hue_name())
 
 
 class Labish:
     """Lab-ish color spaces."""
 
-    def labish_names(self) -> Tuple[str, ...]:
+    def labish_names(self) -> tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast('Space', self).channels[:-1]
+        return cast(Space, self).channels[:-1]
 
-    def labish_indexes(self) -> List[int]:  # pragma: no cover
+    def labish_indexes(self) -> list[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
+        return [cast(Space, self).get_channel_index(name) for name in self.labish_names()]
 
 
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
 
-    def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
+    def lchish_names(self) -> tuple[str, ...]:  # pragma: no cover
         """Return LCh-ish names in the order L c h."""
 
-        return cast('Space', self).channels[:-1]
+        return cast(Space, self).channels[:-1]
 
-    def lchish_indexes(self) -> List[int]:  # pragma: no cover
+    def lchish_indexes(self) -> list[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
+        return [cast(Space, self).get_channel_index(name) for name in self.lchish_names()]
 
 
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
@@ -58,11 +59,11 @@ alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 class SpaceMeta(ABCMeta):
     """Ensure on subclass that the subclass has new instances of mappings."""
 
-    def __init__(cls, name: str, bases: Tuple[object, ...], clsdict: Dict[str, Any]) -> None:
+    def __init__(cls, name: str, bases: tuple[object, ...], clsdict: dict[str, Any]) -> None:
         """Copy mappings on subclass."""
 
         if len(cls.mro()) > 2:
-            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: Dict[str, str]
+            cls.CHANNEL_ALIASES = cls.CHANNEL_ALIASES.copy()  # type: dict[str, str]
 
 
 class Space(Plugin, metaclass=SpaceMeta):
@@ -72,11 +73,11 @@ class Space(Plugin, metaclass=SpaceMeta):
     # Color space name
     NAME = ""
     # Serialized name
-    SERIALIZE = ()  # type: Tuple[str, ...]
+    SERIALIZE = ()  # type: tuple[str, ...]
     # Channel names
-    CHANNELS = ()  # type: Tuple[Channel, ...]
+    CHANNELS = ()  # type: tuple[Channel, ...]
     # Channel aliases
-    CHANNEL_ALIASES = {}  # type: Dict[str, str]
+    CHANNEL_ALIASES = {}  # type: dict[str, str]
     # Enable or disable default color format parsing and serialization.
     COLOR_FORMAT = True
     # Should this color also be checked in a different color space? Only when set to a string (specifying a color space)
@@ -110,7 +111,7 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return self.channels.index(self.CHANNEL_ALIASES.get(name, name))
 
-    def _serialize(self) -> Tuple[str, ...]:
+    def _serialize(self) -> tuple[str, ...]:
         """Get the serialized name."""
 
         return self._color_ids
@@ -131,11 +132,11 @@ class Space(Plugin, metaclass=SpaceMeta):
 
     def to_string(
         self,
-        parent: 'Color',
+        parent: Color,
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
-        fit: Union[bool, str] = True,
+        fit: bool | str = True,
         none: bool = False,
         **kwargs: Any
     ) -> str:
@@ -160,7 +161,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
+    ) -> Optional[tuple[tuple[Vector, float], int]]:
         """Match a color by string."""
 
         return None

@@ -3,11 +3,11 @@ ACES 2065-1 color space.
 
 https://www.oscars.org/science-technology/aces/aces-documentation
 """
+from __future__ import annotations
 from ..channels import Channel
 from ..spaces.srgb import sRGB
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple
 
 AP0_TO_XYZ = [
     [0.9525523959381857, 0.0, 9.367863166046855e-05],
@@ -42,7 +42,7 @@ class ACES20651(sRGB):
 
     BASE = "xyz-d65"
     NAME = "aces2065-1"
-    SERIALIZE = ("--aces2065-1",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--aces2065-1",)  # type: tuple[str, ...]
     WHITE = (0.32168, 0.33767)
     CHANNELS = (
         Channel("r", 0.0, 65504.0, bound=True),

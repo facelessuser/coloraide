@@ -1,4 +1,5 @@
 """LCh D65 class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .lch import LCh
 from ..channels import Channel, FLG_ANGLE

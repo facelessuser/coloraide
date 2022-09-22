@@ -1,5 +1,6 @@
 """Channels."""
-from typing import Tuple, Optional
+from __future__ import annotations
+from typing import Optional
 
 FLG_ANGLE = 1
 FLG_PERCENT = 2
@@ -16,7 +17,7 @@ class Channel(str):
     offset: float
     bound: bool
     flags: int
-    limit: Tuple[Optional[float], Optional[float]]
+    limit: tuple[Optional[float], Optional[float]]
 
     def __new__(
         cls,
@@ -26,7 +27,7 @@ class Channel(str):
         mirror_range: bool = False,
         bound: bool = False,
         flags: int = 0,
-        limit: Tuple[Optional[float], Optional[float]] = (None, None)
+        limit: tuple[Optional[float], Optional[float]] = (None, None)
     ) -> 'Channel':
         """Initialize."""
 

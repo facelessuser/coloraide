@@ -1,4 +1,5 @@
 """XYZ class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .xyz_d65 import XYZD65
 

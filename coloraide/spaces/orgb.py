@@ -3,13 +3,14 @@ oRGB color space.
 
 https://graphics.stanford.edu/~boulos/papers/orgb_sig.pdf
 """
+from __future__ import annotations
 import math
 from .. import algebra as alg
 from ..spaces import Space, Labish
 from ..types import Vector
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
-from typing import cast, Tuple
+from typing import cast
 
 RGB_TO_LC1C2 = [
     [0.2990, 0.5870, 0.1140],
@@ -75,7 +76,7 @@ class oRGB(Labish, Space):
         "luma": "l"
     }
 
-    def labish_names(self) -> Tuple[str, ...]:
+    def labish_names(self) -> tuple[str, ...]:
         """
         Return Lab-ish names in the order L a b.
 

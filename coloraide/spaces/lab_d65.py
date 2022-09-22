@@ -1,4 +1,5 @@
 """Lab D65 class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .lab import Lab
 from ..channels import Channel, FLG_MIRROR_PERCENT

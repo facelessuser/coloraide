@@ -3,6 +3,7 @@ WCAG 2.1 contrast ratio.
 
 https://www.w3.org/TR/WCAG20/#contrast-ratiodef
 """
+from __future__ import annotations
 from ..contrast import ColorContrast
 from typing import Any, TYPE_CHECKING
 
@@ -15,7 +16,7 @@ class WCAG21Contrast(ColorContrast):
 
     NAME = "wcag21"
 
-    def contrast(self, color1: 'Color', color2: 'Color', **kwargs: Any) -> float:
+    def contrast(self, color1: Color, color2: Color, **kwargs: Any) -> float:
         """Contrast."""
 
         lum1 = max(0, color1.luminance())

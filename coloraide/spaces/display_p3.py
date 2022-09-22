@@ -1,4 +1,5 @@
 """Display-p3 color class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .srgb import sRGB, lin_srgb, gam_srgb
 from ..types import Vector

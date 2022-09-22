@@ -4,6 +4,7 @@ RLAB.
 https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1153&context=article
 https://www.imaging.org/site/PDFS/Papers/1997/RP-0-67/2368.pdf
 """
+from __future__ import annotations
 from ..cat import WHITES
 from ..spaces.lab import Lab
 from .. import algebra as alg

@@ -1,4 +1,5 @@
 """sRGB Linear color class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .srgb import sRGB
 from .. import algebra as alg

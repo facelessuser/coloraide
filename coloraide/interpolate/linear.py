@@ -1,8 +1,9 @@
 """Piecewise linear interpolation."""
+from __future__ import annotations
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
-from typing import Optional, Callable, Mapping, Union, Any, Type, Sequence, List, Dict, TYPE_CHECKING
+from typing import Optional, Callable, Mapping, Any, Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -92,14 +93,14 @@ class Linear(Interpolate):
 
     def interpolator(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
+        create: type[Color],
+        easings: list[Optional[Callable[..., float]]],
+        stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         extrapolate: bool = False,
         **kwargs: Any

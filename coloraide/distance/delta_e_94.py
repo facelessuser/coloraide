@@ -1,4 +1,5 @@
 """Delta E 94."""
+from __future__ import annotations
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
@@ -27,8 +28,8 @@ class DE94(DeltaE):
 
     def distance(
         self,
-        color: 'Color',
-        sample: 'Color',
+        color: Color,
+        sample: Color,
         kl: Optional[float] = None,
         k1: Optional[float] = None,
         k2: Optional[float] = None,

@@ -1,6 +1,6 @@
 """Porter Duff compositing."""
+from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from typing import Type
 
 
 class PorterDuff(metaclass=ABCMeta):
@@ -234,7 +234,7 @@ SUPPORTED = {
 }
 
 
-def compositor(name: str) -> Type[PorterDuff]:
+def compositor(name: str) -> type[PorterDuff]:
     """Get the requested compositor."""
 
     composite = SUPPORTED.get(name)

@@ -1,4 +1,5 @@
 """Gamut handling."""
+from __future__ import annotations
 from .. import algebra as alg
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
@@ -9,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def clip_channels(color: 'Color') -> None:
+def clip_channels(color: Color) -> None:
     """Clip channels."""
 
     for i, value in enumerate(color[:-1]):
@@ -28,7 +29,7 @@ def clip_channels(color: 'Color') -> None:
         color[i] = alg.clamp(value, chan.low, chan.high)
 
 
-def verify(color: 'Color', tolerance: float) -> bool:
+def verify(color: Color, tolerance: float) -> bool:
     """Verify the values are in bound."""
 
     for i, value in enumerate(color[:-1]):
@@ -53,5 +54,5 @@ class Fit(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def fit(self, color: 'Color', **kwargs: Any) -> None:
+    def fit(self, color: Color, **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""

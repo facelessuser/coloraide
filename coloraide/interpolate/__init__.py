@@ -13,13 +13,14 @@ color.js.
 Original Authors: Lea Verou, Chris Lilley
 License: MIT (As noted in https://github.com/LeaVerou/color.js/blob/master/package.json)
 """
+from __future__ import annotations
 import math
 import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
 from ..spaces import Cylindrical
 from ..types import Vector, ColorInput, Plugin
-from typing import Callable, Dict, Tuple, Optional, Type, Sequence, Union, Mapping, List, Any, cast, TYPE_CHECKING
+from typing import Callable, Optional, Sequence, Mapping, Any, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -56,14 +57,14 @@ class Interpolator(metaclass=ABCMeta):
 
     def __init__(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
+        create: type[Color],
+        easings: list[Optional[Callable[..., float]]],
+        stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]],
+        progress: Optional[Callable[..., float] | Mapping[str, Callable[..., float]]],
         premultiplied: bool,
         extrapolate: bool = False,
         **kwargs: Any
@@ -82,7 +83,7 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
-        self.current_easing = None  # type: Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]]
+        self.current_easing = None  # type: Optional[Callable[..., float] | Mapping[str, Callable[..., float]]]
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cast(Cylindrical, cs).hue_index()
@@ -109,7 +110,7 @@ class Interpolator(metaclass=ABCMeta):
         max_steps: int = 1000,
         max_delta_e: float = 0,
         delta_e: Optional[str] = None
-    ) -> List['Color']:
+    ) -> list[Color]:
         """Steps."""
 
         actual_steps = steps
@@ -204,7 +205,7 @@ class Interpolator(metaclass=ABCMeta):
 
             coords[i] = value / alpha
 
-    def begin(self, point: float, first: float, last: float, index: int) -> 'Color':
+    def begin(self, point: float, first: float, last: float, index: int) -> Color:
         """
         Begin interpolation.
 
@@ -256,7 +257,7 @@ class Interpolator(metaclass=ABCMeta):
 
         return progress(t) if progress is not None else t
 
-    def __call__(self, point: float) -> 'Color':
+    def __call__(self, point: float) -> Color:
         """Find which leg of the interpolation the request is between."""
 
         # See if point extends past either the first or last stop
@@ -288,21 +289,21 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     @abstractmethod
     def interpolator(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
-        stops: Dict[int, float],
+        create: type[Color],
+        easings: list[Optional[Callable[..., float]]],
+        stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
 
 
-def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
+def calc_stops(stops: dict[int, float], count: int) -> dict[int, float]:
     """Calculate stops."""
 
     # Ensure the first stop is set to zero if not explicitly set
@@ -368,9 +369,9 @@ def calc_stops(stops: Dict[int, float], count: int) -> Dict[int, float]:
 
 
 def process_mapping(
-    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+    progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
     aliases: Mapping[str, str]
-) -> Optional[Union[Callable[..., float], Mapping[str, Callable[..., float]]]]:
+) -> Optional[Callable[..., float] | Mapping[str, Callable[..., float]]]:
     """Process a mapping, such that it is not using aliases."""
 
     if not isinstance(progress, Mapping):
@@ -378,7 +379,7 @@ def process_mapping(
     return {aliases.get(k, k): v for k, v in progress.items()}
 
 
-def normalize_color(color: 'Color') -> None:
+def normalize_color(color: Color) -> None:
     """Normalize color."""
 
     # Adjust to color to space and ensure it fits
@@ -387,7 +388,7 @@ def normalize_color(color: 'Color') -> None:
             color.fit()
 
 
-def adjust_shorter(h1: float, h2: float, offset: float) -> Tuple[float, float]:
+def adjust_shorter(h1: float, h2: float, offset: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     d = h2 - h1
@@ -400,7 +401,7 @@ def adjust_shorter(h1: float, h2: float, offset: float) -> Tuple[float, float]:
     return h2, offset
 
 
-def adjust_longer(h1: float, h2: float, offset: float) -> Tuple[float, float]:
+def adjust_longer(h1: float, h2: float, offset: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     d = h2 - h1
@@ -413,7 +414,7 @@ def adjust_longer(h1: float, h2: float, offset: float) -> Tuple[float, float]:
     return h2, offset
 
 
-def adjust_increase(h1: float, h2: float, offset: float) -> Tuple[float, float]:
+def adjust_increase(h1: float, h2: float, offset: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     if h2 < h1:
@@ -422,7 +423,7 @@ def adjust_increase(h1: float, h2: float, offset: float) -> Tuple[float, float]:
     return h2, offset
 
 
-def adjust_decrease(h1: float, h2: float, offset: float) -> Tuple[float, float]:
+def adjust_decrease(h1: float, h2: float, offset: float) -> tuple[float, float]:
     """Adjust the given hues."""
 
     if h2 > h1:
@@ -438,7 +439,7 @@ def normalize_hue(
     offset: float,
     hue: str,
     fallback: Optional[float]
-) -> Tuple[Vector, float]:
+) -> tuple[Vector, float]:
     """Normalize hues according the hue specifier."""
 
     if hue == 'specified':
@@ -474,11 +475,11 @@ def normalize_hue(
 
 def interpolator(
     interpolator: str,
-    create: Type['Color'],
-    colors: Sequence[Union[ColorInput, stop, Callable[..., float]]],
+    create: type[Color],
+    colors: Sequence[ColorInput | stop | Callable[..., float]],
     space: Optional[str],
     out_space: Optional[str],
-    progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+    progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
     hue: str,
     premultiplied: bool,
     **kwargs: Any

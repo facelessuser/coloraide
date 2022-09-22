@@ -1,4 +1,5 @@
 """Rec 2020 color class."""
+from __future__ import annotations
 from ..cat import WHITES
 from .srgb import sRGB
 import math

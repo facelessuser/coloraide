@@ -1,8 +1,9 @@
 """sRGB color class."""
+from __future__ import annotations
 from .. import srgb as base
 from ...css import parse
 from ...css import serialize
-from typing import Optional, Union, Any, Tuple, TYPE_CHECKING
+from typing import Optional, Any, Tuple, TYPE_CHECKING
 from ...types import Vector
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -14,11 +15,11 @@ class sRGB(base.sRGB):
 
     def to_string(
         self,
-        parent: 'Color',
+        parent: Color,
         *,
         alpha: Optional[bool] = None,
         precision: Optional[int] = None,
-        fit: Union[bool, str] = True,
+        fit: str | bool = True,
         none: bool = False,
         color: bool = False,
         hex: bool = False,  # noqa: A002

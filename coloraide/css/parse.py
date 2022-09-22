@@ -1,12 +1,12 @@
 """Parse utilities."""
+from __future__ import annotations
 import re
 import math
 from .. import algebra as alg
 from ..types import Vector
 from . import color_names
 from ..channels import Channel, FLG_ANGLE
-from typing import Optional, Tuple
-from typing import Dict, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..spaces import Space
@@ -75,7 +75,7 @@ CSS_MATCH = {
             # Hex syntax
             \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?)\b |
             # Names
-            \b(?<!\#)[a-z]{{3,}}(?!\()\b
+            \b[a-z]{{3,}}\b
         )
         """.format(**COLOR_PARTS)
     ),
@@ -223,7 +223,7 @@ def norm_angle_channel(angle: str) -> float:
     return value
 
 
-def parse_hex(color: str) -> Tuple[Vector, float]:
+def parse_hex(color: str) -> tuple[Vector, float]:
     """Parse hexadecimal color."""
     length = len(color)
     if length in (7, 9):
@@ -246,7 +246,7 @@ def parse_hex(color: str) -> Tuple[Vector, float]:
         )
 
 
-def parse_rgb_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
+def parse_rgb_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector, float]:
     """Parse CSS RGB format."""
     channels = []
     alpha = 1.0
@@ -259,7 +259,7 @@ def parse_rgb_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, float]:
+def parse_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector, float]:
     """Parse CSS RGB format."""
 
     channels = []
@@ -280,10 +280,10 @@ def parse_channels(color: str, boundry: Tuple[Channel, ...]) -> Tuple[Vector, fl
 
 def parse_color(
     string: str,
-    spaces: Dict[str, 'Space'],
+    spaces: dict[str, Space],
     start: int,
     fullmatch: bool = False
-) -> Optional[Tuple['Space', Tuple[Vector, float], int]]:
+) -> Optional[tuple[Space, tuple[Vector, float], int]]:
     """Perform default color matching."""
 
     m = RE_COLOR_MATCH.match(string, start)
@@ -321,12 +321,12 @@ def parse_color(
 
 
 def parse_css(
-    cspace: 'Space',
+    cspace: Space,
     string: str,
     start: int = 0,
     fullmatch: bool = True,
     color: bool = False
-) -> Optional[Tuple[Tuple[Vector, float], int]]:
+) -> Optional[tuple[tuple[Vector, float], int]]:
     """Match a CSS color string."""
 
     name = cspace.NAME

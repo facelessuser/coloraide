@@ -4,12 +4,12 @@ The IPT color space.
 https://www.researchgate.net/publication/\
 221677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.
 """
+from __future__ import annotations
 from ..spaces import Space, Labish
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..cat import WHITES
 from .. import algebra as alg
 from ..types import Vector
-from typing import Tuple
 
 # The IPT algorithm requires the use of the Hunt-Pointer-Estevez matrix,
 # but it was originally calculated with the assumption of a slightly different
@@ -72,7 +72,7 @@ class IPT(Labish, Space):
 
     BASE = "xyz-d65"
     NAME = "ipt"
-    SERIALIZE = ("--ipt",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--ipt",)  # type: tuple[str, ...]
     CHANNELS = (
         Channel("i", 0.0, 1.0, bound=True),
         Channel("p", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT),

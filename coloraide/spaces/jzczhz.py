@@ -3,6 +3,7 @@ JzCzhz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
+from __future__ import annotations
 from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE

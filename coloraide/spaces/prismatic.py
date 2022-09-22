@@ -6,11 +6,11 @@ Creates a Maxwell color triangle with a lightness component.
 http://psgraphics.blogspot.com/2015/10/prismatic-color-model.html
 https://studylib.net/doc/14656976/the-prismatic-color-space-for-rgb-computations
 """
+from __future__ import annotations
 from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
-from typing import Tuple
 
 
 def srgb_to_lrgb(rgb: Vector) -> Vector:
@@ -35,7 +35,7 @@ class Prismatic(Space):
 
     BASE = "srgb"
     NAME = "prismatic"
-    SERIALIZE = ("--prismatic",)  # type: Tuple[str, ...]
+    SERIALIZE = ("--prismatic",)  # type: tuple[str, ...]
     EXTENDED_RANGE = False
     CHANNELS = (
         Channel("l", 0.0, 1.0, bound=True),

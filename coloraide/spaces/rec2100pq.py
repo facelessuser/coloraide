@@ -3,6 +3,7 @@ Rec 2100 PQ color class.
 
 https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2100-2-201807-I!!PDF-E.pdf
 """
+from __future__ import annotations
 from ..cat import WHITES
 from .srgb import sRGB
 from .. import algebra as alg

@@ -1,7 +1,8 @@
 """Provides a plugin system for filtering colors."""
+from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
-from typing import Optional, Tuple, Any, TYPE_CHECKING
+from typing import Optional, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -12,21 +13,21 @@ class Filter(Plugin, metaclass=ABCMeta):
 
     NAME = ''
     DEFAULT_SPACE = 'srgb-linear'
-    ALLOWED_SPACES = ('srgb-linear',)  # type: Tuple[str, ...]
+    ALLOWED_SPACES = ('srgb-linear',)  # type: tuple[str, ...]
 
     @abstractmethod
-    def filter(self, color: 'Color', amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: Color, amount: Optional[float], **kwargs: Any) -> None:  # noqa: A003
         """Filter the given color."""
 
 
 def filters(
-    color: 'Color',
+    color: Color,
     name: str,
     amount: Optional[float] = None,
     space: Optional[str] = None,
     in_place: bool = False,
     **kwargs: Any
-) -> 'Color':
+) -> Color:
     """Filter."""
 
     f = color.FILTER_MAP.get(name)

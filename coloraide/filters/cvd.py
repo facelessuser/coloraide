@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Color vision deficiency."""
+from __future__ import annotations
 from .. import algebra as alg
 from ..filters import Filter
 from ..types import Vector, Matrix
-from typing import Any, Optional, Dict, Tuple, Callable, TYPE_CHECKING
+from typing import Any, Optional, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -32,7 +33,7 @@ BRETTEL_PROTAN = (
         [0.0, -0.4857460246367451, 66.67787954858585]
     ],
     [0.0, 0.01751204863221885, -0.3451727051671733]
-)  # type: Tuple[Matrix, Matrix, Vector]
+)  # type: tuple[Matrix, Matrix, Vector]
 
 BRETTEL_DEUTAN = (
     [
@@ -46,7 +47,7 @@ BRETTEL_DEUTAN = (
         [-0.22274513788806224, 0.0, 65.4321324900127]
     ],
     [-0.01751204863221885, 0.0, 0.6547872948328268]
-)  # type: Tuple[Matrix, Matrix, Vector]
+)  # type: tuple[Matrix, Matrix, Vector]
 
 BRETTEL_TRITAN = (
     [
@@ -60,7 +61,7 @@ BRETTEL_TRITAN = (
         [-0.18183628056123033, 3.2420410695833217, 0.0]
     ],
     [0.3451727051671733, -0.6547872948328268, 0.0]
-)  # type: Tuple[Matrix, Matrix, Vector]
+)  # type: tuple[Matrix, Matrix, Vector]
 
 VIENOT_PROTAN = [
     [0.10887256075552479, 0.8911274392444744, -8.326672684688674e-17],
@@ -92,7 +93,7 @@ MACHADO_PROTAN = {
     8: [[0.259411, 0.923008, -0.182420], [0.110296, 0.804340, 0.085364], [-0.006276, -0.034346, 1.040622]],
     9: [[0.203876, 0.990338, -0.194214], [0.112975, 0.794542, 0.092483], [-0.005222, -0.041043, 1.046265]],
     10: [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]]
-}  # type: Dict[int, Matrix]
+}  # type: dict[int, Matrix]
 
 MACHADO_DEUTAN = {
     0: [[1.000000, 0.000000, -0.000000], [0.000000, 1.000000, 0.000000], [-0.000000, -0.000000, 1.000000]],
@@ -107,7 +108,7 @@ MACHADO_DEUTAN = {
     9: [[0.392952, 0.823610, -0.216562], [0.263559, 0.690210, 0.046232], [-0.011910, 0.040281, 0.971630]],
     10: [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]],
 
-}  # type: Dict[int, Matrix]
+}  # type: dict[int, Matrix]
 
 MACHADO_TRITAN = {
     0: [[1.000000, 0.000000, -0.000000], [0.000000, 1.000000, 0.000000], [-0.000000, -0.000000, 1.000000]],
@@ -121,10 +122,10 @@ MACHADO_TRITAN = {
     8: [[1.257728, -0.139648, -0.118081], [-0.078003, 0.975409, 0.102594], [-0.003316, 0.501214, 0.502102]],
     9: [[1.278864, -0.125333, -0.153531], [-0.084748, 0.957674, 0.127074], [-0.000989, 0.601151, 0.399838]],
     10: [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]],
-}  # type: Dict[int, Matrix]
+}  # type: dict[int, Matrix]
 
 
-def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector]) -> None:
+def brettel(color: Color, severity: float, wings: tuple[Matrix, Matrix, Vector]) -> None:
     """
     Calculate color blindness using Brettel 1997.
 
@@ -148,7 +149,7 @@ def brettel(color: 'Color', severity: float, wings: Tuple[Matrix, Matrix, Vector
         color[:-1] = coords
 
 
-def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
+def vienot(color: Color, severity: float, transform: Matrix) -> None:
     """
     Calculate color blindness using the Viénot, Brettel, and Mollon 1999 approach, best for protanopia and deuteranopia.
 
@@ -171,7 +172,7 @@ def vienot(color: 'Color', severity: float, transform: Matrix) -> None:
         color[:-1] = coords
 
 
-def machado(color: 'Color', severity: float, matrices: Dict[int, Matrix]) -> None:
+def machado(color: Color, severity: float, matrices: dict[int, Matrix]) -> None:
     """
     Machado approach to protanopia, deuteranopia, and tritanopia.
 
@@ -228,17 +229,17 @@ class Protan(Filter):
         self.severe = severe
         self.anomalous = anomalous
 
-    def brettel(self, color: 'Color', severity: float) -> None:
+    def brettel(self, color: Color, severity: float) -> None:
         """Tritanopia vision deficiency using Brettel method."""
 
         brettel(color, severity, self.BRETTEL)
 
-    def vienot(self, color: 'Color', severity: float) -> None:
+    def vienot(self, color: Color, severity: float) -> None:
         """Tritanopia vision deficiency using Viénot method."""
 
         vienot(color, severity, self.VIENOT)
 
-    def machado(self, color: 'Color', severity: float) -> None:
+    def machado(self, color: Color, severity: float) -> None:
         """Tritanopia vision deficiency using Machado method."""
 
         machado(color, severity, self.MACHADO)
@@ -262,7 +263,7 @@ class Protan(Filter):
             method = self.severe if max_severity else self.anomalous
         return self.select_filter(method)
 
-    def filter(self, color: 'Color', amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: Color, amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
         """Filter the color."""
 
         method = kwargs.get('method')  # type: Optional[str]

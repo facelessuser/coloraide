@@ -1,4 +1,5 @@
 """HSV class."""
+from __future__ import annotations
 from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
