@@ -497,7 +497,7 @@ def render_notebook(*args):
     """Render notebook."""
 
     import markdown
-    from pymdownx import slugs
+    from pymdownx import slugs, superfences
     from js import document
 
     text = globals().get('content', '')
@@ -527,7 +527,8 @@ def render_notebook(*args):
         'pymdownx.keys',
         'pymdownx.details',
         'pymdownx.saneheaders',
-        'pymdownx.tabbed'
+        'pymdownx.tabbed',
+        'pymdownx.arithmatex'
     ]
     extension_configs = {
         'markdown.extensions.toc': {
@@ -537,9 +538,19 @@ def render_notebook(*args):
         'markdown.extensions.smarty': {
             "smart_quotes": False,
         },
+        'pymdownx.arithmatex': {
+            'generic': True,
+            'block_tag': 'pre'
+        },
         'pymdownx.superfences': {
             'preserve_tabs': True,
             'custom_fences': [
+                {
+
+                    "name": "diagram",
+                    "class": "diagram",
+                    "format": superfences.fence_code_format
+                },
                 {
                     "name": 'playground',
                     "class": 'playground',
