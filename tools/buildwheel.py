@@ -7,7 +7,6 @@ import urllib.error
 import glob
 import shutil
 import re
-import hashlib
 
 # Notebook specific wheels
 NOTEBOOK_WHEELS = [
@@ -22,15 +21,14 @@ PLAYGROUND_WHEELS = [
 
 MKDOCS_YML = 'docs/src/mkdocs.yml'
 
-RE_CONFIG = re.compile(r'playground-config.*?\.js')
 RE_BUILD = re.compile(r'Successfully built ([-_0-9.a-zA-Z]+?\.whl)')
 
 CONFIG = """\
-var color_notebook = {{
-    "playground_wheels": {},
-    "notebook_wheels": {},
-    "default_playground": "import coloraide\\ncoloraide.__version__\\nColor('red')"
-}}
+const colorNotebook = {{
+  "playgroundWheels": {}, // eslint-disable-line max-len
+  "notebookWheels": {}, // eslint-disable-line max-len
+  "defaultPlayground": "import coloraide\\ncoloraide.__version__\\nColor('red')" // eslint-disable-line max-len
+}};
 """
 
 OUTPUT = 'docs/src/markdown/playground/'
@@ -93,6 +91,12 @@ def download_wheel(url, dest):
     return status
 
 
+def replace_config(m, config):
+    """Replace config."""
+
+    return m.group(1) + config + m.group(3)
+
+
 if __name__ == "__main__":
 
     status = 0
@@ -101,9 +105,6 @@ if __name__ == "__main__":
     for file in glob.glob(OUTPUT + '*.whl'):
         if file not in NOTEBOOK.keys() and file not in PLAYGROUND.keys():
             os.remove(file)
-
-    for file in glob.glob('docs/theme/playground-config*.js'):
-        os.remove(file)
 
     # Clean up build directory
     if os.path.exists('build'):
@@ -135,21 +136,18 @@ if __name__ == "__main__":
         notebook = [os.path.basename(x) for x in NOTEBOOK.keys()] + playground
 
         # Create the config that specifies which wheels need to be used
-        config = CONFIG.format(str(playground), str(notebook)).replace('\r', '').encode('utf-8')
-        m = hashlib.sha256()
-        m.update(b'playground-config.js')
-        m.update(b':')
-        m.update(config)
-        hsh = m.hexdigest()[0:8]
-        with open('docs/theme/playground-config-{}.js'.format(hsh), 'wb') as f:
-            f.write(config)
+        config = CONFIG.format(str(playground), str(notebook)).replace('\r', '')
+        with open('docs/src/js/extra-notebook.js', 'r', encoding='utf-8') as f:
+            content = f.read()
 
-        # Update `mkdocs` source to reference wheel config
-        with open(MKDOCS_YML, 'rb') as f:
-            mkdocs = f.read().decode('utf-8')
-        mkdocs = RE_CONFIG.sub('playground-config-{}.js'.format(hsh), mkdocs)
-        with open(MKDOCS_YML, 'wb') as f:
-            f.write(mkdocs.encode('utf-8'))
+        content = re.sub(
+            r'(?ms)^(// notebook-config: start\r?\n)(.*)?(^// notebook-config: end\r?\n)',
+            lambda x, config=config: replace_config(x, config),
+            content
+        )
+
+        with open('docs/src/js/extra-notebook.js', 'w', encoding='utf-8') as f:
+            f.write(content)
 
     print("FAILED :(" if status else "SUCCESS :)")
     sys.exit(status)
