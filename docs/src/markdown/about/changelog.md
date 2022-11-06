@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5
+
+- **NEW**: Formally add support for Python 3.11.
+- **ENHANCE**: Simply some type annotation syntax.
+- **ENHANCE**: Some minor performance enhancements.
+
 ## 1.4
 
 - **NEW**: A color space can now declare its dynamic range. By default, spaces are assumed to be SDR, but can declare
