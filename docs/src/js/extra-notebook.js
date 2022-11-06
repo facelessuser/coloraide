@@ -1,3 +1,11 @@
+// notebook-config: start
+const colorNotebook = {
+  "playgroundWheels": ['Pygments-2.12.0-py3-none-any.whl', 'coloraide-1.5.dev0-py3-none-any.whl'], // eslint-disable-line max-len
+  "notebookWheels": ['Markdown-3.3.4-py3-none-any.whl', 'pymdown_extensions-9.5-py3-none-any.whl', 'Pygments-2.12.0-py3-none-any.whl', 'coloraide-1.5.dev0-py3-none-any.whl'], // eslint-disable-line max-len
+  "defaultPlayground": "import coloraide\ncoloraide.__version__\nColor('red')" // eslint-disable-line max-len
+};
+// notebook-config: end
+
 (() => {
   let pyodide = null
   let busy = false
@@ -16,21 +24,16 @@
   const pycode = `
 {{pycode}}
 
-import micropip
-from js import location
-
 action = globals().get('action')
 if action == 'notebook':
     callback = render_notebook
 else:
     callback = render_console
 
-base = location.pathname.lstrip('/').split('/')[0]
-await micropip.install([location.origin + '/{}/playground/{}'.format(base, w) for w in wheels])
 callback()
 `
 
-  const defContent = window.color_notebook.default_playground
+  const defContent = colorNotebook.defaultPlayground
 
   const getContent = content => {
     return `
@@ -84,7 +87,6 @@ ${content}
     currentInputs.setAttribute("readonly", "")
     pyodide.globals.set("id_num", currentID)
     pyodide.globals.set("action", "playground")
-    pyodide.globals.set('wheels', window.color_notebook.playground_wheels)
     await pyodide.runPythonAsync(pycode)
     currentInputs.removeAttribute("readonly")
   }
@@ -94,7 +96,6 @@ ${content}
 
     pyodide.globals.set("content", text)
     pyodide.globals.set("action", "notebook")
-    pyodide.globals.set('wheels', window.color_notebook.notebook_wheels)
     await pyodide.runPythonAsync(pycode)
     const src = document.getElementById("__notebook-input")
     if (src) {
@@ -107,16 +108,22 @@ ${content}
     }
   }
 
-  const setupPyodide = async() => {
+  const setupPyodide = async full => {
     // Load `Pyodide` and the any default packages we can need and can load.
 
     if (!initialized) {
       initialized = true
       pyodide = await loadPyodide({ // eslint-disable-line no-undef
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.20.0/full/",
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/",
         fullStdLib: false
       })
-      await pyodide.loadPackage(["micropip"])
+      const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/`
+      const packages = (full) ? colorNotebook.notebookWheels : colorNotebook.playgroundWheels
+      const installs = ['micropip']
+      for (const s of packages) {
+        installs.push(base + s)
+      }
+      await pyodide.loadPackage(installs)
     }
   }
 
@@ -305,7 +312,7 @@ ${content}
           showBusy(article, "Loading Notebook...")
           render.innerHTML = ""
           editTemp = {}
-          await setupPyodide()
+          await setupPyodide(true)
           await pyrender(raw)
           await init()
           hideBusy(article)
@@ -404,7 +411,7 @@ ${content}
             b.setAttribute("disabled", "")
           })
         }
-        await setupPyodide()
+        await setupPyodide(false)
         results.querySelector("code").innerHTML = ""
         await pyexecute(currentID)
         if (buttons) {
@@ -455,7 +462,7 @@ ${content}
       if (uri !== null && uri.trim()) {
         // A source was specified, so load it.
         showBusy(article, loadMsg)
-        await setupPyodide()
+        await setupPyodide(true)
         hideBusy(article)
         showBusy(article, pageMsg)
         try {
@@ -488,7 +495,7 @@ ${content}
         const content = getContent(params.has("code") ? params.get("code") : defContent)
         lastSearch = decodeURIComponent(params.toString())
         showBusy(article, loadMsg)
-        await setupPyodide()
+        await setupPyodide(true)
         hideBusy(article)
         showBusy(article, pageMsg)
         await pyrender(content)
