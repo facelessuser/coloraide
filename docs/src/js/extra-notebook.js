@@ -1,11 +1,3 @@
-// notebook-config: start
-const colorNotebook = {
-  "playgroundWheels": ['Pygments-2.12.0-py3-none-any.whl', 'coloraide-1.5.dev0-py3-none-any.whl'], // eslint-disable-line max-len
-  "notebookWheels": ['Markdown-3.3.4-py3-none-any.whl', 'pymdown_extensions-9.5-py3-none-any.whl', 'Pygments-2.12.0-py3-none-any.whl', 'coloraide-1.5.dev0-py3-none-any.whl'], // eslint-disable-line max-len
-  "defaultPlayground": "import coloraide\ncoloraide.__version__\nColor('red')" // eslint-disable-line max-len
-};
-// notebook-config: end
-
 (() => {
   let pyodide = null
   let busy = false
@@ -33,7 +25,7 @@ else:
 callback()
 `
 
-  const defContent = colorNotebook.defaultPlayground
+  const defContent = window.colorNotebook.defaultPlayground
 
   const getContent = content => {
     return `
@@ -48,6 +40,9 @@ ${content}
 `
   }
 
+  let notebookInstalled = false
+  let playgroundInstalled = false
+
   const fakeDOMContentLoaded = () => {
     // Send a fake `DOMContentLoaded`
     fake = true
@@ -55,6 +50,7 @@ ${content}
       bubbles: true,
       cancelable: true
     }))
+    window.document$.next()
   }
 
   const textResize = inpt => {
@@ -117,9 +113,17 @@ ${content}
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/",
         fullStdLib: false
       })
-      const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/`
-      const packages = (full) ? colorNotebook.notebookWheels : colorNotebook.playgroundWheels
-      const installs = ['micropip']
+    }
+
+    if ((!notebookInstalled && full) || (!playgroundInstalled && !full)) {
+      const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/playground/`
+      const packages = (full) ? window.colorNotebook.notebookWheels : window.colorNotebook.playgroundWheels
+      const installs = []
+      if (full) {
+        notebookInstalled = true
+      } else {
+        playgroundInstalled = true
+      }
       for (const s of packages) {
         installs.push(base + s)
       }
@@ -316,6 +320,7 @@ ${content}
           await pyrender(raw)
           await init()
           hideBusy(article)
+          fakeDOMContentLoaded()
         })
       }
 
@@ -518,12 +523,12 @@ ${content}
 
   // Before leaving, turn off fake, just in case we navigated away before finished
   window.addEventListener("unload", () => {
-    fake = true
+    fake = false
   })
 
   // Attach main via subscribe (subscribes to Materials on page load and instant page loads)
   window.document$.subscribe(() => {
-    // To get other libraries to to reload, we may create a fake `DOMContentLoaded`
+    // To get other libraries to reload, we may create a fake `DOMContentLoaded`
     // No need to process these events.
     if (fake) {
       fake = false
