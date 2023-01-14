@@ -66,6 +66,8 @@ from typing import overload, Sequence, Optional, Any, cast, Callable, Mapping
 class ColorMatch:
     """Color match object."""
 
+    __slots__ = ('color', 'start', 'end')
+
     def __init__(self, color: Color, start: int, end: int) -> None:
         """Initialize."""
 
