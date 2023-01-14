@@ -3,8 +3,9 @@
 ## 1.5
 
 - **NEW**: Formally add support for Python 3.11.
-- **ENHANCE**: Simply some type annotation syntax.
+- **ENHANCE**: Simplify some type annotation syntax.
 - **ENHANCE**: Some minor performance enhancements.
+- **FIX**: Fix OkLCh CSS parsing.
 
 ## 1.4
 

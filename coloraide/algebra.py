@@ -27,7 +27,7 @@ import operator
 import functools
 from itertools import zip_longest as zipl
 from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
-from typing import Optional, Callable, Sequence, Iterator, Any, Iterable, overload, cast
+from typing import Optional, Callable, Sequence, Iterator, Any, Iterable, overload, cast  # noqa: F401
 
 NaN = float('nan')
 INF = float('inf')

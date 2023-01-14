@@ -4,7 +4,7 @@ from .. import algebra as alg
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -39,8 +39,8 @@ def verify(color: Color, tolerance: float) -> bool:
         if chan.flags & FLG_ANGLE or not chan.bound or alg.is_nan(value):
             continue
 
-        a = chan.low  # type: Optional[float]
-        b = chan.high  # type: Optional[float]
+        a = chan.low
+        b = chan.high
 
         # Check if bounded values are in bounds
         if (a is not None and value < (a - tolerance)) or (b is not None and value > (b + tolerance)):
