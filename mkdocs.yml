@@ -26,6 +26,8 @@ theme:
     - navigation.sections
     - navigation.indexes
     - toc.follow
+    - content.code.copy
+    - navigation.footer
   pymdownx:
     sponsor: "https://github.com/sponsors/facelessuser"
 

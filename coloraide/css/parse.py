@@ -142,7 +142,7 @@ CSS_MATCH = {
         \b(oklch)\(\s*
         (?:
             # Space separated format
-            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
