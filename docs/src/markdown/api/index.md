@@ -1122,7 +1122,7 @@ Parameters
 : 
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
-    `name`     |                    | Channel name or color space and channel name to retrieve value from.
+    `name`     |                    | A string containing a channel name or color space and channel separated by a `.` specifying the what channel to set. If `value` is omitted, `name` can also be a dictionary containing multiple channels, each specifying their own value to set.
     `value`    |                    | A numerical value, a string value accepted by the specified color space, or a function.
 
 Return

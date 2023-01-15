@@ -852,27 +852,56 @@ class Color(metaclass=ColorMeta):
         # Handle space.attribute
         if '.' in name:
             space, channel = name.split('.', 1)
-            obj = self.convert(space)
-            return obj[channel]
+            return self.convert(space)[channel]
 
         return self[name]
 
     def set(  # noqa: A003
         self,
-        name: str,
-        value: float | Callable[..., float]
+        name: str | dict[str, float | Callable[..., float]],
+        value: Optional[float | Callable[..., float]] = None
     ) -> Color:
         """Set channel."""
 
-        # Handle space.attribute
-        if '.' in name:
-            space, channel = name.split('.', 1)
-            obj = self.convert(space)
-            obj[channel] = value(obj[channel]) if callable(value) else value
-            return self.update(obj)
+        # Set all the channels in a dictionary.
+        # Sort by name to reduce how many times we convert
+        # when dealing with different color spaces.
+        if value is None:
+            if not isinstance(name, dict):
+                raise ValueError("When no value is provided, 'set' expects a dict of channels and values.")
 
-        # Handle a function that modifies the value or a direct value
-        self[name] = value(self[name]) if callable(value) else value
+            original_space = self.space()
+            current_space = original_space
+            obj = self
+
+            for k in name:
+                # Handle space.attribute
+                v = name[k]
+
+                space, channel = k.split('.', 1) if '.' in k else (original_space, k)
+                if space != current_space:
+                    obj = self.update(obj) if space == original_space else self.convert(space)
+                    current_space = space
+                obj[channel] = v(obj[channel]) if callable(v) else v
+
+            if current_space != original_space:
+                self.update(obj)
+
+        # Set a single channel value
+        else:
+            if isinstance(name, dict):
+                raise ValueError("A dict of channels and values cannot be used in conjunction with the value param")
+
+            # Handle space.attribute
+            if '.' in name:
+                space, channel = name.split('.', 1)
+                obj = self.convert(space)
+                obj[channel] = value(obj[channel]) if callable(value) else value
+                return self.update(obj)
+
+            # Handle a function that modifies the value or a direct value
+            self[name] = value(self[name]) if callable(value) else value
+
         return self
 
 

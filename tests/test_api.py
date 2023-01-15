@@ -275,6 +275,23 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1.set("red", 0.5)
         self.assertEqual(c1.get("red"), 0.5)
 
+    def test_multi_set(self):
+        """Test setting multiple channels via set."""
+
+        color = Color('orange')
+        color2 = color.clone()
+        color2.convert('oklch', in_place=True)
+        color2.set('hue', 270).set('lightness', lambda l: l - l * 0.25)
+        color2.convert('srgb', in_place=True)
+        color.set(
+            {
+                'oklch.lightness': lambda l: l - l * 0.25,
+                'oklch.hue': 270
+            }
+        )
+
+        self.assertColorEqual(color, color2)
+
     def test_space_set(self):
         """Test set in another space."""
 

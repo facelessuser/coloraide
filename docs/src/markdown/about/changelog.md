@@ -3,6 +3,7 @@
 ## 1.5
 
 - **NEW**: Formally add support for Python 3.11.
+- **NEW**: `set()` can now take a dictionary of channels and values and set multiple channels at once.
 - **ENHANCE**: Simplify some type annotation syntax.
 - **ENHANCE**: Some minor performance enhancements.
 - **FIX**: Fix OkLCh CSS parsing.
