@@ -62,7 +62,7 @@ color.to_string()
 
 ### Access By Iteration
 
-Color objects can also be treated as an iteratable object. This allows us to simply loop through the values.
+Color objects can also be treated as an iterable object. This allows us to simply loop through the values.
 
 ```playground
 color = Color("orange")

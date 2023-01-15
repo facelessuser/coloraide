@@ -867,32 +867,32 @@ class Color(metaclass=ColorMeta):
         # Sort by name to reduce how many times we convert
         # when dealing with different color spaces.
         if value is None:
-            if not isinstance(name, dict):
-                raise ValueError("When no value is provided, 'set' expects a dict of channels and values.")
+            if isinstance(name, str):
+                raise ValueError("Missing the positional 'value' argument for channel '{}'".format(name))
 
             original_space = self.space()
             current_space = original_space
-            obj = self
+            obj = self.clone()
 
             for k in name:
-                # Handle space.attribute
                 v = name[k]
 
+                # Handle space.channel
                 space, channel = k.split('.', 1) if '.' in k else (original_space, k)
                 if space != current_space:
-                    obj = self.update(obj) if space == original_space else self.convert(space)
+                    obj.convert(space, in_place=True)
                     current_space = space
                 obj[channel] = v(obj[channel]) if callable(v) else v
 
-            if current_space != original_space:
-                self.update(obj)
+            # Update the original color
+            self.update(obj)
 
         # Set a single channel value
         else:
             if isinstance(name, dict):
-                raise ValueError("A dict of channels and values cannot be used in conjunction with the value param")
+                raise ValueError("A dict of channels and values cannot be used with the positional 'value' parameter")
 
-            # Handle space.attribute
+            # Handle space.channel
             if '.' in name:
                 space, channel = name.split('.', 1)
                 obj = self.convert(space)
