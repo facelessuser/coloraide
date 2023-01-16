@@ -84,11 +84,20 @@ color.to_string()
 
 ### Access By Functions
 
-Colors can also be modified in more advanced ways with special access functions `get()` and `set()`. `get()` and `set()`
-are allow you to get or set any color channel. Color channels can be set with numerical values
-or functions with more complex logic.
+Colors can also be accessed and modified in more advanced ways with special access functions `get()` and `set()`.
 
-Lastly, we can augment a given channel by providing our own function allowing for relative adjustments.
+`get()` provides access to any channel via the channel name for a given color space, but what sets it apart from other
+channel access methods is that it can access channels in other color spaces as well.
+
+```python
+color = Color("pink")
+color.to_string()
+color.get('red')
+color.get('oklch.hue')
+```
+
+Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
+value can be set via numerical values or functions with more complex logic. 
 
 ```playground
 color = Color("pink")
@@ -105,26 +114,23 @@ color.to_string()
 color.set('red', 1).set('green', 1).to_string()
 ```
 
-Even more interesting is that the color channels can be from any registered color space.
-
-Below we can access all the native color channels of an sRGB color space object, but then we can also access channel
-values for the same color in Oklab, and even adjust the lightness in Oklab! Notice that the color space remains in the
-sRGB color space throughout.
+Even more interesting is that, like `get()`, targeted color channels can be from any registered color space.
 
 ```playground
 color = Color("orange")
 color.to_string()
-color.get('red')
-color.get('green')
-color.get('blue')
-color.get('oklab.lightness')
 color.set('oklab.lightness', 0.50).to_string()
 ```
 
-If desired, multiple channels can be set at one time by passing in a single dictionary containing the channel names and
-values. Channels will be set in the order they are in the dictionary. As dictionaries are ordered by default as of
-Python 3.6+, this should be be applied in the order they are specified. In order to optimize operations, channels being
-evaluated in the same color space should be grouped together to minimize conversions between color spaces.
+When setting a color channel in a different color space than the current color space, the underlying color is converted
+to the targeted color space, the values set, and the color converted back to the current color space. Since this can be
+a bit inefficient if done for each color channel, `set()` allows for the bulk setting of color channels. By passing in a
+single dictionary containing the channel names and values, multiple channels can be set in one call, and if all those
+channels are part of the same color space, if conversion is needed, they will all be set with a single conversion.
+
+Channels will be set in the order they are in the dictionary. As dictionaries are ordered by default as of Python 3.6+,
+this should be be applied in the order they are specified. In order to optimize operations, channels being evaluated in
+the same color space should be grouped together when specified to minimize conversions between color spaces.
 
 ```playground
 color = Color('orange')
