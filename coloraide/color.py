@@ -846,33 +846,84 @@ class Color(metaclass=ColorMeta):
         color = self._handle_color_input(color)
         return contrast.contrast(method, self, color)
 
-    def get(self, name: str) -> float:
+    @overload
+    def get(self, name: str) -> float:  # noqa: D105
+        ...
+
+    @overload
+    def get(self, name: list[str] | tuple[str, ...]) -> list[float]:  # noqa: D105
+        ...
+
+    def get(self, name: str | list[str] | tuple[str, ...]) -> float | list[float]:
         """Get channel."""
 
-        # Handle space.attribute
-        if '.' in name:
-            space, channel = name.split('.', 1)
-            obj = self.convert(space)
-            return obj[channel]
+        # Handle single channel
+        if isinstance(name, str):
+            # Handle space.channel
+            if '.' in name:
+                space, channel = name.split('.', 1)
+                return self.convert(space)[channel]
+            return self[name]
 
-        return self[name]
+        # Handle list of channels
+        else:
+            original_space = current_space = self.space()
+            obj = self
+            values = []
+
+            for n in name:
+                # Handle space.channel
+                space, channel = n.split('.', 1) if '.' in n else (original_space, n)
+                if space != current_space:
+                    obj = self if space == original_space else self.convert(space)
+                    current_space = space
+                values.append(obj[channel])
+            return values
 
     def set(  # noqa: A003
         self,
-        name: str,
-        value: float | Callable[..., float]
+        name: str | dict[str, float | Callable[..., float]],
+        value: Optional[float | Callable[..., float]] = None
     ) -> Color:
         """Set channel."""
 
-        # Handle space.attribute
-        if '.' in name:
-            space, channel = name.split('.', 1)
-            obj = self.convert(space)
-            obj[channel] = value(obj[channel]) if callable(value) else value
-            return self.update(obj)
+        # Set all the channels in a dictionary.
+        # Sort by name to reduce how many times we convert
+        # when dealing with different color spaces.
+        if value is None:
+            if isinstance(name, str):
+                raise ValueError("Missing the positional 'value' argument for channel '{}'".format(name))
 
-        # Handle a function that modifies the value or a direct value
-        self[name] = value(self[name]) if callable(value) else value
+            original_space = current_space = self.space()
+            obj = self.clone()
+
+            for k, v in name.items():
+
+                # Handle space.channel
+                space, channel = k.split('.', 1) if '.' in k else (original_space, k)
+                if space != current_space:
+                    obj.convert(space, in_place=True)
+                    current_space = space
+                obj[channel] = v(obj[channel]) if callable(v) else v
+
+            # Update the original color
+            self.update(obj)
+
+        # Set a single channel value
+        else:
+            if isinstance(name, dict):
+                raise ValueError("A dict of channels and values cannot be used with the positional 'value' parameter")
+
+            # Handle space.channel
+            if '.' in name:
+                space, channel = name.split('.', 1)
+                obj = self.convert(space)
+                obj[channel] = value(obj[channel]) if callable(value) else value
+                return self.update(obj)
+
+            # Handle a function that modifies the value or a direct value
+            self[name] = value(self[name]) if callable(value) else value
+
         return self
 
 

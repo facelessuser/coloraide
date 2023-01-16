@@ -275,6 +275,47 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1.set("red", 0.5)
         self.assertEqual(c1.get("red"), 0.5)
 
+    def test_multi_set(self):
+        """Test setting multiple channels via set."""
+
+        color = Color('orange')
+        color2 = color.clone()
+        color2.convert('oklch', in_place=True)
+        color2.set('hue', 270).set('lightness', lambda l: l - l * 0.25)
+        color2.convert('srgb', in_place=True).set('alpha', 0.5)
+        color.set(
+            {
+                'oklch.lightness': lambda l: l - l * 0.25,
+                'alpha': 0.5,
+                'oklch.hue': 270
+            }
+        )
+
+        self.assertColorEqual(color, color2)
+
+    def test_bad_multi_set_dict(self):
+        """Test that a dictionary input with a value fails."""
+
+        with self.assertRaises(ValueError):
+            Color('red').set({'red': 0}, 0)
+
+    def test_bad_multi_set_string(self):
+        """Test that a string input with no value fails."""
+
+        with self.assertRaises(ValueError):
+            Color('red').set('red')
+
+    def test_multi_get(self):
+        """Test that we can get multiple values."""
+
+        color = Color('orange')
+        color.get(['oklch.lightness', 'alpha', 'oklch.hue'])
+        oklch = color.convert('oklch')
+        self.assertEqual(
+            color.get(['oklch.lightness', 'alpha', 'oklch.hue']),
+            [oklch['l'], color[-1], oklch['h']]
+        )
+
     def test_space_set(self):
         """Test set in another space."""
 

@@ -37,7 +37,7 @@ class DEHyAB(DeltaE):
             raise ValueError("The space '{}' is not a 'lab-ish' color space and cannot use HyAB".format(space))
 
         names = color._space.labish_names()
-        l1, a1, b1 = alg.no_nans([color.get(names[0]), color.get(names[1]), color.get(names[2])])
-        l2, a2, b2 = alg.no_nans([sample.get(names[0]), sample.get(names[1]), sample.get(names[2])])
+        l1, a1, b1 = alg.no_nans(color.get(names))
+        l2, a2, b2 = alg.no_nans(sample.get(names))
 
         return abs(l1 - l2) + math.sqrt((a1 - a2) ** 2 + (b1 - b2) ** 2)
