@@ -851,10 +851,10 @@ class Color(metaclass=ColorMeta):
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str]) -> list[float]:  # noqa: D105
+    def get(self, name: list[str] | tuple[str, ...]) -> list[float]:  # noqa: D105
         ...
 
-    def get(self, name: str | list[str] | tuple[str]) -> float | list[float]:
+    def get(self, name: str | list[str] | tuple[str, ...]) -> float | list[float]:
         """Get channel."""
 
         # Handle single channel
