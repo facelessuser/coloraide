@@ -305,6 +305,17 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color('red').set('red')
 
+    def test_multi_get(self):
+        """Test that we can get multiple values."""
+
+        color = Color('orange')
+        color.get(['oklch.lightness', 'alpha', 'oklch.hue'])
+        oklch = color.convert('oklch')
+        self.assertEqual(
+            color.get(['oklch.lightness', 'alpha', 'oklch.hue']),
+            [oklch['l'], color[-1], oklch['h']]
+        )
+
     def test_space_set(self):
         """Test set in another space."""
 

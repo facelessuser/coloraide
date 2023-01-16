@@ -846,15 +846,39 @@ class Color(metaclass=ColorMeta):
         color = self._handle_color_input(color)
         return contrast.contrast(method, self, color)
 
-    def get(self, name: str) -> float:
+    @overload
+    def get(self, name: str) -> float:  # noqa: D105
+        ...
+
+    @overload
+    def get(self, name: list[str] | tuple[str]) -> list[float]:  # noqa: D105
+        ...
+
+    def get(self, name: str | list[str] | tuple[str]) -> float | list[float]:
         """Get channel."""
 
-        # Handle space.attribute
-        if '.' in name:
-            space, channel = name.split('.', 1)
-            return self.convert(space)[channel]
+        # Handle single channel
+        if isinstance(name, str):
+            # Handle space.channel
+            if '.' in name:
+                space, channel = name.split('.', 1)
+                return self.convert(space)[channel]
+            return self[name]
 
-        return self[name]
+        # Handle list of channels
+        else:
+            original_space = current_space = self.space()
+            obj = self
+            values = []
+
+            for n in name:
+                # Handle space.channel
+                space, channel = n.split('.', 1) if '.' in n else (original_space, n)
+                if space != current_space:
+                    obj = self if space == original_space else self.convert(space)
+                    current_space = space
+                values.append(obj[channel])
+            return values
 
     def set(  # noqa: A003
         self,
@@ -870,12 +894,10 @@ class Color(metaclass=ColorMeta):
             if isinstance(name, str):
                 raise ValueError("Missing the positional 'value' argument for channel '{}'".format(name))
 
-            original_space = self.space()
-            current_space = original_space
+            original_space = current_space = self.space()
             obj = self.clone()
 
-            for k in name:
-                v = name[k]
+            for k, v in name.items():
 
                 # Handle space.channel
                 space, channel = k.split('.', 1) if '.' in k else (original_space, k)

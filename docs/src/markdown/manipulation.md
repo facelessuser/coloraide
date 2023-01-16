@@ -16,7 +16,7 @@ the available channels. `alpha` is the one channel name that is always constant 
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 color['r']
 color['g']
 color['b']
@@ -28,11 +28,11 @@ channel names and aliases.
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 color['red'] = 0
 color['green'] = 0
 color['blue'] = 1
-color.to_string()
+color
 ```
 
 ### Access By Index
@@ -44,7 +44,7 @@ the order in which they are stored.
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 color[0]
 color[1]
 color[2]
@@ -55,9 +55,9 @@ Because a Color object essentially operates similar to a list, negative values a
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 color[-1] = 0.5
-color.to_string()
+color
 ```
 
 ### Access By Iteration
@@ -66,7 +66,7 @@ Color objects can also be treated as an iterable object. This allows us to simpl
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 [c for c in color]
 ```
 
@@ -76,10 +76,10 @@ As previously mentioned, Color objects operate very similar to lists, and as suc
 
 ```playground
 color = Color("orange")
-color.to_string()
+color
 color[:-1]
 color[:-1] = [0, 0, 1]
-color.to_string()
+color
 ```
 
 ### Access By Functions
@@ -91,7 +91,7 @@ channel access methods is that it can access channels in other color spaces as w
 
 ```python
 color = Color("pink")
-color.to_string()
+color
 color.get('red')
 color.get('oklch.hue')
 ```
@@ -101,39 +101,47 @@ value can be set via numerical values or functions with more complex logic.
 
 ```playground
 color = Color("pink")
-color.to_string()
+color
 color.set('blue', 0.5)
-color.set('green', lambda g: g * 1.3).to_string()
+color.set('green', lambda g: g * 1.3)
 ```
 
 Since `set()` returns a reference to the current color object, we can also chain multiple `set()` operations.
 
 ```playground
 color = Color('black')
-color.to_string()
-color.set('red', 1).set('green', 1).to_string()
+color
+color.set('red', 1).set('green', 1)
 ```
 
 Even more interesting is that, like `get()`, targeted color channels can be from any registered color space.
 
 ```playground
 color = Color("orange")
-color.to_string()
-color.set('oklab.lightness', 0.50).to_string()
+color
+color.set('oklab.lightness', 0.50)
 ```
 
-When setting a color channel in a different color space than the current color space, the underlying color is converted
-to the targeted color space, the values set, and the color converted back to the current color space. Since this can be
-a bit inefficient if done for each color channel, `set()` allows for the bulk setting of color channels. By passing in a
-single dictionary containing the channel names and values, multiple channels can be set in one call, and if all those
-channels are part of the same color space, if conversion is needed, they will all be set with a single conversion.
+When getting/setting a color channel in a different color space than the current color space, the underlying color must
+be converted to the target color space in order to access the channel. When doing this to get/set multiple channels,
+this can be a bit inefficient. In order to make such operations more efficient, both `get()` and `set()` allow for bulk
+operations. When performing bulk channel operations, the channels operations are performed in the order they are
+specified; therefore, it is important to group together channels of the same color space to ensure they are accessed
+with a single conversion.
 
-Channels will be set in the order they are in the dictionary. As dictionaries are ordered by default as of Python 3.6+,
-this should be be applied in the order they are specified. In order to optimize operations, channels being evaluated in
-the same color space should be grouped together when specified to minimize conversions between color spaces.
+To get multiple channels, simply provide a list of channels.
 
 ```playground
 color = Color('orange')
+color
+color.get(['oklch.lightness', 'oklch.hue', 'alpha'])
+```
+
+To set multiple channels, pass a single dictionary containing the channel names and values.
+
+```playground
+color = Color('orange')
+color
 color.set(
     {
         'oklch.lightness': lambda l: l - l * 0.25,
@@ -142,7 +150,7 @@ color.set(
 )
 ```
 
-!!! new "Setting Multiple Channels is New in 1.5"
+!!! new "New in 1.5: Getting/Setting Multiple Channels"
 
 ??? note "Notes on Modifying Coordinates in Other Spaces"
 
