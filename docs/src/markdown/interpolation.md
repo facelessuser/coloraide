@@ -10,7 +10,7 @@ ColorAide provides a number of useful utilities based on interpolation.
 
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
-We could then navigate up and down that line and return colors at different points to simulate mixing colors at various
+We could then navigate along that line and return colors at different points to simulate mixing colors at various
 percentages or return the whole range and create a gradient.
 
 To further illustrate this point, the example below shows a slice of the Oklab color space at a lightness of 70%. On
@@ -27,16 +27,16 @@ Interpolation performed at 50%
 </figcaption>
 </figure>
 
-The `interpolate` method allows a user to create a linear interpolation function using two or more colors. A returned
-interpolation function accepts an input between 0 - 1 and will cause a new color between the specified colors to be
-returned.
+The `interpolate` method allows a user to create a linear interpolation function using two or more colors. By default, a
+returned interpolation function accepts numerical input in the [domain](#domains) of [0, 1] and will cause a new color
+between the specified colors to be returned.
 
 By default, colors are interpolated in the perceptually uniform Oklab color space, though any supported color space can
 be used instead. This also applies to all methods that use interpolation, such as [`steps`](#steps), [`mix`](#mixing),
 etc.
 
 As an example, below we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)`. We then
-step through values of `0.1`, `0.2`, `0.3`, etc. This returns colors at various positions on the line that connects
+step through values of `0.0`, `0.1`, `0.2`, etc. This returns colors at various positions on the line that connects
 the two colors, `0` returning `#!color rebeccapurple` and `1` returning `#!color lch(85% 100 85)`.
 
 ```playground
@@ -62,24 +62,25 @@ Color.interpolate(
 
 ## Piecewise Interpolation
 
-Piecewise interpolation takes the idea of linear interpolation, and then applies it to multiple colors. As drawing a
-straight line through a series of points greater than two can be problematic to achieve, piecewise interpolation creates
-straight lines between each color.
+Piecewise interpolation takes the idea of linear interpolation and then applies it to multiple colors. As drawing a
+straight line through a series of points greater than two can be difficult to achieve, piecewise interpolation creates
+straight lines between each color in a chain of colors.
 
 ![Piecewise Interpolation](images/piecewise-interpolation.png)
 
 When the `interpolate` method receives more that two colors, the interpolation will utilize piecewise interpolation
 and interpolation will be broken up between each pair of colors. The function, just like when interpolating between two
-colors, still takes a range of 0 - 1, only it will now apply to the entire range that spans all the colors.
+colors, still operates by default in the domain of [0, 1], only it will now apply to the entire range of colors.
 
-Piecewise interpolation is simply a method of breaking up a data set and performing interpolation over small segments.
+Piecewise interpolation simply breaks up a series of data points into segments in order to apply interpolation
+individually on each segment.
 
 ```playground
 Color.interpolate(['black', 'red', 'white'])
 ```
 
 This approach generally works well, but since the placement of colors may not be in a straight line, you will often
-have pivot points and the transition may not be quite as smooth.
+have pivot points and the transition may not be quite as smooth at these locations.
 
 ## Cubic Spline Interpolation
 
@@ -88,16 +89,16 @@ that said, it doesn't always have the smoothest transitions. It turns out that t
 interpolate that can yield smoother results.
 
 Inspired by some efforts seen on the [web](catmull-observe) and in the great JavaScript library
-[Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods. ColorAide
-implements 3 piecewise, cubic splines.
+[Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods.
 
 ### B-Spline
 
 ![B-spline](images/bspline-interpolation.png)
 
 B-spline is a piecewise spline similar to Bezier curves. It utilizes "control points" that help shape the interpolation
-path through two or more colors. Like Bezier Curves, the path does not pass through all the colors, but it is clamped at
-the start and end.
+path through a series of colors. Like Bezier Curves, the path does not pass through the control points, but it is
+clamped at the start and end. Essentially, the interpolation path passes through both end colors and bends that path
+along the way towards the other colors being used as control points.
 
 It can be used by specifying `bspline` as the interpolation method.
 
@@ -109,9 +110,10 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 
 ![Natural](images/natural-interpolation.png)
 
-The "natural" spline is an the same B-spline approach except an algorithm is applied that uses the colors as data
-points and calculates control points such that the interpolation passes through all the data points. The resultant
-spline has the continuity and properties of a natural spline, hence the name.
+The "natural" spline is the same as the B-spline approach except an algorithm is applied that uses the colors as data
+points and calculates new control points such that the interpolation passes through all the data points. This means
+that the path will pass through all the colors. The resultant spline has the continuity and properties of a natural
+spline, hence the name.
 
 One down side is that it can overshoot or undershoot a bit, and can occasionally cause the interpolation path to pass
 out of gamut if interpolating on an edge.
@@ -126,8 +128,9 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 
 ![Monotone](images/monotone-interpolation.png)
 
-The "monotone" spline is a piecewise interpolation spline that preserves monotonicity. As far as we are concerned, the
-important thing to note is that it greatly reduces any overshoot or undershoot in the interpolation.
+The "monotone" spline is a piecewise interpolation spline that passes through all its data points and helps to preserve
+monotonicity. As far as we are concerned, the important thing to note is that it greatly reduces any overshoot or
+undershoot in the interpolation.
 
 ```playground
 Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
@@ -161,9 +164,9 @@ Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
 ## Hue Interpolation
 
 In interpolation, hues are handled special allowing us to control the way in which hues are evaluated. By default, the
-shortest angle between two hues is interpolated between, but the `hue` allows us to redefine this behavior in a number
-of different ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. Below, we can see how the
-interpolation varies using `shorter` vs `longer` (interpolate between the largest angle).
+shortest angle between two hues is targeted for interpolation, but the `hue` option allows us to redefine this behavior
+in a number of interesting ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. Below, we can see how
+the interpolation varies using `shorter` vs `longer` (interpolate between the longest angle).
 
 ```playground
 i = Color.interpolate(
@@ -239,15 +242,14 @@ Interpolating color channels is pretty straight forward and uses traditional lin
 introducing transparency to a color, interpolation uses a concept known as premultiplication which alters the normal
 interpolation process.
 
-Premultiplication is a technique that tends to produce better results when two colors have differing transparency.
-Consider the following two example. Normally, when transitioning to a "transparent" color, the colors will be more gray
+Premultiplication is a technique that tends to produce better results when two colors have differing transparency. It
+essentially accounts for the transparency and uses it to _weight_ how may a given color channel will contribute to the
+interpolation. A more transparent color's channels will naturally contribute less.
+
+Consider the following example. Normally, when transitioning to a "transparent" color, the colors will be more gray
 during the transition. This is because `#!color transparent` is actually black. But when using premultiplication, the
 transition looks just as one would expect as the transparent color's channels are weighted less due to the high
 transparency.
-
-The example below transitions from white to a fully transparent color for both non-premultiplied and premultiplied
-interpolation. We've forced a white background (_for dark theme users_) to make the grayish transition of the
-non-premultiplied results easy to see.
 
 <div style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%) " markdown>
 
@@ -258,13 +260,10 @@ Color.interpolate(['white', 'transparent'], space='srgb')
 
 </div>
 
-Premultiplication does better because it takes into account the differing amounts of transparency that each color has.
-Colors that are more opaque are "weighted" more, and contribute more to the overall color.
-
-Consider the example below. Orange is fully opaque while blue is quite transparent. Logically, the blue shouldn't have
-as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
+As a final example, below we have an opaque orange and a blue that is quite transparent. Logically, the blue shouldn't
+have as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
 colors equally, we see that the resultant color is also equally influenced by the hue of both colors. In the
-premultiplied example, we see that orange is still quite dominant at 50%.
+premultiplied example, we see that orange is still quite dominant at 50% as it is fully opaque.
 
 
 ```playground
@@ -279,8 +278,8 @@ Color.interpolate(['orange', Color('blue').set('alpha', 0.25)], space='srgb', pr
 Color.interpolate(['orange', Color('blue').set('alpha', 0.25)], space='srgb')
 ```
 
-There may be some cases where it is desired to use a non-premultiplied. There are many reasons, one could simply be that
-you need to mimic the same behavior of a system that does not use premultiplied interpolation. If so, simply set
+There may be some cases where it is desired to use no premultiplication in alpha blending. One could simply be that you
+need to mimic the same behavior of a system that does not use premultiplied interpolation. If so, simply set
 `premultiplied` to `#!py3 False` as shown above.
 
 ## Masking
@@ -317,10 +316,6 @@ i = Color.interpolate(
 [i(x/10).to_string() for x in range(10)]
 ```
 
-!!! tip "Magic Behind Masking"
-    Masking actually clones the color, setting the specified channels to undefined values. To learn more about masking
-    and undefined values, check out [Undefined Handling](#null-handling).
-
 ## Easing Functions
 
 When interpolating, whether using linear interpolation or something like B-Spline interpolation, the transitioning
@@ -328,12 +323,14 @@ between colors is always linear in time, even if the path to those colors is not
 between 2 colors and you request a `#!py3 0.5` point on that line, it will always be in the middle. This is because, no
 matter how crooked the path, the rate of change on that path is always linear.
 
-By default, ColorAide always uses linear transitions when interpolating, but there are times that a different, more
-dynamic transition may be desired. This can be achieved by using the `progress` parameter on any of the interpolation
-related functions provided by ColorAide. `progress` accepts an easing function that takes a single `time` input and
-returns a new `time` input. This allows for a user to augment the rate of change when transition from one color to
-another. Inputs are almost always between 0 - 1 unless [`extrapolate`](#extrapolation) is enabled and the user has
-manually input a range beyond 0 - 1.
+By default, ColorAide uses linear transitions when interpolating, but there are times that a different, more dynamic
+transition may be desired. This can be achieved by using the `progress` parameter on any of the interpolation related
+functions provided by ColorAide.
+
+`progress` accepts an easing function that takes a single `time` input and returns a new `time` input. This allows for a
+user to augment the rate of change when transitioning from one color to another. Inputs are almost always between 0 - 1
+unless [`extrapolate`](#extrapolation) is enabled and the user has manually input a range beyond 0 - 1. Even a change in
+[domain](#domains) will not affect the range as once the domain is accounted for, internally the domain [0, 1] is used.
 
 ColorAide provides 5 basic easing functions out of the box along with `cubic_bezier` which is used to create all of the
 aforementioned easing function except `linear`, which simply returns what is given as an input.
@@ -453,7 +450,7 @@ Color.interpolate(
 ## Color Stops and Hints
 
 Color stops are the position where the transition to and from a color starts and ends. By default, color stops are
-evenly distributed between 0 - 1, but if desired, these color stops can be shifted.
+evenly distributed within the domain of [0, 1], but if desired, these color stops can be shifted.
 
 To specify color stops, simply wrap a color in a `coloraide.stop` object and specify the stop position. Stop positions
 will then cause the transition of the targeted color to be moved.
@@ -619,6 +616,66 @@ of the other supported `interpolate` features as well.
 ```playground
 Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
 ```
+
+## Domains
+
+By default, interpolation has an input domain of [0, 1]. This domain applies to an entire interpolation, even ones that
+span multiple colors. Generally, this is sufficient and can be used to generate color scales, mixes, and steps in any
+way that a user needs, but there are times where a different domain would be helpful.
+
+Consider the use case of generating a color scale in relation to temperature. Temperature doesn't operate on a [0, 1]
+domain. We may want our color scale to span a particular range of temperature. We may also want to have the color scale
+align with specific temperature within that range. While the user can certainly craft the logic to translate these
+data points to a [0, 1] domain and calculate and apply color stops to align the, colors, it would be much more
+accessible if the user could simply change the domain to work with their data. Luckily, ColorAide is up to the
+challenge.
+
+```playground
+i = Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 32, 60, 85, 95]
+)
+i(-32)
+i(47)
+i(89)
+i
+```
+
+It should be noted that you are not constrained to provide the exact same amount of domain values as you have colors and
+can have differing amounts, but if you want to align specific colors to certain data points, then it helps.
+
+```playground
+Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
+Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 95])
+```
+
+Lastly, domains must be specified in ascending order of values. If a value decreases in magnitude, it will assume the
+value that comes right before it.
+
+```playground
+i = Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 20, 95])
+i.domain
+i
+```
+
+Domains cannot be in reverse order. If you wish to reverse your domain, just flip the color inputs instead.
+
+```playground
+Color.interpolate(list(reversed(['blue', 'green', 'yellow', 'orange', 'red'])), domain=[-32, 32, 60, 85, 95])
+```
+
+Custom domains are most useful when working with `interpolate` directly, but you can use it in other methods like
+[`steps`](#steps) as well. As `steps` does not take a data point inputs like `interpolate`, we do not need to use the
+temperature data as an input except to set the domain, but the steps will be generated with the same alignment relative
+to the domain range.
+
+```playground
+Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
+Color.steps(['blue', 'green', 'yellow', 'orange', 'red'], steps=11, domain=[-32, 32, 60, 85, 95])
+```
+
+Wile you can technically feed `domain` into [`mix`](#mix), it is probably not as useful. It will respect the domain
+alignment, but mix always accepts a percentage of [0, 1], regardless of the underlying domain.
 
 ## Extrapolation
 
