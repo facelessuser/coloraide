@@ -51,6 +51,7 @@ class NaturalBSpline(Interpolate):
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         premultiplied: bool,
         extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the natural B-spline interpolator."""
@@ -65,5 +66,6 @@ class NaturalBSpline(Interpolate):
             out_space,
             progress,
             premultiplied,
-            extrapolate
+            extrapolate,
+            domain
         )

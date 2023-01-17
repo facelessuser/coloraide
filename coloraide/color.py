@@ -696,7 +696,11 @@ class Color(metaclass=ColorMeta):
 
         if not self._is_color(color) and not isinstance(color, (str, Mapping)):
             raise TypeError("Unexpected type '{}'".format(type(color)))
-        mixed = self.interpolate([self, color], **interpolate_args)(percent)
+        i = self.interpolate([self, color], **interpolate_args)
+        # Scale really needs to be between 0 and 1 as mix deals in percentages.
+        if i.domain:
+            i.domain = interpolate.normalize_domain(i.domain)
+        mixed = i(percent)
         return self.mutate(mixed) if in_place else mixed
 
     @classmethod
@@ -712,7 +716,11 @@ class Color(metaclass=ColorMeta):
     ) -> list[Color]:
         """Discrete steps."""
 
-        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
+        i = cls.interpolate(colors, **interpolate_args)
+        # Scale really needs to be between 0 and 1 or steps will break
+        if i.domain:
+            i.domain = interpolate.normalize_domain(i.domain)
+        return i.steps(steps, max_steps, max_delta_e, delta_e)
 
     @classmethod
     def interpolate(

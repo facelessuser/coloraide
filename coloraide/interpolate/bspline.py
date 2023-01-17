@@ -174,6 +174,7 @@ class BSpline(Interpolate):
         progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the B-spline interpolator."""
@@ -188,5 +189,6 @@ class BSpline(Interpolate):
             out_space,
             progress,
             premultiplied,
-            extrapolate
+            extrapolate,
+            domain
         )

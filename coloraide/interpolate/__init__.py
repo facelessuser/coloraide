@@ -52,6 +52,19 @@ def hint(mid: float) -> Callable[..., float]:
     return functools.partial(midpoint, h=mid)
 
 
+def normalize_domain(d):
+    """Normalize domain between 0 and 1."""
+
+    total = d[-1] - d[0]
+    regions = len(d) - 1
+    values = [0]
+    for index in range(regions):
+        a, b = d[index:index + 2]
+        l = b - a
+        values.append(values[-1] + (l / total if total else 0))
+    return values
+
+
 class Interpolator(metaclass=ABCMeta):
     """Interpolator."""
 
@@ -67,6 +80,7 @@ class Interpolator(metaclass=ABCMeta):
         progress: Optional[Callable[..., float] | Mapping[str, Callable[..., float]]],
         premultiplied: bool,
         extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         **kwargs: Any
     ):
         """Initialize."""
@@ -90,6 +104,24 @@ class Interpolator(metaclass=ABCMeta):
         else:
             self.hue_index = -1
         self.premultiplied = premultiplied
+
+        # Ensure domain ascends.
+        # If we have a domain of length 1, we will duplicate it.
+        if domain is not None and domain:
+            length = len(domain)
+
+            # Ensure values are not decending
+            d = [domain[0]]
+            for index in range(length - 1):
+                b = domain[index + 1]
+                d.append(d[-1] if b <= d[-1] else b)
+
+            # We need at least two values, so duplicate the first.
+            if len(d) == 1:
+                d.append(d[0])
+            domain = d
+
+        self.domain = [] if domain is None else domain  # type: list[float]
 
         self.setup()
 
@@ -257,8 +289,37 @@ class Interpolator(metaclass=ABCMeta):
 
         return progress(t) if progress is not None else t
 
+    def scale(self, point):
+        """
+        Scale a point from a custom domain into a domain of 0 to 1.
+
+        This allows a user to have a custom domain, but for us to adapt back to 0 and 1
+        so that our logic can remain consistent.
+        """
+
+        if point < self.domain[0]:
+            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0]) if self.extrapolate else 0.0
+        elif point > self.domain[-1]:
+            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0]) if self.extrapolate else 1.0
+        else:
+            regions = len(self.domain) - 1
+            size = (1 / regions)
+            index = adjusted = 0
+            for index in range(regions):
+                a, b = self.domain[index:index + 2]
+                if point >= a and point <= b:
+                    l = b - a
+                    adjusted = ((point - a) / l) if l else 0
+                    break
+
+            point = size * index + (adjusted * size)
+        return point
+
     def __call__(self, point: float) -> Color:
         """Find which leg of the interpolation the request is between."""
+
+        if self.domain:
+            point = self.scale(point)
 
         # See if point extends past either the first or last stop
         if point < self.start:
@@ -298,6 +359,8 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         out_space: str,
         progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
+        extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""

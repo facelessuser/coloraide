@@ -25,7 +25,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
 import coloraide
 from coloraide import Color
-from coloraide.interpolate import Interpolator
+from coloraide.interpolate import Interpolator, normalize_domain
 try:
     from coloraide_extras.everything import ColorAll
 except ImportError:
@@ -101,6 +101,7 @@ def get_colors(result):
     """Get color from results."""
 
     colors = []
+    domain = []
     if isinstance(result, HtmlRow):
         colors = HtmlRow(
             [
@@ -114,7 +115,14 @@ def get_colors(result):
     elif isinstance(result, Color):
         colors.append(ColorTuple(result.to_string(fit=False), result.clone()))
     elif isinstance(result, Interpolator):
+        # Since we are auto showing the gradient, we need to scale the domain to something we expect.
+        if result.domain:
+            domain = result.domain
+            result.domain = normalize_domain(result.domain)
         colors = HtmlGradient(result.steps(steps=5, max_delta_e=2.3))
+        if domain:
+            result.domain = domain
+            domain = []
     elif isinstance(result, str):
         try:
             colors.append(ColorTuple(result, ColorAll(result)))
