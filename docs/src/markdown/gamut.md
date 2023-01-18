@@ -227,18 +227,15 @@ sRGB, but we'll control the method being used by providing two different `#!py C
 these dark colors and makes them reddish. This is a very undesirable outcome.
 
 ```playground
-class ColorClip(Color):
-    FIT = 'clip'
-
 # Gamut mapping in LCh
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
 HtmlRow([c.fit() for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 
 # Clipping
-yellow = ColorClip('color(display-p3 1 1 0)')
+yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow([c.fit() for c in ColorClip.steps([yellow, lightness_mask], steps=10, space='lch')])
+HtmlRow([c.clip() for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 ```
 
 There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is
