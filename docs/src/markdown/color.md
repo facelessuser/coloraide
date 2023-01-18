@@ -1,8 +1,11 @@
 # The Color Object
 
-The `Color` object is where all the magic of ColorAide happens. In order to manipulate, interpolate, or perform any
-action on a color, we must first create one. There are a number of ways to instantiate new colors. Here we will cover
-basic creating, cloning, and updating of the `Color` class object and a few other class specific topics.
+The `Color` object is where all the magic of ColorAide happens and provides access to all the color manipulation
+methods available. The `Color` object is used to represent a given color within a particular color space, and in order
+to perform most operations, you will need to create a color instance to begin.
+
+There are a number of ways to instantiate new colors. Here we will cover basic creating, cloning, and updating of the
+`Color` class object and a few other class specific topics.
 
 ## Importing
 
@@ -12,11 +15,12 @@ The `Color` object contains all the logic to create and manipulate colors. It ca
 from coloraide import Color
 ```
 
-By default, the `Color` object contains only a subset of the available color spaces, related distancing algorithms, etc.
-This is done in order to keep the `Color` object lighter. If desired, the `ColorAll` object can be used which includes
-_everything_. This is generally not recommended as most users do not need _everything_. In general, it is recommended to
-subclass the `Color` object and cherry pick any additional plugins that are required, but if you'd like to have access
-to all the color spaces that are available, along with any other optional plugins, you can import and use `ColorAll`.
+By default, the `Color` object registers only a subset of the available color spaces and features that are shipped with
+ColorAide. This keeps the object a bit lighter and provides the more commonly used color spaces and features. Color
+spaces, additional color distancing algorithms, gamut mapping algorithms, etc. are implemented via plugins. The normal
+way to get access to these additional spaces and features is to subclass the `Color` object and resister the desired
+spaces and features that are needed, but if you just want to explore all that ColorAide offers, you can import the
+`ColorAll` object from `everything`.
 
 ```py3
 from coloraide.everything import ColorAll as Color
@@ -27,46 +31,29 @@ from coloraide.everything import ColorAll as Color
 
 ## Creating Colors
 
-Once the `Color` class is imported, colors can be created using various forms of input. Colors can be created from
-strings, raw data input, and even simple raw data wrapped in dictionaries.
+Once the `Color` class is imported, colors can be created using various forms of input, including: numerical inputs,
+dictionaries, CSS color strings, and even other `Color` instances.
 
-As far as strings are concerned, ColorAide has the ability to parse valid CSS syntax. Syntax includes legacy formats as
-defined in CSS Level 3, but also contains CSS Level 4!
+### Numerical Inputs
 
-```playground
-Color("red")
-Color("#00ff00")
-Color("rgb(0 0 255 / 1)")
-```
-
-!!! warning "Warning: CSS Level 4"
-    Though CSS Level 4 is supported, the CSS spec is not finalized and there could be some churn in relation to the
-    syntax as browsers begin to implement the spec.
-
-ColorAide not only supports colors in the CSS spec, but also some other additional color spaces as well. To bridge the
-gap with syntax, ColorAide allows all colors, whether in the CSS spec or not, to be recognized using the CSS color
-function (`#!css-color color(space coord ... / alpha)`). Even if the color is in the CSS spec and is not currently
-specified to use the `#!css-color color()` function, we still allow it.
-
-Essentially, we've adopted the `#!css-color color()` function as the universal way in which to serialize color strings.
-If the CSS spec does not formally recognize a color in this form, the color identifier will use two dashes as a prefix
-(`--color-id`). Check the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS
-identifier name as the CSS identifier may not always match the color space name as specified in ColorAide.
-
-```playground
-Color('color(--hsl 130 40% 75% / 0.5)')
-```
-
-While CSS input is useful, we can also insert raw data points directly. When doing things this way, we must be mindful
-of the actual accepted input range. For instance, RGB colors are not specified in ranges from 0 - 255, but from 0 - 1.
+The quickest way to create a color is by simply specifying the color space, color coordinates, and the optional alpha
+channel. Numerical inputs require very little processing, but it should be noted that inputs must be specified according
+to the way the color points are stored. Some people may be aware of the old CSS convention of specifying sRGB colors
+with a range of 0 - 255, but ColorAide stores these as values between 0 - 1. If transparency is omitted, transparency is
+assumed to be fully opaque, or a value of 1.
 
 ```playground
 Color("srgb", [0.5, 0, 1], 0.3)
+Color("srgb", [0.5, 0, 1])
 ```
 
-Colors can also be exported to and receive input from simple dictionaries. These can be useful when serializing to JSON
-or various other reasons. Dictionaries include the `space` key and all relevant color channels as a list under the
-`coords` key, and an optional `alpha` key will be assumed as `1` if omitted.
+### Dictionary Inputs
+
+It may be desired to store and retrieve colors from some serialized format such as JSON. To make this easier, ColorAide
+allows exporting and importing colors via dictionaries as well.
+
+Dictionaries must define the `space` key and the `coords` key containing values for all of the color channels. The
+`alpha` channel is kept separate and can be omitted, and if so, will be assumed as 1.
 
 ```playground
 d = Color('red').to_dict()
@@ -74,7 +61,36 @@ print(d)
 Color(d)
 ```
 
-If another color instance is passed as the input, a new color will be created, essentially cloning the passed object.
+### String Inputs
+
+By default, ColorAide accepts input strings as outlined in the CSS color specification. Accepted syntax includes legacy
+CSS color formats as defined in CSS Level 3, but also allows for CSS Level 4 Color syntax!
+
+```playground
+Color("red")
+Color("#00ff00")
+Color("rgb(0 0 255 / 1)")
+```
+
+ColorAide supports all the color spaces as defined in the CSS Level 4 Color spec, but is not restricted to only
+supported CSS colors. In order to support color strings for all colors, ColorAide allows for non-CSS color spaces to be
+represented via the Level 4 CSS `#!css-color color()` function. Essentially, we've adopted the `#!css-color color()`
+function as the universal way in which to serialize color strings.
+
+It should also be noted that `#!css-color color()` can be used to describe any color regardless of whether it is
+supported in the CSS spec in this way or not. For any color that is not explicitly supported in CSS via the
+`#!css-color color()` function, ColorAide will allow using this form if the color space uses a `--` prefix for the color
+space identifier. Check the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS
+identifier name.
+
+```playground
+Color('color(--hsl 130 40% 75% / 0.5)')
+```
+
+### Color Instance Inputs
+
+If another color instance is passed as the input, a new color object will be created using the color data from the
+input. This essentially clones the passed object.
 
 ```playground
 c1 = Color('red')
@@ -91,6 +107,10 @@ color1
 color1.new("blue")
 ```
 
+!!! tip
+    If the `Color` class has be subclassed, this is an easy way to convert between the different subclasses, assuming
+    the registered color spaces are compatible between the two different `Color` classes.
+
 ## Random
 
 If you'd like to generate a random color, simply call `Color.random` with a given color space and one will be generated.
@@ -100,9 +120,9 @@ If you'd like to generate a random color, simply call `Color.random` with a give
 ```
 
 Ranges are based on the color space's defined channel range. For color spaces with defined gamuts, the values will be
-confined to appropriate ranges. For color space's without defined gamuts, the ranges may be quite arbitrary. For color
-spaces with no hard, defined gamut, it is recommend to fit the colors to whatever gamut you'd like, or simply use a
-target space with a clear defined gamut.
+confined to appropriate ranges. For color space's without defined gamuts, the ranges may be quite arbitrary in some
+cases. For color spaces with no hard, defined gamut, or gamuts that that far exceed practical usage it is recommend to
+fit the colors to whatever gamut you'd like, or simply use a target space with a clear defined gamut.
 
 ```playground
 Color.random('lab').fit('srgb')
@@ -169,8 +189,8 @@ Colors can be converted to other color spaces as needed. Converting will always 
 parameter is set to `#!py3 True`, in which case, the current color will be mutated to the new converted color and a
 reference to itself is returned.
 
-For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, such as CIELab,
-we could simply call the `convert` method with the desired color space.
+For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, we could simply
+call the `convert` method with the desired color space.
 
 ```playground
 Color('yellow').convert("lab")
@@ -275,7 +295,8 @@ valid color. As the buffer is an HTML document we also want to incorporate some 
 or color names that are part of a CSS variable.
 
 Once we've crafted our regular expression, we can search the buffer to find locations in the buffer that are likely to
-be colors. Then we can run `Color.match()` on those positions within the buffer to see if we find a valid color!
+be colors. Then we can run `Color.match()` on those positions within the buffer to see if we find a valid color. This
+ends up being much more efficient!
 
 ```playground
 import re
@@ -314,11 +335,11 @@ The `Color` object was created to be extensible and has implemented various func
 color spaces, distancing algorithms, filters, etc. are all implemented as plugins. In order to keep things light,
 ColorAide does not register all the of the plugins by default unless the user as imported the `ColorAll` object.
 
-Additionally, ColorAide as implemented a number of defaults that can be tweaked within the `Color` class to alter how
+Additionally, ColorAide has implemented a number of defaults that can be tweaked within the `Color` class to alter how
 things are handled.
 
 Creating a custom class allows for a user to change some of the default settings and add or remove plugins to gain
-access to more color spaces, distancing algorithms, filters, etc.
+access to more color spaces, distancing algorithms, filters, and other functionality.
 
 In general, it is always recommended to subclass the `Color` object when setting up custom preferences or adding or
 removing plugins. This prevents modifying the base class which may affect other libraries relying on the module. When
@@ -351,9 +372,10 @@ Properties             | Defaults            | Description
 
 ### Plugins
 
-Currently, color spaces, delta E methods, chromatic adaptation, filters, contrast, and gamut mapping methods are exposed
-as plugins. As previously mentioned, `Color` does not register all plugins, and `ColorAll` is often more than a user
-needs by default. Registering exactly what you need is normally the recommend way.
+Currently, color spaces, delta E methods, chromatic adaptation, filters, contrast, interpolation, and gamut mapping
+methods are exposed as plugins. As previously mentioned, `Color` does not register all plugins, and `ColorAll` is often
+more than a user needs by default. Registering exactly what you need is normally the recommend approach when more
+functionality is required.
 
 While we won't go into a lot of details about creating plugins here, we will go over how to register new plugins and
 deregister existing plugins. To learn more about creating plugins, checkout the [plugin documentation](./plugins/index.md).
@@ -363,9 +385,6 @@ plugin's type, The Color object will determine how to properly register the plug
 a plugin already registered with the same name (as dictated by the plugin) the operation will fail. If `overwrite` is
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
-
-As previously mentioned, the `Color` object does not include all plugins. This example shows how to register one of the
-many additional color spaces provided by ColorAide.
 
 ```playground
 from coloraide import Color
@@ -395,10 +414,10 @@ Custom.register(DECMC(l=1, c=1), overwrite=True)
 Custom('red').delta_e('blue')
 ```
 
-If a deregistration was desired, the `deregister` method can be used. It takes a string that describes the plugin to
+If a deregistration is desired, the `deregister` method can be used. It takes a string that describes the plugin to
 deregister: `category:name`.
 
-Valid categories are `space`, `delta-e`, `cat`, `filter`, and `fit`.
+Valid categories are `space`, `delta-e`, `cat`, `filter`, `interpolate`, and `fit`.
 
 If the given plugin is not found, an error will be thrown, but if this notification is found to be unnecessary, `silent`
 can be enabled and the there will be no error thrown.
