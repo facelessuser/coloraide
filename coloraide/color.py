@@ -733,6 +733,7 @@ class Color(metaclass=ColorMeta):
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
         extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         method: str = "linear",
         **kwargs: Any
     ) -> Interpolator:
@@ -758,6 +759,7 @@ class Color(metaclass=ColorMeta):
             hue=hue,
             premultiplied=premultiplied,
             extrapolate=extrapolate,
+            domain=domain,
             **kwargs
         )
 

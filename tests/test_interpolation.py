@@ -8,6 +8,67 @@ from . import util
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     """Test interpolation."""
 
+    def test_domain(self):
+        """Test that domains work."""
+
+        i = Color.interpolate(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=[-32, 32, 60, 85, 95]
+        )
+
+        self.assertColorEqual(i(-32), Color('blue'))
+        self.assertColorEqual(i(35), Color('rgb(52.558 141.25 0.01039)'))
+        self.assertColorEqual(i(60), Color('yellow'))
+        self.assertColorEqual(i(79), Color('rgb(256.86 187 0.02703)'))
+        self.assertColorEqual(i(95), Color('red'))
+
+    def test_domain_extrapolation(self):
+        """Test extrapolation with custom domain."""
+
+        i = Color.interpolate(['red', 'blue'], extrapolate=True, domain=[-25, 25])
+        self.assertColorEqual(i(-30), Color('rgb(277.88 -56.723 -61.634)'))
+        self.assertColorEqual(i(30), Color('rgb(-22.838 -53.038 273.02)'))
+
+    def test_domain_of_one(self):
+        """
+        Test domain of one.
+
+        This is pointless, but we won't break because of it.
+        """
+
+        i = Color.interpolate(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=[1]
+        )
+
+        self.assertColorEqual(i(-1), Color('blue'))
+        self.assertColorEqual(i(0), Color('blue'))
+        self.assertColorEqual(i(1), Color('blue'))
+        self.assertColorEqual(i(2), Color('red'))
+
+    def test_domain_in_step(self):
+        """Test domains work in steps."""
+
+        steps = Color.steps(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            steps=11,
+            domain=[-32, 32, 60, 85, 95]
+        )
+
+        self.assertColorEqual(steps[0], Color('blue'))
+        self.assertColorEqual(steps[3], Color('rgb(-53.051 112.52 135.23)'))
+        self.assertColorEqual(steps[5], Color('rgb(-3.6056 127.82 10.348)'))
+        self.assertColorEqual(steps[7], Color('rgb(230.77 240.55 0.01746)'))
+        self.assertColorEqual(steps[10], Color('red'))
+
+    def test_domain_mix(self):
+        """Test domains in mix."""
+
+        self.assertColorEqual(
+            Color('red').mix('blue', 0.75, domain=[0.0, 0.75, 1.0]),
+            Color('red').mix('blue', 0.5)
+        )
+
     def test_mix(self):
         """Test interpolation via mixing."""
 

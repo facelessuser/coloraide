@@ -645,23 +645,27 @@ It should be noted that you are not constrained to provide the exact same amount
 can have differing amounts, but if you want to align specific colors to certain data points, then it helps.
 
 ```playground
-Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
-Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 95])
+Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 32, 60, 85, 95]
+)
+Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 95]
+)
 ```
 
 Lastly, domains must be specified in ascending order of values. If a value decreases in magnitude, it will assume the
-value that comes right before it.
+value that comes right before it. This means you cannot put a domain in reverse. If you need to reverse the order, just
+flip the color order and setup the domain accordingly.
 
 ```playground
-i = Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 20, 95])
+i = Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 32, 60, 20, 95]
+)
 i.domain
 i
-```
-
-Domains cannot be in reverse order. If you wish to reverse your domain, just flip the color inputs instead.
-
-```playground
-Color.interpolate(list(reversed(['blue', 'green', 'yellow', 'orange', 'red'])), domain=[-32, 32, 60, 85, 95])
 ```
 
 Custom domains are most useful when working with `interpolate` directly, but you can use it in other methods like
@@ -670,8 +674,15 @@ temperature data as an input except to set the domain, but the steps will be gen
 to the domain range.
 
 ```playground
-Color.interpolate(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
-Color.steps(['blue', 'green', 'yellow', 'orange', 'red'], steps=11, domain=[-32, 32, 60, 85, 95])
+Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 32, 60, 85, 95]
+)
+Color.steps(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    steps=11,
+    domain=[-32, 32, 60, 85, 95]
+)
 ```
 
 Wile you can technically feed `domain` into [`mix`](#mix), it is probably not as useful. It will respect the domain
@@ -679,9 +690,9 @@ alignment, but mix always accepts a percentage of [0, 1], regardless of the unde
 
 ## Extrapolation
 
-By default, ColorAide clamps the entire progress of an interpolation to always be between 0 and 1. In most cases, this
-is more what most user expects and why this is the default. It should be noted that this does not affect easing
-functions, as the clamping is done prior to any easing function calls.
+By default, ColorAide clamps the entire progress of an interpolation to always be within the domain ([0, 1] by default).
+In most cases, this is more what most user expects and why this is the default. It should be noted that this does not
+affect easing functions, as the clamping is done prior to any easing function calls.
 
 If it is desired to extrapolate past 0 and 1, `extrapolate` can set to `#!py3 True` on all interpolation methods.
 

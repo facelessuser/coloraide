@@ -52,12 +52,12 @@ def hint(mid: float) -> Callable[..., float]:
     return functools.partial(midpoint, h=mid)
 
 
-def normalize_domain(d):
+def normalize_domain(d: list[float]) -> list[float]:
     """Normalize domain between 0 and 1."""
 
     total = d[-1] - d[0]
     regions = len(d) - 1
-    values = [0]
+    values = [0.0]
     for index in range(regions):
         a, b = d[index:index + 2]
         l = b - a
@@ -110,7 +110,7 @@ class Interpolator(metaclass=ABCMeta):
         if domain is not None and domain:
             length = len(domain)
 
-            # Ensure values are not decending
+            # Ensure values are not descending
             d = [domain[0]]
             for index in range(length - 1):
                 b = domain[index + 1]
@@ -289,7 +289,7 @@ class Interpolator(metaclass=ABCMeta):
 
         return progress(t) if progress is not None else t
 
-    def scale(self, point):
+    def scale(self, point: float) -> float:
         """
         Scale a point from a custom domain into a domain of 0 to 1.
 
@@ -304,12 +304,13 @@ class Interpolator(metaclass=ABCMeta):
         else:
             regions = len(self.domain) - 1
             size = (1 / regions)
-            index = adjusted = 0
+            index = 0
+            adjusted = 0.0
             for index in range(regions):
                 a, b = self.domain[index:index + 2]
                 if point >= a and point <= b:
                     l = b - a
-                    adjusted = ((point - a) / l) if l else 0
+                    adjusted = ((point - a) / l) if l else 0.0
                     break
 
             point = size * index + (adjusted * size)
@@ -545,6 +546,8 @@ def interpolator(
     progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
     hue: str,
     premultiplied: bool,
+    extrapolate: bool,
+    domain: Optional[list[float]] = None,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -639,5 +642,7 @@ def interpolator(
         out_space,
         process_mapping(progress, current._space.CHANNEL_ALIASES),
         premultiplied,
+        extrapolate,
+        domain,
         **kwargs
     )
