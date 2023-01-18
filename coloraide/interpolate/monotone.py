@@ -37,6 +37,7 @@ class Monotone(Interpolate):
         progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
         premultiplied: bool,
         extrapolate: bool = False,
+        domain: Optional[list[float]] = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the monotone interpolator."""
@@ -51,5 +52,6 @@ class Monotone(Interpolate):
             out_space,
             progress,
             premultiplied,
-            extrapolate
+            extrapolate,
+            domain
         )
