@@ -3,6 +3,7 @@
 ## 1.5
 
 - **NEW**: Formally add support for Python 3.11.
+- **NEW**: Add support for custom domains when interpolating.
 - **NEW**: `set()` can now take a dictionary of channels and values and set multiple channels at once.
 - **NEW**: `get()` can now take a list of channels and will return a list of those channel values.
 - **ENHANCE**: Simplify some type annotation syntax.
