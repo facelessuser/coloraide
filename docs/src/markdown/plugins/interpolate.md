@@ -28,6 +28,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
         premultiplied: bool,
         extrapolate: bool = False,
+        domain: Optional[List[float]] = None,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
