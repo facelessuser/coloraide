@@ -12,39 +12,39 @@ color spaces will throw an error.
 
 === "Normal"
 
-    ![Normal](./images/color-wheel.png)
+    ![Normal](./images/colorchart.png)
 
 === "Brightness"
 
-    ![Brightness](./images/color-wheel-brightness.png)
+    ![Brightness](./images/colorchart-brightness.png)
 
 === "Saturate"
 
-    ![Saturate](./images/color-wheel-saturate.png)
+    ![Saturate](./images/colorchart-saturate.png)
 
 === "Contrast"
 
-    ![Contrast](./images/color-wheel-contrast.png)
+    ![Contrast](./images/colorchart-contrast.png)
 
 === "Opacity"
 
-    ![Opacity](./images/color-wheel-opacity.png){.trans-bg}
+    ![Opacity](./images/colorchart-opacity.png){.trans-bg}
 
 === "Invert"
 
-    ![Invert](./images/color-wheel-invert.png)
+    ![Invert](./images/colorchart-invert.png)
 
 === "Hue Rotate"
 
-    ![Hue Rotate](./images/color-wheel-hue-rotate.png)
+    ![Hue Rotate](./images/colorchart-hue-rotate.png)
 
 === "Sepia"
 
-    ![Sepia](./images/color-wheel-sepia.png)
+    ![Sepia](./images/colorchart-sepia.png)
 
 === "Grayscale"
 
-    ![Grayscale](./images/color-wheel-grayscale.png)
+    ![Grayscale](./images/colorchart-grayscale.png)
 
 In ColorAide, just call the `filter` method and provide the name of the filter. If `amount` is not provided, the default
 according to the W3C spec will be used instead.
@@ -87,19 +87,19 @@ tritanopia describes deficiencies with the blue cone.
 
 === "Normal"
 
-    ![Normal](./images/color-wheel.png)
+    ![Normal](./images/colorchart.png)
 
 === "Protanopia"
 
-    ![Protanopia](./images/color-wheel-protan.png)
+    ![Protanopia](./images/colorchart-protan.png)
 
 === "Deuteranopia"
 
-    ![Deuteranopia](./images/color-wheel-deutan.png)
+    ![Deuteranopia](./images/colorchart-deutan.png)
 
 === "Tritanopia"
 
-    ![Tritanopia](./images/color-wheel-tritan.png)
+    ![Tritanopia](./images/colorchart-tritan.png)
 
 By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia and the
 [Viénot, Brettel, and Mollon 1999 approach][vienot] to simulate protanopia and and deuteranopia. While Brettel is
@@ -143,19 +143,19 @@ deuteranomaly (reduced green sensitivity), and tritanomaly (reduced blue sensiti
 
 === "Normal"
 
-    ![Normal](./images/color-wheel.png)
+    ![Normal](./images/colorchart.png)
 
 === "Protanomaly Severity 0.5"
 
-    ![Protanomaly 0.5](./images/color-wheel-protan-machado-0.5.png)
+    ![Protanomaly 0.5](./images/colorchart-protan-machado-0.5.png)
 
 === "Protanomaly Severity 0.7"
 
-    ![Protanomaly 0.7](./images/color-wheel-protan-machado-0.7.png)
+    ![Protanomaly 0.7](./images/colorchart-protan-machado-0.7.png)
 
 === "Protanomaly Severity 0.9"
 
-    ![Protanomaly 0.9](./images/color-wheel-protan-machado-0.9.png)
+    ![Protanomaly 0.9](./images/colorchart-protan-machado-0.9.png)
 
 To represent anomalous trichromacy, ColorAide leans on the [Machado 2009 approach][machado] which has a more nuanced
 approach to handling severity levels below 1. This approach did not really focus on tritanopia though, and the suggested
