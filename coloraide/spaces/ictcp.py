@@ -78,7 +78,7 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     lms = alg.dot(xyz_to_lms_m, absxyz, dims=alg.D2_D1)
 
     # PQ encode the LMS
-    pqlms = util.pq_st2084_inverse_eotf(lms)
+    pqlms = util.pq_st2084_oetf(lms)
 
     # Calculate Izazbz
     return alg.dot(lms_p_to_ictcp_m, pqlms, dims=alg.D2_D1)

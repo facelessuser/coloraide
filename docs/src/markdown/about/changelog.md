@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6
+
+- **NEW**: Add `rec2100-hlg` color space.
+- **BREAKING**: `rec2100pq` should have been named `rec2100-pq` for consistency. It has been renamed to `rec2100-pq` and
+  serializes with the CSS ID of `--rec2100-pq`. This is likely to have little impact on most users.
+
 ## 1.5
 
 - **NEW**: Formally add support for Python 3.11.

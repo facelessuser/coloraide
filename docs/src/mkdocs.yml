@@ -58,7 +58,8 @@ nav:
         - A98 RGB: colors/a98_rgb.md
         - Rec. 2020: colors/rec2020.md
         - ProPhoto RGB: colors/prophoto_rgb.md
-        - Rec. 2100 PQ: colors/rec2100pq.md
+        - Rec. 2100 PQ: colors/rec2100_pq.md
+        - Rec. 2100 HLG: colors/rec2100_hlg.md
         - Linear sRGB: colors/srgb_linear.md
         - Linear Display P3: colors/display_p3_linear.md
         - Linear A98 RGB: colors/a98_rgb_linear.md
@@ -211,7 +212,7 @@ extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
-  - playground-config-52c8e5b3.js
+  - playground-config-2af6a262.js
   - https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 

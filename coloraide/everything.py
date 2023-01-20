@@ -1,7 +1,8 @@
 """Everything and the kitchen sink."""
 from __future__ import annotations
 from .color import Color as Base
-from .spaces.rec2100pq import Rec2100PQ
+from .spaces.rec2100_pq import Rec2100PQ
+from .spaces.rec2100_hlg import Rec2100HLG
 from .spaces.jzazbz import Jzazbz
 from .spaces.jzczhz import JzCzhz
 from .spaces.ictcp import ICtCp
@@ -47,6 +48,7 @@ ColorAll.register(
     [
         # Spaces
         Rec2100PQ(),
+        Rec2100HLG(),
         Jzazbz(),
         JzCzhz(),
         ICtCp(),

@@ -113,6 +113,7 @@ NONINFRINGEMENT
 NaN
 NaNs
 Numpy
+OETF
 OkLCh
 OkLCh's
 Okhsl

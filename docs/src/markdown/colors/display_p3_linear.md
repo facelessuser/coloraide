@@ -5,7 +5,7 @@
 <div class="info-container" markdown>
 !!! info inline end "Properties"
 
-    **Name:** `--display-p3-linear`
+    **Name:** `display-p3-linear`
 
     **White Point:** D65
 

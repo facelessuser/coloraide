@@ -108,7 +108,7 @@ def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     lms = alg.dot(xyz_to_lms_m, [xm, ym, za], dims=alg.D2_D1)
 
     # PQ encode the LMS
-    pqlms = util.pq_st2084_inverse_eotf(lms, m2=M2)
+    pqlms = util.pq_st2084_oetf(lms, m2=M2)
 
     # Calculate Izazbz
     iz, az, bz = alg.dot(lms_p_to_izazbz_m, pqlms, dims=alg.D2_D1)
