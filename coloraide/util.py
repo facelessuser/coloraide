@@ -96,7 +96,7 @@ def xyz_to_xyY(xyz: VectorLike, white: VectorLike) -> Vector:
     return [white[0], white[1], y] if d == 0 else [x / d, y / d, y]
 
 
-def pq_st2084_inverse_eotf(
+def pq_st2084_oetf(
     values: VectorLike,
     c1: float = C1,
     c2: float = C2,
@@ -104,7 +104,7 @@ def pq_st2084_inverse_eotf(
     m1: float = M1,
     m2: float = M2
 ) -> Vector:
-    """Perceptual quantizer (SMPTE ST 2084) - inverse EOTF."""
+    """Perceptual quantizer (SMPTE ST 2084) - OETF."""
 
     adjusted = []
     for c in values:

@@ -159,6 +159,18 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
+def nlog(value: float) -> float:
+    """Perform `log` with a negative number."""
+
+    return math.copysign(math.log(abs(value)), value)
+
+
+def nexp(value: float) -> float:
+    """Perform `exp` with a negative number."""
+
+    return math.copysign(math.exp(abs(value)), value)
+
+
 ################################
 # Interpolation and splines
 ################################
