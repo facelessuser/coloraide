@@ -28,6 +28,8 @@ from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
+from .spaces.yiq import YIQ
+from .spaces.yuv import YUV
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
@@ -74,6 +76,8 @@ ColorAll.register(
         ACEScg(),
         ACEScc(),
         ACEScct(),
+        YIQ(),
+        YUV(),
 
         # Delta E
         DEITP(),

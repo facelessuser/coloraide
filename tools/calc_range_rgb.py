@@ -28,12 +28,15 @@ def main():
     parser.add_argument(
         '--res', '-s', type=int, default=100, help="Resolution to use when calculating range, default is 100."
     )
+    parser.add_argument(
+        '--precision', '-p', type=int, default=3, help="Precision for displaying the range."
+    )
     args = parser.parse_args()
 
-    return run(args.color, args.rgb, args.res)
+    return run(args.color, args.rgb, args.res, args.precision)
 
 
-def run(target, rgb, res):
+def run(target, rgb, res, p):
     """Run."""
 
     max_x = float('-inf')
@@ -78,9 +81,9 @@ def run(target, rgb, res):
     print('')
     chan_x, chan_y, chan_z = Color('white').convert(target)._space.CHANNELS
     print('---- {} range in {} ----'.format(target, rgb))
-    print('{}: [{}, {}]'.format(chan_x, alg.round_half_up(min_x, 3), alg.round_half_up(max_x, 3)))
-    print('{}: [{}, {}]'.format(chan_y, alg.round_half_up(min_y, 3), alg.round_half_up(max_y, 3)))
-    print('{}: [{}, {}]'.format(chan_z, alg.round_half_up(min_z, 3), alg.round_half_up(max_z, 3)))
+    print('{}: [{}, {}]'.format(chan_x, alg.round_half_up(min_x, p), alg.round_half_up(max_x, p)))
+    print('{}: [{}, {}]'.format(chan_y, alg.round_half_up(min_y, p), alg.round_half_up(max_y, p)))
+    print('{}: [{}, {}]'.format(chan_z, alg.round_half_up(min_z, p), alg.round_half_up(max_z, p)))
 
     return 0
 

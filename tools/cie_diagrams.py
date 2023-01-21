@@ -488,7 +488,7 @@ class DiagramOptions:
             self.title = title
 
         if theme == 'light':
-            plt.style.use('seaborn-darkgrid')
+            plt.style.use('seaborn-v0_8-darkgrid')
             self.default_color = "#00000088"
             self.default_colorized_color = "#00000088"
             self.locus_label_color = "#00000088"

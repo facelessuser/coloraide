@@ -40,7 +40,7 @@ def main():
     else:
         edge = 'black'
         line = '#333333'
-        plt.style.use('seaborn-bright')
+        plt.style.use('seaborn-v0_8-bright')
 
     # Setup figure and axis
     figure = plt.figure()

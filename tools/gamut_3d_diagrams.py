@@ -254,7 +254,7 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     if dark:
         plt.style.use('dark_background')
     else:
-        plt.style.use('seaborn-bright')
+        plt.style.use('seaborn-v0_8-bright')
 
     # Setup figure and axis
     figure = plt.figure()
