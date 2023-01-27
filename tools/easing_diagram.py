@@ -49,7 +49,7 @@ def main():
         xs.append(x)
         ys.append(ease(x))
 
-    plt.style.use('seaborn-darkgrid')
+    plt.style.use('seaborn-v0_8-darkgrid')
     default_color = 'black'
 
     figure = plt.figure()

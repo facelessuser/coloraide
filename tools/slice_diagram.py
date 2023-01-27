@@ -58,7 +58,7 @@ def plot_slice(
 
     res = resolution
     if not dark:
-        plt.style.use('seaborn-darkgrid')
+        plt.style.use('seaborn-v0_8-darkgrid')
         default_color = 'black'
     else:
         plt.style.use('dark_background')
