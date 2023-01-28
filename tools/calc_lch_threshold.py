@@ -80,7 +80,7 @@ def run(lch, lab):
         m = RE_LEAD_ZERO.match(num)
         minimum = '0'
         better = '0'
-        if len(m.group(0)) != len(num):
+        if m and len(m.group(0)) != len(num):
             count = len(m.group(0)[2:])
             if int(num[m.end(0)]) == 9:
                 # Close to rolling over
@@ -90,9 +90,13 @@ def run(lch, lab):
                 minimum = '> 0.{}{}'.format('0' * count, str(int(num[m.end(0)]) + 1))
             # Give at least a little over a decimal point
             better = '> 0.{}2'.format('0' * (count - 1))
+            print('{}: minimum threshold: {}'.format(lch, minimum))
+            print('{}: relaxed threshold: {}'.format(lch, better))
+        else:
+            print('{}: minimum threshold: {}'.format(lch, '?'))
+            print('{}: relaxed threshold: {}'.format(lch, '?'))
+
         print('{}: maximum chroma: {:.53f}'.format(lch, max_chroma))
-        print('{}: minimum threshold: {}'.format(lch, minimum))
-        print('{}: relaxed threshold: {}'.format(lch, better))
 
         print(
             '\n* Only potential recommendations, adjustments can be made if desired.'
