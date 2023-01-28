@@ -1884,7 +1884,7 @@ def inv(matrix: MatrixLike) -> Matrix:
     m = acopy(matrix)
 
     # Create an identity matrix of the same size as our provided vector
-    im = diag([1] * s[0])
+    im = identity(s[0])
 
     # Iterating through each row, we will scale each row by it's "focus diagonal".
     # Then using the scaled row, we will adjust the other rows.
