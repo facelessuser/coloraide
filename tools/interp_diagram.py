@@ -55,13 +55,16 @@ def main():
 
     args = parser.parse_args()
 
-    c_name, c_value = args.constant.split(':')
-    c_value = float(c_value)
     colors = []
     for color in args.color:
         c = Color(color).convert(args.space)
-        c.set(c_name, c_value)
         colors.append(c)
+
+    for chan in args.constant.split(';'):
+        c_name, c_value = chan.split(':')
+        c_value = float(c_value)
+        for color in colors:
+            color.set(c_name, c_value)
 
     if not args.title:
         title = "Interpolation in the {} Color Space Using the {} Gamut".format(args.space, args.gamut)

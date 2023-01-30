@@ -44,7 +44,7 @@ def needs_lchuv_workaround(color):
 
 def plot_slice(
     space,
-    channel0,
+    constants,
     channel1,
     channel2,
     gamut='srgb',
@@ -70,9 +70,15 @@ def plot_slice(
     c = Color(space, [])
 
     # Parse the channel strings into actual values
-    name0, value = [
-        c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(channel0.split(":"), 0)
-    ]
+    chan_constants = []
+    for chan in constants.split(';'):
+        n, v = [
+            c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(chan.split(':'), 0)
+        ]
+        n = c._space.CHANNEL_ALIASES.get(n, n)
+        i = c._space.get_channel_index(n)
+        chan_constants.append((n, v, i))
+
     name1, start1, end1 = [
         c if i == 0 else float(c) for i, c in enumerate(channel1.split(':'), 0)
     ]
@@ -86,8 +92,6 @@ def plot_slice(
     offset2 = start2
 
     # Get the actual indexes of the specified channels
-    name0 = c._space.CHANNEL_ALIASES.get(name0, name0)
-    index0 = c._space.get_channel_index(name0)
     name1 = c._space.CHANNEL_ALIASES.get(name1, name1)
     index1 = c._space.get_channel_index(name1)
     name2 = c._space.CHANNEL_ALIASES.get(name2, name2)
@@ -129,8 +133,9 @@ def plot_slice(
         ((x / res * factor2) + offset2 for x in range(0, res + 1))
     ):
         # Set the appropriate channels and update the color object
-        coords = [NaN] * 3
-        coords[index0] = value
+        coords = [NaN] * (2 + len(chan_constants))
+        for chan in chan_constants:
+            coords[chan[2]] = chan[1]
         coords[index1] = c1
         coords[index2] = c2
         c.update(space, coords)
@@ -189,8 +194,8 @@ def plot_slice(
 
     # Create titles
     if not title:
-        title = "Plot of {} showing '{}' and '{}' with '{}' at {}".format(
-            space, name1, name2, name0, fmt_float(value, 5)
+        title = "Plot of {} showing '{}' and '{}': {}".format(
+            space, name1, name2, ' '.join(['{} = {}'.format(chan[0], fmt_float(chan[1], 5)) for chan in chan_constants])
         )
 
     plt.suptitle(title)
@@ -270,7 +275,9 @@ def main():
     parser = argparse.ArgumentParser(prog='slice_diagrams', description='Plot a slice of a color space.')
     parser.add_argument('--space', '-s', help='Desired space.')
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
-    parser.add_argument('--constant', '-c', help="The channel to hold constant and the value to use 'name:value'.")
+    parser.add_argument(
+        '--constant', '-c', help="The channel(s) to hold constant and the value to use 'name:value;name2:value2'."
+    )
     parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:min:max'.")
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:min:max'.")
     parser.add_argument('--polar', '-p', action="store_true", help="Graph the cylindrical space in polar coordinates.")
