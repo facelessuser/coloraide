@@ -67,6 +67,7 @@ def main():
     z = []
     c = []
     colors = []
+    display = None
     for color in args.color:
         current = Color(color).convert(args.space)
         display = current.convert(args.display)
@@ -77,7 +78,7 @@ def main():
         colors.append(current)
 
     # We don't have logic to handle cylindrical color spaces.
-    if isinstance(display, Cylindrical):
+    if isinstance(display._space, Cylindrical):
         raise ValueError('Displaying interpolation in a cylindrical color space is not currently supported.')
 
     # Interpolate between the entire range and optionally extrapolate
