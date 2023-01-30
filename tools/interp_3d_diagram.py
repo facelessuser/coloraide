@@ -42,25 +42,6 @@ def main():
         line = '#333333'
         plt.style.use('seaborn-v0_8-bright')
 
-    # Setup figure and axis
-    figure = plt.figure()
-    plt.tight_layout()
-    ax = plt.axes(
-        projection='3d'
-    )
-
-    # Create title
-    if not args.title:
-        title = "{} Interpolation in '{}' space displayed in the '{}' space.".format(
-            args.method.title(), args.space, args.display
-        )
-    else:
-        title = args.title
-    plt.suptitle(title)
-
-    # Add axis to figure
-    figure.add_axes(ax)
-
     # Create the color points
     x = []
     y = []
@@ -80,6 +61,28 @@ def main():
     # We don't have logic to handle cylindrical color spaces.
     if isinstance(display._space, Cylindrical):
         raise ValueError('Displaying interpolation in a cylindrical color space is not currently supported.')
+
+    # Setup figure and axis
+    figure = plt.figure()
+    plt.tight_layout()
+    ax = plt.axes(
+        projection='3d',
+        xlabel=display._space.CHANNELS[0],
+        ylabel=display._space.CHANNELS[1],
+        zlabel=display._space.CHANNELS[2]
+    )
+
+    # Create title
+    if not args.title:
+        title = "{} Interpolation in '{}' space displayed in the '{}' space.".format(
+            args.method.title(), args.space, args.display
+        )
+    else:
+        title = args.title
+    plt.suptitle(title)
+
+    # Add axis to figure
+    figure.add_axes(ax)
 
     # Interpolate between the entire range and optionally extrapolate
     i = Color.interpolate(
