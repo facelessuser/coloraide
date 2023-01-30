@@ -49,9 +49,10 @@ def main():
     c = []
     colors = []
     display = None
+    d = args.space if args.display is None else args.display
     for color in args.color:
         current = Color(color).convert(args.space)
-        display = current.convert(args.display)
+        display = current.convert(d)
         x.append(display[0])
         y.append(display[1])
         z.append(display[2])
