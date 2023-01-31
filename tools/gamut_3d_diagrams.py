@@ -51,15 +51,13 @@ def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
             WHITE = cs.WHITE
             DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
-            @classmethod
-            def to_base(cls, coords):
+            def to_base(self, coords):
                 """To HSL from HSV."""
 
                 coords = super().to_base(coords)
                 return [coords[0], coords[1] * factor, coords[2] * factor]
 
-            @classmethod
-            def from_base(cls, coords):
+            def from_base(self, coords):
                 """From HSL to HSV."""
 
                 return super().from_base([coords[0], coords[1] / factor, coords[2] / factor])
@@ -105,6 +103,19 @@ def add_rect_color(space, color, x, y, z, c):
     c.append(color.to_string(hex=True))
 
 
+def add_lab_color(space, color, x, y, z, c):
+    """Add Lab like color to the provided arrays."""
+
+    coords = color.convert(space)[:-1]
+    x.append(coords[1])
+    y.append(coords[2])
+    z.append(coords[0])
+    if not color.in_gamut():
+        m = max(color[:-1])
+        color.update('srgb', [(i / m if m != 0 else 0) for i in color[:-1]], color[-1])
+    c.append(color.to_string(hex=True))
+
+
 def add_cyl_color(space, color, x, y, z, c):
     """
     Add color to the provided arrays.
@@ -120,9 +131,9 @@ def add_cyl_color(space, color, x, y, z, c):
     if is_nan(hue):
         hue = 0
 
-    z.append(chroma * math.sin(math.radians(hue)))
+    x.append(chroma * math.sin(math.radians(hue)))
     y.append(chroma * math.cos(math.radians(hue)))
-    x.append(lightness)
+    z.append(lightness)
 
     s = color.convert('srgb')
     if not color.in_gamut():
@@ -131,7 +142,7 @@ def add_cyl_color(space, color, x, y, z, c):
     c.append(s.to_string(hex=True))
 
 
-def render_space(space, gamut, resolution, factor, data, c):
+def render_space(space, gamut, resolution, factor, x, y, z, c):
     """
     Render the space with the given resolution and factor.
 
@@ -150,8 +161,6 @@ def render_space(space, gamut, resolution, factor, data, c):
     spaces.
     """
 
-    x, y, z = data
-
     is_hsv = color_options.get(space, {}).get('is_hsv', False)
     is_hsl = color_options.get(space, {}).get('is_hsl', False)
     if not is_hsv:
@@ -168,7 +177,12 @@ def render_space(space, gamut, resolution, factor, data, c):
     is_cyl = isinstance(ColorCyl.CS_MAP[space], Cylindrical)
     is_labish = isinstance(ColorCyl.CS_MAP[space], Labish)
     is_lchish = isinstance(ColorCyl.CS_MAP[space], LChish)
-    add = add_rect_color if not is_cyl or is_labish else add_cyl_color
+    if is_labish:
+        add = add_lab_color
+    elif not is_cyl:
+        add = add_rect_color
+    else:
+        add = add_cyl_color
     force_max_radius = not is_lchish and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
     force_bottom = color_options.get(space, {}).get('force_bottom', False)
     force_top = color_options.get(space, {}).get('force_top', False)
@@ -193,9 +207,9 @@ def render_space(space, gamut, resolution, factor, data, c):
         else:
             # Certain color spaces, like HWB, we must force max radius as the space
             # is constructed in a way that just doesn't translate to how we map other spaces.
-            z.append(factor * math.sin(math.radians(c1)))
+            x.append(factor * math.sin(math.radians(c1)))
             y.append(factor * math.cos(math.radians(c1)))
-            x.append(c2)
+            z.append(c2)
             c.append(color.update(space, [c1, factor, c2]).to_string(hex=True))
 
         if not is_lchish and is_cyl:
@@ -206,16 +220,16 @@ def render_space(space, gamut, resolution, factor, data, c):
 
             if force_top:
                 # Top disc
-                z.append(c2 * factor * math.sin(math.radians(c1)))
+                x.append(c2 * factor * math.sin(math.radians(c1)))
                 y.append(c2 * factor * math.cos(math.radians(c1)))
-                x.append(factor)
+                z.append(factor)
                 c.append(color.update(space, [c1, c2, factor]).to_string(hex=True))
 
             if force_bottom:
                 # Bottom disc
-                z.append(c2 * factor * math.sin(math.radians(c1)))
+                x.append(c2 * factor * math.sin(math.radians(c1)))
                 y.append(c2 * factor * math.cos(math.radians(c1)))
-                x.append(0)
+                z.append(0)
                 c.append(color.update(space, [c1, c2 * factor, 0]).to_string(hex=True))
         else:
             # Some spaces require a higher resolution in the black region to fill in any holes
@@ -242,11 +256,13 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
-        axm = [1, 2, 0]
+        c1, c2, c3 = target.labish_indexes()
+        axm = [c2, c3, c1]
     elif is_lchish:
-        axm = target.lchish_indexes()
+        c1, c2, c3 = target.lchish_indexes()
+        axm = [c3, c2, c1]
     elif is_cyl:
-        axm = [2, 1, 0]
+        axm = [0, 1, 2]
     else:
         axm = color_options.get(space, {}).get('axis', [0, 1, 2])
 
@@ -277,7 +293,7 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     plt.title(title if title else "'{}' Rendered in '{}'".format(gamut, space), pad=20)
 
     # Render the space
-    render_space(space, gamut, resolution, factor, data, c)
+    render_space(space, gamut, resolution, factor, data[axm[0]], data[axm[1]], data[axm[2]], c)
 
     # Setup the aspect ratio
     ax.set_box_aspect((1, 1, 1))
