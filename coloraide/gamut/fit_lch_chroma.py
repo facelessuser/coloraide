@@ -28,6 +28,7 @@ class LChChroma(Fit):
     EPSILON = 0.1
     LIMIT = 2.0
     DE = "2000"
+    DE_OPTIONS = {}
     SPACE = "lch-d65"
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100
@@ -61,7 +62,7 @@ class LChChroma(Fit):
         clip_channels(color.update(mapcolor))
 
         # Adjust chroma if we are not under the JND yet.
-        if mapcolor.delta_e(color, method=self.DE) >= self.LIMIT:
+        if mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS) >= self.LIMIT:
             # Perform "in gamut" checks until we know our lower bound is no longer in gamut.
             lower_in_gamut = True
 
@@ -75,7 +76,7 @@ class LChChroma(Fit):
                     low = mapcolor['chroma']
                 else:
                     clip_channels(color.update(mapcolor))
-                    de = mapcolor.delta_e(color, method=self.DE)
+                    de = mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS)
                     if de < self.LIMIT:
                         # Kick out as soon as we are close enough to the JND.
                         # Too far below and we may reduce chroma too aggressively.

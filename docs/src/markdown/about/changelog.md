@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7
+
+- **NEW**: Gamut mapping classes derived from `fit_lch_chroma` can set `DE_OPTIONS` to pass ∆E parameters.
+
 ## 1.6
 
 - **NEW**: Add `rec2100-hlg` color space.
