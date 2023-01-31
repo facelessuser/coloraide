@@ -1291,6 +1291,19 @@ class TestAlgebra(unittest.TestCase):
             [[3.0, 4.0], [4.5, 6.9375], [6.0, 8.0], [7.5, 5.9375], [9.0, 2.0]]
         )
 
+    def test_interpolate_extrapolate(self):
+        """Test extrapolation with splines when interpolating."""
+
+        i = alg.interpolate([[3, 4], [6, 8], [9, 2]], method='natural')
+        self.assertEqual(
+            i(1.2),
+            [9.6, 0.3000000000000007]
+        )
+        self.assertEqual(
+            i(-0.2),
+            [2.4, 2.7]
+        )
+
     def test_apply_two_inputs(self):
         """Test apply with two inputs."""
 
