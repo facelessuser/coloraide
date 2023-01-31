@@ -28,7 +28,7 @@ class LChChroma(Fit):
     EPSILON = 0.1
     LIMIT = 2.0
     DE = "2000"
-    DE_OPTIONS = {}
+    DE_OPTIONS = {}  # type: dict[str, Any]
     SPACE = "lch-d65"
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100
