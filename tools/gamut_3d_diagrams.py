@@ -33,7 +33,8 @@ color_options = {
     'hsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
     'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
     'hsi': {'chroma': 's', 'lightness': 'i', 'force_bottom': True},
-    'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True}
+    'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True},
+    'cam16-ucs-jmh': {'chroma': 'm'}
 }
 
 

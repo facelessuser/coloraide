@@ -39,7 +39,7 @@ except ImportError:
 RE_LEAD_ZERO = re.compile(r'^0\.0+')
 
 
-def run(lch, lab):
+def run(lch, lab, verify):
     """Run the calculation."""
 
     max_chroma = 0.0
@@ -51,7 +51,7 @@ def run(lch, lab):
         max_a = 0.0
         max_b = 0.0
 
-        for x in range(-0x600, 0x600):
+        for x in range(500):
             # Create an achromatic RGB color
             color = Color(space, [x / 100] * 3)
             if lab:
@@ -68,6 +68,8 @@ def run(lch, lab):
                 lchish = color.convert(lch)
                 c_name = lchish._space.lchish_names()[1]
                 chroma = lchish.get(c_name)
+                if verify:
+                    assert lchish.is_nan('hue'), str(lchish) + " <-> " + str(color)
                 if chroma > max_chroma:
                     max_chroma = chroma
 
@@ -123,12 +125,16 @@ def main():
         '--lab', '-l', action='store', default='',
         help="Optionally view Lab color whose 'ab' values you'd like evaluate."
     )
+    parser.add_argument(
+        '--verify', '-v', action='store_true',
+        help='Verify the space has all values equated to an achromatic hue (NaN).'
+    )
     args = parser.parse_args()
 
     if not args.lch and not args.lab:
         print('No spaces provided to test!')
 
-    return run(args.lch, args.lab)
+    return run(args.lch, args.lab, args.verify)
 
 
 if __name__ == "__main__":
