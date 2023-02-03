@@ -33,6 +33,9 @@ def srgb_to_hsi(rgb: Vector) -> Vector:
             h = (r - g) / c + 4.0
         h *= 60.0
 
+    if abs(s) < 1e-08:
+        h = alg.NaN
+
     return [util.constrain_hue(h), s, i]
 
 
@@ -102,7 +105,7 @@ class HSI(Cylindrical, Space):
         z = 1 - abs(h % 2 - 1)
         c = (3 * i * s) / (1 + z)
 
-        if c == 0:
+        if c == 0 or abs(s) < 1e-08:
             coords[0] = alg.NaN
 
         return coords

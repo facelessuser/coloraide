@@ -1,17 +1,13 @@
 """Sanity check that ensures all colors round trip back."""
-from coloraide.everything import ColorAll
+from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Cylindrical
 from coloraide import algebra as alg
 import pytest
 
-
-class Color(ColorAll):
-    """Test color for round trip."""
-
+SPACES = {k: 5 for k in Color.CS_MAP.keys()}
 
 # This color's gamut is less than the sRGB gamut we use to round trip, so we cannot test it.
-Color.deregister('space:hpluv')
-SPACES = Color.CS_MAP.keys()
+del SPACES['hpluv']
 
 
 class TestRoundTrip:
@@ -46,29 +42,48 @@ class TestRoundTrip:
         Color('blue'),
         Color('indigo'),
         Color('violet'),
-        Color('black')
+        Color('darkgrey'),
+        Color('lightgrey'),
+        Color('gray'),
+        Color('black'),
+        Color('white')
     ]
+
+    # Ignore non-black achromatic cases for spaces who's algorithm isn't precise enough
+    IGNORE_ACHROMA = ['okhsl', 'okhsv']
+
+    # Ignore gray cases. Spaces that don't offer enough precision near grey.
+    IGNORE_GREY = ['jzczhz']
+
+    ACHROMA = {'grey', 'white', 'darkgrey', 'lightgrey'}
+    GREY = {'grey', 'darkgrey', 'lightgrey'}
 
     def assert_round_trip(self, color, space):
         """Cycle through all the other colors and convert to them and back and check the results."""
 
-        c1 = Color(color).convert(space)
-        for space in SPACES:
+        c1 = Color(color)
+        name = c1.to_string(names=True)
+        c1.convert(space, in_place=True)
+        for space, p in SPACES.items():
+            if ((c1.space() in self.IGNORE_ACHROMA or space in self.IGNORE_ACHROMA) and name in self.ACHROMA):
+                continue
+            if ((c1.space() in self.IGNORE_GREY or space in self.IGNORE_GREY) and name in self.GREY):
+                continue
             # Print the color space to easily identify which color space broke.
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
             # Catch cases where we are really close to 360 which should wrap to 0
-            for c in (c1, c2):
-                if isinstance(c._space, Cylindrical):
-                    if alg.round_half_up(alg.no_nan(c['hue']), c.PRECISION) == 360:
-                        c.set('hue', 0)
+            if isinstance(c2._space, Cylindrical):
+                if alg.round_half_up(alg.no_nan(c2['hue']), p) == 360:
+                    c2.set('hue', 0)
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
-            str1 = Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False)
-            str2 = Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False)
+            str1 = Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
+            str2 = Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
             # Print failing results for debug purposes
             if str1 != str2:
                 print('----- Convert: {} <=> {} -----'.format(c1.space(), space))
-                print('Original: ', color.to_string(color=True, fit=False))
+                print('Name: ', name)
+                print('Original: ', color.to_string(color=True, fit=False, precision=p))
                 print(c1.space() + ': ', str1, c1[:])
                 print(space + ': ', str2, c2[:])
                 assert str1 == str2

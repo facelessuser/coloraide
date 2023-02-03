@@ -13,12 +13,16 @@ def hwb_to_hsv(hwb: Vector) -> Vector:
     h, w, b = hwb
 
     wb = w + b
-    if (wb >= 1):
+    if (abs(1 - wb) < 2e-08):
         gray = w / wb
         return [alg.NaN, 0.0, gray]
 
     v = 1 - b
     s = 0 if v == 0 else 1 - w / v
+
+    if abs(s) < 1e-08 or abs(v) < 1e-08:
+        h = alg.NaN
+
     return [h, s, v]
 
 
@@ -28,7 +32,7 @@ def hsv_to_hwb(hsv: Vector) -> Vector:
     h, s, v = hsv
     w = v * (1 - s)
     b = 1 - v
-    if w + b >= 1:
+    if abs(1 - (w + b)) < 1e-08:
         h = alg.NaN
     return [h, w, b]
 

@@ -86,8 +86,8 @@ def hsluv_to_lch(hsluv: Vector) -> Vector:
     elif not alg.is_nan(h):
         _hx_max = max_chroma_for_lh(l, h)
         c = _hx_max / 100.0 * s
-        if c < ACHROMATIC_THRESHOLD:
-            h = alg.NaN
+    if c < ACHROMATIC_THRESHOLD:
+        h = alg.NaN
     return [l, c, util.constrain_hue(h)]
 
 
@@ -117,7 +117,7 @@ class HSLuv(Cylindrical, Space):
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
         Channel("s", 0.0, 100.0, bound=True),
-        Channel("l", 0.0, 100.0, bound=True)
+        Channel("l", 0.0, 100.0, limit=(0.0, None), bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",
@@ -131,7 +131,7 @@ class HSLuv(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if coords[1] == 0 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
+        if abs(coords[1]) < 1e-08 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
             coords[0] = alg.NaN
         return coords
 
