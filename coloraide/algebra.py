@@ -162,13 +162,7 @@ def npow(base: float, exp: float) -> float:
 def nlog(value: float) -> float:
     """Perform `log` with a negative number."""
 
-    return math.copysign(math.log(abs(value)), value)
-
-
-def nexp(value: float) -> float:
-    """Perform `exp` with a negative number."""
-
-    return math.copysign(math.exp(abs(value)), value)
+    return math.copysign(1, value) * math.log(abs(value))
 
 
 ################################

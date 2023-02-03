@@ -69,7 +69,7 @@ def hlg_oetf(values: Vector, env: Environment) -> Vector:
 
     adjusted = []  # type: Vector
     for e in values:
-        e = alg.nth_root(3 * e, 2) if e <= 1 / 12 else env.a * alg.nlog(12 * e - env.b) + env.c
+        e = alg.nth_root(3 * e, 2) if e <= 1 / 12 else env.a * math.log(12 * e - env.b) + env.c
         adjusted.append((e - env.beta) / (1 - env.beta))
     return adjusted
 
@@ -80,7 +80,7 @@ def hlg_eotf(values: Vector, env: Environment) -> Vector:
     adjusted = []  # type: Vector
     for e in values:
         e = (1 - env.beta) * e + env.beta
-        adjusted.append((e ** 2) / 3 if e <= 0.5 else (alg.nexp((e - env.c) / env.a) + env.b) / 12)
+        adjusted.append((e ** 2) / 3 if e <= 0.5 else (math.exp((e - env.c) / env.a) + env.b) / 12)
     return adjusted
 
 
