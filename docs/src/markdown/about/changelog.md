@@ -5,6 +5,8 @@
 - **FIX**: Fix `rec2100-hlg` transform.
 - **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
 - **FIX**: Some color transformation improvements.
+- **FIX**: Relax some achromatic detection logic for sRGB cylindrical models. Improves results when converting to from
+  various non-sRGB color spaces.
 
 ## 1.7
 

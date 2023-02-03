@@ -100,7 +100,7 @@ In this example, we have an sRGB color that is extremely close to being in gamut
 we can see wildly large saturation.
 
 ```playground
-hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
+hsl = Color('color(srgb 1 1.0000002 1)').convert('hsl')
 hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
 ```
@@ -240,12 +240,12 @@ these dark colors and makes them reddish. This is a very undesirable outcome.
 # Gamut mapping in LCh
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow([c.fit() for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
+HtmlRow([c.fit('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 
 # Clipping
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow([c.clip() for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
+HtmlRow([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 ```
 
 There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is

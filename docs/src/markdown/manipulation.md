@@ -170,7 +170,7 @@ color.set(
     ```
 
     The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise,
-    but the Oklab example is not quite as precise and returns a color with a saturation that is way out of bounds.
+    but the Oklab example is not quite as precise and returns a color with a saturation that is a bit out of bounds.
     This is partly because the Oklab max whiteness isn't exactly `1`, but more like `~0.999...`, The HSL model
     doesn't really represent out of gamut colors in a logical way and, in this case, creates a color with a negative
     saturation. It looks worse than it really is as when we convert it to sRGB, we see it is barely off. None of
