@@ -28,9 +28,16 @@ from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
+from .spaces.cam16 import CAM16
+from .spaces.cam16_jmh import CAM16JMh
+from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
+from .spaces.hct import HCT
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
+from .distance.delta_e_cam16 import DECAM16
+from .distance.delta_e_hct import DEHCT
+from .gamut.fit_hct_chroma import HCTChroma
 from .interpolate.catmull_rom import CatmullRom
 from .cat import VonKries, XYZScaling, CAT02, CMCCAT97, Sharp, CMCCAT2000, CAT16
 from .color import ColorMatch
@@ -74,11 +81,22 @@ ColorAll.register(
         ACEScg(),
         ACEScc(),
         ACEScct(),
+        CAM16(),
+        CAM16JMh(),
+        CAM16UCS(),
+        CAM16SCD(),
+        CAM16LCD(),
+        HCT(),
 
         # Delta E
         DEITP(),
         DE99o(),
         DEZ(),
+        DECAM16(),
+        DEHCT(),
+
+        # Gamut Mapping
+        HCTChroma(),
 
         # CAT
         VonKries(),

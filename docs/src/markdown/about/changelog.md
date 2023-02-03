@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.7.1
+## 1.8
 
+- **NEW**: Add support for CAM16 Jab and JMh: `cam16` and `cam16-jmh` respectively.
+- **NEW**: Add support for CAM16 UCS (Jab forms): `cam16-ucs`, `cam16-scd`, and `cam16-lcd`.
+- **NEW**: Add support for the HCT color space (`hct`) which is combines the colorfulness and hue from CAM16 JMh and the
+  lightness from CIELab.
 - **FIX**: Fix `rec2100-hlg` transform.
 - **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
 - **FIX**: Some color transformation improvements.
