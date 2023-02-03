@@ -4,6 +4,7 @@
 
 - **FIX**: Fix `rec2100-hlg` transform.
 - **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
+- **FIX**: Some color transformation improvements.
 
 ## 1.7
 

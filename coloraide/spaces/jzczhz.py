@@ -13,6 +13,7 @@ from .. import algebra as alg
 from ..types import Vector
 
 ACHROMATIC_THRESHOLD = 0.0003
+ACHROMATIC_HUE = 216.0777045520467
 
 
 def jzazbz_to_jzczhz(jzazbz: Vector) -> Vector:
@@ -35,6 +36,15 @@ def jzczhz_to_jzazbz(jzczhz: Vector) -> Vector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
+
+    # For better round tripping of achromatic colors,
+    # use the achromatic hue that occurs in forward transform.
+    # We use the one from white translation. It may vary slightly
+    # depending on the grayscale color, but only slightly,
+    # so this is close enough.
+    if cz < ACHROMATIC_THRESHOLD:
+        hz = ACHROMATIC_HUE
+
     if alg.is_nan(hz):  # pragma: no cover
         return [jz, 0.0, 0.0]
 

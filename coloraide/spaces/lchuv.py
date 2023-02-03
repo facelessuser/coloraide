@@ -9,6 +9,8 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 
+ACHROMATIC_HUE = 180.0
+
 
 def luv_to_lchuv(luv: Vector) -> Vector:
     """Luv to LChuv."""
@@ -30,6 +32,15 @@ def lchuv_to_luv(lchuv: Vector) -> Vector:
     """LChuv to Luv."""
 
     l, c, h = lchuv
+
+    # For better round tripping of achromatic colors,
+    # use the achromatic hue that occurs in forward transform.
+    # We use the one from white translation. It may vary slightly
+    # depending on the grayscale color, but only slightly,
+    # so this is close enough.
+    if c < ACHROMATIC_THRESHOLD:
+        h = ACHROMATIC_HUE
+
     if alg.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 

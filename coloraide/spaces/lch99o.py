@@ -9,12 +9,22 @@ from ..types import Vector
 from ..channels import Channel, FLG_ANGLE
 
 ACHROMATIC_THRESHOLD = 0.0000000002
+ACHROMATIC_HUE = 0.0
 
 
 def lch_to_lab(lch: Vector) -> Vector:
     """DIN99o LCh to lab."""
 
     l, c, h = lch
+
+    # For better round tripping of achromatic colors,
+    # use the achromatic hue that occurs in forward transform.
+    # We use the one from white translation. It may or may not vary slightly
+    # depending on the grayscale color, but only slightly,
+    # so this is close enough.
+    if c < ACHROMATIC_THRESHOLD:
+        h = ACHROMATIC_HUE
+
     if alg.is_nan(h):  # pragma: no cover
         return [l, 0.0, 0.0]
 
