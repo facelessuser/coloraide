@@ -42,7 +42,7 @@ def hsl_to_srgb(hsl: Vector) -> Vector:
     """
 
     h, s, l = hsl
-    h = h % 360
+    h = util.constrain_hue(h)
 
     def f(n: int) -> float:
         """Calculate the channels."""

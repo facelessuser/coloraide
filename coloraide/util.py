@@ -150,7 +150,7 @@ def absxyzd65_to_xyz_d65(absxyzd65: VectorLike, yw: float = YW) -> Vector:
 def constrain_hue(hue: float) -> float:
     """Constrain hue to 0 - 360."""
 
-    return hue % 360 if not alg.is_nan(hue) else hue
+    return (hue % 360 + 360) % 360 if not alg.is_nan(hue) else hue
 
 
 def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+- **FIX**: Fix `rec2100-hlg` transform.
+- **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
+
 ## 1.7
 
 - **NEW**: Gamut mapping classes derived from `fit_lch_chroma` can set `DE_OPTIONS` to pass ∆E parameters.

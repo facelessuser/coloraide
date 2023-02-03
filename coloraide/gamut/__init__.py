@@ -5,6 +5,7 @@ from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
 from typing import TYPE_CHECKING, Any
+from .. import util
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -19,7 +20,7 @@ def clip_channels(color: Color) -> None:
 
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
         if chan.flags & FLG_ANGLE:
-            color[i] = value % 360.0
+            color[i] = util.constrain_hue(value)
 
         # Ignore undefined or unbounded channels
         if not chan.bound or alg.is_nan(value):
