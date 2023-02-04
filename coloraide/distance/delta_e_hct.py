@@ -8,7 +8,7 @@ from ..types import Vector
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .. import Color
+    from ..color import Color
 
 COEFF2 = COEFFICENTS['ucs'][2]
 

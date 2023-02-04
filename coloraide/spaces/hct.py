@@ -56,7 +56,7 @@ from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .cam16 import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
-from .cam16_jmh import Achromatic as CAM16ACHROMA
+from .cam16_jmh import Achromatic as _Achromatic
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
 from typing import cast
@@ -138,14 +138,17 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
-    cam16 = xyz_d65_to_cam16(coords, env)
     t = y_to_lstar(coords[1], env.ref_white)
-    c, h = cam16[1:3]
+    # We have no interest in trying to calculate inverse lightness
+    # colors forward and backwards.
+    if t <= 0:
+        return [alg.NaN, 0.0, 0.0]
+    c, h = xyz_d65_to_cam16(coords, env)[1:3]
 
     return [h, c, alg.clamp(t, 0.0)]
 
 
-class Achromatic(CAM16ACHROMA):
+class Achromatic(_Achromatic):
     """Test HCT achromatic response."""
 
     CONVERTER = staticmethod(xyz_to_hct)

@@ -16,6 +16,7 @@ Brettel
 Bz
 CATs
 CIE
+CIECAM
 CIEDE
 CIELCh
 CIELCh's
@@ -62,6 +63,7 @@ FNL
 Fairchild
 Florian
 Formatter
+HCT
 HDR
 HLG
 HPE
@@ -84,6 +86,7 @@ IgPgTg
 Interpolator
 Iz
 Izazbz
+JMh
 JND
 JSON
 Jz
@@ -109,6 +112,7 @@ Matcher
 MkDocs
 Mollon
 Monochromacy
+Moroney
 NONINFRINGEMENT
 NaN
 NaNs
@@ -136,6 +140,7 @@ RGB
 RLAB
 ROMM
 RYB
+SCD
 SDR
 SMPTE
 SRGB
@@ -188,12 +193,14 @@ deregistration
 deuteranomaly
 deuteranopia
 dichromacy
+diffuser
 dyad
 easings
 fixup
 formatter
 grayscale
 hz
+illuminance
 illuminant
 illuminants
 indexable
@@ -234,6 +241,7 @@ protanomaly
 protanopia
 quantizer
 rc
+reflectance
 repurpose
 rgb
 sRGB

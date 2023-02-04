@@ -55,6 +55,8 @@ class Achromatic:
             self.iter_achromatic_response(env, points, *tuning['high'])
             self.max_colorfulness = round(self.max_colorfulness, 3) + 1
             self.spline = alg.interpolate(points, method=spline)
+        # Transform seems to favor a particular achromatic hue, capture the one at white
+        # to replace achromatic NaN hues with.
         self.hue = self.CONVERTER(lin_srgb_to_xyz(lin_srgb([1] * 3)), env)[self.H_IDX]
 
     def iter_achromatic_response(

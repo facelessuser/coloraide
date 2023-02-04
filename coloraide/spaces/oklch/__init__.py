@@ -33,6 +33,10 @@ from ... import algebra as alg
 from ...types import Vector
 
 ACHROMATIC_THRESHOLD = 0.000002
+# The transform consistently yields ~90˚ for achromatic hues for positive lightness
+# Replacing achromatic NaN hues with this hue gives us closer translations back.
+# Negative lightness uses ~270, but not worth handling as real world colors don't
+# use inverse lightness.
 ACHROMATIC_HUE = 90.00000025580869
 
 

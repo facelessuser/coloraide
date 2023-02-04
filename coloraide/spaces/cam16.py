@@ -115,7 +115,7 @@ class Environment:
     adapting_luminance: This is the the luminance of the adapting field. The units are in cd/m2.
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
-        For the "gray world" assumtion, we must also divide by 5 (or multiply by 0.2 - 20%).
+        For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).
         This results in `La = E / π * 0.2`.
 
     background_luminance: The background is the region immediately surrounding the stimulus and
@@ -297,7 +297,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
     J_root = alg.npow(A / env.a_w, 0.5 * env.c * env.z)
 
     # Lightness
-    J = 100 * J_root ** 2
+    J = 100 * alg.npow(J_root, 2)
 
     # Brightness
     Q = (4 / env.c * J_root * (env.a_w + 4) * env.fl_root)
@@ -357,7 +357,7 @@ def cam16_jab_to_cam16_jmh(jab: Vector) -> Vector:
     M = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
 
-    return [J, M, h]
+    return [J, M, util.constrain_hue(h)]
 
 
 def xyz_d65_to_cam16_jab(xyzd65: Vector, env: Environment) -> Vector:
@@ -372,7 +372,6 @@ def cam16_jab_to_xyz_d65(jab: Vector, env: Environment) -> Vector:
 
     jmh = cam16_jab_to_cam16_jmh(jab)
     return cam16_jmh_to_xyz_d65(jmh, env=env)
-
 
 
 class CAM16(Labish, Space):

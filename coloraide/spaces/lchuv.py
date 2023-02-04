@@ -3,13 +3,11 @@ from __future__ import annotations
 from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .lch import LCh, ACHROMATIC_THRESHOLD
+from .lch import LCh, ACHROMATIC_THRESHOLD, ACHROMATIC_HUE
 from .. import util
 import math
 from .. import algebra as alg
 from ..types import Vector
-
-ACHROMATIC_HUE = 180.0
 
 
 def luv_to_lchuv(luv: Vector) -> Vector:

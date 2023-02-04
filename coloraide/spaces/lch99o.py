@@ -1,15 +1,12 @@
 """DIN99o LCh class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .lch import LCh
+from .lch import LCh, ACHROMATIC_THRESHOLD, ACHROMATIC_HUE
 from .. import util
 import math
 from .. import algebra as alg
 from ..types import Vector
 from ..channels import Channel, FLG_ANGLE
-
-ACHROMATIC_THRESHOLD = 0.0000000002
-ACHROMATIC_HUE = 0.0
 
 
 def lch_to_lab(lch: Vector) -> Vector:

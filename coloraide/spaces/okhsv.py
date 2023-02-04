@@ -98,7 +98,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     if c < ACHROMATIC_THRESHOLD:
-        c = 0
+        c = 0.0
 
     if abs(l) >= 1e-08 and abs(1 - l) >= 1e-08 and c != 0:
         a_ = lab[1] / c

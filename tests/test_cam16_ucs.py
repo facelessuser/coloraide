@@ -3,9 +3,6 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 import pytest
-from collections import namedtuple
-
-CAM16Coords = namedtuple("CAM16Coords", "J C h s Q M H")
 
 
 class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
@@ -29,6 +26,52 @@ class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('cam16-ucs'), Color(color2))
+
+
+class TestCAM16CAM16SCD(util.ColorAssertsPyTest):
+    """Test CAM16 SCD."""
+
+    COLORS = [
+        ('red', 'color(--cam16-scd 59.178 33.597 17.41)'),
+        ('orange', 'color(--cam16-scd 78.364 8.3723 24.725)'),
+        ('yellow', 'color(--cam16-scd 96.802 -10.847 28.041)'),
+        ('green', 'color(--cam16-scd 46.661 -22.82 17.637)'),
+        ('blue', 'color(--cam16-scd 36.252 7.1995 -31.806)'),
+        ('indigo', 'color(--cam16-scd 24.524 17.032 -19.663)'),
+        ('violet', 'color(--cam16-scd 74.738 24.003 -13.094)'),
+        ('white', 'color(--cam16-scd 100 -1.8713 -1.0602)'),
+        ('gray', 'color(--cam16-scd 56.23 -1.2436 -0.70457)'),
+        ('black', 'color(--cam16-scd 0 0 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('cam16-scd'), Color(color2))
+
+
+class TestCAM16CAM16LCD(util.ColorAssertsPyTest):
+    """Test CAM16 LCD."""
+
+    COLORS = [
+        ('red', 'color(--cam16-lcd 59.178 59.994 31.089)'),
+        ('orange', 'color(--cam16-lcd 78.364 12.557 37.084)'),
+        ('yellow', 'color(--cam16-lcd 96.802 -17.273 44.653)'),
+        ('green', 'color(--cam16-lcd 46.661 -35.677 27.573)'),
+        ('blue', 'color(--cam16-lcd 36.252 11.909 -52.61)'),
+        ('indigo', 'color(--cam16-lcd 24.524 25.511 -29.451)'),
+        ('violet', 'color(--cam16-lcd 74.738 36.686 -20.013)'),
+        ('white', 'color(--cam16-lcd 100 -1.9348 -1.0961)'),
+        ('gray', 'color(--cam16-lcd 56.23 -1.2714 -0.72038)'),
+        ('black', 'color(--cam16-lcd 0 0 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('cam16-lcd'), Color(color2))
 
 
 class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):

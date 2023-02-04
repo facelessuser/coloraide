@@ -11,11 +11,11 @@ from typing import Any, TYPE_CHECKING
 from ..spaces.cam16_ucs import COEFFICENTS
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .. import Color
+    from ..color import Color
 
 
 class DECAM16(DeltaE):
-    """Delta E z class."""
+    """Delta E CAM16 class."""
 
     NAME = "cam16"
 
