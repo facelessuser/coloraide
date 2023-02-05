@@ -1,6 +1,6 @@
 # REC. 2100 HLG
 
-!!! fail "The Rec. 2100 HLG is not registered in `Color` by default"
+!!! failure "The Rec. 2100 HLG is not registered in `Color` by default"
 
 <div class="info-container" markdown>
 !!! info inline end "Properties"

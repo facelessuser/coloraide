@@ -16,6 +16,7 @@ Brettel
 Bz
 CATs
 CIE
+CIECAM
 CIEDE
 CIELCh
 CIELCh's
@@ -62,6 +63,7 @@ FNL
 Fairchild
 Florian
 Formatter
+HCT
 HDR
 HLG
 HPE
@@ -84,8 +86,11 @@ IgPgTg
 Interpolator
 Iz
 Izazbz
+JCh
+JMh
 JND
 JSON
+Jsh
 Jz
 JzCzhz
 Jzazbz
@@ -99,6 +104,8 @@ Lab
 Lab's
 Labish
 Lilley
+Lstar
+Lstar's
 Luv
 MATLAB
 MERCHANTABILITY
@@ -109,6 +116,7 @@ Matcher
 MkDocs
 Mollon
 Monochromacy
+Moroney
 NONINFRINGEMENT
 NaN
 NaNs
@@ -122,6 +130,7 @@ Oklab
 Oklab's
 Ottosson
 PQ
+Perceptibility
 Piecewise
 Planckian
 Pokorny
@@ -132,11 +141,16 @@ Protan
 Protanopia
 PyPI
 Pyodide
+QCh
+QMh
+Qsh
 RGB
 RLAB
 ROMM
 RYB
+SCD
 SDR
+SL
 SMPTE
 SRGB
 Sharma
@@ -149,6 +163,7 @@ Tritanopia
 Twemoji
 UCS
 UHDTV
+UIs
 Uncalibrated
 Verou
 Viénot
@@ -174,6 +189,7 @@ broadcasted
 bz
 cd
 chroma
+chroma's
 chromaticity
 colorimetrically
 colorimetry
@@ -188,12 +204,14 @@ deregistration
 deuteranomaly
 deuteranopia
 dichromacy
+diffuser
 dyad
 easings
 fixup
 formatter
 grayscale
 hz
+illuminance
 illuminant
 illuminants
 indexable
@@ -234,6 +252,7 @@ protanomaly
 protanopia
 quantizer
 rc
+reflectance
 repurpose
 rgb
 sRGB
@@ -255,6 +274,7 @@ tritanomaly
 tritanopia
 un
 uncomment
+uniformities
 unintuitive
 unsaturate
 uv

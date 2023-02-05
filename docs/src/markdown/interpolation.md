@@ -8,6 +8,8 @@ ColorAide provides a number of useful utilities based on interpolation.
 
 ## Linear Interpolation
 
+!!! success "Linear interpolation is registered in `Color` by Default"
+
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
 We could then navigate along that line and return colors at different points to simulate mixing colors at various
@@ -93,6 +95,8 @@ Inspired by some efforts seen on the [web](catmull-observe) and in the great Jav
 
 ### B-Spline
 
+!!! success "B-Spline interpolation is registered in `Color` by Default"
+
 ![B-spline](images/bspline-interpolation.png)
 
 B-spline is a piecewise spline similar to Bezier curves. It utilizes "control points" that help shape the interpolation
@@ -107,6 +111,8 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 ```
 
 ### Natural
+
+!!! success "Natural interpolation is registered in `Color` by Default"
 
 ![Natural](images/natural-interpolation.png)
 
@@ -126,6 +132,8 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 
 ### Monotone
 
+!!! success "Monotone interpolation is registered in `Color` by Default"
+
 ![Monotone](images/monotone-interpolation.png)
 
 The "monotone" spline is a piecewise interpolation spline that passes through all its data points and helps to preserve
@@ -138,7 +146,7 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
 
 ### Catmull-Rom
 
-!!! fail "Catmull-Rom is Not Registered By Default"
+!!! failure "Catmull-Rom interpolation is not registered in `Color` by Default"
 
 ![Catmull-Rom](images/catmull-rom-interpolation.png)
 

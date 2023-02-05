@@ -1,15 +1,12 @@
 """DIN99o LCh class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .lch import LCh
+from .lch import LCh, ACHROMATIC_THRESHOLD, ACHROMATIC_HUE
 from .. import util
 import math
 from .. import algebra as alg
 from ..types import Vector
 from ..channels import Channel, FLG_ANGLE
-
-ACHROMATIC_THRESHOLD = 0.0000000002
-ACHROMATIC_HUE = 0.0
 
 
 def lch_to_lab(lch: Vector) -> Vector:
@@ -62,6 +59,11 @@ class LCh99o(LCh):
         Channel("c", 0.0, 60.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
+
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return ACHROMATIC_HUE
 
     def to_base(self, coords: Vector) -> Vector:
         """To DIN99o from DIN99o LCh."""

@@ -1,6 +1,6 @@
 # Okhsl
 
-!!! fail "The Okhsl color space is not registered in `Color` by default"
+!!! failure "The Okhsl color space is not registered in `Color` by default"
 
 <div class="info-container" markdown>
 !!! info inline end "Properties"

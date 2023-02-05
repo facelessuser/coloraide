@@ -34,7 +34,7 @@ color_options = {
     'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
     'hsi': {'chroma': 's', 'lightness': 'i', 'force_bottom': True},
     'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True},
-    'cam16-ucs-jmh': {'chroma': 'm'}
+    'cam16-jmh': {'chroma': 'm'}
 }
 
 
@@ -130,7 +130,7 @@ def add_cyl_color(space, color, x, y, z, c):
     hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))
 
     if is_nan(hue):
-        hue = 0
+        hue = cyl._space.achromatic_hue()
 
     x.append(chroma * math.sin(math.radians(hue)))
     y.append(chroma * math.cos(math.radians(hue)))

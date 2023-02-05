@@ -51,9 +51,9 @@ def run(lch, lab, verify):
         max_a = 0.0
         max_b = 0.0
 
-        for x in range(500):
+        for x in range(5000):
             # Create an achromatic RGB color
-            color = Color(space, [x / 100] * 3)
+            color = Color(space, [x / 1000] * 3)
             if lab:
                 labish = color.convert(lab)
                 a_name, b_name = labish._space.labish_names()[1:]
@@ -104,7 +104,7 @@ def run(lch, lab, verify):
             '\n* Only potential recommendations, adjustments can be made if desired.'
             '\n  If consraints are very tight, the minimum is probably best while the'
             '\n  relaxed would give a little more room assuming achromatic colors even'
-            '\n  further out rolled the next decimal point by one.'
+            '\n  further out did not roll the next decimal point by one.'
         )
 
     return 0

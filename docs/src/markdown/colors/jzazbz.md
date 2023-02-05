@@ -1,6 +1,6 @@
 # Jzazbz
 
-!!! fail "The Jzazbz color space is not registered in `Color` by default"
+!!! failure "The Jzazbz color space is not registered in `Color` by default"
 
 <div class="info-container" markdown>
 !!! info inline end "Properties"

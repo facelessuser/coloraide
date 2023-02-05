@@ -92,6 +92,10 @@ nav:
         - IPT: colors/ipt.md
         - ICtCp: colors/ictcp.md
         - IgPgTg: colors/igpgtg.md
+        - CAM16: colors/cam16.md
+        - CAM16 UCS: colors/cam16_ucs.md
+        - CAM16 SCD: colors/cam16_scd.md
+        - CAM16 LCD: colors/cam16_lcd.md
 
       - LCh Like Spaces:
         - LCh D50: colors/lch.md
@@ -100,6 +104,8 @@ nav:
         - LCh(uv): colors/lchuv.md
         - DIN99 LCh: colors/lch99o.md
         - JzCzhz: colors/jzczhz.md
+        - CAM16 JMh: colors/cam16_jmh.md
+        - HCT: colors/hct.md
 
       - ACES Spaces:
         - ACES 2065-1: colors/aces2065_1.md

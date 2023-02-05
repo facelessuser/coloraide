@@ -8,6 +8,7 @@ SPACES = {k: 5 for k in Color.CS_MAP.keys()}
 
 # This color's gamut is less than the sRGB gamut we use to round trip, so we cannot test it.
 del SPACES['hpluv']
+SPACES['hct'] = 3
 
 
 class TestRoundTrip:
@@ -53,7 +54,7 @@ class TestRoundTrip:
     IGNORE_ACHROMA = ['okhsl', 'okhsv']
 
     # Ignore gray cases. Spaces that don't offer enough precision near grey.
-    IGNORE_GREY = ['jzczhz']
+    IGNORE_GREY = ['jzczhz', 'cam16-jmh', 'hct']
 
     ACHROMA = {'grey', 'white', 'darkgrey', 'lightgrey'}
     GREY = {'grey', 'darkgrey', 'lightgrey'}

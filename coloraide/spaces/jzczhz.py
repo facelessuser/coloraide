@@ -13,6 +13,8 @@ from .. import algebra as alg
 from ..types import Vector
 
 ACHROMATIC_THRESHOLD = 0.0003
+# The transform consistently yields ~216 for achromatic hues for positive lightness
+# Replacing achromatic NaN hues with this hue gives us closer translations back.
 ACHROMATIC_HUE = 216.0777045520467
 
 
@@ -77,6 +79,11 @@ class JzCzhz(LChish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
+
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return ACHROMATIC_HUE
 
     def normalize(self, coords: Vector) -> Vector:
         """On color update."""
