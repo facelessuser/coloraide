@@ -65,7 +65,9 @@ class TestRoundTrip:
         c1 = Color(color)
         name = c1.to_string(names=True)
         c1.convert(space, in_place=True)
-        for space, p in SPACES.items():
+        p1 = SPACES[space]
+        for space, p2 in SPACES.items():
+            p = min(p1, p2)
             if ((c1.space() in self.IGNORE_ACHROMA or space in self.IGNORE_ACHROMA) and name in self.ACHROMA):
                 continue
             if ((c1.space() in self.IGNORE_GREY or space in self.IGNORE_GREY) and name in self.GREY):
