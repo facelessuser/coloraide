@@ -130,7 +130,7 @@ HSL has a very tight conversion to and from sRGB, so when an sRGB color is preci
 throughout the conversion to and from HSL, both forwards and backwards. On the other hand, there may be color models
 that have a looser conversion algorithm. There may be cases where it may be beneficial to increase the threshold.
 
-## Mapping Colors
+## Gamut Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it such that it fits within the gamut.
 There are various ways to map an out of bound color to an in bound color, each with their own pros and cons. ColorAide
@@ -141,12 +141,10 @@ generally yield better results.
 
 While clipping won't always yield the best results, clipping is still very important and can be used to trim channel
 noise after certain mathematical operations or even used in other gamut mapping algorithms if used carefully. For this
-reason, clip has its own dedicated method for quick access: `#!py3 clip()`. It can be applied directly to the current
-color space or can be applied on the gamuts of other color spaces.
+reason, clip has its own dedicated method for quick access: `#!py3 clip()`.
 
 ```playground
 Color('rgb(270 30 120)').clip()
-Color('color(display-p3 1 1 0)').clip('srgb')
 ```
 
 The `#!py3 fit()` method, is the generic gamut mapping method that exposes access to all the different gamut mapping
@@ -159,8 +157,8 @@ Color('rgb(270 30 120)').fit()
 Color('rgb(270 30 120)').fit(method='clip')
 ```
 
-Gamut mapping can also be used to fit colors in other gamuts, just like `#!py3 clip()`. For instance, fitting a Display
-P3 color into an sRGB gamut.
+Gamut mapping can also be used to indirectly fit colors in another gamut. For instance, fitting a Display P3 color into
+an sRGB gamut.
 
 ```playground
 c1 = Color('color(display-p3 1 1 0)')
@@ -169,23 +167,19 @@ c1.fit('srgb')
 c1.in_gamut()
 ```
 
-!!! warning "Caveats when Mapping in Other Spaces"
-    When fitting in another color space, results may vary depending on what color space you are in and what color space
-    you are using to fit the color. We went into great depths when discussing [gamut checking](#gamut-checking) about
-    how transform functions from one color space to another are not always exact. We also gave quite a number of
-    examples showing cases in which some color spaces were more sensitive to slight deviations outside their gamut than
-    others. This is mainly mentioned as fitting in one color space and round tripping back may not give exact results:
+This can also be done with `#!py3 clip()`.
 
-    ```playground
-    Color("color(--lch-d65 100 50 75)").convert('srgb').fit()[:]
-    Color("color(--lch-d65 100 50 75)").fit('srgb').convert('srgb')[:]
-    ```
+```playground
+Color('color(display-p3 1 1 0)').clip('srgb')
+```
 
-    While the above case does fit the LCh color within the sRGB color space, and once converted back to LCh, it is
-    technically well within the "in gamut" threshold, the conversion can't quite keep it precisely in gamut. Depending
-    on what you are doing and what spaces you are working in, this may be okay, but it may also make sense to fully
-    convert to color space with the gamut you wish to work in and work directly in that space opposed to the indirect
-    fitting of a color in a different color space.
+!!! warning "Indirectly Gamut Mapping a Color Space"
+    When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
+    what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
+    because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
+    the original color. The process will be subject to any errors that occur in the [round trip](#notes-on-round-trip-accuracy)
+    to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
+    not give exact results and, in some cases, exceed "in gamut" thresholds.
 
 There are actually many different ways to gamut map a color. Some are computationally expensive, some are quite simple,
 and many do really good in some cases and not so well in others. There is probably no perfect gamut mapping method, but

@@ -48,6 +48,7 @@ nav:
       - Color Harmonies: harmonies.md
       - Filters: filters.md
       - String Output: strings.md
+      - Advanced Topics: advanced.md
 
   - Color Spaces:
       - colors/index.md

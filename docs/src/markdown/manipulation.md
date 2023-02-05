@@ -87,7 +87,7 @@ color
 Colors can also be accessed and modified in more advanced ways with special access functions `get()` and `set()`.
 
 `get()` provides access to any channel via the channel name for a given color space, but what sets it apart from other
-channel access methods is that it can access channels in other color spaces as well.
+channel access methods is that it can indirectly access channels in other color spaces as well.
 
 ```python
 color = Color("pink")
@@ -97,7 +97,7 @@ color.get('oklch.hue')
 ```
 
 Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
-value can be set via numerical values or functions with more complex logic. 
+value can be set via numerical values or functions with more complex logic.
 
 ```playground
 color = Color("pink")
@@ -114,7 +114,7 @@ color
 color.set('red', 1).set('green', 1)
 ```
 
-Even more interesting is that, like `get()`, targeted color channels can be from any registered color space.
+Even more interesting is that, like `get()`, you can modify a channel in another color space indirectly.
 
 ```playground
 color = Color("orange")
@@ -150,39 +150,21 @@ color.set(
 )
 ```
 
+!!! warning "Indirect Channel Modifications"
+    Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
+    incompatible due to gamut size, and their algorithm may end up not preserving some aspects of a color. Additionally,
+    the feature converts the color to the target color space, modifies it, and then converts it back making it
+    susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
+
 !!! new "New in 1.5: Getting/Setting Multiple Channels"
-
-??? note "Notes on Modifying Coordinates in Other Spaces"
-
-    When setting a color in another color space, the color is converted to the desired space, modified, and then
-    converted back to the original color space. The final value is subject to any rounding errors that may occur in
-    the round trip to and from the specified color space. Also, depending on the transform functions of the spaces
-    involved, and whether the original color is on the edge of its own gamut, this can lead to a color going
-    slightly out of gamut, and if one of the spaces involved in the conversion doesn't handle out of gamut colors
-    with sensible values, you may get something unexpected back.
-
-    Consider the following example that compares the modification of an HSL color in HWB vs Oklab.
-
-    ```playground
-    Color('hsl(0 0% 50%)').set({'hwb.blackness': 0, 'hwb.whiteness': 100})
-    Color('hsl(0 0% 50%)').set('oklab.lightness', 1)
-    Color('hsl(0 0% 50%)').set('oklab.lightness', 1).convert('srgb')[:]
-    ```
-
-    The above example cleanly converts between HSL and HWB as the conversion between these two is much more precise,
-    but the Oklab example is not quite as precise and returns a color with a saturation that is a bit out of bounds.
-    This is partly because the Oklab max whiteness isn't exactly `1`, but more like `~0.999...`, The HSL model
-    doesn't really represent out of gamut colors in a logical way and, in this case, creates a color with a negative
-    saturation. It looks worse than it really is as when we convert it to sRGB, we see it is barely off. None of
-    this is a bug, it is just the nature of the algorithms we are using to convert, the precision of the floats, and
-    the slight rounding errors that occur when using [floating-point arithmetic][floating-point], etc.
 
 ## Undefined Values
 
 Colors in general can sometimes have undefined channels. This can actually happen in a number of ways.
 
 1. Channels can naturally be undefined under certain situations as defined by the color space. For instance, spaces
-   with hues will have powerless hues when the color is achromatic. This can occur if saturation or chroma is zero.
+   with hues will have powerless hues when the color is achromatic. As an example, this can occur if saturation or
+   chroma is zero.
 
     If an achromatic color manually has its hue defined, then the hue is considered defined, though that value will
     still be powerless during conversions. But lets considered an achromatic color in a rectangular color space being
