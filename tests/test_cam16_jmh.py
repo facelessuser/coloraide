@@ -72,6 +72,11 @@ class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
+    def test_real_achromatic_hue(self):
+        """Test that we get the expected achromatic hue."""
+
+        self.assertEqual(Color('white').convert('cam16-jmh')._space.achromatic_hue(), 209.53333446353292)
+
     def test_null_input(self):
         """Test null input."""
 
@@ -87,13 +92,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color('color(--cam16-jmh 30 0.05 90 / 1)').normalize()
+        c = Color('color(--cam16-jmh 740 0.03 90 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--cam16-jmh 7 0.05 30)').normalize()
+        c = Color('color(--cam16-jmh 30 0.03 90 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--cam16-jmh 1 0.05 30)').normalize()
+        c = Color('color(--cam16-jmh 1 0.03 30)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):

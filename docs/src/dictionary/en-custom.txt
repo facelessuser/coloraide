@@ -86,9 +86,11 @@ IgPgTg
 Interpolator
 Iz
 Izazbz
+JCh
 JMh
 JND
 JSON
+Jsh
 Jz
 JzCzhz
 Jzazbz
@@ -102,6 +104,8 @@ Lab
 Lab's
 Labish
 Lilley
+Lstar
+Lstar's
 Luv
 MATLAB
 MERCHANTABILITY
@@ -126,6 +130,7 @@ Oklab
 Oklab's
 Ottosson
 PQ
+Perceptibility
 Piecewise
 Planckian
 Pokorny
@@ -136,12 +141,16 @@ Protan
 Protanopia
 PyPI
 Pyodide
+QCh
+QMh
+Qsh
 RGB
 RLAB
 ROMM
 RYB
 SCD
 SDR
+SL
 SMPTE
 SRGB
 Sharma
@@ -154,6 +163,7 @@ Tritanopia
 Twemoji
 UCS
 UHDTV
+UIs
 Uncalibrated
 Verou
 Viénot
@@ -179,6 +189,7 @@ broadcasted
 bz
 cd
 chroma
+chroma's
 chromaticity
 colorimetrically
 colorimetry
@@ -263,6 +274,7 @@ tritanomaly
 tritanopia
 un
 uncomment
+uniformities
 unintuitive
 unsaturate
 uv

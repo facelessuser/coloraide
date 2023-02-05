@@ -1,6 +1,6 @@
 # IPT
 
-!!! fail "The IPT color space is not registered in `Color` by default"
+!!! failure "The IPT color space is not registered in `Color` by default"
 
 <div class="info-container" markdown>
 !!! info inline end "Properties"

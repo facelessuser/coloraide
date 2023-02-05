@@ -1,20 +1,21 @@
 # Changelog
 
-## 1.8
+## 1.7
 
 - **NEW**: Add support for CAM16 Jab and JMh: `cam16` and `cam16-jmh` respectively.
 - **NEW**: Add support for CAM16 UCS (Jab forms): `cam16-ucs`, `cam16-scd`, and `cam16-lcd`.
-- **NEW**: Add support for the HCT color space (`hct`) which is combines the colorfulness and hue from CAM16 JMh and the
+- **NEW**: Add support for the HCT color space (`hct`) which combines the colorfulness and hue from CAM16 JMh and the
   lightness from CIELab.
+- **NEW**: Gamut mapping classes derived from `fit_lch_chroma` can set `DE_OPTIONS` to pass ∆E parameters.
+- **NEW**: While rare, some cylindrical color spaces have an algorithm such that achromatic colors convert best with a
+  very specific hue. Internally, this is handled during conversions, but there can be reasons where knowing the hue can
+  be useful such as plotting. Cylindrical spaces now expose a method called `achromatic_hue()` which will
+  return this specific hue if needed.
 - **FIX**: Fix `rec2100-hlg` transform.
 - **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
 - **FIX**: Some color transformation improvements.
-- **FIX**: Relax some achromatic detection logic for sRGB cylindrical models. Improves results when converting to from
-  various non-sRGB color spaces.
-
-## 1.7
-
-- **NEW**: Gamut mapping classes derived from `fit_lch_chroma` can set `DE_OPTIONS` to pass ∆E parameters.
+- **FIX**: Relax some achromatic detection logic for sRGB cylindrical models. Improves achromatic hue detection results
+  when converting to from various non-sRGB color spaces.
 
 ## 1.6
 

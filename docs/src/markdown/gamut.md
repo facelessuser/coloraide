@@ -150,7 +150,7 @@ Color('color(display-p3 1 1 0)').clip('srgb')
 ```
 
 The `#!py3 fit()` method, is the generic gamut mapping method that exposes access to all the different gamut mapping
-methods available. By default, `#!py3 fit()` uses a more advanced method of color mapping that tries to preserve hue and
+methods available. By default, `#!py3 fit()` uses a more advanced method of gamut mapping that tries to preserve hue and
 lightness, hue being the attribute the human eye is most sensitive to. If desired, a user can also specify any currently
 registered gamut mapping algorithm via the `method` parameter.
 
@@ -189,24 +189,118 @@ c1.in_gamut()
 
 There are actually many different ways to gamut map a color. Some are computationally expensive, some are quite simple,
 and many do really good in some cases and not so well in others. There is probably no perfect gamut mapping method, but
-some are better than others. ColorAide currently only offers a couple simple methods to gamut map.
+some are better than others.
 
-Method         | Description
--------------- | -----------
-`clip`         | Simple, naive clipping.
-`lch-chroma`   | Uses a combination of chroma reduction and MINDE in the CIELCh color space to bring a color into gamut. This is the default method used.
-`oklch-chroma` | Like `lch-chroma`, but uses the OkLCh color space instead. This is currently what the [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) recommends.
+### Clip
 
-!!! note "CSS Level 4 Gamut Mapping"
-    The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
-    OkLCh as the gamut mapping color space. `oklch-chroma` is our implementation of the CSS Level 4 color specification.
+!!! success "The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered"
 
-    OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness
-    are known. OkLCh does seem to have certain quirks of its own, and may have more that have yet to be discovered.
-    While we have not made `oklch-chroma` our default yet, we have exposed the algorithm so users can begin exploring
-    it.
+Clipping is a simple and naive approach to gamut mapping. If the color space is bounded by a gamut, clip will compare
+each channel's value against the bounds for that channel set the value to the limit it exceeds.
 
-### Why Not Just Clip?
+Clip can be performed via `fit` by using the method name `clip` or by using the `clip()` method.
+
+```playground
+c = Color('srgb', [2, 1, 1.5])
+c.fit(method='clip')
+c = Color('srgb', [2, 1, 1.5])
+c.clip()
+```
+
+Clipping is unique to all other clipping methods in that it has its own dedicated method `clip()` method and that its
+method name `clip` is reserved. While not always the best approach for gamut mapping in general, clip is very important
+to some other gamut mapping and has specific cases where its speed and simplicity are of great value.
+
+### LCh Chroma
+
+!!! success "The `lch-chroma` gamut mapping is registered in `Color` by default"
+
+LCh Chroma uses a combination of chroma reduction and MINDE in the CIELCh color space to bring a color into gamut. By
+reducing chroma in the CIELCh color space, LCh Chroma can hold hue and lightness in the LCh color space relatively
+constant. This is currently the default method used.
+
+The algorithm generally works by performing both clipping and chroma reduction. Using bisection, the chroma is reduced
+and then the chroma reduced color is clipped. Using ∆E~2000~, the distance between the chroma reduced color and the
+clipped chroma reduced color is measured. If the resultant distance falls within the specified threshold, the clipped
+color is returned.
+
+Computationally, LCh Chroma is slower to compute than clipping, but generally provides better results. LCh, is not
+necessarily the best perceptual color space available, but it is generally well understood color space that has been
+available a long time. It does suffer from a purple shift when dealing with blue colors, but generally can generally
+colors far out of gamut in a reasonable manner.
+
+While CSS has currently proposed LCh Chroma reduction to be done with OkLCh, and we do offer an [OkLCh variant](#oklch-chroma),
+we currently still use CIELCh as the default until OkLCh can be evaluated more fully.
+
+LCh Chroma is the default gamut mapping algorithm by default, unless otherwise changed, and can be performed by simply
+calling `fit()` or by calling `fit(method='lch-chroma')`.
+
+```playground
+c = Color('srgb', [2, -1, 0])
+c.fit(method='clip')
+c = Color('srgb', [2, -1, 0])
+c.fit(method='clip')
+```
+
+### OkLCh Chroma
+
+!!! success "The `lch-chroma` gamut mapping is registered in `Color` by default"
+
+The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
+OkLCh as the gamut mapping color space. OkLCh Chroma is performed exactly like [LCh Chroma](#lch-chroma) except that it
+uses the perceptually uniform OkLCh color space as the LCh color space of choice.
+
+OkLCh has the advantage of doing a better job at holding hues uniform than CIELCh.
+
+```playground
+c = Color('srgb', [2, -1, 0])
+c.fit(method='oklch-chroma')
+```
+
+OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness are
+known. OkLCh does seem to have certain quirks of its own, and may have more that have yet to be discovered. While we
+have not made `oklch-chroma` our default yet, we have exposed the algorithm so users can begin exploring it.
+
+### HCT Chroma
+
+!!! failure "The `hct-chroma` gamut mapping is **not** registered in `Color` by default"
+
+Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut mapping exactly like
+[LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.
+
+Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
+[CAM16 (JMh)](./colors/cam16.md) space and the tone/lightness from the [CIELab](./colors/lab_d65.md) space. HCT takes
+advantage of the good hue preservation of CAM16 and has the better lightness predictability of CIELab. Using these
+characteristics, the color space is adept at generating tonal palettes with predictable lightness. This makes it easier
+to construct UIs with decent contrast. But to do this well, you must work in HCT and gamut map in HCT. For this reason,
+the HCT Chroma gamut mapping method was added.
+
+HCT Chroma is computationally the most expensive gamut mapping method that is offered. Since the color space used is
+based on the already computationally expensive CAM16 color space, and is made more expensive by blending that color
+space with CIELab, it is not the most performant approach, but when used in conjunction with the HCT color space, it
+can allow creating good tonal palettes:
+
+```playground
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+HtmlSteps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+```
+
+To HCT Chroma plugin is not registered by default, but can be added by subclassing `Color`. You must register the
+[∆E~hct~](./distance.md#delta-e-hct) distancing algorithm and the HCT color space as well.
+
+```py
+from coloraide import Color as Base
+from coloraide.gamut.fit_hct_chroma import HCTChroma
+from coloraide.distance.delta_e_hct import DEHCT
+from coloraide.spaces.hct import HCT
+
+class Color(Base): ...
+
+Color.register([HCT(), DEHCT(), HCTChroma()])
+```
+
+## Why Not Just Clip?
 
 In the past, clipping has been the default way in which out of gamut colors have been handled in web browsers. It is
 fast, and has generally been fine as most browsers have been constrained to using sRGB. But as modern browsers begin to

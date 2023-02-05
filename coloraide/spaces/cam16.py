@@ -382,8 +382,8 @@ class CAM16(Labish, Space):
     SERIALIZE = ("--cam16",)
     CHANNELS = (
         Channel("j", 0.0, 100.0),
-        Channel("a", -100.0, 100.0),
-        Channel("b", -100.0, 100.0)
+        Channel("a", -90.0, 90.0),
+        Channel("b", -90.0, 90.0)
     )
     CHANNEL_ALIASES = {
         "lightness": "j"

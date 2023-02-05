@@ -1,6 +1,6 @@
 # IgPgTg
 
-!!! fail "The IgPgTg color space is not registered in `Color` by default"
+!!! failure "The IgPgTg color space is not registered in `Color` by default"
 
 <div class="info-container" markdown>
 !!! info inline end "Properties"

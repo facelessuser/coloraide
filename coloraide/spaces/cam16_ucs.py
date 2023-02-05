@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from . cam16 import CAM16
 from ..types import Vector
+from ..channels import Channel
 
 COEFFICENTS = {
     'lcd': (0.77, 0.007, 0.0053),
@@ -78,6 +79,11 @@ class CAM16UCS(CAM16):
     NAME = "cam16-ucs"
     SERIALIZE = ("--cam16-ucs",)
     MODEL = 'ucs'
+    CHANNELS = (
+        Channel("j", 0.0, 100.0),
+        Channel("a", -50.0, 50.0),
+        Channel("b", -50.0, 50.0)
+    )
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from CAM16."""
@@ -97,6 +103,11 @@ class CAM16LCD(CAM16UCS):
     SERIALIZE = ("--cam16-lcd",)
     ENV = ENV = CAM16.ENV
     MODEL = 'lcd'
+    CHANNELS = (
+        Channel("j", 0.0, 100.0),
+        Channel("a", -70.0, 70.0),
+        Channel("b", -70.0, 70.0)
+    )
 
 
 class CAM16SCD(CAM16UCS):
@@ -106,3 +117,8 @@ class CAM16SCD(CAM16UCS):
     SERIALIZE = ("--cam16-scd",)
     ENV = ENV = CAM16.ENV
     MODEL = 'scd'
+    CHANNELS = (
+        Channel("j", 0.0, 100.0),
+        Channel("a", -40.0, 40.0),
+        Channel("b", -40.0, 40.0)
+    )

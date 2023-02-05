@@ -62,6 +62,11 @@ class LChuv(LCh, Space):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return ACHROMATIC_HUE
+
     def to_base(self, coords: Vector) -> Vector:
         """To Luv from LChuv."""
 

@@ -80,6 +80,11 @@ class JzCzhz(LChish, Space):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return ACHROMATIC_HUE
+
     def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 

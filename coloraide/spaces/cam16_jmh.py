@@ -149,13 +149,18 @@ class CAM16JMh(LChish, Space):
     ACHROMATIC = Achromatic(
         {
             'low': (0, 25, 1, 100.0),
-            'mid': (25, 101, 25, 55.0),
-            'high': (101, 252, 25, 45.0)
+            'mid': (25, 101, 9, 80.0),
+            'high': (101, 302, 5, 60.0)
         },
-        0.065,
+        0.032,
         ENV,
-        'catrom'
+        'monotone'
     )
+
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return self.ACHROMATIC.hue
 
     def normalize(self, coords: Vector) -> Vector:
         """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""

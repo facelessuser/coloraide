@@ -9,23 +9,22 @@ Our approach getting back to sRGB is likely different as we are using a simple b
 to help calculate the missing piece (J) needed to convert CAM16 C and h back to XYZ such that
 Y matches the L* conversion back to Y. I am certain the Material library is most likely
 employing further tricks to resolve faster. We also try to get as good round trip as possible,
-which forces us to probably make more iterations than Material does (none of this as been confirmed).
+which forces us to probably make more iterations than Material does (none of this has been confirmed).
 
 As ColorAide usually cares about setting powerless hues as NaN, especially for good interpolation,
 we've also calculated the cut off for chromatic colors and will properly enforce achromatic,powerless
 hues. This is because CAM16 actually resolves colors as achromatic before chroma reaches zero as
 lightness increases. In the SDR range, a Tone of 100 will have a cut off as high as ~2.87 chroma.
 
-Generally, the HCT color space is restricted to SDR range. lightness above this range will be clamped.
-This is required in order for us to properly gauge and search for the appropriate CAM16 J when
-converting back to other SDR color spaces. We do not clamp chroma's maximum, but we will clamp minimum
-to zero. This allows HCT to work with Display P3 and other SDR RGB spaces.
+Generally, the HCT color space is restricted to SDR range in the Material library, but we do not have
+such restrictions.
 
 Though we did not port HCT from Material Color Utilities, we did test against it, and are pretty
 much on point. The only differences are due to matrix precision and white point precision. Material
 uses an RGB <-> XYZ matrix that rounds values off significantly more than we do. Also, while we
-calculate the XYZ points from the `xy` points without rounding, they have rounded XYZ points. All of
-this just makes it so that after about 2 decimal points, things can differ some:
+calculate the XYZ points from the `xy` points without rounding, they have rounded XYZ points. Lastly,
+the gamut mapping algorithm we use is likely different even though it arrives at pretty much the same
+result, so slightly different values can occur.
 
 Material:
 
@@ -195,6 +194,11 @@ class HCT(LChish, Space):
         ENV,
         'natural'
     )
+
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return self.ACHROMATIC.hue
 
     def normalize(self, coords: Vector) -> Vector:
         """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""

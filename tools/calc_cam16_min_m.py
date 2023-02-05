@@ -51,11 +51,11 @@ def main():
         help="Tuning for low range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--mid', '-M', type=str, default='25:101:25:55.0',
+        '--mid', '-M', type=str, default='25:101:9:80.0',
         help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--high', '-H', type=str, default='101:252:25:45.0',
+        '--high', '-H', type=str, default='101:302:5:60.0',
         help="Tuning for high range: start:end:step:scale (int:int:int:float)"
     )
     args = parser.parse_args()

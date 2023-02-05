@@ -130,6 +130,11 @@ class TestLChuvD65Properties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
+    def test_real_achromatic_hue(self):
+        """Test that we get the expected achromatic hue."""
+
+        self.assertEqual(Color('white').convert('lchuv')._space.achromatic_hue(), 0.0)
+
     def test_null_input(self):
         """Test null input."""
 

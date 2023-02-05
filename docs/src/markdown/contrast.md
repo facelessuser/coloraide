@@ -33,42 +33,82 @@ Color("blue").luminance()
 
 ## Contrast
 
-There have actually been numerous approaches to determining reliable contrast. ColorAide currently only implements the
-color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio), but has done
-so as a plugin to allow for expanding implementations in the future to allow for more reliable approaches as the WCAG
-2.1 approach is not without flaws.
+Chromatic contrast refers to the ability to see the difference of a colored object against a colored background. This
+can be very important when it comes to visual design and other fields. Determining contrast has been explored in many
+different ways and, depending on the application, there may be approaches to contrast that are more favorable. In the
+context of the web, contrast often refers to the ability to see text on a colored background and is of particular
+importance to those that suffer from visual impairments or disabilities.
 
 It should be noted that as we talk about contrast, we will refer to the colors as the **text** and **background** as
-this is generally the context in which such a function is used. The **text** is always the calling color and the
-**background** is the input parameter. Not all contrast algorithms care about such details, but it is important to note
-as some future algorithms assuredly will.
+this is often the context in which such a function is used. As far as ColorAide is concerned, the **text** is always the
+calling color and the **background** is the input parameter. It is important to note this as not all contrast algorithms
+are symmetrical, and can differ depending which color is referenced as **text**, and which is referenced as the
+**background**.
 
-```py
-text.contrast(background)
-```
-
-While in all normal circumstances a negative luminance should not occur, if one does occur, the luminance will be
-clamped to zero.
-
-```py
-# Where `l1` is the lighter luminance and `l2` the darker
-contrast_ratio = (l1 + 0.05) / (l2 + 0.05)
-```
-To get the this contrast ratio between two colors, simply pass in the second color:
+At this time, ColorAide only offers a handful of contrast approaches, and they can be by using the `contrast()` method.
 
 ```playground
 Color("blue").contrast("red")
 ```
 
-!!! warning "Distancing and Symmetry"
-    It should be noted that not all contrast algorithms are symmetrical. Some are order dependent.
+To select different contrast methods, simply use the `method` parameter.
+
+```playground
+Color("blue").contrast("red", method='wcag21')
+```
 
 Methods  | Symmetrical         | Description
 -------- | ------------------  | -----------
 `wcag21` | :octicons-check-16: | WCAG 2.1 contrast ratio.
+`lstar`  | :octicons-check-16: | Color difference between two tones in the HCT color space.
 
-To use different methods, simply specify the method via the `method` parameter:
+
+### WCAG 2.1 Contrast Ratio
+
+!!! success "The WCAG 2.1 contrast ratio is registered in `Color` by default"
+
+ColorAide implements the color contrast ratio as outlined in the [WCAG 2.1 spec](https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio).
+This is currently, the default contrast method. It is not without fault, but is currently the standard outlined for the
+web.
+
+The contrast ratio as outlined in the WCAG 2.1 specification is simply the ratio of color luminance from a foreground
+and background color and is very easy to determine if you are able to acquire the luminance of the two colors.
+
+```py
+# Where `l1` is the lighter luminance and `l2` the darker
+contrast_ratio = (l1 + 0.05) / (l2 + 0.05)
+```
+
+This method can be used by specifying `wcag21` as the contrast method.
 
 ```playground
 Color("blue").contrast("red", method='wcag21')
+```
+
+### Lstar Lightness Difference
+
+!!! failure "The Lstar contrast method is **not** registered in `Color` by default"
+
+Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
+[CAM16](./colors/cam16.md) and the tone/lightness from CIELab. For contrast, they determined using tones that are
+"far enough apart" in the HCT color space was a good indication of sufficient contrast. Since HCT tone is exactly the
+same as CIELab's lightness (also known as L\*), we've referred to this approach as Lstar.
+
+Lstar's color difference approach to contrast is quite simple, it's literally the difference between two color's
+lightness as provided by CIELab. This method does not care which color is text or background.
+
+```playground
+Color('hct', [30, 20, 70]).contrast(Color('hct', [30, 20, 50]), method='lstar')
+```
+
+In order to use this contrast method, the plugin must be registered. This assumes the CIELab color space is currently
+registered, which it is by default.
+
+```py
+from coloraide import Color as Base
+from coloraide.contrast.lstar import LstarContrast
+
+class Color(Base): ...
+
+Color.register(LstarContrast())
 ```

@@ -229,6 +229,21 @@ mix-in class: `Cylindrical`, `Labish`, or `LChish`. It should be noted that `LCh
             """Get hue index."""
 
             return cast('Space', self).get_channel_index(self.hue_name())
+
+        def achromatic_hue(self) -> float:
+            """
+            Ideal achromatic hue.
+
+            Normally, we assume 0 when a cylindrical color space has a powerless hue.
+            For most color spaces, the hue has little affect when the color is achromatic,
+            but on rare occasions, a color space algorithm may require a specific hue
+            in order to more accurately translate an achromatic hue, CAM16 JMh (without
+            discounting) being an example. Color spaces internally handle this during
+            conversion, but there are times such as when plotting where knowing the
+            hue can be useful.
+            """
+
+            return 0.0
     ```
 
 === "Labish"

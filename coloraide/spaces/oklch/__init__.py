@@ -97,6 +97,11 @@ class OkLCh(LChish, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
+    def achromatic_hue(self) -> float:
+        """Ideal achromatic hue."""
+
+        return ACHROMATIC_HUE
+
     def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
