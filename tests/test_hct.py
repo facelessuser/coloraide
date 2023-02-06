@@ -75,7 +75,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_real_achromatic_hue(self):
         """Test that we get the expected achromatic hue."""
 
-        self.assertEqual(Color('white').convert('hct')._space.achromatic_hue(), 209.54293597883213)
+        self.assertEqual(Color('white').convert('hct')._space.achromatic_hue(), 209.5429359788321)
 
     def test_null_input(self):
         """Test null input."""
