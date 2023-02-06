@@ -117,7 +117,7 @@ class HSLuv(Cylindrical, Space):
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
         Channel("s", 0.0, 100.0, bound=True),
-        Channel("l", 0.0, 100.0, limit=(0.0, None), bound=True)
+        Channel("l", 0.0, 100.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",
