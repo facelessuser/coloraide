@@ -1,5 +1,7 @@
 # CAM16
 
+!!! failure "The CAM16 color space is not registered in `Color` by default"
+
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 

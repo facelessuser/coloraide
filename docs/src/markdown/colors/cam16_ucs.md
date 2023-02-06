@@ -1,5 +1,7 @@
 # CAM16 UCS
 
+!!! failure "The CAM16 UCS color space is not registered in `Color` by default"
+
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 

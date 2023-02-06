@@ -1,5 +1,7 @@
 # HCT
 
+!!! failure "The HCT color space is not registered in `Color` by default"
+
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 

@@ -1,5 +1,7 @@
 # CAM16 SCD
 
+!!! failure "The CAM16 SCD color space is not registered in `Color` by default"
+
 <div class="info-container" markdown="1">
 !!! info inline end "Properties"
 
