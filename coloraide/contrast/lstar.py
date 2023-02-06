@@ -18,8 +18,7 @@ class LstarContrast(ColorContrast):
 
     NAME = "lstar"
 
-    @classmethod
-    def contrast(cls, color1: Color, color2: Color, **kwargs: Any) -> float:
+    def contrast(self, color1: Color, color2: Color, **kwargs: Any) -> float:
         """Contrast."""
 
         l1 = color1.get('lch-d65.lightness')
