@@ -21,7 +21,7 @@ def srgb_to_hsi(rgb: Vector) -> Vector:
     mx = max(rgb)
     mn = min(rgb)
     i = sum(rgb) * 1 / 3
-    s = 0 if i == 0 else 1 - (mn / i)
+    s = 0 if (-1e-08 < i <= 0.0) else 1 - (mn / i)
     c = mx - mn
 
     if c != 0.0:
