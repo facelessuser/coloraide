@@ -8,11 +8,10 @@
   lightness from CIELab.
 - **NEW**: Gamut mapping classes derived from `fit_lch_chroma` can set `DE_OPTIONS` to pass ∆E parameters.
 - **NEW**: While rare, some cylindrical color spaces have an algorithm such that achromatic colors convert best with a
-  very specific hue. Internally, this is handled during conversions, but there can be reasons where knowing the hue can
-  be useful such as plotting. Cylindrical spaces now expose a method called `achromatic_hue()` which will
+  very specific hue. Internally, this is now handled during conversions, but there can be reasons where knowing the hue
+  can be useful such as plotting. Cylindrical spaces now expose a method called `achromatic_hue()` which will
   return this specific hue if needed.
 - **FIX**: Fix `rec2100-hlg` transform.
-- **FIX**: Hues should be constrained between as \[0, 360), not \[0, 360].
 - **FIX**: Some color transformation improvements.
 - **FIX**: Relax some achromatic detection logic for sRGB cylindrical models. Improves achromatic hue detection results
   when converting to from various non-sRGB color spaces.
