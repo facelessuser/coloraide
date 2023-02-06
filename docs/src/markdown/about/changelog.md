@@ -14,7 +14,7 @@
 - **FIX**: Fix `rec2100-hlg` transform.
 - **FIX**: Some color transformation improvements.
 - **FIX**: Relax some achromatic detection logic for sRGB cylindrical models. Improves achromatic hue detection results
-  when converting to from various non-sRGB color spaces.
+  when converting to and from various non-sRGB color spaces.
 
 ## 1.6
 
