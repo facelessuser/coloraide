@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
+import pytest
 
 
-class TestICtCpInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestICtCp(util.ColorAssertsPyTest):
     """Test ICtCp."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--ictcp 0.42785 -0.11574 0.2788)'),
+        ('orange', 'color(--ictcp 0.50497 -0.20797 0.11077)'),
+        ('yellow', 'color(--ictcp 0.56981 -0.25166 0.0379)'),
+        ('green', 'color(--ictcp 0.39138 -0.24057 -0.04421)'),
+        ('blue', 'color(--ictcp 0.35607 0.26914 -0.16143)'),
+        ('indigo', 'color(--ictcp 0.27954 0.23658 -0.00107)'),
+        ('violet', 'color(--ictcp 0.49387 0.13657 0.05828)'),
+        ('white', 'color(--ictcp 0.58069 0 0)'),
+        ('gray', 'color(--ictcp 0.42781 0 0)'),
+        ('black', 'color(--ictcp 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("ictcp", [1, 0.5, 0.5]), Color('color(--ictcp 100% 0.5 0.5)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_igpgtg_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("ictcp", [1, 0.5, 0.5])), Color('color(--ictcp 100% 0.5 0.5)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--ictcp 1 0.2 -0.3)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--ictcp 1 0.2 -0.3)')
-
-        color = "color(--ictcp 1 0.2 -0.3 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--ictcp 1 0.2 -0.3 / 0.5)')
-
-        color = "color(--ictcp 100% 0.2 -0.3 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--ictcp 1 0.2 -0.3 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--ictcp 1 0.2 -0.3 / 0.5)"
-        ictcp = Color(color)
-        self.assertEqual("color(--ictcp 1 0.2 -0.3)", ictcp.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--ictcp 1 0.2 -0.3 / 100%)"
-        ictcp = Color(color)
-        self.assertEqual("color(--ictcp 1 0.2 -0.3 / 1)", ictcp.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--ictcp 0.123456 0.123456 -0.123456)'
-        self.assertEqual(Color(color).to_string(), 'color(--ictcp 0.12346 0.12346 -0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--ictcp 0.123 0.123 -0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--ictcp 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--ictcp 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 -0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--ictcp 2 0.6 -0.6)').to_string(),
-            'color(--ictcp 2 0.6 -0.6)'
-        )
-
-        self.assertEqual(
-            Color('color(--ictcp 2 0.6 -0.6)').to_string(fit="clip"),
-            'color(--ictcp 2 0.6 -0.6)'
-        )
-
-        self.assertEqual(
-            Color('color(--ictcp 2 0.6 -0.6)').to_string(fit=False),
-            'color(--ictcp 2 0.6 -0.6)'
-        )
+        self.assertColorEqual(Color(color1).convert('ictcp'), Color(color2))
 
 
 class TestICtCpProperties(util.ColorAsserts, unittest.TestCase):

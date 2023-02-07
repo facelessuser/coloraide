@@ -3,82 +3,30 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN
+import pytest
 
 
-class TestJzCzhzInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestJzCzhz(util.ColorAssertsPyTest):
     """Test JzCzhz."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--jzczhz 0.13438 0.16252 43.502)'),
+        ('orange', 'color(--jzczhz 0.16937 0.12698 75.776)'),
+        ('yellow', 'color(--jzczhz 0.2096 0.1378 102)'),
+        ('green', 'color(--jzczhz 0.09203 0.10932 132.99)'),
+        ('blue', 'color(--jzczhz 0.09577 0.19029 257.61)'),
+        ('indigo', 'color(--jzczhz 0.06146 0.10408 287.05)'),
+        ('violet', 'color(--jzczhz 0.16771 0.08468 319.37)'),
+        ('white', 'color(--jzczhz 0.22207 0.0002 none)'),
+        ('gray', 'color(--jzczhz 0.11827 0.00014 none)'),
+        ('black', 'color(--jzczhz 0 0 none)')
+    ]
 
-        self.assertColorEqual(Color("jzczhz", [0.22, 0.5, 270]), Color('color(--jzczhz 22% 0.5 270)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("jzczhz", [0.22, 0.5, 270])), Color('color(--jzczhz 22% 0.5 270)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--jzczhz 0.22 0.5 270)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270)')
-
-        color = "color(--jzczhz 0.22 0.5 270 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270 / 0.5)')
-
-        color = "color(--jzczhz 22% 0.5 270 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzczhz 0.22 0.5 270 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--jzczhz 0.22 0.5 270 / 0.5)"
-        jzczhz = Color(color)
-        self.assertEqual("color(--jzczhz 0.22 0.5 270)", jzczhz.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--jzczhz 0.22 0.5 270 / 100%)"
-        jzczhz = Color(color)
-        self.assertEqual("color(--jzczhz 0.22 0.5 270 / 1)", jzczhz.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--jzczhz 0.123456 0.123456 0.123456)'
-        self.assertEqual(Color(color).to_string(), 'color(--jzczhz 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--jzczhz 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--jzczhz 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--jzczhz 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--jzczhz 0.22 200 270)').to_string(),
-            'color(--jzczhz 0.22 200 270)'
-        )
-
-        self.assertEqual(
-            Color('color(--jzczhz 0.22 200 270)').to_string(fit="clip"),
-            'color(--jzczhz 0.22 200 270)'
-        )
-
-        self.assertEqual(
-            Color('color(--jzczhz 0.22 200 270)').to_string(fit=False),
-            'color(--jzczhz 0.22 200 270)'
-        )
+        self.assertColorEqual(Color(color1).convert('jzczhz'), Color(color2))
 
 
 class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
@@ -182,7 +130,7 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
     """Test quirks."""
 
     def test_chorma_less_than_zero_convert(self):
-        """Test handling of negative chroma when converting to Oklab."""
+        """Test handling of negative chroma when converting to Jzazbz."""
 
         self.assertColorEqual(
             Color('color(--jzczhz 90% -10 120 / 1)').convert('jzazbz'), Color('color(--jzazbz 0.9 0 0)')

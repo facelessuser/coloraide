@@ -4,201 +4,30 @@ import unittest
 import math
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestHSLInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestHSL(util.ColorAssertsPyTest):
     """Test HSL."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--hsl 0 1 0.5)'),
+        ('orange', 'color(--hsl 38.824 1 0.5)'),
+        ('yellow', 'color(--hsl 60 1 0.5)'),
+        ('green', 'color(--hsl 120 1 0.25098)'),
+        ('blue', 'color(--hsl 240 1 0.5)'),
+        ('indigo', 'color(--hsl 274.62 1 0.2549)'),
+        ('violet', 'color(--hsl 300 0.76056 0.72157)'),
+        ('white', 'color(--hsl none 0 1)'),
+        ('gray', 'color(--hsl none 0 0.50196)'),
+        ('black', 'color(--hsl none 0 0)')
+    ]
 
-        self.assertColorEqual(Color("hsl", [20, 1, 0.75]), Color('hsl(20 100% 75%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("hsl", [20, 1, 0.75])), Color('hsl(20 100% 75%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--hsl 20 100% 75%)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75)')
-
-        color = "color(--hsl 20 1 0.75 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75 / 0.5)')
-
-        color = "color(--hsl 20 100% 75% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsl 20 1 0.75 / 0.5)')
-
-    def test_comma(self):
-        """Test comma input and comma output format."""
-
-        args = {"comma": True}
-
-        color = "hsl(20, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual(color, hsl.to_string(**args))
-
-        color = "hsl(20, 100%, 75%, 1)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20, 100%, 75%)", hsl.to_string(**args))
-
-        color = "hsl(20, 100%, 75%, 0.2)"
-        hsl = Color(color)
-        self.assertEqual("hsla(20, 100%, 75%, 0.2)", hsl.to_string(**args))
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "hsl(20 100% 75%)"
-        hsl = Color(color)
-        self.assertEqual(color, hsl.to_string(**args))
-
-        color = "hsl(20 100% 75% / 1)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
-
-        color = "hsl(20 100% 75% / 0.2)"
-        hsl = Color(color)
-        self.assertEqual(color, hsl.to_string(**args))
-
-    def test_alias(self):
-        """Test that `hsla` is an alias for `hsl`."""
-
-        args = {"comma": True}
-
-        color = "hsla(20, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20, 100%, 75%)", hsl.to_string(**args))
-
-        color = "hsla(20, 100%, 75%, 1)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20, 100%, 75%)", hsl.to_string(**args))
-
-        color = "hsla(20, 100%, 75%, 0.5)"
-        hsl = Color(color)
-        self.assertEqual("hsla(20, 100%, 75%, 0.5)", hsl.to_string(**args))
-
-        args["comma"] = False
-
-        color = "hsla(20, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
-
-        color = "hsla(20, 100%, 75%, 1)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
-
-        color = "hsla(20, 100%, 75%, 0.5)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75% / 0.5)", hsl.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        args = {"comma": True}
-
-        color = "hsla(20, 100%, 75%, 100%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20, 100%, 75%)", hsl.to_string(**args))
-
-        color = "hsla(20, 100%, 75%, 20%)"
-        hsl = Color(color)
-        self.assertEqual("hsla(20, 100%, 75%, 0.2)", hsl.to_string(**args))
-
-        args["comma"] = False
-
-        color = "hsl(20 100% 75% / 100%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
-
-        color = "hsl(20 100% 75% / 20%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75% / 0.2)", hsl.to_string(**args))
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"comma": True, "alpha": False}
-
-        color = "hsla(20, 100%, 75%, 0.2)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20, 100%, 75%)", hsl.to_string(**args))
-
-        args["comma"] = False
-
-        color = "hsl(20 100% 75% / 0.2)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75%)", hsl.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"comma": True, "alpha": True}
-
-        color = "hsla(20, 100%, 75%, 1)"
-        hsl = Color(color)
-        self.assertEqual("hsla(20, 100%, 75%, 1)", hsl.to_string(**args))
-
-        args["comma"] = False
-
-        color = "hsl(20 100% 75% / 1)"
-        hsl = Color(color)
-        self.assertEqual("hsl(20 100% 75% / 1)", hsl.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--hsl 20.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'hsl(20.123 12.346% 12.346%)')
-        self.assertEqual(Color(color).to_string(precision=3), 'hsl(20.1 12.3% 12.3%)')
-        self.assertEqual(Color(color).to_string(precision=0), 'hsl(20 12% 12%)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'hsl(20.12345669999999842048055143095552921295166015625 12.3456700000000001438138497178442776203155517578125% 12.3456700000000001438138497178442776203155517578125%)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--hsl 20 150% 75%)').to_string(),
-            'hsl(19.619 100% 76.43%)'
-        )
-
-        self.assertEqual(
-            Color('color(--hsl 20 150% 75%)').to_string(fit="clip"),
-            'hsl(20 100% 75%)'
-        )
-
-        self.assertEqual(
-            Color('color(--hsl 20 150% 75%)').to_string(fit=False),
-            'hsl(20 150% 75%)'
-        )
-
-    def test_hue_inputs(self):
-        """Test hue inputs."""
-
-        color = "hsl(90deg, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
-
-        color = "hsl({:f}rad, 100%, 75%)".format(math.radians(90))
-        hsl = Color(color)
-        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
-
-        color = "hsl(100grad, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
-
-        color = "hsl(0.25turn, 100%, 75%)"
-        hsl = Color(color)
-        self.assertEqual("hsl(90 100% 75%)", hsl.to_string())
+        self.assertColorEqual(Color(color1).convert('hsl'), Color(color2), color=True)
 
 
 class TestHSLProperties(util.ColorAsserts, unittest.TestCase):

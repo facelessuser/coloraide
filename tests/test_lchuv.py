@@ -3,92 +3,30 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN
+import pytest
 
 
-class TestLChuvD65InputOutput(util.ColorAsserts, unittest.TestCase):
+class TestLChuv(util.ColorAssertsPyTest):
     """Test LChuv."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--lchuv 53.237 179.04 12.177)'),
+        ('orange', 'color(--lchuv 74.934 105.26 44.683)'),
+        ('yellow', 'color(--lchuv 97.139 107.09 85.874)'),
+        ('green', 'color(--lchuv 46.228 71.548 127.72)'),
+        ('blue', 'color(--lchuv 32.301 130.69 265.87)'),
+        ('indigo', 'color(--lchuv 20.47 62.163 279.33)'),
+        ('violet', 'color(--lchuv 69.695 84.743 307.72)'),
+        ('white', 'color(--lchuv 100 0 none)'),
+        ('gray', 'color(--lchuv 53.585 0 none)'),
+        ('black', 'color(--lchuv 0 0 none)')
+    ]
 
-        self.assertColorEqual(Color("lchuv", [20, 10, 130]), Color('color(--lchuv 20% 10 130)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("lchuv", [20, 10, 130])), Color('color(--lchuv 20% 10 130)'))
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "color(--lchuv 20% 10 130)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130)", lchuv.to_string(**args))
-
-        color = "color(--lchuv 20% 10 130 / 1)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130)", lchuv.to_string(**args))
-
-        color = "color(--lchuv 20% 10 130 / 0.2)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130 / 0.2)", lchuv.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        color = "color(--lchuv 20% 10 130 / 100%)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130)", lchuv.to_string())
-
-        color = "color(--lchuv 20% 10 130 / 20%)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130 / 0.2)", lchuv.to_string())
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        color = "color(--lchuv 20% 10 130 / 0.2)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130)", lchuv.to_string(alpha=False))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        color = "color(--lchuv 20% 10 130 / 1)"
-        lchuv = Color(color)
-        self.assertEqual("color(--lchuv 20 10 130 / 1)", lchuv.to_string(alpha=True))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--lchuv 20.1234567% 10.1234567 130.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--lchuv 20.123 10.123 130.12)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--lchuv 20.1 10.1 130)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--lchuv 20 10 130)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--lchuv 20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--lchuv 20% 200 120)').to_string(),
-            'color(--lchuv 20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lchuv 20% 200 120)').to_string(fit="clip"),
-            'color(--lchuv 20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lchuv 20% 200 120)').to_string(fit=False),
-            'color(--lchuv 20 200 120)'
-        )
+        self.assertColorEqual(Color(color1).convert('lchuv'), Color(color2))
 
 
 class TestLChuvD65Properties(util.ColorAsserts, unittest.TestCase):

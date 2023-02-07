@@ -2,112 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestLabInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestLab(util.ColorAssertsPyTest):
     """Test Lab."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--lab 54.291 80.805 69.891)'),
+        ('orange', 'color(--lab 75.59 27.516 79.121)'),
+        ('yellow', 'color(--lab 97.607 -15.75 93.394)'),
+        ('green', 'color(--lab 46.278 -47.552 48.586)'),
+        ('blue', 'color(--lab 29.568 68.287 -112.03)'),
+        ('indigo', 'color(--lab 19.715 47.029 -54.278)'),
+        ('violet', 'color(--lab 69.618 53.295 -36.538)'),
+        ('white', 'color(--lab 100 0 0)'),
+        ('gray', 'color(--lab 53.585 0 0)'),
+        ('black', 'color(--lab 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("lab", [20, 10, -30]), Color('lab(20% 10 -30)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("lab", [20, 10, -30])), Color('lab(20% 10 -30)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--lab 20% 10 -30)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30)')
-
-        color = "color(--lab 20% 10 -30 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30 / 0.5)')
-
-        color = "color(--lab 20% 10 -30 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lab 20 10 -30 / 0.5)')
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "lab(20 10 -30)"
-        lab = Color(color)
-        self.assertEqual(color, lab.to_string(**args))
-
-        color = "lab(20 10 -30 / 1)"
-        lab = Color(color)
-        self.assertEqual("lab(20 10 -30)", lab.to_string(**args))
-
-        color = "lab(20 10 -30 / 0.2)"
-        lab = Color(color)
-        self.assertEqual(color, lab.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        args = {'percent': True}
-
-        color = "lab(20% 10 -30 / 100%)"
-        lab = Color(color)
-        self.assertEqual("lab(20% 8% -24%)", lab.to_string(**args))
-
-        color = "lab(20% 10 -30 / 20%)"
-        lab = Color(color)
-        self.assertEqual("lab(20% 8% -24% / 0.2)", lab.to_string(**args))
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "lab(20 10 -30 / 0.2)"
-        lab = Color(color)
-        self.assertEqual("lab(20 10 -30)", lab.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "lab(20 10 -30 / 1)"
-        lab = Color(color)
-        self.assertEqual("lab(20 10 -30 / 1)", lab.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--lab 20.1234567 10.1234567 -30.1234567)'
-        self.assertEqual(Color(color).to_string(), 'lab(20.123 10.123 -30.123)')
-        self.assertEqual(Color(color).to_string(precision=3), 'lab(20.1 10.1 -30.1)')
-        self.assertEqual(Color(color).to_string(precision=0), 'lab(20 10 -30)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'lab(20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 -30.12345669999999842048055143095552921295166015625)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--lab -20% 180 -180)').to_string(),
-            'lab(-20 180 -180)'
-        )
-
-        self.assertEqual(
-            Color('color(--lab -20% 180 -180)').to_string(fit="clip"),
-            'lab(-20 180 -180)'
-        )
-
-        self.assertEqual(
-            Color('color(--lab -20% 180 -180)').to_string(fit=False),
-            'lab(-20 180 -180)'
-        )
+        self.assertColorEqual(Color(color1).convert('lab'), Color(color2), color=True)
 
 
 class TestLabProperties(util.ColorAsserts, unittest.TestCase):

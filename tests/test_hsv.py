@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color, NaN
+import pytest
 
 
-class TestHSVInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestHSV(util.ColorAssertsPyTest):
     """Test HSV."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--hsv 0 1 1)'),
+        ('orange', 'color(--hsv 38.824 1 1)'),
+        ('yellow', 'color(--hsv 60 1 1)'),
+        ('green', 'color(--hsv 120 1 0.50196)'),
+        ('blue', 'color(--hsv 240 1 1)'),
+        ('indigo', 'color(--hsv 274.62 1 0.5098)'),
+        ('violet', 'color(--hsv 300 0.45378 0.93333)'),
+        ('white', 'color(--hsv none 0 1)'),
+        ('gray', 'color(--hsv none 0 0.50196)'),
+        ('black', 'color(--hsv none 0 0)')
+    ]
 
-        self.assertColorEqual(Color("hsv", [20, 1, 0.75]), Color('color(--hsv 20 1 0.75)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("hsv", [20, 1, 0.75])), Color('color(--hsv 20 1 0.75)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--hsv 20 1 0.75)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsv 20 1 0.75)')
-
-        color = "color(--hsv 20 1 0.75 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsv 20 1 0.75 / 0.5)')
-
-        color = "color(--hsv 20 100% 75% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--hsv 20 1 0.75 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--hsv 20 1 0.75 / 0.2)"
-        hsv = Color(color)
-        self.assertEqual("color(--hsv 20 1 0.75)", hsv.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--hsv 20 1 0.75 / 1)"
-        hsv = Color(color)
-        self.assertEqual("color(--hsv 20 1 0.75 / 1)", hsv.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--hsv 20.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--hsv 20.123 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--hsv 20.1 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--hsv 20 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--hsv 20.12345669999999842048055143095552921295166015625 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--hsv 20 1.5 0.75)').to_string(),
-            'color(--hsv 39.15 1 0.50541)'
-        )
-
-        self.assertEqual(
-            Color('color(--hsv 20 1.5 0.75)').to_string(fit="clip"),
-            'color(--hsv 20 1 0.75)'
-        )
-
-        self.assertEqual(
-            Color('color(--hsv 20 150% 75%)').to_string(fit=False),
-            'color(--hsv 20 1.5 0.75)'
-        )
+        self.assertColorEqual(Color(color1).convert('hsv'), Color(color2))
 
 
 class TestHSVProperties(util.ColorAsserts, unittest.TestCase):

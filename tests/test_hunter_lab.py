@@ -22,7 +22,7 @@ class TestHunterLab(util.ColorAssertsPyTest):
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_hunter_lab_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('hunter-lab'), Color(color2))

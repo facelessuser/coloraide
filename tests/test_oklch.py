@@ -3,112 +3,30 @@ import unittest
 from . import util
 from coloraide import NaN
 from coloraide import Color
+import pytest
 
 
-class TestOkLChInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestsOkLCh(util.ColorAssertsPyTest):
     """Test OkLCh."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--oklch 0.62796 0.25768 29.234)'),
+        ('orange', 'color(--oklch 0.79269 0.17103 70.67)'),
+        ('yellow', 'color(--oklch 0.96798 0.21101 109.77)'),
+        ('green', 'color(--oklch 0.51975 0.17686 142.5)'),
+        ('blue', 'color(--oklch 0.45201 0.31321 264.05)'),
+        ('indigo', 'color(--oklch 0.33898 0.17927 301.68)'),
+        ('violet', 'color(--oklch 0.7619 0.18612 327.21)'),
+        ('white', 'color(--oklch 1 0 none)'),
+        ('gray', 'color(--oklch 0.59987 0 none)'),
+        ('black', 'color(--oklch 0 0 none)')
+    ]
 
-        self.assertColorEqual(Color("oklch", [0.9, 0.5, 270]), Color('oklch(90% 0.5 270)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("oklch", [0.9, 0.5, 270])), Color('oklch(90% 0.5 270)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--oklch 0.9 0.5 270)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--oklch 0.9 0.5 270)')
-
-        color = "color(--oklch 0.9 0.5 270 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--oklch 0.9 0.5 270 / 0.5)')
-
-        color = "color(--oklch 90% 0.5 270 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--oklch 0.9 0.5 270 / 0.5)')
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "oklch(0.2 0.1 130)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-        color = "oklch(0.2 0.1 130 / 1)"
-        lch = Color(color)
-        self.assertEqual("oklch(0.2 0.1 130)", lch.to_string(**args))
-
-        color = "oklch(0.2 0.1 130 / 0.2)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        args = {'percent': True}
-
-        color = "oklch(0.2 0.1 130 / 100%)"
-        lch = Color(color)
-        self.assertEqual("oklch(20% 25% 130)", lch.to_string(**args))
-
-        color = "oklch(0.2 0.1 130 / 20%)"
-        lch = Color(color)
-        self.assertEqual("oklch(20% 25% 130 / 0.2)", lch.to_string(**args))
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "oklch(0.9 0.5 270 / 0.5)"
-        oklch = Color(color)
-        self.assertEqual("oklch(0.9 0.5 270)", oklch.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "oklch(0.9 0.5 270 / 100%)"
-        oklch = Color(color)
-        self.assertEqual("oklch(0.9 0.5 270 / 1)", oklch.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--oklch 0.123456 0.123456 0.123456)'
-        self.assertEqual(Color(color).to_string(), 'oklch(0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'oklch(0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'oklch(0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'oklch(0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('oklch(0.9 200 270)').to_string(),
-            'oklch(0.9 200 270)'
-        )
-
-        self.assertEqual(
-            Color('oklch(90% 200 270)').to_string(fit="clip"),
-            'oklch(0.9 200 270)'
-        )
-
-        self.assertEqual(
-            Color('oklch(90% 200 270)').to_string(fit=False),
-            'oklch(0.9 200 270)'
-        )
+        self.assertColorEqual(Color(color1).convert('oklch'), Color(color2), color=True)
 
 
 class TestOkLChProperties(util.ColorAsserts, unittest.TestCase):

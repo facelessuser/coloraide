@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
+import pytest
 
 
-class TestJzazbzInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestJzazbz(util.ColorAssertsPyTest):
     """Test Jzazbz."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--jzazbz 0.13438 0.11789 0.11188)'),
+        ('orange', 'color(--jzazbz 0.16937 0.0312 0.12308)'),
+        ('yellow', 'color(--jzazbz 0.2096 -0.02864 0.13479)'),
+        ('green', 'color(--jzazbz 0.09203 -0.07454 0.07996)'),
+        ('blue', 'color(--jzazbz 0.09577 -0.04085 -0.18585)'),
+        ('indigo', 'color(--jzazbz 0.06146 0.03051 -0.09951)'),
+        ('violet', 'color(--jzazbz 0.16771 0.06427 -0.05514)'),
+        ('white', 'color(--jzazbz 0.22207 -0.00016 -0.00012)'),
+        ('gray', 'color(--jzazbz 0.11827 -0.00012 -0.00008)'),
+        ('black', 'color(--jzazbz 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("jzazbz", [1, 0.5, 0.5]), Color('color(--jzazbz 100% 0.5 0.5)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("jzazbz", [1, 0.5, 0.5])), Color('color(--jzazbz 100% 0.5 0.5)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--jzazbz 1 0.2 -0.3)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzazbz 1 0.2 -0.3)')
-
-        color = "color(--jzazbz 1 0.2 -0.3 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzazbz 1 0.2 -0.3 / 0.5)')
-
-        color = "color(--jzazbz 100% 0.2 -0.3 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--jzazbz 1 0.2 -0.3 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--jzazbz 1 0.2 -0.3 / 0.5)"
-        jzazbz = Color(color)
-        self.assertEqual("color(--jzazbz 1 0.2 -0.3)", jzazbz.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--jzazbz 1 0.2 -0.3 / 100%)"
-        jzazbz = Color(color)
-        self.assertEqual("color(--jzazbz 1 0.2 -0.3 / 1)", jzazbz.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--jzazbz 0.123456 0.123456 -0.123456)'
-        self.assertEqual(Color(color).to_string(), 'color(--jzazbz 0.12346 0.12346 -0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--jzazbz 0.123 0.123 -0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--jzazbz 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--jzazbz 0.12345599999999999629718416827017790637910366058349609 0.12345599999999999629718416827017790637910366058349609 -0.12345599999999999629718416827017790637910366058349609)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--jzazbz 2 0.6 -0.6)').to_string(),
-            'color(--jzazbz 2 0.6 -0.6)'
-        )
-
-        self.assertEqual(
-            Color('color(--jzazbz 2 0.6 -0.6)').to_string(fit="clip"),
-            'color(--jzazbz 2 0.6 -0.6)'
-        )
-
-        self.assertEqual(
-            Color('color(--jzazbz 2 0.6 -0.6)').to_string(fit=False),
-            'color(--jzazbz 2 0.6 -0.6)'
-        )
+        self.assertColorEqual(Color(color1).convert('jzazbz'), Color(color2))
 
 
 class TestJzazbzProperties(util.ColorAsserts, unittest.TestCase):

@@ -3,92 +3,30 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN
+import pytest
 
 
-class TestLch99oInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test DIN99o LCh."""
+class TestLCh99o(util.ColorAssertsPyTest):
+    """Test LCh99o."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--lch99o 57.289 49.915 37.692)'),
+        ('orange', 'color(--lch99o 77.855 43.543 67.811)'),
+        ('yellow', 'color(--lch99o 97.552 45.069 100.28)'),
+        ('green', 'color(--lch99o 50.336 39.561 139.69)'),
+        ('blue', 'color(--lch99o 36.03 51.485 308.34)'),
+        ('indigo', 'color(--lch99o 23.324 40.1 317.51)'),
+        ('violet', 'color(--lch99o 73.015 38.904 331.74)'),
+        ('white', 'color(--lch99o 100 0 none)'),
+        ('gray', 'color(--lch99o 57.63 0 none)'),
+        ('black', 'color(--lch99o 0 0 none)')
+    ]
 
-        self.assertColorEqual(Color("lch99o", [20, 10, 130]), Color('color(--lch99o 20% 10 130)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("lch99o", [20, 10, 130])), Color('color(--lch99o 20% 10 130)'))
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "color(--lch99o 20% 10 130)"
-        din99o = Color(color)
-        self.assertEqual('color(--lch99o 20 10 130)', din99o.to_string(**args))
-
-        color = "color(--lch99o 20% 10 130 / 1)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130)", din99o.to_string(**args))
-
-        color = "color(--lch99o 20% 10 130 / 0.2)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130 / 0.2)", din99o.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        color = "color(--lch99o 20% 10 130 / 100%)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130)", din99o.to_string())
-
-        color = "color(--lch99o 20% 10 130 / 20%)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130 / 0.2)", din99o.to_string())
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        color = "color(--lch99o 20% 10 130 / 0.2)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130)", din99o.to_string(alpha=False))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        color = "color(--lch99o 20% 10 130 / 1)"
-        din99o = Color(color)
-        self.assertEqual("color(--lch99o 20 10 130 / 1)", din99o.to_string(alpha=True))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--lch99o 20.1234567% 10.1234567 130.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--lch99o 20.123 10.123 130.12)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--lch99o 20.1 10.1 130)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--lch99o 20 10 130)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--lch99o 20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--lch99o 20% 200 120)').to_string(),
-            'color(--lch99o 20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lch99o 20% 200 120)').to_string(fit="clip"),
-            'color(--lch99o 20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lch99o 20% 200 120)').to_string(fit=False),
-            'color(--lch99o 20 200 120)'
-        )
+        self.assertColorEqual(Color(color1).convert('lch99o'), Color(color2))
 
 
 class TestLCh99oProperties(util.ColorAsserts, unittest.TestCase):

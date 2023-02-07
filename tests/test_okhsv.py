@@ -3,82 +3,30 @@ import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN
+import pytest
 
 
-class TestOkhsvInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestsOkhsv(util.ColorAssertsPyTest):
     """Test Okhsv."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--okhsv 29.234 1 1)'),
+        ('orange', 'color(--okhsv 70.67 1 1)'),
+        ('yellow', 'color(--okhsv 109.77 1 1)'),
+        ('green', 'color(--okhsv 142.5 1 0.52704)'),
+        ('blue', 'color(--okhsv 264.05 0.99999 1)'),
+        ('indigo', 'color(--okhsv 301.68 1.0007 0.50334)'),
+        ('violet', 'color(--okhsv 327.21 0.60492 0.93895)'),
+        ('white', 'color(--okhsv none 0 1)'),
+        ('gray', 'color(--okhsv none 0 0.53571)'),
+        ('black', 'color(--okhsv none 0 0)')
+    ]
 
-        self.assertColorEqual(Color("okhsv", [20, 1, 0.75]), Color('color(--okhsv 20 100% 75%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("okhsv", [20, 1, 0.75])), Color('color(--okhsv 20 100% 75%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--okhsv 20 100% 75%)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--okhsv 20 1 0.75)')
-
-        color = "color(--okhsv 20 1 0.75 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--okhsv 20 1 0.75 / 0.5)')
-
-        color = "color(--okhsv 20 100% 75% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--okhsv 20 1 0.75 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--okhsv 20 100% 75% / 0.2)"
-        okhsv = Color(color)
-        self.assertEqual("color(--okhsv 20 1 0.75)", okhsv.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--okhsv 20 100% 75% / 1)"
-        okhsv = Color(color)
-        self.assertEqual("color(--okhsv 20 1 0.75 / 1)", okhsv.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--okhsv 20.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--okhsv 20.123 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--okhsv 20.1 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--okhsv 20 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--okhsv 20.12345669999999842048055143095552921295166015625 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--okhsv 20 150% 75%)').to_string(),
-            'color(--okhsv 23.232 1 0.56317)'
-        )
-
-        self.assertEqual(
-            Color('color(--okhsv 20 150% 75%)').to_string(fit="clip"),
-            'color(--okhsv 20 1 0.75)'
-        )
-
-        self.assertEqual(
-            Color('color(--okhsv 20 150% 75%)').to_string(fit=False),
-            'color(--okhsv 20 1.5 0.75)'
-        )
+        self.assertColorEqual(Color(color1).convert('okhsv'), Color(color2))
 
 
 class TestOkhsvProperties(util.ColorAsserts, unittest.TestCase):

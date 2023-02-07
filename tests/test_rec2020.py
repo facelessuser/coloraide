@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestRec2020InputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test Rec.2020."""
+class TestRec2020(util.ColorAssertsPyTest):
+    """Test Rec. 2020."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(rec2020 0.79198 0.23098 0.07376)'),
+        ('orange', 'color(rec2020 0.86727 0.64078 0.18496)'),
+        ('yellow', 'color(rec2020 0.97831 0.99436 0.29839)'),
+        ('green', 'color(rec2020 0.23521 0.43171 0.08543)'),
+        ('blue', 'color(rec2020 0.16837 0.05113 0.94678)'),
+        ('indigo', 'color(rec2020 0.19583 0.03329 0.43481)'),
+        ('violet', 'color(rec2020 0.80438 0.51467 0.89463)'),
+        ('white', 'color(rec2020 1 1 1)'),
+        ('gray', 'color(rec2020 0.45214 0.45214 0.45214)'),
+        ('black', 'color(rec2020 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("rec2020", [1, 1, 1]), Color('color(rec2020 100% 100% 100%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("rec2020", [1, 1, 1])), Color('color(rec2020 100% 100% 100%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(rec2020 0.3 1 0.5)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(rec2020 0.3 1 0.5)')
-
-        color = "color(rec2020 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(rec2020 0.3 1 0.5 / 0.5)')
-
-        color = "color(rec2020 30% 100% 50% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(rec2020 0.3 1 0.5 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(rec2020 0.3 1 0.5 / 0.2)"
-        rec = Color(color)
-        self.assertEqual("color(rec2020 0.3 1 0.5)", rec.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(rec2020 0.3 1 0.5 / 100%)"
-        rec = Color(color)
-        self.assertEqual("color(rec2020 0.3 1 0.5 / 1)", rec.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(rec2020 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(rec2020 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(rec2020 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(rec2020 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(rec2020 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(rec2020 2 -1 0)').to_string(),
-            'color(rec2020 1 0.42136 0.36624)'
-        )
-
-        self.assertEqual(
-            Color('color(rec2020 2 -1 0)').to_string(fit="clip"),
-            'color(rec2020 1 0 0)'
-        )
-
-        self.assertEqual(
-            Color('color(rec2020 2 -1 0)').to_string(fit=False),
-            'color(rec2020 2 -1 0)'
-        )
+        self.assertColorEqual(Color(color1).convert('rec2020'), Color(color2))
 
 
 class TestRec2020Properties(util.ColorAsserts, unittest.TestCase):

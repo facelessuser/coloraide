@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestDisplayP3InputOutput(util.ColorAsserts, unittest.TestCase):
+class TestDisplayP3(util.ColorAssertsPyTest):
     """Test Display P3."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(display-p3 0.91749 0.20029 0.13856)'),
+        ('orange', 'color(display-p3 0.94965 0.6629 0.23297)'),
+        ('yellow', 'color(display-p3 1 1 0.3309)'),
+        ('green', 'color(display-p3 0.21604 0.49418 0.13151)'),
+        ('blue', 'color(display-p3 0 0 0.95959)'),
+        ('indigo', 'color(display-p3 0.26681 0.03018 0.48951)'),
+        ('violet', 'color(display-p3 0.87709 0.53133 0.91095)'),
+        ('white', 'color(display-p3 1 1 1)'),
+        ('gray', 'color(display-p3 0.50196 0.50196 0.50196)'),
+        ('black', 'color(display-p3 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("display-p3", [1, 1, 1]), Color('color(display-p3 100% 100% 100%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("display-p3", [1, 1, 1])), Color('color(display-p3 100% 100% 100%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(display-p3 0.3 1 0.5)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(display-p3 0.3 1 0.5)')
-
-        color = "color(display-p3 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(display-p3 0.3 1 0.5 / 0.5)')
-
-        color = "color(display-p3 30% 100% 50% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(display-p3 0.3 1 0.5 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(display-p3 0.3 1 0.5 / 0.2)"
-        p3 = Color(color)
-        self.assertEqual("color(display-p3 0.3 1 0.5)", p3.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(display-p3 0.3 1 0.5 / 100%)"
-        p3 = Color(color)
-        self.assertEqual("color(display-p3 0.3 1 0.5 / 1)", p3.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(display-p3 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(display-p3 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(display-p3 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(display-p3 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(display-p3 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(display-p3 2 -1 0)').to_string(),
-            'color(display-p3 1 0.54012 0.45708)'
-        )
-
-        self.assertEqual(
-            Color('color(display-p3 2 -1 0)').to_string(fit="clip"),
-            'color(display-p3 1 0 0)'
-        )
-
-        self.assertEqual(
-            Color('color(display-p3 2 -1 0)').to_string(fit=False),
-            'color(display-p3 2 -1 0)'
-        )
+        self.assertColorEqual(Color(color1).convert('display-p3'), Color(color2))
 
 
 class TestDisplayP3Properties(util.ColorAsserts, unittest.TestCase):

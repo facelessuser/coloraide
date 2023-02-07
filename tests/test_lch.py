@@ -3,131 +3,30 @@ import unittest
 import math
 from . import util
 from coloraide import Color, NaN
+import pytest
 
 
-class TestLChInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestLCh(util.ColorAssertsPyTest):
     """Test LCh."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--lch 54.291 106.84 40.858)'),
+        ('orange', 'color(--lch 75.59 83.769 70.824)'),
+        ('yellow', 'color(--lch 97.607 94.712 99.572)'),
+        ('green', 'color(--lch 46.278 67.984 134.38)'),
+        ('blue', 'color(--lch 29.568 131.2 301.36)'),
+        ('indigo', 'color(--lch 19.715 71.818 310.91)'),
+        ('violet', 'color(--lch 69.618 64.617 325.57)'),
+        ('white', 'color(--lch 100 0 none)'),
+        ('gray', 'color(--lch 53.585 0 none)'),
+        ('black', 'color(--lch 0 0 none)')
+    ]
 
-        self.assertColorEqual(Color("lch", [20, 10, 130]), Color('lch(20% 10 130)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("lch", [20, 10, 130])), Color('lch(20% 10 130)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--lch 20% 10 130)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20 10 130)')
-
-        color = "color(--lch 20% 10 130 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20 10 130 / 0.5)')
-
-        color = "color(--lch 20% 10 130 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--lch 20 10 130 / 0.5)')
-
-    def test_space(self):
-        """Test space input and space output format."""
-
-        args = {}
-
-        color = "lch(20 10 130)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-        color = "lch(20 10 130 / 1)"
-        lch = Color(color)
-        self.assertEqual("lch(20 10 130)", lch.to_string(**args))
-
-        color = "lch(20 10 130 / 0.2)"
-        lch = Color(color)
-        self.assertEqual(color, lch.to_string(**args))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        args = {'percent': True}
-
-        color = "lch(20% 10 130 / 100%)"
-        lch = Color(color)
-        self.assertEqual("lch(20% 6.6667% 130)", lch.to_string(**args))
-
-        color = "lch(20% 10 130 / 20%)"
-        lch = Color(color)
-        self.assertEqual("lch(20% 6.6667% 130 / 0.2)", lch.to_string(**args))
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "lch(20 10 130 / 0.2)"
-        lch = Color(color)
-        self.assertEqual("lch(20 10 130)", lch.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "lch(20 10 130 / 1)"
-        lch = Color(color)
-        self.assertEqual("lch(20 10 130 / 1)", lch.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--lch 20.1234567 10.1234567 130.1234567)'
-        self.assertEqual(Color(color).to_string(), 'lch(20.123 10.123 130.12)')
-        self.assertEqual(Color(color).to_string(precision=3), 'lch(20.1 10.1 130)')
-        self.assertEqual(Color(color).to_string(precision=0), 'lch(20 10 130)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'lch(20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 130.123456699999991315053193829953670501708984375)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--lch 20 200 120)').to_string(),
-            'lch(20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lch 20 200 120)').to_string(fit="clip"),
-            'lch(20 200 120)'
-        )
-
-        self.assertEqual(
-            Color('color(--lch 20 200 120)').to_string(fit=False),
-            'lch(20 200 120)'
-        )
-
-    def test_hue_inputs(self):
-        """Test hue inputs."""
-
-        color = "lch(90 50 90deg)"
-        lch = Color(color)
-        self.assertEqual("lch(90 50 90)", lch.to_string())
-
-        color = "lch(90 50 {:f}rad)".format(math.radians(90))
-        lch = Color(color)
-        self.assertEqual("lch(90 50 90)", lch.to_string())
-
-        color = "lch(90 50 100grad)"
-        lch = Color(color)
-        self.assertEqual("lch(90 50 90)", lch.to_string())
-
-        color = "lch(90 50 0.25turn)"
-        lch = Color(color)
-        self.assertEqual("lch(90 50 90)", lch.to_string())
+        self.assertColorEqual(Color(color1).convert('lch'), Color(color2), color=True)
 
 
 class TestLChProperties(util.ColorAsserts, unittest.TestCase):

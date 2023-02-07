@@ -2,79 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestXYZInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test XYZ."""
+class TestXYZD50(util.ColorAssertsPyTest):
+    """Test XYZ D50."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(xyz-d50 0.43607 0.22249 0.01392)'),
+        ('orange', 'color(xyz-d50 0.58098 0.49223 0.05045)'),
+        ('yellow', 'color(xyz-d50 0.82122 0.93938 0.11101)'),
+        ('green', 'color(xyz-d50 0.08314 0.15475 0.02096)'),
+        ('blue', 'color(xyz-d50 0.14308 0.06062 0.7141)'),
+        ('indigo', 'color(xyz-d50 0.06262 0.02919 0.16039)'),
+        ('violet', 'color(xyz-d50 0.58114 0.40209 0.64413)'),
+        ('white', 'color(xyz-d50 0.9643 1 0.8251)'),
+        ('gray', 'color(xyz-d50 0.20815 0.21586 0.17811)'),
+        ('black', 'color(xyz-d50 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("xyz-d50", [1, 1, 1]), Color('color(xyz-d50 1 1 1)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("xyz-d50", [1, 1, 1])), Color('color(xyz-d50 1 1 1)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(xyz-d50 0.3 1 0.5)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(xyz-d50 0.3 1 0.5)')
-
-        color = "color(xyz-d50 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(xyz-d50 0.3 1 0.5 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(xyz-d50 0.3 1 0.5 / 0.2)"
-        xyz = Color(color)
-        self.assertEqual("color(xyz-d50 0.3 1 0.5)", xyz.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(xyz-d50 0.3 1 0.5 / 100%)"
-        xyz = Color(color)
-        self.assertEqual("color(xyz-d50 0.3 1 0.5 / 1)", xyz.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(xyz-d50 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(xyz-d50 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(xyz-d50 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(xyz-d50 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(xyz-d50 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(xyz-d50 2 -1 0)').to_string(),
-            'color(xyz-d50 2 -1 0)'
-        )
-
-        self.assertEqual(
-            Color('color(xyz-d50 2 -1 0)').to_string(fit="clip"),
-            'color(xyz-d50 2 -1 0)'
-        )
-
-        self.assertEqual(
-            Color('color(xyz-d50 2 -1 0)').to_string(fit=False),
-            'color(xyz-d50 2 -1 0)'
-        )
+        self.assertColorEqual(Color(color1).convert('xyz-d50'), Color(color2))
 
 
 class TestXYZProperties(util.ColorAsserts, unittest.TestCase):

@@ -2,89 +2,30 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
+import pytest
 
 
-class TestDIN99oInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestDIN99o(util.ColorAssertsPyTest):
     """Test DIN99o."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--din99o 57.289 39.498 30.518)'),
+        ('orange', 'color(--din99o 77.855 16.444 40.318)'),
+        ('yellow', 'color(--din99o 97.552 -8.046 44.345)'),
+        ('green', 'color(--din99o 50.336 -30.169 25.591)'),
+        ('blue', 'color(--din99o 36.03 31.935 -40.383)'),
+        ('indigo', 'color(--din99o 23.324 29.57 -27.086)'),
+        ('violet', 'color(--din99o 73.015 34.267 -18.421)'),
+        ('white', 'color(--din99o 100 0 0)'),
+        ('gray', 'color(--din99o 57.63 0 0)'),
+        ('black', 'color(--din99o 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("din99o", [20, 10, -30]), Color('color(--din99o 20% 10 -30)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("din99o", [20, 10, -30])), Color('color(--din99o 20% 10 -30)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(--din99o 20% 10 -30)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(--din99o 20 10 -30)')
-
-        color = "color(--din99o 20% 10 -30 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--din99o 20 10 -30 / 0.5)')
-
-        color = "color(--din99o 20% 10 -30 / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(--din99o 20 10 -30 / 0.5)')
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        color = "color(--din99o 20% 10 -30 / 100%)"
-        din99o = Color(color)
-        self.assertEqual("color(--din99o 20 10 -30)", din99o.to_string())
-
-        color = "color(--din99o 20% 10 -30 / 20%)"
-        din99o = Color(color)
-        self.assertEqual("color(--din99o 20 10 -30 / 0.2)", din99o.to_string())
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        color = "color(--din99o 20% 10 -30 / 0.2)"
-        din99o = Color(color)
-        self.assertEqual("color(--din99o 20 10 -30)", din99o.to_string(alpha=False))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        color = "color(--din99o 20% 10 -30 / 1)"
-        din99o = Color(color)
-        self.assertEqual("color(--din99o 20 10 -30 / 1)", din99o.to_string(alpha=True))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--din99o 20.1234567% 10.1234567 -30.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--din99o 20.123 10.123 -30.123)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--din99o 20.1 10.1 -30.1)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--din99o 20 10 -30)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--din99o 20.12345669999999842048055143095552921295166015625 10.1234567000000001968373908312059938907623291015625 -30.12345669999999842048055143095552921295166015625)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--din99o -20% 180 -180)').to_string(),
-            'color(--din99o -20 180 -180)'
-        )
-
-        self.assertEqual(
-            Color('color(--din99o -20% 180 -180)').to_string(fit="clip"),
-            'color(--din99o -20 180 -180)'
-        )
-
-        self.assertEqual(
-            Color('color(--din99o -20% 180 -180)').to_string(fit=False),
-            'color(--din99o -20 180 -180)'
-        )
+        self.assertColorEqual(Color(color1).convert('din99o'), Color(color2))
 
 
 class TestDIN99oProperties(util.ColorAsserts, unittest.TestCase):

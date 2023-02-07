@@ -9,20 +9,20 @@ class ColorAsserts:
 
         self.assertEqual(round(value1, rounding), round(value2, rounding))
 
-    def assertColorEqual(self, color1, color2, fit=False, precision=5):
+    def assertColorEqual(self, color1, color2, *, fit=False, **kwargs):
         """Compare two colors."""
 
         self.assertEqual(
-            color1.to_string(fit=fit, precision=precision),
-            color2.to_string(fit=fit, precision=precision)
+            color1.to_string(fit=fit, **kwargs),
+            color2.to_string(fit=fit, **kwargs)
         )
 
-    def assertColorNotEqual(self, color1, color2, fit=False, precision=5):
+    def assertColorNotEqual(self, color1, color2, *, fit=False, **kwargs):
         """Compare two colors."""
 
         self.assertNotEqual(
-            color1.to_string(fit=fit, precision=precision),
-            color2.to_string(fit=fit, precision=precision)
+            color1.to_string(fit=fit, **kwargs),
+            color2.to_string(fit=fit, **kwargs)
         )
 
 

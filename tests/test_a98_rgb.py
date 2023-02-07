@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestA98RGBInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestA98RGB(util.ColorAssertsPyTest):
     """Test A98 RGB."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(a98-rgb 0.85859 0 0)'),
+        ('orange', 'color(a98-rgb 0.91489 0.64117 0.15031)'),
+        ('yellow', 'color(a98-rgb 1 1 0.23442)'),
+        ('green', 'color(a98-rgb 0.28137 0.49802 0.11675)'),
+        ('blue', 'color(a98-rgb 0 0 0.98107)'),
+        ('indigo', 'color(a98-rgb 0.25684 0 0.4961)'),
+        ('violet', 'color(a98-rgb 0.83635 0.50567 0.91826)'),
+        ('white', 'color(a98-rgb 1 1 1)'),
+        ('gray', 'color(a98-rgb 0.49802 0.49802 0.49802)'),
+        ('black', 'color(a98-rgb 0 0 0)')
+    ]
 
-        self.assertColorEqual(Color("a98-rgb", [1, 1, 1]), Color('color(a98-rgb 100% 100% 100%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("a98-rgb", [1, 1, 1])), Color('color(a98-rgb 100% 100% 100%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(a98-rgb 0.3 1 0.5)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(a98-rgb 0.3 1 0.5)')
-
-        color = "color(a98-rgb 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(a98-rgb 0.3 1 0.5 / 0.5)')
-
-        color = "color(a98-rgb 30% 100% 50% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(a98-rgb 0.3 1 0.5 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(a98-rgb 0.3 1 0.5 / 0.2)"
-        a98 = Color(color)
-        self.assertEqual("color(a98-rgb 0.3 1 0.5)", a98.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(a98-rgb 0.3 1 0.5 / 100%)"
-        a98 = Color(color)
-        self.assertEqual("color(a98-rgb 0.3 1 0.5 / 1)", a98.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(a98-rgb 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(a98-rgb 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(a98-rgb 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(a98-rgb 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(a98-rgb 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(a98-rgb 2 -1 0)').to_string(),
-            'color(a98-rgb 1 0.79105 0.77968)'
-        )
-
-        self.assertEqual(
-            Color('color(a98-rgb 2 -1 0)').to_string(fit="clip"),
-            'color(a98-rgb 1 0 0)'
-        )
-
-        self.assertEqual(
-            Color('color(a98-rgb 2 -1 0)').to_string(fit=False),
-            'color(a98-rgb 2 -1 0)'
-        )
+        self.assertColorEqual(Color(color1).convert('a98-rgb'), Color(color2))
 
 
 class TestA98RGBProperties(util.ColorAsserts, unittest.TestCase):

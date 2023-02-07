@@ -2,82 +2,30 @@
 import unittest
 from . import util
 from coloraide import Color
+import pytest
 
 
-class TestProPhotoRGBInputOutput(util.ColorAsserts, unittest.TestCase):
-    """Test ProPhoto RGB."""
+class TestProPhotoRGB(util.ColorAssertsPyTest):
+    """Test Linear ProPhoto RGB."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(prophoto-rgb 0.70225 0.27572 0.10355 )'),
+        ('orange', 'color(prophoto-rgb 0.78951 0.62329 0.21172 )'),
+        ('yellow', 'color(prophoto-rgb 0.91929 0.98425 0.32811 )'),
+        ('green', 'color(prophoto-rgb 0.23052 0.39578 0.12995 )'),
+        ('blue', 'color(prophoto-rgb 0.3362 0.13765 0.92287 )'),
+        ('indigo', 'color(prophoto-rgb 0.22572 0.09037 0.40254 )'),
+        ('violet', 'color(prophoto-rgb 0.78474 0.51528 0.87148 )'),
+        ('white', 'color(prophoto-rgb 1 1 1 )'),
+        ('gray', 'color(prophoto-rgb 0.42667 0.42667 0.42667 )'),
+        ('black', 'color(prophoto-rgb 0 0 0 )')
+    ]
 
-        self.assertColorEqual(Color("prophoto-rgb", [1, 1, 1]), Color('color(prophoto-rgb 100% 100% 100%)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("prophoto-rgb", [1, 1, 1])), Color('color(prophoto-rgb 100% 100% 100%)'))
-
-    def test_color(self):
-        """Test color input/output format."""
-
-        args = {"color": True}
-        color = "color(prophoto-rgb 0.3 1 0.5)"
-
-        self.assertEqual(Color(color).to_string(**args), 'color(prophoto-rgb 0.3 1 0.5)')
-
-        color = "color(prophoto-rgb 0.3 1 0.5 / 0.5)"
-        self.assertEqual(Color(color).to_string(**args), 'color(prophoto-rgb 0.3 1 0.5 / 0.5)')
-
-        color = "color(prophoto-rgb 30% 100% 50% / 50%)"
-        self.assertEqual(Color(color).to_string(**args), 'color(prophoto-rgb 0.3 1 0.5 / 0.5)')
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(prophoto-rgb 0.3 1 0.5 / 0.2)"
-        pro = Color(color)
-        self.assertEqual("color(prophoto-rgb 0.3 1 0.5)", pro.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(prophoto-rgb 0.3 1 0.5 / 100%)"
-        pro = Color(color)
-        self.assertEqual("color(prophoto-rgb 0.3 1 0.5 / 1)", pro.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(prophoto-rgb 0.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(prophoto-rgb 0.12346 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(prophoto-rgb 0.123 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(prophoto-rgb 0 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(prophoto-rgb 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(prophoto-rgb 2 -1 0)').to_string(),
-            'color(prophoto-rgb 0.92273 0 0.29789)'
-        )
-
-        self.assertEqual(
-            Color('color(prophoto-rgb 2 -1 0)').to_string(fit="clip"),
-            'color(prophoto-rgb 1 0 0)'
-        )
-
-        self.assertEqual(
-            Color('color(prophoto-rgb 2 -1 0)').to_string(fit=False),
-            'color(prophoto-rgb 2 -1 0)'
-        )
+        self.assertColorEqual(Color(color1).convert('prophoto-rgb'), Color(color2))
 
 
 class TestProPhotoRGBProperties(util.ColorAsserts, unittest.TestCase):

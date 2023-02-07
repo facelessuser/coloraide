@@ -3,91 +3,30 @@ from coloraide import NaN
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
+import pytest
 
 
-class TestOkhslInputOutput(util.ColorAsserts, unittest.TestCase):
+class TestsOkhsl(util.ColorAssertsPyTest):
     """Test Okhsl."""
 
-    def test_input_raw(self):
-        """Test raw input."""
+    COLORS = [
+        ('red', 'color(--okhsl 29.234 1 0.56808)'),
+        ('orange', 'color(--okhsl 70.67 1 0.75883)'),
+        ('yellow', 'color(--okhsl 109.77 1 0.9627)'),
+        ('green', 'color(--okhsl 142.5 1 0.44371)'),
+        ('blue', 'color(--okhsl 264.05 1 0.36657)'),
+        ('indigo', 'color(--okhsl 301.68 1.0018 0.24043)'),
+        ('violet', 'color(--okhsl 327.21 0.90624 0.7231)'),
+        ('white', 'color(--okhsl none 0 1)'),
+        ('gray', 'color(--okhsl none 0 0.53571)'),
+        ('black', 'color(--okhsl none 0 0)')
+    ]
 
-        self.assertColorEqual(Color("okhsl", [20, 1, 0.75]), Color('color(--okhsl 20 1 0.75)'))
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
 
-    def test_conversion(self):
-        """
-        Test a particular area of the conversion algorithm to ensure complete coverage.
-
-        Exercises part where chroma is less than calculated mid chroma.
-        """
-
-        self.assertEqual(
-            Color('color(--oklab 0.5 0.1 0)').convert('okhsl').to_string(),
-            'color(--okhsl 0 0.49656 0.42114)'
-        )
-
-    def test_color_class(self):
-        """Test raw input."""
-
-        self.assertColorEqual(Color(Color("okhsl", [20, 1, 0.75])), Color('color(--okhsl 20 1 0.75)'))
-
-    def test_percent(self):
-        """Test that percents work properly."""
-
-        color = "color(--okhsl 20 100% 75% / 100%)"
-        okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 1 0.75)", okhsl.to_string())
-
-        color = "color(--okhsl 20 1 0.75 / 20%)"
-        okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 1 0.75 / 0.2)", okhsl.to_string())
-
-    def test_no_alpha(self):
-        """Test no alpha."""
-
-        args = {"alpha": False}
-
-        color = "color(--okhsl 20 100% 75% / 0.2)"
-        okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 1 0.75)", okhsl.to_string(**args))
-
-    def test_force_alpha(self):
-        """Test force alpha."""
-
-        args = {"alpha": True}
-
-        color = "color(--okhsl 20 100% 75% / 1)"
-        okhsl = Color(color)
-        self.assertEqual("color(--okhsl 20 1 0.75 / 1)", okhsl.to_string(**args))
-
-    def test_precision(self):
-        """Test precision."""
-
-        color = 'color(--okhsl 20.1234567 0.1234567 0.1234567)'
-        self.assertEqual(Color(color).to_string(), 'color(--okhsl 20.123 0.12346 0.12346)')
-        self.assertEqual(Color(color).to_string(precision=3), 'color(--okhsl 20.1 0.123 0.123)')
-        self.assertEqual(Color(color).to_string(precision=0), 'color(--okhsl 20 0 0)')
-        self.assertEqual(
-            Color(color).to_string(precision=-1),
-            'color(--okhsl 20.12345669999999842048055143095552921295166015625 0.12345670000000000254836152180359931662678718566894531 0.12345670000000000254836152180359931662678718566894531)'  # noqa:  E501
-        )
-
-    def test_fit(self):
-        """Test fit."""
-
-        self.assertEqual(
-            Color('color(--okhsl 50 40% 110%)').to_string(),
-            'color(--okhsl 0 0 1)'
-        )
-
-        self.assertEqual(
-            Color('color(--okhsl 50 40% 110%)').to_string(fit="clip"),
-            'color(--okhsl 50 0.4 1)'
-        )
-
-        self.assertEqual(
-            Color('color(--okhsl 50 40% 110%)').to_string(fit=False),
-            'color(--okhsl 50 0.4 1.1)'
-        )
+        self.assertColorEqual(Color(color1).convert('okhsl'), Color(color2))
 
 
 class TestOkhslProperties(util.ColorAsserts, unittest.TestCase):

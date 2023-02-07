@@ -22,7 +22,7 @@ class TestxyY(util.ColorAssertsPyTest):
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_xyy_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('xyy'), Color(color2))
