@@ -18,7 +18,16 @@ class TestLinearRec2020(util.ColorAssertsPyTest):
         ('violet', 'color(--rec2020-linear 0.64696 0.27406 0.79939)'),
         ('white', 'color(--rec2020-linear 1 1 1)'),
         ('gray', 'color(--rec2020-linear 0.21586 0.21586 0.21586)'),
-        ('black', 'color(--rec2020-linear 0 0 0)')
+        ('black', 'color(--rec2020-linear 0 0 0)'),
+        # Test CSS color
+        ('color(--rec2020-linear 0 0.50196 0)', 'color(--rec2020-linear 0 0.50196 0)'),
+        ('color(--rec2020-linear 0 0.50196 0 / 0.5)', 'color(--rec2020-linear 0 0.50196 0 / 0.5)'),
+        ('color(--rec2020-linear 50% 50% 50% / 50%)', 'color(--rec2020-linear 0.5 0.5 0.5 / 0.5)'),
+        ('color(--rec2020-linear none none none / none)', 'color(--rec2020-linear none none none / none)'),
+        # Test range
+        ('color(--rec2020-linear 0% 0% 0%)', 'color(--rec2020-linear 0 0 0)'),
+        ('color(--rec2020-linear 100% 100% 100%)', 'color(--rec2020-linear 1 1 1)'),
+        ('color(--rec2020-linear -100% -100% -100%)', 'color(--rec2020-linear -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

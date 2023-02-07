@@ -1,0 +1,103 @@
+"""Test HPLuv."""
+from coloraide import NaN
+import unittest
+from .. import util
+from coloraide.everything import ColorAll as Color
+import pytest
+
+
+class TestsOkhsl(util.ColorAssertsPyTest):
+    """Test Okhsl."""
+
+    COLORS = [
+        # Test color
+        ('color(--hpluv 270 30 50)', 'color(--hpluv 270 30 50)'),
+        ('color(--hpluv 270 30 50 / 0.5)', 'color(--hpluv 270 30 50 / 0.5)'),
+        ('color(--hpluv 50% 50% 50% / 50%)', 'color(--hpluv 180 50 50 / 0.5)'),
+        ('color(--hpluv none none none / none)', 'color(--hpluv none none none / none)'),
+        # Test percent ranges
+        ('color(--hpluv 0% 0% 0%)', 'color(--hpluv 0 0 none)'),
+        ('color(--hpluv 100% 100% 100%)', 'color(--hpluv 360 100 100 / 1)'),
+        ('color(--hpluv -100% -100% -100%)', 'color(--hpluv -360 -100 -100 / 1)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('hpluv'), Color(color2))
+
+
+class TestHPluvProperties(util.ColorAsserts, unittest.TestCase):
+    """Test HPLuv."""
+
+    def test_hue(self):
+        """Test `hue`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['hue'], 120)
+        c['hue'] = 110
+        self.assertEqual(c['hue'], 110)
+
+    def test_perpendiculars(self):
+        """Test `perpendiculars`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['perpendiculars'], 50)
+        c['perpendiculars'] = 60
+        self.assertEqual(c['perpendiculars'], 60)
+
+    def test_lightness(self):
+        """Test `lightness`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['lightness'], 90)
+        c['lightness'] = 80
+        self.assertEqual(c['lightness'], 80)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(--hpluv 120 50% 90% / 1)')
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
+
+
+class TestHPLuvNull(util.ColorAsserts, unittest.TestCase):
+    """Test Null cases."""
+
+    def test_real_achromatic_hue(self):
+        """Test that we get the expected achromatic hue."""
+
+        self.assertEqual(Color('white').convert('hpluv')._space.achromatic_hue(), 0.0)
+
+    def test_null_input(self):
+        """Test null input."""
+
+        c = Color('hpluv', [NaN, 0.5, 1], 1)
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_none_input(self):
+        """Test `none` null."""
+
+        c = Color('color(--hpluv none 0% 75% / 1)')
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_sat(self):
+        """Test minimum saturation."""
+
+        c = Color('color(--hpluv 270 0% 0.75 / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_max_light(self):
+        """Test maximum lightness."""
+
+        c = Color('color(--hpluv 270 20% 100% / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))
+
+    def test_null_normalization_min_light(self):
+        """Test minimum lightness."""
+
+        c = Color('color(--hpluv 270 20% 0% / 1)').normalize()
+        self.assertTrue(c.is_nan('hue'))

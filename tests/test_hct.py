@@ -18,7 +18,16 @@ class TestHCT(util.ColorAssertsPyTest):
         ('violet', 'color(--hct 331.49 65.001 69.695)'),
         ('white', 'color(--hct 0 2.8716 100)'),
         ('gray', 'color(--hct 0 1.8977 53.585)'),
-        ('black', 'color(--hct 0 0 0)')
+        ('black', 'color(--hct 0 0 0)'),
+        # Test color
+        ('color(--hct 270 30 100)', 'color(--hct 270 30 100)'),
+        ('color(--hct 270 30 100 / 0.5)', 'color(--hct 270 30 100 / 0.5)'),
+        ('color(--hct 50% 50% 50% / 50%)', 'color(--hct 180 72.5 50 / 0.5)'),
+        ('color(--hct none none none / none)', 'color(--hct none none none / none)'),
+        # Test percent ranges
+        ('color(--hct 0% 0% 0%)', 'color(--hct 0 0 none)'),
+        ('color(--hct 100% 100% 100%)', 'color(--hct 360 145 100 / 1)'),
+        ('color(--hct -100% -100% -100%)', 'color(--hct -360 0 0 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

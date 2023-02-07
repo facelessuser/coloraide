@@ -22,11 +22,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1[:] = c2[:]
         self.assertColorEqual(c1, c2)
 
-    def test_print_none(self):
-        """Test printing `none`."""
-
-        self.assertEqual(Color("hsl", [NaN, NaN, 0.3]).to_string(fit=False, none=True), 'hsl(none none 30%)')
-
     def test_none(self):
         """Test none."""
 
@@ -353,16 +348,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             c1.set("red", "bad")
-
-    def test_repr(self):
-        """Test string representation."""
-
-        self.assertEqual(str(Color('red')), 'color(srgb 1 0 0 / 1)')
-
-    def test_repr_percent(self):
-        """Test string percent representation."""
-
-        self.assertEqual(str(Color('white').convert('lab')), 'color(--lab 100 0 0 / 1)')
 
     def test_is_nan_false(self):
         """Test when `is_nan` is false."""

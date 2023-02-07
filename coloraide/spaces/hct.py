@@ -220,6 +220,7 @@ class HCT(LChish, Space):
 
         m, j = coords[1:3]
         if self.ACHROMATIC.test(j, m):
+            coords[1] = self.ACHROMATIC.get_ideal_chroma(j, m)
             coords[0] = self.ACHROMATIC.hue
 
         return hct_to_xyz(coords, self.ENV)

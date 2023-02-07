@@ -18,14 +18,34 @@ class TestLab(util.ColorAssertsPyTest):
         ('violet', 'color(--lab 69.618 53.295 -36.538)'),
         ('white', 'color(--lab 100 0 0)'),
         ('gray', 'color(--lab 53.585 0 0)'),
-        ('black', 'color(--lab 0 0 0)')
+        ('black', 'color(--lab 0 0 0)'),
+        # Test CSS
+        ('lab(100 10 -10)', 'color(--lab 100 10 -10)'),
+        ('lab(100 10 -10 / 0.5)', 'color(--lab 100 10 -10 / 0.5)'),
+        ('lab(50% 10 -10)', 'color(--lab 50 10 -10)'),
+        ('lab(50% 50% -50% / 50%)', 'color(--lab 50 62.5 -62.5 / 0.5)'),
+        ('lab(none none none / none)', 'color(--lab none none none / none)'),
+        ('lab(1, 10, -10)', None),
+        # Test color
+        ('color(--lab 100 10 -10)', 'color(--lab 100 10 -10)'),
+        ('color(--lab 100 10 -10 / 0.5)', 'color(--lab 100 10 -10 / 0.5)'),
+        ('color(--lab 50% 50% -50% / 50%)', 'color(--lab 50 62.5 -62.5 / 0.5)'),
+        ('color(--lab none none none / none)', 'color(--lab none none none / none)'),
+        # Test percent ranges
+        ('color(--lab 0% 0% 0%)', 'color(--lab 0 0 0)'),
+        ('color(--lab 100% 100% 100%)', 'color(--lab 100 125 125)'),
+        ('color(--lab -100% -100% -100%)', 'color(--lab -100 -125 -125)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('lab'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('lab'), Color(color2), color=True)
 
 
 class TestLabProperties(util.ColorAsserts, unittest.TestCase):

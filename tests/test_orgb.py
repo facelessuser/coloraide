@@ -18,7 +18,16 @@ class TestoRGB(util.ColorAssertsPyTest):
         ('violet', 'color(--orgb 0.68472 -0.29948 0.29947)'),
         ('white', 'color(--orgb 1 0 0)'),
         ('gray', 'color(--orgb 0.50196 0 0)'),
-        ('black', 'color(--orgb 0 0 0)')
+        ('black', 'color(--orgb 0 0 0)'),
+        # Test color
+        ('color(--orgb 0.5 0.1 -0.1)', 'color(--orgb 0.5 0.1 -0.1)'),
+        ('color(--orgb 0.5 0.1 -0.1 / 0.5)', 'color(--orgb 0.5 0.1 -0.1 / 0.5)'),
+        ('color(--orgb 50% 50% -50% / 50%)', 'color(--orgb 0.5 0.5 -0.5 / 0.5)'),
+        ('color(--orgb none none none / none)', 'color(--orgb none none none / none)'),
+        # Test percent ranges
+        ('color(--orgb 0% 0% 0%)', 'color(--orgb 0 0 0)'),
+        ('color(--orgb 100% 100% 100%)', 'color(--orgb 1 1 1)'),
+        ('color(--orgb -100% -100% -100%)', 'color(--orgb -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

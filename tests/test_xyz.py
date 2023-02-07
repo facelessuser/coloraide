@@ -20,7 +20,16 @@ class TestXYZD65(util.ColorAssertsPyTest):
         ('gray', 'color(xyz-d65 0.20517 0.21586 0.23508)'),
         ('black', 'color(xyz-d65 0 0 0)'),
         # Test alternate CSS identifier
-        ('color(xyz 0.95046 1 1.0891)', 'color(xyz-d65 0.95046 1 1.0891)')
+        ('color(xyz 0.95046 1 1.0891)', 'color(xyz-d65 0.95046 1 1.0891)'),
+        # Test CSS color
+        ('color(xyz-d65 0 0.50196 0)', 'color(xyz-d65 0 0.50196 0)'),
+        ('color(xyz-d65 0 0.50196 0 / 0.5)', 'color(xyz-d65 0 0.50196 0 / 0.5)'),
+        ('color(xyz-d65 50% 50% 50% / 50%)', 'color(xyz-d65 0.5 0.5 0.5 / 0.5)'),
+        ('color(xyz-d65 none none none / none)', 'color(xyz-d65 none none none / none)'),
+        # Test range
+        ('color(xyz-d65 0% 0% 0%)', 'color(xyz-d65 0 0 0)'),
+        ('color(xyz-d65 100% 100% 100%)', 'color(xyz-d65 1 1 1)'),
+        ('color(xyz-d65 -100% -100% -100%)', 'color(xyz-d65 -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

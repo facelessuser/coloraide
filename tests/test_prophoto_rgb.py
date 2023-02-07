@@ -18,7 +18,16 @@ class TestProPhotoRGB(util.ColorAssertsPyTest):
         ('violet', 'color(prophoto-rgb 0.78474 0.51528 0.87148 )'),
         ('white', 'color(prophoto-rgb 1 1 1 )'),
         ('gray', 'color(prophoto-rgb 0.42667 0.42667 0.42667 )'),
-        ('black', 'color(prophoto-rgb 0 0 0 )')
+        ('black', 'color(prophoto-rgb 0 0 0 )'),
+        # Test CSS color
+        ('color(prophoto-rgb 0 0.50196 0)', 'color(prophoto-rgb 0 0.50196 0)'),
+        ('color(prophoto-rgb 0 0.50196 0 / 0.5)', 'color(prophoto-rgb 0 0.50196 0 / 0.5)'),
+        ('color(prophoto-rgb 50% 50% 50% / 50%)', 'color(prophoto-rgb 0.5 0.5 0.5 / 0.5)'),
+        ('color(prophoto-rgb none none none / none)', 'color(prophoto-rgb none none none / none)'),
+        # Test range
+        ('color(prophoto-rgb 0% 0% 0%)', 'color(prophoto-rgb 0 0 0)'),
+        ('color(prophoto-rgb 100% 100% 100%)', 'color(prophoto-rgb 1 1 1)'),
+        ('color(prophoto-rgb -100% -100% -100%)', 'color(prophoto-rgb -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

@@ -18,7 +18,16 @@ class TestsRGBLinear(util.ColorAssertsPyTest):
         ('violet', 'color(srgb-linear 0.85499 0.22323 0.85499)'),
         ('white', 'color(srgb-linear 1 1 1)'),
         ('gray', 'color(srgb-linear 0.21586 0.21586 0.21586)'),
-        ('black', 'color(srgb-linear 0 0 0)')
+        ('black', 'color(srgb-linear 0 0 0)'),
+        # Test CSS color
+        ('color(srgb-linear 0 0.50196 0)', 'color(srgb-linear 0 0.50196 0)'),
+        ('color(srgb-linear 0 0.50196 0 / 0.5)', 'color(srgb-linear 0 0.50196 0 / 0.5)'),
+        ('color(srgb-linear 50% 50% 50% / 50%)', 'color(srgb-linear 0.5 0.5 0.5 / 0.5)'),
+        ('color(srgb-linear none none none / none)', 'color(srgb-linear none none none / none)'),
+        # Test range
+        ('color(srgb-linear 0% 0% 0%)', 'color(srgb-linear 0 0 0)'),
+        ('color(srgb-linear 100% 100% 100%)', 'color(srgb-linear 1 1 1)'),
+        ('color(srgb-linear -100% -100% -100%)', 'color(srgb-linear -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

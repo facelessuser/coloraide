@@ -9,6 +9,7 @@ class TestsOklab(util.ColorAssertsPyTest):
     """Test Oklab."""
 
     COLORS = [
+        # Test general conversion
         ('red', 'color(--oklab 0.62796 0.22486 0.12585)'),
         ('orange', 'color(--oklab 0.79269 0.05661 0.16138)'),
         ('yellow', 'color(--oklab 0.96798 -0.07137 0.19857)'),
@@ -18,14 +19,34 @@ class TestsOklab(util.ColorAssertsPyTest):
         ('violet', 'color(--oklab 0.7619 0.15647 -0.1008)'),
         ('white', 'color(--oklab 1 0 0)'),
         ('gray', 'color(--oklab 0.59987 0 0)'),
-        ('black', 'color(--oklab 0 0 0)')
+        ('black', 'color(--oklab 0 0 0)'),
+        # Test CSS
+        ('oklab(1 0.1 -0.1)', 'color(--oklab 1 0.1 -0.1)'),
+        ('oklab(1 0.1 -0.1 / 0.5)', 'color(--oklab 1 0.1 -0.1 / 0.5)'),
+        ('oklab(50% 0.2 -0.2)', 'color(--oklab 0.5 0.2 -0.2)'),
+        ('oklab(50% 50% -50% / 50%)', 'color(--oklab 0.5 0.2 -0.2 / 0.5)'),
+        ('oklab(none none none / none)', 'color(--oklab none none none / none)'),
+        ('oklab(1, 0.1, -0.1)', None),
+        # Test color
+        ('color(--oklab 1 0.1 -0.1)', 'color(--oklab 1 0.1 -0.1)'),
+        ('color(--oklab 1 0.1 -0.1 / 0.5)', 'color(--oklab 1 0.1 -0.1 / 0.5)'),
+        ('color(--oklab 50% 50% -50% / 50%)', 'color(--oklab 0.5 0.2 -0.2 / 0.5)'),
+        ('color(--oklab none none none / none)', 'color(--oklab none none none / none)'),
+        # Test percent ranges
+        ('color(--oklab 0% 0% 0%)', 'color(--oklab 0 0 0)'),
+        ('color(--oklab 100% 100% 100%)', 'color(--oklab 1 0.4 0.4)'),
+        ('color(--oklab -100% -100% -100%)', 'color(--oklab -1 -0.4 -0.4)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('oklab'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('oklab'), Color(color2), color=True)
 
 
 class TestOklabProperties(util.ColorAsserts, unittest.TestCase):

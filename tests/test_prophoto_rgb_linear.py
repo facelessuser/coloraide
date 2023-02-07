@@ -18,7 +18,16 @@ class TestLinearProPhotoRGB(util.ColorAssertsPyTest):
         ('violet', 'color(--prophoto-rgb-linear 0.64641 0.30317 0.78066)'),
         ('white', 'color(--prophoto-rgb-linear 1 1 1)'),
         ('gray', 'color(--prophoto-rgb-linear 0.21586 0.21586 0.21586)'),
-        ('black', 'color(--prophoto-rgb-linear 0 0 0)')
+        ('black', 'color(--prophoto-rgb-linear 0 0 0)'),
+        # Test CSS color
+        ('color(--prophoto-rgb-linear 0 0.50196 0)', 'color(--prophoto-rgb-linear 0 0.50196 0)'),
+        ('color(--prophoto-rgb-linear 0 0.50196 0 / 0.5)', 'color(--prophoto-rgb-linear 0 0.50196 0 / 0.5)'),
+        ('color(--prophoto-rgb-linear 50% 50% 50% / 50%)', 'color(--prophoto-rgb-linear 0.5 0.5 0.5 / 0.5)'),
+        ('color(--prophoto-rgb-linear none none none / none)', 'color(--prophoto-rgb-linear none none none / none)'),
+        # Test range
+        ('color(--prophoto-rgb-linear 0% 0% 0%)', 'color(--prophoto-rgb-linear 0 0 0)'),
+        ('color(--prophoto-rgb-linear 100% 100% 100%)', 'color(--prophoto-rgb-linear 1 1 1)'),
+        ('color(--prophoto-rgb-linear -100% -100% -100%)', 'color(--prophoto-rgb-linear -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

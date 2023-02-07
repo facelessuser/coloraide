@@ -18,7 +18,16 @@ class TestACEScg(util.ColorAssertsPyTest):
         ('violet', 'color(--acescg 0.64049 0.27607 0.78577)'),
         ('white', 'color(--acescg 1 1 1)'),
         ('gray', 'color(--acescg 0.21586 0.21586 0.21586)'),
-        ('black', 'color(--acescg 0 0 0)')
+        ('black', 'color(--acescg 0 0 0)'),
+        # Test CSS color
+        ('color(--acescg 0 0.50196 0)', 'color(--acescg 0 0.50196 0)'),
+        ('color(--acescg 0 0.50196 0 / 0.5)', 'color(--acescg 0 0.50196 0 / 0.5)'),
+        ('color(--acescg 50% 50% 50% / 50%)', 'color(--acescg 32752 32752 32752 / 0.5)'),
+        ('color(--acescg none none none / none)', 'color(--acescg none none none / none)'),
+        # Test range
+        ('color(--acescg 0% 0% 0%)', 'color(--acescg 0 0 0)'),
+        ('color(--acescg 100% 100% 100%)', 'color(--acescg 65504 65504 65504)'),
+        ('color(--acescg -100% -100% -100%)', 'color(--acescg -65504 -65504 -65504)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

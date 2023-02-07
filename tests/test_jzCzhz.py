@@ -19,7 +19,16 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         ('violet', 'color(--jzczhz 0.16771 0.08468 319.37)'),
         ('white', 'color(--jzczhz 0.22207 0.0002 none)'),
         ('gray', 'color(--jzczhz 0.11827 0.00014 none)'),
-        ('black', 'color(--jzczhz 0 0 none)')
+        ('black', 'color(--jzczhz 0 0 none)'),
+        # Test color
+        ('color(--jzczhz 1 0.3 270)', 'color(--jzczhz 1 0.3 270)'),
+        ('color(--jzczhz 1 0.3 270 / 0.5)', 'color(--jzczhz 1 0.3 270 / 0.5)'),
+        ('color(--jzczhz 50% 50% 50% / 50%)', 'color(--jzczhz 0.5 0.25 180 / 0.5)'),
+        ('color(--jzczhz none none none / none)', 'color(--jzczhz none none none / none)'),
+        # Test percent ranges
+        ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 none)'),
+        ('color(--jzczhz 100% 100% 100%)', 'color(--jzczhz 1 0.5 360 / 1)'),
+        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz 0 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

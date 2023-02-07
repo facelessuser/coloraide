@@ -32,9 +32,9 @@ class ColorAssertsPyTest(ColorAsserts):
     def assertEqual(self, a, b):
         """Assert equal."""
 
-        assert a == b
+        assert a == b, "{} != {}".format(a, b)
 
     def assertNotEqual(self, a, b):
         """Assert not equal."""
 
-        assert a != b
+        assert a != b, "{} != {}".format(a, b)

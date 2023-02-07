@@ -18,7 +18,16 @@ class TestIPT(util.ColorAssertsPyTest):
         ('violet', 'color(--ipt 0.72886 0.31223 -0.24012)'),
         ('white', 'color(--ipt 0.99999 0.00007 -0.00004)'),
         ('gray', 'color(--ipt 0.51724 0.00003 -0.00002)'),
-        ('black', 'color(--ipt 0 0 0)')
+        ('black', 'color(--ipt 0 0 0)'),
+        # Test color
+        ('color(--ipt 0.5 0.1 -0.1)', 'color(--ipt 0.5 0.1 -0.1)'),
+        ('color(--ipt 0.5 0.1 -0.1 / 0.5)', 'color(--ipt 0.5 0.1 -0.1 / 0.5)'),
+        ('color(--ipt 50% 50% -50% / 50%)', 'color(--ipt 0.5 0.5 -0.5 / 0.5)'),
+        ('color(--ipt none none none / none)', 'color(--ipt none none none / none)'),
+        # Test percent ranges
+        ('color(--ipt 0% 0% 0%)', 'color(--ipt 0 0 0)'),
+        ('color(--ipt 100% 100% 100%)', 'color(--ipt 1 1 1)'),
+        ('color(--ipt -100% -100% -100%)', 'color(--ipt -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

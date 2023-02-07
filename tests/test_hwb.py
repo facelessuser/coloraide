@@ -1,6 +1,5 @@
 """Test HWB library."""
 import unittest
-import math
 from . import util
 from coloraide import Color, NaN
 import pytest
@@ -19,7 +18,16 @@ class TestHWB(util.ColorAssertsPyTest):
         ('violet', 'color(--hwb 300 0.5098 0.06667)'),
         ('white', 'color(--hwb none 1 0)'),
         ('gray', 'color(--hwb none 0.50196 0.49804)'),
-        ('black', 'color(--hwb none 0 1)')
+        ('black', 'color(--hwb none 0 1)'),
+        # Test color
+        ('color(--hwb 270 0.3 0.5)', 'color(--hwb 270 0.3 0.5)'),
+        ('color(--hwb 270 0.3 0.5 / 0.5)', 'color(--hwb 270 0.3 0.5 / 0.5)'),
+        ('color(--hwb 50% 30% 50% / 50%)', 'color(--hwb 180 0.3 0.5 / 0.5)'),
+        ('color(--hwb none none none / none)', 'color(--hwb none none none / none)'),
+        # Test percent ranges
+        ('color(--hwb 0% 0% 0%)', 'color(--hwb 0 0 none)'),
+        ('color(--hwb 100% 100% 100%)', 'color(--hwb 360 1 1 / 1)'),
+        ('color(--hwb -100% -100% -100%)', 'color(--hwb -360 -1 -1 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

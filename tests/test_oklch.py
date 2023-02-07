@@ -10,6 +10,7 @@ class TestsOkLCh(util.ColorAssertsPyTest):
     """Test OkLCh."""
 
     COLORS = [
+        # Test general conversion
         ('red', 'color(--oklch 0.62796 0.25768 29.234)'),
         ('orange', 'color(--oklch 0.79269 0.17103 70.67)'),
         ('yellow', 'color(--oklch 0.96798 0.21101 109.77)'),
@@ -19,14 +20,40 @@ class TestsOkLCh(util.ColorAssertsPyTest):
         ('violet', 'color(--oklch 0.7619 0.18612 327.21)'),
         ('white', 'color(--oklch 1 0 none)'),
         ('gray', 'color(--oklch 0.59987 0 none)'),
-        ('black', 'color(--oklch 0 0 none)')
+        ('black', 'color(--oklch 0 0 none)'),
+        # Test CSS
+        ('oklch(1 0.3 270)', 'color(--oklch 1 0.3 270 / 1)'),
+        ('oklch(1 0.3 270 / 0.5)', 'color(--oklch 1 0.3 270 / 0.5)'),
+        ('oklch(50% 0.3 270)', 'color(--oklch 0.5 0.3 270 / 1)'),
+        ('oklch(50% 50% 270 / 50%)', 'color(--oklch 0.5 0.2 270 / 0.5)'),
+        ('oklch(none none none / none)', 'color(--oklch none none none / none)'),
+        ('oklch(1 0.3 50%)', None),
+        ('oklch(1, 0.3, 50)', None),
+        # Test degrees
+        ('oklch(0.75 0.2 180deg)', 'color(--oklch 0.75 0.2 180 / 1)'),
+        ('oklch(0.75 0.2 0.5turn)', 'color(--oklch 0.75 0.2 180 / 1)'),
+        ('oklch(0.75 0.2 3.14159rad)', 'color(--oklch 0.75 0.2 180 / 1)'),
+        ('oklch(0.75 0.2 200grad)', 'color(--oklch 0.75 0.2 180 / 1)'),
+        # Test color
+        ('color(--oklch 1 0.3 270)', 'color(--oklch 1 0.3 270)'),
+        ('color(--oklch 1 0.3 270 / 0.5)', 'color(--oklch 1 0.3 270 / 0.5)'),
+        ('color(--oklch 50% 50% 50% / 50%)', 'color(--oklch 0.5 0.2 180 / 0.5)'),
+        ('color(--oklch none none none / none)', 'color(--oklch none none none / none)'),
+        # Test percent ranges
+        ('color(--oklch 0% 0% 0%)', 'color(--oklch 0 0 none)'),
+        ('color(--oklch 100% 100% 100%)', 'color(--oklch 1 0.4 360 / 1)'),
+        ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('oklch'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('oklch'), Color(color2), color=True)
 
 
 class TestOkLChProperties(util.ColorAsserts, unittest.TestCase):

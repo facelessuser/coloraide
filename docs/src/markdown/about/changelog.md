@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.1
+
+- **FIX**: Ensure CAM16 spaces mirror percentages across `a` and `b` components.
+- **FIX**: Since the CAM16 JMh model can not predict achromatic colors with negative lightness and, more importantly,
+  negative lightness is not useful, limit the lower end of lightness in CAM16 spaces to zero.
+- **FIX**: When a CAM16 JMh (or HCT) color's chroma, when not discounting illuminance, has chroma drop below the actual
+  ideal achromatic chroma threshold, just use the ideal chroma to ensure better conversion back to XYZ.
+- **FIX**: Jzazbz and JzCzhz model can never translate a color with a negative lightness, so just clamp negative
+  lightness while in Jzazbz and JzCzhz.
+
 ## 1.7
 
 - **NEW**: Add support for CAM16 Jab and JMh: `cam16` and `cam16-jmh` respectively.

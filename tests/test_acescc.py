@@ -9,6 +9,39 @@ class TestACEScc(util.ColorAssertsPyTest):
     """Test ACEScc."""
 
     COLORS = [
+        # Test general conversion
+        ('red', 'color(--acescc 0.51451 0.33604 0.23515)'),
+        ('orange', 'color(--acescc 0.53009 0.48237 0.32561)'),
+        ('yellow', 'color(--acescc 0.5508 0.55368 0.38691)'),
+        ('green', 'color(--acescc 0.3396 0.42136 0.24647)'),
+        ('blue', 'color(--acescc 0.30368 0.2 0.54331)'),
+        ('indigo', 'color(--acescc 0.31401 0.1566 0.42044)'),
+        ('violet', 'color(--acescc 0.51811 0.44881 0.53494)'),
+        ('white', 'color(--acescc 0.55479 0.55479 0.55479)'),
+        ('gray', 'color(--acescc 0.42855 0.42855 0.42855)'),
+        ('black', 'color(--acescc -0.35845 -0.35845 -0.35845)'),
+        # Test CSS color
+        ('color(--acescc 0 0.50196 0)', 'color(--acescc 0 0.50196 0)'),
+        ('color(--acescc 0 0.50196 0 / 0.5)', 'color(--acescc 0 0.50196 0 / 0.5)'),
+        ('color(--acescc 50% 50% 50% / 50%)', 'color(--acescc 0.55477 0.55477 0.55477 / 0.5)'),
+        ('color(--acescc none none none / none)', 'color(--acescc none none none / none)'),
+        # Test range
+        ('color(--acescc 0% 0% 0%)', 'color(--acescc -0.35845 -0.35845 -0.35845)'),
+        ('color(--acescc 100% 100% 100%)', 'color(--acescc 1.468 1.468 1.468)'),
+        ('color(--acescc -100% -100% -100%)', 'color(--acescc -2.1849 -2.1849 -2.1849)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('acescc'), Color(color2))
+
+
+class TestACESccToACES2056_1(util.ColorAssertsPyTest):
+    """Test ACEScc to ACES 2056-1."""
+
+    COLORS = [
         # Tests from S-2014-003 paper
         (
             f'color(--aces2065-1 {2 ** -24} {2 ** -24} {2 ** -24})',

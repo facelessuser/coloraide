@@ -18,7 +18,16 @@ class TestLinearDisplayP3(util.ColorAssertsPyTest):
         ('violet', 'color(--display-p3-linear 0.74283 0.2442 0.80925)'),
         ('white', 'color(--display-p3-linear 1 1 1)'),
         ('gray', 'color(--display-p3-linear 0.21586 0.21586 0.21586)'),
-        ('black', 'color(--display-p3-linear 0 0 0)')
+        ('black', 'color(--display-p3-linear 0 0 0)'),
+        # Test CSS color
+        ('color(--display-p3-linear 0 0.50196 0)', 'color(--display-p3-linear 0 0.50196 0)'),
+        ('color(--display-p3-linear 0 0.50196 0 / 0.5)', 'color(--display-p3-linear 0 0.50196 0 / 0.5)'),
+        ('color(--display-p3-linear 50% 50% 50% / 50%)', 'color(--display-p3-linear 0.5 0.5 0.5 / 0.5)'),
+        ('color(--display-p3-linear none none none / none)', 'color(--display-p3-linear none none none / none)'),
+        # Test range
+        ('color(--display-p3-linear 0% 0% 0%)', 'color(--display-p3-linear 0 0 0)'),
+        ('color(--display-p3-linear 100% 100% 100%)', 'color(--display-p3-linear 1 1 1)'),
+        ('color(--display-p3-linear -100% -100% -100%)', 'color(--display-p3-linear -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

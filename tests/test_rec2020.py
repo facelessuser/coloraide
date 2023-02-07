@@ -18,7 +18,16 @@ class TestRec2020(util.ColorAssertsPyTest):
         ('violet', 'color(rec2020 0.80438 0.51467 0.89463)'),
         ('white', 'color(rec2020 1 1 1)'),
         ('gray', 'color(rec2020 0.45214 0.45214 0.45214)'),
-        ('black', 'color(rec2020 0 0 0)')
+        ('black', 'color(rec2020 0 0 0)'),
+        # Test CSS color
+        ('color(rec2020 0 0.50196 0)', 'color(rec2020 0 0.50196 0)'),
+        ('color(rec2020 0 0.50196 0 / 0.5)', 'color(rec2020 0 0.50196 0 / 0.5)'),
+        ('color(rec2020 50% 50% 50% / 50%)', 'color(rec2020 0.5 0.5 0.5 / 0.5)'),
+        ('color(rec2020 none none none / none)', 'color(rec2020 none none none / none)'),
+        # Test range
+        ('color(rec2020 0% 0% 0%)', 'color(rec2020 0 0 0)'),
+        ('color(rec2020 100% 100% 100%)', 'color(rec2020 1 1 1)'),
+        ('color(rec2020 -100% -100% -100%)', 'color(rec2020 -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

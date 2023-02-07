@@ -19,7 +19,16 @@ class TestHSI(util.ColorAssertsPyTest):
         ('violet', 'color(--hsi 300 0.35644 0.79216)'),
         ('white', 'color(--hsi 0 0 1)'),
         ('gray', 'color(--hsi 0 0 0.50196)'),
-        ('black', 'color(--hsi 0 0 0)')
+        ('black', 'color(--hsi 0 0 0)'),
+        # Test color
+        ('color(--hsi 270 0.3 0.5)', 'color(--hsi 270 0.3 0.5)'),
+        ('color(--hsi 270 0.3 0.5 / 0.5)', 'color(--hsi 270 0.3 0.5 / 0.5)'),
+        ('color(--hsi 50% 50% 50% / 50%)', 'color(--hsi 180 0.5 0.5 / 0.5)'),
+        ('color(--hsi none none none / none)', 'color(--hsi none none none / none)'),
+        # Test percent ranges
+        ('color(--hsi 0% 0% 0%)', 'color(--hsi 0 0 none)'),
+        ('color(--hsi 100% 100% 100%)', 'color(--hsi 360 1 1 / 1)'),
+        ('color(--hsi -100% -100% -100%)', 'color(--hsi -360 -1 -1 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

@@ -1,6 +1,5 @@
 """Test LCh library."""
 import unittest
-import math
 from . import util
 from coloraide import Color, NaN
 import pytest
@@ -19,14 +18,40 @@ class TestLCh(util.ColorAssertsPyTest):
         ('violet', 'color(--lch 69.618 64.617 325.57)'),
         ('white', 'color(--lch 100 0 none)'),
         ('gray', 'color(--lch 53.585 0 none)'),
-        ('black', 'color(--lch 0 0 none)')
+        ('black', 'color(--lch 0 0 none)'),
+        # Test CSS
+        ('lch(100 30 270)', 'color(--lch 100 30 270 / 1)'),
+        ('lch(100 30 270 / 0.5)', 'color(--lch 100 30 270 / 0.5)'),
+        ('lch(50% 30 270)', 'color(--lch 50 30 270 / 1)'),
+        ('lch(50% 50% 270 / 50%)', 'color(--lch 50 75 270 / 0.5)'),
+        ('lch(none none none / none)', 'color(--lch none none none / none)'),
+        ('lch(1 30 50%)', None),
+        ('lch(1, 30, 50)', None),
+        # Test degrees
+        ('lch(75 20 180deg)', 'color(--lch 75 20 180 / 1)'),
+        ('lch(75 20 0.5turn)', 'color(--lch 75 20 180 / 1)'),
+        ('lch(75 20 3.14159rad)', 'color(--lch 75 20 180 / 1)'),
+        ('lch(75 20 200grad)', 'color(--lch 75 20 180 / 1)'),
+        # Test color
+        ('color(--lch 100 30 270)', 'color(--lch 100 30 270)'),
+        ('color(--lch 100 30 270 / 0.5)', 'color(--lch 100 30 270 / 0.5)'),
+        ('color(--lch 50% 50% 50% / 50%)', 'color(--lch 50 75 180 / 0.5)'),
+        ('color(--lch none none none / none)', 'color(--lch none none none / none)'),
+        # Test percent ranges
+        ('color(--lch 0% 0% 0%)', 'color(--lch 0 0 none)'),
+        ('color(--lch 100% 100% 100%)', 'color(--lch 100 150 360 / 1)'),
+        ('color(--lch -100% -100% -100%)', 'color(--lch -100 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('lch'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('lch'), Color(color2), color=True)
 
 
 class TestLChProperties(util.ColorAsserts, unittest.TestCase):

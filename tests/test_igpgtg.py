@@ -18,7 +18,16 @@ class TestIgPgTg(util.ColorAssertsPyTest):
         ('violet', 'color(--igpgtg 0.68117 0.22553 -0.17411)'),
         ('white', 'color(--igpgtg 0.97415 0.00139 -0.00404)'),
         ('gray', 'color(--igpgtg 0.50619 0.00072 -0.0021)'),
-        ('black', 'color(--igpgtg 0 0 0)')
+        ('black', 'color(--igpgtg 0 0 0)'),
+        # Test color
+        ('color(--igpgtg 0.5 0.1 -0.1)', 'color(--igpgtg 0.5 0.1 -0.1)'),
+        ('color(--igpgtg 0.5 0.1 -0.1 / 0.5)', 'color(--igpgtg 0.5 0.1 -0.1 / 0.5)'),
+        ('color(--igpgtg 50% 50% -50% / 50%)', 'color(--igpgtg 0.5 0.5 -0.5 / 0.5)'),
+        ('color(--igpgtg none none none / none)', 'color(--igpgtg none none none / none)'),
+        # Test percent ranges
+        ('color(--igpgtg 0% 0% 0%)', 'color(--igpgtg 0 0 0)'),
+        ('color(--igpgtg 100% 100% 100%)', 'color(--igpgtg 1 1 1)'),
+        ('color(--igpgtg -100% -100% -100%)', 'color(--igpgtg -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

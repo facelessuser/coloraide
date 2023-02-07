@@ -18,11 +18,20 @@ class TestRLAB(util.ColorAssertsPyTest):
         ('violet', 'color(--rlab 67.371 58.947 -38.558)'),
         ('white', 'color(--rlab 100 0 0)'),
         ('gray', 'color(--rlab 51.346 0 0)'),
-        ('black', 'color(--rlab 0 0 0)')
+        ('black', 'color(--rlab 0 0 0)'),
+        # Test color
+        ('color(--rlab 100 10 -10)', 'color(--rlab 100 10 -10)'),
+        ('color(--rlab 100 10 -10 / 0.5)', 'color(--rlab 100 10 -10 / 0.5)'),
+        ('color(--rlab 50% 50% -50% / 50%)', 'color(--rlab 50 62.5 -62.5 / 0.5)'),
+        ('color(--rlab none none none / none)', 'color(--rlab none none none / none)'),
+        # Test percent ranges
+        ('color(--rlab 0% 0% 0%)', 'color(--rlab 0 0 0)'),
+        ('color(--rlab 100% 100% 100%)', 'color(--rlab 100 125 125)'),
+        ('color(--rlab -100% -100% -100%)', 'color(--rlab -100 -125 -125)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_hunter_lab_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('rlab'), Color(color2))

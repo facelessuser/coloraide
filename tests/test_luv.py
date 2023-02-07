@@ -18,7 +18,16 @@ class TestLuv(util.ColorAssertsPyTest):
         ('violet', 'color(--luv 69.695 51.84 -67.037)'),
         ('white', 'color(--luv 100 0 0)'),
         ('gray', 'color(--luv 53.585 0 0)'),
-        ('black', 'color(--luv 0 0 0)')
+        ('black', 'color(--luv 0 0 0)'),
+        # Test color
+        ('color(--luv 100 0.1 -0.1)', 'color(--luv 100 0.1 -0.1)'),
+        ('color(--luv 100 0.1 -0.1 / 0.5)', 'color(--luv 100 0.1 -0.1 / 0.5)'),
+        ('color(--luv 50% 50% -50% / 50%)', 'color(--luv 50 107.5 -107.5 / 0.5)'),
+        ('color(--luv none none none / none)', 'color(--luv none none none / none)'),
+        # Test percent ranges
+        ('color(--luv 0% 0% 0%)', 'color(--luv 0 0 0)'),
+        ('color(--luv 100% 100% 100%)', 'color(--luv 100 215 215)'),
+        ('color(--luv -100% -100% -100%)', 'color(--luv -100 -215 -215)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

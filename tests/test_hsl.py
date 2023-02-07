@@ -1,7 +1,6 @@
 """Test HSL library."""
 from coloraide import NaN
 import unittest
-import math
 from . import util
 from coloraide import Color
 import pytest
@@ -20,14 +19,48 @@ class TestHSL(util.ColorAssertsPyTest):
         ('violet', 'color(--hsl 300 0.76056 0.72157)'),
         ('white', 'color(--hsl none 0 1)'),
         ('gray', 'color(--hsl none 0 0.50196)'),
-        ('black', 'color(--hsl none 0 0)')
+        ('black', 'color(--hsl none 0 0)'),
+        # Test legacy CSS
+        ('hsl(270, 30%, 50%)', 'color(--hsl 270 0.3 0.5)'),
+        ('hsl(270, 30%, 50%, 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsl(270, 30%, 50%, 50%)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsla(270, 30%, 50%)', 'color(--hsl 270 0.3 0.5)'),
+        ('hsla(270, 30%, 50%, 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsla(270, 30%, 50%, 50%)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsl(none, 30%, 50%)', None),
+        ('hsl(50%, 50%, 50%)', None),
+        ('hsla(none, 30%, 50%)', None),
+        ('hsla(50%, 50%, 50%)', None),
+        # Test CSS
+        ('hsl(270 30% 50%)', 'color(--hsl 270 0.3 0.5)'),
+        ('hsl(270 30% 50% / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsl(270 30% 50% / 50%)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsl(none none none / none)', 'color(--hsl none none none / none)'),
+        ('hsla(270 30% 50%)', 'color(--hsl 270 0.3 0.5)'),
+        ('hsla(270 30% 50% / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsla(270 30% 50% / 50%)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('hsla(none none none / none)', 'color(--hsl none none none / none)'),
+        ('hsl(50% 30 50)', None),
+        # Test CSS color
+        ('color(--hsl 270 0.3 0.5)', 'color(--hsl 270 0.3 0.5)'),
+        ('color(--hsl 270 0.3 0.5 / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
+        ('color(--hsl 50% 50% 50% / 50%)', 'color(--hsl 180 0.5 0.5 / 0.5)'),
+        ('color(--hsl none none none / none)', 'color(--hsl none none none / none)'),
+        # Test range
+        ('color(--hsl 0% 0% 0%)', 'color(--hsl 0 0 0)'),
+        ('color(--hsl 100% 100% 100%)', 'color(--hsl 360 1 1)'),
+        ('color(--hsl -100% -100% -100%)', 'color(--hsl -360 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('hsl'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('hsl'), Color(color2), color=True)
 
 
 class TestHSLProperties(util.ColorAsserts, unittest.TestCase):

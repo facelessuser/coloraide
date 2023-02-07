@@ -18,7 +18,16 @@ class TestRec2100PQ(util.ColorAssertsPyTest):
         ('violet', 'color(--rec2100-pq 0.53568 0.45048 0.55741)'),
         ('white', 'color(--rec2100-pq 0.58069 0.58069 0.58069)'),
         ('gray', 'color(--rec2100-pq 0.42781 0.42781 0.42781)'),
-        ('black', 'color(--rec2100-pq 0 0 0)')
+        ('black', 'color(--rec2100-pq 0 0 0)'),
+        # Test CSS color
+        ('color(--rec2100-pq 0 0.50196 0)', 'color(--rec2100-pq 0 0.50196 0)'),
+        ('color(--rec2100-pq 0 0.50196 0 / 0.5)', 'color(--rec2100-pq 0 0.50196 0 / 0.5)'),
+        ('color(--rec2100-pq 50% 50% 50% / 50%)', 'color(--rec2100-pq 0.5 0.5 0.5 / 0.5)'),
+        ('color(--rec2100-pq none none none / none)', 'color(--rec2100-pq none none none / none)'),
+        # Test range
+        ('color(--rec2100-pq 0% 0% 0%)', 'color(--rec2100-pq 0 0 0)'),
+        ('color(--rec2100-pq 100% 100% 100%)', 'color(--rec2100-pq 1 1 1)'),
+        ('color(--rec2100-pq -100% -100% -100%)', 'color(--rec2100-pq -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

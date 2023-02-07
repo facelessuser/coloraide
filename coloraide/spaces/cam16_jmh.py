@@ -101,6 +101,21 @@ class Achromatic:
             point = size * index + (adjusted * size)
         return point
 
+    def get_ideal_chroma(self, j: float, m: float) -> bool:
+        """Get the ideal chroma."""
+
+        if j < 0.0:  # pragma: no cover
+            return 0.0
+
+        if self.spline is not None:
+            point = self.scale(j)
+            m2 = self.spline(point)[1]
+            if abs(m2 - m) < self.threshold:
+                return m
+            elif m < m2:
+                return m2
+        return m
+
     def test(self, j: float, m: float) -> bool:
         """Test if the current color is achromatic."""
 
@@ -130,7 +145,7 @@ class CAM16JMh(LChish, Space):
     NAME = "cam16-jmh"
     SERIALIZE = ("--cam16-jmh",)
     CHANNELS = (
-        Channel("j", 0.0, 100.0),
+        Channel("j", 0.0, 100.0, limit=(0.0, None)),
         Channel("m", 0, 55.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
@@ -176,6 +191,7 @@ class CAM16JMh(LChish, Space):
 
         j, m = coords[:2]
         if self.ACHROMATIC.test(j, m):
+            coords[1] = self.ACHROMATIC.get_ideal_chroma(j, m)
             coords[2] = self.ACHROMATIC.hue
 
         return cam16_jmh_to_cam16_jab(coords)

@@ -18,7 +18,16 @@ class TestPrismatic(util.ColorAssertsPyTest):
         ('violet', 'color(--prismatic 0.93333 0.39274 0.21452 0.39274)'),
         ('white', 'color(--prismatic 1 0.33333 0.33333 0.33333)'),
         ('gray', 'color(--prismatic 0.50196 0.33333 0.33333 0.33333)'),
-        ('black', 'color(--prismatic 0 0 0 0)')
+        ('black', 'color(--prismatic 0 0 0 0)'),
+        # Test CSS color
+        ('color(--prismatic 0 0.50196 0 0)', 'color(--prismatic 0 0.50196 0 0)'),
+        ('color(--prismatic 0 0.50196 0 0 / 0.5)', 'color(--prismatic 0 0.50196 0 0 / 0.5)'),
+        ('color(--prismatic 50% 50% 50% 50% / 50%)', 'color(--prismatic 0.5 0.5 0.5 0.5 / 0.5)'),
+        ('color(--prismatic none none none none / none)', 'color(--prismatic none none none none / none)'),
+        # Test range
+        ('color(--prismatic 0% 0% 0% 0%)', 'color(--prismatic 0 0 0 0)'),
+        ('color(--prismatic 100% 100% 100% 100%)', 'color(--prismatic 1 1 1 1)'),
+        ('color(--prismatic -100% -100% -100% -100%)', 'color(--prismatic -1 -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

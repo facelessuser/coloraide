@@ -18,7 +18,16 @@ class TestCMY(util.ColorAssertsPyTest):
         ('violet', 'color(--cmy 0.06667 0.4902 0.06667)'),
         ('white', 'color(--cmy 0 0 0)'),
         ('gray', 'color(--cmy 0.49804 0.49804 0.49804)'),
-        ('black', 'color(--cmy 1 1 1)')
+        ('black', 'color(--cmy 1 1 1)'),
+        # Test CSS color
+        ('color(--cmy 0 0.50196 0)', 'color(--cmy 0 0.50196 0)'),
+        ('color(--cmy 0 0.50196 0 / 0.5)', 'color(--cmy 0 0.50196 0 / 0.5)'),
+        ('color(--cmy 50% 50% 50% / 50%)', 'color(--cmy 0.5 0.5 0.5 / 0.5)'),
+        ('color(--cmy none none none / none)', 'color(--cmy none none none / none)'),
+        # Test range
+        ('color(--cmy 0% 0% 0%)', 'color(--cmy 0 0 0)'),
+        ('color(--cmy 100% 100% 100%)', 'color(--cmy 1 1 1)'),
+        ('color(--cmy -100% -100% -100%)', 'color(--cmy -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

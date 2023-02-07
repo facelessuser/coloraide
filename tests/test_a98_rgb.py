@@ -18,7 +18,16 @@ class TestA98RGB(util.ColorAssertsPyTest):
         ('violet', 'color(a98-rgb 0.83635 0.50567 0.91826)'),
         ('white', 'color(a98-rgb 1 1 1)'),
         ('gray', 'color(a98-rgb 0.49802 0.49802 0.49802)'),
-        ('black', 'color(a98-rgb 0 0 0)')
+        ('black', 'color(a98-rgb 0 0 0)'),
+        # Test CSS color
+        ('color(a98-rgb 0 0.50196 0)', 'color(a98-rgb 0 0.50196 0)'),
+        ('color(a98-rgb 0 0.50196 0 / 0.5)', 'color(a98-rgb 0 0.50196 0 / 0.5)'),
+        ('color(a98-rgb 50% 50% 50% / 50%)', 'color(a98-rgb 0.5 0.5 0.5 / 0.5)'),
+        ('color(a98-rgb none none none / none)', 'color(a98-rgb none none none / none)'),
+        # Test range
+        ('color(a98-rgb 0% 0% 0%)', 'color(a98-rgb 0 0 0)'),
+        ('color(a98-rgb 100% 100% 100%)', 'color(a98-rgb 1 1 1)'),
+        ('color(a98-rgb -100% -100% -100%)', 'color(a98-rgb -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

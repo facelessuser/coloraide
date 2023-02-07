@@ -18,7 +18,16 @@ class TestDIN99o(util.ColorAssertsPyTest):
         ('violet', 'color(--din99o 73.015 34.267 -18.421)'),
         ('white', 'color(--din99o 100 0 0)'),
         ('gray', 'color(--din99o 57.63 0 0)'),
-        ('black', 'color(--din99o 0 0 0)')
+        ('black', 'color(--din99o 0 0 0)'),
+        # Test color
+        ('color(--din99o 50 10 -10)', 'color(--din99o 50 10 -10)'),
+        ('color(--din99o 50 10 -10 / 0.5)', 'color(--din99o 50 10 -10 / 0.5)'),
+        ('color(--din99o 50% 50% -50% / 50%)', 'color(--din99o 50 27.5 -27.5 / 0.5)'),
+        ('color(--din99o none none none / none)', 'color(--din99o none none none / none)'),
+        # Test percent ranges
+        ('color(--din99o 0% 0% 0%)', 'color(--din99o 0 0 0)'),
+        ('color(--din99o 100% 100% 100%)', 'color(--din99o 100 55 55)'),
+        ('color(--din99o -100% -100% -100%)', 'color(--din99o -100 -55 -55)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

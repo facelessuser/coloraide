@@ -19,7 +19,16 @@ class TestLChuv(util.ColorAssertsPyTest):
         ('violet', 'color(--lchuv 69.695 84.743 307.72)'),
         ('white', 'color(--lchuv 100 0 none)'),
         ('gray', 'color(--lchuv 53.585 0 none)'),
-        ('black', 'color(--lchuv 0 0 none)')
+        ('black', 'color(--lchuv 0 0 none)'),
+        # Test color
+        ('color(--lchuv 100 30 270)', 'color(--lchuv 100 30 270)'),
+        ('color(--lchuv 100 30 270 / 0.5)', 'color(--lchuv 100 30 270 / 0.5)'),
+        ('color(--lchuv 50% 50% 50% / 50%)', 'color(--lchuv 50 110 180 / 0.5)'),
+        ('color(--lchuv none none none / none)', 'color(--lchuv none none none / none)'),
+        # Test percent ranges
+        ('color(--lchuv 0% 0% 0%)', 'color(--lchuv 0 0 none)'),
+        ('color(--lchuv 100% 100% 100%)', 'color(--lchuv 100 220 360 / 1)'),
+        ('color(--lchuv -100% -100% -100%)', 'color(--lchuv -100 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

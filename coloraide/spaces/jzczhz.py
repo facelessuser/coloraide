@@ -68,7 +68,7 @@ class JzCzhz(LChish, Space):
     NAME = "jzczhz"
     SERIALIZE = ("--jzczhz",)
     CHANNELS = (
-        Channel("jz", 0.0, 1.0),
+        Channel("jz", 0.0, 1.0, limit=(0.0, None)),
         Channel("cz", 0.0, 0.5, limit=(0.0, None)),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
     )

@@ -18,7 +18,16 @@ class TestHunterLab(util.ColorAssertsPyTest):
         ('violet', 'color(--hunter-lab 63.496 58.109 -40.51)'),
         ('white', 'color(--hunter-lab 100 0 0)'),
         ('gray', 'color(--hunter-lab 46.461 0 0)'),
-        ('black', 'color(--hunter-lab 0 0 0)')
+        ('black', 'color(--hunter-lab 0 0 0)'),
+        # Test color
+        ('color(--hunter-lab 50 10 -10)', 'color(--hunter-lab 50 10 -10)'),
+        ('color(--hunter-lab 50 10 -10 / 0.5)', 'color(--hunter-lab 50 10 -10 / 0.5)'),
+        ('color(--hunter-lab 50% 50% -50% / 50%)', 'color(--hunter-lab 50 105 -105 / 0.5)'),
+        ('color(--hunter-lab none none none / none)', 'color(--hunter-lab none none none / none)'),
+        # Test percent ranges
+        ('color(--hunter-lab 0% 0% 0%)', 'color(--hunter-lab 0 0 0)'),
+        ('color(--hunter-lab 100% 100% 100%)', 'color(--hunter-lab 100 210 210)'),
+        ('color(--hunter-lab -100% -100% -100%)', 'color(--hunter-lab -100 -210 -210)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

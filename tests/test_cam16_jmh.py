@@ -18,7 +18,16 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         ('violet', 'color(--cam16-jmh 63.507 46.779 331.39)'),
         ('white', 'color(--cam16-jmh 100 2.2369 0)'),
         ('gray', 'color(--cam16-jmh 43.042 1.467 0)'),
-        ('black', 'color(--cam16-jmh 0 0 0)')
+        ('black', 'color(--cam16-jmh 0 0 0)'),
+        # Test color
+        ('color(--cam16-jmh 50 30 270)', 'color(--cam16-jmh 50 30 270)'),
+        ('color(--cam16-jmh 50 30 270 / 0.5)', 'color(--cam16-jmh 50 30 270 / 0.5)'),
+        ('color(--cam16-jmh 50% 50% 50% / 50%)', 'color(--cam16-jmh 50 27.5 180 / 0.5)'),
+        ('color(--cam16-jmh none none none / none)', 'color(--cam16-jmh none none none / none)'),
+        # Test percent ranges
+        ('color(--cam16-jmh 0% 0% 0%)', 'color(--cam16-jmh 0 0 0)'),
+        ('color(--cam16-jmh 100% 100% 100%)', 'color(--cam16-jmh 100 55 360 / 1)'),
+        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh 0 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

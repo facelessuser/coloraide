@@ -22,7 +22,16 @@ class TestCAM16CAM16(util.ColorAssertsPyTest):
         ('violet', 'color(--cam16 63.507 41.066 -22.402)'),
         ('white', 'color(--cam16 100 -1.9463 -1.1026)'),
         ('gray', 'color(--cam16 43.042 -1.2764 -0.72317)'),
-        ('black', 'color(--cam16 0 0 0)')
+        ('black', 'color(--cam16 0 0 0)'),
+        # Test color
+        ('color(--cam16 50 10 -10)', 'color(--cam16 50 10 -10)'),
+        ('color(--cam16 50 10 -10 / 0.5)', 'color(--cam16 50 10 -10 / 0.5)'),
+        ('color(--cam16 50% 50% -50% / 50%)', 'color(--cam16 50 45 -45 / 0.5)'),
+        ('color(--cam16 none none none / none)', 'color(--cam16 none none none / none)'),
+        # Test percent ranges
+        ('color(--cam16 0% 0% 0%)', 'color(--cam16 0 0 0)'),
+        ('color(--cam16 100% 100% 100%)', 'color(--cam16 100 90 90)'),
+        ('color(--cam16 -100% -100% -100%)', 'color(--cam16 -100 -90 -90)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

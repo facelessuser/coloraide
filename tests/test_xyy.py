@@ -18,7 +18,16 @@ class TestxyY(util.ColorAssertsPyTest):
         ('violet', 'color(--xyy 0.31788 0.21844 0.40317)'),
         ('white', 'color(--xyy 0.3127 0.329 1)'),
         ('gray', 'color(--xyy 0.3127 0.329 0.21586)'),
-        ('black', 'color(--xyy 0.3127 0.329 0)')
+        ('black', 'color(--xyy 0.3127 0.329 0)'),
+        # Test CSS color
+        ('color(--xyy 0 0.50196 0)', 'color(--xyy 0 0.50196 0)'),
+        ('color(--xyy 0 0.50196 0 / 0.5)', 'color(--xyy 0 0.50196 0 / 0.5)'),
+        ('color(--xyy 50% 50% 50% / 50%)', 'color(--xyy 0.5 0.5 0.5 / 0.5)'),
+        ('color(--xyy none none none / none)', 'color(--xyy none none none / none)'),
+        # Test range
+        ('color(--xyy 0% 0% 0%)', 'color(--xyy 0 0 0)'),
+        ('color(--xyy 100% 100% 100%)', 'color(--xyy 1 1 1)'),
+        ('color(--xyy -100% -100% -100%)', 'color(--xyy -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

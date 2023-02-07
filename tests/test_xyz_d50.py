@@ -18,7 +18,16 @@ class TestXYZD50(util.ColorAssertsPyTest):
         ('violet', 'color(xyz-d50 0.58114 0.40209 0.64413)'),
         ('white', 'color(xyz-d50 0.9643 1 0.8251)'),
         ('gray', 'color(xyz-d50 0.20815 0.21586 0.17811)'),
-        ('black', 'color(xyz-d50 0 0 0)')
+        ('black', 'color(xyz-d50 0 0 0)'),
+        # Test CSS color
+        ('color(xyz-d50 0 0.50196 0)', 'color(xyz-d50 0 0.50196 0)'),
+        ('color(xyz-d50 0 0.50196 0 / 0.5)', 'color(xyz-d50 0 0.50196 0 / 0.5)'),
+        ('color(xyz-d50 50% 50% 50% / 50%)', 'color(xyz-d50 0.5 0.5 0.5 / 0.5)'),
+        ('color(xyz-d50 none none none / none)', 'color(xyz-d50 none none none / none)'),
+        # Test range
+        ('color(xyz-d50 0% 0% 0%)', 'color(xyz-d50 0 0 0)'),
+        ('color(xyz-d50 100% 100% 100%)', 'color(xyz-d50 1 1 1)'),
+        ('color(xyz-d50 -100% -100% -100%)', 'color(xyz-d50 -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

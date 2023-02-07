@@ -18,7 +18,16 @@ class TestICtCp(util.ColorAssertsPyTest):
         ('violet', 'color(--ictcp 0.49387 0.13657 0.05828)'),
         ('white', 'color(--ictcp 0.58069 0 0)'),
         ('gray', 'color(--ictcp 0.42781 0 0)'),
-        ('black', 'color(--ictcp 0 0 0)')
+        ('black', 'color(--ictcp 0 0 0)'),
+        # Test color
+        ('color(--ictcp 0.5 0.1 -0.1)', 'color(--ictcp 0.5 0.1 -0.1)'),
+        ('color(--ictcp 0.5 0.1 -0.1 / 0.5)', 'color(--ictcp 0.5 0.1 -0.1 / 0.5)'),
+        ('color(--ictcp 50% 50% -50% / 50%)', 'color(--ictcp 0.5 0.25 -0.25 / 0.5)'),
+        ('color(--ictcp none none none / none)', 'color(--ictcp none none none / none)'),
+        # Test percent ranges
+        ('color(--ictcp 0% 0% 0%)', 'color(--ictcp 0 0 0)'),
+        ('color(--ictcp 100% 100% 100%)', 'color(--ictcp 1 0.5 0.5)'),
+        ('color(--ictcp -100% -100% -100%)', 'color(--ictcp -1 -0.5 -0.5)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

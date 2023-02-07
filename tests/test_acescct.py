@@ -9,6 +9,39 @@ class TestACEScct(util.ColorAssertsPyTest):
     """Test ACEScct."""
 
     COLORS = [
+        # Test general conversion
+        ('red', 'color(--acescct 0.51451 0.33604 0.23515)'),
+        ('orange', 'color(--acescct 0.53009 0.48237 0.32561)'),
+        ('yellow', 'color(--acescct 0.5508 0.55368 0.38691)'),
+        ('green', 'color(--acescct 0.3396 0.42136 0.24647)'),
+        ('blue', 'color(--acescct 0.30368 0.2 0.54331)'),
+        ('indigo', 'color(--acescct 0.31401 0.1566 0.42044)'),
+        ('violet', 'color(--acescct 0.51811 0.44881 0.53494)'),
+        ('white', 'color(--acescct 0.55479 0.55479 0.55479)'),
+        ('gray', 'color(--acescct 0.42855 0.42855 0.42855)'),
+        ('black', 'color(--acescct 0.07291 0.07291 0.07291)'),
+        # Test CSS color
+        ('color(--acescct 0 0.50196 0)', 'color(--acescct 0 0.50196 0)'),
+        ('color(--acescct 0 0.50196 0 / 0.5)', 'color(--acescct 0 0.50196 0 / 0.5)'),
+        ('color(--acescct 50% 50% 50% / 50%)', 'color(--acescct 0.77045 0.77045 0.77045 / 0.5)'),
+        ('color(--acescct none none none / none)', 'color(--acescct none none none / none)'),
+        # Test range
+        ('color(--acescct 0% 0% 0%)', 'color(--acescct 0.07291 0.07291 0.07291)'),
+        ('color(--acescct 100% 100% 100%)', 'color(--acescct 1.468 1.468 1.468)'),
+        ('color(--acescct -100% -100% -100%)', 'color(--acescct -1.3222 -1.3222 -1.3222)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('acescct'), Color(color2))
+
+
+class TestACEScctToACES2065_1(util.ColorAssertsPyTest):
+    """Test ACEScct to Aces 2065-1."""
+
+    COLORS = [
         # Tests from S-2016-001 paper
         (
             f'color(--aces2065-1 {2 ** -24} {2 ** -24} {2 ** -24})',

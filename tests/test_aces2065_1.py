@@ -18,7 +18,16 @@ class TestACES(util.ColorAssertsPyTest):
         ('violet', 'color(--aces2065-1 0.61303 0.34109 0.78452)'),
         ('white', 'color(--aces2065-1 1 1 1)'),
         ('gray', 'color(--aces2065-1 0.21586 0.21586 0.21586)'),
-        ('black', 'color(--aces2065-1 0 0 0)')
+        ('black', 'color(--aces2065-1 0 0 0)'),
+        # Test CSS color
+        ('color(--aces2065-1 0 0.50196 0)', 'color(--aces2065-1 0 0.50196 0)'),
+        ('color(--aces2065-1 0 0.50196 0 / 0.5)', 'color(--aces2065-1 0 0.50196 0 / 0.5)'),
+        ('color(--aces2065-1 50% 50% 50% / 50%)', 'color(--aces2065-1 32752 32752 32752 / 0.5)'),
+        ('color(--aces2065-1 none none none / none)', 'color(--aces2065-1 none none none / none)'),
+        # Test range
+        ('color(--aces2065-1 0% 0% 0%)', 'color(--aces2065-1 0 0 0)'),
+        ('color(--aces2065-1 100% 100% 100%)', 'color(--aces2065-1 65504 65504 65504)'),
+        ('color(--aces2065-1 -100% -100% -100%)', 'color(--aces2065-1 -65504 -65504 -65504)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
