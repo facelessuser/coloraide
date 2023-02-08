@@ -114,7 +114,10 @@ class Achromatic:
                 return m
             elif m < m2:
                 return m2
-        return m
+
+        # This would be for `discounting=True`,
+        # which we do not run with currently.
+        return m  # pragma: no cover
 
     def test(self, j: float, m: float) -> bool:
         """Test if the current color is achromatic."""

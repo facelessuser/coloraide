@@ -86,6 +86,7 @@ class TestsRGBSerialize(util.ColorAssertsPyTest):
         ('rgb(255 0 0)', {'hex': True, 'compress': True}, '#f00'),
         ('rgb(255 0 0 / 0.53333)', {'hex': True}, '#ff000088'),
         ('rgb(255 0 0 / 0.53333)', {'hex': True, 'compress': True}, '#f008'),
+        ('rgb(255 0 0 / 0.53333)', {'hex': True, 'upper': True}, '#FF000088'),
         # Test alpha
         ('rgb(255 0 0 / 0.5)', {}, 'rgb(255 0 0 / 0.5)'),
         ('rgb(255 0 0)', {'alpha': True}, 'rgb(255 0 0 / 1)'),

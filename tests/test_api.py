@@ -9,6 +9,14 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_max_precision(self):
+        """Test max precision."""
+
+        self.assertEqual(
+            Color('purple').convert('lab').to_string(precision=-1),
+            'lab(29.6915242415228703976026736199855804443359375 56.11166698871137015203203191049396991729736328125 -36.29266541032566095736910938285291194915771484375)'  # noqa:  E501
+        )
+
     def test_repr(self):
         """Test string representation."""
 

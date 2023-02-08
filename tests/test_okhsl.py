@@ -28,7 +28,9 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--okhsl 0% 0% 0%)', 'color(--okhsl 0 0 none)'),
         ('color(--okhsl 100% 100% 100%)', 'color(--okhsl 360 1 1 / 1)'),
-        ('color(--okhsl -100% -100% -100%)', 'color(--okhsl -360 -1 -1 / 1)')
+        ('color(--okhsl -100% -100% -100%)', 'color(--okhsl -360 -1 -1 / 1)'),
+        # Space specifc tests to ensure complete coverage in algorithm
+        ('color(--oklab 0.5 0.1 0)', 'color(--okhsl 0 0.49656 0.42114)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

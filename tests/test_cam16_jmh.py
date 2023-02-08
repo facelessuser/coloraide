@@ -37,6 +37,24 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('cam16-jmh'), Color(color2))
 
 
+class TestCAM16JMhRevere(util.ColorAssertsPyTest):
+    """Test CAM16 JMh conversions in reverse."""
+
+    COLORS = [
+        # CAM16 has a specific limit for a given lightness that determines
+        # when a color is achromatic. This is specific to when `discounting=False`.
+        # Anything below the limit will start giving you non-achromatic colors
+        # again. Internally, we catch this handle them as achromatic.
+        ('color(--cam16-jmh 0.5 0 0)', 'rgb(0.24033 0.23714 0.23654)')
+    ]
+
+    @pytest.mark.parametrize('color1,color2', COLORS)
+    def test_colors(self, color1, color2):
+        """Test colors."""
+
+        self.assertColorEqual(Color(color1).convert('srgb'), Color(color2))
+
+
 class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
     """Test CAM16 JMh properties."""
 
