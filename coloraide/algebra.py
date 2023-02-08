@@ -609,7 +609,7 @@ def _extract_dims(
             yield m
     else:
         for m2 in m:
-            yield from cast(ArrayLike, _extract_dims(cast(ArrayLike, m2), total - 1, target, depth + 1))
+            yield from _extract_dims(cast(ArrayLike, m2), total - 1, target, depth + 1)
 
 
 @overload
