@@ -95,30 +95,10 @@ def color_function(
 
 
 def get_coords(obj: 'Color', fit: str | bool, none: bool, legacy: bool) -> Vector:
-    """
-    Get the coordinates.
+    """Get the coordinates."""
 
-    We need resolve NaN values none is not desired in the output,
-    but we would like to avoid cloning the color for efficiency.
-    """
-
-    method = None if not isinstance(fit, str) else fit
-    if fit is False:
-        # Decide whether to return NaNs or not
-        return alg.no_nans(obj[:-1]) if legacy or not none else obj[:-1]
-    if none and not legacy:
-        # Okay to keep NaN values and proceed to fit
-        return obj.fit(method=method)[:-1] if fit else obj[:-1]
-
-    # We need to fit the color with no NaN values.
-    temp = obj._coords
-    obj._coords = alg.no_nans(temp)
-    try:
-        return alg.no_nans(obj.fit(method=method, in_place=True)[:-1])
-    except Exception:  # pragma: no cover
-        raise
-    finally:
-        obj._coords = temp
+    coords = obj.fit(method=None if not isinstance(fit, str) else fit)[:-1] if fit else obj[:-1]
+    return alg.no_nans(coords) if legacy or not none else coords
 
 
 def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool, legacy: bool) -> Optional[float]:
