@@ -99,13 +99,13 @@ def get_coords(obj: 'Color', fit: str | bool, none: bool, legacy: bool) -> Vecto
     """
     Get the coordinates.
 
-    We need reslove NaN values none is not desired in the output,
+    We need resolve NaN values none is not desired in the output,
     but we would like to avoid cloning the color for efficiency.
     """
 
     method = None if not isinstance(fit, str) else fit
     if fit is False:
-        # Decide wether to return NaNs or not
+        # Decide whether to return NaNs or not
         return alg.no_nans(obj[:-1]) if legacy or not none else obj[:-1]
     if none and not legacy:
         # Okay to keep NaN values and proceed to fit

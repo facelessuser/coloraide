@@ -30,7 +30,7 @@ from coloraide.util import fmt_float  # noqa: E402
 from coloraide.spaces import Cylindrical  # noqa: E402
 
 
-def needs_lchuv_workaround(color):
+def needs_workaround(color):
     """
     Check if LChuv has high chroma and no lightness.
 
@@ -39,7 +39,11 @@ def needs_lchuv_workaround(color):
     it all gets treated as black which is in gamut for almost any color.
     """
 
-    return color.space().startswith('lchuv') and color.l == 0 and not color.normalize().is_nan('hue')
+    return (
+        color.space().startswith(('lchuv', 'cam16-jmh', 'hct')) and
+        color['lightness'] == 0 and
+        not color.normalize().is_nan('hue')
+    )
 
 
 def plot_slice(
@@ -141,7 +145,7 @@ def plot_slice(
         c.update(space, coords)
 
         # Only process colors within the gamut of sRGB.
-        if c.in_gamut(gamut, tolerance=0) and not needs_lchuv_workaround(c):
+        if c.in_gamut(gamut, tolerance=0) and not needs_workaround(c):
             if hue_index != -1:
                 c1 = math.radians(c1)
 
