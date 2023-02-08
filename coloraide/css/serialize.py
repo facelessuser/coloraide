@@ -1,7 +1,6 @@
 """String serialization."""
 from __future__ import annotations
 import re
-import math
 from .. import util
 from .. import algebra as alg
 from . import parse
