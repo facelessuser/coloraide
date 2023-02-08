@@ -37,6 +37,30 @@ class TestsRGBLinear(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('srgb-linear'), Color(color2))
 
 
+class TestLinearsRGBSerialize(util.ColorAssertsPyTest):
+    """Test Linear sRGB serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(srgb-linear 0 0.3 0.75 / 0.5)', {}, 'color(srgb-linear 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(srgb-linear 0 0.3 0.75)', {'alpha': True}, 'color(srgb-linear 0 0.3 0.75 / 1)'),
+        ('color(srgb-linear 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(srgb-linear 0 0.3 0.75)'),
+        # Test None
+        ('color(srgb-linear none 0.3 0.75)', {}, 'color(srgb-linear 0 0.3 0.75)'),
+        ('color(srgb-linear none 0.3 0.75)', {'none': True}, 'color(srgb-linear none 0.3 0.75)'),
+        # Test Fit
+        ('color(srgb-linear 1.2 0.2 0)', {}, 'color(srgb-linear 1 0.22803 0.02349)'),
+        ('color(srgb-linear 1.2 0.2 0)', {'fit': False}, 'color(srgb-linear 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestsRGBLinearProperties(util.ColorAsserts, unittest.TestCase):
     """Test sRGB Linear properties."""
 

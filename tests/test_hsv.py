@@ -37,6 +37,30 @@ class TestHSV(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hsv'), Color(color2))
 
 
+class TestHSVSerialize(util.ColorAssertsPyTest):
+    """Test HSV serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hsv 50 0.3 0.5 / 0.5)', {}, 'color(--hsv 50 0.3 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--hsv 50 0.3 0.5)', {'alpha': True}, 'color(--hsv 50 0.3 0.5 / 1)'),
+        ('color(--hsv 50 0.3 0.5 / 0.5)', {'alpha': False}, 'color(--hsv 50 0.3 0.5)'),
+        # Test None
+        ('color(--hsv 50 0.3 none)', {}, 'color(--hsv 50 0.3 0)'),
+        ('color(--hsv 50 0.3 none)', {'none': True}, 'color(--hsv 50 0.3 none)'),
+        # Test Fit (not bound)
+        ('color(--hsv 50 1.1 0.5)', {}, 'color(--hsv 50 1 0.5)'),
+        ('color(--hsv 50 1.1 0.5)', {'fit': False}, 'color(--hsv 50 1.1 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSV."""
 

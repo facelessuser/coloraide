@@ -54,6 +54,39 @@ class TestLCh(util.ColorAssertsPyTest):
             self.assertColorEqual(Color(color1).convert('lch'), Color(color2), color=True)
 
 
+class TestLChSerialize(util.ColorAssertsPyTest):
+    """Test LCh serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('lch(75 30 50)', {}, 'lch(75 30 50)'),
+        # Test alpha
+        ('lch(75 30 50 / 0.5)', {}, 'lch(75 30 50 / 0.5)'),
+        ('lch(75 30 50)', {'alpha': True}, 'lch(75 30 50 / 1)'),
+        ('lch(75 30 50 / 0.5)', {'alpha': False}, 'lch(75 30 50)'),
+        # Test percent
+        ('lch(50 75 180)', {'percent': True}, 'lch(50% 50% 180)'),
+        ('lch(50 75 180 / 0.5)', {'percent': True, 'alpha': True}, 'lch(50% 50% 180 / 0.5)'),
+        # Test None
+        ('lch(none 30 50)', {}, 'lch(0 30 50)'),
+        ('lch(none 30 50)', {'none': True}, 'lch(none 30 50)'),
+        # Test fit (not bound)
+        ('lch(20 160 0)', {}, 'lch(20 160 0)'),
+        ('lch(20 160 0)', {'fit': False}, 'lch(20 160 0)'),
+        # Test color
+        ('lch(none 30 50 / 0.5)', {'color': True}, 'color(--lch 0 30 50 / 0.5)'),
+        ('lch(none 30 50)', {'color': True, 'none': True}, 'color(--lch none 30 50)'),
+        ('lch(0 30 50)', {'color': True, 'alpha': True}, 'color(--lch 0 30 50 / 1)'),
+        ('lch(0 30 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--lch 0 30 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLChProperties(util.ColorAsserts, unittest.TestCase):
     """Test LCh."""
 

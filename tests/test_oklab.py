@@ -49,6 +49,39 @@ class TestsOklab(util.ColorAssertsPyTest):
             self.assertColorEqual(Color(color1).convert('oklab'), Color(color2), color=True)
 
 
+class TestOklabSerialize(util.ColorAssertsPyTest):
+    """Test Oklab serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('oklab(0.75 0.1 -0.1)', {}, 'oklab(0.75 0.1 -0.1)'),
+        # Test alpha
+        ('oklab(0.75 0.1 -0.1 / 0.5)', {}, 'oklab(0.75 0.1 -0.1 / 0.5)'),
+        ('oklab(0.75 0.1 -0.1)', {'alpha': True}, 'oklab(0.75 0.1 -0.1 / 1)'),
+        ('oklab(0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'oklab(0.75 0.1 -0.1)'),
+        # Test percent
+        ('oklab(0.5 0.2 -0.2)', {'percent': True}, 'oklab(50% 50% -50%)'),
+        ('oklab(0.5 0.2 -0.2 / 0.5)', {'percent': True, 'alpha': True}, 'oklab(50% 50% -50% / 0.5)'),
+        # Test None
+        ('oklab(none 0.1 -0.1)', {}, 'oklab(0 0.1 -0.1)'),
+        ('oklab(none 0.1 -0.1)', {'none': True}, 'oklab(none 0.1 -0.1)'),
+        # Test fit (not bound)
+        ('oklab(0.2 0.5 0)', {}, 'oklab(0.2 0.5 0)'),
+        ('oklab(0.2 0.5 0)', {'fit': False}, 'oklab(0.2 0.5 0)'),
+        # Test color
+        ('oklab(none 0.1 -0.1 / 0.5)', {'color': True}, 'color(--oklab 0 0.1 -0.1 / 0.5)'),
+        ('oklab(none 0.1 -0.1)', {'color': True, 'none': True}, 'color(--oklab none 0.1 -0.1)'),
+        ('oklab(0 0.1 -0.1)', {'color': True, 'alpha': True}, 'color(--oklab 0 0.1 -0.1 / 1)'),
+        ('oklab(0 0.1 -0.1 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklab 0 0.1 -0.1)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestOklabProperties(util.ColorAsserts, unittest.TestCase):
     """Test Oklab."""
 

@@ -74,9 +74,9 @@ class IPT(Labish, Space):
     NAME = "ipt"
     SERIALIZE = ("--ipt",)  # type: tuple[str, ...]
     CHANNELS = (
-        Channel("i", 0.0, 1.0, bound=True),
-        Channel("p", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT),
-        Channel("t", -1.0, 1.0, bound=True, flags=FLG_MIRROR_PERCENT)
+        Channel("i", 0.0, 1.0),
+        Channel("p", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("t", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "intensity": "i",

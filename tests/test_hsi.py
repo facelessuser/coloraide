@@ -38,6 +38,30 @@ class TestHSI(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hsi'), Color(color2))
 
 
+class TestHSISerialize(util.ColorAssertsPyTest):
+    """Test HSI serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hsi 50 0.3 0.5 / 0.5)', {}, 'color(--hsi 50 0.3 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--hsi 50 0.3 0.5)', {'alpha': True}, 'color(--hsi 50 0.3 0.5 / 1)'),
+        ('color(--hsi 50 0.3 0.5 / 0.5)', {'alpha': False}, 'color(--hsi 50 0.3 0.5)'),
+        # Test None
+        ('color(--hsi 50 0.3 none)', {}, 'color(--hsi 50 0.3 0)'),
+        ('color(--hsi 50 0.3 none)', {'none': True}, 'color(--hsi 50 0.3 none)'),
+        # Test Fit (not bound)
+        ('color(--hsi 50 1.1 0.5)', {}, 'color(--hsi 50 1 0.5)'),
+        ('color(--hsi 50 1.1 0.5)', {'fit': False}, 'color(--hsi 50 1.1 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHSIPoperties(util.ColorAsserts, unittest.TestCase):
     """Test HSI."""
 

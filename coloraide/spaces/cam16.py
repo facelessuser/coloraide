@@ -86,8 +86,8 @@ def adapt(coords: Vector, fl: float) -> Vector:
 
     adapted = []
     for c in coords:
-        x = math.pow(fl * abs(c) * 0.01, ADAPTED_COEF)
-        adapted.append(math.copysign(400 * x / (x + 27.13), c))
+        x = alg.npow(fl * c * 0.01, ADAPTED_COEF)
+        adapted.append(400 * math.copysign(x, c) / (x + 27.13))
     return adapted
 
 
@@ -98,7 +98,7 @@ def unadapt(adapted: Vector, fl: float) -> Vector:
     constant = 100 / fl * math.pow(27.13, ADAPTED_COEF_INV)
     for c in adapted:
         cabs = abs(c)
-        coords.append(math.copysign(constant * math.pow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
+        coords.append(math.copysign(constant * alg.npow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
     return coords
 
 

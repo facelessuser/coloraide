@@ -63,6 +63,48 @@ class TestHSL(util.ColorAssertsPyTest):
             self.assertColorEqual(Color(color1).convert('hsl'), Color(color2), color=True)
 
 
+class TestHSLSerialize(util.ColorAssertsPyTest):
+    """Test HSL serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('hsl(270 30% 75%)', {}, 'hsl(270 30% 75%)'),
+        # Test alpha
+        ('hsl(270 30% 75% / 0.5)', {}, 'hsl(270 30% 75% / 0.5)'),
+        ('hsl(270 30% 75%)', {'alpha': True}, 'hsl(270 30% 75% / 1)'),
+        ('hsl(270 30% 75% / 0.5)', {'alpha': False}, 'hsl(270 30% 75%)'),
+        # Test None
+        ('hsl(none 30% 75%)', {}, 'hsl(0 30% 75%)'),
+        ('hsl(none 30% 75%)', {'none': True}, 'hsl(none 30% 75%)'),
+        # Test fit
+        ('hsl(20 150% 75%)', {}, 'hsl(19.619 100% 76.43%)'),
+        ('hsl(20 150% 75%)', {'fit': False}, 'hsl(20 150% 75%)'),
+        # Test legacy
+        ('hsl(270 30% 75%)', {'comma': True}, 'hsl(270, 30%, 75%)'),
+        # Test legacy alpha
+        ('hsl(270 30% 75% / 0.5)', {'comma': True}, 'hsla(270, 30%, 75%, 0.5)'),
+        ('hsl(270 30% 75%)', {'comma': True, 'alpha': True}, 'hsla(270, 30%, 75%, 1)'),
+        ('hsl(270 30% 75% / 0.5)', {'comma': True, 'alpha': False}, 'hsl(270, 30%, 75%)'),
+        # Test legacy None
+        ('hsl(none 30% 75%)', {'comma': True}, 'hsl(0, 30%, 75%)'),
+        ('hsl(none 30% 75%)', {'comma': True, 'none': True}, 'hsl(0, 30%, 75%)'),
+        # Test color
+        ('hsl(none 30% 75% / 0.5)', {'color': True}, 'color(--hsl 0 0.3 0.75 / 0.5)'),
+        ('hsl(none 30% 75%)', {'color': True, 'none': True}, 'color(--hsl none 0.3 0.75)'),
+        ('hsl(0 30% 75%)', {'color': True, 'alpha': True}, 'color(--hsl 0 0.3 0.75 / 1)'),
+        ('hsl(0 30% 75% / 0.5)', {'color': True, 'alpha': False}, 'color(--hsl 0 0.3 0.75)'),
+        # Test Fit
+        ('color(--hsl 0 -1.1 0.3)', {'color': True}, 'color(--hsl 180 1 0.3028)'),
+        ('color(--hsl 0 -1.1 0.3)', {'color': True, 'fit': False}, 'color(--hsl 0 -1.1 0.3)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHSLProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSL."""
 

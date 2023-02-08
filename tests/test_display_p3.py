@@ -37,6 +37,30 @@ class TestDisplayP3(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('display-p3'), Color(color2))
 
 
+class TestDisplayP3Serialize(util.ColorAssertsPyTest):
+    """Test Display P3 serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(display-p3 0 0.3 0.75 / 0.5)', {}, 'color(display-p3 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(display-p3 0 0.3 0.75)', {'alpha': True}, 'color(display-p3 0 0.3 0.75 / 1)'),
+        ('color(display-p3 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(display-p3 0 0.3 0.75)'),
+        # Test None
+        ('color(display-p3 none 0.3 0.75)', {}, 'color(display-p3 0 0.3 0.75)'),
+        ('color(display-p3 none 0.3 0.75)', {'none': True}, 'color(display-p3 none 0.3 0.75)'),
+        # Test Fit
+        ('color(display-p3 1.2 0.2 0)', {}, 'color(display-p3 1 0.44338 0.20739)'),
+        ('color(display-p3 1.2 0.2 0)', {'fit': False}, 'color(display-p3 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestDisplayP3Properties(util.ColorAsserts, unittest.TestCase):
     """Test Display P3."""
 

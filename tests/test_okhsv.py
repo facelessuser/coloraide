@@ -38,6 +38,30 @@ class TestsOkhsv(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('okhsv'), Color(color2))
 
 
+class TestOkhsvSerialize(util.ColorAssertsPyTest):
+    """Test Okhsv serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--okhsv 50 0.3 0.5 / 0.5)', {}, 'color(--okhsv 50 0.3 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--okhsv 50 0.3 0.5)', {'alpha': True}, 'color(--okhsv 50 0.3 0.5 / 1)'),
+        ('color(--okhsv 50 0.3 0.5 / 0.5)', {'alpha': False}, 'color(--okhsv 50 0.3 0.5)'),
+        # Test None
+        ('color(--okhsv 50 0.3 none)', {}, 'color(--okhsv 50 0.3 0)'),
+        ('color(--okhsv 50 0.3 none)', {'none': True}, 'color(--okhsv 50 0.3 none)'),
+        # Test Fit (not bound)
+        ('color(--okhsv 50 1.1 0.5)', {}, 'color(--okhsv 50 1 0.5)'),
+        ('color(--okhsv 50 1.1 0.5)', {'fit': False}, 'color(--okhsv 50 1.1 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestOkhsvProperties(util.ColorAsserts, unittest.TestCase):
     """Test Okhsv."""
 

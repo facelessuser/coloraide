@@ -80,7 +80,7 @@ def is_nan(obj: float) -> bool:
     return math.isnan(obj)
 
 
-def no_nans(value: VectorLike, default: float = 0.0) -> Vector:
+def no_nans(value: VectorLike | Iterable[float], default: float = 0.0) -> Vector:
     """Ensure there are no `NaN` values in a sequence."""
 
     return [(default if is_nan(x) else x) for x in value]

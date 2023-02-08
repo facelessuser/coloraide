@@ -37,6 +37,66 @@ class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('cam16-ucs'), Color(color2))
 
 
+class TestCAM16UCSSerialize(util.ColorAssertsPyTest):
+    """Test CAM16 UCS serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--cam16-ucs 75 10 -10 / 0.5)', {}, 'color(--cam16-ucs 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--cam16-ucs 75 10 -10)', {'alpha': True}, 'color(--cam16-ucs 75 10 -10 / 1)'),
+        ('color(--cam16-ucs 75 10 -10 / 0.5)', {'alpha': False}, 'color(--cam16-ucs 75 10 -10)'),
+        # Test None
+        ('color(--cam16-ucs none 10 -10)', {}, 'color(--cam16-ucs 0 10 -10)'),
+        ('color(--cam16-ucs none 10 -10)', {'none': True}, 'color(--cam16-ucs none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--cam16-ucs 120 10 -10)', {}, 'color(--cam16-ucs 120 10 -10)'),
+        ('color(--cam16-ucs 120 10 -10)', {'fit': False}, 'color(--cam16-ucs 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
+    """Test CAM16 UCS."""
+
+    def test_j(self):
+        """Test `j`."""
+
+        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c['j'], 0.51332)
+        c['j'] = 0.2
+        self.assertEqual(c['j'], 0.2)
+
+    def test_a(self):
+        """Test `a`."""
+
+        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c['a'], 0.92781)
+        c['a'] = 0.1
+        self.assertEqual(c['a'], 0.1)
+
+    def test_b(self):
+        """Test `b`."""
+
+        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c['b'], 1.076)
+        c['b'] = 0.1
+        self.assertEqual(c['b'], 0.1)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
+
+
 class TestCAM16CAM16SCD(util.ColorAssertsPyTest):
     """Test CAM16 SCD."""
 
@@ -67,6 +127,66 @@ class TestCAM16CAM16SCD(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('cam16-scd'), Color(color2))
+
+
+class TestCAM16SCDSerialize(util.ColorAssertsPyTest):
+    """Test CAM16 SCD serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--cam16-scd 75 10 -10 / 0.5)', {}, 'color(--cam16-scd 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--cam16-scd 75 10 -10)', {'alpha': True}, 'color(--cam16-scd 75 10 -10 / 1)'),
+        ('color(--cam16-scd 75 10 -10 / 0.5)', {'alpha': False}, 'color(--cam16-scd 75 10 -10)'),
+        # Test None
+        ('color(--cam16-scd none 10 -10)', {}, 'color(--cam16-scd 0 10 -10)'),
+        ('color(--cam16-scd none 10 -10)', {'none': True}, 'color(--cam16-scd none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--cam16-scd 120 10 -10)', {}, 'color(--cam16-scd 120 10 -10)'),
+        ('color(--cam16-scd 120 10 -10)', {'fit': False}, 'color(--cam16-scd 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestCAM16SCDPoperties(util.ColorAsserts, unittest.TestCase):
+    """Test CAM16 SCD."""
+
+    def test_j(self):
+        """Test `j`."""
+
+        c = Color('color(--cam16-scd 0.51332 0.92781 1.076)')
+        self.assertEqual(c['j'], 0.51332)
+        c['j'] = 0.2
+        self.assertEqual(c['j'], 0.2)
+
+    def test_a(self):
+        """Test `a`."""
+
+        c = Color('color(--cam16-scd 0.51332 0.92781 1.076)')
+        self.assertEqual(c['a'], 0.92781)
+        c['a'] = 0.1
+        self.assertEqual(c['a'], 0.1)
+
+    def test_b(self):
+        """Test `b`."""
+
+        c = Color('color(--cam16-scd 0.51332 0.92781 1.076)')
+        self.assertEqual(c['b'], 1.076)
+        c['b'] = 0.1
+        self.assertEqual(c['b'], 0.1)
+
+    def test_alpha(self):
+        """Test `alpha`."""
+
+        c = Color('color(--cam16-scd 0.51332 0.92781 1.076)')
+        self.assertEqual(c['alpha'], 1)
+        c['alpha'] = 0.5
+        self.assertEqual(c['alpha'], 0.5)
 
 
 class TestCAM16CAM16LCD(util.ColorAssertsPyTest):
@@ -101,13 +221,37 @@ class TestCAM16CAM16LCD(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('cam16-lcd'), Color(color2))
 
 
-class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
-    """Test CAM16 UCS."""
+class TestCAM16LCDSerialize(util.ColorAssertsPyTest):
+    """Test CAM16 LCD serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--cam16-lcd 75 10 -10 / 0.5)', {}, 'color(--cam16-lcd 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--cam16-lcd 75 10 -10)', {'alpha': True}, 'color(--cam16-lcd 75 10 -10 / 1)'),
+        ('color(--cam16-lcd 75 10 -10 / 0.5)', {'alpha': False}, 'color(--cam16-lcd 75 10 -10)'),
+        # Test None
+        ('color(--cam16-lcd none 10 -10)', {}, 'color(--cam16-lcd 0 10 -10)'),
+        ('color(--cam16-lcd none 10 -10)', {'none': True}, 'color(--cam16-lcd none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--cam16-lcd 120 10 -10)', {}, 'color(--cam16-lcd 120 10 -10)'),
+        ('color(--cam16-lcd 120 10 -10)', {'fit': False}, 'color(--cam16-lcd 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestCAM16LCDPoperties(util.ColorAsserts, unittest.TestCase):
+    """Test CAM16 LCD."""
 
     def test_j(self):
         """Test `j`."""
 
-        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        c = Color('color(--cam16-lcd 0.51332 0.92781 1.076)')
         self.assertEqual(c['j'], 0.51332)
         c['j'] = 0.2
         self.assertEqual(c['j'], 0.2)
@@ -115,7 +259,7 @@ class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
     def test_a(self):
         """Test `a`."""
 
-        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        c = Color('color(--cam16-lcd 0.51332 0.92781 1.076)')
         self.assertEqual(c['a'], 0.92781)
         c['a'] = 0.1
         self.assertEqual(c['a'], 0.1)
@@ -123,7 +267,7 @@ class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
     def test_b(self):
         """Test `b`."""
 
-        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        c = Color('color(--cam16-lcd 0.51332 0.92781 1.076)')
         self.assertEqual(c['b'], 1.076)
         c['b'] = 0.1
         self.assertEqual(c['b'], 0.1)
@@ -131,7 +275,7 @@ class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
     def test_alpha(self):
         """Test `alpha`."""
 
-        c = Color('color(--cam16-ucs 0.51332 0.92781 1.076)')
+        c = Color('color(--cam16-lcd 0.51332 0.92781 1.076)')
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)

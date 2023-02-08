@@ -38,6 +38,30 @@ class TestLCh99o(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('lch99o'), Color(color2))
 
 
+class TestLCh99oSerialize(util.ColorAssertsPyTest):
+    """Test LCh99o serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--lch99o 75 30 50 / 0.5)', {}, 'color(--lch99o 75 30 50 / 0.5)'),
+        # Test alpha
+        ('color(--lch99o 75 30 50)', {'alpha': True}, 'color(--lch99o 75 30 50 / 1)'),
+        ('color(--lch99o 75 30 50 / 0.5)', {'alpha': False}, 'color(--lch99o 75 30 50)'),
+        # Test None
+        ('color(--lch99o none 30 50)', {}, 'color(--lch99o 0 30 50)'),
+        ('color(--lch99o none 30 50)', {'none': True}, 'color(--lch99o none 30 50)'),
+        # Test Fit (not bound)
+        ('color(--lch99o 75 60 50)', {}, 'color(--lch99o 75 60 50)'),
+        ('color(--lch99o 75 60 50)', {'fit': False}, 'color(--lch99o 75 60 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLCh99oProperties(util.ColorAsserts, unittest.TestCase):
     """Test LCh99o."""
 

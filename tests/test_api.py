@@ -9,6 +9,16 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_repr(self):
+        """Test string representation."""
+
+        self.assertEqual(str(Color('red')), 'color(srgb 1 0 0 / 1)')
+
+    def test_repr_percent(self):
+        """Test string percent representation."""
+
+        self.assertEqual(str(Color('white').convert('lab')), 'color(--lab 100 0 0 / 1)')
+
     def test_color_indexing(self):
         """Test color indexing."""
 

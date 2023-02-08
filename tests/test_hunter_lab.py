@@ -37,6 +37,30 @@ class TestHunterLab(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hunter-lab'), Color(color2))
 
 
+class TestHunterLabSerialize(util.ColorAssertsPyTest):
+    """Test Hunter Lab serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hunter-lab 75 10 -10 / 0.5)', {}, 'color(--hunter-lab 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--hunter-lab 75 10 -10)', {'alpha': True}, 'color(--hunter-lab 75 10 -10 / 1)'),
+        ('color(--hunter-lab 75 10 -10 / 0.5)', {'alpha': False}, 'color(--hunter-lab 75 10 -10)'),
+        # Test None
+        ('color(--hunter-lab none 10 -10)', {}, 'color(--hunter-lab 0 10 -10)'),
+        ('color(--hunter-lab none 10 -10)', {'none': True}, 'color(--hunter-lab none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--hunter-lab 120 10 -10)', {}, 'color(--hunter-lab 120 10 -10)'),
+        ('color(--hunter-lab 120 10 -10)', {'fit': False}, 'color(--hunter-lab 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHunterLabPoperties(util.ColorAsserts, unittest.TestCase):
     """Test Hunter Lab."""
 

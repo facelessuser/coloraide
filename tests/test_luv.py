@@ -37,6 +37,30 @@ class TestLuv(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('luv'), Color(color2))
 
 
+class TestLuvSerialize(util.ColorAssertsPyTest):
+    """Test Luv serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--luv 75 10 -10 / 0.5)', {}, 'color(--luv 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--luv 75 10 -10)', {'alpha': True}, 'color(--luv 75 10 -10 / 1)'),
+        ('color(--luv 75 10 -10 / 0.5)', {'alpha': False}, 'color(--luv 75 10 -10)'),
+        # Test None
+        ('color(--luv none 10 -10)', {}, 'color(--luv 0 10 -10)'),
+        ('color(--luv none 10 -10)', {'none': True}, 'color(--luv none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--luv 120 10 -10)', {}, 'color(--luv 120 10 -10)'),
+        ('color(--luv 120 10 -10)', {'fit': False}, 'color(--luv 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLuvProperties(util.ColorAsserts, unittest.TestCase):
     """Test Luv."""
 

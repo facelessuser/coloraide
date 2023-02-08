@@ -60,7 +60,7 @@ from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .interpolate.linear import Linear
 from .types import Plugin
-from typing import overload, Sequence, Optional, Any, cast, Callable, Mapping
+from typing import overload, Sequence, Optional, Any, cast, Callable, Mapping, Iterator
 
 
 class ColorMatch:

@@ -38,6 +38,30 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('okhsl'), Color(color2))
 
 
+class TestOkhslSerialize(util.ColorAssertsPyTest):
+    """Test Okhsl serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--okhsl 50 0.3 0.5 / 0.5)', {}, 'color(--okhsl 50 0.3 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--okhsl 50 0.3 0.5)', {'alpha': True}, 'color(--okhsl 50 0.3 0.5 / 1)'),
+        ('color(--okhsl 50 0.3 0.5 / 0.5)', {'alpha': False}, 'color(--okhsl 50 0.3 0.5)'),
+        # Test None
+        ('color(--okhsl 50 0.3 none)', {}, 'color(--okhsl 50 0.3 0)'),
+        ('color(--okhsl 50 0.3 none)', {'none': True}, 'color(--okhsl 50 0.3 none)'),
+        # Test Fit (not bound)
+        ('color(--okhsl 50 1.1 0.5)', {}, 'color(--okhsl 50 1 0.5)'),
+        ('color(--okhsl 50 1.1 0.5)', {'fit': False}, 'color(--okhsl 50 1.1 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestOkhslProperties(util.ColorAsserts, unittest.TestCase):
     """Test Okhsl."""
 

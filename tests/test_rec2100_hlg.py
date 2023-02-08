@@ -37,6 +37,30 @@ class TestRec2100HLG(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('rec2100-hlg'), Color(color2))
 
 
+class TestRec2100HLGSerialize(util.ColorAssertsPyTest):
+    """Test Rec. 2100 HLG serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--rec2100-hlg 0 0.3 0.75 / 0.5)', {}, 'color(--rec2100-hlg 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--rec2100-hlg 0 0.3 0.75)', {'alpha': True}, 'color(--rec2100-hlg 0 0.3 0.75 / 1)'),
+        ('color(--rec2100-hlg 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--rec2100-hlg 0 0.3 0.75)'),
+        # Test None
+        ('color(--rec2100-hlg none 0.3 0.75)', {}, 'color(--rec2100-hlg 0 0.3 0.75)'),
+        ('color(--rec2100-hlg none 0.3 0.75)', {'none': True}, 'color(--rec2100-hlg none 0.3 0.75)'),
+        # Test Fit
+        ('color(--rec2100-hlg 1.2 0.2 0)', {}, 'color(--rec2100-hlg 1 0.94167 0.8953)'),
+        ('color(--rec2100-hlg 1.2 0.2 0)', {'fit': False}, 'color(--rec2100-hlg 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class Testrec2100HLGPoperties(util.ColorAsserts, unittest.TestCase):
     """Test Rec. 2100 HLG properties."""
 

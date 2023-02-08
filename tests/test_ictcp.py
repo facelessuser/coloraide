@@ -37,6 +37,30 @@ class TestICtCp(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('ictcp'), Color(color2))
 
 
+class TestICtCpSerialize(util.ColorAssertsPyTest):
+    """Test ICtCp serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--ictcp 0.75 0.1 -0.1 / 0.5)', {}, 'color(--ictcp 0.75 0.1 -0.1 / 0.5)'),
+        # Test alpha
+        ('color(--ictcp 0.75 0.1 -0.1)', {'alpha': True}, 'color(--ictcp 0.75 0.1 -0.1 / 1)'),
+        ('color(--ictcp 0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'color(--ictcp 0.75 0.1 -0.1)'),
+        # Test None
+        ('color(--ictcp none 0.1 -0.1)', {}, 'color(--ictcp 0 0.1 -0.1)'),
+        ('color(--ictcp none 0.1 -0.1)', {'none': True}, 'color(--ictcp none 0.1 -0.1)'),
+        # Test Fit (not bound)
+        ('color(--ictcp 0.75 0.6 -0.1)', {}, 'color(--ictcp 0.75 0.6 -0.1)'),
+        ('color(--ictcp 0.75 0.6 -0.1)', {'fit': False}, 'color(--ictcp 0.75 0.6 -0.1)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestICtCpProperties(util.ColorAsserts, unittest.TestCase):
     """Test ICtCp."""
 

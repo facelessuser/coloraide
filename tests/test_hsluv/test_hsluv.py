@@ -38,6 +38,30 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hsluv'), Color(color2))
 
 
+class TestHSLuvSerialize(util.ColorAssertsPyTest):
+    """Test HSLuv serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hsluv 50 30 50 / 0.5)', {}, 'color(--hsluv 50 30 50 / 0.5)'),
+        # Test alpha
+        ('color(--hsluv 50 30 50)', {'alpha': True}, 'color(--hsluv 50 30 50 / 1)'),
+        ('color(--hsluv 50 30 50 / 0.5)', {'alpha': False}, 'color(--hsluv 50 30 50)'),
+        # Test None
+        ('color(--hsluv 50 30 none)', {}, 'color(--hsluv 50 30 0)'),
+        ('color(--hsluv 50 30 none)', {'none': True}, 'color(--hsluv 50 30 none)'),
+        # Test Fit (not bound)
+        ('color(--hsluv 50 110 50)', {}, 'color(--hsluv 51.208 100 50)'),
+        ('color(--hsluv 50 110 50)', {'fit': False}, 'color(--hsluv 50 110 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHSluvProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSLuv."""
 

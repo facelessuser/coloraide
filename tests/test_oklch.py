@@ -56,6 +56,39 @@ class TestsOkLCh(util.ColorAssertsPyTest):
             self.assertColorEqual(Color(color1).convert('oklch'), Color(color2), color=True)
 
 
+class TestOkLChSerialize(util.ColorAssertsPyTest):
+    """Test OkLCh serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('oklch(0.75 0.3 50)', {}, 'oklch(0.75 0.3 50)'),
+        # Test alpha
+        ('oklch(0.75 0.3 50 / 0.5)', {}, 'oklch(0.75 0.3 50 / 0.5)'),
+        ('oklch(0.75 0.3 50)', {'alpha': True}, 'oklch(0.75 0.3 50 / 1)'),
+        ('oklch(0.75 0.3 50 / 0.5)', {'alpha': False}, 'oklch(0.75 0.3 50)'),
+        # Test percent
+        ('oklch(0.5 0.2 180)', {'percent': True}, 'oklch(50% 50% 180)'),
+        ('oklch(0.5 0.2 180 / 0.5)', {'percent': True, 'alpha': True}, 'oklch(50% 50% 180 / 0.5)'),
+        # Test None
+        ('oklch(none 0.3 50)', {}, 'oklch(0 0.3 50)'),
+        ('oklch(none 0.3 50)', {'none': True}, 'oklch(none 0.3 50)'),
+        # Test fit (not bound)
+        ('oklch(0.2 0.5 0)', {}, 'oklch(0.2 0.5 0)'),
+        ('oklch(0.2 0.5 0)', {'fit': False}, 'oklch(0.2 0.5 0)'),
+        # Test color
+        ('oklch(none 0.3 50 / 0.5)', {'color': True}, 'color(--oklch 0 0.3 50 / 0.5)'),
+        ('oklch(none 0.3 50)', {'color': True, 'none': True}, 'color(--oklch none 0.3 50)'),
+        ('oklch(0 0.3 50)', {'color': True, 'alpha': True}, 'color(--oklch 0 0.3 50 / 1)'),
+        ('oklch(0 0.3 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklch 0 0.3 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestOkLChProperties(util.ColorAsserts, unittest.TestCase):
     """Test OkLCh."""
 

@@ -37,6 +37,30 @@ class TestACES(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('aces2065-1'), Color(color2))
 
 
+class TestACESSerialize(util.ColorAssertsPyTest):
+    """Test ACES 2065-1 serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--aces2065-1 0 0.3 0.75 / 0.5)', {}, 'color(--aces2065-1 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--aces2065-1 0 0.3 0.75)', {'alpha': True}, 'color(--aces2065-1 0 0.3 0.75 / 1)'),
+        ('color(--aces2065-1 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--aces2065-1 0 0.3 0.75)'),
+        # Test None
+        ('color(--aces2065-1 none 0.3 0.75)', {}, 'color(--aces2065-1 0 0.3 0.75)'),
+        ('color(--aces2065-1 none 0.3 0.75)', {'none': True}, 'color(--aces2065-1 none 0.3 0.75)'),
+        # Test Fit
+        ('color(--aces2065-1 665510 0.2 0)', {}, 'color(--aces2065-1 65504 65504 65504)'),
+        ('color(--aces2065-1 665510 0.2 0)', {'fit': False}, 'color(--aces2065-1 665510 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestACESProperties(util.ColorAsserts, unittest.TestCase):
     """Test ACES 2065-1."""
 

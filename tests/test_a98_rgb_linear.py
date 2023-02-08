@@ -37,6 +37,30 @@ class TestLinearA98RGB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('a98-rgb-linear'), Color(color2))
 
 
+class TestLinearA98RGBSerialize(util.ColorAssertsPyTest):
+    """Test Linear A98 RGB serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--a98-rgb-linear 0 0.3 0.75 / 0.5)', {}, 'color(--a98-rgb-linear 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--a98-rgb-linear 0 0.3 0.75)', {'alpha': True}, 'color(--a98-rgb-linear 0 0.3 0.75 / 1)'),
+        ('color(--a98-rgb-linear 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--a98-rgb-linear 0 0.3 0.75)'),
+        # Test None
+        ('color(--a98-rgb-linear none 0.3 0.75)', {}, 'color(--a98-rgb-linear 0 0.3 0.75)'),
+        ('color(--a98-rgb-linear none 0.3 0.75)', {'none': True}, 'color(--a98-rgb-linear none 0.3 0.75)'),
+        # Test Fit
+        ('color(--a98-rgb-linear 1.2 0.2 0)', {}, 'color(--a98-rgb-linear 1 0.24778 0.03259)'),
+        ('color(--a98-rgb-linear 1.2 0.2 0)', {'fit': False}, 'color(--a98-rgb-linear 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLinearA98RGBPoperties(util.ColorAsserts, unittest.TestCase):
     """Test Linear A98 RGB properties."""
 

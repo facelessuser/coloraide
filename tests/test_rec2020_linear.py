@@ -37,6 +37,30 @@ class TestLinearRec2020(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('rec2020-linear'), Color(color2))
 
 
+class TestLinearRec2020Serialize(util.ColorAssertsPyTest):
+    """Test Linear Rec. 2020 serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--rec2020-linear 0 0.3 0.75 / 0.5)', {}, 'color(--rec2020-linear 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--rec2020-linear 0 0.3 0.75)', {'alpha': True}, 'color(--rec2020-linear 0 0.3 0.75 / 1)'),
+        ('color(--rec2020-linear 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--rec2020-linear 0 0.3 0.75)'),
+        # Test None
+        ('color(--rec2020-linear none 0.3 0.75)', {}, 'color(--rec2020-linear 0 0.3 0.75)'),
+        ('color(--rec2020-linear none 0.3 0.75)', {'none': True}, 'color(--rec2020-linear none 0.3 0.75)'),
+        # Test Fit
+        ('color(--rec2020-linear 1.2 0.2 0)', {}, 'color(--rec2020-linear 1 0.24165 0.01231)'),
+        ('color(--rec2020-linear 1.2 0.2 0)', {'fit': False}, 'color(--rec2020-linear 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLinearRec2020Poperties(util.ColorAsserts, unittest.TestCase):
     """Test Linear Rec. 2020 properties."""
 

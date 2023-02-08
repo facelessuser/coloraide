@@ -37,6 +37,30 @@ class TestRLAB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('rlab'), Color(color2))
 
 
+class TestRLABSerialize(util.ColorAssertsPyTest):
+    """Test RLAB serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--rlab 75 10 -10 / 0.5)', {}, 'color(--rlab 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--rlab 75 10 -10)', {'alpha': True}, 'color(--rlab 75 10 -10 / 1)'),
+        ('color(--rlab 75 10 -10 / 0.5)', {'alpha': False}, 'color(--rlab 75 10 -10)'),
+        # Test None
+        ('color(--rlab none 10 -10)', {}, 'color(--rlab 0 10 -10)'),
+        ('color(--rlab none 10 -10)', {'none': True}, 'color(--rlab none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--rlab 120 10 -10)', {}, 'color(--rlab 120 10 -10)'),
+        ('color(--rlab 120 10 -10)', {'fit': False}, 'color(--rlab 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestRLABPoperties(util.ColorAsserts, unittest.TestCase):
     """Test RLAB."""
 

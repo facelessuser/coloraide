@@ -38,6 +38,30 @@ class TestLChuv(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('lchuv'), Color(color2))
 
 
+class TestLChuvSerialize(util.ColorAssertsPyTest):
+    """Test LChuv serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--lchuv 75 30 50 / 0.5)', {}, 'color(--lchuv 75 30 50 / 0.5)'),
+        # Test alpha
+        ('color(--lchuv 75 30 50)', {'alpha': True}, 'color(--lchuv 75 30 50 / 1)'),
+        ('color(--lchuv 75 30 50 / 0.5)', {'alpha': False}, 'color(--lchuv 75 30 50)'),
+        # Test None
+        ('color(--lchuv none 30 50)', {}, 'color(--lchuv 0 30 50)'),
+        ('color(--lchuv none 30 50)', {'none': True}, 'color(--lchuv none 30 50)'),
+        # Test Fit (not bound)
+        ('color(--lchuv 75 230 50)', {}, 'color(--lchuv 75 230 50)'),
+        ('color(--lchuv 75 230 50)', {'fit': False}, 'color(--lchuv 75 230 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLChuvD65Properties(util.ColorAsserts, unittest.TestCase):
     """Test LChuv."""
 

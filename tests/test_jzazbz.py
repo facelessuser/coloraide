@@ -37,6 +37,30 @@ class TestJzazbz(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('jzazbz'), Color(color2))
 
 
+class TestJzazbzSerialize(util.ColorAssertsPyTest):
+    """Test Jzazbz serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--jzazbz 0.75 0.1 -0.1 / 0.5)', {}, 'color(--jzazbz 0.75 0.1 -0.1 / 0.5)'),
+        # Test alpha
+        ('color(--jzazbz 0.75 0.1 -0.1)', {'alpha': True}, 'color(--jzazbz 0.75 0.1 -0.1 / 1)'),
+        ('color(--jzazbz 0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'color(--jzazbz 0.75 0.1 -0.1)'),
+        # Test None
+        ('color(--jzazbz none 0.1 -0.1)', {}, 'color(--jzazbz 0 0.1 -0.1)'),
+        ('color(--jzazbz none 0.1 -0.1)', {'none': True}, 'color(--jzazbz none 0.1 -0.1)'),
+        # Test Fit (not bound)
+        ('color(--jzazbz 0.75 0.6 -0.1)', {}, 'color(--jzazbz 0.75 0.6 -0.1)'),
+        ('color(--jzazbz 0.75 0.6 -0.1)', {'fit': False}, 'color(--jzazbz 0.75 0.6 -0.1)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestJzazbzProperties(util.ColorAsserts, unittest.TestCase):
     """Test Jzazbz."""
 

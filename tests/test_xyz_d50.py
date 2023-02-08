@@ -37,6 +37,30 @@ class TestXYZD50(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('xyz-d50'), Color(color2))
 
 
+class TestXYZD50Serialize(util.ColorAssertsPyTest):
+    """Test XYZ D50 serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(xyz-d50 0 0.3 0.75 / 0.5)', {}, 'color(xyz-d50 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(xyz-d50 0 0.3 0.75)', {'alpha': True}, 'color(xyz-d50 0 0.3 0.75 / 1)'),
+        ('color(xyz-d50 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(xyz-d50 0 0.3 0.75)'),
+        # Test None
+        ('color(xyz-d50 none 0.3 0.75)', {}, 'color(xyz-d50 0 0.3 0.75)'),
+        ('color(xyz-d50 none 0.3 0.75)', {'none': True}, 'color(xyz-d50 none 0.3 0.75)'),
+        # Test Fit (not bound)
+        ('color(xyz-d50 1.2 0.2 0)', {}, 'color(xyz-d50 1.2 0.2 0)'),
+        ('color(xyz-d50 1.2 0.2 0)', {'fit': False}, 'color(xyz-d50 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestXYZProperties(util.ColorAsserts, unittest.TestCase):
     """Test XYZ."""
 

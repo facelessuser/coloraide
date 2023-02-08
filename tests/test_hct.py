@@ -37,6 +37,30 @@ class TestHCT(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hct'), Color(color2))
 
 
+class TestHCTSerialize(util.ColorAssertsPyTest):
+    """Test HCT serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hct 50 30 75 / 0.5)', {}, 'color(--hct 50 30 75 / 0.5)'),
+        # Test alpha
+        ('color(--hct 50 30 75)', {'alpha': True}, 'color(--hct 50 30 75 / 1)'),
+        ('color(--hct 50 30 75 / 0.5)', {'alpha': False}, 'color(--hct 50 30 75)'),
+        # Test None
+        ('color(--hct 50 30 none)', {}, 'color(--hct 50 30 0)'),
+        ('color(--hct 50 30 none)', {'none': True}, 'color(--hct 50 30 none)'),
+        # Test Fit (not bound)
+        ('color(--hct 50 230 75)', {}, 'color(--hct 50 230 75)'),
+        ('color(--hct 50 230 75)', {'fit': False}, 'color(--hct 50 230 75)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
     """Test HCT properties."""
 

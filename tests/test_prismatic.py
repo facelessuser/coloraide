@@ -37,6 +37,30 @@ class TestPrismatic(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('prismatic'), Color(color2))
 
 
+class TestPrismaticSerialize(util.ColorAssertsPyTest):
+    """Test Prismatic serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--prismatic 0 0.3 0.75 0.5 / 0.5)', {}, 'color(--prismatic 0 0.3 0.75 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--prismatic 0 0.3 0.75 0.5)', {'alpha': True}, 'color(--prismatic 0 0.3 0.75 0.5 / 1)'),
+        ('color(--prismatic 0 0.3 0.75 0.5 / 0.5)', {'alpha': False}, 'color(--prismatic 0 0.3 0.75 0.5)'),
+        # Test None
+        ('color(--prismatic none 0.3 0.75 0.5)', {}, 'color(--prismatic 0 0.3 0.75 0.5)'),
+        ('color(--prismatic none 0.3 0.75 0.5)', {'none': True}, 'color(--prismatic none 0.3 0.75 0.5)'),
+        # Test Fit
+        ('color(--prismatic 1.2 0.2 0 0.5)', {}, 'color(--prismatic 1 0.29182 0.11319 0.595)'),
+        ('color(--prismatic 1.2 0.2 0 0.5)', {'fit': False}, 'color(--prismatic 1.2 0.2 0 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestPrismaticPoperties(util.ColorAsserts, unittest.TestCase):
     """Test Prismatic."""
 

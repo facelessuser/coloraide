@@ -101,7 +101,7 @@ class Achromatic:
             point = size * index + (adjusted * size)
         return point
 
-    def get_ideal_chroma(self, j: float, m: float) -> bool:
+    def get_ideal_chroma(self, j: float, m: float) -> float:
         """Get the ideal chroma."""
 
         if j < 0.0:  # pragma: no cover
@@ -146,7 +146,7 @@ class CAM16JMh(LChish, Space):
     SERIALIZE = ("--cam16-jmh",)
     CHANNELS = (
         Channel("j", 0.0, 100.0, limit=(0.0, None)),
-        Channel("m", 0, 55.0, limit=(0.0, None)),
+        Channel("m", 0, 105.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

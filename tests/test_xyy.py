@@ -37,6 +37,30 @@ class TestxyY(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('xyy'), Color(color2))
 
 
+class TestxyYSerialize(util.ColorAssertsPyTest):
+    """Test XYZ D65 serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--xyy 0 0.3 0.75 / 0.5)', {}, 'color(--xyy 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--xyy 0 0.3 0.75)', {'alpha': True}, 'color(--xyy 0 0.3 0.75 / 1)'),
+        ('color(--xyy 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--xyy 0 0.3 0.75)'),
+        # Test None
+        ('color(--xyy none 0.3 0.75)', {}, 'color(--xyy 0 0.3 0.75)'),
+        ('color(--xyy none 0.3 0.75)', {'none': True}, 'color(--xyy none 0.3 0.75)'),
+        # Test Fit (not bound)
+        ('color(--xyy 1.2 0.2 0)', {}, 'color(--xyy 1.2 0.2 0)'),
+        ('color(--xyy 1.2 0.2 0)', {'fit': False}, 'color(--xyy 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestxyYPoperties(util.ColorAsserts, unittest.TestCase):
     """Test xyY."""
 

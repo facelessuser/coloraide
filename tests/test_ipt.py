@@ -37,6 +37,30 @@ class TestIPT(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('ipt'), Color(color2))
 
 
+class TestIPTSerialize(util.ColorAssertsPyTest):
+    """Test IPT serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--ipt 0.75 0.1 -0.1 / 0.5)', {}, 'color(--ipt 0.75 0.1 -0.1 / 0.5)'),
+        # Test alpha
+        ('color(--ipt 0.75 0.1 -0.1)', {'alpha': True}, 'color(--ipt 0.75 0.1 -0.1 / 1)'),
+        ('color(--ipt 0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'color(--ipt 0.75 0.1 -0.1)'),
+        # Test None
+        ('color(--ipt none 0.1 -0.1)', {}, 'color(--ipt 0 0.1 -0.1)'),
+        ('color(--ipt none 0.1 -0.1)', {'none': True}, 'color(--ipt none 0.1 -0.1)'),
+        # Test Fit (not bound)
+        ('color(--ipt 0.75 1.2 -0.1)', {}, 'color(--ipt 0.75 1.2 -0.1)'),
+        ('color(--ipt 0.75 1.2 -0.1)', {'fit': False}, 'color(--ipt 0.75 1.2 -0.1)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestIPTPoperties(util.ColorAsserts, unittest.TestCase):
     """Test IPT."""
 

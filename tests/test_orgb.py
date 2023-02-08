@@ -37,6 +37,30 @@ class TestoRGB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('orgb'), Color(color2))
 
 
+class TestoRGBSerialize(util.ColorAssertsPyTest):
+    """Test oRGB serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--orgb 0.75 0.1 -0.1 / 0.5)', {}, 'color(--orgb 0.75 0.1 -0.1 / 0.5)'),
+        # Test alpha
+        ('color(--orgb 0.75 0.1 -0.1)', {'alpha': True}, 'color(--orgb 0.75 0.1 -0.1 / 1)'),
+        ('color(--orgb 0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'color(--orgb 0.75 0.1 -0.1)'),
+        # Test None
+        ('color(--orgb none 0.1 -0.1)', {}, 'color(--orgb 0 0.1 -0.1)'),
+        ('color(--orgb none 0.1 -0.1)', {'none': True}, 'color(--orgb none 0.1 -0.1)'),
+        # Test Fit
+        ('color(--orgb 0.75 1.2 -0.1)', {}, 'color(--orgb 0.76398 1 -0.05221)'),
+        ('color(--orgb 0.75 1.2 -0.1)', {'fit': False}, 'color(--orgb 0.75 1.2 -0.1)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestoRGBPoperties(util.ColorAsserts, unittest.TestCase):
     """Test oRGB."""
 

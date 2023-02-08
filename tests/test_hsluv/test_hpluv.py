@@ -6,8 +6,8 @@ from coloraide.everything import ColorAll as Color
 import pytest
 
 
-class TestsOkhsl(util.ColorAssertsPyTest):
-    """Test Okhsl."""
+class TestsHPLuv(util.ColorAssertsPyTest):
+    """Test HPLuv."""
 
     COLORS = [
         # Test color
@@ -26,6 +26,30 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('hpluv'), Color(color2))
+
+
+class TestHPLuvSerialize(util.ColorAssertsPyTest):
+    """Test HPLuv serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--hpluv 50 30 50 / 0.5)', {}, 'color(--hpluv 50 30 50 / 0.5)'),
+        # Test alpha
+        ('color(--hpluv 50 30 50)', {'alpha': True}, 'color(--hpluv 50 30 50 / 1)'),
+        ('color(--hpluv 50 30 50 / 0.5)', {'alpha': False}, 'color(--hpluv 50 30 50)'),
+        # Test None
+        ('color(--hpluv 50 30 none)', {}, 'color(--hpluv 50 30 0)'),
+        ('color(--hpluv 50 30 none)', {'none': True}, 'color(--hpluv 50 30 none)'),
+        # Test Fit (not bound)
+        ('color(--hpluv 50 110 50)', {}, 'color(--hpluv 50 100 50)'),
+        ('color(--hpluv 50 110 50)', {'fit': False}, 'color(--hpluv 50 110 50)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
 
 
 class TestHPluvProperties(util.ColorAsserts, unittest.TestCase):

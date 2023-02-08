@@ -37,6 +37,30 @@ class TestProPhotoRGB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('prophoto-rgb'), Color(color2))
 
 
+class TestProPhotoRGBSerialize(util.ColorAssertsPyTest):
+    """Test ProPhoto RGB serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(prophoto-rgb 0 0.3 0.75 / 0.5)', {}, 'color(prophoto-rgb 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(prophoto-rgb 0 0.3 0.75)', {'alpha': True}, 'color(prophoto-rgb 0 0.3 0.75 / 1)'),
+        ('color(prophoto-rgb 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(prophoto-rgb 0 0.3 0.75)'),
+        # Test None
+        ('color(prophoto-rgb none 0.3 0.75)', {}, 'color(prophoto-rgb 0 0.3 0.75)'),
+        ('color(prophoto-rgb none 0.3 0.75)', {'none': True}, 'color(prophoto-rgb none 0.3 0.75)'),
+        # Test Fit
+        ('color(prophoto-rgb 1.2 0.2 0)', {}, 'color(prophoto-rgb 1 0.36333 0.13613)'),
+        ('color(prophoto-rgb 1.2 0.2 0)', {'fit': False}, 'color(prophoto-rgb 1.2 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestProPhotoRGBProperties(util.ColorAsserts, unittest.TestCase):
     """Test ProPhoto RGB."""
 

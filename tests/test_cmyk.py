@@ -37,6 +37,30 @@ class TestCMYK(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('cmyk'), Color(color2))
 
 
+class TestCMYKSerialize(util.ColorAssertsPyTest):
+    """Test CMYK serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--cmyk 0 0.3 0.75 0.5 / 0.5)', {}, 'color(--cmyk 0 0.3 0.75 0.5 / 0.5)'),
+        # Test alpha
+        ('color(--cmyk 0 0.3 0.75 0.5)', {'alpha': True}, 'color(--cmyk 0 0.3 0.75 0.5 / 1)'),
+        ('color(--cmyk 0 0.3 0.75 0.5 / 0.5)', {'alpha': False}, 'color(--cmyk 0 0.3 0.75 0.5)'),
+        # Test None
+        ('color(--cmyk none 0.3 0.75 0.5)', {}, 'color(--cmyk 0 0.3 0.75 0.5)'),
+        ('color(--cmyk none 0.3 0.75 0.5)', {'none': True}, 'color(--cmyk none 0.3 0.75 0.5)'),
+        # Test Fit
+        ('color(--cmyk 1.2 0.2 0 0.5)', {}, 'color(--cmyk 1 0.2 0 0.5)'),
+        ('color(--cmyk 1.2 0.2 0 0.5)', {'fit': False}, 'color(--cmyk 1.2 0.2 0 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestCMYKPoperties(util.ColorAsserts, unittest.TestCase):
     """Test CMYK."""
 

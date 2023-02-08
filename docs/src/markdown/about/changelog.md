@@ -2,13 +2,19 @@
 
 ## 1.7.1
 
-- **FIX**: Ensure CAM16 spaces mirror percentages across `a` and `b` components.
+- **FIX**: Ensure CAM16 spaces mirrors positive and negative percentages for `a` and `b` components.
 - **FIX**: Since the CAM16 JMh model can not predict achromatic colors with negative lightness and, more importantly,
   negative lightness is not useful, limit the lower end of lightness in CAM16 spaces to zero.
 - **FIX**: When a CAM16 JMh (or HCT) color's chroma, when not discounting illuminance, has chroma drop below the actual
   ideal achromatic chroma threshold, just use the ideal chroma to ensure better conversion back to XYZ.
 - **FIX**: Jzazbz and JzCzhz model can never translate a color with a negative lightness, so just clamp negative
   lightness while in Jzazbz and JzCzhz.
+- **FIX**: Fix a math error in CAM16.
+- **FIX**: Fix CAM16 JMh M limit which was too low.
+- **FIX**: IPT was set to "bound" when it should have an unbounded gamut.
+- **FIX**: When serializing to strings, NaN values should be resolved before gamut mapping to ensure the output is in
+  gamut.
+- **FIX**: Enable `comma` with `none` could make undefined alpha values show up as `none` in legacy format.
 
 ## 1.7
 

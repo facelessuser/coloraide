@@ -48,6 +48,39 @@ class TestLab(util.ColorAssertsPyTest):
             self.assertColorEqual(Color(color1).convert('lab'), Color(color2), color=True)
 
 
+class TestLabSerialize(util.ColorAssertsPyTest):
+    """Test Lab serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('lab(75 10 -10)', {}, 'lab(75 10 -10)'),
+        # Test alpha
+        ('lab(75 10 -10 / 0.5)', {}, 'lab(75 10 -10 / 0.5)'),
+        ('lab(75 10 -10)', {'alpha': True}, 'lab(75 10 -10 / 1)'),
+        ('lab(75 10 -10 / 0.5)', {'alpha': False}, 'lab(75 10 -10)'),
+        # Test percent
+        ('lab(50 62.5 -62.5)', {'percent': True}, 'lab(50% 50% -50%)'),
+        ('lab(50 62.5 -62.5 / 0.5)', {'percent': True, 'alpha': True}, 'lab(50% 50% -50% / 0.5)'),
+        # Test None
+        ('lab(none 10 -10)', {}, 'lab(0 10 -10)'),
+        ('lab(none 10 -10)', {'none': True}, 'lab(none 10 -10)'),
+        # Test fit (not bound)
+        ('lab(20 130 0)', {}, 'lab(20 130 0)'),
+        ('lab(20 130 0)', {'fit': False}, 'lab(20 130 0)'),
+        # Test color
+        ('lab(none 10 -10 / 0.5)', {'color': True}, 'color(--lab 0 10 -10 / 0.5)'),
+        ('lab(none 10 -10)', {'color': True, 'none': True}, 'color(--lab none 10 -10)'),
+        ('lab(0 10 -10)', {'color': True, 'alpha': True}, 'color(--lab 0 10 -10 / 1)'),
+        ('lab(0 10 -10 / 0.5)', {'color': True, 'alpha': False}, 'color(--lab 0 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestLabProperties(util.ColorAsserts, unittest.TestCase):
     """Test Lab."""
 

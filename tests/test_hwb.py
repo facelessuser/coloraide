@@ -37,6 +37,36 @@ class TestHWB(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('hwb'), Color(color2), color=True)
 
 
+class TestHWBSerialize(util.ColorAssertsPyTest):
+    """Test HWB serialization."""
+
+    COLORS = [
+        # Test hex no options
+        ('hwb(270 30% 50%)', {}, 'hwb(270 30% 50%)'),
+        # Test alpha
+        ('hwb(270 30% 50% / 0.5)', {}, 'hwb(270 30% 50% / 0.5)'),
+        ('hwb(270 30% 50%)', {'alpha': True}, 'hwb(270 30% 50% / 1)'),
+        ('hwb(270 30% 50% / 0.5)', {'alpha': False}, 'hwb(270 30% 50%)'),
+        # Test None
+        ('hwb(none 30% 50%)', {}, 'hwb(0 30% 50%)'),
+        ('hwb(none 30% 50%)', {'none': True}, 'hwb(none 30% 50%)'),
+        # Test fit
+        ('hwb(20 0% -55%)', {}, 'hwb(16.837 75.709% 0%)'),
+        ('hwb(20 0% -55%)', {'fit': False}, 'hwb(20 0% -55%)'),
+        # Test color
+        ('hwb(none 30% 50% / 0.5)', {'color': True}, 'color(--hwb 0 0.3 0.5 / 0.5)'),
+        ('hwb(none 30% 50%)', {'color': True, 'none': True}, 'color(--hwb none 0.3 0.5)'),
+        ('hwb(0 30% 50%)', {'color': True, 'alpha': True}, 'color(--hwb 0 0.3 0.5 / 1)'),
+        ('hwb(0 30% 50% / 0.5)', {'color': True, 'alpha': False}, 'color(--hwb 0 0.3 0.5)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
     """Test HWB."""
 

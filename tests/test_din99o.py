@@ -37,6 +37,30 @@ class TestDIN99o(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('din99o'), Color(color2))
 
 
+class TestDIN99oSerialize(util.ColorAssertsPyTest):
+    """Test DIN99o serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--din99o 75 10 -10 / 0.5)', {}, 'color(--din99o 75 10 -10 / 0.5)'),
+        # Test alpha
+        ('color(--din99o 75 10 -10)', {'alpha': True}, 'color(--din99o 75 10 -10 / 1)'),
+        ('color(--din99o 75 10 -10 / 0.5)', {'alpha': False}, 'color(--din99o 75 10 -10)'),
+        # Test None
+        ('color(--din99o none 10 -10)', {}, 'color(--din99o 0 10 -10)'),
+        ('color(--din99o none 10 -10)', {'none': True}, 'color(--din99o none 10 -10)'),
+        # Test Fit (not bound)
+        ('color(--din99o 120 10 -10)', {}, 'color(--din99o 120 10 -10)'),
+        ('color(--din99o 120 10 -10)', {'fit': False}, 'color(--din99o 120 10 -10)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestDIN99oProperties(util.ColorAsserts, unittest.TestCase):
     """Test DIN99o."""
 

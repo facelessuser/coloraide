@@ -38,6 +38,30 @@ class TestACEScc(util.ColorAssertsPyTest):
         self.assertColorEqual(Color(color1).convert('acescc'), Color(color2))
 
 
+class TestACESccSerialize(util.ColorAssertsPyTest):
+    """Test ACEScc serialization."""
+
+    COLORS = [
+        # Test color
+        ('color(--acescc 0 0.3 0.75 / 0.5)', {}, 'color(--acescc 0 0.3 0.75 / 0.5)'),
+        # Test alpha
+        ('color(--acescc 0 0.3 0.75)', {'alpha': True}, 'color(--acescc 0 0.3 0.75 / 1)'),
+        ('color(--acescc 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--acescc 0 0.3 0.75)'),
+        # Test None
+        ('color(--acescc none 0.3 0.75)', {}, 'color(--acescc 0 0.3 0.75)'),
+        ('color(--acescc none 0.3 0.75)', {'none': True}, 'color(--acescc none 0.3 0.75)'),
+        # Test Fit
+        ('color(--acescc 1.5 0.2 0)', {}, 'color(--acescc 1.468 0.2 0)'),
+        ('color(--acescc 1.5 0.2 0)', {'fit': False}, 'color(--acescc 1.5 0.2 0)')
+    ]
+
+    @pytest.mark.parametrize('color1,options,color2', COLORS)
+    def test_colors(self, color1, options, color2):
+        """Test colors."""
+
+        self.assertEqual(Color(color1).to_string(**options), color2)
+
+
 class TestACESccToACES2056_1(util.ColorAssertsPyTest):
     """Test ACEScc to ACES 2056-1."""
 
