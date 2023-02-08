@@ -15,6 +15,7 @@
 - **FIX**: When serializing to strings, NaN values should be resolved before gamut mapping to ensure the output is in
   gamut.
 - **FIX**: Enable `comma` with `none` could make undefined alpha values show up as `none` in legacy format.
+- **FIX**: Sane handling of inverse lightness in DIN99o.
 
 ## 1.7
 

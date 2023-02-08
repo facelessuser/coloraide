@@ -39,8 +39,8 @@ def lab_to_din99o(lab: Vector) -> Vector:
     """XYZ to DIN99o."""
 
     l, a, b = lab
-    val = 1 + C2 * l
-    l99o = C1 * math.copysign(math.log(abs(val)), val) / KE
+    val = 1 + abs(C2 * l)
+    l99o = C1 * math.copysign(1, l) * math.log(val) / KE
 
     if a == 0 and b == 0:
         a99o = b99o = 0.0
@@ -49,7 +49,7 @@ def lab_to_din99o(lab: Vector) -> Vector:
         fo = FACTOR * (b * math.cos(RADS) - a * math.sin(RADS))
         go = math.sqrt(eo ** 2 + fo ** 2)
         val = 1 + C3 * go
-        c99o = math.copysign(math.log(abs(val)), val) / (C4 * KE * KCH)
+        c99o = math.log(val) / (C4 * KE * KCH)
         h99o = math.atan2(fo, eo) + RADS
 
         a99o = c99o * math.cos(h99o)
@@ -77,15 +77,12 @@ def din99o_to_lab(din99o: Vector) -> Vector:
 
     l99o, c99o, h99o = din99o_lab_to_lch(din99o)
     val = C4 * c99o * KCH * KE
-    g = (math.copysign(math.exp(abs(val)), val) - 1) / C3
+    g = (math.exp(val) - 1) / C3
     e = g * math.cos(h99o - RADS)
     f = g * math.sin(h99o - RADS)
 
-    val = (l99o * KE) / C1
-    (math.copysign(math.exp(abs(val)), val) - 1) / C2
-
     return [
-        (math.exp((l99o * KE) / C1) - 1) / C2,
+        math.copysign(1, l99o) * (math.exp((abs(l99o) * KE) / C1) - 1) / C2,
         e * math.cos(RADS) - (f / FACTOR) * math.sin(RADS),
         e * math.sin(RADS) + (f / FACTOR) * math.cos(RADS)
     ]
