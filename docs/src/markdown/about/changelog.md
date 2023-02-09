@@ -12,9 +12,8 @@
 - **FIX**: Fix a math error in CAM16.
 - **FIX**: Fix CAM16 JMh M limit which was too low.
 - **FIX**: IPT was set to "bound" when it should have an unbounded gamut.
-- **FIX**: When serializing to strings, NaN values should be resolved before gamut mapping to ensure the output is in
-  gamut.
-- **FIX**: Enable `comma` with `none` could make undefined alpha values show up as `none` in legacy format.
+- **FIX**: When both `comma` and `none` are enabled it could make undefined alpha values show up as `none` in legacy CSS
+  format.
 - **FIX**: Sane handling of inverse lightness in DIN99o.
 
 ## 1.7
