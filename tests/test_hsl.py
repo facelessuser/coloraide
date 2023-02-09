@@ -40,6 +40,8 @@ class TestHSL(util.ColorAssertsPyTest):
         ('hsla(270 30% 50% / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
         ('hsla(270 30% 50% / 50%)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
         ('hsla(none none none / none)', 'color(--hsl none none none / none)'),
+        ('hsl(270 30 50)', 'color(--hsl 270 0.3 0.5)'),
+        ('hsla(270 30 50 / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
         ('hsl(50% 30 50)', None),
         # Test CSS color
         ('color(--hsl 270 0.3 0.5)', 'color(--hsl 270 0.3 0.5)'),
@@ -68,23 +70,27 @@ class TestHSLSerialize(util.ColorAssertsPyTest):
 
     COLORS = [
         # Test hex no options
-        ('hsl(270 30% 75%)', {}, 'hsl(270 30% 75%)'),
+        ('hsl(270 30% 75%)', {}, 'hsl(270 30 75)'),
         # Test alpha
-        ('hsl(270 30% 75% / 0.5)', {}, 'hsl(270 30% 75% / 0.5)'),
-        ('hsl(270 30% 75%)', {'alpha': True}, 'hsl(270 30% 75% / 1)'),
-        ('hsl(270 30% 75% / 0.5)', {'alpha': False}, 'hsl(270 30% 75%)'),
+        ('hsl(270 30% 75% / 0.5)', {}, 'hsl(270 30 75 / 0.5)'),
+        ('hsl(270 30% 75%)', {'alpha': True}, 'hsl(270 30 75 / 1)'),
+        ('hsl(270 30% 75% / 0.5)', {'alpha': False}, 'hsl(270 30 75)'),
+        # Test percent
+        ('hsl(270 30% 75% / 50%)', {'percent': True}, 'hsl(270 30% 75% / 0.5)'),
         # Test None
-        ('hsl(none 30% 75%)', {}, 'hsl(0 30% 75%)'),
-        ('hsl(none 30% 75%)', {'none': True}, 'hsl(none 30% 75%)'),
+        ('hsl(none 30% 75%)', {}, 'hsl(0 30 75)'),
+        ('hsl(none 30% 75%)', {'none': True}, 'hsl(none 30 75)'),
         # Test fit
-        ('hsl(20 150% 75%)', {}, 'hsl(19.619 100% 76.43%)'),
-        ('hsl(20 150% 75%)', {'fit': False}, 'hsl(20 150% 75%)'),
+        ('hsl(20 150% 75%)', {}, 'hsl(19.619 100 76.43)'),
+        ('hsl(20 150% 75%)', {'fit': False}, 'hsl(20 150 75)'),
         # Test legacy
         ('hsl(270 30% 75%)', {'comma': True}, 'hsl(270, 30%, 75%)'),
         # Test legacy alpha
         ('hsl(270 30% 75% / 0.5)', {'comma': True}, 'hsla(270, 30%, 75%, 0.5)'),
         ('hsl(270 30% 75%)', {'comma': True, 'alpha': True}, 'hsla(270, 30%, 75%, 1)'),
         ('hsl(270 30% 75% / 0.5)', {'comma': True, 'alpha': False}, 'hsl(270, 30%, 75%)'),
+        # Test legacy percent
+        ('hsl(270 30% 75% / 50%)', {'comma': True, 'percent': False}, 'hsla(270, 30%, 75%, 0.5)'),
         # Test legacy None
         ('hsl(none 30% 75%)', {'comma': True}, 'hsl(0, 30%, 75%)'),
         ('hsl(none 30% 75%)', {'comma': True, 'none': True}, 'hsl(0, 30%, 75%)'),

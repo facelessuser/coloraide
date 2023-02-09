@@ -57,12 +57,8 @@ CSS_MATCH = {
             \b(rgba?)\(\s*
             (?:
                 # Space separated format
-                (?:
-                    # Float form
-                    (?:{float}{space}){{2}}{float} |
-                    # Percent form
-                    (?:{percent}{space}){{2}}{percent}
-                )({slash}(?:{strict_percent}|{float}))? |
+                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                ({slash}(?:{strict_percent}|{float}))? |
                 # Comma separated format
                 (?:
                     # Float form
@@ -84,9 +80,9 @@ CSS_MATCH = {
         \b(hsla?)\(\s*
         (?:
             # Space separated format
-            {angle}{space}{percent}{space}{percent}(?:{slash}(?:{strict_percent}|{float}))? |
+            {angle}(?:{space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))? |
             # comma separated format
-            {strict_angle}{comma}{strict_percent}{comma}{strict_percent}(?:{comma}(?:{strict_percent}|{strict_float}))?
+            {strict_angle}(?:{comma}{strict_percent}){{2}}(?:{comma}(?:{strict_percent}|{strict_float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -180,12 +176,22 @@ def norm_percent_channel(string: str, scale: float = 100, offset: float = 0.0) -
 
 
 def norm_color_channel(string: str, scale: float = 1, offset: float = 0.0) -> float:
-    """Normalize percent channel."""
+    """Normalize percent/number channel."""
 
     if string.endswith('%'):
         return norm_percent_channel(string, scale, offset)
     else:
         return norm_float(string)
+
+
+def norm_scaled_color_channel(string: str, scale: float = 1, offset: float = 0.0) -> float:
+    """Normalize scaled percent/number channel."""
+
+    if string.endswith('%'):
+        return norm_percent_channel(string, scale, offset)
+    else:
+        value = norm_float(string)
+        return (value * scale * 0.01) - offset if scale != 100 else value
 
 
 def norm_rgb_channel(string: str, scale: float = 1) -> float:
@@ -259,8 +265,8 @@ def parse_rgb_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector, float]:
-    """Parse CSS RGB format."""
+def parse_channels(color: str, boundry: tuple[Channel, ...], scaled: bool = False) -> tuple[Vector, float]:
+    """Parse CSS channel format."""
 
     channels = []
     alpha = 1.0
@@ -271,6 +277,8 @@ def parse_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector, fl
             bound = boundry[i]
             if bound.flags & FLG_ANGLE:
                 channels.append(norm_angle_channel(c))
+            elif scaled:
+                channels.append(norm_scaled_color_channel(c, bound.high))
             else:
                 channels.append(norm_color_channel(c, bound.high))
         elif i == length:
@@ -348,8 +356,9 @@ def parse_css(
                 )
     else:
         m = CSS_MATCH[cspace.NAME].match(string, start)
+        scaled = cspace.NAME in ('hsl',)
         if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.CHANNELS), m.end(0)
+            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.CHANNELS, scaled=scaled), m.end(0)
 
     # If we wanted to support per color matching of this format, we could enable this.
     # It is much faster to generically match all `color(space ...)` instances and then

@@ -5,7 +5,7 @@ from .. import util
 from .. import algebra as alg
 from . import parse
 from .color_names import to_name
-from ..channels import FLG_PERCENT, FLG_OPT_PERCENT
+from ..channels import FLG_PERCENT, FLG_OPT_PERCENT, FLG_ANGLE
 from ..types import Vector
 from typing import TYPE_CHECKING
 
@@ -52,7 +52,8 @@ def named_color_function(
     for idx, value in enumerate(coords):
         channel = channels[idx]
         use_percent = channel.flags & FLG_PERCENT or (percent and channel.flags & FLG_OPT_PERCENT)
-        if not use_percent:
+        is_angle = channel.flags & FLG_ANGLE
+        if not use_percent and not is_angle:
             value *= scale
         if idx != 0:
             string.append(COMMA if legacy else SPACE)
