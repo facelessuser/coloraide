@@ -89,7 +89,7 @@ Colors can also be accessed and modified in more advanced ways with special acce
 `get()` provides access to any channel via the channel name for a given color space, but what sets it apart from other
 channel access methods is that it can indirectly access channels in other color spaces as well.
 
-```python
+```playground
 color = Color("pink")
 color
 color.get('red')
@@ -152,9 +152,8 @@ color.set(
 
 !!! warning "Indirect Channel Modifications"
     Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
-    incompatible due to gamut size, and their algorithm may end up not preserving some aspects of a color. Additionally,
-    the feature converts the color to the target color space, modifies it, and then converts it back making it
-    susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
+    incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
+    and then converts it back making it susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
 
 !!! new "New in 1.5: Getting/Setting Multiple Channels"
 
