@@ -21,7 +21,7 @@ from .. import util
 from .. import algebra as alg
 from ..spaces import Cylindrical
 from ..types import Vector, ColorInput, Plugin
-from typing import Callable, Optional, Sequence, Mapping, Any, cast, TYPE_CHECKING
+from typing import Callable, Sequence, Mapping, Any, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -74,14 +74,14 @@ class Interpolator(metaclass=ABCMeta):
         coordinates: list[Vector],
         channel_names: Sequence[str],
         create: type[Color],
-        easings: list[Optional[Callable[..., float]]],
+        easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Callable[..., float] | Mapping[str, Callable[..., float]]],
+        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: Optional[list[float]] = None,
+        domain: list[float] | None = None,
         **kwargs: Any
     ):
         """Initialize."""
@@ -98,7 +98,7 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
-        self.current_easing = None  # type: Optional[Callable[..., float] | Mapping[str, Callable[..., float]]]
+        self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cast(Cylindrical, cs).hue_index()
@@ -142,7 +142,7 @@ class Interpolator(metaclass=ABCMeta):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
-        delta_e: Optional[str] = None
+        delta_e: str | None = None
     ) -> list[Color]:
         """Steps."""
 
@@ -204,7 +204,7 @@ class Interpolator(metaclass=ABCMeta):
 
         return [cast('Color', i['color']) for i in ret]
 
-    def premultiply(self, coords: Vector, alpha: Optional[float] = None) -> None:
+    def premultiply(self, coords: Vector, alpha: float | None = None) -> None:
 
         if alpha is not None:
             coords[-1] = alpha
@@ -355,14 +355,14 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         coordinates: list[Vector],
         channel_names: Sequence[str],
         create: type[Color],
-        easings: list[Optional[Callable[..., float]]],
+        easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
+        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: Optional[list[float]] = None,
+        domain: list[float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -434,9 +434,9 @@ def calc_stops(stops: dict[int, float], count: int) -> dict[int, float]:
 
 
 def process_mapping(
-    progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
+    progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
     aliases: Mapping[str, str]
-) -> Optional[Callable[..., float] | Mapping[str, Callable[..., float]]]:
+) -> Mapping[str, Callable[..., float]] | Callable[..., float] | None:
     """Process a mapping, such that it is not using aliases."""
 
     if not isinstance(progress, Mapping):
@@ -499,11 +499,11 @@ def adjust_decrease(h1: float, h2: float, offset: float) -> tuple[float, float]:
 
 def normalize_hue(
     color1: Vector,
-    color2: Optional[Vector],
+    color2: Vector | None,
     index: int,
     offset: float,
     hue: str,
-    fallback: Optional[float]
+    fallback: float | None
 ) -> tuple[Vector, float]:
     """Normalize hues according the hue specifier."""
 
@@ -542,13 +542,13 @@ def interpolator(
     interpolator: str,
     create: type[Color],
     colors: Sequence[ColorInput | stop | Callable[..., float]],
-    space: Optional[str],
-    out_space: Optional[str],
-    progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
+    space: str | None,
+    out_space: str | None,
+    progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
     hue: str,
     premultiplied: bool,
     extrapolate: bool,
-    domain: Optional[list[float]] = None,
+    domain: list[float] | None = None,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""

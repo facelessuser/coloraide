@@ -4,7 +4,7 @@ from .. import oklab as base
 from ...css import parse
 from ...css import serialize
 from ...types import Vector
-from typing import Optional, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
@@ -17,8 +17,8 @@ class Oklab(base.Oklab):
         self,
         parent: Color,
         *,
-        alpha: Optional[bool] = None,
-        precision: Optional[int] = None,
+        alpha: bool | None = None,
+        precision: int | None = None,
         fit: str | bool = True,
         none: bool = False,
         color: bool = False,
@@ -43,7 +43,7 @@ class Oklab(base.Oklab):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[tuple[tuple[Vector, float], int]]:
+    ) -> tuple[tuple[Vector, float], int] | None:
         """Match a CSS color string."""
 
         return parse.parse_css(self, string, start, fullmatch)

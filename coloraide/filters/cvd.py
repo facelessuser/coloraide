@@ -4,7 +4,7 @@ from __future__ import annotations
 from .. import algebra as alg
 from ..filters import Filter
 from ..types import Vector, Matrix
-from typing import Any, Optional, Callable, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -256,17 +256,17 @@ class Protan(Filter):
         else:
             raise ValueError("Unrecognized CVD filter method '{}'".format(method))
 
-    def get_best_filter(self, method: Optional[str], max_severity: bool) -> Callable[..., None]:
+    def get_best_filter(self, method: str | None, max_severity: bool) -> Callable[..., None]:
         """Get the best filter based on the situation."""
 
         if method is None:
             method = self.severe if max_severity else self.anomalous
         return self.select_filter(method)
 
-    def filter(self, color: Color, amount: Optional[float] = None, **kwargs: Any) -> None:  # noqa: A003
+    def filter(self, color: Color, amount: float | None = None, **kwargs: Any) -> None:  # noqa: A003
         """Filter the color."""
 
-        method = kwargs.get('method')  # type: Optional[str]
+        method = kwargs.get('method')  # type: str | None
         amount = alg.clamp(1 if amount is None else amount, 0, 1)
         self.get_best_filter(method, amount == 1)(color, amount)
 

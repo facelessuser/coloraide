@@ -60,7 +60,7 @@ from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .interpolate.linear import Linear
 from .types import Plugin
-from typing import overload, Sequence, Optional, Any, cast, Callable, Mapping
+from typing import overload, Sequence, Any, cast, Callable, Mapping
 
 
 class ColorMatch:
@@ -146,7 +146,7 @@ class Color(metaclass=ColorMeta):
     def __init__(
         self,
         color: ColorInput,
-        data: Optional[VectorLike] = None,
+        data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
     ) -> None:
@@ -204,7 +204,7 @@ class Color(metaclass=ColorMeta):
     def _parse(
         cls,
         color: ColorInput,
-        data: Optional[VectorLike] = None,
+        data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
     ) -> tuple[Space, list[float]]:
@@ -258,7 +258,7 @@ class Color(metaclass=ColorMeta):
         string: str,
         start: int = 0,
         fullmatch: bool = False
-    ) -> Optional[tuple[Space, Vector, float, int, int]]:
+    ) -> tuple[Space, Vector, float, int, int] | None:
         """
         Match a color in a buffer and return a color object.
 
@@ -283,7 +283,7 @@ class Color(metaclass=ColorMeta):
         string: str,
         start: int = 0,
         fullmatch: bool = False
-    ) -> Optional[ColorMatch]:
+    ) -> ColorMatch | None:
         """Match color."""
 
         m = cls._match(string, start, fullmatch)
@@ -318,7 +318,7 @@ class Color(metaclass=ColorMeta):
         if not isinstance(plugin, Sequence):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[dict[str, Any]]
+        mapping = None  # type: dict[str, Any] | None
         for p in plugin:
             if isinstance(p, Space):
                 mapping = cls.CS_MAP
@@ -368,7 +368,7 @@ class Color(metaclass=ColorMeta):
         if isinstance(plugin, str):
             plugin = [plugin]
 
-        mapping = None  # type: Optional[dict[str, Any]]
+        mapping = None  # type: dict[str, Any] | None
         for p in plugin:
             if p == '*':
                 cls.CS_MAP.clear()
@@ -419,7 +419,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def random(cls, space: str, *, limits: Optional[Sequence[Optional[Sequence[float]]]] = None) -> Color:
+    def random(cls, space: str, *, limits: Sequence[Sequence[float] | None] | None = None) -> Color:
         """Get a random color."""
 
         # Get the color space and number of channels
@@ -480,7 +480,7 @@ class Color(metaclass=ColorMeta):
     def new(
         self,
         color: ColorInput,
-        data: Optional[VectorLike] = None,
+        data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
     ) -> Color:
@@ -516,7 +516,7 @@ class Color(metaclass=ColorMeta):
     def mutate(
         self,
         color: ColorInput,
-        data: Optional[VectorLike] = None,
+        data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
     ) -> Color:
@@ -528,7 +528,7 @@ class Color(metaclass=ColorMeta):
     def update(
         self,
         color: ColorInput,
-        data: Optional[VectorLike] = None,
+        data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
     ) -> Color:
@@ -590,7 +590,7 @@ class Color(metaclass=ColorMeta):
         w2: tuple[float, float],
         xyz: VectorLike,
         *,
-        method: Optional[str] = None
+        method: str | None = None
     ) -> Vector:
         """Chromatic adaptation."""
 
@@ -600,7 +600,7 @@ class Color(metaclass=ColorMeta):
 
         return adapter.adapt(w1, w2, xyz)
 
-    def clip(self, space: Optional[str] = None) -> Color:
+    def clip(self, space: str | None = None) -> Color:
         """Clip the color channels."""
 
         orig_space = self.space()
@@ -616,9 +616,9 @@ class Color(metaclass=ColorMeta):
 
     def fit(
         self,
-        space: Optional[str] = None,
+        space: str | None = None,
         *,
-        method: Optional[str] = None,
+        method: str | None = None,
         **kwargs: Any
     ) -> Color:
         """Fit the gamut using the provided method."""
@@ -649,7 +649,7 @@ class Color(metaclass=ColorMeta):
         # Convert back to the original color space
         return self.convert(orig_space, in_place=True)
 
-    def in_gamut(self, space: Optional[str] = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
+    def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
 
         if space is None:
@@ -711,7 +711,7 @@ class Color(metaclass=ColorMeta):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
-        delta_e: Optional[str] = None,
+        delta_e: str | None = None,
         **interpolate_args: Any
     ) -> list[Color]:
         """Discrete steps."""
@@ -727,13 +727,13 @@ class Color(metaclass=ColorMeta):
         cls,
         colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
         *,
-        space: Optional[str] = None,
-        out_space: Optional[str] = None,
-        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]] = None,
+        space: str | None = None,
+        out_space: str | None = None,
+        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None = None,
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
         extrapolate: bool = False,
-        domain: Optional[list[float]] = None,
+        domain: list[float] | None = None,
         method: str = "linear",
         **kwargs: Any
     ) -> Interpolator:
@@ -766,9 +766,9 @@ class Color(metaclass=ColorMeta):
     def filter(  # noqa: A003
         self,
         name: str,
-        amount: Optional[float] = None,
+        amount: float | None = None,
         *,
-        space: Optional[str] = None,
+        space: str | None = None,
         in_place: bool = False,
         **kwargs: Any
     ) -> Color:
@@ -780,7 +780,7 @@ class Color(metaclass=ColorMeta):
         self,
         name: str,
         *,
-        space: Optional[str] = None
+        space: str | None = None
     ) -> list[Color]:
         """Acquire the specified color harmonies."""
 
@@ -792,8 +792,8 @@ class Color(metaclass=ColorMeta):
         *,
         blend: str | bool = True,
         operator: str | bool = True,
-        space: Optional[str] = None,
-        out_space: Optional[str] = None,
+        space: str | None = None,
+        out_space: str | None = None,
         in_place: bool = False
     ) -> Color:
         """Blend colors using the specified blend mode."""
@@ -815,7 +815,7 @@ class Color(metaclass=ColorMeta):
         self,
         color: ColorInput,
         *,
-        method: Optional[str] = None,
+        method: str | None = None,
         **kwargs: Any
     ) -> float:
         """Delta E distance."""
@@ -838,7 +838,7 @@ class Color(metaclass=ColorMeta):
         self,
         colors: Sequence[ColorInput],
         *,
-        method: Optional[str] = None,
+        method: str | None = None,
         **kwargs: Any
     ) -> Color:
         """Find the closest color to the current base color."""
@@ -850,7 +850,7 @@ class Color(metaclass=ColorMeta):
 
         return self.convert("xyz-d65")['y']
 
-    def contrast(self, color: ColorInput, method: Optional[str] = None) -> float:
+    def contrast(self, color: ColorInput, method: str | None = None) -> float:
         """Compare the contrast ratio of this color and the provided color."""
 
         color = self._handle_color_input(color)
@@ -893,7 +893,7 @@ class Color(metaclass=ColorMeta):
     def set(  # noqa: A003
         self,
         name: str | dict[str, float | Callable[..., float]],
-        value: Optional[float | Callable[..., float]] = None
+        value: float | Callable[..., float] | None = None
     ) -> Color:
         """Set channel."""
 

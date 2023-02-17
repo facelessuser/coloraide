@@ -7,7 +7,7 @@ from . import parse
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT
 from ..types import Vector
-from typing import Optional, Match, cast, TYPE_CHECKING
+from typing import Match, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -20,7 +20,7 @@ SPACE = ' '
 EMPTY = ''
 
 
-def named_color(obj: 'Color', alpha: Optional[bool], fit: str | bool) -> Optional[str]:
+def named_color(obj: 'Color', alpha: bool | None, fit: str | bool) -> str | None:
     """Get the CSS color name."""
 
     a = get_alpha(obj, alpha, False, False)
@@ -32,7 +32,7 @@ def named_color(obj: 'Color', alpha: Optional[bool], fit: str | bool) -> Optiona
 def named_color_function(
     obj: 'Color',
     func: str,
-    alpha: Optional[bool],
+    alpha: bool | None,
     precision: int,
     fit: str | bool,
     none: bool,
@@ -75,7 +75,7 @@ def named_color_function(
 
 def color_function(
     obj: 'Color',
-    alpha: Optional[bool],
+    alpha: bool | None,
     precision: int,
     fit: str | bool,
     none: bool
@@ -101,7 +101,7 @@ def get_coords(obj: 'Color', fit: str | bool, none: bool, legacy: bool) -> Vecto
     return alg.no_nans(coords) if legacy or not none else coords
 
 
-def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool, legacy: bool) -> Optional[float]:
+def get_alpha(obj: 'Color', alpha: bool | None, none: bool, legacy: bool) -> float | None:
     """Get the alpha if required."""
 
     a = alg.no_nan(obj[-1]) if not none or legacy else obj[-1]
@@ -111,7 +111,7 @@ def get_alpha(obj: 'Color', alpha: Optional[bool], none: bool, legacy: bool) -> 
 
 def hexadecimal(
     obj: 'Color',
-    alpha: Optional[bool] = None,
+    alpha: bool | None = None,
     fit: str | bool = True,
     upper: bool = False,
     compress: bool = False
@@ -149,8 +149,8 @@ def serialize_css(
     obj: 'Color',
     func: str = '',
     color: bool = False,
-    alpha: Optional[bool] = None,
-    precision: Optional[int] = None,
+    alpha: bool | None = None,
+    precision: int | None = None,
     fit: str | bool = True,
     none: bool = False,
     percent: bool = False,

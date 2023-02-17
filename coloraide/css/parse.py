@@ -6,7 +6,7 @@ from .. import algebra as alg
 from ..types import Vector
 from . import color_names
 from ..channels import Channel, FLG_ANGLE
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..spaces import Space
@@ -283,7 +283,7 @@ def parse_color(
     spaces: dict[str, Space],
     start: int,
     fullmatch: bool = False
-) -> Optional[tuple[Space, tuple[Vector, float], int]]:
+) -> tuple[Space, tuple[Vector, float], int] | None:
     """Perform default color matching."""
 
     m = RE_COLOR_MATCH.match(string, start)
@@ -326,7 +326,7 @@ def parse_css(
     start: int = 0,
     fullmatch: bool = True,
     color: bool = False
-) -> Optional[tuple[tuple[Vector, float], int]]:
+) -> tuple[tuple[Vector, float], int] | None:
     """Match a CSS color string."""
 
     name = cspace.NAME

@@ -8,7 +8,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -17,8 +17,8 @@ if TYPE_CHECKING:  # pragma: no cover
 def clip_channel(coord: float, channel: Channel) -> float:
     """Clipping channel."""
 
-    a = channel.low  # type: Optional[float]
-    b = channel.high  # type: Optional[float]
+    a = channel.low  # type: float | None
+    b = channel.high  # type: float | None
 
     # These parameters are unbounded
     if not channel.bound:  # pragma: no cover
@@ -34,7 +34,7 @@ def clip_channel(coord: float, channel: Channel) -> float:
 def apply_compositing(
     color1: Color,
     color2: Color,
-    blender: Optional[blend_modes.Blend],
+    blender: blend_modes.Blend | None,
     operator: str | bool
 ) -> Color:
     """Perform the actual blending."""
@@ -46,7 +46,7 @@ def apply_compositing(
     coords2 = alg.no_nans(color2[:-1])
 
     # Setup compositing
-    compositor = None  # type: Optional[porter_duff.PorterDuff]
+    compositor = None  # type: porter_duff.PorterDuff | None
     cra = csa
     if isinstance(operator, str):
         compositor = porter_duff.compositor(operator)(cba, csa)
@@ -79,12 +79,12 @@ def compose(
     backdrop: list[Color],
     blend: str | bool = True,
     operator: str | bool = True,
-    space: Optional[str] = None
+    space: str | None = None
 ) -> Color:
     """Blend colors using the specified blend mode."""
 
     # We need to go ahead and grab the blender as we need to check what type of blender it is.
-    blender = None  # Optional[blend_modes.Blend]
+    blender = None  # blend_modes.Blend | None
     if isinstance(blend, str):
         blender = blend_modes.get_blender(blend)
     elif blend is True:

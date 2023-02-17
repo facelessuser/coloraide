@@ -5,7 +5,7 @@ from ..channels import Channel
 from ..css import serialize
 from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
-from typing import Optional, Any, cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -103,7 +103,7 @@ class Space(Plugin, metaclass=SpaceMeta):
     #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
     #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
     #   space, the values can be greatly out of specification (looking at you HSL).
-    GAMUT_CHECK = None  # type: Optional[str]
+    GAMUT_CHECK = None  # type: str | None
     # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
     # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
     # interpolated, the colors will usually be gamut mapped, but if the interpolation space happens to support extended
@@ -149,8 +149,8 @@ class Space(Plugin, metaclass=SpaceMeta):
         self,
         parent: Color,
         *,
-        alpha: Optional[bool] = None,
-        precision: Optional[int] = None,
+        alpha: bool | None = None,
+        precision: int | None = None,
         fit: bool | str = True,
         none: bool = False,
         **kwargs: Any
@@ -176,7 +176,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[tuple[tuple[Vector, float], int]]:
+    ) -> tuple[tuple[Vector, float], int] | None:
         """Match a color by string."""
 
         return None

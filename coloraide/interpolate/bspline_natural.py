@@ -8,7 +8,7 @@ from .. interpolate import Interpolate, Interpolator
 from .bspline import InterpolatorBSpline
 from .. import algebra as alg
 from ..types import Vector
-from typing import List, Sequence, Any, Optional, Union, Mapping, Callable, Dict, Type, TYPE_CHECKING
+from typing import List, Sequence, Any, Mapping, Callable, Dict, Type, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -44,14 +44,14 @@ class NaturalBSpline(Interpolate):
         coordinates: List[Vector],
         channel_names: Sequence[str],
         create: Type[Color],
-        easings: List[Optional[Callable[..., float]]],
+        easings: List[Callable[..., float] | None],
         stops: Dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: Optional[list[float]] = None,
+        domain: list[float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the natural B-spline interpolator."""
