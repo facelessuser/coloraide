@@ -27,7 +27,7 @@ import operator
 import functools
 from itertools import zip_longest as zipl
 from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
-from typing import Optional, Callable, Sequence, Iterator, Any, Iterable, overload, cast  # noqa: F401
+from typing import Callable, Sequence, Iterator, Any, Iterable, overload, cast  # noqa: F401
 
 NaN = float('nan')
 INF = float('inf')
@@ -119,8 +119,8 @@ def round_to(f: float, p: int = 0) -> float:
 
 def clamp(
     value: SupportsFloatOrInt,
-    mn: Optional[SupportsFloatOrInt] = None,
-    mx: Optional[SupportsFloatOrInt] = None
+    mn: SupportsFloatOrInt | None = None,
+    mx: SupportsFloatOrInt | None = None
 ) -> SupportsFloatOrInt:
     """Clamp the value to the the given minimum and maximum."""
 
@@ -613,47 +613,47 @@ def _extract_dims(
 
 
 @overload
-def dot(a: float, b: float, *, dims: Optional[tuple[int, int]] = None) -> float:
+def dot(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def dot(a: float, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def dot(a: float, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: float, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def dot(a: VectorLike, b: float, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: float, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def dot(a: float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: float, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def dot(a: MatrixLike, b: float, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> float:
+def dot(a: VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def dot(a: VectorLike, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def dot(a: MatrixLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def dot(a: MatrixLike, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
@@ -661,7 +661,7 @@ def dot(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """
     Get dot product of simple numbers, vectors, and matrices.
@@ -871,7 +871,7 @@ def _math(
     a: float,
     b: float,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float:
     ...
 
@@ -882,7 +882,7 @@ def _math(
     a: float | VectorLike,
     b: VectorLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Vector:
     ...
 
@@ -893,7 +893,7 @@ def _math(
     a: VectorLike,
     b: float | VectorLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Vector:
     ...
 
@@ -904,7 +904,7 @@ def _math(
     a: MatrixLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Matrix:
     ...
 
@@ -915,7 +915,7 @@ def _math(
     a: ArrayLike | float,
     b: MatrixLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Matrix:
     ...
 
@@ -925,7 +925,7 @@ def _math(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """
     Reuse same logic for basic, multiplication, division, addition and subtraction.
@@ -1007,27 +1007,27 @@ def _math(
 
 
 @overload
-def divide(a: float, b: float, *, dims: Optional[tuple[int, int]] = None) -> float:
+def divide(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def divide(a: float | VectorLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def divide(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def divide(a: VectorLike, b: float | VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def divide(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def divide(a: MatrixLike, b: float | ArrayLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def divide(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def divide(a: ArrayLike | float, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def divide(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
@@ -1035,7 +1035,7 @@ def divide(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """Divide simple numbers, vectors, and 2D matrices."""
 
@@ -1043,27 +1043,27 @@ def divide(
 
 
 @overload
-def multiply(a: float, b: float, *, dims: Optional[tuple[int, int]] = None) -> float:
+def multiply(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def multiply(a: float | VectorLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def multiply(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def multiply(a: VectorLike, b: float | VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def multiply(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
@@ -1071,7 +1071,7 @@ def multiply(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """Multiply simple numbers, vectors, and 2D matrices."""
 
@@ -1079,27 +1079,27 @@ def multiply(
 
 
 @overload
-def add(a: float, b: float, *, dims: Optional[tuple[int, int]] = None) -> float:
+def add(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def add(a: float | VectorLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def add(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def add(a: VectorLike, b: float | VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def add(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def add(a: MatrixLike, b: float | ArrayLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def add(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def add(a: ArrayLike | float, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def add(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
@@ -1107,7 +1107,7 @@ def add(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """Add simple numbers, vectors, and 2D matrices."""
 
@@ -1115,27 +1115,27 @@ def add(
 
 
 @overload
-def subtract(a: float, b: float, *, dims: Optional[tuple[int, int]] = None) -> float:
+def subtract(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
     ...
 
 
 @overload
-def subtract(a: float | VectorLike, b: VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def subtract(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def subtract(a: VectorLike, b: float | VectorLike, *, dims: Optional[tuple[int, int]] = None) -> Vector:
+def subtract(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
     ...
 
 
 @overload
-def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
 @overload
-def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: Optional[tuple[int, int]] = None) -> Matrix:
+def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
     ...
 
 
@@ -1143,7 +1143,7 @@ def subtract(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """Subtract simple numbers, vectors, and 2D matrices."""
 
@@ -1154,9 +1154,9 @@ def subtract(
 def apply(
     fn: Callable[..., float],
     a: float,
-    b: Optional[float] = None,
+    b: float | None = None,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float:
     ...
 
@@ -1167,7 +1167,7 @@ def apply(
     a: float | VectorLike,
     b: VectorLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Vector:
     ...
 
@@ -1176,9 +1176,9 @@ def apply(
 def apply(
     fn: Callable[..., float],
     a: VectorLike,
-    b: Optional[float | VectorLike] = None,
+    b: float | VectorLike | None = None,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Vector:
     ...
 
@@ -1187,9 +1187,9 @@ def apply(
 def apply(
     fn: Callable[..., float],
     a: MatrixLike,
-    b: Optional[float | ArrayLike] = None,
+    b: float | ArrayLike | None = None,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Matrix:
     ...
 
@@ -1200,7 +1200,7 @@ def apply(
     a: ArrayLike | float,
     b: MatrixLike,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> Matrix:
     ...
 
@@ -1208,9 +1208,9 @@ def apply(
 def apply(
     fn: Callable[..., float],
     a: float | ArrayLike,
-    b: Optional[float | ArrayLike] = None,
+    b: float | ArrayLike | None = None,
     *,
-    dims: Optional[tuple[int, int]] = None
+    dims: tuple[int, int] | None = None
 ) -> float | Array:
     """Apply a given function over each element of the matrix."""
 
@@ -1521,7 +1521,7 @@ def _frange(start: float, stop: float, step: float) -> Iterator[float]:
 
 def arange(
     start: SupportsFloatOrInt,
-    stop: Optional[SupportsFloatOrInt] = None,
+    stop: SupportsFloatOrInt | None = None,
     step: SupportsFloatOrInt = 1
 ) -> Vector:
     """
@@ -1756,7 +1756,7 @@ def fill_diagonal(matrix: MatrixLike, val: float | ArrayLike = 0.0, wrap: bool =
         pos = pos + 1 if pos < dlen else 0
 
 
-def eye(n: int, m: Optional[int] = None, k: int = 0) -> Matrix:
+def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
     """Create a diagonal of ones in a zero initialized matrix at the specified position."""
 
     if m is None:
@@ -1956,7 +1956,7 @@ def hstack(arrays: tuple[ArrayLike, ...]) -> Array:
     # Gather up shapes
     columns = 0
     shapes = []
-    first = None  # type: Optional[tuple[int, ...]]
+    first = None  # type: tuple[int, ...] | None
     for a in arrays:
         cs = shape(a)
 
