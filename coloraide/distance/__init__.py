@@ -4,13 +4,13 @@ from abc import ABCMeta, abstractmethod
 import math
 from .. import algebra as alg
 from ..types import ColorInput, Plugin
-from typing import TYPE_CHECKING, Any, Sequence, Optional
+from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def closest(color: Color, colors: Sequence[ColorInput], method: Optional[str] = None, **kwargs: Any) -> Color:
+def closest(color: Color, colors: Sequence[ColorInput], method: str | None = None, **kwargs: Any) -> Color:
     """Get the closest color."""
 
     if method is None:

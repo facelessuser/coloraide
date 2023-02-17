@@ -1,7 +1,7 @@
 """Delta E OK."""
 from __future__ import annotations
 from .delta_e_76 import DE76
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -18,7 +18,7 @@ class DEOK(DE76):
 
         self.scalar = scalar
 
-    def distance(self, color: Color, sample: Color, scalar: Optional[float] = None, **kwargs: Any) -> float:
+    def distance(self, color: Color, sample: Color, scalar: float | None = None, **kwargs: Any) -> float:
         """
         Delta E OK color distance formula.
 

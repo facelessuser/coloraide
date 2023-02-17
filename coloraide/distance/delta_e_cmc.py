@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -28,8 +28,8 @@ class DECMC(DeltaE):
         self,
         color: Color,
         sample: Color,
-        l: Optional[float] = None,
-        c: Optional[float] = None,
+        l: float | None = None,
+        c: float | None = None,
         **kwargs: Any
     ) -> float:
         """

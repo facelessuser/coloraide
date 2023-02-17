@@ -8,7 +8,7 @@ from .bspline import InterpolatorBSpline
 from ..interpolate import Interpolator, Interpolate
 from .. import algebra as alg
 from ..types import Vector
-from typing import Optional, Callable, Mapping, Sequence, Any, TYPE_CHECKING
+from typing import Callable, Mapping, Sequence, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -34,14 +34,14 @@ class CatmullRom(Interpolate):
         coordinates: list[Vector],
         channel_names: Sequence[str],
         create: type[Color],
-        easings: list[Optional[Callable[..., float]]],
+        easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Mapping[str, Callable[..., float]] | Callable[..., float]],
+        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: Optional[list[float]] = None,
+        domain: list[float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the Catmull-Rom interpolator."""

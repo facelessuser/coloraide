@@ -15,7 +15,7 @@ from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector, VectorLike
-from typing import Optional, cast
+from typing import cast
 
 # CAT16
 M16 = [
@@ -190,14 +190,14 @@ class Environment:
 
 
 def cam16_to_xyz_d65(
-    J: Optional[float] = None,
-    C: Optional[float] = None,
-    h: Optional[float] = None,
-    s: Optional[float] = None,
-    Q: Optional[float] = None,
-    M: Optional[float] = None,
-    H: Optional[float] = None,
-    env: Optional[Environment] = None
+    J: float | None = None,
+    C: float | None = None,
+    h: float | None = None,
+    s: float | None = None,
+    Q: float | None = None,
+    M: float | None = None,
+    H: float | None = None,
+    env: Environment | None = None
 ) -> Vector:
     """From CAM16 to XYZ."""
 

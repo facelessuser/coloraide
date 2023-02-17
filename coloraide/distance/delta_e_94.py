@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..distance import DeltaE
 import math
 from .. import algebra as alg
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -30,9 +30,9 @@ class DE94(DeltaE):
         self,
         color: Color,
         sample: Color,
-        kl: Optional[float] = None,
-        k1: Optional[float] = None,
-        k2: Optional[float] = None,
+        kl: float | None = None,
+        k1: float | None = None,
+        k2: float | None = None,
         **kwargs: Any
     ) -> float:
         """

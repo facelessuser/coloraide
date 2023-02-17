@@ -6,7 +6,6 @@ A simple name to hex and hex to name map of CSS3 colors.
 http://www.w3.org/TR/SVG/types.html#ColorKeywords
 """
 from __future__ import annotations
-from typing import Optional
 from .. import algebra as alg
 from ..types import Vector
 
@@ -167,13 +166,13 @@ name2val_map = {
 val2name_map = dict([(v, k) for k, v in name2val_map.items()])  # type: dict[tuple[float, ...], str]
 
 
-def to_name(value: Vector) -> Optional[str]:
+def to_name(value: Vector) -> str | None:
     """Convert CSS hex to webcolor name."""
 
     return val2name_map.get(tuple([alg.round_half_up(c * 255) for c in value]), None)
 
 
-def from_name(name: str) -> Optional[Vector]:
+def from_name(name: str) -> Vector | None:
     """Convert CSS hex to webcolor name."""
 
     value = name2val_map.get(name.lower(), None)

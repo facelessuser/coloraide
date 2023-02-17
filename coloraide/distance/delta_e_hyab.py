@@ -4,7 +4,7 @@ from ..distance import DeltaE
 import math
 from .. import algebra as alg
 from ..spaces import Labish
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -20,7 +20,7 @@ class DEHyAB(DeltaE):
 
         self.space = space
 
-    def distance(self, color: Color, sample: Color, space: Optional[str] = None, **kwargs: Any) -> float:
+    def distance(self, color: Color, sample: Color, space: str | None = None, **kwargs: Any) -> float:
         """
         HyAB distance for Lab-ish spaces.
 

@@ -36,7 +36,6 @@ import math
 import sys
 from .. import algebra as alg
 from ..types import Vector
-from typing import Optional
 
 FLT_MAX = sys.float_info.max
 
@@ -125,7 +124,7 @@ def find_gamut_intersection(
     l1: float,
     c1: float,
     l0: float,
-    cusp: Optional[Vector] = None
+    cusp: Vector | None = None
 ) -> float:
     """
     Finds intersection of the line.
