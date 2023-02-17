@@ -48,7 +48,7 @@ class XYZD65(Space):
     #        high: float,
     #        bound: bool = False,
     #        flags: int = 0,
-    #        limit: Tuple[Optional[float], Optional[float]] = (None, None)
+    #        limit: Tuple[float | None, float | None] = (None, None)
     #    ) -> 'Channel':
     #```
     #
@@ -359,7 +359,7 @@ class sRGB(base.sRGB):
         string: str,
         start: int = 0,
         fullmatch: bool = True
-    ) -> Optional[Tuple[Tuple[Vector, float], int]]:
+    ) -> Tuple[Tuple[Vector, float], int] | None:
         """Match a CSS color string."""
 
         return parse.parse_css(self, string, start, fullmatch)
@@ -375,8 +375,8 @@ all the parameters we need, in our case we accept the common parameters and late
         self,
         parent: 'Color',
         *,
-        alpha: Optional[bool] = None,
-        precision: Optional[int] = None,
+        alpha: bool | None = None,
+        precision: int | None = None,
         fit: Union[bool, str] = True,
         none: bool = False,
         color: bool = False,

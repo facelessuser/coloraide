@@ -21,14 +21,14 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         coordinates: List[Vector],
         channel_names: Sequence[str],
         create: Type['Color'],
-        easings: List[Optional[Callable[..., float]]],
+        easings: List[Callable[..., float] | None],
         stops: Dict[int, float],
         space: str,
         out_space: str,
-        progress: Optional[Union[Mapping[str, Callable[..., float]], Callable[..., float]]],
+        progress: Union[Mapping[str, Callable[..., float]], Callable[..., float]] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: Optional[List[float]] = None,
+        domain: List[float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
