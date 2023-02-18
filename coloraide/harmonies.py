@@ -10,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def adjust_hue(hue: float, deg: float) -> float:
-    """Andust hue by the given degree."""
+    """Adjust hue by the given degree."""
 
     return hue + deg
 
