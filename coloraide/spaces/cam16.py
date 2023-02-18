@@ -15,7 +15,6 @@ from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector, VectorLike
-from typing import cast
 
 # CAT16
 M16 = [
@@ -199,11 +198,19 @@ def cam16_to_xyz_d65(
     H: float | None = None,
     env: Environment | None = None
 ) -> Vector:
-    """From CAM16 to XYZ."""
+    """
+    From CAM16 to XYZ.
 
-    # Reverse calculation can actually be obtained from a small subset of the components
-    # Really, only one should be given as we won't know which one is correct otherwise,
-    # but we don't currently enforce it as we expect the `Space` object to do that.
+    Reverse calculation can actually be obtained from a small subset of the CAM16 components
+    Really, only one suitable value is needed for each type of attribute: (lightness/brightness),
+    (chroma/colorfulness/saturation), (hue/hue quadrature). If more than one for a given
+    category is given, we will fail as we have no idea which is the right one to use. Also,
+    if none are given, we must fail as well as there is nothing to calculate with.
+    """
+
+    # These check ensure one, and only one attribute for a given category is provided.
+    # Unfortunately, `mypy` is not smart enough to tell which one is not `None`,
+    # so we have to we must test each again later, but it is still faster than calling `cast()`.
     if not ((J is not None) ^ (Q is not None)):
         raise ValueError("Conversion requires one and only one: 'J' or 'Q'")
 
@@ -219,27 +226,33 @@ def cam16_to_xyz_d65(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if J == 0 or Q == 0:
-        return [0, 0, 0]
+    if J == 0.0 or Q == 0.0:
+        return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
-    h_rad = math.radians(h if h is not None else inv_hue_quadrature(cast(float, H)))
+    h_rad = 0.0
+    if h is not None:
+        h_rad = math.radians(h)
+    elif H is not None:
+        h_rad = math.radians(inv_hue_quadrature(H))
     cos_h = math.cos(h_rad)
     sin_h = math.sin(h_rad)
 
     # Calculate `J_root` from one of the lightness derived coordinates.
+    J_root = 0.0
     if J is not None:
         J_root = alg.nth_root(J, 2) * 0.1
-    else:
-        J_root = 0.25 * env.c * cast(float, Q) / ((env.a_w + 4) * env.fl_root)
+    elif Q is not None:
+        J_root = 0.25 * env.c * Q / ((env.a_w + 4) * env.fl_root)
 
     # Calculate the `t` value from one of the chroma derived coordinates
+    alpha = 0.0
     if C is not None:
         alpha = C / J_root
     elif M is not None:
         alpha = (M / env.fl_root) / J_root
-    else:
-        alpha = 0.0004 * (cast(float, s) ** 2) * (env.a_w + 4) / env.c
+    elif s is not None:
+        alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
     t = alg.npow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
 
     # Eccentricity

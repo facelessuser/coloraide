@@ -3,10 +3,16 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 from .spaces import Cylindrical
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
+
+
+def adjust_hue(hue: float, deg: float) -> float:
+    """Andust hue by the given degree."""
+
+    return hue + deg
 
 
 class Harmony(metaclass=ABCMeta):
@@ -129,14 +135,11 @@ class Geometric(Harmony):
 
         name = color0._space.hue_name()
 
-        degree = current = 360 / self.COUNT
+        degree = current = 360.0 / self.COUNT
         colors = [color]
         for _ in range(self.COUNT - 1):
             colors.append(
-                color0.clone().set(
-                    name,
-                    lambda x: cast(float, x + current)
-                ).convert(orig_space, in_place=True)
+                color0.clone().set(name, lambda x: adjust_hue(x, current)).convert(orig_space, in_place=True)
             )
             current += degree
         return colors
@@ -179,8 +182,8 @@ class SplitComplementary(Harmony):
 
         color2 = color0.clone()
         color3 = color0.clone()
-        color2.set(name, lambda x: cast(float, x + 210))
-        color3.set(name, lambda x: cast(float, x - 210))
+        color2.set(name, lambda x: adjust_hue(x, 210))
+        color3.set(name, lambda x: adjust_hue(x, -210))
         return [
             color,
             color2.convert(orig_space, in_place=True),
@@ -207,8 +210,8 @@ class Analogous(Harmony):
 
         color2 = color0.clone()
         color3 = color0.clone()
-        color2.set(name, lambda x: cast(float, x + 30))
-        color3.set(name, lambda x: cast(float, x - 30))
+        color2.set(name, lambda x: adjust_hue(x, 30))
+        color3.set(name, lambda x: adjust_hue(x, -30))
         return [
             color,
             color2.convert(orig_space, in_place=True),
@@ -236,9 +239,9 @@ class TetradicRect(Harmony):
         color2 = color0.clone()
         color3 = color0.clone()
         color4 = color0.clone()
-        color2.set(name, lambda x: cast(float, x + 30))
-        color3.set(name, lambda x: cast(float, x + 180))
-        color4.set(name, lambda x: cast(float, x + 210))
+        color2.set(name, lambda x: adjust_hue(x, 30))
+        color3.set(name, lambda x: adjust_hue(x, 180))
+        color4.set(name, lambda x: adjust_hue(x, 210))
         return [
             color,
             color2.convert(orig_space, in_place=True),

@@ -10,7 +10,6 @@ from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector
-from typing import cast
 
 # All PQ Values are equivalent to defaults as stated in link below:
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -111,7 +110,7 @@ class ICtCp(Labish, Space):
         Interestingly, the polarity of tritan (yellow/blue) is also flipped.
         """
 
-        channels = cast(Space, self).channels
+        channels = self.channels
         return channels[0], channels[2], channels[1]
 
     def to_base(self, coords: Vector) -> Vector:
