@@ -60,7 +60,7 @@ from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .interpolate.linear import Linear
 from .types import Plugin
-from typing import overload, Sequence, Any, cast, Callable, Mapping
+from typing import overload, Sequence, Any, Callable, Mapping
 
 
 class ColorMatch:
@@ -185,11 +185,11 @@ class Color(metaclass=ColorMeta):
 
         space = self._space
         if isinstance(i, slice):
-            for index, value in zip(range(len(self._coords))[i], cast(Vector, v)):
+            for index, value in zip(range(len(self._coords))[i], v):  # type: ignore[arg-type]
                 self._coords[index] = alg.clamp(float(value), *space.channels[index].limit)
         else:
             index = space.get_channel_index(i) if isinstance(i, str) else i
-            self._coords[index] = alg.clamp(float(cast(float, v)), *space.channels[index].limit)
+            self._coords[index] = alg.clamp(float(v), *space.channels[index].limit)  # type: ignore[arg-type]
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
