@@ -7,7 +7,7 @@ from . import parse
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT
 from ..types import Vector
-from typing import Match, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -139,8 +139,8 @@ def hexadecimal(
         value = value.upper()
 
     if compress:
-        m = cast(Match[str], RE_COMPRESS.match(value))
-        return m.expand(r"#\1\2\3\4") if len(value) == 9 else m.expand(r"#\1\2\3") if m else value
+        m = RE_COMPRESS.match(value)
+        return (m.expand(r"#\1\2\3\4") if len(value) == 9 else m.expand(r"#\1\2\3")) if m is not None else value
     else:
         return value
 

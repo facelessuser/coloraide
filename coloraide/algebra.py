@@ -482,7 +482,7 @@ def _cross_pad(a: ArrayLike, s: tuple[int, ...]) -> Array:
     m = acopy(a)
 
     # Initialize indexes so we can properly write our data
-    total = prod(cast(Iterator[int], s[:-1]))
+    total = prod(s[:-1])
     idx = [0] * (len(s) - 1)
 
     for c in range(total):

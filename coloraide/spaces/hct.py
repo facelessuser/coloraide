@@ -58,7 +58,6 @@ from .cam16 import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
 from .cam16_jmh import Achromatic as _Achromatic
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
-from typing import cast
 import math
 
 
@@ -212,7 +211,7 @@ class HCT(LChish, Space):
     def lchish_names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
 
-        channels = cast(Space, self).channels
+        channels = self.channels
         return channels[2], channels[1], channels[0]
 
     def to_base(self, coords: Vector) -> Vector:

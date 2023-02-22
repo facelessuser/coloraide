@@ -21,7 +21,7 @@ from .. import util
 from .. import algebra as alg
 from ..spaces import Cylindrical
 from ..types import Vector, ColorInput, Plugin
-from typing import Callable, Sequence, Mapping, Any, cast, TYPE_CHECKING
+from typing import Callable, Sequence, Mapping, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -101,7 +101,7 @@ class Interpolator(metaclass=ABCMeta):
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
-            self.hue_index = cast(Cylindrical, cs).hue_index()
+            self.hue_index = cs.hue_index()
         else:
             self.hue_index = -1
         self.premultiplied = premultiplied
@@ -156,14 +156,14 @@ class Interpolator(metaclass=ABCMeta):
         if max_steps is not None:
             actual_steps = min(actual_steps, max_steps)
 
-        ret = []
+        ret = []  # type: list[tuple[float, Color]]
         if actual_steps == 1:
-            ret = [{"p": 0.5, "color": self(0.5)}]
+            ret = [(0.5, self(0.5))]
         elif actual_steps > 1:
             step = 1 / (actual_steps - 1)
             for i in range(actual_steps):
                 p = i * step
-                ret.append({'p': p, 'color': self(p)})
+                ret.append((p, self(p)))
 
         # Iterate over all the stops inserting stops in between all colors
         # if we have any two colors with a max delta greater than what was requested.
@@ -174,8 +174,8 @@ class Interpolator(metaclass=ABCMeta):
             for i in range(1, len(ret)):
                 m_delta = max(
                     m_delta,
-                    cast('Color', ret[i - 1]['color']).delta_e(
-                        cast('Color', ret[i]['color']),
+                    ret[i - 1][1].delta_e(
+                        ret[i][1],
                         method=delta_e
                     )
                 )
@@ -191,18 +191,18 @@ class Interpolator(metaclass=ABCMeta):
                 while index < total:
                     prev = ret[index - 1]
                     cur = ret[index]
-                    p = (cast(float, cur['p']) + cast(float, prev['p'])) / 2
+                    p = (cur[0] + prev[0]) / 2
                     color = self(p)
                     m_delta = max(
                         m_delta,
-                        color.delta_e(cast('Color', prev['color']), method=delta_e),
-                        color.delta_e(cast('Color', cur['color']), method=delta_e)
+                        color.delta_e(prev[1], method=delta_e),
+                        color.delta_e(cur[1], method=delta_e)
                     )
-                    ret.insert(index, {'p': p, 'color': color})
+                    ret.insert(index, (p, color))
                     total += 1
                     index += 2
 
-        return [cast('Color', i['color']) for i in ret]
+        return [i[1] for i in ret]
 
     def premultiply(self, coords: Vector, alpha: float | None = None) -> None:
 
@@ -530,9 +530,11 @@ def normalize_hue(
     c2 = util.constrain_hue(color2[index]) + offset
 
     # Adjust hue, handle gaps across `NaN`s
-    c1_nan = alg.is_nan(c1)
-    if (not c1_nan or fallback is not None) and not alg.is_nan(c2):
-        c2, offset = adjuster(cast(float, fallback) if c1_nan else c1, c2, offset)
+    if not alg.is_nan(c2):
+        if not alg.is_nan(c1):
+            c2, offset = adjuster(c1, c2, offset)
+        elif fallback is not None:
+            c2, offset = adjuster(fallback, c2, offset)
 
     color2[index] = c2
     return color2, offset
@@ -577,7 +579,7 @@ def interpolator(
 
     current.convert(space, in_place=True)
     offset = 0.0
-    hue_index = cast(Cylindrical, current._space).hue_index() if isinstance(current._space, Cylindrical) else -1
+    hue_index = current._space.hue_index() if isinstance(current._space, Cylindrical) else -1
     normalize_color(current)
     norm = current[:]
     fallback = None

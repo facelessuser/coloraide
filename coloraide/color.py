@@ -60,7 +60,7 @@ from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .interpolate.linear import Linear
 from .types import Plugin
-from typing import overload, Sequence, Any, cast, Callable, Mapping
+from typing import overload, Sequence, Any, Callable, Mapping
 
 
 class ColorMatch:
@@ -185,11 +185,11 @@ class Color(metaclass=ColorMeta):
 
         space = self._space
         if isinstance(i, slice):
-            for index, value in zip(range(len(self._coords))[i], cast(Vector, v)):
+            for index, value in zip(range(len(self._coords))[i], v):  # type: ignore[arg-type]
                 self._coords[index] = alg.clamp(float(value), *space.channels[index].limit)
         else:
             index = space.get_channel_index(i) if isinstance(i, str) else i
-            self._coords[index] = alg.clamp(float(cast(float, v)), *space.channels[index].limit)
+            self._coords[index] = alg.clamp(float(v), *space.channels[index].limit)  # type: ignore[arg-type]
 
     def __eq__(self, other: Any) -> bool:
         """Compare equal."""
@@ -271,7 +271,7 @@ class Color(metaclass=ColorMeta):
             return m[0], m[1][0], m[1][1], start, m[2]
 
         # Attempt color space specific match
-        for space, space_class in cls.CS_MAP.items():
+        for _, space_class in cls.CS_MAP.items():
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
                 return space_class, m2[0][0], m2[0][1], start, m2[1]
@@ -314,27 +314,31 @@ class Color(metaclass=ColorMeta):
         """Register the hook."""
 
         reset_convert_cache = False
-
-        if not isinstance(plugin, Sequence):
-            plugin = [plugin]
-
-        mapping = None  # type: dict[str, Any] | None
-        for p in plugin:
-            if isinstance(p, Space):
+        mapping = None  # type: Any
+        p = None  # type: Any
+        for i in [plugin] if not isinstance(plugin, Sequence) else plugin:
+            if isinstance(i, Space):
                 mapping = cls.CS_MAP
                 reset_convert_cache = True
-            elif isinstance(p, DeltaE):
+                p = i
+            elif isinstance(i, DeltaE):
                 mapping = cls.DE_MAP
-            elif isinstance(p, CAT):
+                p = i
+            elif isinstance(i, CAT):
                 mapping = cls.CAT_MAP
-            elif isinstance(p, Filter):
+                p = i
+            elif isinstance(i, Filter):
                 mapping = cls.FILTER_MAP
-            elif isinstance(p, ColorContrast):
+                p = i
+            elif isinstance(i, ColorContrast):
                 mapping = cls.CONTRAST_MAP
-            elif isinstance(p, Interpolate):
+                p = i
+            elif isinstance(i, Interpolate):
                 mapping = cls.INTERPOLATE_MAP
-            elif isinstance(p, Fit):
+                p = i
+            elif isinstance(i, Fit):
                 mapping = cls.FIT_MAP
+                p = i
                 if p.NAME == 'clip':
                     if reset_convert_cache:  # pragma: no cover
                         cls._get_convert_chain.cache_clear()
@@ -344,17 +348,14 @@ class Color(metaclass=ColorMeta):
             else:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()
-                raise TypeError("Cannot register plugin of type '{}'".format(type(p)))
+                raise TypeError("Cannot register plugin of type '{}'".format(type(i)))
 
-            name = p.NAME
-            value = p
-
-            if name != "*" and name not in mapping or overwrite:
-                cast('dict[str, Plugin]', mapping)[name] = value
+            if p.NAME != "*" and p.NAME not in mapping or overwrite:
+                mapping[p.NAME] = p
             elif not silent:
                 if reset_convert_cache:  # pragma: no cover
                     cls._get_convert_chain.cache_clear()
-                raise ValueError("A plugin with the name of '{}' already exists or is not allowed".format(name))
+                raise ValueError("A plugin of name '{}' already exists or is not allowed".format(p.NAME))
 
         if reset_convert_cache:
             cls._get_convert_chain.cache_clear()
