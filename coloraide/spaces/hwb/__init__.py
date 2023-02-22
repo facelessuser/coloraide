@@ -2,7 +2,7 @@
 from __future__ import annotations
 from ...spaces import Space, Cylindrical
 from ...cat import WHITES
-from ...channels import Channel, FLG_ANGLE, FLG_PERCENT
+from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import algebra as alg
 from ...types import Vector
 
@@ -42,8 +42,8 @@ class HWB(Cylindrical, Space):
     SERIALIZE = ("--hwb",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        Channel("w", 0.0, 1.0, bound=True, flags=FLG_PERCENT),
-        Channel("b", 0.0, 1.0, bound=True, flags=FLG_PERCENT)
+        Channel("w", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
     )
     CHANNEL_ALIASES = {
         "hue": "h",
