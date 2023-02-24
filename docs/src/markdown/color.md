@@ -259,13 +259,11 @@ body {
 </html>
 """
 
-colors = []
 for m in RE_COLOR_START.finditer(text):
     start = m.start()
     mcolor = Color.match(text, start=start)
     if mcolor is not None:
-        colors.append(mcolor.color)
-[x.to_string() for x in colors]
+        mcolor.color.to_string()
 ```
 
 ## Custom Color Classes

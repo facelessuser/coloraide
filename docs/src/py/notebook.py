@@ -13,7 +13,6 @@ Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
 import xml.etree.ElementTree as Etree
-from collections.abc import Sequence
 from collections import namedtuple
 import ast
 from io import StringIO
@@ -36,7 +35,19 @@ except ImportError:
     coloraide_extras = None
 
 WEBSPACE = "srgb"
-AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
+AST_BLOCKS = (
+    ast.If,
+    ast.For,
+    ast.While,
+    ast.Try,
+    ast.With,
+    ast.FunctionDef,
+    ast.ClassDef,
+    ast.Match,
+    ast.AsyncFor,
+    ast.AsyncWith,
+    ast.AsyncFunctionDef
+)
 
 RE_COLOR_START = re.compile(
     r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
@@ -77,6 +88,18 @@ class HtmlRow(list):
     """Create a row with the given colors."""
 
 
+class AtomicString(str):
+    """Atomic string."""
+
+
+class Break(Exception):
+    """Break exception."""
+
+
+class Continue(Exception):
+    """Continue exception."""
+
+
 def _escape(txt):
     """Basic HTML escaping."""
 
@@ -100,10 +123,12 @@ def std_output(stdout=None):
 def get_colors(result):
     """Get color from results."""
 
-    colors = []
     domain = []
+    if isinstance(result, AtomicString):
+        yield find_colors(result)
+
     if isinstance(result, HtmlRow):
-        colors = HtmlRow(
+        yield HtmlRow(
             [
                 ColorTuple(c.to_string(fit=False), c.clone()) if isinstance(c, Color) else ColorTuple(c, ColorAll(c))
                 for c in result
@@ -111,33 +136,29 @@ def get_colors(result):
         )
     elif isinstance(result, (HtmlSteps, HtmlGradient)):
         t = type(result)
-        colors = t([c.clone() if isinstance(c, Color) else ColorAll(c) for c in result])
+        yield t([c.clone() if isinstance(c, Color) else ColorAll(c) for c in result])
     elif isinstance(result, Color):
-        colors.append(ColorTuple(result.to_string(fit=False), result.clone()))
+        yield [ColorTuple(result.to_string(fit=False), result.clone())]
     elif isinstance(result, Interpolator):
         # Since we are auto showing the gradient, we need to scale the domain to something we expect.
         if result.domain:
             domain = result.domain
             result.domain = normalize_domain(result.domain)
-        colors = HtmlGradient(result.steps(steps=5, max_delta_e=2.3))
+        grad = HtmlGradient(result.steps(steps=5, max_delta_e=2.3))
         if domain:
             result.domain = domain
             domain = []
+        yield grad
     elif isinstance(result, str):
         try:
-            colors.append(ColorTuple(result, ColorAll(result)))
+            yield [ColorTuple(result, ColorAll(result))]
         except Exception:
             pass
-    elif isinstance(result, Sequence):
-        for x in result:
-            if isinstance(x, Color):
-                colors.append(ColorTuple(x.to_string(fit=False), x.clone()))
-            elif isinstance(x, str):
-                try:
-                    colors.append(ColorTuple(x, ColorAll(x)))
-                except Exception:
-                    pass
-    return colors
+    elif isinstance(result, (list, tuple)):
+        for r in result:
+            for x in get_colors(r):
+                if x:
+                    yield x
 
 
 def find_colors(text):
@@ -150,6 +171,105 @@ def find_colors(text):
         if mcolor is not None:
             colors.append(ColorTuple(text[mcolor.start:mcolor.end], mcolor.color))
     return colors
+
+
+def evaluate_with(node, g, loop, index=0):
+    """Evaluate with."""
+
+    l = len(node.items) - 1
+    withitem = node.items[index]
+    if withitem.context_expr:
+        with eval(compile(ast.Expression(withitem.context_expr), '<string>', 'eval'), g) as w:
+            g[withitem.optional_vars.id] = w
+            if index < l:
+                evaluate_with(node, g, loop, index + 1)
+            else:
+                for n in node.body:
+                    yield from evaluate(n, g, loop)
+    else:
+        with eval(compile(ast.Expression(withitem.context_expr), '<string>', 'eval'), g):
+            if index < l:
+                evaluate_with(node, g, loop, index + 1)
+            else:
+                for n in node.body:
+                    yield from evaluate(n, g, loop)
+
+
+def evaluate(node, g, loop=False):
+    """Evaluate."""
+
+    if loop and isinstance(node, ast.Break):
+        raise Break
+
+    if loop and isinstance(node, ast.Continue):
+        raise Continue
+
+    if isinstance(node, ast.Expr):
+        _eval = ast.Expression(node.value)
+        yield eval(compile(_eval, '<string>', 'eval'), g)
+    elif isinstance(node, ast.If):
+        if eval(compile(ast.Expression(node.test), '<string>', 'eval'), g):
+            for n in node.body:
+                yield from evaluate(n, g, loop)
+        elif node.orelse:
+            for n in node.orelse:
+                yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.While):
+        while eval(compile(ast.Expression(node.test), '<string>', 'eval'), g):
+            try:
+                for n in node.body:
+                    yield from evaluate(n, g, True)
+            except Break:
+                break
+            except Continue:
+                continue
+        else:
+            for n in node.orelse:
+                yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.For):
+        for x in eval(compile(ast.Expression(node.iter), '<string>', 'eval'), g):
+            g[node.target.id] = x
+            try:
+                for n in node.body:
+                    yield from evaluate(n, g, True)
+            except Break:
+                break
+            except Continue:
+                continue
+        else:
+            for n in node.orelse:
+                yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.Try):
+        try:
+            for n in node.body:
+                yield from evaluate(n, g, loop)
+        except Exception as e:
+            for n in node.handlers:
+                if n.name:
+                    g[n.name] = e
+                if n.type is None:
+                    for ne in n.body:
+                        yield from evaluate(ne, g, loop)
+                    break
+                else:
+                    if isinstance(e, eval(compile(ast.Expression(n.type), '<string>', 'eval'), g)):
+                        for ne in n.body:
+                            yield from evaluate(ne, g, loop)
+                        break
+            else:
+                raise
+        else:
+            for n in node.orelse:
+                yield from evaluate(n, g, loop)
+        finally:
+            for n in node.finalbody:
+                yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.With):
+        yield from evaluate_with(node, g, loop)
+    else:
+        _exec = ast.Module([node], [])
+        exec(compile(_exec, '<string>', 'exec'), g)
+        yield None
 
 
 def execute(cmd, no_except=True, inline=False):
@@ -185,7 +305,7 @@ def execute(cmd, no_except=True, inline=False):
         return '{}'.format(traceback.format_exc()), colors
 
     for node in tree.body:
-        result = None
+        result = []
 
         # Format source as Python console statements
         start = node.lineno
@@ -203,27 +323,22 @@ def execute(cmd, no_except=True, inline=False):
 
         try:
             # Capture anything sent to standard out
-            text = ''
             with std_output() as s:
                 # Execute code
-                if isinstance(node, ast.Expr):
-                    _eval = ast.Expression(node.value)
-                    result = eval(compile(_eval, '<string>', 'eval'), g)
-                else:
-                    _exec = ast.Module([node], [])
-                    exec(compile(_exec, '<string>', 'exec'), g)
+                pos = 0
+                for x in evaluate(node, g):
+                    result.append(x)
+
+                    # Output captured standard out after statements
+                    s.flush()
+                    text = s.getvalue()[pos:]
+                    pos += len(text)
+                    if text:
+                        result.append(AtomicString(text))
 
                 # Execution went well, so append command
                 console += command
 
-                # Output captured standard out after statements
-                text = s.getvalue()
-                if text:
-                    clist = find_colors(text)
-                    if clist:
-                        colors.append(clist)
-                    console += '\n{}'.format(text)
-                s.flush()
         except Exception as e:
             if no_except:
                 if not inline:
@@ -238,13 +353,15 @@ def execute(cmd, no_except=True, inline=False):
             break
 
         # If we got a result, output it as well
-        if result is not None:
-            clist = get_colors(result)
-            if clist:
-                colors.append(clist)
-            console += '{}{}\n'.format('\n' if not text else '', str(result))
-        else:
-            console += '\n' if not text else ''
+        result_text = '\n'
+        for r in result:
+            if r is None:
+                continue
+            for clist in get_colors(r):
+                if clist:
+                    colors.append(clist)
+            result_text += '{}{}'.format(str(r), '\n' if not isinstance(r, AtomicString) else '')
+        console += result_text
 
     return console, colors
 
@@ -399,7 +516,7 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
         try:
             color = ColorAll(result.strip())
         except Exception:
-            console, colors = execute(result, exceptions, inline=True)
+            _, colors = execute(result, exceptions, inline=True)
             if len(colors) != 1 or len(colors[0]) != 1:
                 if exceptions:
                     raise InlineHiliteException('Only one color allowed')
