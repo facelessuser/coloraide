@@ -161,6 +161,28 @@ def find_colors(text):
     return colors
 
 
+def evaluate_with(node, g, loop, index=0):
+    """Evaluate with."""
+
+    l = len(node.items) - 1
+    withitem = node.items[index]
+    if withitem.context_expr:
+        with eval(compile(ast.Expression(withitem.context_expr), '<string>', 'eval'), g) as w:
+            g[withitem.optional_vars.id] = w
+            if index < l:
+                evaluate_with(node, g, loop, index + 1)
+            else:
+                for n in node.body:
+                    yield from evaluate(n, g, loop)
+    else:
+        with eval(compile(ast.Expression(withitem.context_expr), '<string>', 'eval'), g):
+            if index < l:
+                evaluate_with(node, g, loop, index + 1)
+            else:
+                for n in node.body:
+                    yield from evaluate(n, g, loop)
+
+
 def evaluate(node, g, loop=False):
     """Evaluate."""
 
@@ -216,16 +238,22 @@ def evaluate(node, g, loop=False):
                 if n.type is None:
                     for ne in n.body:
                         yield from evaluate(ne, g, loop)
+                    break
                 else:
                     if isinstance(e, eval(compile(ast.Expression(n.type), '<string>', 'eval'), g)):
                         for ne in n.body:
                             yield from evaluate(ne, g, loop)
+                        break
+            else:
+                raise
         else:
             for n in node.orelse:
                 yield from evaluate(n, g, loop)
         finally:
             for n in node.finalbody:
                 yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.With):
+        yield from evaluate_with(node, g, loop)
     else:
         _exec = ast.Module([node], [])
         exec(compile(_exec, '<string>', 'exec'), g)
