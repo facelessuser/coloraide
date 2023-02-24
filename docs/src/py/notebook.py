@@ -35,7 +35,19 @@ except ImportError:
     coloraide_extras = None
 
 WEBSPACE = "srgb"
-AST_BLOCKS = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.FunctionDef, ast.ClassDef)
+AST_BLOCKS = (
+    ast.If,
+    ast.For,
+    ast.While,
+    ast.Try,
+    ast.With,
+    ast.FunctionDef,
+    ast.ClassDef,
+    ast.Match,
+    ast.AsyncFor,
+    ast.AsyncWith,
+    ast.AsyncFunctionDef
+)
 
 RE_COLOR_START = re.compile(
     r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
