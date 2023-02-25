@@ -13,6 +13,7 @@ Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
 import xml.etree.ElementTree as Etree
+from collections.abc import Sequence, Mapping
 from collections import namedtuple
 import ast
 from io import StringIO
@@ -195,6 +196,80 @@ def evaluate_with(node, g, loop, index=0):
                     yield from evaluate(n, g, loop)
 
 
+def compare_match(s, g, node):
+    """Compare a match."""
+
+    if isinstance(node, ast.MatchOr):
+        for pattern in node.patterns:
+            if compare_match(s, g, pattern):
+                return True
+    else:
+        if isinstance(node, ast.MatchValue):
+            p = eval(compile(ast.Expression(node.value), '<string>', 'eval'), g)
+            return s == p
+        elif isinstance(node, ast.MatchSingleton):
+            return s is node.value
+        elif isinstance(node, ast.MatchSequence):
+            if isinstance(s, Sequence):
+                star = isinstance(node.patterns[-1], ast.MatchStar)
+                l1, l2 = len(s), len(node.patterns)
+                if (star and l1 >= l2 - 1) or (l1 == l2):
+                    for e, p in enumerate(node.patterns[:-1] if star else node.patterns):
+                        if not compare_match(s[e], g, p):
+                            return False
+                    if star and node.patterns[-1].name:
+                        g[node.patterns[-1].name] = s[l2 - 1:]
+                    return True
+            return False
+        elif isinstance(node, ast.MatchMapping):
+            if isinstance(s, Mapping):
+                star = node.rest
+                l1, l2 = len(s), len(node.patterns)
+                if (star and l1 >= l2) or (l1 == l2):
+                    keys = set()
+                    for kp, vp in zip(node.keys, node.patterns):
+                        key = eval(compile(ast.Expression(kp), '<string>', 'eval'), g)
+                        keys.add(key)
+                        if key not in s:
+                            return False
+                        if not compare_match(s[key], g, vp):
+                            return False
+                    if star:
+                        g[star] = {k: v for k, v in s.items() if k not in keys}
+                    return True
+            return False
+        elif isinstance(node, ast.MatchClass):
+            name = g.get(node.cls.id, None)
+            if name is None:
+                raise NameError("name '{}' is not defined".format(node.cls.id))
+            if not isinstance(s, name):
+                return False
+            ma = getattr(s, '__match_args__', tuple())
+            l1 = len(ma)
+            l2 = len(node.patterns)
+            if l1 < l2:
+                raise TypeError("{}() accepts {} positional sub-patterns ({} given)".format(name, l1, l2))
+            for e, p in enumerate(node.patterns):
+                if not hasattr(s, ma[e]):
+                    return False
+                if not compare_match(getattr(s, ma[e]), g, p):
+                    return False
+            for a, p in zip(node.kwd_attrs, node.kwd_patterns):
+                if not hasattr(s, a):
+                    return False
+                if not compare_match(getattr(s, a), g, p):
+                    return False
+            return True
+        elif isinstance(node, ast.MatchAs):
+            if node.name is not None:
+                g[node.name] = s
+            if node.pattern:
+                return compare_match(s, g, node.pattern)
+            return True
+
+    raise RuntimeError('Unknown Match pattern {}'.format(str(node)))
+
+
 def evaluate(node, g, loop=False):
     """Evaluate."""
 
@@ -264,6 +339,14 @@ def evaluate(node, g, loop=False):
         finally:
             for n in node.finalbody:
                 yield from evaluate(n, g, loop)
+    elif isinstance(node, ast.Match):
+        s = eval(compile(ast.Expression(node.subject), '<string>', 'eval'), g)
+        for c in node.cases:
+            if compare_match(s, g, c.pattern):
+                if not c.guard or eval(compile(ast.Expression(c.guard), '<string>', 'eval'), g):
+                    for n in c.body:
+                        yield from evaluate(n, g, loop)
+                    break
     elif isinstance(node, ast.With):
         yield from evaluate_with(node, g, loop)
     else:
