@@ -58,16 +58,18 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <div class="playground-results" id="__playground-results_{el_id}">
 {results}
 </div>
-<div class="playground-code hidden" id="__playground-code_{el_id}">
+<div class="playground-code hidden" id="__playground-code_{el_id}" data-search-exclude>
 <form autocomplete="off">
 <textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
 </form>
 </div>
 
+<div data-search-exclude>
 <button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+</div>
 </div>'''
 
 code_id = 0

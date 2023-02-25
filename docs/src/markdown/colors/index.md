@@ -34,6 +34,8 @@ Below we've provided a diagram of all available color spaces and how they transl
 
 Click any of the color spaces to jump to the related documentation.
 
+<div data-search-exclude markdown>
+
 ```diagram
 flowchart TB
 
@@ -203,3 +205,5 @@ flowchart TB
     click cam16-lcd "./cam16_lcd/" _self
     click hct "./hct/" _self
 ```
+
+</div>

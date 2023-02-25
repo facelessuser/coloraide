@@ -13,7 +13,7 @@ hide:
 
 <div id="__notebook-render"></div>
 
-<div id="__notebook-source" class="notebook hidden">
+<div id="__notebook-source" class="notebook hidden" data-search-exclude>
 <textarea id="__notebook-input"></textarea>
 <button id="__notebook-submit" title="Submit">Submit</button>
 <button id="__notebook-cancel" title="Cancel">Cancel</button>
