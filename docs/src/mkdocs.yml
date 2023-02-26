@@ -165,7 +165,12 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
         - name: playground
           class: playground
-          format: !!python/name:docs.src.py.notebook.color_command_formatter
+          format: !!python/object/apply:docs.src.py.notebook.color_command_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
           validator: !!python/name:docs.src.py.notebook.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
@@ -181,7 +186,12 @@ markdown_extensions:
       custom_inline:
         - name: color
           class: color
-          format: !!python/name:docs.src.py.notebook.color_formatter
+          format: !!python/object/apply:docs.src.py.notebook.color_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
   - pymdownx.magiclink:
       repo_url_shortener: true
       repo_url_shorthand: true
