@@ -17,25 +17,24 @@ from collections.abc import Sequence, Mapping
 from collections import namedtuple
 import ast
 from io import StringIO
-import contextlib
 import sys
 import re
+from functools import partial
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import find_formatter_class
-import coloraide
 from coloraide import Color
 from coloraide.interpolate import Interpolator, normalize_domain
 try:
     from coloraide_extras.everything import ColorAll
 except ImportError:
     from coloraide.everything import ColorAll
-try:
-    import coloraide_extras
-except ImportError:
-    coloraide_extras = None
+
+PY310 = (3, 10) <= sys.version_info
+PY311 = (3, 11) <= sys.version_info
 
 WEBSPACE = "srgb"
+
 AST_BLOCKS = (
     ast.If,
     ast.For,
@@ -44,15 +43,34 @@ AST_BLOCKS = (
     ast.With,
     ast.FunctionDef,
     ast.ClassDef,
-    ast.Match,
     ast.AsyncFor,
     ast.AsyncWith,
     ast.AsyncFunctionDef
 )
 
+if PY310:
+    AST_BLOCKS = AST_BLOCKS + (ast.Match,)
+
+
+if PY311:
+    AST_BLOCKS = AST_BLOCKS + (ast.TryStar,)
+
+
+RE_INIT = re.compile(r'^\s*#\s*pragma:\s*init\n(.*?)#\s*pragma:\s*init\n', re.DOTALL | re.I)
+
 RE_COLOR_START = re.compile(
     r"(?i)(?:\b(?<![-#&$])(?:color|hsla?|lch|lab|hwb|rgba?)\(|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)"
 )
+
+LIVE_INIT = """
+from coloraide import *
+import coloraide
+try:
+    import coloraide_extras
+    from coloraide_extras.everything import ColorAll as Color
+except ImportError:
+    from coloraide.everything import ColorAll as Color
+"""
 
 template = '''<div class="playground" id="__playground_{el_id}">
 <div class="playground-results" id="__playground-results_{el_id}">
@@ -112,15 +130,36 @@ def _escape(txt):
     return txt
 
 
-@contextlib.contextmanager
-def std_output(stdout=None):
-    """Capture standard out."""
-    old = sys.stdout
-    if stdout is None:
-        stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
+class StreamOut:
+    """Override the standard out."""
+
+    def __init__(self):
+        """Initialize."""
+        self.old = sys.stdout
+        self.stdout = StringIO()
+        sys.stdout = self.stdout
+
+    def read(self):
+        """Read the stringIO buffer."""
+
+        value = ''
+        if self.stdout is not None:
+            self.stdout.flush()
+            value = self.stdout.getvalue()
+            self.stdout = StringIO()
+            sys.stdout = self.stdout
+        return value
+
+    def __enter__(self):
+        """Enter."""
+        return self
+
+    def __exit__(self, type, value, traceback):  # noqa: A002
+        """Exit."""
+
+        sys.stdout = self.old
+        self.old = None
+        self.stdout = None
 
 
 def get_colors(result):
@@ -272,6 +311,25 @@ def compare_match(s, g, node):
     raise RuntimeError('Unknown Match pattern {}'.format(str(node)))
 
 
+def evaluate_except(node, e, g, loop=False):
+    """Evaluate normal except block."""
+
+    for n in node.handlers:
+        if n.name:
+            g[n.name] = e
+        if n.type is None:
+            for ne in n.body:
+                yield from evaluate(ne, g, loop)
+            break
+        else:
+            if isinstance(e, eval(compile(ast.Expression(n.type), '<string>', 'eval'), g)):
+                for ne in n.body:
+                    yield from evaluate(ne, g, loop)
+                break
+    else:
+        raise
+
+
 def evaluate(node, g, loop=False):
     """Evaluate."""
 
@@ -321,27 +379,38 @@ def evaluate(node, g, loop=False):
             for n in node.body:
                 yield from evaluate(n, g, loop)
         except Exception as e:
-            for n in node.handlers:
-                if n.name:
-                    g[n.name] = e
-                if n.type is None:
-                    for ne in n.body:
-                        yield from evaluate(ne, g, loop)
-                    break
-                else:
-                    if isinstance(e, eval(compile(ast.Expression(n.type), '<string>', 'eval'), g)):
-                        for ne in n.body:
-                            yield from evaluate(ne, g, loop)
-                        break
-            else:
-                raise
+            yield from evaluate_except(node, e, g, loop)
         else:
             for n in node.orelse:
                 yield from evaluate(n, g, loop)
         finally:
             for n in node.finalbody:
                 yield from evaluate(n, g, loop)
-    elif isinstance(node, ast.Match):
+    elif PY311 and isinstance(node, ast.TryStar):
+        try:
+            for n in node.body:
+                yield from evaluate(n, g, loop)
+        except ExceptionGroup as e:
+            for n in node.handlers:
+                if n.name:
+                    g[n.name] = e
+                m, e = e.split(eval(compile(ast.Expression(n.type), '<string>', 'eval'), g))
+                if m is not None:
+                    for ne in n.body:
+                        yield from evaluate(ne, g, loop)
+                if e is None:
+                    break
+            if e is not None:
+                raise e
+        except Exception as e:
+            yield from evaluate_except(node, e, g, loop)
+        else:
+            for n in node.orelse:
+                yield from evaluate(n, g, loop)
+        finally:
+            for n in node.finalbody:
+                yield from evaluate(n, g, loop)
+    elif PY310 and isinstance(node, ast.Match):
         s = eval(compile(ast.Expression(node.subject), '<string>', 'eval'), g)
         for c in node.cases:
             if compare_match(s, g, c.pattern):
@@ -357,24 +426,30 @@ def evaluate(node, g, loop=False):
         yield None
 
 
-def execute(cmd, no_except=True, inline=False):
+def execute(cmd, no_except=True, inline=False, init='', g=None):
     """Execute color commands."""
-
-    g = {k: getattr(coloraide, k) for k in coloraide.__all__}
-    g['coloraide'] = coloraide
-    g['Color'] = ColorAll
-    g['HtmlRow'] = HtmlRow
-    g['HtmlSteps'] = HtmlSteps
-    g['HtmlGradient'] = HtmlGradient
-
-    if coloraide_extras is not None:
-        g['coloraide_extras'] = coloraide_extras
 
     console = ''
     colors = []
 
+    # Setup global initialization
+    if g is None:
+        g = {
+            'HtmlRow': HtmlRow,
+            'HtmlSteps': HtmlSteps,
+            'HtmlGradient': HtmlGradient
+        }
+    if init:
+        execute(init.strip(), g=g)
+
     # Build AST tree
-    src = cmd.strip()
+    m = RE_INIT.match(cmd)
+    if m:
+        block_init = m.group(1)
+        src = cmd[m.end():]
+        execute(block_init, g=g)
+    else:
+        src = cmd
     lines = src.split('\n')
     try:
         tree = ast.parse(src)
@@ -408,16 +483,13 @@ def execute(cmd, no_except=True, inline=False):
 
         try:
             # Capture anything sent to standard out
-            with std_output() as s:
+            with StreamOut() as s:
                 # Execute code
-                pos = 0
                 for x in evaluate(node, g):
                     result.append(x)
 
                     # Output captured standard out after statements
-                    s.flush()
-                    text = s.getvalue()[pos:]
-                    pos += len(text)
+                    text = s.read()
                     if text:
                         result.append(AtomicString(text))
 
@@ -553,7 +625,7 @@ def _color_command_console(colors):
     return el
 
 
-def color_command_formatter(src="", language="", class_name=None, options=None, md="", **kwargs):
+def _color_command_formatter(src="", language="", class_name=None, options=None, md="", init='', **kwargs):
     """Formatter wrapper."""
 
     global code_id
@@ -566,7 +638,7 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
         # Check if we should allow exceptions
         exceptions = options.get('exceptions', False) if options is not None else False
 
-        console, colors = execute(src.strip(), not exceptions)
+        console, colors = execute(src.strip(), not exceptions, init=init)
         el = _color_command_console(colors)
 
         el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
@@ -590,7 +662,13 @@ def color_command_formatter(src="", language="", class_name=None, options=None, 
     return el
 
 
-def color_formatter(src="", language="", class_name=None, md="", exceptions=True):
+def color_command_formatter(init='', interactive=False):
+    """Return a Python command formatter with the provided imports."""
+
+    return partial(_color_command_formatter, init=init, interactive=interactive)
+
+
+def _color_formatter(src="", language="", class_name=None, md="", exceptions=True, init=''):
     """Formatter wrapper."""
 
     from pymdownx.inlinehilite import InlineHiliteException
@@ -601,7 +679,7 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
         try:
             color = ColorAll(result.strip())
         except Exception:
-            _, colors = execute(result, exceptions, inline=True)
+            _, colors = execute(result, exceptions, inline=True, init=init)
             if len(colors) != 1 or len(colors[0]) != 1:
                 if exceptions:
                     raise InlineHiliteException('Only one color allowed')
@@ -652,14 +730,20 @@ def color_formatter(src="", language="", class_name=None, md="", exceptions=True
     return el
 
 
+def color_formatter(init=''):
+    """Return a Python command formatter with the provided imports."""
+
+    return partial(_color_formatter, init=init)
+
+
 #############################
 # Pyodide specific code
 #############################
-def live_color_command_formatter(src):
+def _live_color_command_formatter(src, init=''):
     """Formatter wrapper."""
 
     try:
-        console, colors = execute(src.strip(), False)
+        console, colors = execute(src.strip(), False, init=init)
         el = _color_command_console(colors)
 
         if not colors:
@@ -668,8 +752,17 @@ def live_color_command_formatter(src):
         el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
         el = '<div class="color-command">{}</div>'.format(el)
     except Exception:
-        return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(colorize('', 'text'))
+        import traceback
+        return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(
+            colorize(traceback.format_exc(), 'pycon')
+        )
     return el
+
+
+def live_color_command_formatter(init=''):
+    """Return a Python command formatter with the provided imports."""
+
+    return partial(_live_color_command_formatter, init=init)
 
 
 def live_color_command_validator(language, inputs, options, attrs, md):
@@ -681,12 +774,6 @@ def live_color_command_validator(language, inputs, options, attrs, md):
     return value
 
 
-def live_color_formatter(src="", language="", class_name=None, md=""):
-    """Color formatter for a live environment."""
-
-    return color_formatter(src, language, class_name, md, exceptions=False)
-
-
 def render_console(*args):
     """Render console update."""
 
@@ -696,7 +783,7 @@ def render_console(*args):
         # Run code
         inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        results.innerHTML = live_color_command_formatter(inputs.value)
+        results.innerHTML = live_color_command_formatter(LIVE_INIT)(inputs.value)
         scrollingElement = results.querySelector('code')
         scrollingElement.scrollTop = scrollingElement.scrollHeight
     except Exception as e:
@@ -764,7 +851,7 @@ def render_notebook(*args):
                 {
                     "name": 'playground',
                     "class": 'playground',
-                    "format": color_command_formatter,
+                    "format": color_command_formatter(LIVE_INIT),
                     "validator": live_color_command_validator
                 }
             ]
@@ -774,7 +861,7 @@ def render_notebook(*args):
                 {
                     'name': 'color',
                     'class': 'color',
-                    'format': live_color_formatter
+                    'format': color_formatter(LIVE_INIT)
                 }
             ]
         },
