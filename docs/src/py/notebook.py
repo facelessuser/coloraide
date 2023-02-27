@@ -783,7 +783,25 @@ def render_console(*args):
         # Run code
         inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        results.innerHTML = live_color_command_formatter(LIVE_INIT)(inputs.value)
+        result = live_color_command_formatter(LIVE_INIT)(inputs.value)
+        temp = document.createElement('div')
+        temp.innerHTML = result
+
+        # Replace swatch bars
+        cmd = results.querySelector('.color-command')
+        for el in cmd.querySelectorAll('.swatch-bar'):
+            el.remove()
+        for el in temp.querySelectorAll('.swatch-bar'):
+            cmd.insertBefore(el, cmd.lastChild)
+
+        # Update code content
+        pre = cmd.querySelector('pre')
+        pre.replaceChild(temp.querySelector('code'), pre.querySelector('code'))
+
+        # Clean up stray element.
+        temp.remove()
+
+        # Adjust scorlling
         scrollingElement = results.querySelector('code')
         scrollingElement.scrollTop = scrollingElement.scrollHeight
     except Exception as e:
