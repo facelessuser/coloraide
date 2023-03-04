@@ -19,6 +19,14 @@ class TestHWB(util.ColorAssertsPyTest):
         ('white', 'color(--hwb none 1 0)'),
         ('gray', 'color(--hwb none 0.50196 0.49804)'),
         ('black', 'color(--hwb none 0 1)'),
+        # Test CSS
+        ('hwb(270 30% 50%)', 'color(--hwb 270 0.3 0.5)'),
+        ('hwb(270 30% 50% / 0.5)', 'color(--hwb 270 0.3 0.5 / 0.5)'),
+        ('hwb(270 30% 50% / 50%)', 'color(--hwb 270 0.3 0.5 / 0.5)'),
+        ('hwb(none none none / none)', 'color(--hwb none none none / none)'),
+        ('hwb(270 30 50)', 'color(--hwb 270 0.3 0.5)'),
+        ('hwb(270 30% 50)', 'color(--hwb 270 0.3 0.5)'),
+        ('hwb(50% 30 50)', None),
         # Test color
         ('color(--hwb 270 0.3 0.5)', 'color(--hwb 270 0.3 0.5)'),
         ('color(--hwb 270 0.3 0.5 / 0.5)', 'color(--hwb 270 0.3 0.5 / 0.5)'),
@@ -34,7 +42,11 @@ class TestHWB(util.ColorAssertsPyTest):
     def test_colors(self, color1, color2):
         """Test colors."""
 
-        self.assertColorEqual(Color(color1).convert('hwb'), Color(color2), color=True)
+        if color2 is None:
+            with pytest.raises(ValueError):
+                Color(color1)
+        else:
+            self.assertColorEqual(Color(color1).convert('hwb'), Color(color2), color=True)
 
 
 class TestHWBSerialize(util.ColorAssertsPyTest):
@@ -47,6 +59,8 @@ class TestHWBSerialize(util.ColorAssertsPyTest):
         ('hwb(270 30% 50% / 0.5)', {}, 'hwb(270 30% 50% / 0.5)'),
         ('hwb(270 30% 50%)', {'alpha': True}, 'hwb(270 30% 50% / 1)'),
         ('hwb(270 30% 50% / 0.5)', {'alpha': False}, 'hwb(270 30% 50%)'),
+        # Test percent
+        ('hwb(270 30% 75% / 50%)', {'percent': False}, 'hwb(270 30 75 / 0.5)'),
         # Test None
         ('hwb(none 30% 50%)', {}, 'hwb(0 30% 50%)'),
         ('hwb(none 30% 50%)', {'none': True}, 'hwb(none 30% 50%)'),

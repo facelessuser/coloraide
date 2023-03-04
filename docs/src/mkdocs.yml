@@ -138,9 +138,9 @@ nav:
       - Contributing &amp; Support: about/contributing.md
       - Acknowledgments: about/acknowledgments.md
       - Changelog: about/changelog.md
+      - License: about/license.md
       - Migration Notes:
           - '1.0': about/releases/1.0.md
-      - License: about/license.md
 
 markdown_extensions:
   - markdown.extensions.toc:
@@ -229,7 +229,7 @@ extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
-  - playground-config-fe55101c.js
+  - playground-config-c68b7434.js
   - https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 
@@ -244,6 +244,7 @@ plugins:
   - search
   - git-revision-date-localized:
       fallback_to_build_date: true
+      strict: false
   - mkdocs_pymdownx_material_extras
   - minify:
       minify_html: true

@@ -22,6 +22,7 @@ class HSL(base.HSL):
         fit: str | bool = True,
         none: bool = False,
         color: bool = False,
+        percent: bool = True,
         comma: bool = False,
         **kwargs: Any
     ) -> str:
@@ -35,7 +36,9 @@ class HSL(base.HSL):
             fit=fit,
             none=none,
             color=color,
-            legacy=comma
+            legacy=comma,
+            percent=True if comma else percent,
+            scale=100
         )
 
     def match(

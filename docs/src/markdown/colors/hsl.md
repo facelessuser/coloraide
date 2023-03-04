@@ -72,6 +72,7 @@ Color("hsl", [0, 1, 0.5])
 Color("hsl", [38.824, 1, 0.5], ).to_string()
 Color("hsl", [60, 1, 0.5]).to_string(comma=True)
 Color("hsl", [120, 1, 0.25098]).to_string(color=True)
+Color("hsl", [240, 1, 0.5]).to_string(percent=False)
 ```
 
 ## Registering
