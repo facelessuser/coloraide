@@ -59,7 +59,9 @@ class TestsRGB(util.ColorAssertsPyTest):
         # Test range
         ('color(srgb 0% 0% 0%)', 'color(srgb 0 0 0)'),
         ('color(srgb 100% 100% 100%)', 'color(srgb 1 1 1)'),
-        ('color(srgb -100% -100% -100%)', 'color(srgb -1 -1 -1)')
+        ('color(srgb -100% -100% -100%)', 'color(srgb -1 -1 -1)'),
+        # Test corner cases
+        ('color(srgb 0.5-0.3.8)', 'color(srgb 0.5 -0.3 0.8)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

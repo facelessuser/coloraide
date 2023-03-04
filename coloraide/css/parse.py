@@ -18,9 +18,8 @@ SCALE_PERCENT = 1 / 100.0
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
 
-RE_CHAN_SPLIT = re.compile(r'(?:\s*[,/]\s*|\s+)')
-RE_COMMA_SPlIT = re.compile(r'(?:\s*,\s*)')
 RE_SLASH_SPLIT = re.compile(r'(?:\s*/\s*)')
+RE_CHAN_VALUE = re.compile(r'(?i)(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]*)?(?:%|deg|rad|turn|grad)?|none)')
 
 COLOR_PARTS = {
     "strict_percent": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]*)?%)",
@@ -30,6 +29,7 @@ COLOR_PARTS = {
     "float": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]*)?|none)",
     "angle": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]*)?(?:deg|rad|turn|grad)?|none)",
     "space": r"\s+",
+    "loose_space": r"\s*",
     "comma": r"\s*,\s*",
     "slash": r"\s*/\s*",
     "sep": r"(?:\s*,\s*|\s+)",
@@ -41,8 +41,8 @@ COLOR_PARTS = {
 RE_COLOR_MATCH = re.compile(
     r"""(?xi)
     color\(\s*
-    (-{{0,2}}[a-z][-a-z0-9_]*)
-    ((?:{space}(?:{strict_percent}|{float})){{1,15}}(?:{slash}(?:{strict_percent}|{float}))?)
+    (-{{0,2}}[a-z][-a-z0-9_]*)(?=\s)
+    ((?:{loose_space}(?:{strict_percent}|{float})){{1,15}}(?:{slash}(?:{strict_percent}|{float}))?)
     \s*\)
     """.format(
         **COLOR_PARTS
@@ -57,7 +57,7 @@ CSS_MATCH = {
             \b(rgba?)\(\s*
             (?:
                 # Space separated format
-                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
                 ({slash}(?:{strict_percent}|{float}))? |
                 # Comma separated format
                 (?:
@@ -80,7 +80,7 @@ CSS_MATCH = {
         \b(hsla?)\(\s*
         (?:
             # Space separated format
-            {angle}(?:{space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))? |
+            {angle}(?:{loose_space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))? |
             # comma separated format
             {strict_angle}(?:{comma}{strict_percent}){{2}}(?:{comma}(?:{strict_percent}|{strict_float}))?
         )
@@ -92,7 +92,7 @@ CSS_MATCH = {
         \b(hwb)\(\s*
         (?:
             # Space separated format
-            {angle}(?:{space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))?
+            {angle}(?:{loose_space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -103,7 +103,7 @@ CSS_MATCH = {
             \b(lab)\(\s*
             (?:
                 # Space separated format
-                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
                 (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
@@ -115,7 +115,7 @@ CSS_MATCH = {
         \b(lch)\(\s*
         (?:
             # Space separated format
-            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){loose_space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -126,7 +126,7 @@ CSS_MATCH = {
             \b(oklab)\(\s*
             (?:
                 # Space separated format
-                (?:{strict_percent}|{float})(?:{space}(?:{strict_percent}|{float})){{2}}
+                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
                 (?:{slash}(?:{strict_percent}|{float}))?
             )
             \s*\)
@@ -138,7 +138,7 @@ CSS_MATCH = {
         \b(oklch)\(\s*
         (?:
             # Space separated format
-            (?:(?:{strict_percent}|{float}){space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
+            (?:(?:{strict_percent}|{float}){loose_space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
         )
         \s*\)
         """.format(**COLOR_PARTS)
@@ -256,7 +256,7 @@ def parse_rgb_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector
     """Parse CSS RGB format."""
     channels = []
     alpha = 1.0
-    for i, c in enumerate(RE_CHAN_SPLIT.split(color.strip()), 0):
+    for i, c in enumerate(RE_CHAN_VALUE.findall(color.strip()), 0):
         c = c.lower()
         if i <= 2:
             channels.append(norm_rgb_channel(c, boundry[i].high))
@@ -271,7 +271,7 @@ def parse_channels(color: str, boundry: tuple[Channel, ...], scaled: bool = Fals
     channels = []
     alpha = 1.0
     length = len(boundry)
-    for i, c in enumerate(RE_CHAN_SPLIT.split(color.strip()), 0):
+    for i, c in enumerate(RE_CHAN_VALUE.findall(color.strip()), 0):
         c = c.lower()
         if i < length:
             bound = boundry[i]
@@ -312,7 +312,7 @@ def parse_color(
                 channels = []
                 i = -1
                 properties = space.CHANNELS
-                for i, c in enumerate(RE_CHAN_SPLIT.split(split[0]), 0):
+                for i, c in enumerate(RE_CHAN_VALUE.findall(split[0]), 0):
                     if c and i < num_channels:
                         channel = properties[i]
                         channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
