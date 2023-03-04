@@ -123,12 +123,15 @@ Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 
 ### Percent
 
-RGB, CIELab, CIELCh, Oklab, and OkLCh can receive and output colors with optional percents for certain channels. This
-will output those channels in the range of [0%,100%] instead of their usual numeric value.
+RGB, HSL, HWB, CIELab, CIELCh, Oklab, and OkLCh can receive and output colors with optional percents for certain
+channels. By default, only HSL and HWB output channels with percents by default, and percentages for these color spaces
+can only be turned off when serializing to the modern syntax (space delimited). When percentage is enabled, ranges will
+be output in the range of [0%,100%] instead of their usual numeric value.
 
 ```playground
 Color("rebeccapurple").to_string(percent=True)
 Color("rebeccapurple").convert('lab').to_string(percent=True)
+Color("rebeccapurple").convert('hsl').to_string(percent=False)
 ```
 
 ## sRGB Specific Options

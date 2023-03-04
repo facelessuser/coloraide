@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0
+
+- **NEW**: Modern sRGB, HSL, and HWB should allow mixed percentage and numbers. HSL and HWB percentages in the `hsl()`
+  and `hwb()` formats respectively will resolve to numbers in the range [0, 100]. These changes reflect the latest
+  changes in the CSS Level 4 Color spec.
+- **NEW**: HSL and HWB can serialize to a modern syntax that does not use percentages, but the default still uses
+  percentages.
+
 ## 1.7.1
 
 - **FIX**: Ensure CAM16 spaces mirrors positive and negative percentages for `a` and `b` components.

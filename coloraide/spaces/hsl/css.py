@@ -22,7 +22,7 @@ class HSL(base.HSL):
         fit: str | bool = True,
         none: bool = False,
         color: bool = False,
-        percent: bool = False,
+        percent: bool = True,
         comma: bool = False,
         **kwargs: Any
     ) -> str:

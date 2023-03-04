@@ -67,6 +67,8 @@ form, but the default string output will be the `#!css-color hwb(h s l / a)` for
 ```playground
 Color("hwb", [0, 0, 0])
 Color("hwb", [38.824, 0, 0]).to_string()
+Color("hwb", [60, 0, 0]).to_string(percent=False)
+Color("hwb", [120, 0, 0]).to_string(color=True)
 ```
 
 ## Registering

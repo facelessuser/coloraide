@@ -356,7 +356,7 @@ def parse_css(
                 )
     else:
         m = CSS_MATCH[cspace.NAME].match(string, start)
-        scaled = cspace.NAME in ('hsl','hwb')
+        scaled = cspace.NAME in ('hsl', 'hwb')
         if m is not None and (not fullmatch or m.end(0) == len(string)):
             return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.CHANNELS, scaled=scaled), m.end(0)
 

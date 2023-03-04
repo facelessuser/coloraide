@@ -22,7 +22,7 @@ class HWB(base.HWB):
         fit: str | bool = True,
         none: bool = False,
         color: bool = False,
-        percent: bool = False,
+        percent: bool = True,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
