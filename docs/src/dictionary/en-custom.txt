@@ -156,6 +156,7 @@ SRGB
 Sharma
 TODO
 Tetradic
+Tokenize
 Triadic
 Trichromacy
 Tritan

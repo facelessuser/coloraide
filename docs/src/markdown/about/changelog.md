@@ -7,8 +7,10 @@
   changes in the CSS Level 4 Color spec.
 - **NEW**: HSL and HWB can serialize to a modern syntax that does not use percentages, but the default still uses
   percentages.
+- **NEW**: Rework CSS parsing for better performance.
 - **FIX**: Handle some parsing corner cases that are handled by browsers, but not by ColorAide. For example,
   `color(srgb 1-0.5.4)` should parse as `color(srgb 1 -0.5 0.4)`.
+- **FIX**: Ensure that `COLOR_FORMAT` is respected.
 
 ## 1.7.1
 

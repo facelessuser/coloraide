@@ -177,3 +177,9 @@ def from_name(name: str) -> Vector | None:
 
     value = name2val_map.get(name.lower(), None)
     return [c / 255 for c in value] if value is not None else value
+
+
+def has_name(name: str) -> bool:
+    """Check if name is in color map."""
+
+    return name.lower() in name2val_map

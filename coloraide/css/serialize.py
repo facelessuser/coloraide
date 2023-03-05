@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from .. import util
 from .. import algebra as alg
-from . import parse
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT, FLG_ANGLE
 from ..types import Vector
@@ -12,7 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-RE_COMPRESS = re.compile(r'(?i)^#({hex})\1({hex})\2({hex})\3(?:({hex})\4)?$'.format(**parse.COLOR_PARTS))
+RE_COMPRESS = re.compile(r'(?i)^#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3(?:([a-f0-9])\4)?$')
 
 COMMA = ', '
 SLASH = ' / '
