@@ -38,8 +38,6 @@ def norm_float(string: str) -> float:
 
     if string == "none":
         return alg.NaN
-    elif string.lower().endswith(('e-', 'e+', 'e')):
-        string += '0'
     return float(string)
 
 
@@ -308,7 +306,8 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
     """Tokenize the CSS string."""
 
     tokens = {}  # type: dict[str, Any]
-    m = RE_HEX.match(css, start)
+    # `mypy` will get confused, just set to Any
+    m = RE_HEX.match(css, start)  # type: Any
     if m:
         tokens['hex'] = {
             'start': m.group(1),
@@ -335,7 +334,7 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
         # Has function body?
         tokens['func'] = {'name': func_name, 'values': [], 'delimiter': ''}
         m = RE_FUNC_START.match(css, m.end())
-        if not m:
+        if not m:  # pragma: no cover
             return {}
 
         # If a color function, does it have an identifier?
@@ -381,8 +380,6 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
                     if m2:
                         delimiter = 'space'
                         tokens['func']['delimiter'] = delimiter
-                    else:
-                        return {}
                 else:
                     delimiter = 'comma'
                     tokens['func']['delimiter'] = delimiter
@@ -400,8 +397,7 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
                     slash = True
                 else:
                     m2 = RE_LOOSE_SPACE.match(css, m.end(0))
-                    if not m2:
-                        return {}
+
             m = m2
 
         tokens['func']['slash'] = slash

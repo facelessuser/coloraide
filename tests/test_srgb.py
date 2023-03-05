@@ -38,6 +38,9 @@ class TestsRGB(util.ColorAssertsPyTest):
         ('rgb(50%, 128, 0)', None),
         ('rgba(none, 128, 0)', None),
         ('rgba(50%, 128, 0)', None),
+        ('rgb(128, 0)', None),
+        ('rgb(128, 0, 128, 3deg)', None),
+        ('rgb(128deg, 0, 128)', None),
         # Test CSS
         ('rgb(0 128 0)', 'color(srgb 0 0.50196 0)'),
         ('rgb(0% 50% 0%)', 'color(srgb 0 0.5 0)'),
@@ -51,6 +54,10 @@ class TestsRGB(util.ColorAssertsPyTest):
         ('rgba(none none none / none)', 'color(srgb none none none / none)'),
         ('rgb(50% 128 0)', 'color(srgb 0.5 0.50196 0)'),
         ('rgba(50% 128 0)', 'color(srgb 0.5 0.50196 0)'),
+        ('rgb(128 0)', None),
+        ('rgb(128 0 128 / 3deg)', None),
+        ('rgb(128deg 0 128)', None),
+        ('rgb(128 128 128 0.5)', None),
         # Test CSS color
         ('color(srgb 0 0.50196 0)', 'color(srgb 0 0.50196 0)'),
         ('color(srgb 0 0.50196 0 / 0.5)', 'color(srgb 0 0.50196 0 / 0.5)'),
