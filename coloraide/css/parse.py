@@ -6,7 +6,8 @@ from .. import algebra as alg
 from ..types import Vector
 from . import color_names
 from ..channels import Channel, FLG_ANGLE
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+import functools
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..spaces import Space
@@ -14,136 +15,22 @@ if TYPE_CHECKING:  # pragma: no cover
 RGB_CHANNEL_SCALE = 1.0 / 255.0
 HUE_SCALE = 1.0 / 360.0
 SCALE_PERCENT = 1 / 100.0
+MAX_CHANNELS = 16
 
 CONVERT_TURN = 360
 CONVERT_GRAD = 90 / 100
 
-RE_SLASH_SPLIT = re.compile(r'(?:\s*/\s*)')
-RE_CHAN_VALUE = re.compile(r'(?i)(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?(?:%|deg|rad|turn|grad)?|none)')
-
-COLOR_PARTS = {
-    "strict_percent": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?%)",
-    "strict_float": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)",
-    "strict_angle": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?(?:deg|rad|turn|grad)?)",
-    "percent": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?%|none)",
-    "float": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?|none)",
-    "angle": r"(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?(?:deg|rad|turn|grad)?|none)",
-    "space": r"\s+",
-    "loose_space": r"\s*",
-    "comma": r"\s*,\s*",
-    "slash": r"\s*/\s*",
-    "sep": r"(?:\s*,\s*|\s+)",
-    "asep": r"(?:\s*[,/]\s*|\s+)",
-    "hex": r"[a-f0-9]"
-}
-
-# Allow 15 channels maximum. This should be able to handle any colors we throw at it.
-RE_COLOR_MATCH = re.compile(
-    r"""(?xi)
-    color\(\s*
-    (-{{0,2}}[a-z][-a-z0-9_]*)(?=\s)
-    ((?:{loose_space}(?:{strict_percent}|{float})){{1,15}}(?:{slash}(?:{strict_percent}|{float}))?)
-    \s*\)
-    """.format(
-        **COLOR_PARTS
-    )
-)
-
-CSS_MATCH = {
-    'srgb': re.compile(
-        r"""(?xi)
-        (?:
-            # RGB syntax
-            \b(rgba?)\(\s*
-            (?:
-                # Space separated format
-                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
-                ({slash}(?:{strict_percent}|{float}))? |
-                # Comma separated format
-                (?:
-                    # Float form
-                    (?:{strict_float}{comma}){{2}}{strict_float} |
-                    # Percent form
-                    (?:{strict_percent}{comma}){{2}}{strict_percent}
-                )({comma}(?:{strict_percent}|{strict_float}))?
-            )
-            \s*\) |
-            # Hex syntax
-            \#(?:{hex}{{6}}(?:{hex}{{2}})?|{hex}{{3}}(?:{hex})?)\b |
-            # Names
-            \b[a-z]{{3,}}\b
-        )
-        """.format(**COLOR_PARTS)
-    ),
-    'hsl': re.compile(
-        r"""(?xi)
-        \b(hsla?)\(\s*
-        (?:
-            # Space separated format
-            {angle}(?:{loose_space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))? |
-            # comma separated format
-            {strict_angle}(?:{comma}{strict_percent}){{2}}(?:{comma}(?:{strict_percent}|{strict_float}))?
-        )
-        \s*\)
-        """.format(**COLOR_PARTS)
-    ),
-    'hwb': re.compile(
-        r"""(?xi)
-        \b(hwb)\(\s*
-        (?:
-            # Space separated format
-            {angle}(?:{loose_space}(?:{strict_percent}|{float})){{2}}(?:{slash}(?:{strict_percent}|{float}))?
-        )
-        \s*\)
-        """.format(**COLOR_PARTS)
-    ),
-    'lab': re.compile(
-        r"""(?xi)
-        (?:
-            \b(lab)\(\s*
-            (?:
-                # Space separated format
-                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
-                (?:{slash}(?:{strict_percent}|{float}))?
-            )
-            \s*\)
-        )
-        """.format(**COLOR_PARTS)
-    ),
-    'lch': re.compile(
-        r"""(?xi)
-        \b(lch)\(\s*
-        (?:
-            # Space separated format
-            (?:(?:{strict_percent}|{float}){loose_space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
-        )
-        \s*\)
-        """.format(**COLOR_PARTS)
-    ),
-    'oklab': re.compile(
-        r"""(?xi)
-        (?:
-            \b(oklab)\(\s*
-            (?:
-                # Space separated format
-                (?:{strict_percent}|{float})(?:{loose_space}(?:{strict_percent}|{float})){{2}}
-                (?:{slash}(?:{strict_percent}|{float}))?
-            )
-            \s*\)
-        )
-        """.format(**COLOR_PARTS)
-    ),
-    'oklch': re.compile(
-        r"""(?xi)
-        \b(oklch)\(\s*
-        (?:
-            # Space separated format
-            (?:(?:{strict_percent}|{float}){loose_space}){{2}}{angle}(?:{slash}(?:{strict_percent}|{float}))?
-        )
-        \s*\)
-        """.format(**COLOR_PARTS)
-    )
-}
+RE_HEX = re.compile(r'(?i)(\#)((?:[a-f0-9]{6}(?:[a-f0-9]{2})?|[a-f0-9]{3}(?:[a-f0-9])?))\b')
+RE_NAME = re.compile(r'(?i)\b([a-z]{3,})\b')
+RE_IDENT = re.compile(r'(?i)(-{0,2}[a-z][-a-z0-9_]*)')
+RE_SPACE = re.compile(r'(\s+)')
+RE_LOOSE_SPACE = re.compile(r'(\s*)')
+RE_CHANNEL = re.compile(r'(?i)((?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?))(?:(%)|(deg|rad|turn|grad))?|(none)')
+RE_FUNC_START = re.compile(r'(\()\s*')
+RE_FUNC_END = re.compile(r'\s*(\))')
+RE_COMMA = re.compile(r'\s*(,)\s*')
+RE_SLASH = re.compile(r'\s*(/)\s*')
+RE_CSS_FUNC = re.compile(r'\b(color|rgba?|hsla?|hwb|(?:ok)?lab|(?:ok)?lch)\b')
 
 
 def norm_float(string: str) -> float:
@@ -231,6 +118,7 @@ def norm_angle_channel(angle: str) -> float:
 
 def parse_hex(color: str) -> tuple[Vector, float]:
     """Parse hexadecimal color."""
+
     length = len(color)
     if length in (7, 9):
         return (
@@ -252,11 +140,12 @@ def parse_hex(color: str) -> tuple[Vector, float]:
         )
 
 
-def parse_rgb_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector, float]:
+def parse_rgb_channels(color: list[str], boundry: tuple[Channel, ...]) -> tuple[Vector, float]:
     """Parse CSS RGB format."""
+
     channels = []
     alpha = 1.0
-    for i, c in enumerate(RE_CHAN_VALUE.findall(color.strip()), 0):
+    for i, c in enumerate(color, 0):
         c = c.lower()
         if i <= 2:
             channels.append(norm_rgb_channel(c, boundry[i].high))
@@ -265,13 +154,13 @@ def parse_rgb_channels(color: str, boundry: tuple[Channel, ...]) -> tuple[Vector
     return channels, alpha
 
 
-def parse_channels(color: str, boundry: tuple[Channel, ...], scaled: bool = False) -> tuple[Vector, float]:
+def parse_channels(color: list[str], boundry: tuple[Channel, ...], scaled: bool = False) -> tuple[Vector, float]:
     """Parse CSS channel format."""
 
     channels = []
     alpha = 1.0
     length = len(boundry)
-    for i, c in enumerate(RE_CHAN_VALUE.findall(color.strip()), 0):
+    for i, c in enumerate(color, 0):
         c = c.lower()
         if i < length:
             bound = boundry[i]
@@ -286,46 +175,271 @@ def parse_channels(color: str, boundry: tuple[Channel, ...], scaled: bool = Fals
     return channels, alpha
 
 
-def parse_color(
-    string: str,
-    spaces: dict[str, Space],
-    start: int,
-    fullmatch: bool = False
-) -> tuple[Space, tuple[Vector, float], int] | None:
-    """Perform default color matching."""
+def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | None:
+    """Parse the color function."""
 
-    m = RE_COLOR_MATCH.match(string, start)
-    if m is not None and (not fullmatch or m.end(0) == len(string)):
-        ident = m.group(1).lower()
+    # Iterate the spaces and see if we find the color serialization identifier
+    num_channels = len(space.CHANNELS)
+    values = len(tokens['func']['values'])
 
-        # Iterate the spaces and see if we find the color serialization identifier
-        for space in spaces.values():
-            if ident in space._serialize():
-                # Break channels up into a list
-                num_channels = len(space.CHANNELS)
-                split = RE_SLASH_SPLIT.split(m.group(2).strip(), maxsplit=1)
+    if tokens['func']['slash']:
+        values -= 1
 
-                # Get alpha channel
-                alpha = norm_alpha_channel(split[-1].lower()) if len(split) > 1 else 1.0
+    if values != num_channels:
+        return None
 
-                # Parse color channels
-                channels = []
-                i = -1
-                properties = space.CHANNELS
-                for i, c in enumerate(RE_CHAN_VALUE.findall(split[0]), 0):
-                    if c and i < num_channels:
-                        channel = properties[i]
-                        channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
-                    else:
-                        # Not the right amount of channels
-                        break
+    alpha = norm_alpha_channel(tokens['func']['values'][-1]['value']) if tokens['func']['slash'] else 1.0
 
-                # Apply null adjustments (null hues) if applicable
-                # or return None if we got the wrong amount of channels
-                if i + 1 == num_channels:
-                    return space, (channels, alpha), m.end(0)
+    channels = []
+    properties = space.CHANNELS
+    for i in range(num_channels):
+        c = tokens['func']['values'][i]['value']
+        channel = properties[i]
+        channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
+    return (channels, alpha)
+
+
+def validate_color(tokens: dict[str, Any]) -> bool:
+    """Validate the color function syntax."""
+
+    return not any([v['type'] == 'degree' for v in tokens['func']['values']])
+
+
+def validate_srgb(tokens: dict[str, Any]) -> bool:
+    """Validate the RGB color functions."""
+
+    length = len(tokens['func']['values'])
+    delimiter = tokens['func']['delimiter']
+
+    if length < 3 or length > 4:
+        return False
+    vtype = tokens['func']['values'][0]['type']
+    if delimiter == 'comma':
+        if vtype in ('none', 'degree') or not all([v['type'] == vtype for v in tokens['func']['values'][:3]]):
+            return False
+        if length == 4 and tokens['func']['values'][3]['type'] in ('none', 'degree'):
+            return False
+    else:
+        if any([v['type'] == 'degree' for v in tokens['func']['values']]):
+            return False
+        if length == 4 and not tokens['func']['slash']:
+            return False
+    return True
+
+
+def validate_cylindrical_srgb(tokens: dict[str, Any]) -> bool:
+    """Validate cylindrical sRGB."""
+
+    length = len(tokens['func']['values'])
+    delimiter = tokens['func']['delimiter']
+    func_name = tokens['func']['name']
+
+    if length < 3 or length > 4:
+        return False
+
+    if func_name == 'hwb' and delimiter == 'comma':
+        return False
+
+    if delimiter == 'comma':
+        if tokens['func']['values'][0]['type'] not in ('degree', 'number'):
+            return False
+        if not all([v['type'] == 'percent' for v in tokens['func']['values'][1:3]]):
+            return False
+        if length == 4 and tokens['func']['values'][3]['type'] in ('none', 'degree'):
+            return False
+    else:
+        if tokens['func']['values'][0]['type'] == 'percent':
+            return False
+        if any([v['type'] == 'degree' for v in tokens['func']['values'][1:]]):
+            return False
+
+        if length == 4 and not tokens['func']['slash']:
+            return False
+    return True
+
+
+def validate_lab(tokens: dict[str, Any]) -> bool:
+    """Validate CSS Lab variant color spaces."""
+
+    length = len(tokens['func']['values'])
+    delimiter = tokens['func']['delimiter']
+
+    if delimiter == 'comma':
+        return False
+
+    if length < 3 or length > 4:
+        return False
+
+    if any([v['type'] == 'degree' for v in tokens['func']['values'][:]]):
+        return False
+
+    if length == 4 and not tokens['func']['slash']:
+        return False
+
+    return True
+
+
+def validate_lch(tokens: dict[str, Any]) -> bool:
+    """Validate CSS LCh variant color spaces."""
+
+    length = len(tokens['func']['values'])
+    delimiter = tokens['func']['delimiter']
+
+    if delimiter == 'comma':
+        return False
+
+    if length < 3 or length > 4:
+        return False
+
+    if tokens['func']['values'][2]['type'] == 'percent':
+        return False
+
+    if any([v['type'] == 'degree' for v in tokens['func']['values'][0:2]]):
+        return False
+
+    if length == 4 and (not tokens['func']['slash'] or tokens['func']['values'][3]['type'] == 'degree'):
+        return False
+
+    return True
+
+
+@functools.lru_cache(maxsize=1)
+def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
+    """Tokenize the CSS string."""
+
+    tokens = {}  # type: dict[str, Any]
+    m = RE_HEX.match(css, start)
+    if m:
+        tokens['hex'] = {
+            'start': m.group(1),
+            'value': m.group(0)
+        }
+        tokens['id'] = 'srgb'
+        tokens['end'] = m.end()
+        return tokens
+    m = RE_NAME.match(css, start)
+    if m:
+        # Is hex?
+        if color_names.has_name(m.group(1)):
+            tokens['name'] = {'color': m.group(1)}
+            tokens['id'] = 'srgb'
+            tokens['end'] = m.end()
+            return tokens
+
+        # Is CSS function
+        func_name = m.group(0).lower()
+        m2 = RE_CSS_FUNC.match(func_name)
+        if not m2:
+            return {}
+
+        # Has function body?
+        tokens['func'] = {'name': func_name, 'values': [], 'delimiter': ''}
+        m = RE_FUNC_START.match(css, m.end())
+        if not m:
+            return {}
+
+        # If a color function, does it have an identifier?
+        delimiter = None
+        if func_name == 'color':
+            m2 = RE_IDENT.match(css, m.end())
+            if not m2:
+                return {}
+            delimiter = 'space'
+            tokens['func']['delimiter'] = delimiter
+            tokens['id'] = m2.group(1)
+            m = RE_SPACE.match(css, m2.end())
+            if not m:
+                return {}
+
+        # Gather function channel values, up to 16.
+        slash = False
+        for _ in range(MAX_CHANNELS):
+            # Get channel value
+            m2 = RE_CHANNEL.match(css, m.end())
+            if not m2:
+                if slash:
+                    return {}
                 break
-    return None
+            m = m2
+            if m.group(2):
+                tokens['func']['values'].append({'type': 'percent', 'value': m.group(0)})
+            elif m.group(3):
+                tokens['func']['values'].append({'type': 'degree', 'value': m.group(0)})
+            elif m.group(4):
+                tokens['func']['values'].append({'type': 'none', 'value': m.group(0)})
+            else:
+                tokens['func']['values'].append({'type': 'number', 'value': m.group(0)})
+
+            if slash:
+                break
+
+            # Get delimiter type
+            if delimiter is None:
+                m2 = RE_COMMA.match(css, m.end(0))
+                if not m2:
+                    m2 = RE_LOOSE_SPACE.match(css, m.end(0))
+                    if m2:
+                        delimiter = 'space'
+                        tokens['func']['delimiter'] = delimiter
+                    else:
+                        return {}
+                else:
+                    delimiter = 'comma'
+                    tokens['func']['delimiter'] = delimiter
+
+            # Find comma
+            elif delimiter == 'comma':
+                m2 = RE_COMMA.match(css, m.end(0))
+                if not m2:
+                    break
+
+            # Find space/slash
+            else:
+                m2 = RE_SLASH.match(css, m.end(0))
+                if m2:
+                    slash = True
+                else:
+                    m2 = RE_LOOSE_SPACE.match(css, m.end(0))
+                    if not m2:
+                        return {}
+            m = m2
+
+        tokens['func']['slash'] = slash
+
+        # Get function end
+        m = RE_FUNC_END.match(css, m.end())
+        if not m:
+            return {}
+
+        # Do basic validation on the supported color functions
+        tokens['end'] = m.end()
+        if func_name == 'color' and not validate_color(tokens):
+            return {}
+
+        elif func_name.startswith('rgb'):
+            tokens['id'] = 'srgb'
+            if not validate_srgb(tokens):
+                return {}
+
+        elif func_name in ('hsl', 'hsla', 'hwb'):
+            tokens['id'] = '--hwb' if func_name == 'hwb' else '--hsl'
+
+            if not validate_cylindrical_srgb(tokens):
+                return {}
+
+        elif func_name in ('lab', 'oklab'):
+            tokens['id'] = '--' + func_name
+
+            if not validate_lab(tokens):
+                return {}
+
+        elif func_name in ('oklch', 'lch'):
+            tokens['id'] = '--' + func_name
+
+            if not validate_lch(tokens):
+                return {}
+
+    return tokens
 
 
 def parse_css(
@@ -337,36 +451,44 @@ def parse_css(
 ) -> tuple[tuple[Vector, float], int] | None:
     """Match a CSS color string."""
 
-    name = cspace.NAME
-    if name == 'srgb':
-        m = CSS_MATCH[cspace.NAME].match(string, start)
-        if m is not None and (not fullmatch or m.end(0) == len(string)):
-            string = string[m.start(0):m.end(0)].lower()
-            if string.startswith('#'):
-                return parse_hex(string), m.end(0)
-            elif not string.startswith('rgb'):
-                value = color_names.from_name(string)
-                if value is not None:
-                    return (value[:3], value[3]), m.end(0)
-            else:
-                offset = m.start(0)
-                return (
-                    parse_rgb_channels(string[m.end(1) - offset + 1:m.end(0) - offset - 1], cspace.CHANNELS),
-                    m.end(0)
-                )
+    target = cspace.SERIALIZE
+    if not target:
+        target = (cspace.NAME,)
+
+    tokens = tokenize_css(string, start=start)
+
+    # Could we parse it?
+    if not tokens:
+        return None
+
+    # Does the space match the target space?
+    if tokens['id'] not in target:
+        return None
+
+    # Did we get a full match if requested?
+    if fullmatch and tokens['end'] < len(string):
+        return None
+
+    # Scale and convert the channel data according to the CSS space rules
+    end = tokens['end']
+    if 'func' in tokens and tokens['func']['name'] == 'color':
+        if color is False:
+            return None
+
+        result = parse_color(tokens, cspace)
+        if result is None:
+            return result
+        return result, end
+
+    elif tokens['id'] == 'srgb':
+        if 'hex' in tokens:
+            return parse_hex(tokens['hex']['value']), end
+        elif 'name' in tokens:
+            values = color_names.from_name(tokens['name']['color'])
+            return (values[:-1], values[-1]), end  # type: ignore[index]
+        else:
+            return parse_rgb_channels([v['value'] for v in tokens['func']['values']], cspace.CHANNELS), end
+    elif tokens['id'] in ('--hsl', '--hwb'):
+        return parse_channels([v['value'] for v in tokens['func']['values']], cspace.CHANNELS, scaled=True), end
     else:
-        m = CSS_MATCH[cspace.NAME].match(string, start)
-        scaled = cspace.NAME in ('hsl', 'hwb')
-        if m is not None and (not fullmatch or m.end(0) == len(string)):
-            return parse_channels(string[m.end(1) + 1:m.end(0) - 1], cspace.CHANNELS, scaled=scaled), m.end(0)
-
-    # If we wanted to support per color matching of this format, we could enable this.
-    # It is much faster to generically match all `color(space ...)` instances and then
-    # just see if the `spaces` matches any of the registered spaces that have opted in.
-    # Repeatedly performing this step over and over for each space just isn't efficient.
-    if color:  # pragma: no cover
-        result = parse_color(string, {cspace.NAME: cspace}, start, fullmatch)
-        if result is not None:
-            return result[1:]
-
-    return None  # pragma: no cover
+        return parse_channels([v['value'] for v in tokens['func']['values']], cspace.CHANNELS), end

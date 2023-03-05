@@ -266,9 +266,13 @@ class Color(metaclass=ColorMeta):
         """
 
         # Attempt color match
-        m = parse.parse_color(string, cls.CS_MAP, start, fullmatch)
-        if m is not None:
-            return m[0], m[1][0], m[1][1], start, m[2]
+        if string[start:start + 6].lower() == 'color(':
+            for space_class in cls.CS_MAP.values():
+                if not space_class.COLOR_FORMAT:
+                    continue
+                m = parse.parse_css(space_class, string, start, fullmatch, True)
+                if m is not None:
+                    return space_class, m[0][0], m[0][1], start, m[1]
 
         # Attempt color space specific match
         for _, space_class in cls.CS_MAP.items():
