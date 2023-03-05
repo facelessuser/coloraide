@@ -268,7 +268,7 @@ class Color(metaclass=ColorMeta):
         # Attempt color match
         if string[start:start + 6].lower() == 'color(':
             for space_class in cls.CS_MAP.values():
-                if not space_class.COLOR_FORMAT:
+                if not space_class.COLOR_FORMAT:  # pragma: no cover
                     continue
                 m = parse.parse_css(space_class, string, start, fullmatch, True)
                 if m is not None:

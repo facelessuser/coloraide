@@ -97,6 +97,30 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color('color(srgb 1)')
 
+    def test_non_ident(self):
+        """Test color when its missing the identifier."""
+
+        with self.assertRaises(ValueError):
+            Color('color(1 1 1 / 0.5)')
+
+    def test_missing_alpha(self):
+        """Test missing alpha after slash."""
+
+        with self.assertRaises(ValueError):
+            Color('color(srgb 1 1 1 /)')
+
+    def test_bad_color_channel_type(self):
+        """Test bad color channel type."""
+
+        with self.assertRaises(ValueError):
+            Color('color(srgb 1deg 1 1)')
+
+    def test_missing_end(self):
+        """Test missing function end."""
+
+        with self.assertRaises(ValueError):
+            Color('color(srgb 1 1 1')
+
     def test_less_raw_input(self):
         """Test when not enough color channels are provided via raw input."""
 

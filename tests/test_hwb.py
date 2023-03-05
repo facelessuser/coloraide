@@ -27,6 +27,7 @@ class TestHWB(util.ColorAssertsPyTest):
         ('hwb(270 30 50)', 'color(--hwb 270 0.3 0.5)'),
         ('hwb(270 30% 50)', 'color(--hwb 270 0.3 0.5)'),
         ('hwb(50% 30 50)', None),
+        ('hwb(270, 30%, 50%)', None),
         # Test color
         ('color(--hwb 270 0.3 0.5)', 'color(--hwb 270 0.3 0.5)'),
         ('color(--hwb 270 0.3 0.5 / 0.5)', 'color(--hwb 270 0.3 0.5 / 0.5)'),

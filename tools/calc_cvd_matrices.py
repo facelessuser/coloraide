@@ -12,6 +12,7 @@ from coloraide import Color  # noqa: E402
 # Calculated using our own `calc_xyz_transform.py`
 RGB_TO_XYZ, XYZ_TO_RGB = xyzt.get_matrix(xyzt.white_d65, 'srgb')
 
+# Smith & Pokorny (1975) 2-deg cone fundamentals
 M = [
     [0.15514, 0.54312, -0.03286],
     [-0.15514, 0.45684, 0.03286],

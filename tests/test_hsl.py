@@ -31,6 +31,9 @@ class TestHSL(util.ColorAssertsPyTest):
         ('hsl(50%, 50%, 50%)', None),
         ('hsla(none, 30%, 50%)', None),
         ('hsla(50%, 50%, 50%)', None),
+        ('hsl(50%, 50%)', None),
+        ('hsl(270, 30, 50)', None),
+        ('hsl(270, 30%, 50%, 3deg)', None),
         # Test CSS
         ('hsl(270 30% 50%)', 'color(--hsl 270 0.3 0.5)'),
         ('hsl(270 30% 50% / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
@@ -44,6 +47,9 @@ class TestHSL(util.ColorAssertsPyTest):
         ('hsl(270 30% 50)', 'color(--hsl 270 0.3 0.5)'),
         ('hsla(270 30 50 / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
         ('hsl(50% 30 50)', None),
+        ('hsl(270 30deg 50)', None),
+        ('hsl(270 30% 50% 30%)', None),
+        ('hsl(270 30% 50% / 3deg)', None),
         # Test CSS color
         ('color(--hsl 270 0.3 0.5)', 'color(--hsl 270 0.3 0.5)'),
         ('color(--hsl 270 0.3 0.5 / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
