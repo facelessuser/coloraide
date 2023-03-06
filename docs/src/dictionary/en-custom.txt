@@ -91,6 +91,7 @@ JMh
 JND
 JSON
 Jsh
+Judd
 Jz
 JzCzhz
 Jzazbz
@@ -169,6 +170,7 @@ Uncalibrated
 Verou
 Viénot
 Von
+Vos
 WCAG
 WCG
 XD
