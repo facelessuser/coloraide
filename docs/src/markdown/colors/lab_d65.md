@@ -1,38 +1,40 @@
 # Lab D65
 
-!!! success "The Lab D65 color space is registered in `Color` by default"
+/// success | The Lab D65 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `lab-d65`
+**Name:** `lab-d65`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `a`  | [-130, 130]
-    `b`  | [-130, 130]
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`a`  | [-130, 130]
+`b`  | [-130, 130]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELab D65 3D](../images/lab-d65-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELab D50 color space.
-</figcaption>
-</figure>
+/////
+////
 
 CIELab D65 is the same as [CIELab](./lab.md) except it uses a D65 white point.
 
 _[Learn about CIELab](https://en.wikipedia.org/wiki/CIELab_color_space)_
-</div>
+///
 
 ## Channel Aliases
 

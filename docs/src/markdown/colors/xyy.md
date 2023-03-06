@@ -1,38 +1,40 @@
 # xyY
 
-!!! failure "The xyY color space is not registered in `Color` by default"
+/// failure | The xyY color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `xyy`
+**Name:** `xyy`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `x`  | [0, 1]
-    `y`  | [0, 1]
-    `Y`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`x`  | [0, 1]
+`y`  | [0, 1]
+`Y`  | [0, 1]
 
-    ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
+^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![xyY](../images/xyy-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the xyY color space.
-</figcaption>
-</figure>
+/////
+////
 
 A derivative of the CIE 1931 XYZ space, the CIE xyY color space, is often used as a way to graphically present the
 chromaticity of colors.
 
 [Learn more](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space).
-</div>
+///
 
 ## Channel Aliases
 

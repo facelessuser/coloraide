@@ -1,32 +1,34 @@
 # ProPhoto
 
-!!! success "The ProPhoto color space is registered in `Color` by default"
+/// success | The ProPhoto color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `prophoto-rgb`
+**Name:** `prophoto-rgb`
 
-    **White Point:** D50
+**White Point:** D50
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![ProPhoto RGB](../images/prophoto-rgb.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 The ProPhoto RGB color space, also known as ROMM RGB (Reference Output Medium Metric), is an output referred RGB color
 space developed by Kodak. It offers an especially large gamut designed for use with photographic output in mind. The
@@ -34,7 +36,7 @@ ProPhoto RGB color space encompasses over 90% of possible surface colors in the 
 and 100% of likely occurring real-world surface colors documented by Pointer in 1980.
 
 _[Learn about ProPhoto](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space)_
-</div>
+///
 
 ## Channel Aliases
 

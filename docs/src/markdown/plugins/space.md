@@ -214,71 +214,71 @@ even when very close to zero. This can vary from color space to color space.
 If the color is a cylindrical space, Lab-ish space, or LCh-ish space, you can additionally add in the respective
 mix-in class: `Cylindrical`, `Labish`, or `LChish`. It should be noted that `LChish` is subclassed from `Cylindrical`.
 
-=== "Cylindrical"
+/// tab | Cylindrical
+```py
+class Cylindrical:
+    """Cylindrical space."""
 
-    ```py
-    class Cylindrical:
-        """Cylindrical space."""
+    def hue_name(self) -> str:
+        """Hue channel name."""
 
-        def hue_name(self) -> str:
-            """Hue channel name."""
+        return "h"
 
-            return "h"
+    def hue_index(self) -> int:  # pragma: no cover
+        """Get hue index."""
 
-        def hue_index(self) -> int:  # pragma: no cover
-            """Get hue index."""
+        return cast('Space', self).get_channel_index(self.hue_name())
 
-            return cast('Space', self).get_channel_index(self.hue_name())
+    def achromatic_hue(self) -> float:
+        """
+        Ideal achromatic hue.
 
-        def achromatic_hue(self) -> float:
-            """
-            Ideal achromatic hue.
+        Normally, we assume 0 when a cylindrical color space has a powerless hue.
+        For most color spaces, the hue has little affect when the color is achromatic,
+        but on rare occasions, a color space algorithm may require a specific hue
+        in order to more accurately translate an achromatic hue, CAM16 JMh (without
+        discounting) being an example. Color spaces internally handle this during
+        conversion, but there are times such as when plotting where knowing the
+        hue can be useful.
+        """
 
-            Normally, we assume 0 when a cylindrical color space has a powerless hue.
-            For most color spaces, the hue has little affect when the color is achromatic,
-            but on rare occasions, a color space algorithm may require a specific hue
-            in order to more accurately translate an achromatic hue, CAM16 JMh (without
-            discounting) being an example. Color spaces internally handle this during
-            conversion, but there are times such as when plotting where knowing the
-            hue can be useful.
-            """
+        return 0.0
+```
+///
 
-            return 0.0
-    ```
+/// tab | Labish
+```py
+class Labish:
+    """Lab-ish color spaces."""
 
-=== "Labish"
+    def labish_names(self) -> Tuple[str, ...]:
+        """Return Lab-ish names in the order L a b."""
 
-    ```py
-    class Labish:
-        """Lab-ish color spaces."""
+        return cast('Space', self).channels[:-1]
 
-        def labish_names(self) -> Tuple[str, ...]:
-            """Return Lab-ish names in the order L a b."""
+    def labish_indexes(self) -> List[int]:  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
 
-            return cast('Space', self).channels[:-1]
+        return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
+```
+///
 
-        def labish_indexes(self) -> List[int]:  # pragma: no cover
-            """Return the index of the Lab-ish channels."""
+/// tab | LChish
+```py
+class LChish(Cylindrical):
+    """LCh-ish color spaces."""
 
-            return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
-    ```
+    def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
+        """Return LCh-ish names in the order L c h."""
 
-=== "LChish"
+        return cast('Space', self).channels[:-1]
 
-    ```py
-    class LChish(Cylindrical):
-        """LCh-ish color spaces."""
+    def lchish_indexes(self) -> List[int]:  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
 
-        def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
-            """Return LCh-ish names in the order L c h."""
-
-            return cast('Space', self).channels[:-1]
-
-        def lchish_indexes(self) -> List[int]:  # pragma: no cover
-            """Return the index of the Lab-ish channels."""
-
-            return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
-    ```
+        return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
+```
+///
 
 Mix-in classes are mainly available so that a color space can be inspected to see if it falls into a specific generic
 color space type in order to allow for some generic handling of the color. For instance, you may not care specifically

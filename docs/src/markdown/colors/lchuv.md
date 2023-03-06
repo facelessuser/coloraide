@@ -1,40 +1,42 @@
 # LCh~uv~
 
-!!! failure "The LCH~uv~ color space is not registered in `Color` by default"
+/// failure | The LCH~uv~ color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `lchuv`
+**Name:** `lchuv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `c`  | [0, 220]
-    `h`  | [0, 360)
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`c`  | [0, 220]
+`h`  | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELCh~uv~](../images/lchuv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELCh~uv~ color space.
-</figcaption>
-</figure>
+/////
+////
 
 [CIELuv](./luv.md) is not an intuitive space to work with directly and instead is often converted to cylindrical
 coordinates with hues represented as degrees and a chroma and lightness channel. The shape of the color space doesn't
 really change, just how the colors are manipulated.
 
 _[Learn about CIELCh~uv~](https://en.wikipedia.org/wiki/CIELuv)_
-</div>
+///
 
 ## Channel Aliases
 

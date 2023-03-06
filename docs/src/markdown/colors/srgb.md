@@ -1,39 +1,41 @@
 # sRGB
 
-!!! success "The sRGB color space is registered in `Color` by default"
+/// success | The sRGB color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `srgb`
+**Name:** `srgb`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![sRGB](../images/srgb.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- sRGB Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 The sRGB space is a standard RGB (red, green, blue) color space that HP and Microsoft created cooperatively in 1996 to
 use on monitors, printers, and the Web. sRGB stands for "Standard RGB". It is the most widely used color space and is
 supported by most operating systems, software programs, monitors, and printers.
 
 _[Learn about sRGB](https://en.wikipedia.org/wiki/SRGB)_
-</div>
+///
 
 ## Channel Aliases
 

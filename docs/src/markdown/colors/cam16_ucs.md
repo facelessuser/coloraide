@@ -1,33 +1,35 @@
 # CAM16 UCS
 
-!!! failure "The CAM16 UCS color space is not registered in `Color` by default"
+/// failure | The CAM16 UCS color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `cam16-ucs`
+**Name:** `cam16-ucs`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `j`  | [0, 100]
-    `a`  | [-50, 50]
-    `b`  | [-50, 50]
+Name | Range^\*^
+---- | -----
+`j`  | [0, 100]
+`a`  | [-50, 50]
+`b`  | [-50, 50]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CAM16 UCS](../images/cam16-ucs.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CAM16 UCS color space.
-</figcaption>
-</figure>
+/////
+////
 
 A color appearance model (CAM) is a mathematical model that seeks to describe the perceptual aspects of human color
 vision, i.e. viewing conditions under which the appearance of a color does not tally with the corresponding physical
@@ -40,7 +42,7 @@ which uses M (colorfulness) to derive the a and b values. There are also [SCD](.
 variants which optimize the spaces for "small" and "large" color distancing respectively.
 
 [Learn more](https://doi.org/10.1002/col.22131).
-</div>
+///
 
 ## Channel Aliases
 
@@ -77,10 +79,6 @@ class Color(Base): ...
 
 Color.register(CAM16UCS())
 ```
-
-<style>
-.info-container {display: inline-block;}
-</style>
 
 ## Subclassing
 

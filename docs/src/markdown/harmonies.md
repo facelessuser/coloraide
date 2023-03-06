@@ -91,14 +91,13 @@ While we use OkLCh, we will actually visualize the examples in Okhsl. Okhsl is a
 adjusted to match CIELCh and reshaped in a cylindrical form. It is limited to the sRGB gamut only, but it can help
 visualize better what is happening in a familiar color wheel format. You can see the difference below:
 
-=== "OkLCh Color Slice"
+/// tab | OkLCh Color Slice
+![OkLCh Color Wheel](images/oklch-color-wheel.png)
+///
 
-    ![OkLCh Color Wheel](images/oklch-color-wheel.png)
-
-=== "Okhsl Color Slice"
-
-    ![Okhsl Color Wheel](images/okhsl-color-wheel.png)
-
+/// tab | Okhsl Color Slice
+![Okhsl Color Wheel](images/okhsl-color-wheel.png)
+///
 
 ### Monochromatic
 
@@ -110,9 +109,10 @@ The monochromatic harmony pairs various tints and shades of a color together to 
 HtmlSteps(Color('red').harmony('mono'))
 ```
 
-!!! note "Achromatic Colors"
-    Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
-    achromatic.
+/// note | Achromatic Colors
+Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
+achromatic.
+///
 
 ### Complementary
 

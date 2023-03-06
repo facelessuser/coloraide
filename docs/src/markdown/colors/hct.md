@@ -1,33 +1,35 @@
 # HCT
 
-!!! failure "The HCT color space is not registered in `Color` by default"
+/// failure | The HCT color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hct`
+**Name:** `hct`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `h`  | [0, 360)
-    `c`  | [0, 145]
-    `t`  | [0, 100]
+Name | Range^\*^
+---- | -----
+`h`  | [0, 360)
+`c`  | [0, 145]
+`t`  | [0, 100]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![HCT](../images/hct.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the HCT color space.
-</figcaption>
-</figure>
+/////
+////
 
 The HCT color space is Google's attempt at a perceptually accurate color system. Essentially, it is two color spaces
 glued together. 'H' (hue) and 'C' (chroma) come from the CAM16 color appearance model and 'T' (tone) is the lightness
@@ -39,7 +41,7 @@ bit more expensive, but considering the use case that it was designed for, creat
 contrast, it has attractive benefits.
 
 [Learn more](https://material.io/blog/science-of-color-design).
-</div>
+///
 
 ## Channel Aliases
 
@@ -76,10 +78,6 @@ class Color(Base): ...
 
 Color.register(HCT())
 ```
-
-<style>
-.info-container {display: inline-block;}
-</style>
 
 ## Tonal Palettes
 

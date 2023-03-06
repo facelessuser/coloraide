@@ -1,39 +1,41 @@
 # Display P3
 
-!!! success "The Display P3 color space is registered in `Color` by default"
+/// success | The Display P3 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `display-p3`
+**Name:** `display-p3`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![Display P3](../images/display-p3.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- Display P3 Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 Display P3 is a combination of the DCI-P3 color gamut with the D65 white point together with the [sRGB](./srgb.md) gamma
 curve. It originated from the DCI-P3 color gamut's implementation in digital cinema projectors, as this standard offers
 more vibrant greens and reds than the traditional [sRGB](./srgb.md) color gamut.
 
 _[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
-</div>
+///
 
 ## Channel Aliases
 

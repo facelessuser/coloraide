@@ -1,33 +1,35 @@
 # CAM16 JMh
 
-!!! failure "The CAM16 JMh color space is not registered in `Color` by default"
+/// failure | The CAM16 JMh color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `cam16-jmh`
+**Name:** `cam16-jmh`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `j`  | [0, 100]
-    `m`  | [0, 105]
-    `h`  | [0, 360)
+Name | Range^\*^
+---- | -----
+`j`  | [0, 100]
+`m`  | [0, 105]
+`h`  | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CAM16 JMh](../images/cam16-jmh.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CAM16 JMh color space.
-</figcaption>
-</figure>
+/////
+////
 
 A color appearance model (CAM) is a mathematical model that seeks to describe the perceptual aspects of human color
 vision, i.e. viewing conditions under which the appearance of a color does not tally with the corresponding physical
@@ -51,7 +53,7 @@ construct Lab like spaces taking using the hue and either C, M, or s. The `cam16
 represents the JMh configuration.
 
 [Learn more](https://doi.org/10.1002/col.22131).
-</div>
+///
 
 ## Channel Aliases
 
@@ -88,10 +90,6 @@ class Color(Base): ...
 
 Color.register(CAM16JMh())
 ```
-
-<style>
-.info-container {display: inline-block;}
-</style>
 
 ## Subclassing
 

@@ -10,41 +10,41 @@ The following filters are all supported in ColorAide and generally adhere to the
 By default, filters are applied in the Linear sRGB color space, but can be applied in sRGB if requested. All other
 color spaces will throw an error.
 
-=== "Normal"
+/// tab | Normal
+![Normal](./images/colorchart.png)
+///
 
-    ![Normal](./images/colorchart.png)
+/// tab | Brightness
+![Brightness](./images/colorchart-brightness.png)
+///
 
-=== "Brightness"
+/// tab | Saturate
+![Saturate](./images/colorchart-saturate.png)
+///
 
-    ![Brightness](./images/colorchart-brightness.png)
+/// tab | Contrast
+![Contrast](./images/colorchart-contrast.png)
+///
 
-=== "Saturate"
+/// tab | Opacity
+![Opacity](./images/colorchart-opacity.png){.trans-bg}
+///
 
-    ![Saturate](./images/colorchart-saturate.png)
+/// tab | Invert
+![Invert](./images/colorchart-invert.png)
+///
 
-=== "Contrast"
+/// tab | Hue Rotate
+![Hue Rotate](./images/colorchart-hue-rotate.png)
+///
 
-    ![Contrast](./images/colorchart-contrast.png)
+/// tab | Sepia
+![Sepia](./images/colorchart-sepia.png)
+///
 
-=== "Opacity"
-
-    ![Opacity](./images/colorchart-opacity.png){.trans-bg}
-
-=== "Invert"
-
-    ![Invert](./images/colorchart-invert.png)
-
-=== "Hue Rotate"
-
-    ![Hue Rotate](./images/colorchart-hue-rotate.png)
-
-=== "Sepia"
-
-    ![Sepia](./images/colorchart-sepia.png)
-
-=== "Grayscale"
-
-    ![Grayscale](./images/colorchart-grayscale.png)
+/// tab | Grayscale
+![Grayscale](./images/colorchart-grayscale.png)
+///
 
 In ColorAide, just call the `filter` method and provide the name of the filter. If `amount` is not provided, the default
 according to the W3C spec will be used instead.
@@ -85,21 +85,21 @@ cones for perceiving colors. This essentially flattens the color spectrum into a
 where the cone responsible for red light does not function, deuteranopia describes the CVD affecting the green cone, and
 tritanopia describes deficiencies with the blue cone.
 
-=== "Normal"
+/// tab | Normal
+![Normal](./images/colorchart.png)
+///
 
-    ![Normal](./images/colorchart.png)
+/// tab | Protanopia
+![Protanopia](./images/colorchart-protan.png)
+///
 
-=== "Protanopia"
+/// tab | Deuteranopia
+![Deuteranopia](./images/colorchart-deutan.png)
+///
 
-    ![Protanopia](./images/colorchart-protan.png)
-
-=== "Deuteranopia"
-
-    ![Deuteranopia](./images/colorchart-deutan.png)
-
-=== "Tritanopia"
-
-    ![Tritanopia](./images/colorchart-tritan.png)
+/// tab | Tritanopia
+![Tritanopia](./images/colorchart-tritan.png)
+///
 
 By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia and the
 [Viénot, Brettel, and Mollon 1999 approach][vienot] to simulate protanopia and and deuteranopia. While Brettel is
@@ -141,21 +141,21 @@ While dichromacy may be considered a severity 1, a given case of anomalous trich
 Like dichromacy, the related deficiencies are named in a similar manner: protanomaly (reduced red sensitivity),
 deuteranomaly (reduced green sensitivity), and tritanomaly (reduced blue sensitivity).
 
-=== "Normal"
+/// tab | Normal
+![Normal](./images/colorchart.png)
+///
 
-    ![Normal](./images/colorchart.png)
+/// tab | Protanomaly Severity 0.5
+![Protanomaly 0.5](./images/colorchart-protan-machado-0.5.png)
+///
 
-=== "Protanomaly Severity 0.5"
+/// tab | Protanomaly Severity 0.7
+![Protanomaly 0.7](./images/colorchart-protan-machado-0.7.png)
+///
 
-    ![Protanomaly 0.5](./images/colorchart-protan-machado-0.5.png)
-
-=== "Protanomaly Severity 0.7"
-
-    ![Protanomaly 0.7](./images/colorchart-protan-machado-0.7.png)
-
-=== "Protanomaly Severity 0.9"
-
-    ![Protanomaly 0.9](./images/colorchart-protan-machado-0.9.png)
+/// tab | Protanomaly Severity 0.9
+![Protanomaly 0.9](./images/colorchart-protan-machado-0.9.png)
+///
 
 To represent anomalous trichromacy, ColorAide leans on the [Machado 2009 approach][machado] which has a more nuanced
 approach to handling severity levels below 1. This approach did not really focus on tritanopia though, and the suggested
@@ -204,47 +204,48 @@ HtmlRow([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
 HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
 ```
 
-!!! tip "Processing Lots of Colors"
-    One logical application for filters is to apply them directly to images. If you are performing these operations on
-    millions of pixels, you may notice that ColorAide, with all of its convenience, may not always be the fastest. There
-    is a cost due to the overhead of convenience and a cost due to the pure Python approach as well. With that said,
-    there are tricks that can dramatically make things much faster in most cases!
+/// tip | Processing Lots of Colors
+One logical application for filters is to apply them directly to images. If you are performing these operations on
+millions of pixels, you may notice that ColorAide, with all of its convenience, may not always be the fastest. There
+is a cost due to the overhead of convenience and a cost due to the pure Python approach as well. With that said,
+there are tricks that can dramatically make things much faster in most cases!
 
-    `functools.lru_cache` is your friend in such cases. We actually process all the images on this page with ColorAide
-    to demonstrate the filters. The key to making it a quick and painless process was to cache repetitive operations.
-    When processing images, it is highly likely that you will be performing the same operations on thousands of
-    identical pixels. Caching the work you've already done can speed this process up exponentially.
+`functools.lru_cache` is your friend in such cases. We actually process all the images on this page with ColorAide
+to demonstrate the filters. The key to making it a quick and painless process was to cache repetitive operations.
+When processing images, it is highly likely that you will be performing the same operations on thousands of
+identical pixels. Caching the work you've already done can speed this process up exponentially.
 
-    There are certainly some images that could be constructed in such a way to elicit a worse case scenario where the
-    cache would not be able to compensate as well, but for most images, caching dramatically reduces processing time.
+There are certainly some images that could be constructed in such a way to elicit a worse case scenario where the
+cache would not be able to compensate as well, but for most images, caching dramatically reduces processing time.
 
-    We can crawl the pixels in a file, and using a simple function like below, we will only process a pixel once (at
-    least until our cache fills and we start having to overwrite existing colors).
+We can crawl the pixels in a file, and using a simple function like below, we will only process a pixel once (at
+least until our cache fills and we start having to overwrite existing colors).
 
-    ```py
-    @lru_cache(maxsize=1024 * 1024)
-    def apply_filter(name, amount, space, method, p, fit):
-        """Apply filter."""
+```py
+@lru_cache(maxsize=1024 * 1024)
+def apply_filter(name, amount, space, method, p, fit):
+    """Apply filter."""
 
-        has_alpha = len(p) > 3
-        color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
-        if method is not None:
-            # This is a CVD filter that allows specifying the method
-            color.filter(name, amount, space=space, in_place=True, method=method)
-        else:
-            # General filter.
-            color.filter(name, amount, space=space, in_place=True)
-        # Fit the color back into the color gamut and return the results
-        return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
-    ```
+    has_alpha = len(p) > 3
+    color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
+    if method is not None:
+        # This is a CVD filter that allows specifying the method
+        color.filter(name, amount, space=space, in_place=True, method=method)
+    else:
+        # General filter.
+        color.filter(name, amount, space=space, in_place=True)
+    # Fit the color back into the color gamut and return the results
+    return tuple([int(x * 255) for x in color.fit(method=fit)[:3 if has_alpha else -1]])
+```
 
-    When processing a 4608x2456 image (15,925,248 pixels) during our testing, it turned a ~7 minute process into a ~25
-    second process^\*^. Using gamut mapping opposed to simple clipping only increases time by to about ~56 seconds. The
-    much smaller images shown on this page process much, much faster.
+When processing a 4608x2456 image (15,925,248 pixels) during our testing, it turned a ~7 minute process into a ~25
+second process^\*^. Using gamut mapping opposed to simple clipping only increases time by to about ~56 seconds. The
+much smaller images shown on this page process much, much faster.
 
-    The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filter_img.py).
+The full script can be viewed [here](https://github.com/facelessuser/coloraide/blob/master/tools/filter_img.py).
 
-    \* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
-    pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
+\* _Tests were performed using the [Pillow][pillow] library. Results may vary depending on the size of the image,
+pixel configuration, number of unique pixels, etc. Cache size can be tweaked to optimize the results._
+///
 
 --8<-- "images.md"

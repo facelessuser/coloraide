@@ -1,32 +1,34 @@
 # XYZ D65
 
-!!! success "The XYZ D65 color space is registered in `Color` by default"
+/// success | The XYZ D65 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `xyz-d65`
+**Name:** `xyz-d65`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name       | Range^\*^
-    ---------- | ---------
-    `x`        | [0, 1]
-    `y`        | [0, 1]
-    `z`        | [0, 1]
+Name       | Range^\*^
+---------- | ---------
+`x`        | [0, 1]
+`y`        | [0, 1]
+`z`        | [0, 1]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![XYZ D65 3D](../images/xyz-d65-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the XYZ D65 color space.
-</figcaption>
-</figure>
+/////
+////
 
 The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination
 (CIE) in 1931. They resulted from a series of experiments done in the late 1920s by William David Wright using ten
@@ -36,7 +38,7 @@ quantitative links between distributions of wavelengths in the electromagnetic v
 perceived colors in human color vision.
 
 _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
-</div>
+///
 
 ## Channel Aliases
 

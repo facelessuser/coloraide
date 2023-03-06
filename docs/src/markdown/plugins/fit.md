@@ -36,6 +36,7 @@ accordingly. Defaults can be passed in when instantiating a new plugin.
 Color.register(Plugin(**kwargs))
 ```
 
-!!! warning "Reserved Name"
-    `clip` is a special, reserved name and the associated plugin cannot be overridden. Another clip plugin can be
-    written, but it cannot override the original.
+/// warning | Reserved Name
+`clip` is a special, reserved name and the associated plugin cannot be overridden. Another clip plugin can be
+written, but it cannot override the original.
+///

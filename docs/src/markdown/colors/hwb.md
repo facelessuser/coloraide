@@ -1,30 +1,32 @@
 # HWB
 
-!!! success "The HWB color space is registered in `Color` by default"
+/// success | The HWB color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hwb`
+**Name:** `hwb`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `w`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`w`  | [0, 1]
+`b`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HWB 3D](../images/hwb-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 HWB color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 HWB is a cylindrical-coordinate representation of points in an [RGB](./srgb.md) color model, similar to HSL and HSV. It
 was developed by [HSV](./hsv.md)'s creator Alvy Ray Smith in 1996 to address some of the issues with HSV. HWB was
@@ -34,7 +36,7 @@ respectively and range from 0-100% (or 0-1). The mental model is that the user c
 with white and/or black to produce the desired color.
 
 _[Learn about HWB](https://en.wikipedia.org/wiki/HWB_color_model)_
-</div>
+///
 
 ## Channel Aliases
 

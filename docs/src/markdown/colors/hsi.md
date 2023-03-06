@@ -1,30 +1,32 @@
 # HSI
 
-!!! failure "The HSI color space is not registered in `Color` by default"
+/// failure | The HSI color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hsi`
+**Name:** `hsi`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 1]
-    `i`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 1]
+`i`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HSI](../images/hsi-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the HSI color space.
-</figcaption>
-</figure>
+/////
+////
 
 The HSI model is similar to models like HSL and HSV except that it uses I for intensity instead of Lightness or Value.
 It does not attempt to "fill" a cylinder by its definition of saturation leading to a very different look when we plot
@@ -33,7 +35,7 @@ it.
 ![HSI Slice](../images/hsi-slice.png)
 
 [Learn more](https://en.wikipedia.org/wiki/HSL_and_HSV#HSI_to_RGB).
-</div>
+///
 
 ## Channel Aliases
 

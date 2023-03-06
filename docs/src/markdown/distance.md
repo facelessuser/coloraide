@@ -41,12 +41,14 @@ being a little slower.
 Color("red").delta_e("blue", method="2000")
 ```
 
-!!! warning "Distancing and Symmetry"
-    It should be noted that not all distancing algorithms are symmetrical. Some are order dependent.
+/// warning | Distancing and Symmetry
+It should be noted that not all distancing algorithms are symmetrical. Some are order dependent.
+///
 
 ### Delta E CIE76
 
-!!! success "The ∆E~ab~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~ab~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -57,7 +59,8 @@ color space.
 
 ### Delta E CMC (1984)
 
-!!! success "The ∆E~cmc~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~cmc~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -73,7 +76,8 @@ Parameter | Acceptability | Perceptibility
 
 ### Delta E CIE94
 
-!!! success "The ∆E~94~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~94~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -91,7 +95,8 @@ Parameter | Graphic\ Arts | Textiles
 
 ### Delta E CIEDE2000
 
-!!! success "The ∆E~00~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~00~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -108,7 +113,8 @@ adding five corrections:
 
 ### Delta E HyAB
 
-!!! success "The ∆E~HyAB~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~HyAB~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -119,7 +125,8 @@ can be used on any Lab like color space, the default being CIELab D65.
 
 ### Delta E OK
 
-!!! success "The ∆E~ok~ distancing algorithm is registered in `Color` by default"
+/// success | The ∆E~ok~ distancing algorithm is registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
@@ -131,7 +138,8 @@ the result up if desired.
 
 ### Delta E ITP
 
-!!! failure "The ∆E~itp~ distancing algorithm is **not** registered in `Color` by default"
+/// failure | The ∆E~itp~ distancing algorithm is **not** registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
@@ -156,7 +164,8 @@ Color.register([ICtCp(), DEITP()])
 
 ### Delta E Z
 
-!!! failure "The ∆E~z~ distancing algorithm is **not** registered in `Color` by default"
+/// failure | The ∆E~z~ distancing algorithm is **not** registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
@@ -178,7 +187,8 @@ Color.register([Jzazbz(), DEZ()])
 
 ### Delta E 99o
 
-!!! failure "The ∆E~99o~ distancing algorithm is **not** registered in `Color` by default"
+/// failure | The ∆E~99o~ distancing algorithm is **not** registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
@@ -200,11 +210,12 @@ Color.register([DIN99o(), DE99o()])
 
 ### Delta E CAM16
 
-!!! failure "The ∆E~cam16~ distancing algorithm is **not** registered in `Color` by default"
+/// failure | The ∆E~cam16~ distancing algorithm is **not** registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
-∆E~cam16~\ (CAM16)                       | :octicons-check-16:   | `cam16`         | `model='ucs'`
+∆E~cam16~                                | :octicons-check-16:   | `cam16`         | `model='ucs'`
 
 The [CAM16 UCS](./colors/cam16_ucs.md) uniform color space applies an additional nonlinear transformation to lightness
 and colorfulness so that a color difference metric ΔE can be based more closely on Euclidean distance. This algorithm
@@ -229,7 +240,8 @@ Color.register([CAM16UCS(), CAM16SCD(), CAM16LCD(), DECAM16()])
 
 ### Delta E HCT
 
-!!! failure "The ∆E~hct~ distancing algorithm is **not** registered in `Color` by default"
+/// failure | The ∆E~hct~ distancing algorithm is **not** registered in `Color` by default
+///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------

@@ -1,39 +1,41 @@
 # RLAB
 
-!!! failure "The RLAB color space is not registered in `Color` by default"
+/// failure | The RLAB color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `rlab`
+**Name:** `rlab`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `l`  | [0, 100]
-    `a`  | [-125, 125]
-    `b`  | [-125, 125]
+Name | Range
+---- | -----
+`l`  | [0, 100]
+`a`  | [-125, 125]
+`b`  | [-125, 125]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![RLAB](../images/rlab-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the RLAB color space.
-</figcaption>
-</figure>
+/////
+////
 
 The RLAB color-appearance space was developed by Fairchild and Berns for cross-media color reproduction applications in
 which images are reproduced with differing white points, luminance levels, and/or surrounds.
 
 [Learn more](https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1153&context=article).
-</div>
+///
 
 ## Channel Aliases
 

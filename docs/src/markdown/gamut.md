@@ -173,13 +173,14 @@ This can also be done with `#!py3 clip()`.
 Color('color(display-p3 1 1 0)').clip('srgb')
 ```
 
-!!! warning "Indirectly Gamut Mapping a Color Space"
-    When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
-    what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
-    because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
-    the original color. The process will be subject to any errors that occur in the [round trip](#notes-on-round-trip-accuracy)
-    to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
-    not give exact results and, in some cases, exceed "in gamut" thresholds.
+/// warning | Indirectly Gamut Mapping a Color Space
+When indirectly gamut mapping in another color space, results may vary depending on what color space you are in and
+what color space you are using to fit the color. The operation may not get the color precisely in gamut. This is
+because we must convert the color to the gamut mapping space, apply the gamut mapping, and then convert it back to
+the original color. The process will be subject to any errors that occur in the [round trip](#notes-on-round-trip-accuracy)
+to and from the targeted space. This is mainly mentioned as fitting in one color space and round tripping back may
+not give exact results and, in some cases, exceed "in gamut" thresholds.
+///
 
 There are actually many different ways to gamut map a color. Some are computationally expensive, some are quite simple,
 and many do really good in some cases and not so well in others. There is probably no perfect gamut mapping method, but
@@ -187,7 +188,8 @@ some are better than others.
 
 ### Clip
 
-!!! success "The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered"
+/// success | The `clip` gamut mapping is registered in `Color` by default and cannot be unregistered
+///
 
 Clipping is a simple and naive approach to gamut mapping. If the color space is bounded by a gamut, clip will compare
 each channel's value against the bounds for that channel set the value to the limit it exceeds.
@@ -207,7 +209,8 @@ to some other gamut mapping and has specific cases where its speed and simplicit
 
 ### LCh Chroma
 
-!!! success "The `lch-chroma` gamut mapping is registered in `Color` by default"
+/// success | The `lch-chroma` gamut mapping is registered in `Color` by default
+///
 
 LCh Chroma uses a combination of chroma reduction and MINDE in the CIELCh color space to bring a color into gamut. By
 reducing chroma in the CIELCh color space, LCh Chroma can hold hue and lightness in the LCh color space relatively
@@ -238,7 +241,8 @@ c.fit(method='clip')
 
 ### OkLCh Chroma
 
-!!! success "The `lch-chroma` gamut mapping is registered in `Color` by default"
+/// success | The `lch-chroma` gamut mapping is registered in `Color` by default
+///
 
 The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
 OkLCh as the gamut mapping color space. OkLCh Chroma is performed exactly like [LCh Chroma](#lch-chroma) except that it
@@ -257,7 +261,8 @@ have not made `oklch-chroma` our default yet, we have exposed the algorithm so u
 
 ### HCT Chroma
 
-!!! failure "The `hct-chroma` gamut mapping is **not** registered in `Color` by default"
+/// failure | The `hct-chroma` gamut mapping is **not** registered in `Color` by default
+///
 
 Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut mapping exactly like
 [LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.

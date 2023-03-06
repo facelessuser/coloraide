@@ -1,31 +1,33 @@
 # Prismatic
 
-!!! failure "The oRGB color space is not registered in `Color` by default"
+/// failure | The oRGB color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `prismatic`
+**Name:** `prismatic`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `l`  | [0, 1]
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range
+---- | -----
+`l`  | [0, 1]
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![Prismatic](../images/prismatic.png)
 
-<figcaption markdown>
+///// html | figcaption
 Prismatic Illustrations
-</figcaption>
-</figure>
+/////
+////
 
 The Prismatic model introduces a simple transform of the RGB color cube into a light/dark dimension and a 2D hue. The
 hue is a normalized (barycentric)triangle with pure red, green, and blue at the vertices, often called the Maxwell Color
@@ -33,7 +35,7 @@ Triangle.  Each cross section of the space is the same barycentric triangle, and
 one for each hue so the whole color volume takes the form of a prism.
 
 [Learn more](http://psgraphics.blogspot.com/2015/10/prismatic-color-model.html).
-</div>
+///
 
 ## Channel Aliases
 

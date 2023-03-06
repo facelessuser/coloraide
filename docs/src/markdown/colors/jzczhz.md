@@ -1,38 +1,40 @@
 # JzCzhz
 
-!!! failure "The JzCzhz color space is not registered in `Color` by default"
+/// failure | The JzCzhz color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `jzczhz`
+**Name:** `jzczhz`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `jz` | [0, 1]
-    `cz` | [0, 0.5]
-    `hz` | [0, 360)
+Name | Range
+---- | -----
+`jz` | [0, 1]
+`cz` | [0, 0.5]
+`hz` | [0, 360)
 
-    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to define percentage inputs/outputs.
+^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![JzCzhz](../images/jzczhz-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the JzCzhz color space.
-</figcaption>
-</figure>
+/////
+////
 
 JzCzhz is the cylindrical form of [Jzazbz](./jzazbz.md).
 
 _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
-</div>
+///
 
 ## Channel Aliases
 

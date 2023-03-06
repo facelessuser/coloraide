@@ -150,12 +150,14 @@ color.set(
 )
 ```
 
-!!! warning "Indirect Channel Modifications"
-    Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
-    incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
-    and then converts it back making it susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
+/// warning | Indirect Channel Modifications
+Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
+incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
+and then converts it back making it susceptible to any possible [round trip errors](./advanced.md#round-trip-accuracy).
+///
 
-!!! new "New in 1.5: Getting/Setting Multiple Channels"
+/// new | New in 1.5: Getting/Setting Multiple Channels
+///
 
 ## Undefined Values
 

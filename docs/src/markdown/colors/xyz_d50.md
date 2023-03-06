@@ -1,37 +1,39 @@
 # XYZ D50
 
-!!! success "The XYZ D50 color space is registered in `Color` by default"
+/// success | The XYZ D50 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `xyz-d50`
+**Name:** `xyz-d50`
 
-    **White Point:** D50
+**White Point:** D50
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name       | Range^\*^
-    ---------- | ---------
-    `x`        | [0, 1]
-    `y`        | [0, 1]
-    `z`        | [0, 1]
+Name       | Range^\*^
+---------- | ---------
+`x`        | [0, 1]
+`y`        | [0, 1]
+`z`        | [0, 1]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![XYZ D50 3D](../images/xyz-d50-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the XYZ D50 color space.
-</figcaption>
-</figure>
+/////
+////
 
 XYZ D50 is the same as [XYZ D65](./xyz_d65.md) except it uses a D50 white point.
 
 _[Learn about XYZ](https://en.wikipedia.org/wiki/CIE_1931_color_space)_
-</div>
+///
 
 ## Channel Aliases
 

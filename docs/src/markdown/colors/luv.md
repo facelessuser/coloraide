@@ -1,33 +1,35 @@
 # Luv
 
-!!! failure "The Luv color space is not registered in `Color` by default"
+/// failure | The Luv color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `luv`
+**Name:** `luv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `u`  | [-215, 215]
-    `v`  | [-215, 215]
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`u`  | [-215, 215]
+`v`  | [-215, 215]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELuv 3D](../images/luv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELuv D65 color space.
-</figcaption>
-</figure>
+/////
+////
 
 CIELuv is similar to CIELab as they were both developed in 1976 as perceptually uniform color spaces, both are derived
 from the color experiments in 1931 that brought us the XYZ color space, and neither are truly perceptually uniform.
@@ -40,7 +42,7 @@ CIELab is more commonly used in subtractive color applications (printed pages, d
 suited in additive color applications such as display colorimetry (monitors, TVs, etc.).
 
 _[Learn about CIELuv](https://en.wikipedia.org/wiki/CIELuv)_
-</div>
+///
 
 ## Channel Aliases
 

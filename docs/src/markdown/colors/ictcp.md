@@ -1,33 +1,35 @@
 # ICtCp
 
-!!! failure "The ICtCp color space is not registered in `Color` by default"
+/// failure | The ICtCp color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `ictcp`
+**Name:** `ictcp`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name       | Range^\*^
-    ---------- | ---------
-    `i`        | [0, 1]
-    `ct`       | [-0.5, 0.5]
-    `cp`       | [-0.5, 0.5]
+Name       | Range^\*^
+---------- | ---------
+`i`        | [0, 1]
+`ct`       | [-0.5, 0.5]
+`cp`       | [-0.5, 0.5]
 
-    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to define percentage inputs/outputs.
+^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![ICtCp](../images/ictcp-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the ICtCp color space.
-</figcaption>
-</figure>
+/////
+////
 
 ICtCp is a color space format with better perceptual uniformity than [CIELab](#cielab) and is used as a part of the
 color image pipeline in video and digital photography systems for high dynamic range (HDR) and wide color gamut (WCG)
@@ -35,7 +37,7 @@ imagery. It was developed by Dolby Laboratories from the IPT color space by Ebne
 the intention to replace YCbCr.
 
 _[Learn about ICtCp](https://en.wikipedia.org/wiki/ICtCp)_
-</div>
+///
 
 ## Channel Aliases
 

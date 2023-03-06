@@ -1,33 +1,35 @@
 # LAB D50
 
-!!! success "The Lab D50 color space is registered in `Color` by default"
+/// success | The Lab D50 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `lab`
+**Name:** `lab`
 
-    **White Point:** D50
+**White Point:** D50
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `a`  | [-125, 125]
-    `b`  | [-125, 125]
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`a`  | [-125, 125]
+`b`  | [-125, 125]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELab D50 3D](../images/lab-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELab D50 color space.
-</figcaption>
-</figure>
+/////
+////
 
 The CIELab color space also referred to as L\*a\*b\* is a color space defined by the International Commission on
 Illumination (abbreviated CIE) in 1976. It expresses color as three values: L\* for perceptual lightness, and a\* and
@@ -36,7 +38,7 @@ uniform space, where a given numerical change corresponds to similar perceived c
 is not truly perceptually uniform, it nevertheless is useful in industry for detecting small differences in color.
 
 _[Learn about CIELab](https://en.wikipedia.org/wiki/CIELab_color_space)_
-</div>
+///
 
 ## Channel Aliases
 
