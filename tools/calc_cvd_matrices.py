@@ -5,18 +5,22 @@ import os
 
 sys.path.insert(0, os.getcwd())
 
-import tools.calc_xyz_transform as xyzt  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide import Color  # noqa: E402
-
-# Calculated using our own `calc_xyz_transform.py`
-RGB_TO_XYZ, XYZ_TO_RGB = xyzt.get_matrix(xyzt.white_d65, 'srgb')
 
 # Smith & Pokorny (1975) 2-deg cone fundamentals
 M = [
     [0.15514, 0.54312, -0.03286],
     [-0.15514, 0.45684, 0.03286],
     [0, 0, 0.01608]
+]
+
+# Linear sRGB to Judd-Vos corrected XYZ (approximation)
+# https://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf
+RGB_TO_XYZ = [
+    [40.9568, 35.5041, 17.9167],
+    [21.3389, 70.6743, 7.9868],
+    [1.86297, 11.462, 91.2367]
 ]
 
 
@@ -37,7 +41,7 @@ def pprint(value):
 ####################
 # General matrices
 ####################
-T = alg.dot(M, RGB_TO_XYZ)
+T = alg.dot(M, alg.divide(RGB_TO_XYZ, 100))
 INV_T = alg.inv(T)
 
 print('===== LRGB to LMS =====')
