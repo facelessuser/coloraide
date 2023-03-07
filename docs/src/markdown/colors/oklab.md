@@ -66,7 +66,7 @@ Color("oklab", [0, 0, 0], 1)
 The string representation of the color object will always default to the `#!css-color color(--oklab l a b / a)`
 form, but the default string output will be the `#!css-color oklab(l a b / a)` form.
 
-```playground
+```py play
 Color("oklab", [0.62796, 0.22486, 0.12585])
 Color("oklab", [0.79269, 0.05661, 0.16138]).to_string()
 Color("oklab", [0.96798, -0.07137, 0.19857]).to_string(percent=True)

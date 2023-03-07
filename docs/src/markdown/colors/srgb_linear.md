@@ -62,7 +62,7 @@ Color("srgb-linear", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(srgb-linear r g b / a)` form.
 
-```playground
+```py play
 Color("srgb", [1, 0, 0])
 Color("srgb", [1, 0.37626, 0]).to_string()
 ```

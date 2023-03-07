@@ -68,7 +68,7 @@ Color("rec2100-hlg", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--rec2100-hlg r g b / a)` form.
 
-```playground
+```py play
 Color("rec2100-hlg", [0.65587, 0.23436, 0.11415], 1)
 Color("rec2100-hlg", [0.69294, 0.56608, 0.19838], 1).to_string()
 ```

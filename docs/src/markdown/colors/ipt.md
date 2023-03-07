@@ -61,7 +61,7 @@ color(--ipt i p t / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--ipt i p t / a)` form.
 
-```playground
+```py play
 Color("ipt", [0.45616, 0.62086, 0.44282])
 Color("ipt", [0.64877, 0.189, 0.5303]).to_string()
 ```

@@ -63,7 +63,7 @@ Color("a98-rgb-linear", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--a98-rgb-linear r g b / a)` form.
 
-```playground
+```py play
 Color("a98-rgb", [0.71513, 0, 0])
 Color("a98-rgb-linear", [0.82231, 0.37626, 0.01549]).to_string()
 ```

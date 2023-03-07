@@ -58,7 +58,7 @@ color(--oklch l c h / a)  // Color function
 The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
 form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
 
-```playground
+```py play
 Color("oklch", [0.62796, 0.25768, 29.234])
 Color("oklch", [0.79269, 0.17103, 70.67]).to_string()
 Color("oklch", [0.96798, 0.21101, 109.77]).to_string(percent=True)

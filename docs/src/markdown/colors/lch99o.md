@@ -63,7 +63,7 @@ Color("lch99o", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--lch99o jz cz hz / a)` form.
 
-```playground
+```py play
 Color("lch99o", [57.289, 49.915, 37.692])
 Color("lch99o", [77.855, 43.543, 67.811]).to_string()
 ```

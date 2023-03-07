@@ -169,6 +169,24 @@ markdown_extensions:
                 from coloraide import *
                 from coloraide.everything import ColorAll as Color
           validator: !!python/name:docs.src.py.notebook.color_command_validator
+        - name: py
+          class: 'highlight'
+          format: !!python/object/apply:docs.src.py.notebook.color_command_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
+          validator: !!python/name:docs.src.py.notebook.color_command_validator
+        - name: python
+          class: 'highlight'
+          format: !!python/object/apply:docs.src.py.notebook.color_command_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
+          validator: !!python/name:docs.src.py.notebook.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline

@@ -57,7 +57,7 @@ color(--rlab l a b / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--rlab l a b / a)` form.
 
-```playground
+```py play
 Color("rlab", [51.012, 79.742, 57.26])
 Color("rlab", [72.793, 25.151, 74.11]).to_string()
 ```

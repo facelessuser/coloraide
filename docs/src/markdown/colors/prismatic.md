@@ -58,7 +58,7 @@ color(--prismatic l r g b / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--prismatic l r g b / a)` form.
 
-```playground
+```py play
 Color("prismatic", [1, 1, 0, 0])
 Color("prismatic", [1, 0.60714, 0.39286, 0], 1).to_string()
 ```

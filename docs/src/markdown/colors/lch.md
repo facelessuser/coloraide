@@ -66,7 +66,7 @@ Color("lch", [0, 0, 0], 1)
 The string representation of the color object will always default to the `#!css-color color(--lch l c h / a)`
 form, but the default string output will be the `#!css-color lch(l c h / a)` form.
 
-```playground
+```py play
 Color("lch", [54.291, 106.84, 40.858])
 Color("lch", [75.59, 83.769, 70.824]).to_string()
 Color("lch", [97.607, 94.712, 99.572]).to_string(percent=True)

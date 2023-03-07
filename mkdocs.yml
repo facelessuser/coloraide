@@ -169,6 +169,24 @@ markdown_extensions:
                 from coloraide import *
                 from coloraide.everything import ColorAll as Color
           validator: !!python/name:docs.src.py.notebook.color_command_validator
+        - name: py
+          class: 'highlight'
+          format: !!python/object/apply:docs.src.py.notebook.color_command_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
+          validator: !!python/name:docs.src.py.notebook.color_command_validator
+        - name: python
+          class: 'highlight'
+          format: !!python/object/apply:docs.src.py.notebook.color_command_formatter
+            kwds:
+              init: |
+                import coloraide
+                from coloraide import *
+                from coloraide.everything import ColorAll as Color
+          validator: !!python/name:docs.src.py.notebook.color_command_validator
   - pymdownx.highlight:
       extend_pygments_lang:
         - name: php-inline
@@ -246,7 +264,7 @@ extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
   - playground-config-c369bb3c.js
   - https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-b5cf7553.js
+  - assets/coloraide-extras/extra-notebook-cec0e8bb.js
 
 extra:
   social:

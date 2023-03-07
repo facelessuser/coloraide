@@ -67,7 +67,7 @@ Color("rec2100-pq", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--rec2100-pq r g b / a)` form.
 
-```playground
+```py play
 Color("rec2100-pq", [0.53255, 0.32702, 0.22007], 1)
 Color("rec2100-pq", [0.55101, 0.49099, 0.30009], 1).to_string()
 ```

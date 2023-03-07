@@ -11,7 +11,7 @@ white.
 The `luminance` method exposes access to this value to make it quick and easy to query the relative luminance, or Y
 parameter from XYZ D65 after converting the current color.
 
-```playground
+```py play
 Color("black").luminance()
 Color("white").luminance()
 Color("blue").luminance()
@@ -21,7 +21,7 @@ Color("blue").luminance()
 Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
 only difference is the lower precision by which they calculate the value:
 
-```playground
+```py play
 r, g, b = Color('purple')[:-1]
 r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
 g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
@@ -48,13 +48,13 @@ are symmetrical, and can differ depending which color is referenced as **text**,
 
 At this time, ColorAide only offers a handful of contrast approaches, and they can be by using the `contrast()` method.
 
-```playground
+```py play
 Color("blue").contrast("red")
 ```
 
 To select different contrast methods, simply use the `method` parameter.
 
-```playground
+```py play
 Color("blue").contrast("red", method='wcag21')
 ```
 
@@ -83,7 +83,7 @@ contrast_ratio = (l1 + 0.05) / (l2 + 0.05)
 
 This method can be used by specifying `wcag21` as the contrast method.
 
-```playground
+```py play
 Color("blue").contrast("red", method='wcag21')
 ```
 
@@ -100,7 +100,7 @@ same as CIELab's lightness (also known as L\*), we've referred to this approach 
 Lstar's color difference approach to contrast is quite simple, it's literally the difference between two color's
 lightness as provided by CIELab. This method does not care which color is text or background.
 
-```playground
+```py play
 Color('hct', [30, 20, 70]).contrast(Color('hct', [30, 20, 50]), method='lstar')
 ```
 

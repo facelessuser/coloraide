@@ -67,7 +67,7 @@ Color("srgb", [0, 0, 0], 1)
 The string representation of the color object will always default to the `#!css-color color(srgb r g b / a)`
 form, but the default string output will be the `#!css-color rgb(r g b / a)` form.
 
-```playground
+```py play
 Color('red').to_string()
 Color('orange').to_string(comma=True)
 Color('yellow').to_string(percent=True)

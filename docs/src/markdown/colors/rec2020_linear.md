@@ -64,7 +64,7 @@ Color("rec2020-linear", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--rec2020-linear r g b / a)` form.
 
-```playground
+```py play
 Color("rec2020-linear", [0.6274, 0.0691, 0.01639])
 Color("rec2020-linear", [0.7513, 0.41509, 0.04951]).to_string()
 ```

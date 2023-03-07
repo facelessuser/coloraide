@@ -49,7 +49,7 @@ color spaces will throw an error.
 In ColorAide, just call the `filter` method and provide the name of the filter. If `amount` is not provided, the default
 according to the W3C spec will be used instead.
 
-```playground
+```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
 HtmlRow(colors)
@@ -105,7 +105,7 @@ By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritan
 [Viénot, Brettel, and Mollon 1999 approach][vienot] to simulate protanopia and and deuteranopia. While Brettel is
 probably the best approach for all cases, Viénot is much faster and does quite well for protanopia and deuteranopia.
 
-```playground
+```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
 HtmlRow(colors)
@@ -119,7 +119,7 @@ Viénot is faster and does quite well for protanopia and deuteranopia, but is no
 [Machado 2009][machado] has better logic for severity ranges less than 1, but is probably even further off for
 tritanopia.
 
-```playground
+```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
 HtmlRow(colors)
@@ -163,7 +163,7 @@ algorithm for tritanopia should only be considered as an approximation. Instead 
 tritanomaly, we instead just use linear interpolation between the severity 1 results and the severity 0 (no CVD)
 results. With that said, the `method` can always be overridden to use something other than the defaults.
 
-```playground
+```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
 HtmlRow(colors)
@@ -196,7 +196,7 @@ All of the filters that are supported allow filtering in the Linear sRGB color s
 Additionally, the W3C filter effects also support filtering in the sRGB color space. The CVD filters are specifically
 designed to be applied in the Linear sRGB space, and cannot be used in any other color space.
 
-```playground
+```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
 HtmlRow(colors)

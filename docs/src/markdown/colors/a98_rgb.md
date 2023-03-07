@@ -67,7 +67,7 @@ Color("a98-rgb", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(a98-rgb r g b / a)` form.
 
-```playground
+```py play
 Color('a98-rgb', [0.85859, 0, 0])
 Color('a98-rgb', [0.91489, 0.64117, 0.15031]).to_string()
 ```

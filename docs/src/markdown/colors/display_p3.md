@@ -63,7 +63,7 @@ Color("display-p3", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(display-p3 r g b / a)` form.
 
-```playground
+```py play
 Color('display-p3', [0.91749, 0.20029, 0.13856])
 Color('display-p3', [0.94965, 0.6629, 0.23297]).to_string()
 ```

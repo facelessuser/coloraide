@@ -9,7 +9,7 @@ ColorAide exposes various options to allow users to serialize in the form they m
 Colors can be serialized to strings by using the `to_string` method. The color class will convert the current color into
 one of the many of CSS formats supported for the given color space.
 
-```playground
+```py play
 Color("srgb", [0.5, 0, 1], 0.3).to_string()
 ```
 
@@ -33,7 +33,7 @@ When in the default state, `alpha` will only be shown if the alpha channel has a
 precision and scale of the values. The default is 5. In some cases, like the sRGB hex output, precision may not really
 come into play as hex values are rounded to the nearest whole number.
 
-```playground
+```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=5, percent=True)
 Color("rgb(30.3456% 75% 100%)").to_string(precision=4, percent=True)
 Color("rgb(30.3456% 75% 100%)").to_string(precision=3, percent=True)
@@ -43,14 +43,14 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)
 
 Providing a precision of `0` will simply enable simple rounding to the nearest whole number.
 
-```playground
+```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)
 ```
 
 Providing a precision of `-1` is a special input that will give the highest precision that can be given. Not
 particularly helpful except to look at the raw decimal number.
 
-```playground
+```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, percent=True)
 ```
 
@@ -58,7 +58,7 @@ One note though, format of the value matters. Here we output in the range of 0 -
 `1`, in this case, can throw the color out of gamut. So remember to use a sufficient precision for what you are
 doing and the values you are working in.
 
-```playground
+```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
 ```
 
@@ -68,14 +68,14 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
 technically unbounded, so no fitting may occur in those color spaces. Additionally, some color formats, like sRGB hex,
 are always fitted (regardless of this setting) as they must fit into the gamut or they cannot be translated.
 
-```playground
+```py play
 Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit=False)
 ```
 
 Additionally, we can choose a different fitting method by passing `fit` the name of the method we would like.
 
-```playground
+```py play
 Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit='clip')
 ```
@@ -85,7 +85,7 @@ Color("rgb(30% 105% 0%)").to_string(fit='clip')
 `color`, for some color spaces, is the default output, but for others this format can be explicitly requested by setting
 `color` to `#!py3 True`. If set to `#!py3 True`, this will take priority over other format options.
 
-```playground
+```py play
 Color("rebeccapurple").to_string(color=True)
 ```
 
@@ -96,7 +96,7 @@ per the most recent CSS spec. These are very new, so most browsers do not suppor
 until a time when this behavior is common enough. `NaN` values will not survive fitting unless a color channel is
 naturally undefined. An example would be a hue when the color has saturation or chroma set to zero.
 
-```playground
+```py play
 Color('hsl(none 0% 30%)').to_string(none=True)
 ```
 
@@ -117,7 +117,7 @@ output in other subtle ways. As the comma format is the old legacy approach, whe
 `rgba` instead of `rgb`. If using the non-comma syntax, `rgb` is always used, even when the color has
 transparency.
 
-```playground
+```py play
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
 ```
 
@@ -128,7 +128,7 @@ channels. By default, only HSL and HWB output channels with percents by default,
 can only be turned off when serializing to the modern syntax (space delimited). When percentage is enabled, ranges will
 be output in the range of [0%,100%] instead of their usual numeric value.
 
-```playground
+```py play
 Color("rebeccapurple").to_string(percent=True)
 Color("rebeccapurple").convert('lab').to_string(percent=True)
 Color("rebeccapurple").convert('hsl').to_string(percent=False)
@@ -142,7 +142,7 @@ These options are currently specific to the sRGB color space.
 
 sRGB can output colors to a hex format which is unique compared to HSL and others. Simply enable `hex`.
 
-```playground
+```py play
 Color("rebeccapurple").to_string(hex=True)
 ```
 
@@ -150,7 +150,7 @@ Color("rebeccapurple").to_string(hex=True)
 
 You can force hex to output in uppercase.
 
-```playground
+```py play
 Color("red").to_string(hex=True)
 Color("red").to_string(hex=True, upper=True)
 ```
@@ -160,7 +160,7 @@ Color("red").to_string(hex=True, upper=True)
 When converting to the hex color format, a color can be compressed in certain cases. Enabling `compress` will compress a
 hex color if possible.
 
-```playground
+```py play
 Color("#11223388").to_string(hex=True)
 Color("#11223388").to_string(hex=True, compress=True)
 ```
@@ -171,6 +171,6 @@ sRGB can also output color names. If a color evaluates to a hex code which also 
 internal CSS color name mapping, then a color name will be returned. If the color does not match a color name, it will
 fallback to whatever the other options dictate.
 
-```playground
+```py play
 Color("#663399").to_string(names=True)
 ```

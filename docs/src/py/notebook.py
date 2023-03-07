@@ -535,7 +535,7 @@ def colorize(src, lang, **options):
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = set(['exceptions'])
+    valid_inputs = set(['exceptions', 'play'])
 
     for k, v in inputs.items():
         if k in valid_inputs:
@@ -631,7 +631,24 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
     global code_id
     from pymdownx.superfences import SuperFencesException
 
+    # Support the new way
+    play = options.get('play', False) if options is not None else False
+    # Support the old way
+    if not play and language == 'playground':
+        play = True
+
+    if not play:
+        return md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
+            src=src,
+            class_name=class_name,
+            language='py',
+            md=md,
+            options=options,
+            **kwargs
+        )
+
     try:
+
         if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
             code_id = 0
 
@@ -869,6 +886,18 @@ def render_notebook(*args):
                 {
                     "name": 'playground',
                     "class": 'playground',
+                    "format": color_command_formatter(LIVE_INIT),
+                    "validator": live_color_command_validator
+                },
+                {
+                    "name": 'python',
+                    "class": 'highlight',
+                    "format": color_command_formatter(LIVE_INIT),
+                    "validator": live_color_command_validator
+                },
+                {
+                    "name": 'py',
+                    "class": 'highlight',
                     "format": color_command_formatter(LIVE_INIT),
                     "validator": live_color_command_validator
                 }

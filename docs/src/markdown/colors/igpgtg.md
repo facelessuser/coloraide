@@ -57,7 +57,7 @@ color(--igpgtg ig pg tg / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--igpgtg ig pg tg / a)` form.
 
-```playground
+```py play
 Color("igpgtg", [0.54834, 0.15366, 0.43674])
 Color("igpgtg", [0.73238, 0.0397, 0.32108]).to_string()
 ```

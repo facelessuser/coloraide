@@ -64,7 +64,7 @@ color(--cam16-ucs j a b / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--cam16-ucs j a b / a)` form.
 
-```playground
+```py play
 Color("cam16-ucs", [59.178, 40.82, 21.153], 1)
 Color("cam16-ucs", [78.364, 9.6945, 28.629], 1).to_string()
 ```

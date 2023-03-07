@@ -63,7 +63,7 @@ Color("lab-d65", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--lab-d65 l a b / a)` form.
 
-```playground
+```py play
 Color("lab-d65", [53.237, 80.09, 67.203])
 Color("lab-d65", [74.934, 23.927, 78.953]).to_string()
 ```

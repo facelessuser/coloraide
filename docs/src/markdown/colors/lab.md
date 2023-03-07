@@ -68,7 +68,7 @@ Color("lab", [0, 0, 0], 1)
 The string representation of the color object will always default to the `#!css-color color(--lab l a b / a)`
 form, but the default string output will be the `#!css-color lab(l a b / a)` form.
 
-```playground
+```py play
 Color("lab", [54.291, 80.805, 69.891])
 Color("lab", [75.59, 27.516, 79.121]).to_string()
 Color("lab", [97.607, -15.75, 93.394]).to_string(percent=True)

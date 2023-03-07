@@ -62,7 +62,7 @@ Color("hsv", [0, 0, 0], 1)
 The string representation of the color object and default string output will always use the
 `#!css-color color(hsv h s v / a)` form.
 
-```playground
+```py play
 Color("hsv", [0, 1, 1])
 Color("hsv", [38.824, 1, 1]).to_string()
 ```

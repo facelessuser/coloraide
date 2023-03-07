@@ -15,7 +15,7 @@ space, but it can be configured to evaluate in any color space, such as Oklab, e
 spaces compared to others. Some spaces may not be well suited, such as cylindrical spaces. Some spaces might not be as
 very perceptually uniform as others requiring more complex algorithms.
 
-```playground
+```py play
 Color("red").distance("blue", space="srgb")
 Color("red").distance("blue", space="lab")
 ```
@@ -29,7 +29,7 @@ If no `method` is specified, the default implementation is ∆E^\*^~ab~ (CIE76) 
 algorithm on the CIELab color space. It is fast, but not as accurate as later iterations of the algorithm as CIELab is
 not actually as perceptually uniform as it was thought when CIELab was originally developed.
 
-```playground
+```py play
 Color("red").delta_e("blue")
 ```
 
@@ -37,7 +37,7 @@ When `method` is set, the specified ∆E algorithm will be used instead. For ins
 more complex algorithm that accounts for the CIELab's weakness in perceptually uniformity. It does come at the cost of
 being a little slower.
 
-```playground
+```py play
 Color("red").delta_e("blue", method="2000")
 ```
 
@@ -270,12 +270,12 @@ the smallest distance between the calling color object and itself will be consid
 Consider the following example. Here we provide a list of colors to compare against `#!color red`. After comparing all
 the colors, the closest ends up being `#!color maroon`.
 
-```playground
+```py play
 Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'])
 ```
 
 The default distancing method is used if one is not supplied, but others can be used:
 
-```playground
+```py play
 Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], method='2000')
 ```

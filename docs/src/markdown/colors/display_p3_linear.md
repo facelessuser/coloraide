@@ -63,7 +63,7 @@ Color("display-p3-linear", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--display-p3-linear r g b / a)` form.
 
-```playground
+```py play
 Color("display-p3-linear", [0.82246, 0.03319, 0.01708])
 Color("display-p3-linear", [0.88926, 0.39697, 0.04432]).to_string()
 ```

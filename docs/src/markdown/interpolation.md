@@ -42,14 +42,14 @@ As an example, below we create an interpolation between `#!color rebeccapurple` 
 step through values of `0.0`, `0.1`, `0.2`, etc. This returns colors at various positions on the line that connects
 the two colors, `0` returning `#!color rebeccapurple` and `1` returning `#!color lch(85% 100 85)`.
 
-```playground
+```py play
 i = Color.interpolate(["rebeccapurple", "lch(85% 100 85)"], space='lch')
 [i(x / 10).to_string() for x in range(10 + 1)]
 ```
 
 If we create enough steps, we can create a gradient.
 
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 85)"],
     space='lch'
@@ -79,7 +79,7 @@ colors, still operates by default in the domain of [0, 1], only it will now appl
 Piecewise interpolation simply breaks up a series of data points into segments in order to apply interpolation
 individually on each segment.
 
-```playground
+```py play
 Color.interpolate(['black', 'red', 'white'])
 ```
 
@@ -109,7 +109,7 @@ along the way towards the other colors being used as control points.
 
 It can be used by specifying `bspline` as the interpolation method.
 
-```playground
+```py play
 Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 ```
 
@@ -130,7 +130,7 @@ out of gamut if interpolating on an edge.
 
 It can be used by specifying `natural` as the interpolation method.
 
-```playground
+```py play
 Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 ```
 
@@ -145,7 +145,7 @@ The "monotone" spline is a piecewise interpolation spline that passes through al
 monotonicity. As far as we are concerned, the important thing to note is that it greatly reduces any overshoot or
 undershoot in the interpolation.
 
-```playground
+```py play
 Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
 ```
 
@@ -164,7 +164,7 @@ Much like the "natural" spline, it can overshoot or undershoot.
 Catmull-Rom is not registered by default, but can be registered as shown below and then used by specifying `catrom`
 as the interpolation method.
 
-```playground
+```py play
 from coloraide import Color
 from coloraide.interpolate.catmull_rom import CatmullRom
 
@@ -182,7 +182,7 @@ shortest angle between two hues is targeted for interpolation, but the `hue` opt
 in a number of interesting ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. Below, we can see how
 the interpolation varies using `shorter` vs `longer` (interpolate between the longest angle).
 
-```playground
+```py play
 i = Color.interpolate(
     ["lch(52% 58.1 22.7)", Color("lch(56% 49.1 257.1)").mask("hue", invert=True)],
     space="lch"
@@ -207,7 +207,7 @@ same time as opposed to linear, piecewise interpolation that only evaluates two 
 ///
 
 /// tab | shorter
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 805)"],
     space='lch',
@@ -217,7 +217,7 @@ Color.interpolate(
 ///
 
 /// tab | longer
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 805)"],
     space='lch',
@@ -227,7 +227,7 @@ Color.interpolate(
 ///
 
 /// tab | increasing
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 805)"],
     space='lch',
@@ -237,7 +237,7 @@ Color.interpolate(
 ///
 
 /// tab | decreasing
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 805)"],
     space='lch',
@@ -247,7 +247,7 @@ Color.interpolate(
 ///
 
 /// tab | specified
-```playground
+```py play
 Color.interpolate(
     ["rebeccapurple", "lch(85% 100 805)"],
     space='lch',
@@ -272,7 +272,7 @@ transition looks just as one would expect as the transparent color's channels ar
 transparency.
 
 /// html | div[style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%);"]
-```playground
+```py play
 Color.interpolate(['white', 'transparent'], space='srgb', premultiplied=False)
 Color.interpolate(['white', 'transparent'], space='srgb')
 ```
@@ -284,14 +284,14 @@ colors equally, we see that the resultant color is also equally influenced by th
 premultiplied example, we see that orange is still quite dominant at 50% as it is fully opaque.
 
 
-```playground
+```py play
 Color('orange').mix(Color('blue').set('alpha', 0.25), space='srgb', premultiplied=False)
 Color('orange').mix(Color('blue').set('alpha', 0.25), space='srgb')
 ```
 
 If we interpolate it, we can see the difference in transition.
 
-```playground
+```py play
 Color.interpolate(['orange', Color('blue').set('alpha', 0.25)], space='srgb', premultiplied=False)
 Color.interpolate(['orange', Color('blue').set('alpha', 0.25)], space='srgb')
 ```
@@ -317,7 +317,7 @@ In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` w
 will end up with a range of colors that maintains the same lightness and chroma as the first color, but with different
 hues. We can see as we step through the colors that only the hue is interpolated.
 
-```playground
+```py play
 i = Color.interpolate(
     ["lch(52% 58.1 22.7)", Color("lch(56% 49.1 257.1)").mask(['lightness', 'chroma', 'alpha'])],
     space="lch"
@@ -327,7 +327,7 @@ i = Color.interpolate(
 
 You can also create inverted masks. An inverted mask will mask all *except* the specified channel.
 
-```playground
+```py play
 i = Color.interpolate(
     ["lch(52% 58.1 22.7)", Color("lch(56% 49.1 257.1)").mask('hue', invert=True)],
     space="lch"
@@ -418,7 +418,7 @@ ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
 
 Here, we are using the default "ease in" and "ease out" easing functions provided by ColorAide.
 
-```playground
+```py play
 from coloraide import ease_in, ease_out
 
 Color.interpolate(
@@ -437,7 +437,7 @@ Color.interpolate(
 Additionally, easing functions can be injected inline which allows a user to control how easing is performed between
 specific sub-interpolations within piecewise interpolation.
 
-```playground
+```py play
 Color.interpolate(["red", "green", ease_out, "blue"])
 ```
 
@@ -445,7 +445,7 @@ ColorAide even lets you apply easing functions to specific channels, though they
 entire operation. This can be done to one or more channels at a time. Below, we apply an exponential "ease in" to
 `alpha` while allowing all other channels to interpolate normally.
 
-```playground
+```py play
 ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
 Color.interpolate(
     ["lch(50% 50 0)", "lch(90% 50 260 / 0.5)"],
@@ -458,7 +458,7 @@ Color.interpolate(
 We can also set all the channels to an easing function via `all` and then override specific channels. In this case,
 we exponentially "ease out" on all channels except the red channel, which we then force to be linear.
 
-```playground
+```py play
 ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
 Color.interpolate(
     ["color(srgb 0 1 1)", "color(srgb 1 0 0)"],
@@ -478,7 +478,7 @@ evenly distributed within the domain of [0, 1], but if desired, these color stop
 To specify color stops, simply wrap a color in a `coloraide.stop` object and specify the stop position. Stop positions
 will then cause the transition of the targeted color to be moved.
 
-```playground
+```py play
 from coloraide import stop
 Color.interpolate(['orange', 'purple', 'green'])
 Color.interpolate(['orange', stop('purple', 0.25), 'green'])
@@ -493,7 +493,7 @@ easing functions. The logic comes directly from the [CSS spec](https://drafts.cs
 Using the `hint` function, we can generate a midpoint easing method that moves the middle of the interpolation
 transition to the specified point which is relative to the two color stops it is between.
 
-```playground
+```py play
 from coloraide import hint
 
 Color.interpolate(['orange', 'purple', 'green'])
@@ -511,14 +511,14 @@ The `mix` function is built on top of the [`interpolate`](#linear-interpolation)
 intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
 the two.
 
-```playground
+```py play
 Color("red").mix(Color("blue"))
 ```
 
 By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
 the color `#!color red` at 20%. With `#!color blue` at 20% and `#!color red` at 80%, this gives us a more reddish color.
 
-```playground
+```py play
 Color("red").mix(Color("blue"), 0.2)
 ```
 
@@ -526,14 +526,14 @@ As with all interpolation based functions, if needed, a different color space ca
 parameter or even a different interpolation method via `method`. `mix` accepts all the same parameters used in
 `interpolate`, though concepts like [stops and hints](#color-stops-and-hints) are not allowed with mixing.
 
-```playground
+```py play
 Color("red").mix(Color("blue"), space="hsl", method='bspline')
 ```
 
 Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
 color afterwards.
 
-```playground
+```py play
 Color("red").mix("blue", 0.2)
 ```
 
@@ -549,7 +549,7 @@ like `hue`, `progress`, etc.
 The `steps` method provides an intuitive interface to create lists of discrete colors. Like mixing, it is also built on
 [`interpolate`](#linear-interpolation). Just provide two colors, and specify how many `steps` are wanted.
 
-```playground
+```py play
 Color.steps(["red", "blue"], steps=10)
 ```
 
@@ -557,7 +557,7 @@ If desired, multiple colors can be provided, and steps will be returned for all 
 interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
 detail later).
 
-```playground
+```py play
 Color.steps(["red", "orange", "yellow", "green"], steps=10)
 ```
 
@@ -568,7 +568,7 @@ In this example, we specify the color `#!color color(display-p3 0 1 0)` and inte
 The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
 result of 10.
 
-```playground
+```py play
 Color.steps(
     [Color("display-p3", [0, 1, 0]), "red"],
     space="lch",
@@ -584,7 +584,7 @@ both the `max_delta_e` and the `max_steps` requirement, the number of steps may 
 than the `max_steps` limit. `max_steps` is set to `#!py3 1000` by default, but can be set to `#!py3 None` if no limit is
 desired.
 
-```playground
+```py play
 Color.steps(
     [Color("display-p3", [0, 1, 0]), "red"],
     space="lch",
@@ -597,7 +597,7 @@ Color.steps(
 When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
 if the required steps is greater than the calculated steps via the maximum Delta E limit.
 
-```playground
+```py play
 Color.steps(
     [Color("display-p3", [0, 1, 0]), "red"],
     space="lch",
@@ -614,7 +614,7 @@ specifying the method via the `delta_e` parameter.
 
 
 /// tab | ∆E^\*^~ab~.
-```playground
+```py play
 Color.steps(
     [Color("display-p3", [0, 1, 0]), "red"],
     space="lch",
@@ -626,7 +626,7 @@ Color.steps(
 ///
 
 /// tab | ∆E^\*^~00~
-```playground
+```py play
 Color.steps(
     [Color("display-p3", [0, 1, 0]), "red"],
     space="lch",
@@ -640,7 +640,7 @@ Color.steps(
 And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and any
 of the other supported `interpolate` features as well.
 
-```playground
+```py play
 Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
 ```
 
@@ -657,7 +657,7 @@ data points to a [0, 1] domain and calculate and apply color stops to align the,
 accessible if the user could simply change the domain to work with their data. Luckily, ColorAide is up to the
 challenge.
 
-```playground
+```py play
 i = Color.interpolate(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 85, 95]
@@ -671,7 +671,7 @@ i
 It should be noted that you are not constrained to provide the exact same amount of domain values as you have colors and
 can have differing amounts, but if you want to align specific colors to certain data points, then it helps.
 
-```playground
+```py play
 Color.interpolate(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 85, 95]
@@ -686,7 +686,7 @@ Lastly, domains must be specified in ascending order of values. If a value decre
 value that comes right before it. This means you cannot put a domain in reverse. If you need to reverse the order, just
 flip the color order and setup the domain accordingly.
 
-```playground
+```py play
 i = Color.interpolate(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 20, 95]
@@ -700,7 +700,7 @@ Custom domains are most useful when working with `interpolate` directly, but you
 temperature data as an input except to set the domain, but the steps will be generated with the same alignment relative
 to the domain range.
 
-```playground
+```py play
 Color.interpolate(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 85, 95]
@@ -723,7 +723,7 @@ affect easing functions, as the clamping is done prior to any easing function ca
 
 If it is desired to extrapolate past 0 and 1, `extrapolate` can set to `#!py3 True` on all interpolation methods.
 
-```playground
+```py play
 Color('red').mix('blue', 0.5)
 Color('red').mix('blue', -0.5, extrapolate=True)
 ```
@@ -731,7 +731,7 @@ Color('red').mix('blue', -0.5, extrapolate=True)
 As a larger example, we can purposely interpolate over a range with values beyond 0 and 1. Here we extended the range
 to -0.5 and 1.5.
 
-```playground
+```py play
 offset, factor = 0.25, 1.5
 i = Color.interpolate(['red', 'blue'])
 HtmlGradient([i((r * factor / 100) - offset) for r in range(101)])
@@ -744,7 +744,7 @@ an endpoint is moved inwards via a color stop, the end range of the interpolatio
 end color. But when extrapolation is enabled, a color stop on an endpoint essentially moves the start and end
 interpolation. And since there are no other colors on either end to interpolate with, extrapolation occurs.
 
-```playground
+```py play
 Color.interpolate([stop('red', 0.25), stop('blue', 0.75)])
 Color.interpolate([stop('red', 0.25), stop('blue', 0.75)], extrapolate=True)
 ```
@@ -789,7 +789,7 @@ So the curve will use data from the defined points while ignoring the point that
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color green`), the hue of the second color is used.
 
-```playground
+```py play
 color = Color('white').convert('hsl')
 color[:-1]
 color2 = Color('green').convert('hsl')
@@ -799,7 +799,7 @@ color.mix(color2, space="hsl")
 
 But if we manually set the hue to `#!py 0` instead of `NaN`, we can see that the mixing goes quite differently.
 
-```playground
+```py play
 color = Color('white').convert('hsl').set('hue', 0)
 color[:-1]
 color2 = Color('green').convert('hsl')

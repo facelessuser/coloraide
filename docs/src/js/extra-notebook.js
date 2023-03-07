@@ -35,7 +35,7 @@ Learn more [here](\
 ). Preview, convert, interpolate, and explore!
 ///
 
-\`\`\`\`\`\`\`\`playground
+\`\`\`\`\`\`\`\`py play
 ${content}
 \`\`\`\`\`\`\`\`
 `
@@ -126,7 +126,7 @@ ${content}
         playgroundInstalled = true
       }
       for (const s of packages) {
-        if (s.includes('/')) {
+        if (s.endsWith('.whl')) {
           installs.push(base + s)
         } else {
           installs.push(s)
@@ -178,18 +178,13 @@ ${content}
       if (
         target.getAttribute("href") &&
         target.host === window.location.host &&
-        window.location.pathname === `/${base}/playground/"` &&
+        window.location.pathname === `/${base}/playground/` &&
         window.location.pathname === target.pathname &&
         window.location.search !== target.search
       ) {
         e.preventDefault()
         const search = new URLSearchParams(target.search)
-        const state = {}
-        for (const [key, value] of search) {
-          state[key] = value
-        }
-        history.pushState(state, "", target.href)
-        main(false) // eslint-disable-line no-use-before-define
+        main(false, search) // eslint-disable-line no-use-before-define
       }
     }
   }
@@ -456,7 +451,7 @@ ${content}
     })
   }
 
-  const main = async first => {
+  const main = async(first, search) => {
     // Load external source to render in a playground.
     // This can be something like a file on a gist we must read in (?source=)
     // or raw code (?code=).
@@ -464,7 +459,7 @@ ${content}
     editTemp = {}
 
     if (window.location.pathname.endsWith("/playground/")) {
-      const params = new URLSearchParams(window.location.search)
+      const params = search || new URLSearchParams(window.location.search)
       const loadMsg = "Loading Pyodide..."
       const pageMsg = "Loading Notebook..."
       const uri = params.has("source") ? params.get("source") : params.get("notebook")
@@ -521,7 +516,7 @@ ${content}
   }
 
   // Capture links in notebook pages so that we can make playgound links load instantly
-  document.addEventListener("click", interceptClickEvent)
+  document.addEventListener("click", interceptClickEvent, true)
 
   // Handle history of notebook pages as they are loaded dynamically
   window.addEventListener("popstate", popState)

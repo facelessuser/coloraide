@@ -34,7 +34,7 @@ and replicate it in ColorAide. To apply blending in ColorAide, simply call `comp
 calling color will be used as the source.
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c1, c2
@@ -43,7 +43,7 @@ c1.compose(c2, blend='multiply', space="display-p3")
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c1, c2
@@ -67,7 +67,7 @@ being used as the source (on the very top).
 </span>
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c3 = Color('#f5d311')
@@ -77,7 +77,7 @@ c1.compose([c2, c3], blend='multiply', space="display-p3")
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c3 = Color('#f5d311')
@@ -117,7 +117,7 @@ will use the demonstration above and replicate the result in the example below. 
 `compose` method. It should be noted that the default blend mode of `normal` is used in conjunction by default.
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
@@ -126,7 +126,7 @@ c1.compose(c2, space="display-p3")
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
@@ -150,7 +150,7 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
 </span>
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
@@ -159,7 +159,7 @@ c1.compose(c2, operator='destination-over', space="display-p3")
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
@@ -183,7 +183,7 @@ calculate the center color where all three layers overlap.
 </div>
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
@@ -194,7 +194,7 @@ c1.compose([c2, c3, bg], blend='normal', space="display-p3")
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
@@ -233,7 +233,7 @@ outputs to make it easy to compare in case your browser blends in one instead of
 </div>
 
 /// tab | Display P3
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
@@ -252,7 +252,7 @@ c1.compose([c2, cw3], blend='multiply', space='display-p3')
 ///
 
 /// tab | sRGB
-```playground
+```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)

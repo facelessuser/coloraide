@@ -22,7 +22,7 @@ Consider a wide gamut, HDR color space like Jzazbz. When it is converted to HSLu
 that exceeds the SDR range, the round trip is broken. This is just the nature of the HSLuv algorithm as it adheres to an
 sRGB gamut that does not support HDR lightness.
 
-```playground
+```py play
 jz = Color('color(--jzazbz 0.25 0 0)')
 jz
 hsluv = jz.convert('hsluv')
@@ -37,7 +37,7 @@ are not specific to this library or even the language of Python, but to all comp
 cannot store infinite repeating decimals to properly represent all floating point numbers.
 
 
-```playground
+```py play
 color = Color('white')
 color[:]
 color.convert('prophoto-rgb').convert('srgb')[:]
@@ -55,7 +55,7 @@ colors do not have a hue, so to get logical results, we set achromatic hues to `
 This prevents weird color shifts when interpolating between achromatic colors. Only if a user manually specifies a hue
 do we respect it.
 
-```playground
+```py play
 Color.interpolate(['lch(75 100 180)', 'lch(75 0 0)'], space='lch')
 Color.interpolate(['lch(75 100 180)', 'lch(75 0 none)'], space='lch')
 ```
@@ -63,7 +63,7 @@ Color.interpolate(['lch(75 100 180)', 'lch(75 0 none)'], space='lch')
 So that colors work the way people intend, ColorAide does its best during color conversion to identify when a color is
 achromatic and a hue powerless. In these cases, the hue will be set to `NaN`, or `none` in CSS.
 
-```playground
+```py play
 Color('white').convert('lch')
 Color.interpolate(['cyan', 'white'], space='lch')
 ```
@@ -98,7 +98,7 @@ For a good number of Lab-ish color spaces, this will result in zero for chroma o
 will be zero or very near zero for achromatic colors. On the conversion back the extremely low chroma makes whatever the
 hue is essentially meaningless.
 
-```playground
+```py play
 import math
 from coloraide import util
 c = Color('gray').convert('lab')
@@ -114,7 +114,7 @@ util.constrain_hue(math.degrees(math.atan2(c[2], c[1])))
 But there are some color spaces whose transformation are not nearly so tight. Let's consider JzCzhz which is derived
 from Jzazbz.
 
-```playground
+```py play
 import math
 c = Color('gray').convert('jzazbz')
 c.to_string()
@@ -129,7 +129,7 @@ but not nearly as close to zero as we would normally prefer.
 We can see that with JzCzhz that the hue can have more influence on the conversion back even though the color
 technically has no hue.
 
-```playground
+```py play
 import math
 from coloraide import util
 color = Color('gray').convert('jzazbz')
@@ -150,7 +150,7 @@ b3, b1
 Unless you are a color scientist, no one wants to think about this when specifying white, or gray, they just want to set
 chroma to zero and not think about hue.
 
-```playground
+```py play
 Color.interpolate(['color(--jzczhz 0.16 0.2 180)', 'color(--jzczhz 0.227 0 none)'], space='jzczhz')
 ```
 
@@ -158,7 +158,7 @@ ColorAide figures this all out so the user doesn't have to. Since chroma's dista
 depending on the lightness, we use a threshold, as small as we can, to generally detect an achromatic color, then we 
 will use a hue that is close enough to the ideal hue to give as good a conversion back as we can.
 
-```playground
+```py play
 color = Color('gray').convert('jzazbz')
 a1, b1 = color[1:3]
 a2, b2 = color.convert('jzczhz').convert('jzazbz')[1:3]
@@ -168,7 +168,7 @@ b1, b2
 
 If desired, the hue used can be acquired directly from ColorAide. This can be useful for plotting or other reasons.
 
-```playground
+```py play
 color = Color('gray').convert('jzczhz')
 color._space.achromatic_hue()
 ```

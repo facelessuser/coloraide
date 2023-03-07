@@ -14,7 +14,7 @@ or numerical index directly. We can also manipulate colors within different colo
 One of the more intuitive ways to access color values is by channel name. Each color space defines the name of each of
 the available channels. `alpha` is the one channel name that is always constant no matter the color space.
 
-```playground
+```py play
 color = Color("orange")
 color
 color['r']
@@ -26,7 +26,7 @@ color['alpha']
 Some channels may be also be recognized using an alias. Check the color space's documentation to learn the recognized
 channel names and aliases.
 
-```playground
+```py play
 color = Color("orange")
 color
 color['red'] = 0
@@ -42,7 +42,7 @@ RGB color space will have its channel in the order of `r`, `g`, `b`, and `alpha`
 last channel in any color space. Check out the color space's documentation to learn more about available channels and
 the order in which they are stored.
 
-```playground
+```py play
 color = Color("orange")
 color
 color[0]
@@ -53,7 +53,7 @@ color[3]
 
 Because a Color object essentially operates similar to a list, negative values are also allowed.
 
-```playground
+```py play
 color = Color("orange")
 color
 color[-1] = 0.5
@@ -64,7 +64,7 @@ color
 
 Color objects can also be treated as an iterable object. This allows us to simply loop through the values.
 
-```playground
+```py play
 color = Color("orange")
 color
 [c for c in color]
@@ -74,7 +74,7 @@ color
 
 As previously mentioned, Color objects operate very similar to lists, and as such, can also be read or set via slicing.
 
-```playground
+```py play
 color = Color("orange")
 color
 color[:-1]
@@ -89,7 +89,7 @@ Colors can also be accessed and modified in more advanced ways with special acce
 `get()` provides access to any channel via the channel name for a given color space, but what sets it apart from other
 channel access methods is that it can indirectly access channels in other color spaces as well.
 
-```playground
+```py play
 color = Color("pink")
 color
 color.get('red')
@@ -99,7 +99,7 @@ color.get('oklch.hue')
 Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
 value can be set via numerical values or functions with more complex logic.
 
-```playground
+```py play
 color = Color("pink")
 color
 color.set('blue', 0.5)
@@ -108,7 +108,7 @@ color.set('green', lambda g: g * 1.3)
 
 Since `set()` returns a reference to the current color object, we can also chain multiple `set()` operations.
 
-```playground
+```py play
 color = Color('black')
 color
 color.set('red', 1).set('green', 1)
@@ -116,7 +116,7 @@ color.set('red', 1).set('green', 1)
 
 Even more interesting is that, like `get()`, you can modify a channel in another color space indirectly.
 
-```playground
+```py play
 color = Color("orange")
 color
 color.set('oklab.lightness', 0.50)
@@ -131,7 +131,7 @@ with a single conversion.
 
 To get multiple channels, simply provide a list of channels.
 
-```playground
+```py play
 color = Color('orange')
 color
 color.get(['oklch.lightness', 'oklch.hue', 'alpha'])
@@ -139,7 +139,7 @@ color.get(['oklch.lightness', 'oklch.hue', 'alpha'])
 
 To set multiple channels, pass a single dictionary containing the channel names and values.
 
-```playground
+```py play
 color = Color('orange')
 color
 color.set(
@@ -174,7 +174,7 @@ Colors in general can sometimes have undefined channels. This can actually happe
     that is actually a red hue, and achromatic colors have no hue. In the end, no hue is actually satisfactory, so an
     undefined hue is applied.
 
-    ```playground
+    ```py play
     color = Color('white').convert('hsl')
     color[:]
     ```
@@ -183,7 +183,7 @@ Colors in general can sometimes have undefined channels. This can actually happe
    assumed as undefined, the exception is the `alpha` channel which is assumed to be `1` unless explicitly defined or
    explicitly set as undefined.
 
-    ```playground
+    ```py play
     Color('srgb', [1])[:]
     Color('srgb', [1, 0, 0], NaN)[:]
     ```
@@ -197,7 +197,7 @@ Colors in general can sometimes have undefined channels. This can actually happe
     [Interpolation](./interpolation.md) section in the documentation to learn more.
 
 
-    ```playground
+    ```py play
     from coloraide import NaN
     color = Color("srgb", [0.3, NaN, 0.4])
     color[:]
@@ -209,20 +209,20 @@ Colors in general can sometimes have undefined channels. This can actually happe
 4. Lastly, a user can use the `mask` method which is a quick way to set one or multiple channels as undefined.
    Additionally, it returns a clone leaving the original untouched by default.
 
-    ```playground
+    ```py play
     Color('white')[:]
     Color('white').mask(['red', 'green'])[:]
     ```
 
     The `alpha` channel can also be masked:
 
-    ```playground
+    ```py play
     Color('white').mask('alpha')[-1]
     ```
 
     You can also do inverse masks, or masks that apply to every channel not specified.
 
-    ```playground
+    ```py play
     c = Color('white').mask('blue', invert=True)
     c[:]
     ```
@@ -241,7 +241,7 @@ At first glance, the behavior of `NaN` values can seem confusing, but it is actu
 color with an undefined channel, and try to add to that value, what should we get? In reality, if the value is
 undefined, how could we possibly add to it? The only sane answer is to return `NaN` again.
 
-```playground
+```py play
 color = Color('color(srgb 1 none 1)')
 color['green'] + 0.5
 ```
@@ -251,13 +251,13 @@ applying certain operations where `NaN` may be undesirable, especially if the co
 source. To make checking for `NaN`s easy, the convenience function `is_nan` has been made available. You can simply give
 `is_nan` the property you wish to check, and it will return either return `#!py3 True` or `#!py3 False`.
 
-```playground
+```py play
 Color('hsl(none 0% 100%)').is_nan('hue')
 ```
 
 This is equivalent to using the `math` library and comparing the value directly:
 
-```playground
+```py play
 import math
 math.isnan(Color('hsl(none 0% 100%)')['hue'])
 ```

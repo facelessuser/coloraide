@@ -69,7 +69,7 @@ Color("jzazbz", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--jzazbz jz az bz / a)` form.
 
-```playground
+```py play
 Color("jzazbz", [0.13438, 0.11789, 0.11188])
 Color("jzazbz", [0.16937, 0.0312, 0.12308]).to_string()
 ```

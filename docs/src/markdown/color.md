@@ -43,7 +43,7 @@ to the way the color points are stored. Some people may be aware of the old CSS 
 with a range of 0 - 255, but ColorAide stores these as values between 0 - 1. If transparency is omitted, transparency is
 assumed to be fully opaque, or a value of 1.
 
-```playground
+```py play
 Color("srgb", [0.5, 0, 1], 0.3)
 Color("srgb", [0.5, 0, 1])
 ```
@@ -56,7 +56,7 @@ allows exporting and importing colors via dictionaries as well.
 Dictionaries must define the `space` key and the `coords` key containing values for all of the color channels. The
 `alpha` channel is kept separate and can be omitted, and if so, will be assumed as 1.
 
-```playground
+```py play
 d = Color('red').to_dict()
 print(d)
 Color(d)
@@ -67,7 +67,7 @@ Color(d)
 By default, ColorAide accepts input strings as outlined in the CSS color specification. Accepted syntax includes legacy
 CSS color formats as defined in CSS Level 3, but also allows for CSS Level 4 Color syntax!
 
-```playground
+```py play
 Color("red")
 Color("#00ff00")
 Color("rgb(0 0 255 / 1)")
@@ -84,7 +84,7 @@ supported in the CSS spec in this way or not. For any color that is not explicit
 space identifier. Check the [documentation of the given color space](./colors/index.md) to discover the appropriate CSS
 identifier name.
 
-```playground
+```py play
 Color('color(--hsl 130 40% 75% / 0.5)')
 ```
 
@@ -93,7 +93,7 @@ Color('color(--hsl 130 40% 75% / 0.5)')
 If another color instance is passed as the input, a new color object will be created using the color data from the
 input. This essentially clones the passed object.
 
-```playground
+```py play
 c1 = Color('red')
 c2 = Color(c1)
 
@@ -102,7 +102,7 @@ c1, c2
 
 You can also use the `new` method to generate new colors from already instantiated color objects.
 
-```playground
+```py play
 color1 = Color("red")
 color1
 color1.new("blue")
@@ -117,7 +117,7 @@ the registered color spaces are compatible between the two different `Color` cla
 
 If you'd like to generate a random color, simply call `Color.random` with a given color space and one will be generated.
 
-```playground
+```py play
 [Color.random('srgb') for _ in range(10)]
 ```
 
@@ -126,7 +126,7 @@ confined to appropriate ranges. For color space's without defined gamuts, the ra
 cases. For color spaces with no hard, defined gamut, or gamuts that that far exceed practical usage it is recommend to
 fit the colors to whatever gamut you'd like, or simply use a target space with a clear defined gamut.
 
-```playground
+```py play
 Color.random('lab').fit('srgb')
 ```
 
@@ -135,7 +135,7 @@ a sequence of two values specifying the minimum and maximum for the channel. If 
 will be ignored. If the list doesn't have enough values, those missing indexes will be ignored. If the list has too many
 values, those extra values will be ignored.
 
-```playground
+```py play
 Color.random('srgb', limits=[(0.25, 0.75)] * 3)
 ```
 
@@ -145,7 +145,7 @@ The `clone` method is an easy way to duplicate the current color object.
 
 Here we clone the `#!color green` color object, giving us two.
 
-```playground
+```py play
 c1 = Color("green")
 c1
 c1.clone()
@@ -161,14 +161,14 @@ dictionary, or even raw data points.
 
 Here we update the color `#!color red` to the color `#!color blue`:
 
-```playground
+```py play
 Color("red")
 Color("red").update(Color("blue"))
 ```
 
 Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
 
-```playground
+```py play
 Color("red").update("lch(80% 50 130)")
 ```
 
@@ -181,7 +181,7 @@ or even raw data points.
 In this example, the `#!color red` color object literally becomes the specified CIELCh color of
 `#!color lch(80% 50 130)`.
 
-```playground
+```py play
 Color("red").mutate("lch(80% 50 130)")
 ```
 
@@ -194,7 +194,7 @@ reference to itself is returned.
 For instance, if we had a color `#!color yellow`, and we needed to work with it in another color space, we could simply
 call the `convert` method with the desired color space.
 
-```playground
+```py play
 Color('yellow').convert("lab")
 ```
 
@@ -208,14 +208,14 @@ exposed via the `match` method. We can simply pass `match` a string, and, if the
 object will be returned. The `ColorMatch` object has a simple structure that contains the matched `color` as a `Color`
 object, and the `start` and `end` points it was located at.
 
-```playground
+```py play
 Color.match("red")
 ```
 
 By default it matches at the start of the buffer and returns a color if it finds one. If desired, we can do a
 `fullmatch` which requires the entire buffer to match a color.
 
-```playground
+```py play
 Color.match("red and yellow")
 Color.match("red and yellow", fullmatch=True)
 ```
@@ -223,7 +223,7 @@ Color.match("red and yellow", fullmatch=True)
 We can also adjust the start position of the search. In this case, by adjusting the start position to 8 characters
 later, we will match `#!color yellow` instead of `#!color red`.
 
-```playground
+```py play
 Color.match("red and yellow", start=8)
 ```
 
@@ -240,7 +240,7 @@ Once we've crafted our regular expression, we can search the buffer to find loca
 be colors. Then we can run `Color.match()` on those positions within the buffer to see if we find a valid color. This
 ends up being much more efficient!
 
-```playground
+```py play
 import re
 from coloraide import Color
 
@@ -292,7 +292,7 @@ ColorAide has a number of preferences that can be altered in the `Color` class. 
 on demand when calling into a related function that uses them, but it may be useful to set them up one time on a new
 `Color` object.
 
-```playground
+```py play
 class Color2(Color):
     PRECISION = 3
 
@@ -326,7 +326,7 @@ a plugin already registered with the same name (as dictated by the plugin) the o
 set to `#!py3 True`, the overwrite will not fail and the new plugin will be registered with the specified name in place
 of the existing plugin.
 
-```playground
+```py play
 from coloraide import Color
 from coloraide.spaces.xyy import xyY
 
@@ -345,7 +345,7 @@ Custom('red').convert('xyy')
 Used in conjunction with [default settings override](#override-default-settings), we can not only change a default ∆E,
 but we can alter a ∆E method's configuration by registering it with different defaults:
 
-```playground
+```py play
 Color('red').delta_e('blue', method='cmc')
 from coloraide.distance.delta_e_cmc import DECMC
 class Custom(Color):
@@ -362,7 +362,7 @@ Valid categories are `space`, `delta-e`, `cat`, `contrast`, `filter`, `interpola
 If the given plugin is not found, an error will be thrown, but if this notification is found to be unnecessary, `silent`
 can be enabled and the there will be no error thrown.
 
-```playground
+```py play
 class Custom(Color): ...
 Custom.deregister('space:lab-d65')
 try:

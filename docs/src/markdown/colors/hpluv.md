@@ -64,7 +64,7 @@ Color("hpluv", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--hpluv h p l / a)` form.
 
-```playground
+```py play
 Color("hpluv", [23.881, 100, 53.237])
 Color("hpluv", [49.45, 100, 74.934]).to_string()
 ```

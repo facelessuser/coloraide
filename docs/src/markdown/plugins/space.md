@@ -292,7 +292,7 @@ overridden for a color space.
 Below, we can see that both `jzazbz` and `ictcp` identify as Lab-ish spaces. If we just care about accessing the
 equivalent of Lab lightness on these spaces, we can simply can access them with the following logic.
 
-```playground
+```py play
 from coloraide.spaces import Labish
 srgb = Color('red')
 jzazbz = srgb.convert('jzazbz')

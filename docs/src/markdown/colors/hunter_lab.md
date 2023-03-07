@@ -59,7 +59,7 @@ color(--hunter-lab l a b / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--hunter-lab l a b / a)` form.
 
-```playground
+```py play
 Color("hunter-lab", [46.113, 82.672, 28.408])
 Color("hunter-lab", [69.407, 23.266, 40.946]).to_string()
 ```

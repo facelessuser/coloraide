@@ -63,7 +63,7 @@ Color("prophoto-rgb-linear", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--prophoto-rgb-linear r g b / a)` form.
 
-```playground
+```py play
 Color("prophoto-rgb-linear", [0.52928, 0.09837, 0.01688])
 Color("prophoto-rgb-linear", [0.6535, 0.42702, 0.06115]).to_string()
 ```

@@ -71,7 +71,7 @@ Color("luv", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--luv l u v / a)` form.
 
-```playground
+```py play
 Color("luv", [53.237, 175.01, 37.765])
 Color("luv", [74.934, 74.839, 74.014]).to_string()
 ```

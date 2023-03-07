@@ -57,7 +57,7 @@ color(--hsi h s i / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--hsi h s i / a)` form.
 
-```playground
+```py play
 Color("hsi", [0, 1, 0.33333])
 Color("hsi", [38.824, 1, 0.54902]).to_string()
 ```

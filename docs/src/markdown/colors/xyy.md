@@ -56,7 +56,7 @@ color(--xyy x y Y / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--xyy x y Y / a)` form.
 
-```playground
+```py play
 Color("xyy", [0.64, 0.33, 0.21264])
 Color("xyy", [0.50047, 0.4408, 0.48173]).to_string()
 ```

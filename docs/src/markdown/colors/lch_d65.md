@@ -63,7 +63,7 @@ Color("lch-d65", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--lch-d65 l c h / a)` form.
 
-```playground
+```py play
 Color("lch-d65", [53.237, 104.55, 40])
 Color("lch-d65", [74.934, 82.499, 73.14]).to_string()
 ```

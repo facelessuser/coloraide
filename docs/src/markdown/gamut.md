@@ -27,7 +27,7 @@ allows for comparing the current color's specified values against the color spac
 Let's assume we have a color `#!color rgb(30% 105% 0%)`. The color is out of gamut due to the green channel exceeding
 the channel's limit of `#!py3 100%`. When we execute `in_gamut`, we can see that the color is not in its own gamut.
 
-```playground
+```py play
 Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
@@ -35,7 +35,7 @@ On the other hand, some color spaces do not have a limit. CIELab is one such col
 placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELab
 color, we will find that it is always considered in gamut.
 
-```playground
+```py play
 Color("lab(200% -20 40 / 1)").in_gamut()
 ```
 
@@ -45,7 +45,7 @@ will run `in_gamut` on the new color. You could do this manually, but using `in_
 convenient. In the example below, we can see that the CIELab color of `#!color lab(200% -20 40 / 1)` is outside the
 narrow gamut of sRGB.
 
-```playground
+```py play
 Color("lab(200% -20 40 / 1)").in_gamut('srgb')
 ```
 
@@ -59,7 +59,7 @@ account for such cases where a color is "close enough". If desired, this "tolera
 Let's consider CIELab with a D65 white point. The sRGB round trip through CIELab D65 for `#!color white` does not
 perfectly convert back to the original color. This is due to the perils of floating point arithmetic.
 
-```playground
+```py play
 Color('color(srgb 1 1 1)').convert('lab-d65')[:]
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
 ```
@@ -69,7 +69,7 @@ This makes sense as the round trip through CIELab D65 and back is so very close,
 what you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be
 desirable to have some tolerance, and other times not.
 
-```playground
+```py play
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut()
 Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut(tolerance=0)
@@ -83,7 +83,7 @@ blackness, etc. So their gamut is exactly the same as the sRGB space, because th
 stands to reason that simply using the sRGB gamut check for them should be sufficient, and if we are using strict
 tolerance, this would be true.
 
-```playground
+```py play
 Color('rgb(255 255 255)').in_gamut('srgb', tolerance=0)
 Color('hsl(0 0% 100%)').in_gamut('srgb', tolerance=0)
 Color('color(--hsv 0 0% 100%)').in_gamut('srgb', tolerance=0)
@@ -99,7 +99,7 @@ close to the sRGB gamut.
 In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL,
 we can see wildly large saturation.
 
-```playground
+```py play
 hsl = Color('color(srgb 1 1.0000002 1)').convert('hsl')
 hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
@@ -116,7 +116,7 @@ actual gamut and reasonably close to the cylindrical model's constraints as well
 So, when using HSL as the gamut check, we can see that it ensures the color is not only very close to the sRGB gamut,
 but that it is also very close the color model's constraints.
 
-```playground
+```py play
 hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
 hsl
 hsl.in_gamut('hsl')
@@ -143,7 +143,7 @@ While clipping won't always yield the best results, clipping is still very impor
 noise after certain mathematical operations or even used in other gamut mapping algorithms if used carefully. For this
 reason, clip has its own dedicated method for quick access: `#!py3 clip()`.
 
-```playground
+```py play
 Color('rgb(270 30 120)').clip()
 ```
 
@@ -152,7 +152,7 @@ methods available. By default, `#!py3 fit()` uses a more advanced method of gamu
 lightness, hue being the attribute the human eye is most sensitive to. If desired, a user can also specify any currently
 registered gamut mapping algorithm via the `method` parameter.
 
-```playground
+```py play
 Color('rgb(270 30 120)').fit()
 Color('rgb(270 30 120)').fit(method='clip')
 ```
@@ -160,7 +160,7 @@ Color('rgb(270 30 120)').fit(method='clip')
 Gamut mapping can also be used to indirectly fit colors in another gamut. For instance, fitting a Display P3 color into
 an sRGB gamut.
 
-```playground
+```py play
 c1 = Color('color(display-p3 1 1 0)')
 c1.in_gamut('srgb')
 c1.fit('srgb')
@@ -169,7 +169,7 @@ c1.in_gamut()
 
 This can also be done with `#!py3 clip()`.
 
-```playground
+```py play
 Color('color(display-p3 1 1 0)').clip('srgb')
 ```
 
@@ -196,7 +196,7 @@ each channel's value against the bounds for that channel set the value to the li
 
 Clip can be performed via `fit` by using the method name `clip` or by using the `clip()` method.
 
-```playground
+```py play
 c = Color('srgb', [2, 1, 1.5])
 c.fit(method='clip')
 c = Color('srgb', [2, 1, 1.5])
@@ -232,7 +232,7 @@ we currently still use CIELCh as the default until OkLCh can be evaluated more f
 LCh Chroma is the default gamut mapping algorithm by default, unless otherwise changed, and can be performed by simply
 calling `fit()` or by calling `fit(method='lch-chroma')`.
 
-```playground
+```py play
 c = Color('srgb', [2, -1, 0])
 c.fit(method='clip')
 c = Color('srgb', [2, -1, 0])
@@ -250,7 +250,7 @@ uses the perceptually uniform OkLCh color space as the LCh color space of choice
 
 OkLCh has the advantage of doing a better job at holding hues uniform than CIELCh.
 
-```playground
+```py play
 c = Color('srgb', [2, -1, 0])
 c.fit(method='oklch-chroma')
 ```
@@ -279,7 +279,7 @@ based on the already computationally expensive CAM16 color space, and is made mo
 space with CIELab, it is not the most performant approach, but when used in conjunction with the HCT color space, it
 can allow creating good tonal palettes:
 
-```playground
+```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 HtmlSteps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
@@ -329,7 +329,7 @@ sRGB, but we'll control the method being used by providing two different `#!py C
 `lch-chroma` (the default) for gamut mapping, and one that uses `clip`. Notice how clipping, the bottom color set, clips
 these dark colors and makes them reddish. This is a very undesirable outcome.
 
-```playground
+```py play
 # Gamut mapping in LCh
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')

@@ -66,7 +66,7 @@ Color("ictcp", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--ictcp i ct cp / a)` form.
 
-```playground
+```py play
 Color("ictcp", [0.42785, -0.11574, 0.2788])
 Color("ictcp", [0.50497, -0.20797, 0.11077]).to_string()
 ```

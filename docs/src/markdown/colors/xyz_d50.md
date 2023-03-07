@@ -61,7 +61,7 @@ Color("xyz-d50", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(xyz x y z / a)` form.
 
-```playground
+```py play
 Color("xyz-d50", [0.43607, 0.22249, 0.01392])
 Color("xyz-d50", [0.58098, 0.49223, 0.05045]).to_string()
 ```

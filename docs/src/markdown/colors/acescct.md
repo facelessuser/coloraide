@@ -56,7 +56,7 @@ Color("acescct", [1, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(--acescct r g b / a)` form.
 
-```playground
+```py play
 Color("acescct", [0.51451, 0.33604, 0.23515])
 Color("acescct", [0.53009, 0.48237, 0.32561]).to_string()
 ```

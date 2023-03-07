@@ -64,7 +64,7 @@ Color("prophoto-rgb", [0, 0, 0], 1)
 The string representation of the color object and the default string output will be in the
 `#!css-color color(prophoto-rgb r g b / a)` form.
 
-```playground
+```py play
 Color("prophoto-rgb", [0.78951, 0.62329, 0.21172], 1)
 Color("prophoto-rgb", [0.70225, 0.27572, 0.10355]).to_string()
 ```

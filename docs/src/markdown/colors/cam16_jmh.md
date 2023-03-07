@@ -75,7 +75,7 @@ color(--cam16-jmh j m h / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--cam16-jmh j m h / a)` form.
 
-```playground
+```py play
 Color("cam16-jmh", [59.178, 40.82, 21.153], 1)
 Color("cam16-jmh", [78.364, 9.6945, 28.629], 1).to_string()
 ```

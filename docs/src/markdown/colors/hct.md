@@ -63,7 +63,7 @@ color(--hct h c t / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--hct h c t / a)` form.
 
-```playground
+```py play
 Color("hct", [27.41, 113.36, 53.237], 1)
 Color("hct", [71.257, 60.528, 74.934], 1).to_string()
 ```
@@ -85,7 +85,7 @@ One of the applications of HCT is generating tonal palettes. When coupled with C
 distancing algorithm and the [`hct-chroma` gamut mapping algorithm](../gamut.md#hct-chroma), we can produce tonal
 palettes just like in Material's color utilities.
 
-```playground
+```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 HtmlSteps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
@@ -102,7 +102,7 @@ Consider the example below. We've taken the results from Material's tests. We ge
 output both as HCT. We can compare which hues stay overall more constant, which chroma gets reduced more than others,
 and which hue and tone are less affected by the gamut mapping. Can you tell which is doing the job the _best_?
 
-```playground
+```py play
 def tonal_palette(c):
     tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
     return [c.clone().set('tone', tone).fit('srgb', method='hct-chroma') for tone in tones]

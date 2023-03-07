@@ -63,7 +63,7 @@ Color("okhsv", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--okhsv h s l / a)` form.
 
-```playground
+```py play
 Color("okhsv", [29.234, 1, 1])
 Color("okhsv", [70.67, 1, 1]).to_string()
 ```

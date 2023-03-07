@@ -67,7 +67,7 @@ Color("din99o", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--din99o l u v / a)` form.
 
-```playground
+```py play
 Color("din99o", [57.289, 39.498, 30.518])
 Color("din99o", [77.855, 16.444, 40.318]).to_string()
 ```

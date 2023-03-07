@@ -60,7 +60,7 @@ color(--orgb l cyb crb / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--orgb l cyb crg / a)` form.
 
-```playground
+```py play
 Color("orgb", [0.299, 0.00002, 0.99998])
 Color("orgb", [0.67882, 0.75654, 0.4464]).to_string()
 ```

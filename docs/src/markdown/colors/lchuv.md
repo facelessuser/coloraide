@@ -65,7 +65,7 @@ Color("lchuv", [0, 0, 0], 1)
 The string representation of the color object and the default string output use the
 `#!css-color color(--lchuv l c h / a)` form.
 
-```playground
+```py play
 Color("lchuv", [53.237, 179.04, 12.177])
 Color("lchuv", [74.934, 105.26, 44.683]).to_string()
 ```

@@ -66,7 +66,7 @@ Color("hwb", [0, 0, 100], 1)
 The string representation of the color object will always default to the `#!css-color color(--hwb h w b / a)`
 form, but the default string output will be the `#!css-color hwb(h s l / a)` form.
 
-```playground
+```py play
 Color("hwb", [0, 0, 0])
 Color("hwb", [38.824, 0, 0]).to_string()
 Color("hwb", [60, 0, 0]).to_string(percent=False)

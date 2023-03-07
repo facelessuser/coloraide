@@ -52,7 +52,7 @@ color(--cmyk c m y k / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--cmyk c m y k / a)` form.
 
-```playground
+```py play
 Color("cmyk", [0, 1, 1, 0])
 Color("cmyk", [0, 0.35294, 1, 0]).to_string()
 ```

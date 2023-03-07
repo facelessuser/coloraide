@@ -69,7 +69,7 @@ Color("hsl", [0, 0, 0], 1)
 The string representation of the color object will always default to the `#!css-color color(--hsl h s l / a)`
 form, but the default string output will be the `#!css-color hsl(h s l / a)` form.
 
-```playground
+```py play
 Color("hsl", [0, 1, 0.5])
 Color("hsl", [38.824, 1, 0.5], ).to_string()
 Color("hsl", [60, 1, 0.5]).to_string(comma=True)

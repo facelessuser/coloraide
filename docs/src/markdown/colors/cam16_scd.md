@@ -57,7 +57,7 @@ color(--cam16-scd j a b / a)  // Color function
 The string representation of the color object and the default string output use the
 `#!css-color color(--cam16-scd j a b / a)` form.
 
-```playground
+```py play
 Color("cam16-scd", [59.178, 33.597, 17.41], 1)
 Color("cam16-scd", [78.364, 8.3723, 24.725], 1).to_string()
 ```
