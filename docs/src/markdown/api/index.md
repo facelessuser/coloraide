@@ -802,9 +802,9 @@ Description
     Hue\ Evaluation | Description
     --------------- | -----------
     `shorter`       | Angles are adjusted so that θ₂ - θ₁ ∈ [-180, 180].
-    `longer`        | Angles are adjusted so that θ₂ - θ₁ ∈ {0, [180, 360)}.
-    `increasing`    | Angles are adjusted so that θ₂ - θ₁ ∈ [0, 360).
-    `decreasing`    | Angles are adjusted so that θ₂ - θ₁ ∈ (-360, 0]
+    `longer`        | Angles are adjusted so that θ₂ - θ₁ ∈ {[-360, -180], [180, 360]}.
+    `increasing`    | Angles are adjusted so that θ₂ - θ₁ ∈ [0, 360].
+    `decreasing`    | Angles are adjusted so that θ₂ - θ₁ ∈ [-360, 0]
     `specified`     | No fixup is performed. Angles are interpolated in the same way as every other component.
 
     The method of interpolation to can also be selected via the `method` parameter.

@@ -1,3 +1,4 @@
+*-min.py
 manifest*.json
 node_modules/*
 *.whl

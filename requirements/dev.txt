@@ -1,0 +1,3 @@
+build
+python-minifier
+tox

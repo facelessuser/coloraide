@@ -97,7 +97,17 @@ const config = {
   mkdocsCmd: args.mkdocs
 }
 
-const pycode = fs.readFileSync("docs/src/py/notebook.py", "utf8")
+// Minify Python source and format for insertion in JavaScript
+childProcess.spawnSync(
+  'pyminify',
+  [
+    '--remove-literal-statements',
+    'docs/src/py/notebook.py',
+    '-o', 'docs/src/py/notebook-min.py'
+  ]
+)
+
+const pycode = fs.readFileSync("docs/src/py/notebook-min.py", "utf8")
   .replace(/\\/g, "\\\\")
   .replace(/\r?\n/g, "\\n")
   .replace(/"/g, "\\\"")
