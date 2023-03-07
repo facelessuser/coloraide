@@ -109,7 +109,8 @@ jobs:
         node-version: '16'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools tox build
+        python -m pip install --upgrade pip setuptools
+        python -m pip install -r requirements/dev.txt
         npm install --legacy-peer-deps
     - name: Install Aspell
       run: |
