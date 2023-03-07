@@ -33,30 +33,32 @@ When composing, the blend mode can be controlled separately in ColorAide. Here, 
 and replicate it in ColorAide. To apply blending in ColorAide, simply call `compose` with a backdrop color, and the
 calling color will be used as the source.
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed')
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, blend='multiply', space="display-p3")
-    ```
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, blend='multiply', space="display-p3")
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed')
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, blend='multiply', space="srgb")
-    ```
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, blend='multiply', space="srgb")
+```
+///
 
-!!! note "Display Differences"
-    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-    and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
+/// note | Display Differences
+As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
+///
 
 ColorAide allows you to blend a source over multiple backdrops quite easily as well. Simply send in a list, and the
 colors will be blended from right to left with the right most color being on the bottom of the stack, and the base color
 being used as the source (on the very top).
-
 
 <span class="isolate blend-multiply">
   <span class="circle circle-1"></span>
@@ -64,23 +66,25 @@ being used as the source (on the very top).
   <span class="circle circle-3"></span>
 </span>
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed')
-    c2 = Color('#fc3d99')
-    c3 = Color('#f5d311')
-    c1, c2, c3
-    c1.compose([c2, c3], blend='multiply', space="display-p3")
-    ```
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c3 = Color('#f5d311')
+c1, c2, c3
+c1.compose([c2, c3], blend='multiply', space="display-p3")
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed')
-    c2 = Color('#fc3d99')
-    c3 = Color('#f5d311')
-    c1, c2, c3
-    c1.compose([c2, c3], blend='multiply', space="srgb")
-    ```
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed')
+c2 = Color('#fc3d99')
+c3 = Color('#f5d311')
+c1, c2, c3
+c1.compose([c2, c3], blend='multiply', space="srgb")
+```
+///
 
 Lastly, if for any reason, it is desired to compose with blending disabled (e.g. just run alpha compositing), then you
 can simply set `blend` to `#!py3 False`.
@@ -112,25 +116,28 @@ will use the demonstration above and replicate the result in the example below. 
 `#!color Color('#07c7ed').set('alpha', 0.5)` and the backdrop color to `#!color #fc3d99` and run it through the
 `compose` method. It should be noted that the default blend mode of `normal` is used in conjunction by default.
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, space="display-p3")
-    ```
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, space="display-p3")
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, space="srgb")
-    ```
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, space="srgb")
+```
+///
 
-!!! note "Display Differences"
-    As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
-    and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
+/// note | Display Differences
+As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
+and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
+///
 
 While the average user will be content with the default alpha compositing, Porter Duff offers many other configurations.
 If desired, we can change the Porter Duff operator used and apply different composite logic. For instance, in this case
@@ -142,21 +149,23 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
   <span class="circle circle-1"></span>
 </span>
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, operator='destination-over', space="display-p3")
-    ```
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, operator='destination-over', space="display-p3")
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99')
-    c1, c2
-    c1.compose(c2, operator='destination-over', space="srgb")
-    ```
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99')
+c1, c2
+c1.compose(c2, operator='destination-over', space="srgb")
+```
+///
 
 You can also apply alpha compositing to multiple layers at once. Simply send in a list of colors as the backdrop, and
 the colors will be composed from right to left with the right most color being on the bottom of the stack and the base
@@ -173,25 +182,27 @@ calculate the center color where all three layers overlap.
 </span>
 </div>
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99').set('alpha', 0.5)
-    c3 = Color('#f5d311').set('alpha', 0.5)
-    bg = Color('white')
-    c1, c2, c3, bg
-    c1.compose([c2, c3, bg], blend='normal', space="display-p3")
-    ```
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99').set('alpha', 0.5)
+c3 = Color('#f5d311').set('alpha', 0.5)
+bg = Color('white')
+c1, c2, c3, bg
+c1.compose([c2, c3, bg], blend='normal', space="display-p3")
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99').set('alpha', 0.5)
-    c3 = Color('#f5d311').set('alpha', 0.5)
-    bg = Color('white')
-    c1, c2, c3, bg
-    c1.compose([c2, c3, bg], blend='normal', space="srgb")
-    ```
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99').set('alpha', 0.5)
+c3 = Color('#f5d311').set('alpha', 0.5)
+bg = Color('white')
+c1, c2, c3, bg
+c1.compose([c2, c3, bg], blend='normal', space="srgb")
+```
+///
 
 Lastly, if for any reason, it is desired to run compose with alpha compositing disabled (e.g. just run blending),
 then you can simply set `operator` to `#!py3 False`.
@@ -221,41 +232,43 @@ outputs to make it easy to compare in case your browser blends in one instead of
 </span>
 </div>
 
-=== "Display P3"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99').set('alpha', 0.5)
-    c3 = Color('#f5d311').set('alpha', 0.5)
+/// tab | Display P3
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99').set('alpha', 0.5)
+c3 = Color('#f5d311').set('alpha', 0.5)
 
-    cw2 = c2.compose('white', blend='normal', space='display-p3')
-    cw3 = c3.compose('white', blend='normal', space='display-p3')
+cw2 = c2.compose('white', blend='normal', space='display-p3')
+cw3 = c3.compose('white', blend='normal', space='display-p3')
 
-    r1 = c2.compose(cw3, blend='multiply', space='display-p3')
-    r2 = c1.compose(cw2, blend='multiply', space='display-p3')
-    r3 = c1.compose(cw3, blend='multiply', space='display-p3')
+r1 = c2.compose(cw3, blend='multiply', space='display-p3')
+r2 = c1.compose(cw2, blend='multiply', space='display-p3')
+r3 = c1.compose(cw3, blend='multiply', space='display-p3')
 
-    r1, r2, r3
+r1, r2, r3
 
-    c1.compose([c2, cw3], blend='multiply', space='display-p3')
-    ```
+c1.compose([c2, cw3], blend='multiply', space='display-p3')
+```
+///
 
-=== "sRGB"
-    ```playground
-    c1 = Color('#07c7ed').set('alpha', 0.5)
-    c2 = Color('#fc3d99').set('alpha', 0.5)
-    c3 = Color('#f5d311').set('alpha', 0.5)
+/// tab | sRGB
+```playground
+c1 = Color('#07c7ed').set('alpha', 0.5)
+c2 = Color('#fc3d99').set('alpha', 0.5)
+c3 = Color('#f5d311').set('alpha', 0.5)
 
-    cw2 = c2.compose('white', blend='normal', space='srgb')
-    cw3 = c3.compose('white', blend='normal', space='srgb')
+cw2 = c2.compose('white', blend='normal', space='srgb')
+cw3 = c3.compose('white', blend='normal', space='srgb')
 
-    r1 = c2.compose(cw3, blend='multiply', space='srgb')
-    r2 = c1.compose(cw2, blend='multiply', space='srgb')
-    r3 = c1.compose(cw3, blend='multiply', space='srgb')
+r1 = c2.compose(cw3, blend='multiply', space='srgb')
+r2 = c1.compose(cw2, blend='multiply', space='srgb')
+r3 = c1.compose(cw3, blend='multiply', space='srgb')
 
-    r1, r2, r3
+r1, r2, r3
 
-    c1.compose([c2, cw3], blend='multiply', space='srgb')
-    ```
+c1.compose([c2, cw3], blend='multiply', space='srgb')
+```
+///
 
 Results may vary depending on the browser, but we can see (ignoring rounding differences) that the colors match up. This
 was performed on Chrome in macOS using a display that uses `display-p3`.
@@ -264,34 +277,32 @@ was performed on Chrome in macOS using a display that uses `display-p3`.
 
 ## Blend Modes
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-normal">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Normal
 
 The blending formula simply selects the source color.
 
 _Specified as `#!py3 'normal'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-multiply">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Multiply
 
 The source color is multiplied by the destination color and replaces the destination. The resultant color is always at
@@ -299,20 +310,19 @@ least as dark as either the source or destination color. Multiplying any color w
 any color with white preserves the original color.
 
 _Specified as `#!py3 'multiply'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-screen">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Screen
 
 Multiplies the complements of the backdrop and source color values, then complements the result. The result color is
@@ -321,20 +331,19 @@ screening with black leaves the original color unchanged. The effect is similar 
 slides simultaneously onto a single screen.
 
 _Specified as `#!py3 'screen'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-overlay">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Overlay
 
 Multiplies or screens the colors, depending on the backdrop color value. Source colors overlay the backdrop while
@@ -342,217 +351,206 @@ preserving its highlights and shadows. The backdrop color is not replaced but is
 the lightness or darkness of the backdrop.
 
 _Specified as `#!py3 'overlay'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-darken">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Darken
 
 Selects the darker of the backdrop and source colors. The backdrop is replaced with the source where the source is
 darker; otherwise, it is left unchanged.
 
 _Specified as `#!py3 'darken'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-lighten">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Lighten
 
 Selects the lighter of the backdrop and source colors. The backdrop is replaced with the source where the source is
 lighter; otherwise, it is left unchanged.
 
 _Specified as `#!py3 'lighten'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-color-dodge">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Color Dodge
 
 Brightens the backdrop color to reflect the source color. Painting with black produces no changes.
 
 _Specified as `#!py3 'color-dodge'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-color-burn">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Color Burn
 
 Darkens the backdrop color to reflect the source color. Painting with white produces no change.
 
 _Specified as `#!py3 'color-burn'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-hard-light">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Hard Light
 
 Multiplies or screens the colors, depending on the source color value. The effect is similar to shining a harsh
 spotlight on the backdrop.
 
 _Specified as `#!py3 'hard-light'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-soft-light">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Soft Light
 
 Darkens or lightens the colors, depending on the source color value. The effect is similar to shining a diffused
 spotlight on the backdrop.
 
 _Specified as `#!py3 'soft-light'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-difference">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Difference
 
 Subtracts the darker of the two constituent colors from the lighter color. Painting with white inverts the backdrop
 color; painting with black produces no change.
 
 _Specified as `#!py3 'difference'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-exclusion">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Exclusion
 
 Produces an effect similar to that of the Difference mode but lower in contrast. Painting with white inverts the
 backdrop color; painting with black produces no change.
 
 _Specified as `#!py3 'exclusion'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-hue">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Hue
 
 Creates a color with the hue of the source color and the saturation and luminosity of the backdrop color.
 
 _Specified as `#!py3 'hue'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-saturation">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Saturation
 
 Creates a color with the saturation of the source color and the hue and luminosity of the backdrop color. Painting with
 this mode in an area of the backdrop that is a pure gray (no saturation) produces no change.
 
 _Specified as `#!py3 'saturation'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-luminosity">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Luminosity
 
 Creates a color with the luminosity of the source color and the hue and saturation of the backdrop color. This produces
@@ -560,28 +558,27 @@ an inverse effect to that of the Color mode. This mode is the one you can use to
 effects like the ones you can see in different website headers.
 
 _Specified as `#!py3 'luminosity'`_.
-</div>
-</div>
+////
+///
 
 ---
 
-<div class="blend-wrap" markdown>
+/// html | div.blend-wrap
 <span class="isolate blend-color">
   <span class="circle circle-1"></span>
   <span class="circle circle-2"></span>
   <span class="circle circle-3"></span>
 </span>
 
-<div class="blend-content" markdown>
-
+//// html | div.blend-content
 ### Color
 
 Creates a color with the hue and saturation of the source color and the luminosity of the backdrop color. This preserves
 the gray levels of the backdrop and is useful for coloring monochrome images or tinting color images.
 
 _Specified as `#!py3 'color'`_.
-</div>
-</div>
+////
+///
 
 ## Compositing Operators
 

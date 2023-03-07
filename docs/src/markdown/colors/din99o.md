@@ -1,33 +1,35 @@
 # DIN99o
 
-!!! failure "The DIN99o color space is not registered in `Color` by default"
+/// failure | The DIN99o color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `din99o`
+**Name:** `din99o`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `a`  | [-55, 55]
-    `b`  | [-55, 55]
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`a`  | [-55, 55]
+`b`  | [-55, 55]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![DIN99o](../images/din99o-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the DIN99o color space.
-</figcaption>
-</figure>
+/////
+////
 
 The DIN99 color space system is a further development of the CIELab color space system developed by the FNF / FNL 2
 Colorimetry Working Committee. It takes the CIELab space (with a D65 illuminant) and compresses it such that the space
@@ -36,7 +38,7 @@ color distancing algorithm opposed to CIELab which has adapted the color distanc
 space, the latest iteration being ∆E^\*^~00~.
 
 _[Learn about DIN99o](https://de.wikipedia.org/wiki/DIN99-Farbraum)_
-</div>
+///
 
 ## Channel Aliases
 

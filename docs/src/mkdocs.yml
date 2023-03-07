@@ -146,16 +146,13 @@ markdown_extensions:
   - markdown.extensions.toc:
       slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
-  - markdown.extensions.admonition:
   - markdown.extensions.smarty:
       smart_quotes: false
   - pymdownx.betterem:
   - markdown.extensions.attr_list:
-  - markdown.extensions.def_list:
   - markdown.extensions.tables:
   - markdown.extensions.abbr:
   - markdown.extensions.footnotes:
-  - markdown.extensions.md_in_html:
   - pymdownx.superfences:
       preserve_tabs: true
       custom_fences:
@@ -220,16 +217,34 @@ markdown_extensions:
       - info-container.md
   - pymdownx.keys:
       separator: "\uff0b"
-  - pymdownx.details:
   - pymdownx.saneheaders:
-  - pymdownx.tabbed:
-      alternate_style: true
+  - pymdownx.blocks.admonition:
+      types:
+      - new
+      - settings
+      - note
+      - abstract
+      - info
+      - tip
+      - success
+      - question
+      - warning
+      - failure
+      - danger
+      - bug
+      - example
+      - quote
+  - pymdownx.blocks.details:
+  - pymdownx.blocks.html:
+  - pymdownx.blocks.definition:
+  - pymdownx.blocks.tab:
+      alternate_style: True
 
 extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
-  - playground-config-c68b7434.js
+  - playground-config-c369bb3c.js
   - https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 

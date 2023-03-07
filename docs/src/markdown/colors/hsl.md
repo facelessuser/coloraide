@@ -1,30 +1,32 @@
 # HSL
 
-!!! success "The HSL color space is registered in `Color` by default"
+/// success | The HSL color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hsl`
+**Name:** `hsl`
 
-    **White Point:**   D65
+**White Point:**   D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 1]
-    `l`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 1]
+`l`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HSL 3D](../images/hsl-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 HSL color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 HSL is an alternative representations of the [RGB](./srgb.md) color model, designed in the 1970s by computer graphics
 researchers to more closely align with the way human vision perceives color-making attributes. In these models, colors
@@ -35,7 +37,7 @@ HSL models the way different paints mix together to create color in the real wor
 resembling the varying amounts of black or white paint in the mixture.
 
 _[Learn about HSL](https://en.wikipedia.org/wiki/HSL_and_HSV)_
-</div>
+///
 
 ## Channel Aliases
 

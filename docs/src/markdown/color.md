@@ -11,7 +11,7 @@ There are a number of ways to instantiate new colors. Here we will cover basic c
 
 The `Color` object contains all the logic to create and manipulate colors. It can be imported from `coloraide`.
 
-```py3
+```py
 from coloraide import Color
 ```
 
@@ -22,12 +22,13 @@ way to get access to these additional spaces and features is to subclass the `Co
 spaces and features that are needed, but if you just want to explore all that ColorAide offers, you can import the
 `ColorAll` object from `everything`.
 
-```py3
+```py
 from coloraide.everything import ColorAll as Color
 ```
 
-!!! tip "Custom Color Objects"
-    To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-color-classes) for more.
+/// tip | Custom Color Objects
+To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-color-classes) for more.
+///
 
 ## Creating Colors
 
@@ -107,9 +108,10 @@ color1
 color1.new("blue")
 ```
 
-!!! tip
-    If the `Color` class has be subclassed, this is an easy way to convert between the different subclasses, assuming
-    the registered color spaces are compatible between the two different `Color` classes.
+/// tip
+If the `Color` class has be subclassed, this is an easy way to convert between the different subclasses, assuming
+the registered color spaces are compatible between the two different `Color` classes.
+///
 
 ## Random
 
@@ -196,7 +198,8 @@ call the `convert` method with the desired color space.
 Color('yellow').convert("lab")
 ```
 
-!!! note "Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)"
+/// note | Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
+///
 
 ## Color Matching
 
@@ -354,7 +357,7 @@ Custom('red').delta_e('blue')
 If a deregistration is desired, the `deregister` method can be used. It takes a string that describes the plugin to
 deregister: `category:name`.
 
-Valid categories are `space`, `delta-e`, `cat`, `filter`, `interpolate`, and `fit`.
+Valid categories are `space`, `delta-e`, `cat`, `contrast`, `filter`, `interpolate`, and `fit`.
 
 If the given plugin is not found, an error will be thrown, but if this notification is found to be unnecessary, `silent`
 can be enabled and the there will be no error thrown.

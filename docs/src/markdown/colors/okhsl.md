@@ -1,37 +1,39 @@
 # Okhsl
 
-!!! failure "The Okhsl color space is not registered in `Color` by default"
+/// failure | The Okhsl color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `okhsl`
+**Name:** `okhsl`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 1]
-    `l`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 1]
+`l`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![Okhsl 3D](../images/okhsl-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 Okhsl color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 Okhsl is a another color space created by Björn Ottosson. It is based off his early work and leverages the
 [Oklab](./oklab.md) color space. The aim was to create a color space that was better suited for being used in color pickers
 than the current HSL.
 
 _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
-</div>
+///
 
 ## Channel Aliases
 

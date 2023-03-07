@@ -12,13 +12,19 @@ import hashlib
 # Notebook specific wheels
 NOTEBOOK_WHEELS = [
     "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/f1/e0/1ed09f66cd1648f8e009120debf9b7d67596fb688e53e71522da1daa02a0/pymdown_extensions-9.5-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/34/30/a16f0671c64c996726c48811b0d2c6c97f8d12926c9ad1c34e21a3d7155b/pymdown_extensions-9.10-py3-none-any.whl",  # noqa: E501
+]
+
+NOTEBOOK_PYODIDE_PKGS = [
+    'pyyaml'
 ]
 
 # Wheels required in addition to the current project
 PLAYGROUND_WHEELS = [
     "https://files.pythonhosted.org/packages/5c/8e/1d9017950034297fffa336c72e693a5b51bbf85141b24a763882cf1977b5/Pygments-2.12.0-py3-none-any.whl"  # noqa: E501
 ]
+
+PLAYGROUND_PYODIDE_PKGS = []
 
 MKDOCS_YML = 'docs/src/mkdocs.yml'
 
@@ -131,8 +137,8 @@ if __name__ == "__main__":
 
     if not status:
         # Build up a list of wheels needed for playgrounds and notebooks
-        playground = [os.path.basename(x) for x in PLAYGROUND.keys()] + [package]
-        notebook = [os.path.basename(x) for x in NOTEBOOK.keys()] + playground
+        playground = PLAYGROUND_PYODIDE_PKGS + [os.path.basename(x) for x in PLAYGROUND.keys()] + [package]
+        notebook = NOTEBOOK_PYODIDE_PKGS + [os.path.basename(x) for x in NOTEBOOK.keys()] + playground
 
         # Create the config that specifies which wheels need to be used
         config = CONFIG.format(str(playground), str(notebook)).replace('\r', '').encode('utf-8')

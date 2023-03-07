@@ -1,40 +1,42 @@
 # Oklab
 
-!!! success "The Oklab color space is registered in `Color` by default"
+/// success | The Oklab color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `oklab`
+**Name:** `oklab`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 1]
-    `a`  | [-0.4, 0.4]
-    `b`  | [-0.4, 0.4]
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 1]
+`a`  | [-0.4, 0.4]
+`b`  | [-0.4, 0.4]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![Oklab](../images/oklab-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the Oklab color space.
-</figcaption>
-</figure>
+/////
+////
 
 
 A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
 chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
 
 _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
-</div>
+///
 
 ## Channel Aliases
 

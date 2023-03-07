@@ -1,38 +1,40 @@
 # LCh D65
 
-!!! success "The LCh D65 color space is registered in `Color` by default"
+/// success | The LCh D65 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `lch-d65`
+**Name:** `lch-d65`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `c`  | [0, 160]
-    `h`  | [0, 360)
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`c`  | [0, 160]
+`h`  | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELCh D65 3D](../images/lch-d65-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELCh D65 color space.
-</figcaption>
-</figure>
+/////
+////
 
 CIELCh D65 is the same as [CIELCh](./lch.md) except it uses a D65 white point.
 
 _[Learn about CIELCh](https://en.wikipedia.org/wiki/CIELab_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
-</div>
+///
 
 ## Channel Aliases
 

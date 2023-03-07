@@ -1,40 +1,42 @@
 # LCh D50
 
-!!! success "The LCh D50 color space is registered in `Color` by default"
+/// success | The LCh D50 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `lch`
+**Name:** `lch`
 
-    **White Point:** D50
+**White Point:** D50
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `l`  | [0, 100]
-    `c`  | [0, 150]
-    `h`  | [0, 360)
+Name | Range^\*^
+---- | ---------
+`l`  | [0, 100]
+`c`  | [0, 150]
+`h`  | [0, 360)
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CIELCh D50 3D](../images/lch-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CIELCh D50 color space.
-</figcaption>
-</figure>
+/////
+////
 
 The "CIELCh" space is a color space based on [CIELab](./lab.md), which uses the polar coordinates C\* (chroma, relative
 saturation) and h&deg; (hue angle, angle of the hue in the CIELab color wheel) instead of the Cartesian
 coordinates a\* and b\*. The CIELab lightness L\* remains unchanged.
 
 _[Learn about CIELCh](https://en.wikipedia.org/wiki/CIELab_color_space#Cylindrical_representation:_CIELCh_or_CIEHLC)_
-</div>
+///
 
 ## Channel Aliases
 

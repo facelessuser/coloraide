@@ -1,39 +1,41 @@
 # HPLuv
 
-!!! failure "The HPLuv color space is not registered in `Color` by default"
+/// failure | The HPLuv color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hpluv`
+**Name:** `hpluv`
 
-    **Color CSS ID:** `--hpluv`
+**Color CSS ID:** `--hpluv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `p`  | [0, 100]
-    `l`  | [0, 100]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`p`  | [0, 100]
+`l`  | [0, 100]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HPLuv 3D](../images/hpluv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 HSLuv color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 HPLuv is similar to [HSLuv](./hsluv.md) but takes as many colors as it can from [CIELCh~uv~](./lchuv.md) without
 distorting the chroma. This ends up reducing the gamut to a subset of the sRGB gamut. In the end, only more pastel
 colors remain.
 
 _[Learn about HSLuv](https://www.hsluv.org/)_
-</div>
+///
 
 ## Channel Aliases
 

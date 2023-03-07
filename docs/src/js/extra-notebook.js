@@ -29,10 +29,11 @@ callback()
 
   const getContent = content => {
     return `
-!!! new "This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
+/// new | This notebook is powered by [Pyodide](https://github.com/pyodide/pyodide). \
 Learn more [here](\
 ?notebook=https://gist.githubusercontent.com/facelessuser/7c819668b5eb248ecb9ac608d91391cf/raw/playground.md\
-). Preview, convert, interpolate, and explore!"
+). Preview, convert, interpolate, and explore!
+///
 
 \`\`\`\`\`\`\`\`playground
 ${content}
@@ -125,7 +126,11 @@ ${content}
         playgroundInstalled = true
       }
       for (const s of packages) {
-        installs.push(base + s)
+        if (s.includes('/')) {
+          installs.push(base + s)
+        } else {
+          installs.push(s)
+        }
       }
       await pyodide.loadPackage(installs)
     }

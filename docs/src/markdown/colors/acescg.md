@@ -1,30 +1,32 @@
 # ACEScg
 
-!!! failure "The ACEScg color space is not registered in `Color` by default"
+/// failure | The ACEScg color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `acescg`
+**Name:** `acescg`
 
-    **White Point:** D60
+**White Point:** D60
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `r`  | [0, 65504]
-    `g`  | [0, 65504]
-    `b`  | [0, 65504]
+Name | Range
+---- | -----
+`r`  | [0, 65504]
+`g`  | [0, 65504]
+`b`  | [0, 65504]
+////
 
-<figure markdown>
-
+//// html | figure
 ![ACEScg](../images/acescg.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- ACES AP1 Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 ACEScg is a color space often used by CG artists. It is "scene-referred" or linear. It doesn't have as wide a color
 gamut as [ACES 2065-1](./aces2065_1.md) as it uses a different set of primaries called AP1, but it is far larger than
@@ -32,7 +34,7 @@ most other color spaces one might use and has an enormous dynamic range.
 
 _[Learn about ACEScg](https://docs.acescentral.com/specifications/acescg/)_
 
-</div>
+///
 
 ## Channel Aliases
 

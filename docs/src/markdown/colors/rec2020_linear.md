@@ -1,39 +1,41 @@
 # Linear REC. 2020
 
-!!! success "The Linear Rec. 2020 color space is registered in `Color` by default"
+/// success | The Linear Rec. 2020 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `rec2020-linear`
+**Name:** `rec2020-linear`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![Rec. 2020](../images/rec2020.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- Rec. 2020 Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 The Linear Rec. 2020 space is the same as [Rec. 2020](./rec2020.md) *except* that the transfer function is linear-light
 (there is no gamma-encoding).
 
 _[Learn about REC.2020](https://en.wikipedia.org/wiki/Rec._2020)_
 
-</div>
+///
 
 ## Channel Aliases:**
 

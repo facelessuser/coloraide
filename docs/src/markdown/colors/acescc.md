@@ -1,30 +1,33 @@
 # ACEScc
 
-!!! failure "The ACEScc color space is not registered in `Color` by default"
+/// failure | The ACEScc color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `acescc`
+**Name:** `acescc`
 
-    **White Point:** D60
+**White Point:** D60
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [-0.0729,\ 1.468]
-    `g`  | [-0.0729,\ 1.468]
-    `b`  | [-0.0729,\ 1.468]
+Name | Range^\*^
+---- | -----
+`r`  | [-0.0729,\ 1.468]
+`g`  | [-0.0729,\ 1.468]
+`b`  | [-0.0729,\ 1.468]
 
-    ^\*^ Ranges are approximate and have been rounded.
+^\*^ Ranges are approximate and have been rounded.
+////
 
 ACEScc is a color space based on the API primaries and is primarily used for color grading. It is a logarithmic color
 space, unlike ACEScg, and maps black at 0 and white at 1.
 
 _[Learn about ACEScc](https://docs.acescentral.com/specifications/acescc/)_
 
-</div>
+///
 
 ## Channel Aliases
 

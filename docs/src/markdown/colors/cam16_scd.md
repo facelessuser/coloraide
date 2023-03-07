@@ -1,39 +1,41 @@
 # CAM16 SCD
 
-!!! failure "The CAM16 SCD color space is not registered in `Color` by default"
+/// failure | The CAM16 SCD color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown="1">
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `cam16-scd`
+**Name:** `cam16-scd`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `j`  | [0, 100]
-    `a`  | [-40, 40]
-    `b`  | [-40, 40]
+Name | Range^\*^
+---- | -----
+`j`  | [0, 100]
+`a`  | [-40, 40]
+`b`  | [-40, 40]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CAM16 SCD](../images/cam16-scd.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CAM16 SCD color space.
-</figcaption>
-</figure>
+/////
+////
 
 This is the SCD variant of the CAM16 UCS color space and is optimized for "small" color distancing. See
 [CAM16 UCS](./cam16_ucs.md) for more info.
 
 [Learn more](https://doi.org/10.1002/col.22131).
-</div>
+///
 
 ## Channel Aliases
 
@@ -70,10 +72,6 @@ class Color(Base): ...
 
 Color.register(CAM16SCD())
 ```
-
-<style>
-.info-container {display: inline-block;}
-</style>
 
 ## Subclassing
 

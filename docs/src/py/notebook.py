@@ -818,15 +818,12 @@ def render_notebook(*args):
     text = globals().get('content', '')
     extensions = [
         'markdown.extensions.toc',
-        'markdown.extensions.admonition',
         'markdown.extensions.smarty',
         'pymdownx.betterem',
         'markdown.extensions.attr_list',
-        'markdown.extensions.def_list',
         'markdown.extensions.tables',
         'markdown.extensions.abbr',
         'markdown.extensions.footnotes',
-        'markdown.extensions.md_in_html',
         'pymdownx.superfences',
         'pymdownx.highlight',
         'pymdownx.inlinehilite',
@@ -840,10 +837,13 @@ def render_notebook(*args):
         'pymdownx.striphtml',
         'pymdownx.snippets',
         'pymdownx.keys',
-        'pymdownx.details',
         'pymdownx.saneheaders',
-        'pymdownx.tabbed',
-        'pymdownx.arithmatex'
+        'pymdownx.arithmatex',
+        'pymdownx.blocks.admonition',
+        'pymdownx.blocks.details',
+        'pymdownx.blocks.html',
+        'pymdownx.blocks.definition',
+        'pymdownx.blocks.tab'
     ]
     extension_configs = {
         'markdown.extensions.toc': {
@@ -893,8 +893,14 @@ def render_notebook(*args):
         'pymdownx.keys': {
             'separator': "\uff0b"
         },
-        'pymdownx.tabbed': {
+        'pymdownx.blocks.tab': {
             'alternate_style': True
+        },
+        'pymdownx.blocks.admonition': {
+            'types': [
+                'new', 'settings', 'note', 'abstract', 'info', 'tip', 'success',
+                'question', 'warning', 'failure', 'danger', 'bug', 'example', 'quote'
+            ]
         }
     }
 

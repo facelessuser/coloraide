@@ -8,7 +8,8 @@ ColorAide provides a number of useful utilities based on interpolation.
 
 ## Linear Interpolation
 
-!!! success "Linear interpolation is registered in `Color` by Default"
+/// success | Linear interpolation is registered in `Color` by Default
+///
 
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
@@ -21,13 +22,13 @@ these two colors with a line. We can then select any point on the line to simula
 yield the first color, 100% would yield the second color, and 50% would yield a new color:
 `#!color Color.interpolate(['oklab(0.7 0.15 0.1)', 'oklab(0.7 -0.03 -0.12)'])(0.5)`.
 
-<figure markdown>
+/// html | figure
 ![Linear Interpolation](images/linear-interpolation.png)
 
-<figcaption markdown>
+//// html | figcaption
 Interpolation performed at 50%
-</figcaption>
-</figure>
+////
+///
 
 The `interpolate` method allows a user to create a linear interpolation function using two or more colors. By default, a
 returned interpolation function accepts numerical input in the [domain](#domains) of [0, 1] and will cause a new color
@@ -55,12 +56,13 @@ Color.interpolate(
 )
 ```
 
-!!! tip "Interpolating in Constrained Gamuts"
-    Some color spaces, like sRGB, have a limited gamut, but have extended ranges that allow them to represent out of
-    gamut colors in a sane way. Other models, like HSL, HSV, and HWB have the same limited gamut, but have no sane way
-    to represent out of gamut colors. If colors are requested to be interpolated and are too big to be interpolated
-    in the requested color space and cannot properly be represented in that space or model, the colors will be gamut
-    mapped before interpolation.
+/// tip | Interpolating in Constrained Gamuts
+Some color spaces, like sRGB, have a limited gamut, but have extended ranges that allow them to represent out of
+gamut colors in a sane way. Other models, like HSL, HSV, and HWB have the same limited gamut, but have no sane way
+to represent out of gamut colors. If colors are requested to be interpolated and are too big to be interpolated
+in the requested color space and cannot properly be represented in that space or model, the colors will be gamut
+mapped before interpolation.
+///
 
 ## Piecewise Interpolation
 
@@ -95,7 +97,8 @@ Inspired by some efforts seen on the [web](catmull-observe) and in the great Jav
 
 ### B-Spline
 
-!!! success "B-Spline interpolation is registered in `Color` by Default"
+/// success | B-Spline interpolation is registered in `Color` by Default
+///
 
 ![B-spline](images/bspline-interpolation.png)
 
@@ -112,7 +115,8 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='bspline')
 
 ### Natural
 
-!!! success "Natural interpolation is registered in `Color` by Default"
+/// success | Natural interpolation is registered in `Color` by Default
+///
 
 ![Natural](images/natural-interpolation.png)
 
@@ -132,7 +136,8 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='natural')
 
 ### Monotone
 
-!!! success "Monotone interpolation is registered in `Color` by Default"
+/// success | Monotone interpolation is registered in `Color` by Default
+///
 
 ![Monotone](images/monotone-interpolation.png)
 
@@ -146,7 +151,8 @@ Color.interpolate(['red', 'green', 'blue', 'orange'], method='monotone')
 
 ### Catmull-Rom
 
-!!! failure "Catmull-Rom interpolation is not registered in `Color` by Default"
+/// failure | Catmull-Rom interpolation is not registered in `Color` by Default
+///
 
 ![Catmull-Rom](images/catmull-rom-interpolation.png)
 
@@ -194,55 +200,61 @@ To help visualize the different hue methods, consider the following evaluation b
 `#!color lch(85% 85 805)`. Below we will demonstrate each of the different hue evaluations. To learn more, check out the
 [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) which describes each one.
 
-!!! tip "Interpolating Multiple Colors"
-    The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
-    each other. This is a requirement for interpolation methods that use cubic splines that evaluate many hues at the
-    same time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
+/// tip | Interpolating Multiple Colors
+The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
+each other. This is a requirement for interpolation methods that use cubic splines that evaluate many hues at the
+same time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
+///
 
-=== "shorter"
-    ```playground
-    Color.interpolate(
-        ["rebeccapurple", "lch(85% 100 805)"],
-        space='lch',
-        hue="shorter"
-    )
-    ```
+/// tab | shorter
+```playground
+Color.interpolate(
+    ["rebeccapurple", "lch(85% 100 805)"],
+    space='lch',
+    hue="shorter"
+)
+```
+///
 
-=== "longer"
-    ```playground
-    Color.interpolate(
-        ["rebeccapurple", "lch(85% 100 805)"],
-        space='lch',
-        hue="longer"
-    )
-    ```
+/// tab | longer
+```playground
+Color.interpolate(
+    ["rebeccapurple", "lch(85% 100 805)"],
+    space='lch',
+    hue="longer"
+)
+```
+///
 
-=== "increasing"
-    ```playground
-    Color.interpolate(
-        ["rebeccapurple", "lch(85% 100 805)"],
-        space='lch',
-        hue="increasing"
-    )
-    ```
+/// tab | increasing
+```playground
+Color.interpolate(
+    ["rebeccapurple", "lch(85% 100 805)"],
+    space='lch',
+    hue="increasing"
+)
+```
+///
 
-=== "decreasing"
-    ```playground
-    Color.interpolate(
-        ["rebeccapurple", "lch(85% 100 805)"],
-        space='lch',
-        hue="decreasing"
-    )
-    ```
+/// tab | decreasing
+```playground
+Color.interpolate(
+    ["rebeccapurple", "lch(85% 100 805)"],
+    space='lch',
+    hue="decreasing"
+)
+```
+///
 
-=== "specified"
-    ```playground
-    Color.interpolate(
-        ["rebeccapurple", "lch(85% 100 805)"],
-        space='lch',
-        hue="specified"
-    )
-    ```
+/// tab | specified
+```playground
+Color.interpolate(
+    ["rebeccapurple", "lch(85% 100 805)"],
+    space='lch',
+    hue="specified"
+)
+```
+///
 
 ## Interpolating with Alpha
 
@@ -259,14 +271,12 @@ during the transition. This is because `#!color transparent` is actually black. 
 transition looks just as one would expect as the transparent color's channels are weighted less due to the high
 transparency.
 
-<div style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%) " markdown>
-
+/// html | div[style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%);"]
 ```playground
 Color.interpolate(['white', 'transparent'], space='srgb', premultiplied=False)
 Color.interpolate(['white', 'transparent'], space='srgb')
 ```
-
-</div>
+///
 
 As a final example, below we have an opaque orange and a blue that is quite transparent. Logically, the blue shouldn't
 have as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
@@ -297,9 +307,10 @@ and setting the specified channels as undefined (internally set to `NaN`). When 
 has a `NaN`, the other color's channel will be used as the result, keeping that channel at a constant value. If both
 colors have a `NaN` for the same channel, then `NaN` will be returned.
 
-!!! tip "Magic Behind NaN"
-    There are times when `NaN` values can happen naturally, such as with achromatic colors with hues. To learn more,
-    check out [Undefined Handling/NaN Handling](#null-handling).
+/// tip | Magic Behind NaN
+There are times when `NaN` values can happen naturally, such as with achromatic colors with hues. To learn more,
+check out [Undefined Handling/NaN Handling](#null-handling).
+///
 
 In the following example, we have a base color of `#!color lch(52% 58.1 22.7)` which we then interpolate with
 `#!color lch(56% 49.1 257.1)`. We then mask off the second color's channels except for `hue`. Applying this logic, we
@@ -343,63 +354,67 @@ unless [`extrapolate`](#extrapolation) is enabled and the user has manually inpu
 ColorAide provides 5 basic easing functions out of the box along with `cubic_bezier` which is used to create all of the
 aforementioned easing function except `linear`, which simply returns what is given as an input.
 
-!!! tip "Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com"
+/// tip | Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com
+///
 
-??? tip "More Common Cubic Bezier Easings"
-    The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
+/// details | More Common Cubic Bezier Easings
+    type: tip
 
-    ```py3
-    ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
-    ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
-    ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
-    ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
-    ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
-    ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
-    ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
-    ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
+The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
 
-    ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
-    ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
-    ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
-    ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
-    ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
-    ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
-    ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
-    ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
+```py
+ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
+ease_in_cubic = cubic_bezier(0.550, 0.055, 0.675, 0.190)
+ease_in_quart = cubic_bezier(0.895, 0.030, 0.685, 0.220)
+ease_in_quint = cubic_bezier(0.755, 0.050, 0.855, 0.060)
+ease_in_sine = cubic_bezier(0.470, 0.000, 0.745, 0.715)
+ease_in_expo = cubic_bezier(0.950, 0.050, 0.795, 0.035)
+ease_in_circ = cubic_bezier(0.600, 0.040, 0.980, 0.335)
+ease_in_back = cubic_bezier(0.600, -0.280, 0.735, 0.045)
 
-    ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
-    ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
-    ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
-    ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
-    ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
-    ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
-    ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
-    ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
-    ```
+ease_out_quad = cubic_bezier(0.250, 0.460, 0.450, 0.940)
+ease_out_cubic = cubic_bezier(0.215, 0.610, 0.355, 1.000)
+ease_out_quart = cubic_bezier(0.165, 0.840, 0.440, 1.000)
+ease_out_quint = cubic_bezier(0.230, 1.000, 0.320, 1.000)
+ease_out_sine = cubic_bezier(0.390, 0.575, 0.565, 1.000)
+ease_out_expo = cubic_bezier(0.190, 1.000, 0.220, 1.000)
+ease_out_circ = cubic_bezier(0.075, 0.820, 0.165, 1.000)
+ease_out_back = cubic_bezier(0.175, 0.885, 0.320, 1.275)
 
-=== "Linear"
+ease_in_out_quad = cubic_bezier(0.455, 0.030, 0.515, 0.955)
+ease_in_out_cubic = cubic_bezier(0.645, 0.045, 0.355, 1.000)
+ease_in_out_quart = cubic_bezier(0.770, 0.000, 0.175, 1.000)
+ease_in_out_quint = cubic_bezier(0.860, 0.000, 0.070, 1.000)
+ease_in_out_sine = cubic_bezier(0.445, 0.050, 0.550, 0.950)
+ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
+ease_in_out_circ = cubic_bezier(0.785, 0.135, 0.150, 0.860)
+ease_in_out_back = cubic_bezier(0.680, -0.550, 0.265, 1.550)
+```
+///
 
-    ![Linear](./images/easing_linear.png)
+/// tab | Linear
+![Linear](./images/easing_linear.png)
+///
 
-=== "Ease"
+/// tab | Ease
+![Ease](./images/easing_ease.png)
+///
 
-    ![Ease](./images/easing_ease.png)
+/// tab | Ease In
+![Ease In](./images/easing_ease_in.png)
+///
 
-=== "Ease In"
+/// tab | Ease Out
+![Ease Out](./images/easing_ease_out.png)
+///
 
-    ![Ease In](./images/easing_ease_in.png)
+/// tab | Ease In/Out
+![Ease In/Out](./images/easing_ease_in_out.png)
+///
 
-=== "Ease Out"
-
-    ![Ease Out](./images/easing_ease_out.png)
-
-=== "Ease In/Out"
-
-    ![Ease In/Out](./images/easing_ease_in_out.png)
-
-=== "Cubic Bezier"
-
-    ![Ease Cubic Bezier](./images/easing_cubic.png)
+/// tab | Cubic Bezier
+![Ease Cubic Bezier](./images/easing_cubic.png)
+///
 
 Here, we are using the default "ease in" and "ease out" easing functions provided by ColorAide.
 
@@ -487,9 +502,10 @@ Color.interpolate(['orange', hint(0.75), 'purple', 'green'])
 
 ## Mixing
 
-!!! tip "Interpolation Options"
-    Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-    like `hue`, `progress`, etc.
+/// tip | Interpolation Options
+Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+like `hue`, `progress`, etc.
+///
 
 The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick, and
 intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
@@ -525,9 +541,10 @@ Mixing will always return a new color unless `in_place` is set `#!py3 True`.
 
 ## Steps
 
-!!! tip "Interpolation Options"
-    Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-    like `hue`, `progress`, etc.
+/// tip | Interpolation Options
+Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+like `hue`, `progress`, etc.
+///
 
 The `steps` method provides an intuitive interface to create lists of discrete colors. Like mixing, it is also built on
 [`interpolate`](#linear-interpolation). Just provide two colors, and specify how many `steps` are wanted.
@@ -596,27 +613,29 @@ default ∆E can be changed via subclassing the color object and and changing `D
 specifying the method via the `delta_e` parameter.
 
 
-=== "∆E^\*^~ab~."
-    ```playground
-    Color.steps(
-        [Color("display-p3", [0, 1, 0]), "red"],
-        space="lch",
-        out_space="srgb",
-        max_delta_e=10,
-        delta_e="76"
-    )
-    ```
+/// tab | ∆E^\*^~ab~.
+```playground
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    delta_e="76"
+)
+```
+///
 
-=== "∆E^\*^~00~"
-    ```playground
-    Color.steps(
-        [Color("display-p3", [0, 1, 0]), "red"],
-        space="lch",
-        out_space="srgb",
-        max_delta_e=10,
-        delta_e="2000"
-    )
-    ```
+/// tab | ∆E^\*^~00~
+```playground
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    delta_e="2000"
+)
+```
+///
 
 And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and any
 of the other supported `interpolate` features as well.
@@ -760,11 +779,12 @@ When performing linear interpolation, where only two color's channels are ever b
 if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
 for the same channel, then `NaN` will be returned.
 
-!!! tip "NaN Handling in B-Spline Interpolation"
-    `NaN` handling is a bit different for B-spline interpolation. Linear only evaluates colors at a given time, while
-    B-spline uses a sliding window on four colors. Because the context is much wider and more complicated, `NaN` values
-    will often get contexts from both side and create a new "control point" for the curve using linear interpolation.
-    So the curve will use data from the defined points while ignoring the point that is undefined.
+/// tip | NaN Handling in B-Spline Interpolation
+`NaN` handling is a bit different for B-spline interpolation. Linear only evaluates colors at a given time, while
+B-spline uses a sliding window on four colors. Because the context is much wider and more complicated, `NaN` values
+will often get contexts from both side and create a new "control point" for the curve using linear interpolation.
+So the curve will use data from the defined points while ignoring the point that is undefined.
+///
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
 when the color is mixed with a second color (`#!color green`), the hue of the second color is used.

@@ -1,31 +1,33 @@
 # REC. 2100 PQ
 
-!!! failure "The Rec. 2100 PQ is not registered in `Color` by default"
+/// failure | The Rec. 2100 PQ is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `rec2100-pq`
+**Name:** `rec2100-pq`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![Rec. 2020](../images/rec2020.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- Rec. 2100 Chromaticities (Same as Rec. 2020)
 
-</figcaption>
-</figure>
+/////
+////
 
 BT.2100, more commonly known by the abbreviations Rec. 2100 or BT.2100, introduced high-dynamic-range television
 (HDR-TV) by recommending the use of the perceptual quantizer (PQ) or hybrid log–gamma (HLG) transfer functions instead
@@ -36,7 +38,7 @@ range.
 
 _[Learn about REC.2100](https://en.wikipedia.org/wiki/Rec._2100)_
 
-</div>
+///
 
 ## Channel Aliases
 

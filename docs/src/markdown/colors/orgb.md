@@ -1,32 +1,34 @@
 # oRGB
 
-!!! failure "The oRGB color space is not registered in `Color` by default"
+/// failure | The oRGB color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `orgb`
+**Name:** `orgb`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name  | Range^\*^
-    ----- | -----
-    `l`   | [0, 1]
-    `cyb` | [-1, 1]
-    `crg` | [-1, 1]
+Name  | Range^\*^
+----- | -----
+`l`   | [0, 1]
+`cyb` | [-1, 1]
+`crg` | [-1, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![oRGB](../images/orgb-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the oRGB color space.
-</figcaption>
-</figure>
+/////
+////
 
 A new color model that is based on opponent color theory. Like HSV, it is designed specifically for computer graphics.
 However, it is also designed to work well for computational applications such as color transfer, where HSV falters.
@@ -36,7 +38,7 @@ variations, and simple gamut mapping. This new color model strikes a balance bet
 qualities of color spaces such as CIELab.
 
 [Learn more](https://graphics.stanford.edu/~boulos/papers/orgb_sig.pdf).
-</div>
+///
 
 ## Channel Aliases
 

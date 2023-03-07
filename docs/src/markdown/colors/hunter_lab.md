@@ -1,33 +1,35 @@
 # Hunter Lab
 
-!!! failure "The Hunter Lab color space is not registered in `Color` by default"
+/// failure | The Hunter Lab color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hunter-lab`
+**Name:** `hunter-lab`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `l`  | [0, 100]
-    `a`  | [-210, 210]
-    `b`  | [-210, 210]
+Name | Range
+---- | -----
+`l`  | [0, 100]
+`a`  | [-210, 210]
+`b`  | [-210, 210]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
-    relation to the Display P3 color space.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs in
+relation to the Display P3 color space.
+////
 
-<figure markdown>
-
+//// html | figure
 ![oRGB](../images/hunter-lab-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the Hunter Lab color space.
-</figcaption>
-</figure>
+/////
+////
 
 The Hunter Lab color space, defined in 1948 by Richard S. Hunter, is another color space referred to as "Lab". Like
 CIELab, it was also designed to be computed via simple formulas from the CIE XYZ space, but to be more perceptually
@@ -35,7 +37,7 @@ uniform than CIE XYZ. Hunter named his coordinates L, a, and b. The CIE named th
 distinguish them from Hunter's coordinates.
 
 [Learn more](https://support.hunterlab.com/hc/en-us/articles/203997095-Hunter-Lab-Color-Scale-an08-96a2).
-</div>
+///
 
 ## Channel Aliases
 

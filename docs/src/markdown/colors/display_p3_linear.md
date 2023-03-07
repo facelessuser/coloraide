@@ -1,38 +1,40 @@
 # Linear Display P3
 
-!!! success "The Linear Display P3 color space is registered in `Color` by default"
+/// success | The Linear Display P3 color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `display-p3-linear`
+**Name:** `display-p3-linear`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `r`  | [0, 1]
-    `g`  | [0, 1]
-    `b`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`r`  | [0, 1]
+`g`  | [0, 1]
+`b`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![Display P3](../images/display-p3.png)
 
-<figcaption markdown>
+///// html | figcaption
 CIE 1931 xy Chromaticity -- Display P3 Chromaticities
-</figcaption>
-</figure>
+/////
+////
 
 The Linear Display P3 space is the same as [Display P3](./display_p3.md) *except* that the transfer function is linear-light
 (there is no gamma-encoding).
 
 _[Learn about Display P3](https://www.color.org/chardata/rgb/DisplayP3.xalter)_
-</div>
+///
 
 ## Channel Aliases
 

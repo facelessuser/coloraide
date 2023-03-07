@@ -1,32 +1,34 @@
 # IPT
 
-!!! failure "The IPT color space is not registered in `Color` by default"
+/// failure | The IPT color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `ipt`
+**Name:** `ipt`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `i`  | [0, 1]
-    `p`  | [-1, 1]
-    `t`  | [-1, 1]
+Name | Range^\*^
+---- | -----
+`i`  | [0, 1]
+`p`  | [-1, 1]
+`t`  | [-1, 1]
 
-    ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![IPT](../images/ipt-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the IPT color space.
-</figcaption>
-</figure>
+/////
+////
 
 Ebner and Fairchild addressed the issue of non-constant lines of hue in their color space dubbed IPT. The IPT color
 space converts D65-adapted XYZ data (XD65, YD65, ZD65) to long-medium-short cone response data (LMS) using an adapted
@@ -37,7 +39,7 @@ perceived hue independent of the values of lightness and chroma (which is the ge
 model, but hard to achieve). It is therefore well-suited for gamut mapping implementations.
 
 [Learn more](https://www.researchgate.net/publication/21677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.).
-</div>
+///
 
 ## Channel Aliases
 

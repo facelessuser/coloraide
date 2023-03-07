@@ -1,37 +1,39 @@
 # HSLuv
 
-!!! failure "The HSLuv color space is not registered in `Color` by default"
+/// failure | The HSLuv color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hsluv`
+**Name:** `hsluv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 100]
-    `l`  | [0, 100]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 100]
+`l`  | [0, 100]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HSLuv 3D](../images/hsluv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 HSLuv color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 HSLuv is a human-friendly alternative to HSL. It was formerly known as "HUSL" and is a variation of the
 [CIELCh~uv~](./lchuv.md) color space, where the chroma component is replaced by a saturation component which allows you
 to span all the available chroma as a percentage. HSLuv is constrained to the sRGB gamut.
 
 _[Learn about HSLuv](https://www.hsluv.org/)_
-</div>
+///
 
 ## Channel Aliases
 

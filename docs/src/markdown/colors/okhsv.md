@@ -1,36 +1,38 @@
 # Okhsv
 
-!!! failure "The Okhsv color space is not registered in `Color` by default"
+/// failure | The Okhsv color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `okhsv`
+**Name:** `okhsv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 1]
-    `v`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 1]
+`v`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![Okhsv 3D](../images/okhsv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 Okhsv color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 Okhsv is a color space created by Björn Ottosson. It is based off his early work and leverages the [Oklab](./oklab.md) color
 space. The aim was to create a color space that was better suited for being used in color pickers than the current HSV.
 
 _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
-</div>
+///
 
 ??? abstract "ColorAide Details"
 

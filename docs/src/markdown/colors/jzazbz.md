@@ -1,33 +1,35 @@
 # Jzazbz
 
-!!! failure "The Jzazbz color space is not registered in `Color` by default"
+/// failure | The Jzazbz color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `jzazbz`
+  **Name:** `jzazbz`
 
-    **White Point:** D65
+  **White Point:** D65
 
-    **Coordinates:**
+  **Coordinates:**
 
-    Name | Range^\*^
-    ---- | ---------
-    `jz` | [0, 1]
-    `az` | [-0.5, 0.5]
-    `bz` | [-0.5, 0.5]
+  Name | Range^\*^
+  ---- | ---------
+  `jz` | [0, 1]
+  `az` | [-0.5, 0.5]
+  `bz` | [-0.5, 0.5]
 
-    ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-    to define percentage inputs/outputs.
+  ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+  to define percentage inputs/outputs.
+////
 
-<figure markdown>
-
+//// html | figure
 ![Jzazbz](../images/jzazbz-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the Jzazbz color space.
-</figcaption>
-</figure>
+/////
+////
 
 Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)
 applications. Conceptually it is similar to [CIELab](./lab.md), but claims the following improvements:
@@ -38,7 +40,7 @@ applications. Conceptually it is similar to [CIELab](./lab.md), but claims the f
 - Hue linearity: changing saturation or lightness has less shift in hue.
 
 _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272)_
-</div>
+///
 
 ## Channel Aliases
 

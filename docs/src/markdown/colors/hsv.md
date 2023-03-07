@@ -1,37 +1,39 @@
 # HSV
 
-!!! success "The HSV color space is registered in `Color` by default"
+/// success | The HSV color space is registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `hsv`
+**Name:** `hsv`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range
-    ---- | -----
-    `h`  | [0, 360)
-    `s`  | [0, 1]
-    `v`  | [0, 1]
+Name | Range
+---- | -----
+`h`  | [0, 360)
+`s`  | [0, 1]
+`v`  | [0, 1]
+////
 
-<figure markdown>
-
+//// html | figure
 ![HSV 3D](../images/hsv-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 HSV color space in 3D
-</figcaption>
-</figure>
+/////
+////
 
 HSV is a color space similar to the modern [RGB](./srgb.md) and CMYK models. The HSV color space has three components: hue,
 saturation and value. 'Value' is sometimes substituted with 'brightness' and then it is known as HSB. HSV models how
 colors appear under light.
 
 _[Learn about HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)_
-</div>
+///
 
 ## Channel Aliases
 

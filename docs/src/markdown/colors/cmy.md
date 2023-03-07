@@ -1,32 +1,34 @@
 # CMY
 
-!!! failure "The CMY color space is not registered in `Color` by default"
+/// failure | The CMY color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `cmy`
+**Name:** `cmy`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `c`  | [0, 1]
-    `m`  | [0, 1]
-    `y`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`c`  | [0, 1]
+`m`  | [0, 1]
+`y`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
-<figure markdown>
-
+//// html | figure
 ![CMY](../images/cmy-3d.png)
 
-<figcaption markdown>
+///// html | figcaption
 The sRGB gamut represented within the CMY color space.
-</figcaption>
-</figure>
+/////
+////
 
 The CMY color model is a subtractive color model in which cyan, magenta and yellow pigments or dyes are added together
 in various ways to reproduce a broad array of colors. The name of the model comes from the initials of the three
@@ -36,7 +38,7 @@ The CMY color space, as ColorAide Extras has chosen to implement it, is directly
 and as such, is based off the sRGB primaries.
 
 [Learn more](https://en.wikipedia.org/wiki/CMY_color_model).
-</div>
+///
 
 ## Channel Aliases
 

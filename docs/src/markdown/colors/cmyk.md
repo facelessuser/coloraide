@@ -1,24 +1,27 @@
 # CMYK
 
-!!! failure "The CMYK color space is not registered in `Color` by default"
+/// failure | The CMYK color space is not registered in `Color` by default
+///
 
-<div class="info-container" markdown>
-!!! info inline end "Properties"
+/// html | div.info-container
+//// info | Properties
+    attrs: {class: inline end}
 
-    **Name:** `cmyk`
+**Name:** `cmyk`
 
-    **White Point:** D65
+**White Point:** D65
 
-    **Coordinates:**
+**Coordinates:**
 
-    Name | Range^\*^
-    ---- | -----
-    `c`  | [0, 1]
-    `m`  | [0, 1]
-    `y`  | [0, 1]
-    `k`  | [0, 1]
+Name | Range^\*^
+---- | -----
+`c`  | [0, 1]
+`m`  | [0, 1]
+`y`  | [0, 1]
+`k`  | [0, 1]
 
-    ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
+////
 
 The CMYK color model is a just like [CMY](./cmy.md) except that it adds an additional channel `k` to control blackness.
 
@@ -26,7 +29,7 @@ The CMYK color space, as ColorAide Extras has chosen to implement it, is directl
 and as such, is based off the sRGB primaries.
 
 [Learn more](https://en.wikipedia.org/wiki/CMY_color_model).
-</div>
+///
 
 ## Channel Aliases
 
