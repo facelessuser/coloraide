@@ -200,6 +200,12 @@ To help visualize the different hue methods, consider the following evaluation b
 `#!color lch(85% 85 805)`. Below we will demonstrate each of the different hue evaluations. To learn more, check out the
 [CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) which describes each one.
 
+/// note | Hue Specified
+The `specified` fix-up was at one time specified in the CSS Color Level 4 specification, but is no longer mentioned
+there. While CSS no longer supports this hue fix-up, we still do. `specified` simply does not apply any hue fix-up and
+will use hues as _specified_, hence the name.
+///
+
 /// tip | Interpolating Multiple Colors
 The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
 each other. This is a requirement for interpolation methods that use cubic splines that evaluate many hues at the
