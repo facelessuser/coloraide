@@ -99,11 +99,11 @@ pprint(m)
 ####################
 LMS_WHITE = alg.dot(T, [1, 1, 1])
 
-# http://cvrl.ioo.ucl.ac.uk/cie.htm: CIE 1931 CMFs
-LMS_475 = alg.dot(M, [0.1421, 0.1126, 1.0419])
-LMS_575 = alg.dot(M, [0.8425, 0.9154, 0.0018])
-LMS_485 = alg.dot(M, [0.05795, 0.1693, 0.6162])
-LMS_660 = alg.dot(M, [0.1649, 0.0610, 0.0000])
+# http://cvrl.ioo.ucl.ac.uk/: CIE 1931 2-deg, XYZ CMFs modified by Judd (1951) and Vos (1978)
+LMS_475 = alg.dot(M, [1.3287E-01, 1.1284E-01, 9.422E-01])
+LMS_575 = alg.dot(M, [8.4394E-01, 9.1558E-01, 1.9706E-03])
+LMS_485 = alg.dot(M, [5.6985E-02, 1.6987E-01, 5.864E-01])
+LMS_660 = alg.dot(M, [1.6161E-01, 6.1E-02, 1.1906E-05])
 
 AXIS = alg.identity(3)
 NAMES = ['PROTAN', 'DEUTAN', 'TRITAN']
