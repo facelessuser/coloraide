@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.2
+
+- **FIX**: Fix some exception messages.
+
 ## 1.8.1
 
 - **FIX**: Ensure Judd-Vos correction is applied to linear RGB to LMS conversion for CVD.

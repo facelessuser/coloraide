@@ -218,7 +218,7 @@ class Color(metaclass=ColorMeta):
                 s = color
                 space_class = cls.CS_MAP.get(s)
                 if not space_class:
-                    raise ValueError("'{}' is not a registered color space")
+                    raise ValueError("'{}' is not a registered color space".format(s))
                 num_channels = len(space_class.CHANNELS)
                 num_data = len(data)
                 if num_data < num_channels:
@@ -240,7 +240,7 @@ class Color(metaclass=ColorMeta):
         elif isinstance(color, Color):
             space_class = cls.CS_MAP.get(color.space())
             if not space_class:
-                raise ValueError("'{}' is not a registered color space")
+                raise ValueError("'{}' is not a registered color space".format(color.space()))
             obj = space_class, color[:]
 
         # Handle a color dictionary
@@ -404,7 +404,9 @@ class Color(metaclass=ColorMeta):
                     if reset_convert_cache:  # pragma: no cover
                         cls._get_convert_chain.cache_clear()
                     if not silent:
-                        raise ValueError("'{}' is a reserved name gamut mapping/reduction and cannot be removed")
+                        raise ValueError(
+                            "'{}' is a reserved name gamut mapping/reduction and cannot be removed".format(name)
+                        )
                     continue  # pragma: no cover
             else:
                 if reset_convert_cache:  # pragma: no cover
