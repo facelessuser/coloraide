@@ -52,15 +52,15 @@ according to the W3C spec will be used instead.
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlRow(colors)
-HtmlRow([c.filter('brightness', 0.5).clip() for c in colors])
-HtmlRow([c.filter('saturate', 0.5).clip() for c in colors])
-HtmlRow([c.filter('contrast', 1.2).clip() for c in colors])
-HtmlRow([c.filter('opacity', 0.5).clip() for c in colors])
-HtmlRow([c.filter('invert', 1).clip() for c in colors])
-HtmlRow([c.filter('hue-rotate', 90).clip() for c in colors])
-HtmlRow([c.filter('sepia', 1).clip() for c in colors])
-HtmlRow([c.filter('grayscale', 1).clip() for c in colors])
+HtmlSteps(colors)
+HtmlSteps([c.filter('brightness', 0.5).clip() for c in colors])
+HtmlSteps([c.filter('saturate', 0.5).clip() for c in colors])
+HtmlSteps([c.filter('contrast', 1.2).clip() for c in colors])
+HtmlSteps([c.filter('opacity', 0.5).clip() for c in colors])
+HtmlSteps([c.filter('invert', 1).clip() for c in colors])
+HtmlSteps([c.filter('hue-rotate', 90).clip() for c in colors])
+HtmlSteps([c.filter('sepia', 1).clip() for c in colors])
+HtmlSteps([c.filter('grayscale', 1).clip() for c in colors])
 ```
 
 ## Color Vision Deficiency Simulation
@@ -74,16 +74,17 @@ what someone with a CVD would see. Keep in mind that these are just approximatio
 quite different from person to person in severity.
 
 The human eye has 3 types of cones that are used to perceive colors. Each of these cones can become deficient, either
-through genetics, or other means. Each type of cone is responsible for perceiving either red, green, or blue colors. A
-CVD occurs when one or more of these cones are missing or not functioning properly. There are severe cases where one of
-the three cones will not perceive color at all, and there are others were the cones may just be less sensitive.
+through genetics, or other means. Each type of cone is responsible for perceiving different wavelengths of light. A CVD
+occurs when one or more of these cones are missing or not functioning properly. There are severe cases where one of the
+three cones will not perceive color at all, and there are others where the cones may just be less sensitive.
 
 ### Dichromacy
 
 Dichromacy is a type of CVD that has the characteristics of essentially causing the person to only have two functioning
 cones for perceiving colors. This essentially flattens the color spectrum into a 2D plane. Protanopia describes the CVD
-where the cone responsible for red light does not function, deuteranopia describes the CVD affecting the green cone, and
-tritanopia describes deficiencies with the blue cone.
+where the cone responsible for long wavelengths does not function, deuteranopia describes the CVD affecting the cone
+responsible for processing medium wavelengths, and tritanopia describes deficiencies with the cone responsible for short
+wavelengths.
 
 /// tab | Normal
 ![Normal](./images/colorchart.png)
@@ -101,6 +102,87 @@ tritanopia describes deficiencies with the blue cone.
 ![Tritanopia](./images/colorchart-tritan.png)
 ///
 
+One misconception is that people with CVD have a color blindness for just red and green or something similar as that can
+often be how it is described, and while the statement is true that certain people with CVD may have trouble with red and
+green, they often can have trouble with other colors as well.
+
+The LMS color space was created to mimic the response of the human eye. Each channel represents one of the 3 cones with
+each cone responsible for seeing light waves of different frequencies: long (L), medium (M), and short (S). Protanopia
+represents deficiencies with the L cone, deuteranopia with the M cone, and tritanopia with the S cone. Any color whose
+properties only vary in the properties specific to a person's deficient cone(s) will have the potential to cause
+confusion for that person.
+
+Consider the example below. We generate 3 different color series, each specifically targeting a specific deficiency.
+This is done by generating a series of colors that have all properties equal except that they have variance in a
+different cone response. The first row varies only with the L cone response, the second only with the M cone response,
+and the third only with the S cone response. We then apply the filters for protanopia, deuteranopia, and tritanopia. We
+can see that while many of the colors are altered, the row that targets the deficient cone specific to the CVD all
+appear to be of the same color making it difficult to distinguish between any of them.
+
+/// tab | Normal
+```py play
+
+--8<-- "confusion_lines.md"
+
+confusing_colors = confusion_line(Color('orange'), 'l')
+HtmlSteps([c.clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('hotpink'), 'm')
+HtmlSteps([c.clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('seagreen'), 's')
+HtmlSteps([c.clip() for c in confusing_colors])
+```
+///
+
+/// tab | Protanopia
+```py play
+
+---8<-- "confusion_lines.md"
+
+confusing_colors = confusion_line(Color('orange'), 'l')
+HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('hotpink'), 'm')
+HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('seagreen'), 's')
+HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+```
+///
+
+/// tab | Deuteranopia
+```py play
+
+---8<-- "confusion_lines.md"
+
+confusing_colors = confusion_line(Color('orange'), 'l')
+HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('hotpink'), 'm')
+HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('seagreen'), 's')
+HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+```
+///
+
+/// tab | Tritanopia
+```py play
+
+---8<-- "confusion_lines.md"
+
+confusing_colors = confusion_line(Color('orange'), 'l')
+HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('hotpink'), 'm')
+HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+
+confusing_colors = confusion_line(Color('seagreen'), 's')
+HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+```
+///
+
 By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia and the
 [Viénot, Brettel, and Mollon 1999 approach][vienot] to simulate protanopia and and deuteranopia. While Brettel is
 probably the best approach for all cases, Viénot is much faster and does quite well for protanopia and deuteranopia.
@@ -108,10 +190,10 @@ probably the best approach for all cases, Viénot is much faster and does quite 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlRow(colors)
-HtmlRow([c.filter('protan').clip() for c in colors])
-HtmlRow([c.filter('deutan').clip() for c in colors])
-HtmlRow([c.filter('tritan').clip() for c in colors])
+HtmlSteps(colors)
+HtmlSteps([c.filter('protan').clip() for c in colors])
+HtmlSteps([c.filter('deutan').clip() for c in colors])
+HtmlSteps([c.filter('tritan').clip() for c in colors])
 ```
 
 If desired, any of the three available methods can be used. Brettel is usually considered best option for accuracy.
@@ -122,10 +204,10 @@ tritanopia.
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlRow(colors)
-HtmlRow([c.filter('tritan', method='brettel').clip() for c in colors])
-HtmlRow([c.filter('tritan', method='vienot').clip() for c in colors])
-HtmlRow([c.filter('tritan', method='machado').clip() for c in colors])
+HtmlSteps(colors)
+HtmlSteps([c.filter('tritan', method='brettel').clip() for c in colors])
+HtmlSteps([c.filter('tritan', method='vienot').clip() for c in colors])
+HtmlSteps([c.filter('tritan', method='machado').clip() for c in colors])
 ```
 
 ### Anomalous Trichromacy
@@ -166,10 +248,10 @@ results. With that said, the `method` can always be overridden to use something 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlRow(colors)
-HtmlRow([c.filter('protan', 0.75).clip() for c in colors])
-HtmlRow([c.filter('deutan', 0.75).clip() for c in colors])
-HtmlRow([c.filter('tritan', 0.75).clip() for c in colors])
+HtmlSteps(colors)
+HtmlSteps([c.filter('protan', 0.3).clip() for c in colors])
+HtmlSteps([c.filter('protan', 0.5).clip() for c in colors])
+HtmlSteps([c.filter('protan', 0.9).clip() for c in colors])
 ```
 
 ## Usage Details
@@ -199,9 +281,9 @@ designed to be applied in the Linear sRGB space, and cannot be used in any other
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlRow(colors)
-HtmlRow([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
-HtmlRow([c.filter('sepia', 1, space='srgb').clip() for c in colors])
+HtmlSteps(colors)
+HtmlSteps([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
+HtmlSteps([c.filter('sepia', 1, space='srgb').clip() for c in colors])
 ```
 
 /// tip | Processing Lots of Colors
