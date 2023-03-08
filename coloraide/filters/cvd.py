@@ -136,12 +136,12 @@ def brettel(color: Color, severity: float, wings: tuple[Matrix, Matrix, Vector])
 
     w1, w2, sep = wings
 
-    # Which side are we on?
+    # Convert to LMS
     lms_c = alg.dot(LRGB_TO_LMS, color[:-1], dims=alg.D2_D1)
-    if alg.dot(lms_c, sep) > 0:
-        coords = alg.dot(w2, lms_c, dims=alg.D2_D1)
-    else:
-        coords = alg.dot(w1, lms_c, dims=alg.D2_D1)
+
+    # Apply appropriate wing filter based on which side of the separator we are on.
+    # Tritanopia filter and LMS to sRGB conversion are included in the same matrix.
+    coords = alg.dot(w2 if alg.dot(lms_c, sep) > 0 else w1, lms_c, dims=alg.D2_D1)
 
     if severity < 1:
         color[:-1] = [alg.lerp(a, b, severity) for a, b in zip(color[:-1], coords)]

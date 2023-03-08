@@ -58,6 +58,7 @@ pprint(alg.inv(M))
 
 ####################
 # Viénot matrices
+# http://vision.psychol.cam.ac.uk/jdmollon/papers/colourmaps.pdf
 ####################
 print('===== VIENOT PROTAN =====')
 white = Color('white').convert('srgb-linear')
@@ -92,11 +93,9 @@ st = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [q1, q2, 0.0]]
 m = alg.multi_dot([INV_T, st, T])
 pprint(m)
 
-print('===== ACHROMATOPSIA =====')
-pprint([RGB_TO_XYZ[1]] * 3)
-
 ####################
 # Brettel matrices
+# https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.496.7153&rep=rep1&type=pdf
 ####################
 LMS_WHITE = alg.dot(T, [1, 1, 1])
 
