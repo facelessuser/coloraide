@@ -19,8 +19,9 @@
 
 .swatch {
   display: inline-block;
-  width: 1.25em;
-  height: 1.25em;
+  box-sizing: border-box;
+  width: px2em(20px);
+  height: px2em(20px);
   margin-right: 0.2em;
   margin-left: 0.25em;
   line-height: 0;
@@ -32,6 +33,7 @@
                     linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
   background-position: 0 0, 0 0.24em, 0.24em -0.24em, -0.24em 0px;
   background-size: 0.5em 0.5em;
+  border: 2px solid var(--swatch-border-color);
   border-radius: 100px;
   box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, .3);
   transition: all 0.5s ease;
@@ -48,23 +50,26 @@
 
 .swatch-color {
   display: inline-block;
-  box-sizing: border-box;
-  width: 1.25em;
-  height: 1.25em;
+  width: px2em(16.4px);
+  height: px2em(16.4px);
   margin: 0;
   padding: 0;
   vertical-align: text-bottom;
   background: linear-gradient(to right, var(--swatch-stops));
-  border: 2px solid var(--swatch-border-color);
   border-radius: 100px;
 }
 
-.swatch-gradient,
-.swatch-gradient .swatch-color {
+.swatch-gradient {
   width: 100%;
-  height: 3em;
+  height: px2em(48px);
   margin: 0;
   border-radius: 0;
+
+  .swatch-color {
+    width: 100%;
+    height: px2em(44px);
+    border-radius: 0;
+  }
 }
 
 div.swatch-bar {
@@ -81,14 +86,23 @@ div.swatch-bar {
   .swatch {
     background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
     background-size: 1em 1em;
-    box-shadow: none;
 
-    &:not(.swatch-gradient),
-    &:not(.swatch-gradient) .swatch-color {
-      width: 3em;
-      height: 3em;
+    &:not(.out-of-gamut) {
+      box-shadow: none;
+    }
+
+    &:not(.swatch-gradient) {
+      width: px2em(48px);
+      height: px2em(48px);
       margin: 0;
       border-radius: 0;
+
+      .swatch-color {
+        width: px2em(44px);
+        height: px2em(44px);
+        margin: 0;
+        border-radius: 0;
+      }
     }
 
     &:hover {
@@ -101,7 +115,8 @@ div.swatch-bar {
   }
 }
 
-.swatch.out-of-gamut .swatch-color {
+.swatch.out-of-gamut {
+  padding: 1px;
   border: 1px solid var(--swatch-gamut-border-color);
   box-shadow: inset 0 0 0 1px var(--md-code-bg-color);
 }

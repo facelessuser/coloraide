@@ -1,4 +1,6 @@
 (() => {
+  const gamut = (window.matchMedia("(color-gamut: p3)").matches) ? 'display-p3' : 'srgb'
+  const webspace = (gamut === 'display-p3' && CSS.supports('color: color(display-p3 1 0 0)')) ? 'display-p3' : 'srgb'
   let pyodide = null
   let busy = false
   let raw = ""
@@ -22,7 +24,7 @@ if action == 'notebook':
 else:
     callback = render_console
 
-callback()
+callback(gamut='${webspace}')
 `
 
   const defContent = window.colorNotebook.defaultPlayground

@@ -545,7 +545,7 @@ def color_command_validator(language, inputs, options, attrs, md):
     return True
 
 
-def _color_command_console(colors):
+def _color_command_console(colors, gamut=WEBSPACE):
     """Color command formatter."""
 
     el = ''
@@ -566,17 +566,17 @@ def _color_command_console(colors):
             style = "--swatch-stops: "
             stops = []
             for e, color in enumerate(item):
-                color.fit(WEBSPACE)
+                color.fit(gamut)
                 if current:
-                    stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(last)))
-                    stops.append('{} {}%'.format(color.convert(WEBSPACE).to_string(), str(current)))
+                    stops.append('{} {}%'.format(color.convert(gamut).to_string(), str(last)))
+                    stops.append('{} {}%'.format(color.convert(gamut).to_string(), str(current)))
                     last = current
                     if e < (total - 1):
                         current += percent
                     else:
                         current = 100
                 else:
-                    stops.append(color.convert(WEBSPACE).to_string())
+                    stops.append(color.convert(gamut).to_string())
             if not stops:
                 stops.extend(['transparent'] * 2)
             if len(stops) == 1:
@@ -597,10 +597,10 @@ def _color_command_console(colors):
             bar = True
             for color in item:
                 base_classes = "swatch"
-                if not color.color.in_gamut(WEBSPACE):
+                if not color.color.in_gamut(gamut):
                     base_classes += " out-of-gamut"
-                color.color.fit(WEBSPACE)
-                srgb = color.color.convert(WEBSPACE)
+                color.color.fit(gamut)
+                srgb = color.color.convert(gamut)
                 value1 = srgb.to_string(alpha=False)
                 value2 = srgb.to_string()
                 style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
@@ -632,6 +632,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
     from pymdownx.superfences import SuperFencesException
 
     # Support the new way
+    gamut = kwargs.get('gamut', WEBSPACE)
     play = options.get('play', False) if options is not None else False
     # Support the old way
     if not play and language == 'playground':
@@ -648,7 +649,6 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
         )
 
     try:
-
         if len(md.preprocessors['fenced_code_block'].extension.stash) == 0:
             code_id = 0
 
@@ -656,7 +656,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
         exceptions = options.get('exceptions', False) if options is not None else False
 
         console, colors = execute(src.strip(), not exceptions, init=init)
-        el = _color_command_console(colors)
+        el = _color_command_console(colors, gamut=gamut)
 
         el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
             src=console,
@@ -679,13 +679,13 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
     return el
 
 
-def color_command_formatter(init='', interactive=False):
+def color_command_formatter(init='', gamut=WEBSPACE):
     """Return a Python command formatter with the provided imports."""
 
-    return partial(_color_command_formatter, init=init, interactive=interactive)
+    return partial(_color_command_formatter, init=init, gamut=gamut)
 
 
-def _color_formatter(src="", language="", class_name=None, md="", exceptions=True, init=''):
+def _color_formatter(src="", language="", class_name=None, md="", exceptions=True, init='', gamut=WEBSPACE):
     """Formatter wrapper."""
 
     from pymdownx.inlinehilite import InlineHiliteException
@@ -707,21 +707,21 @@ def _color_formatter(src="", language="", class_name=None, md="", exceptions=Tru
 
         el = Etree.Element('span')
         stops = []
-        if not color.in_gamut(WEBSPACE):
-            color.fit(WEBSPACE)
+        if not color.in_gamut(gamut):
+            color.fit(gamut)
             attributes = {'class': "swatch out-of-gamut", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
+            stops.append(color.convert(gamut).to_string(hex=True, alpha=False))
             if color[-1] < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
+                stops.append(color.convert(gamut).to_string(hex=True) + ' 50%')
         else:
             attributes = {'class': "swatch", "title": result}
             sub_el = Etree.SubElement(el, 'span', attributes)
-            stops.append(color.convert(WEBSPACE).to_string(hex=True, alpha=False))
+            stops.append(color.convert(gamut).to_string(hex=True, alpha=False))
             if color[-1] < 1.0:
                 stops[-1] += ' 50%'
-                stops.append(color.convert(WEBSPACE).to_string(hex=True) + ' 50%')
+                stops.append(color.convert(gamut).to_string(hex=True) + ' 50%')
 
         if not stops:
             stops.extend(['transparent'] * 2)
@@ -747,21 +747,21 @@ def _color_formatter(src="", language="", class_name=None, md="", exceptions=Tru
     return el
 
 
-def color_formatter(init=''):
+def color_formatter(init='', gamut=WEBSPACE):
     """Return a Python command formatter with the provided imports."""
 
-    return partial(_color_formatter, init=init)
+    return partial(_color_formatter, init=init, gamut=gamut)
 
 
 #############################
 # Pyodide specific code
 #############################
-def _live_color_command_formatter(src, init=''):
+def _live_color_command_formatter(src, init='', gamut=WEBSPACE):
     """Formatter wrapper."""
 
     try:
         console, colors = execute(src.strip(), False, init=init)
-        el = _color_command_console(colors)
+        el = _color_command_console(colors, gamut=gamut)
 
         if not colors:
             el += '<div class="swatch-bar"></div>'
@@ -776,10 +776,10 @@ def _live_color_command_formatter(src, init=''):
     return el
 
 
-def live_color_command_formatter(init=''):
+def live_color_command_formatter(init='', gamut=WEBSPACE):
     """Return a Python command formatter with the provided imports."""
 
-    return partial(_live_color_command_formatter, init=init)
+    return partial(_live_color_command_formatter, init=init, gamut=gamut)
 
 
 def live_color_command_validator(language, inputs, options, attrs, md):
@@ -791,16 +791,17 @@ def live_color_command_validator(language, inputs, options, attrs, md):
     return value
 
 
-def render_console(*args):
+def render_console(*args, **kwargs):
     """Render console update."""
 
     from js import document
+    gamut = kwargs.get('gamut', WEBSPACE)
 
     try:
         # Run code
         inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
-        result = live_color_command_formatter(LIVE_INIT)(inputs.value)
+        result = live_color_command_formatter(LIVE_INIT, gamut)(inputs.value)
         temp = document.createElement('div')
         temp.innerHTML = result
 
@@ -825,13 +826,14 @@ def render_console(*args):
         print(e)
 
 
-def render_notebook(*args):
+def render_notebook(*args, **kwargs):
     """Render notebook."""
 
     import markdown
     from pymdownx import slugs, superfences
     from js import document
 
+    gamut = kwargs.get('gamut', WEBSPACE)
     text = globals().get('content', '')
     extensions = [
         'markdown.extensions.toc',
@@ -886,19 +888,19 @@ def render_notebook(*args):
                 {
                     "name": 'playground',
                     "class": 'playground',
-                    "format": color_command_formatter(LIVE_INIT),
+                    "format": color_command_formatter(LIVE_INIT, gamut),
                     "validator": live_color_command_validator
                 },
                 {
                     "name": 'python',
                     "class": 'highlight',
-                    "format": color_command_formatter(LIVE_INIT),
+                    "format": color_command_formatter(LIVE_INIT, gamut),
                     "validator": live_color_command_validator
                 },
                 {
                     "name": 'py',
                     "class": 'highlight',
-                    "format": color_command_formatter(LIVE_INIT),
+                    "format": color_command_formatter(LIVE_INIT, gamut),
                     "validator": live_color_command_validator
                 }
             ]
@@ -908,7 +910,7 @@ def render_notebook(*args):
                 {
                     'name': 'color',
                     'class': 'color',
-                    'format': color_formatter(LIVE_INIT)
+                    'format': color_formatter(LIVE_INIT, gamut)
                 }
             ]
         },
