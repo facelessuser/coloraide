@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.playground-code.hidden {
+  margin-top: 0;
+}
+
 .playground-code .highlight code {
   min-height: 3em;
 }
@@ -53,4 +57,16 @@
 
 .playground-code:not(.hidden) div.highlight {
   display: none;
+}
+
+.playground .gamut {
+  padding: 0 px2em(13.6px);
+  color: var(--md-code-hl-comment-color);
+  font-size: 0.85em;
+  text-align: right;
+  background: var(--md-code-bg-color);
+
+  hr {
+    margin: 0;
+  }
 }

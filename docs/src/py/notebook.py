@@ -81,6 +81,10 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
 </form>
 </div>
+<div class="gamut" data-search-exclude>
+<hr>
+Gamut: {gamut}
+</div>
 
 <div data-search-exclude>
 <button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
@@ -667,7 +671,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
             **kwargs
         )
         el = '<div class="color-command">{}</div>'.format(el)
-        el = template.format(el_id=code_id, raw_source=_escape(src), results=el)
+        el = template.format(el_id=code_id, raw_source=_escape(src), results=el, gamut=gamut)
         code_id += 1
     except SuperFencesException:
         raise
@@ -801,6 +805,7 @@ def render_console(*args, **kwargs):
         # Run code
         inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
+        footer = document.querySelector("#__playground_{} .gamut".format(globals()['id_num']))
         result = live_color_command_formatter(LIVE_INIT, gamut)(inputs.value)
         temp = document.createElement('div')
         temp.innerHTML = result
@@ -811,6 +816,7 @@ def render_console(*args, **kwargs):
             el.remove()
         for el in temp.querySelectorAll('.swatch-bar'):
             cmd.insertBefore(el, cmd.lastChild)
+        footer.innerHTML = '<hr>Gamut: {}'.format(gamut)
 
         # Update code content
         pre = cmd.querySelector('pre')

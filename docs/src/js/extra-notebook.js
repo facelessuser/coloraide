@@ -1,6 +1,16 @@
 (() => {
-  const gamut = (window.matchMedia("(color-gamut: p3)").matches) ? 'display-p3' : 'srgb'
-  const webspace = (gamut === 'display-p3' && CSS.supports('color: color(display-p3 1 0 0)')) ? 'display-p3' : 'srgb'
+  let webspace = ''
+  try {
+    let gamut = 'srgb'
+    if (window.matchMedia("(color-gamut: rec2020)").matches) {
+      gamut = 'rec2020'
+    } else if (window.matchMedia("(color-gamut: p3)").matches) {
+      gamut = 'display-p3'
+    }
+    webspace = (CSS.supports('color: color(display-p3 1 0 0)')) ? gamut : 'srgb'
+  } catch {
+    webspace = 'srgb'
+  }
   let pyodide = null
   let busy = false
   let raw = ""
