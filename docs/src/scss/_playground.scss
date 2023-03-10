@@ -59,14 +59,20 @@
   display: none;
 }
 
-.playground .gamut {
-  padding: 0 px2em(13.6px);
+.playground-footer {
+  margin-bottom: 1em;
+  padding: px2em(3px, 13.6px) px2em(16px, 13.6px) px2em(2px, 13.6px);
   color: var(--md-code-hl-comment-color);
-  font-size: 0.85em;
-  text-align: right;
+  font-size: px2em(13.6px);
   background: var(--md-code-bg-color);
+  border-bottom-right-radius: px2rem(2px);
+  border-bottom-left-radius: px2rem(2px);
 
   hr {
-    margin: 0;
+    margin: 0 0 px2em(2px, 13.6px) 0;
+  }
+
+  .gamut {
+    float: right;
   }
 }

@@ -81,16 +81,13 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
 </form>
 </div>
-<div class="gamut" data-search-exclude>
+<div class="playground-footer" data-search-exclude>
 <hr>
-Gamut: {gamut}
-</div>
-
-<div data-search-exclude>
 <button id="__playground-edit_{el_id}" class="playground-edit" title="Edit the current snippet">Edit</button>
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<span class='gamut'>Gamut: {gamut}</span>
 </div>
 </div>'''
 
@@ -816,7 +813,7 @@ def render_console(*args, **kwargs):
             el.remove()
         for el in temp.querySelectorAll('.swatch-bar'):
             cmd.insertBefore(el, cmd.lastChild)
-        footer.innerHTML = '<hr>Gamut: {}'.format(gamut)
+        footer.innerHTML = 'Gamut: {}'.format(gamut)
 
         # Update code content
         pre = cmd.querySelector('pre')

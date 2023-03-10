@@ -9,38 +9,41 @@
 .notebook {
   button:not(.md-clipboard) {
     position: relative;
-    margin-top: 0.25em;
-    padding: 0.25em 1em;
-    padding-left: 2.5em;
-    color: var(--md-primary-bg-color);
-    font-size: 90%;
-    background: var(--md-primary-fg-color);
+    padding: 0 1.5em;
+    color: var(--md-typeset-a-color);
     border-radius: px2rem(2px);
-    opacity: 0.8;
-
-    &:hover {
-      cursor: pointer;
-      opacity: 1;
-    }
-
-    &[disabled] {
-      opacity: 0.5;
-    }
+    transition: color 125ms;
 
     &::before {
        position: absolute;
-       top: 0.25em;
-       left: 1em;
+       left: 0;
        display: block;
        box-sizing: border-box;
        width: 1.25em;
        height: 1.25em;
-       background-color: var(--md-primary-bg-color);
+       background-color: var(--md-typeset-a-color);
        background-size: 1.25em;
        transition: background-color 125ms;
        mask-repeat: no-repeat;
        mask-size: contain;
        content: "";
+    }
+
+    &[disabled] {
+      color: var(--md-code-hl-comment-color);
+
+      &::before {
+        background-color: var(--md-code-hl-comment-color);
+      }
+    }
+
+    &:hover {
+      color: var(--md-accent-fg-color);
+      cursor: pointer;
+
+      &::before {
+        background-color: var(--md-accent-fg-color);
+      }
     }
 
     &.playground-edit::before {

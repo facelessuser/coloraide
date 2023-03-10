@@ -2,13 +2,18 @@ div.color-command {
   margin: 1em 0;
   line-height: 0;
 
-  .highlight:not(:first-child) {
-    border-top: 1px solid var(--md-default-fg-color--lightest);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+  .highlight {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 
-    pre {
-      margin-top: 0;
+    &:not(:first-child) {
+      border-top: 1px solid var(--md-default-fg-color--lightest);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+
+      pre {
+        margin-top: 0;
+      }
     }
   }
 }
