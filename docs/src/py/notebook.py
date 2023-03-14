@@ -518,7 +518,10 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
             for clist in get_colors(r):
                 if clist:
                     colors.append(clist)
-            result_text += '{}{}'.format(str(r), '\n' if not isinstance(r, AtomicString) else '')
+            result_text += '{}{}'.format(
+                repr(r) if isinstance(r, str) and not isinstance(r, AtomicString) else str(r),
+                '\n' if not isinstance(r, AtomicString) else ''
+            )
         console += result_text
 
     return console, colors
