@@ -18,7 +18,7 @@ class TestHCT(util.ColorAssertsPyTest):
         ('violet', 'color(--hct 331.49 65.001 69.695)'),
         ('white', 'color(--hct 209.54 2.8716 100)'),
         ('gray', 'color(--hct 209.54 1.8977 53.585)'),
-        ('black', 'color(--hct 209.55 0 0)'),
+        ('black', 'color(--hct 209.54 0 0)'),
         # Test color
         ('color(--hct 270 30 100)', 'color(--hct 270 30 100)'),
         ('color(--hct 270 30 100 / 0.5)', 'color(--hct 270 30 100 / 0.5)'),

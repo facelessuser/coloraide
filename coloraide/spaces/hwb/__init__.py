@@ -53,14 +53,6 @@ class HWB(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 
-    def normalize(self, coords: Vector) -> Vector:
-        """On color update."""
-
-        coords = alg.no_nans(coords)
-        if 1 - (coords[1] + coords[2]) < 2e-07:
-            coords[0] = alg.NaN
-        return coords
-
     def to_base(self, coords: Vector) -> Vector:
         """To HSV from HWB."""
 

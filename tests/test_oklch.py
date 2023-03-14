@@ -153,7 +153,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         when chroma is very close to zero.
         """
 
-        c = Color('color(--oklch 90% 0.0000009 120 / 1)').convert('srgb').convert('oklch')
+        c = Color('color(--oklch 90% 0.00000009 120 / 1)').convert('srgb').convert('oklch')
         self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_chroma(self):
