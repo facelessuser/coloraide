@@ -16,7 +16,7 @@ def srgb_to_hsi(rgb: Vector) -> Vector:
     """sRGB to HSI."""
 
     r, g, b = rgb
-    h = alg.NaN
+    h = 0.0
     s = 0.0
     mx = max(rgb)
     mn = min(rgb)
@@ -32,9 +32,6 @@ def srgb_to_hsi(rgb: Vector) -> Vector:
         else:
             h = (r - g) / c + 4.0
         h *= 60.0
-
-    if abs(s) < 1e-07:
-        h = alg.NaN
 
     return [util.constrain_hue(h), s, i]
 
@@ -94,16 +91,6 @@ class HSI(Cylindrical, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    def normalize(self, coords: Vector) -> Vector:
-        """On color update."""
-
-        _, s, i = alg.no_nans(coords)
-
-        if abs(s) < 1e-7 or i == 0.0 or abs(1 - i) < 1e-7:
-            coords[0] = alg.NaN
-
-        return coords
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""

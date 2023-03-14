@@ -26,7 +26,7 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         ('color(--jzczhz 50% 50% 50% / 50%)', 'color(--jzczhz 0.5 0.25 180 / 0.5)'),
         ('color(--jzczhz none none none / none)', 'color(--jzczhz none none none / none)'),
         # Test percent ranges
-        ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 none)'),
+        ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 0)'),
         ('color(--jzczhz 100% 100% 100%)', 'color(--jzczhz 1 0.5 360 / 1)'),
         ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz 0 0 -360 / 1)')
     ]
@@ -124,30 +124,17 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('color(--jzczhz 90% 0 none / 1)')
         self.assertTrue(c.is_nan('hue'))
 
-    def test_near_zero_null(self):
-        """
-        Test very near zero null.
-
-        This is a fix up to help give more sane hues
-        when chroma is very close to zero.
-        """
-
-        c = Color('color(--jzczhz 90% 0.00009 120 / 1)').convert('jzazbz').convert('jzczhz')
-        self.assertTrue(c.is_nan('hue'))
-
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color('color(--jzczhz 90% 0 120 / 1)').normalize()
+        c = Color(Color('white').convert('jzczhz').to_string(precision=6)).normalize()
         self.assertTrue(c.is_nan('hue'))
 
-    def test_from_jzazbz(self):
-        """Test null from Lab conversion."""
+        c = Color(Color('gray').convert('jzczhz').to_string(precision=6)).normalize()
+        self.assertTrue(c.is_nan('hue'))
 
-        c1 = Color('color(--jzazbz 90% 0 0)')
-        c2 = c1.convert('jzczhz')
-        self.assertColorEqual(c2, Color('color(--jzczhz 90% 0 0)'))
-        self.assertTrue(c2.is_nan('hue'))
+        c = Color(Color('darkgray').convert('jzczhz').to_string(precision=6)).normalize()
+        self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to OkLCh with a null hue."""

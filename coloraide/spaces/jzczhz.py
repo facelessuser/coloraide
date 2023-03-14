@@ -12,7 +12,6 @@ import math
 from .. import algebra as alg
 from ..types import Vector
 
-ACHROMATIC_THRESHOLD = 0.0003
 # The transform consistently yields ~216 for achromatic hues for positive lightness
 # Replacing achromatic NaN hues with this hue gives us closer translations back.
 ACHROMATIC_HUE = 216.0777045520467
@@ -26,11 +25,6 @@ def jzazbz_to_jzczhz(jzazbz: Vector) -> Vector:
     cz = math.sqrt(az ** 2 + bz ** 2)
     hz = math.degrees(math.atan2(bz, az))
 
-    # Achromatic colors will often get extremely close, but not quite hit zero.
-    # Essentially, we want to discard noise through rounding and such.
-    if cz < ACHROMATIC_THRESHOLD:
-        hz = alg.NaN
-
     return [jz, cz, util.constrain_hue(hz)]
 
 
@@ -38,17 +32,6 @@ def jzczhz_to_jzazbz(jzczhz: Vector) -> Vector:
     """JzCzhz to Jzazbz."""
 
     jz, cz, hz = jzczhz
-
-    # For better round tripping of achromatic colors,
-    # use the achromatic hue that occurs in forward transform.
-    # We use the one from white translation. It may vary slightly
-    # depending on the grayscale color, but only slightly,
-    # so this is close enough.
-    if cz < ACHROMATIC_THRESHOLD:
-        hz = ACHROMATIC_HUE
-
-    if alg.is_nan(hz):  # pragma: no cover
-        return [jz, 0.0, 0.0]
 
     return [
         jz,
@@ -81,18 +64,27 @@ class JzCzhz(LChish, Space):
     DYNAMIC_RANGE = 'hdr'
 
     def achromatic_hue(self) -> float:
-        """Ideal achromatic hue."""
+        """
+        Ideal achromatic hue.
+
+        This is our ideal hue, and since the results are based off
+        CAM16, it should be no surprise that the chroma gets larger
+        as lightness increases, just like CAM16 with no discounting.
+
+        Because of this, we cannot reslove undefined hues as zero.
+        """
 
         return ACHROMATIC_HUE
 
-    def normalize(self, coords: Vector) -> Vector:
-        """On color update."""
+    def no_nans(self, coords: Vector) -> Vector:
+        """Return coordinates with no undefined values."""
 
-        coords = alg.no_nans(coords)
-        if coords[1] < ACHROMATIC_THRESHOLD:
-            coords[2] = alg.NaN
-
-        return coords
+        if alg.is_nan(coords[2]):
+            coords[:2] = alg.no_nans(coords[:2])
+            coords[2] = ACHROMATIC_HUE
+            return coords
+        else:
+            return alg.no_nans(coords)
 
     def hue_name(self) -> str:
         """Hue name."""

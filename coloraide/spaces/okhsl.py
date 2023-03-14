@@ -30,7 +30,7 @@ from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .oklab import oklab_to_linear_srgb
-from .oklch import ACHROMATIC_THRESHOLD
+from .oklch import ACHROMATIC_HUE
 from .. import util
 import math
 import sys
@@ -335,7 +335,7 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0.0 and not abs(1 - L) < 1e-7 and abs(s) >= ACHROMATIC_THRESHOLD and not alg.is_nan(h):
+    if L != 0.0 and abs(1 - L) >= 1e-7 and abs(s) >= 1e-7:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -374,16 +374,14 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
 def oklab_to_okhsl(lab: Vector) -> Vector:
     """Oklab to Okhsl."""
 
-    h = alg.NaN
+    h = ACHROMATIC_HUE
     L = lab[0]
     s = 0.0
     l = toe(L)
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
-    if c < ACHROMATIC_THRESHOLD:
-        c = 0.0
 
-    if l != 0.0 and not abs(1 - l) < 1e-7 and c != 0:
+    if l != 0.0 and abs(1 - l) >= 1e-7 and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -409,9 +407,6 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
             t = (c - k_0) / (k_1 + k_2 * (c - k_0))
             s = mid + 0.2 * t
 
-    if abs(s) < ACHROMATIC_THRESHOLD:
-        h = alg.NaN
-
     return [util.constrain_hue(h * 360), s, l]
 
 
@@ -434,13 +429,15 @@ class Okhsl(Cylindrical, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
-    def normalize(self, coords: Vector) -> Vector:
-        """On color update."""
+    def achromatic_hue(self) -> float:
+        """
+        Ideal achromatic hue.
 
-        coords = alg.no_nans(coords)
-        if coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7 or abs(coords[1]) < ACHROMATIC_THRESHOLD:
-            coords[0] = alg.NaN
-        return coords
+        This is the ideal achromatic hue. It tightens up translation, but we can get away
+        with accepting 0 as well.
+        """
+
+        return ACHROMATIC_HUE
 
     def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""

@@ -55,10 +55,11 @@ from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .cam16 import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
-from .cam16_jmh import Achromatic as _Achromatic
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
 import math
+
+ACHROMATIC_HUE = 209.5429359788321
 
 
 def y_to_lstar(y: float, white: VectorLike) -> float:
@@ -94,10 +95,6 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     threshold = 0.000000002
 
     h, c, t = coords[:]
-
-    # No NaN
-    if alg.is_nan(h):  # pragma: no cover
-        h = 0
 
     if t == 0:
         return [0.0, 0.0, 0.0]
@@ -140,20 +137,10 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     # We have no interest in trying to calculate inverse lightness
     # colors forward and backwards.
     if t <= 0:
-        return [alg.NaN, 0.0, 0.0]
+        return [0.0, 0.0, 0.0]
     c, h = xyz_d65_to_cam16(coords, env)[1:3]
 
     return [h, c, alg.clamp(t, 0.0)]
-
-
-class Achromatic(_Achromatic):
-    """Test HCT achromatic response."""
-
-    CONVERTER = staticmethod(xyz_to_hct)
-    # Lightness and chroma (equivalent) index.
-    L_IDX = 2
-    C_IDX = 1
-    H_IDX = 0
 
 
 class HCT(LChish, Space):
@@ -182,23 +169,10 @@ class HCT(LChish, Space):
         False
     )
 
-    # Achromatic detection
-    ACHROMATIC = Achromatic(
-        {
-            'low': (1, 5, 1, 1000.0),
-            'mid': (1, 40, 1, 200.0),
-            'high': (50, 551, 50, 100.0)
-        },
-        0.0097,
-        0.0787,
-        ENV,
-        'catrom'
-    )
-
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""
 
-        return self.ACHROMATIC.hue
+        return ACHROMATIC_HUE
 
     def lchish_names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
@@ -211,33 +185,17 @@ class HCT(LChish, Space):
 
         if alg.is_nan(coords[0]):
             coords[1:] = alg.no_nans(coords[1:])
-            coords[0] = self.ACHROMATIC.get_ideal_hue(coords[2], coords[1], coords[0])
+            coords[0] = ACHROMATIC_HUE
             return coords
         else:
             return alg.no_nans(coords)
 
-    def normalize(self, coords: Vector) -> Vector:
-        """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""
-
-        coords = alg.no_nans(coords)
-        h, c, t = coords
-        if self.ACHROMATIC.test(t, c, h):
-            coords[0] = alg.NaN
-        return coords
-
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from CAM16."""
 
-        h, c, t = coords
-        if alg.is_nan(h):
-            coords[0] = self.ACHROMATIC.get_ideal_hue(t, c, h)
         return hct_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to CAM16."""
 
-        coords = xyz_to_hct(coords, self.ENV)
-        h, c, t = coords
-        if not alg.is_nan(h) and self.ACHROMATIC.test(t, c, h):
-            coords[0] = alg.NaN
-        return coords
+        return xyz_to_hct(coords, self.ENV)

@@ -17,8 +17,8 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         ('indigo', 'color(--cam16-jmh 16.046 43.278 310.9)'),
         ('violet', 'color(--cam16-jmh 63.507 46.779 331.39)'),
         ('white', 'color(--cam16-jmh 100 2.2369 209.53)'),
-        ('gray', 'color(--cam16-jmh 43.042 1.467 209.54)'),
-        ('black', 'color(--cam16-jmh 0 0 209.54)'),
+        ('gray', 'color(--cam16-jmh 43.042 1.467 209.53)'),
+        ('black', 'color(--cam16-jmh 0 0 209.53)'),
         # Test color
         ('color(--cam16-jmh 50 30 270)', 'color(--cam16-jmh 50 30 270)'),
         ('color(--cam16-jmh 50 30 270 / 0.5)', 'color(--cam16-jmh 50 30 270 / 0.5)'),

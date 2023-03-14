@@ -183,11 +183,6 @@ class Space(Plugin, metaclass=SpaceMeta):
             none=none
         )
 
-    def normalize(self, coords: Vector) -> Vector:
-        """Process coordinates and adjust any channels to null/NaN if required."""
-
-        return alg.no_nans(coords)
-
     def match(
         self,
         string: str,

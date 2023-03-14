@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import functools
 import random
+import math
 from . import distance
 from . import convert
 from . import gamut
@@ -461,7 +462,10 @@ class Color(metaclass=ColorMeta):
     def normalize(self) -> Color:
         """Normalize the color."""
 
-        self[:-1] = self._space.normalize(self[:-1])
+        self[:-1] = self.coords()
+        if hasattr(self._space, 'hue_index') and self.is_achromatic():
+            i = self._space.hue_index()
+            self[i] = alg.NaN
         self[-1] = alg.no_nan(self[-1])
         return self
 
@@ -514,12 +518,20 @@ class Color(metaclass=ColorMeta):
             return self if in_place else self.clone()
 
         c, coords = convert.convert(self, space)
-        coords.append(self[-1])
         this = self if in_place else self.clone()
         this._space = c
-        this._coords = coords
+        this._coords[:-1] = coords
+
+        if hasattr(this._space, 'hue_index') and this.is_achromatic():
+            this[this._space.hue_index()] = alg.NaN
 
         return this
+
+    def is_achromatic(self) -> bool:
+        """Test if color is achromatic."""
+
+        xyz = self.convert('xyz-d65')
+        return all([math.isclose(0, x, abs_tol=9e-6) for x in alg.vcross(xyz.coords(), xyz.white())])
 
     def mutate(
         self,
