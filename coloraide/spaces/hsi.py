@@ -98,7 +98,7 @@ class HSI(Cylindrical, Space):
     def normalize(self, coords: Vector) -> Vector:
         """On color update."""
 
-        _, s, i = alg.no_nans(coords[:-1])
+        _, s, i = alg.no_nans(coords)
 
         if abs(s) < 1e-7 or i == 0.0 or abs(1 - i) < 1e-7:
             coords[0] = alg.NaN

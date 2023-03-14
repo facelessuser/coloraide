@@ -144,7 +144,7 @@ def plot_slice(
         coords[index2] = c2
         c.update(space, coords)
 
-        # Only process colors within the gamut of sRGB.
+        # Only process colors within the specified gamut.
         if c.in_gamut(gamut, tolerance=0) and not needs_workaround(c):
             if hue_index != -1:
                 c1 = math.radians(c1)

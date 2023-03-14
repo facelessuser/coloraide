@@ -21,8 +21,8 @@ class DEZ(DeltaE):
     def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
-        jz1, az1, bz1 = alg.no_nans(color.convert('jzazbz')[:-1])
-        jz2, az2, bz2 = alg.no_nans(sample.convert('jzazbz')[:-1])
+        jz1, az1, bz1 = color.convert('jzazbz').coords(nan=False)
+        jz2, az2, bz2 = sample.convert('jzazbz').coords(nan=False)
 
         cz1 = math.sqrt(az1 ** 2 + bz1 ** 2)
         cz2 = math.sqrt(az2 ** 2 + bz2 ** 2)

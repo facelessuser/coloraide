@@ -44,8 +44,8 @@ class DECMC(DeltaE):
         if c is None:
             c = self.c
 
-        l1, a1, b1 = alg.no_nans(color.convert("lab")[:-1])
-        l2, a2, b2 = alg.no_nans(sample.convert("lab")[:-1])
+        l1, a1, b1 = color.convert("lab").coords(nan=False)
+        l2, a2, b2 = sample.convert("lab").coords(nan=False)
 
         # Equation (3)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

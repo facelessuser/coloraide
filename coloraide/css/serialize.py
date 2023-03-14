@@ -97,14 +97,14 @@ def color_function(
 def get_coords(obj: 'Color', fit: str | bool, none: bool, legacy: bool) -> Vector:
     """Get the coordinates."""
 
-    coords = obj.fit(method=None if not isinstance(fit, str) else fit)[:-1] if fit else obj[:-1]
-    return alg.no_nans(coords) if legacy or not none else coords
+    coords = (obj.fit(method=None if not isinstance(fit, str) else fit) if fit else obj)
+    return coords.coords(nan=False if legacy or not none else True)
 
 
 def get_alpha(obj: 'Color', alpha: bool | None, none: bool, legacy: bool) -> float | None:
     """Get the alpha if required."""
 
-    a = alg.no_nan(obj[-1]) if not none or legacy else obj[-1]
+    a = obj.alpha(nan=False if not none or legacy else True)
     alpha = alpha is not False and (alpha is True or a < 1.0 or alg.is_nan(a))
     return None if not alpha else a
 

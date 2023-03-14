@@ -491,9 +491,9 @@ class TestDistance(util.ColorAssertsPyTest):
             ('red', 'blue', 85.0841),
             ('red', 'indigo', 68.2811),
             ('red', 'violet', 49.9396),
-            ('red', 'white', 71.0854),
+            ('red', 'white', 75.1061),
             ('red', 'black', 77.2615),
-            ('red', 'gray', 54.351),
+            ('red', 'gray', 57.85),
             ('red', 'red', 0),
             ('orange', 'red', 44.506),
             ('yellow', 'red', 80.2846),
@@ -501,9 +501,9 @@ class TestDistance(util.ColorAssertsPyTest):
             ('blue', 'red', 85.0841),
             ('indigo', 'red', 68.2811),
             ('violet', 'red', 49.9396),
-            ('white', 'red', 71.0854),
+            ('white', 'red', 75.1061),
             ('black', 'red', 77.2615),
-            ('gray', 'red', 54.351)
+            ('gray', 'red', 57.85)
         ]
     )
     def test_delta_e_hct(self, color1, color2, value):

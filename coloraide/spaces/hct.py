@@ -185,13 +185,14 @@ class HCT(LChish, Space):
     # Achromatic detection
     ACHROMATIC = Achromatic(
         {
-            'low': (0, 51, 1, 200.0),
-            'mid': (50, 101, 5, 100.0),
-            'high': (101, 502, 25, 75.0)
+            'low': (1, 5, 1, 1000.0),
+            'mid': (1, 40, 1, 200.0),
+            'high': (50, 551, 50, 100.0)
         },
-        0.085,
+        0.0097,
+        0.0787,
         ENV,
-        'natural'
+        'catrom'
     )
 
     def achromatic_hue(self) -> float:
@@ -199,33 +200,44 @@ class HCT(LChish, Space):
 
         return self.ACHROMATIC.hue
 
-    def normalize(self, coords: Vector) -> Vector:
-        """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""
-
-        coords = alg.no_nans(coords)
-        m, j = coords[1:3]
-        if self.ACHROMATIC.test(j, m):
-            coords[0] = alg.NaN
-        return coords
-
     def lchish_names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
 
         channels = self.channels
         return channels[2], channels[1], channels[0]
 
+    def no_nans(self, coords: Vector) -> Vector:
+        """Return coordinates with no undefined values."""
+
+        if alg.is_nan(coords[0]):
+            coords[1:] = alg.no_nans(coords[1:])
+            coords[0] = self.ACHROMATIC.get_ideal_hue(coords[2], coords[1], coords[0])
+            return coords
+        else:
+            return alg.no_nans(coords)
+
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""
+
+        coords = alg.no_nans(coords)
+        h, c, t = coords
+        if self.ACHROMATIC.test(t, c, h):
+            coords[0] = alg.NaN
+        return coords
+
     def to_base(self, coords: Vector) -> Vector:
-        """To XYZ from HCT."""
+        """To XYZ from CAM16."""
 
-        m, j = coords[1:3]
-        if self.ACHROMATIC.test(j, m):
-            coords[1] = self.ACHROMATIC.get_ideal_chroma(j, m)
-            coords[0] = self.ACHROMATIC.hue
-
+        h, c, t = coords
+        if alg.is_nan(h):
+            coords[0] = self.ACHROMATIC.get_ideal_hue(t, c, h)
         return hct_to_xyz(coords, self.ENV)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From XYZ to HCT."""
+        """From XYZ to CAM16."""
 
-        hct = xyz_to_hct(coords, self.ENV)
-        return self.normalize(hct)
+        coords = xyz_to_hct(coords, self.ENV)
+        h, c, t = coords
+        if not alg.is_nan(h) and self.ACHROMATIC.test(t, c, h):
+            coords[0] = alg.NaN
+        return coords

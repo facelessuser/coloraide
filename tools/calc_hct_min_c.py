@@ -26,18 +26,18 @@ def main():
         '--res', '-r', type=int, default=50000, help="Resolution to use when calculating range, default is 10000."
     )
     parser.add_argument(
-        '--spline', '-S', type=str, default='natural', help="Spline to use for approximation of achromatic line"
+        '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
-        '--low', '-L', type=str, default='0:51:1:200.0',
+        '--low', '-L', type=str, default='1:5:1:1000.0',
         help="Tuning for low range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--mid', '-M', type=str, default='50:101:5:100.0',
+        '--mid', '-M', type=str, default='1:40:1:200.0',
         help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--high', '-H', type=str, default='101:502:25:75.0',
+        '--high', '-H', type=str, default='50:551:50:100.0',
         help="Tuning for high range: start:end:step:scale (int:int:int:float)"
     )
     args = parser.parse_args()
@@ -54,62 +54,82 @@ def run(spline, low, mid, high, res):
         "high": [int(i) if e < 3 else float(i) for e, i in enumerate(high.split(':'))]
     }
     env = HCT.ENV
-    test = Achromatic(tuning, 0.06, env, spline)
+    test = Achromatic(tuning, 1, 1, env, spline)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}
     points2 = {}
-    diff = 0
+    diff_over = 0
+    diff_under = 0
     max_m = 0
+    first = False
 
     for i in range(res + 1):
         div = res / 5
-        color.update('srgb', [i / div, i / div, i / div])
+        v = i / div
+        if v < 0.001:
+            continue
+        color.update('srgb', [v, v, v])
         xyz = color.convert('xyz-d65')
-        m, t = xyz_to_hct(xyz[:-1], HCT.ENV)[1:]
+        h, c, t = xyz_to_hct(xyz[:-1], HCT.ENV)
+        if not first:
+            print('Starting T: ', t)
+            print('Starting C: ', c)
+            first = True
 
-        if m > max_m:
-            max_m = m
+        if c > max_m:
+            max_m = c
 
         domain = test.scale(t)
         calc = test.spline(domain)
 
-        delta = abs(calc[1] - m)
-        if delta > diff:
-            diff = delta
+        delta = calc[1] - c
+        if delta >= 0 and delta > diff_over:
+            diff_over = delta
+        if delta < 0 and abs(delta) > diff_under:
+            diff_under = abs(delta)
 
-        points1[t] = m
-        points2[calc[0]] = calc[1]
+        points1[t] = (c, h)
+        points2[calc[0]] = (calc[1], calc[2])
 
-    print('Delta: ', diff)
-    print('Max Chroma: ', max_m)
+    print('Delta Over: ', diff_over)
+    print('Delta Under: ', diff_under)
+    print('Max M: ', max_m)
+    print('Data Points: ', test.spline.length)
 
     t1 = []
     t2 = []
     m1 = []
     m2 = []
+    h1 = []
+    h2 = []
     for t in sorted(points1):
         t1.append(t)
-        m1.append(points1[t])
+        m1.append(points1[t][0])
+        h1.append(points1[t][1])
     for t in sorted(points2):
         t2.append(t)
-        m2.append(points2[t])
+        m2.append(points2[t][0])
+        h2.append(points2[t][1])
 
     figure = plt.figure()
 
     # Create axes
     ax = plt.axes(
+        projection='3d',
         xlabel='C',
-        ylabel='T'
+        ylabel='H',
+        zlabel='T'
     )
+
     ax.set_aspect('auto')
-    ax.set_title('HCT: Delta = {} - Max C = {}'.format(diff, max_m))
+    ax.set_title('HCT: Delta = {} - Max C = {}'.format(max(diff_over, diff_under), max_m))
     figure.add_axes(ax)
 
     # Print the calculated line against the real line
     plt.style.use('seaborn-v0_8-whitegrid')
-    plt.plot(m1, t1, '.', color='black')
-    plt.plot(m2, t2, '.', color='red', markersize=0.5)
+    plt.plot(m1, h1, t1, '.', color='black')
+    plt.plot(m2, h2, t2, '.', color='red', markersize=0.5)
     plt.show()
 
     return 0

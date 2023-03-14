@@ -461,7 +461,8 @@ class Color(metaclass=ColorMeta):
     def normalize(self) -> Color:
         """Normalize the color."""
 
-        self[:] = self._space.normalize(self[:])
+        self[:-1] = self._space.normalize(self[:-1])
+        self[-1] = alg.no_nan(self[-1])
         return self
 
     def is_nan(self, name: str) -> bool:
@@ -942,6 +943,16 @@ class Color(metaclass=ColorMeta):
             self[name] = value(self[name]) if callable(value) else value
 
         return self
+
+    def coords(self, nan=True):
+        """Get the color channels and optionally remove undefined values."""
+
+        return self[:-1] if nan else self._space.no_nans(self[:-1])
+
+    def alpha(self, nan=True):
+        """Get the alpha channel."""
+
+        return self[-1] if nan else alg.no_nan(self[-1])
 
 
 Color.register(
