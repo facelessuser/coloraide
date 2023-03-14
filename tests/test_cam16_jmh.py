@@ -16,9 +16,9 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         ('blue', 'color(--cam16-jmh 25.066 62.442 282.75)'),
         ('indigo', 'color(--cam16-jmh 16.046 43.278 310.9)'),
         ('violet', 'color(--cam16-jmh 63.507 46.779 331.39)'),
-        ('white', 'color(--cam16-jmh 100 2.2369 0)'),
-        ('gray', 'color(--cam16-jmh 43.042 1.467 0)'),
-        ('black', 'color(--cam16-jmh 0 0 0)'),
+        ('white', 'color(--cam16-jmh 100 2.2369 209.53)'),
+        ('gray', 'color(--cam16-jmh 43.042 1.467 209.54)'),
+        ('black', 'color(--cam16-jmh 0 0 209.54)'),
         # Test color
         ('color(--cam16-jmh 50 30 270)', 'color(--cam16-jmh 50 30 270)'),
         ('color(--cam16-jmh 50 30 270 / 0.5)', 'color(--cam16-jmh 50 30 270 / 0.5)'),
@@ -35,24 +35,6 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('cam16-jmh'), Color(color2))
-
-
-class TestCAM16JMhRevere(util.ColorAssertsPyTest):
-    """Test CAM16 JMh conversions in reverse."""
-
-    COLORS = [
-        # CAM16 has a specific limit for a given lightness that determines
-        # when a color is achromatic. This is specific to when `discounting=False`.
-        # Anything below the limit will start giving you non-achromatic colors
-        # again. Internally, we catch this handle them as achromatic.
-        ('color(--cam16-jmh 0.5 0 0)', 'rgb(0.24033 0.23714 0.23654)')
-    ]
-
-    @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_colors(self, color1, color2):
-        """Test colors."""
-
-        self.assertColorEqual(Color(color1).convert('srgb'), Color(color2))
 
 
 class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
@@ -119,13 +101,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color('color(--cam16-jmh 740 0.03 90 / 1)').normalize()
+        c = Color(Color('white').convert('cam16-jmh').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--cam16-jmh 30 0.03 90 / 1)').normalize()
+        c = Color(Color('gray').convert('cam16-jmh').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--cam16-jmh 1 0.03 30)').normalize()
+        c = Color(Color('darkgray').convert('cam16-jmh').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):

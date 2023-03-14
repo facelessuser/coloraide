@@ -36,18 +36,22 @@ class Achromatic:
     def __init__(
         self,
         tuning: dict[str, tuple[int, int, int, float]],
-        threshold: float,
+        threshold_upper: float,
+        threshold_lower: float,
         env: Environment,
         spline: str
     ) -> None:
         """Initialize."""
 
-        self.threshold = threshold
+        self.threshold_upper = threshold_upper
+        self.threshold_lower = threshold_lower
 
         # Create a spline that maps the achromatic range for the SDR range
         points = []  # type: list[list[float]]
         self.domain = []  # type: list[float]
         self.max_colorfulness = 1e-10
+        self.min_colorfulness = 1e10
+        self.min_lightness = 1e10
         self.spline = None
         if not env.discounting:
             self.iter_achromatic_response(env, points, *tuning['low'])
@@ -76,11 +80,15 @@ class Achromatic:
 
         for p in range(start, end, step):
             c = self.CONVERTER(lin_srgb_to_xyz(lin_srgb([p / scale] * 3)), env)
-            j, m = c[self.L_IDX], c[self.C_IDX]
+            j, m, h = c[self.L_IDX], c[self.C_IDX], c[self.H_IDX]
+            if j < self.min_lightness:
+                self.min_lightness = j
+            if m < self.min_colorfulness:
+                self.min_colorfulness = m
             if m > self.max_colorfulness:
                 self.max_colorfulness = m
             self.domain.append(j)
-            points.append([j, m])
+            points.append([j, m, h])
 
     def scale(self, point: float) -> float:
         """Scale the lightness to match the range."""
@@ -101,25 +109,18 @@ class Achromatic:
             point = size * index + (adjusted * size)
         return point
 
-    def get_ideal_chroma(self, j: float, m: float) -> float:
+    def get_ideal_hue(self, j: float, m: float, h: float) -> float:
         """Get the ideal chroma."""
-
-        if j < 0.0:  # pragma: no cover
-            return 0.0
 
         if self.spline is not None:
             point = self.scale(j)
-            m2 = self.spline(point)[1]
-            if abs(m2 - m) < self.threshold:
-                return m
-            elif m < m2:
-                return m2
+            return self.spline(point)[2]
 
         # This would be for `discounting=True`,
         # which we do not run with currently.
-        return m  # pragma: no cover
+        return self.hue  # pragma: no cover
 
-    def test(self, j: float, m: float) -> bool:
+    def test(self, j: float, m: float, h: float) -> bool:
         """Test if the current color is achromatic."""
 
         # If colorfulness is past this limit, we'd have to have a lightness
@@ -134,11 +135,15 @@ class Achromatic:
         # If we are higher than 1, we are extrapolating;
         # otherwise, use the spline.
         point = self.scale(j)
-        if point < 0:  # pragma: no cover
-            m2 = 0.0
+        if j < self.min_lightness and m < self.min_colorfulness:  # pragma: no cover
+            return True
         else:
-            m2 = self.spline(point)[1]
-        return m < m2 or abs(m2 - m) < self.threshold
+            m2, h2 = self.spline(point)[1:]
+        diff = m2 - m
+        return (
+            (diff >= 0 and diff < self.threshold_upper) or (diff < 0 and abs(diff) < self.threshold_lower) and
+            (abs(h % 360 - h2) < 0.1)
+        )
 
 
 class CAM16JMh(LChish, Space):
@@ -166,13 +171,14 @@ class CAM16JMh(LChish, Space):
     # Achromatic detection
     ACHROMATIC = Achromatic(
         {
-            'low': (0, 25, 1, 100.0),
-            'mid': (25, 101, 9, 80.0),
-            'high': (101, 302, 5, 60.0)
+            'low': (1, 5, 1, 1000.0),
+            'mid': (1, 10, 1, 200.0),
+            'high': (5, 521, 5, 100.0)
         },
-        0.032,
+        0.0012,
+        0.0141,
         ENV,
-        'monotone'
+        'catrom'
     )
 
     def achromatic_hue(self) -> float:
@@ -180,27 +186,38 @@ class CAM16JMh(LChish, Space):
 
         return self.ACHROMATIC.hue
 
+    def no_nans(self, coords: Vector) -> Vector:
+        """Return coordinates with no undefined values."""
+
+        if alg.is_nan(coords[2]):
+            coords[:2] = alg.no_nans(coords[:2])
+            coords[2] = self.ACHROMATIC.get_ideal_hue(*coords)
+            return coords
+        else:
+            return alg.no_nans(coords)
+
     def normalize(self, coords: Vector) -> Vector:
         """Normalize the color ensuring no unexpected NaN and achromatic hues are NaN."""
 
         coords = alg.no_nans(coords)
-        j, m = coords[:2]
-        if self.ACHROMATIC.test(j, m):
+        j, m, h = coords
+        if self.ACHROMATIC.test(j, m, h):
             coords[2] = alg.NaN
         return coords
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from CAM16."""
 
-        j, m = coords[:2]
-        if self.ACHROMATIC.test(j, m):
-            coords[1] = self.ACHROMATIC.get_ideal_chroma(j, m)
-            coords[2] = self.ACHROMATIC.hue
-
+        j, m, h = coords
+        if alg.is_nan(h):
+            coords[2] = self.ACHROMATIC.get_ideal_hue(j, m, h)
         return cam16_jmh_to_cam16_jab(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From XYZ to CAM16."""
 
-        jmh = cam16_jab_to_cam16_jmh(coords)
-        return self.normalize(jmh)
+        coords = cam16_jab_to_cam16_jmh(coords)
+        j, m, h = coords
+        if not alg.is_nan(h) and self.ACHROMATIC.test(j, m, h):
+            coords[2] = alg.NaN
+        return coords

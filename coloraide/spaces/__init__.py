@@ -39,6 +39,18 @@ class Cylindrical:
 
         return 0.0
 
+    def no_nans(self, coords: Vector) -> Vector:
+        """Return coordinates with no undefined values."""
+
+        i = self.hue_index()
+        if alg.is_nan(coords[i]):
+            coords[:i] = alg.no_nans(coords[:i])
+            coords[i + 1:] = alg.no_nans(coords[i + 1:])
+            coords[i] = 0.0
+            return coords
+        else:
+            return alg.no_nans(coords)
+
 
 class Labish:
     """Lab-ish color spaces."""
@@ -130,6 +142,11 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Get the serialized name."""
 
         return self._color_ids
+
+    def no_nans(self, coords: VectorLike):
+        """Return coordinates with no undefined values."""
+
+        return alg.no_nans(coords)
 
     @classmethod
     def white(cls) -> VectorLike:

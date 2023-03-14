@@ -51,7 +51,7 @@ class TestACEScctSerialize(util.ColorAssertsPyTest):
         # TODO: In ACEScct, it seems that 0 may or may not be out of gamut? If it is out of gamut,
         # then we might need to rethink zero always being the default replacement for NaN
         # or come up with some other approach.
-        ('color(--acescct none 0.3 0.75)', {}, 'color(--acescct 0 0.3 0.75)'),
+        ('color(--acescct none 0.3 0.75)', {}, 'color(--acescct 0.07291 0.3 0.75)'),
         ('color(--acescct none 0.3 0.75)', {'none': True}, 'color(--acescct none 0.3 0.75)'),
         # Test Fit
         ('color(--acescct 1.5 0.2 0)', {}, 'color(--acescct 1.468 0.2 0.07291)'),

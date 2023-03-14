@@ -24,8 +24,8 @@ class DECAM16(DeltaE):
 
         space = 'cam16-{}'.format(model)
         kl = COEFFICENTS[model][0]
-        j1, a1, b1 = alg.no_nans(color.convert(space)[:-1])
-        j2, a2, b2 = alg.no_nans(sample.convert(space)[:-1])
+        j1, a1, b1 = color.convert(space).coords(nan=False)
+        j2, a2, b2 = sample.convert(space).coords(nan=False)
 
         dj = j1 - j2
         da = a1 - a2

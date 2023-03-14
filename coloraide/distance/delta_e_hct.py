@@ -32,8 +32,8 @@ class DEHCT(DeltaE):
     def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """Delta E HCT color distance formula."""
 
-        h1, c1, t1 = alg.no_nans(color.convert('hct')[:-1])
-        h2, c2, t2 = alg.no_nans(sample.convert('hct')[:-1])
+        h1, c1, t1 = color.convert('hct').coords(nan=False)
+        h2, c2, t2 = sample.convert('hct').coords(nan=False)
 
         a1, b1 = convert_ucs_ab(c1, h1)
         a2, b2 = convert_ucs_ab(c2, h2)

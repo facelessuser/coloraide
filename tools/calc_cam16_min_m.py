@@ -47,15 +47,15 @@ def main():
         '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
-        '--low', '-L', type=str, default='0:25:1:100.0',
+        '--low', '-L', type=str, default='1:5:1:1000.0',
         help="Tuning for low range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--mid', '-M', type=str, default='25:101:9:80.0',
+        '--mid', '-M', type=str, default='1:10:1:200.0',
         help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--high', '-H', type=str, default='101:302:5:60.0',
+        '--high', '-H', type=str, default='5:521:5:100.0',
         help="Tuning for high range: start:end:step:scale (int:int:int:float)"
     )
     args = parser.parse_args()
@@ -87,20 +87,29 @@ def run(white_point, la, ba, surround, discounting, spline, low, mid, high, res)
     env = Environment(WHITES[deg][wp], la, ba, surround, discounting)
     convert = xyz_d65_to_cam16
 
-    test = Achromatic(tuning, 0.06, env, spline)
+    test = Achromatic(tuning, 1, 1, env, spline)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}
     points2 = {}
-    diff = 0
+    diff_over = 0
+    diff_under = 0
     max_m = 0
+    first = False
 
-    for i in range(res + 1):
+    for i in range(1, res + 1):
         div = res / 5
-        color.update('srgb', [i / div, i / div, i / div])
+        v = i / div
+        if v < 0.001:
+            continue
+        color.update('srgb', [v, v, v])
         xyz = color.convert('xyz-d65')
         coords = convert(xyz[:-1], env)[:]
-        j, m = coords[0], coords[5]
+        j, m, h = coords[0], coords[5], coords[2]
+        if not first:
+            print('Starting J: ', j)
+            print('Starting M: ', m)
+            first = True
 
         if m > max_m:
             max_m = m
@@ -109,44 +118,55 @@ def run(white_point, la, ba, surround, discounting, spline, low, mid, high, res)
             domain = test.scale(j)
             calc = test.spline(domain)
         else:
-            calc = (j, 1e-08)
+            calc = (j, 1e-08, 0.0)
 
-        delta = abs(calc[1] - m)
-        if delta > diff:
-            diff = delta
+        delta = calc[1] - m
+        if delta >= 0 and delta > diff_over:
+            diff_over = delta
+        if delta < 0 and abs(delta) > diff_under:
+            diff_under = abs(delta)
 
-        points1[j] = m
-        points2[calc[0]] = calc[1]
+        points1[j] = (m, h)
+        points2[calc[0]] = (calc[1], calc[2])
 
-    print('Delta: ', diff)
+    print('Delta Over: ', diff_over)
+    print('Delta Under: ', diff_under)
     print('Max M: ', max_m)
+    if not env.discounting:
+        print('Data Points: ', test.spline.length)
 
     j1 = []
     j2 = []
     m1 = []
     m2 = []
+    h1 = []
+    h2 = []
     for j in sorted(points1):
         j1.append(j)
-        m1.append(points1[j])
+        m1.append(points1[j][0])
+        h1.append(points1[j][1])
     for j in sorted(points2):
         j2.append(j)
-        m2.append(points2[j])
+        m2.append(points2[j][0])
+        h2.append(points2[j][1])
 
     figure = plt.figure()
 
-    # Create axes
     ax = plt.axes(
+        projection='3d',
         xlabel='M',
-        ylabel='J'
+        ylabel='H',
+        zlabel='J'
     )
-    ax.set_aspect('auto')
-    ax.set_title('JMh: Delta = {} - Max M = {}'.format(diff, max_m))
+
+    # ax.set_aspect('auto')
+    ax.set_title('JMh: Delta = {} - Max M = {}'.format(max(diff_over, diff_under), max_m))
     figure.add_axes(ax)
 
     # Print the calculated line against the real line
     plt.style.use('seaborn-v0_8-whitegrid')
-    plt.plot(m1, j1, '.', color='black')
-    plt.plot(m2, j2, '.', color='red', markersize=0.5)
+    plt.plot(m1, h1, j1, '.', color='black')
+    plt.plot(m2, h2, j2, '.', color='red', markersize=0.5)
     plt.show()
 
     return 0

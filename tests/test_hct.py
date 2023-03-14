@@ -16,9 +16,9 @@ class TestHCT(util.ColorAssertsPyTest):
         ('blue', 'color(--hct 282.76 87.228 32.301)'),
         ('indigo', 'color(--hct 310.96 60.765 20.47)'),
         ('violet', 'color(--hct 331.49 65.001 69.695)'),
-        ('white', 'color(--hct 0 2.8716 100)'),
-        ('gray', 'color(--hct 0 1.8977 53.585)'),
-        ('black', 'color(--hct 0 0 0)'),
+        ('white', 'color(--hct 209.54 2.8716 100)'),
+        ('gray', 'color(--hct 209.54 1.8977 53.585)'),
+        ('black', 'color(--hct 209.55 0 0)'),
         # Test color
         ('color(--hct 270 30 100)', 'color(--hct 270 30 100)'),
         ('color(--hct 270 30 100 / 0.5)', 'color(--hct 270 30 100 / 0.5)'),
@@ -125,13 +125,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color('color(--hct 90 0.05 30 / 1)').normalize()
+        c = Color(Color('white').convert('hct').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--hct 30 0.05 7)').normalize()
+        c = Color(Color('gray').convert('hct').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
-        c = Color('color(--hct 30 0.05 1)').normalize()
+        c = Color(Color('darkgray').convert('hct').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_achromatic_hue(self):

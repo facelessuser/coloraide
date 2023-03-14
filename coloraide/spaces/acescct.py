@@ -59,6 +59,11 @@ class ACEScct(sRGB):
     )
     DYNAMIC_RANGE = 'hdr'
 
+    def no_nans(self, coords: Vector) -> Vector:
+        """Return color channels with the proper lower boundary."""
+
+        return [CCT_MIN if math.isnan(c) else c for c in coords]
+
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""
 

@@ -130,7 +130,8 @@ def add_cyl_color(space, color, x, y, z, c):
     hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))
 
     if is_nan(hue):
-        hue = cyl._space.achromatic_hue()
+        i = cyl._space.hue_index()
+        hue = cyl.coords(nan=False)[i]
 
     x.append(chroma * math.sin(math.radians(hue)))
     y.append(chroma * math.cos(math.radians(hue)))
