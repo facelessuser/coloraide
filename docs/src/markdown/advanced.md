@@ -7,20 +7,28 @@ verbose to be included elsewhere.
 ## Round Trip Accuracy
 
 In general, ColorAide is careful to provide good round trip conversions where practical. What this means is that we
-try to maintain a high level of accuracy so that when a color is converted to a different color and then back, that
-it will be very close, if not exactly, the same. We accomplish this by not not clipping values during conversion and
-maintaining as high of precision as we can, but there are some cases where the round tripping accuracy cannot be
-maintained at the same high level or at all, there are even reasons where we willfully choose to sacrifice accuracy for
-convenience.
+try to maintain a high level of accuracy so that when a color is converted to a different color and back that it will be
+very close, if not exactly, the same.
+
+In general, we are able to keep decent round tripping by not not clipping values during conversion and maintaining as
+high a level of precision as we can, but there are some cases where the high level of round trip accuracy cannot be
+maintained, or even at all. There are even reasons where we willfully choose to sacrifice some accuracy for convenience
+in order to uphold intuitive expectations for the user.
+
+If you are a color scientist or you work in certain industries, there are definite reasons to uphold accuracy at all
+costs, but sometimes, you just want the colors to do the what you expect them to do. ColorAide tries to live in the
+space between. We try to provide accurate color round tripping except when it comes at the cost of practicality.
 
 ### Limitations of The Color Space
 
-One situation that can cause bad round tripping is when one color model cannot properly handle a color due to its gamut
-being beyond the conversion algorithms limits or other limitations in the color space.
+One situation that can affect round tripping is when one color model cannot properly handle a color due to its gamut
+being beyond the conversion algorithm's capabilities.
 
-Consider a wide gamut, HDR color space like Jzazbz. When it is converted to HSLuv, whose algorithm clamps any lightness
-that exceeds the SDR range, the round trip is broken. This is just the nature of the HSLuv algorithm as it adheres to an
-sRGB gamut that does not support HDR lightness.
+Consider a wide gamut, HDR color space like Jzazbz. Jzazbz is an unbounded color space with plenty of headroom for HDR.
+Now, let's compare it to HSLuv, an SDR color space derived from the Luv color space and confined to the sRGB gamut. It
+is essentially a more perceptually uniform version of HSL, but the algorithm specifically requires lightness to be
+clamped to the SDR range. If we convert an HDR color from Jzazbz to HSLuv, round trip will be broken as the color space
+simply does not support the HDR range.
 
 ```py play
 jz = Color('color(--jzazbz 0.25 0 0)')
@@ -29,6 +37,8 @@ hsluv = jz.convert('hsluv')
 hsluv
 hsluv.convert('jzazbz')
 ```
+If a color space algorithm does not support a specific color, the conversion may be clamped or come back with an
+unexpected value.
 
 ### Floating Point Math
 
@@ -36,6 +46,10 @@ Floating point math can also be responsible for some differences in round trippi
 are not specific to this library or even the language of Python, but to all computers in general. For example, computers
 cannot store infinite repeating decimals to properly represent all floating point numbers.
 
+What this means is that no matter how much floating point precision you maintain, some error is introduced when doing
+floating point operations. Certain rounding conventions are used in order to average out the errors to stay as close as
+possible to the intended, real value, but it does not prevent floating point errors. This is simply the nature of
+computers and floating point math.
 
 ```py play
 color = Color('white')
@@ -43,142 +57,136 @@ color[:]
 color.convert('prophoto-rgb').convert('srgb')[:]
 ```
 
-### Special Handling of Cylindrical Spaces
+### Special Handling: RGB Cylindrical Spaces
 
-Sometimes, round trip accuracy can be compromised further for practical reasons. This does not mean round tripping
-breaks, but the high degree of accuracy can drop some. A common case where this happens is with some cylindrical color
-models.
+Sometimes, round trip accuracy can be compromised further for practical reasons. A common case where we make compromises
+is with cylindrical color models.
 
-ColorAide aims to make colors easy to use, and one way it does this is treating hues as powerless under reasonable
-situations. One common issue people run into is with interpolating achromatic colors in cylindrical spaces. Achromatic
-colors do not have a hue, so to get logical results, we set achromatic hues to `NaN`, which means the hue is undefined.
-This prevents weird color shifts when interpolating between achromatic colors. Only if a user manually specifies a hue
-do we respect it.
+ColorAide aims to make colors easy to use, but the one case that can frustrate users is interpolating with an achromatic
+color using a cylindrical color space.
+
+Achromatic colors do not have a hue, but all conversions end up yielding something for hue, even it it has no practical
+meaning. This can cause odd color shifts when interpolating with an achromatic color. In order to get logical results
+when doing interpolation, we can set achromatic hues to `NaN` (or `none` in CSS), which means the hue is undefined. This
+helps us to identify achromatic cases and helps us to prevent weird color shifts when interpolating between achromatic
+colors. Only if a user manually defines a hue do we respect it.
 
 ```py play
 Color.interpolate(['lch(75 100 180)', 'lch(75 0 0)'], space='lch')
 Color.interpolate(['lch(75 100 180)', 'lch(75 0 none)'], space='lch')
 ```
 
-So that colors work the way people intend, ColorAide does its best during color conversion to identify when a color is
-achromatic and a hue powerless. In these cases, the hue will be set to `NaN`, or `none` in CSS.
+Because of [floating point issues](#floating-point-math), conversions to cylindrical color spaces do not always satisfy
+the requirements to be recognized as achromatic colors.
+
+Consider the following example. HSL colors are achromatic when the sRGB color it is derived from has all color channels
+equal to each other. Let's say we convert the color `#!color darkgray` to the XYZ D65 color space and then back again.
+We can see that what was once was a color with all color channels equal to each other is now a color that has color
+channels very nearly equal to each other.
 
 ```py play
-Color('white').convert('lch')
-Color.interpolate(['cyan', 'white'], space='lch')
+c1 = Color('darkgray')
+c1[:-1]
+c2 = c1.convert('xyz-d65').convert('srgb')
+c2[:-1]
 ```
 
-When determining if a cylindrical color's hue is powerless, it must often be based on attributes of the color space. As
-an example, HSL is achromatic when lightness is 0 (black) or 1 (white) or when there is no color saturation. Where
-things get tricky is that not all color spaces have perfect transformation algorithms. They may not handle out of gamut
-colors well, the recommended algorithm may not provide the high level of precision to get a perfect 0 for saturation or
-chroma, or floating point math simply cannot get the perfect conversion. Combine this with translating to and from many
-different color spaces that all have such quirks, you can end up with colors that are meant to be achromatic, that
-simply cannot be detected as such.
+These two colors are intended to be the same, but one satisfies the requirement to have the HSL hue set to `NaN`, but
+the other does not. This is a case where accuracy vs practicality comes into play. We all know the color is essentially
+still `#!color darkgray`, and that is what the user intends. To allow this to work seamlessly, we apply a little
+leniency to the achromatic rules and state that if the color is very, very close to being achromatic, we will consider
+it achromatic, and we sacrifice a little accuracy to gain practicality. Or maybe it is better say that we compensate for
+the natural inaccuracies that exist.
 
-As an example, let's look at the conversion between Lab-ish and LCh-ish color spaces. In general, to convert a Lab-ish
-color space to LCh-ish, you use the following formulas to transform a Lab color's `a` and `b` components to chroma and
-hue:
+```py play
+Color('darkgray').convert('hsl')[:-1]
+Color('darkgray').convert('xyz-d65').convert('hsl')[:-1]
+```
+
+A similar problem can occur with HSL near `#!color white`. If we take white and run it through XYZ, we'll get a value
+not that is not only just slightly not achromatic, but values that are slightly out of range (above 1).
+
+```py play
+c1 = Color('white')
+c1[:-1]
+c2 = c1.convert('xyz-d65').convert('srgb')
+c2[:-1]
+```
+
+Without any correction, we'd get the following:
 
 ```py
-import math
-chroma = math.sqrt(a ** 2 + b ** 2)
-hue = math.degrees(math.atan2(b, a))
+>>> Color('white').convert('xyz-d65').convert('hsl')[:]
+[60.0, 0.5, 0.9999999999999998, 1.0]
 ```
 
-And to get back:
-
-```py
-import math
-a = chroma * math.cos(math.radians(hue))
-b = chroma * math.sin(math.radians(hue))
-```
-
-For a good number of Lab-ish color spaces, this will result in zero for chroma or extremely close to zero as `a` and `b`
-will be zero or very near zero for achromatic colors. On the conversion back the extremely low chroma makes whatever the
-hue is essentially meaningless.
+Again, we all know this is `#!color white`, so we relax the rules a bit and say if a value is very, very close to max
+lightness, we will consider saturation to be zero. This provides a little leniency if lightness is slightly over or
+under.
 
 ```py play
-import math
-from coloraide import util
-c = Color('gray').convert('lab')
-c.to_string()
-math.sqrt(c[1] ** 2 + c[2] ** 2)
-util.constrain_hue(math.degrees(math.atan2(c[2], c[1])))
-c = Color('gray').convert('oklab')
-c.to_string()
-math.sqrt(c[1] ** 2 + c[2] ** 2)
-util.constrain_hue(math.degrees(math.atan2(c[2], c[1])))
+Color('white').convert('hsl')[:-1]
+Color('white').convert('xyz-d65').convert('hsl')[:-1]
 ```
 
-But there are some color spaces whose transformation are not nearly so tight. Let's consider JzCzhz which is derived
-from Jzazbz.
+Not all RGB cylindrical models have the exact same rules, but we apply similar logic to all HSL, HSV, and HWB like
+models. The approach might be slightly different depending on the model, but the idea is the same.
+
+### Special Handling: LCh Cylindrical Spaces
+
+Lastly, LCh like cylindrical models have a similar issues as the RGB cylindrical models. Since the algorithms are
+usually consistent even when extending from SDR to HDR, lightness can usually exceed the upper boundary without the
+algorithm breaking down. As a matter of fact, there are a number of LCh models that are based on HDR color spaces. The
+real issue is that many of these color spaces do not always have their contrast resolve perfectly to their lower limit
+(usually zero) to signify an achromatic color. So, just like with RGB cylindrical models, when contrast gets very, very
+close to the lower limit, we consider the hue to be undefined and set it to `NaN`.
 
 ```py play
-import math
-c = Color('gray').convert('jzazbz')
-c.to_string()
-math.sqrt(c[1] ** 2 + c[2] ** 2)
+Color('darkgray').convert('lch')[:]
 ```
 
-We can see just from the conversion of `#!color gray` from sRGB to Jzazbz that `a` and `b` are already far enough from
-zero that round to 5 decimal places is not not enough to get zeros. Then when we convert them to chroma, we get chroma
-that is much larger than are previous examples. Still close enough to zero that we do not have to worry much about it,
-but not nearly as close to zero as we would normally prefer.
-
-We can see that with JzCzhz that the hue can have more influence on the conversion back even though the color
-technically has no hue.
+Some may have the bottom chroma limit rise slightly as the achromatic colors approach and surpass `#!color white`. We
+can see this behavior occur with JzCzhz:
 
 ```py play
-import math
-from coloraide import util
-color = Color('gray').convert('jzazbz')
-color.to_string()
-a1, b1 = color[1:3]
-c = math.sqrt(a1 ** 2 + b1 ** 2)
-h = util.constrain_hue(math.degrees(math.atan2(b1, a1)))
-a2 = c * math.cos(math.radians(0))
-b2 = c * math.sin(math.radians(0))
-a2, a1
-b1, b2
-a3 = c * math.cos(math.radians(h))
-b3 = c * math.sin(math.radians(h))
-a3, a1
-b3, b1
+Color('color(srgb 0 0 0)').convert('jzczhz')[:]
+Color('color(srgb 0.5 0.5 0.5)').convert('jzczhz')[:]
+Color('color(srgb 1 1 1)').convert('jzczhz')[:]
+Color('color(--rec2100-pq 1 1 1)').convert('jzczhz')[:]
 ```
 
-Unless you are a color scientist, no one wants to think about this when specifying white, or gray, they just want to set
-chroma to zero and not think about hue.
+Generally, as long as the lower chroma limit is quite low, the hue value has little impact on the conversion back and we
+can set a lower threshold such that any chroma that falls below that threshold can be considered achromatic. Generally,
+conversion will be pretty good, but some round trip accuracy is lost when the lower chroma limit is slightly larger.
 
-```py play
-Color.interpolate(['color(--jzczhz 0.16 0.2 180)', 'color(--jzczhz 0.227 0 none)'], space='jzczhz')
-```
-
-ColorAide figures this all out so the user doesn't have to. Since chroma's distance from zero can fluctuate a little
-depending on the lightness, we use a threshold, as small as we can, to generally detect an achromatic color, then we 
-will use a hue that is close enough to the ideal hue to give as good a conversion back as we can.
-
-```py play
-color = Color('gray').convert('jzazbz')
-a1, b1 = color[1:3]
-a2, b2 = color.convert('jzczhz').convert('jzazbz')[1:3]
-a1, a2
-b1, b2
-```
-
-If desired, the hue used can be acquired directly from ColorAide. This can be useful for plotting or other reasons.
+For spaces that have a larger chroma limit like JzCzhz has, we may even track the ideal hue to use in the conversion
+back from an achromatic color to mitigate round trip errors being introduced. That hue can be acquired from the LCh like
+color space object:
 
 ```py play
 color = Color('gray').convert('jzczhz')
 color._space.achromatic_hue()
 ```
 
-Obviously, with such approximation, round tripping will not be as precise, but the convenience of not having to think
-about the proper hue or how close to zero the chroma needs to be in order to consider the color achromatic
-is priceless.
+There are some slightly more complicated cases, such as CAM16 JMh and HCT (which is based off of CAM16), but the basic
+idea remains relatively the same.
 
-Do keep in mind though, as there are color space transformation with wildly varying accuracy, even when we do all we
-can, we can end up sometimes not able to predict an achromatic color as the transformations can cause values to fall
-right outside our thresholds.
+Do keep in mind that there are color space transformations which may vary in precision due to their algorithm. There are
+times when we do all we can, and we can still end up not being able to predict an achromatic color as the
+transformations can cause values to fall right outside our thresholds. CAM16 JMh and HCT (which is derived from CAM16
+JMh) are a bit more difficult to calculate the achromatic threshold to the high degree of precision, and there is only
+so far we are willing to drop accuracy for the sake of convenience, so converting between these cylindrical spaces and
+other cylindrical spaces may not get us the achromatic hues we desire.
 
-If in doubt, work directly in the color space of interest.
+Notice in the example below that we get the achromatic hue in all cases except when we convert from `cam16-jmh` to
+`hsl`.
+
+```py play
+Color('gray').convert('cam16-jmh')
+Color('gray').convert('hsl')
+Color('gray').convert('hsl').convert('cam16-jmh')
+Color('gray').convert('cam16-jmh').convert('hsl')
+```
+
+When it comes to cylindrical color spaces, it is best to choose one instead of bouncing between multiple cylindrical
+spaces. If you choose to do so, you may need to manually check for achromatic colors with an even lower threshold.

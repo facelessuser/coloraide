@@ -100,7 +100,7 @@ In this example, we have an sRGB color that is extremely close to being in gamut
 we can see wildly large saturation.
 
 ```py play
-hsl = Color('color(srgb 1 1.0000002 1)').convert('hsl')
+hsl = Color('color(srgb 1 1.000002 1)').convert('hsl')
 hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
 ```

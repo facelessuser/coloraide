@@ -258,8 +258,8 @@ def plot_slice(
         if isinstance(poly, GeometryCollection):
             for a in poly.geoms:
                 # Sometimes the intersection can have weird, unnecessary `LineString`.
-                # This occurs with very complex polygons. Just throw them away until
-                # as they seem to be a bug.
+                # This occurs with very complex polygons. Just throw them away as
+                # they seem to be a bug.
                 if isinstance(a, LineString):
                     continue
                 ex, ey = zip(*dump_coords(a))

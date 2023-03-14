@@ -13,7 +13,7 @@ def hwb_to_hsv(hwb: Vector) -> Vector:
     h, w, b = hwb
 
     wb = w + b
-    if 1 - wb < 2e-08:
+    if 1 - wb < 2e-07:
         gray = w / wb
         return [alg.NaN, 0.0, gray]
 
@@ -29,7 +29,7 @@ def hsv_to_hwb(hsv: Vector) -> Vector:
     h, s, v = hsv
     w = v * (1 - s)
     b = 1 - v
-    if 1 - (w + b) < 2e-08:
+    if 1 - (w + b) < 2e-07:
         h = alg.NaN
     return [h, w, b]
 
@@ -57,7 +57,7 @@ class HWB(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if 1 - (coords[1] + coords[2]) < 2e-08:
+        if 1 - (coords[1] + coords[2]) < 2e-07:
             coords[0] = alg.NaN
         return coords
 

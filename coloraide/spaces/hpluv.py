@@ -101,7 +101,7 @@ def lch_to_hpluv(lch: Vector) -> Vector:
     elif not alg.is_nan(h):
         _hx_max = max_safe_chroma_for_l(l)
         s = c / _hx_max * 100
-    if s < 1e-08:
+    if s < 1e-07:
         h = alg.NaN
     return [util.constrain_hue(h), s, l]
 
@@ -128,7 +128,7 @@ class HPLuv(Cylindrical, Space):
         """On color update."""
 
         coords = alg.no_nans(coords)
-        if abs(coords[1]) < 1e-08 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
+        if abs(coords[1]) < 1e-07 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08:
             coords[0] = alg.NaN
         return coords
 
