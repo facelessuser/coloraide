@@ -120,3 +120,15 @@ div.swatch-bar {
   border: 1px solid var(--swatch-gamut-border-color);
   box-shadow: inset 0 0 0 1px var(--md-code-bg-color);
 }
+
+@media (color-gamut: p3) {
+  .swatch-color {
+    background: linear-gradient(in xyz to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
+  }
+}
+
+@media (color-gamut: rec2020) {
+  .swatch-color {
+    background: linear-gradient(in xyz to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
+  }
+}
