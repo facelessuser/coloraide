@@ -1,6 +1,6 @@
 """sRGB color class."""
 from __future__ import annotations
-from ...spaces import Space
+from ...spaces import RGBish, Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_OPT_PERCENT
 from ... import algebra as alg
@@ -44,7 +44,7 @@ def gam_srgb(rgb: Vector) -> Vector:
     return result
 
 
-class sRGB(Space):
+class sRGB(RGBish, Space):
     """sRGB class."""
 
     BASE = "srgb-linear"

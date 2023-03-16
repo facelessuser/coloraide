@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import Space, Cylindrical
+from ..spaces import Space, HSLish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .lab import EPSILON, KAPPA
@@ -102,7 +102,7 @@ def lch_to_hsluv(lch: Vector) -> Vector:
     return [util.constrain_hue(h), s, l]
 
 
-class HSLuv(Cylindrical, Space):
+class HSLuv(HSLish, Space):
     """HSLuv class."""
 
     BASE = 'lchuv'

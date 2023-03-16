@@ -1,12 +1,12 @@
 """XYZ D65 class."""
 from __future__ import annotations
-from ..spaces import Space
+from ..spaces import Space, RGBish
 from ..cat import WHITES
 from ..channels import Channel
 from ..types import Vector
 
 
-class XYZD65(Space):
+class XYZD65(RGBish, Space):
     """XYZ D65 class."""
 
     BASE = "xyz-d65"

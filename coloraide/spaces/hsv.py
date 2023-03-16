@@ -1,6 +1,6 @@
 """HSV class."""
 from __future__ import annotations
-from ..spaces import Space, Cylindrical
+from ..spaces import Space, HSVish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
@@ -36,7 +36,7 @@ def hsl_to_hsv(hsl: Vector) -> Vector:
     return [util.constrain_hue(h), s, v]
 
 
-class HSV(Cylindrical, Space):
+class HSV(HSVish, Space):
     """HSL class."""
 
     BASE = "hsl"
