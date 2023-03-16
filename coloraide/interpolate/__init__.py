@@ -102,7 +102,7 @@ class Interpolator(metaclass=ABCMeta):
         self.undef = undef
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
-        if hasattr(cs, 'hue_index'):
+        if isinstance(cs, Cylindrical):
             self.hue_index = cs.hue_index()
         else:
             self.hue_index = -1
@@ -545,25 +545,17 @@ def normalize_hue(
     return color2, offset
 
 
-def carryforward_convert(color: Color, space: str):
+def carryforward_convert(color: Color, space: str) -> None:
     """Carry forward undefined values during conversion."""
 
     cs1 = color._space
     cs2 = color.CS_MAP[space]
-    carry = []
-    if alg.is_nan(color[-1]):
-        carry.append(-1)
     channels = {'r': False, 'g': False, 'b': False, 'h': False, 'c': False, 'l': False, 'v': False}
+    carry = []
+
+    # Gather undefined channels
     if isinstance(cs1, RGBish):
         for i, name in zip(cs1.rgbish_indexes(), ('r', 'g', 'b')):
-            if alg.is_nan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, HSLish):
-        for i, name in zip(cs1.hslish_indexes(), ('h', 'c', 'l')):
-            if alg.is_nan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, HSVish):
-        for i, name in zip(cs1.hsvish_indexes(), ('h', 'c', 'v')):
             if alg.is_nan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, LChish):
@@ -573,13 +565,35 @@ def carryforward_convert(color: Color, space: str):
     elif isinstance(cs1, Labish):
         if alg.is_nan(color[cs1.labish_indexes()[0]]):
             channels['l'] = True
+    elif isinstance(cs1, HSLish):
+        for i, name in zip(cs1.hslish_indexes(), ('h', 'c', 'l')):
+            if alg.is_nan(color[i]):
+                channels[name] = True
+    elif isinstance(cs1, HSVish):
+        for i, name in zip(cs1.hsvish_indexes(), ('h', 'c', 'v')):
+            if alg.is_nan(color[i]):
+                channels[name] = True
     elif isinstance(cs1, Cylindrical):
         if alg.is_nan(color[cs1.hue_index()]):
             channels['h'] = True
 
+    # Carry alpha forward if undefined
+    if alg.is_nan(color[-1]):
+        carry.append(-1)
+
+    # Channels that need to be carried forward
     if isinstance(cs2, RGBish):
         indexes = cs2.rgbish_indexes()
         for e, name in enumerate(('r', 'g', 'b')):
+            if channels[name]:
+                carry.append(indexes[e])
+    elif isinstance(cs2, Labish):
+        indexes = cs2.labish_indexes()
+        if channels['l']:
+            carry.append(indexes[0])
+    elif isinstance(cs2, LChish):
+        indexes = cs2.lchish_indexes()
+        for e, name in enumerate(('l', 'c', 'h')):
             if channels[name]:
                 carry.append(indexes[e])
     elif isinstance(cs2, HSLish):
@@ -592,19 +606,11 @@ def carryforward_convert(color: Color, space: str):
         for e, name in enumerate(('h', 'c', 'v')):
             if channels[name]:
                 carry.append(indexes[e])
-    elif isinstance(cs2, LChish):
-        indexes = cs2.lchish_indexes()
-        for e, name in enumerate(('l', 'c', 'h')):
-            if channels[name]:
-                carry.append(indexes[e])
-    elif isinstance(cs2, Labish):
-        indexes = cs2.labish_indexes()
-        if channels['l']:
-            carry.append(indexes[0])
     elif isinstance(cs2, Cylindrical):
         if channels['h']:
             carry.append(cs2.hue_index())
 
+    # Convert the color space
     color.convert(space, in_place=True)
     for i in carry:
         color[i] = alg.NaN
@@ -647,15 +653,22 @@ def interpolator(
         raise ValueError('Cannot have an easing function as the first item in an interpolation list')
 
     if out_space is None:
-        out_space = current.space()
+        out_space = space
 
-    if carryforward:
-        carryforward_convert(current, space)
-    else:
-        current.convert(space, in_place=True)
+    # Adjust to space
+    if space != current.space():
+        if carryforward:
+            carryforward_convert(current, space)
+        else:
+            current.convert(space, in_place=True)
+
     offset = 0.0
-    hue_index = current._space.hue_index() if hasattr(current._space, 'hue_index') else -1
+    hue_index = current._space.hue_index() if isinstance(current._space, Cylindrical) else -1
+
+    # Fit if required
     normalize_color(current)
+
+    # Normalize hue
     norm = current[:]
     fallback = None
     if hue_index >= 0:
@@ -684,12 +697,17 @@ def interpolator(
             color = current._handle_color_input(x)
             stops[i] = None
 
-        # Adjust color to space and ensure it fits
-        if carryforward:
-            carryforward_convert(color, space)
-        else:
-            color.convert(space, in_place=True)
+        # Adjust color to space
+        if space != color.space():
+            if carryforward:
+                carryforward_convert(color, space)
+            else:
+                color.convert(space, in_place=True)
+
+        # Ensure it fits
         normalize_color(color)
+
+        # Normalize the hue
         norm = color[:]
         if hue_index >= 0:
             h = norm[hue_index]

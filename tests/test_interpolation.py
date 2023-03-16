@@ -13,21 +13,21 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         i = Color.interpolate(
             ['blue', 'green', 'yellow', 'orange', 'red'],
-            domain=[-32, 32, 60, 85, 95]
+            domain=[-32, 32, 60, 85, 95],
         )
 
-        self.assertColorEqual(i(-32), Color('blue'))
-        self.assertColorEqual(i(35), Color('rgb(52.558 141.25 0.01039)'))
-        self.assertColorEqual(i(60), Color('yellow'))
-        self.assertColorEqual(i(79), Color('rgb(256.86 187 0.02703)'))
-        self.assertColorEqual(i(95), Color('red'))
+        self.assertColorEqual(i(-32), Color('oklab(0.45201 -0.03246 -0.31153)'))
+        self.assertColorEqual(i(35), Color('oklab(0.56778 -0.13292 0.11741)'))
+        self.assertColorEqual(i(60), Color('oklab(0.96798 -0.07137 0.19857)'))
+        self.assertColorEqual(i(79), Color('oklab(0.83476 0.0259 0.17031)'))
+        self.assertColorEqual(i(95), Color('oklab(0.62796 0.22486 0.12585)'))
 
     def test_domain_extrapolation(self):
         """Test extrapolation with custom domain."""
 
         i = Color.interpolate(['red', 'blue'], extrapolate=True, domain=[-25, 25])
-        self.assertColorEqual(i(-30), Color('rgb(277.88 -56.723 -61.634)'))
-        self.assertColorEqual(i(30), Color('rgb(-22.838 -53.038 273.02)'))
+        self.assertColorEqual(i(-30), Color('oklab(0.64555 0.2506 0.16958)'))
+        self.assertColorEqual(i(30), Color('oklab(0.43442 -0.05819 -0.35527)'))
 
     def test_domain_of_one(self):
         """
@@ -41,10 +41,10 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             domain=[1]
         )
 
-        self.assertColorEqual(i(-1), Color('blue'))
-        self.assertColorEqual(i(0), Color('blue'))
-        self.assertColorEqual(i(1), Color('blue'))
-        self.assertColorEqual(i(2), Color('red'))
+        self.assertColorEqual(i(-1), Color('oklab(0.45201 -0.03246 -0.31153)'))
+        self.assertColorEqual(i(0), Color('oklab(0.45201 -0.03246 -0.31153)'))
+        self.assertColorEqual(i(1), Color('oklab(0.45201 -0.03246 -0.31153)'))
+        self.assertColorEqual(i(2), Color('oklab(0.62796 0.22486 0.12585)'))
 
     def test_domain_in_step(self):
         """Test domains work in steps."""
@@ -55,11 +55,11 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             domain=[-32, 32, 60, 85, 95]
         )
 
-        self.assertColorEqual(steps[0], Color('blue'))
-        self.assertColorEqual(steps[3], Color('rgb(-53.051 112.52 135.23)'))
-        self.assertColorEqual(steps[5], Color('rgb(-3.6056 127.82 10.348)'))
-        self.assertColorEqual(steps[7], Color('rgb(230.77 240.55 0.01746)'))
-        self.assertColorEqual(steps[10], Color('red'))
+        self.assertColorEqual(steps[0], Color('oklab(0.45201 -0.03246 -0.31153)'))
+        self.assertColorEqual(steps[3], Color('oklab(0.49234 -0.09666 -0.06197)'))
+        self.assertColorEqual(steps[5], Color('oklab(0.51922 -0.13946 0.1044)'))
+        self.assertColorEqual(steps[7], Color('oklab(0.91836 -0.079 0.18851)'))
+        self.assertColorEqual(steps[10], Color('oklab(0.62796 0.22486 0.12585)'))
 
     def test_domain_mix(self):
         """Test domains in mix."""
@@ -72,11 +72,11 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_mix(self):
         """Test interpolation via mixing."""
 
-        self.assertColorEqual(Color('red').mix('blue', 1), Color("rgb(0 0 255)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("rgb(80.686 71.104 209.56)"))
-        self.assertColorEqual(Color('red').mix('blue'), Color("rgb(140.36 83.033 162.31)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("rgb(197.88 73.02 108.95)"))
-        self.assertColorEqual(Color('red').mix('blue', 0.0), Color("rgb(255 0 0)"))
+        self.assertColorEqual(Color('red').mix('blue', 1), Color("color(--oklab 0.45201 -0.03246 -0.31153 / 1)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.75), Color("color(--oklab 0.496 0.03187 -0.20218 / 1)"))
+        self.assertColorEqual(Color('red').mix('blue'), Color("color(--oklab 0.53998 0.0962 -0.09284 / 1)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.25), Color("color(--oklab 0.58397 0.16053 0.0165 / 1)"))
+        self.assertColorEqual(Color('red').mix('blue', 0.0), Color("color(--oklab 0.62796 0.22486 0.12585 / 1)"))
 
     def test_mix_dict(self):
         """Test mixing with a mapping."""
@@ -251,23 +251,23 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch"),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch"),
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch"),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch"),
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch"),
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("lch(32.393 61.244 432.89)")
         )
 
     def test_hue_shorter_cases(self):
@@ -392,7 +392,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(['color(display-p3 0 1 1)', 'color(display-p3 0 0 1)'], space='hsl')(0.5),
-            Color('color(display-p3 0.21779 0.49774 0.96566)')
+            Color('hsl(209.63 100% 49.934%)')
         )
 
     def test_interpolate(self):
@@ -428,7 +428,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3})(0.5),
-            Color('rgb(119.63 0 0 / 0.875)')
+            Color('oklab(0.35883 0.12849 0.07191 / 0.875)')
         )
 
     def test_interpolate_channel_bspline(self):
@@ -438,7 +438,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color.interpolate(
                 ['red', Color('blue').set('alpha', 0)], progress={'alpha': lambda t: t ** 3}, method='bspline'
             )(0.5),
-            Color('rgb(119.63 0 0 / 0.875)')
+            Color('oklab(0.35883 0.12849 0.07191 / 0.875)')
         )
 
     def test_interpolate_easing_inline(self):
@@ -446,7 +446,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(['red', lambda t: t ** 3, 'blue'])(0.5),
-            Color('rgb(226.44 55.886 74.779)')
+            Color('oklab(0.60596 0.1927 0.07117)')
         )
 
     def test_interpolate_color_hint(self):
@@ -454,7 +454,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.interpolate(['red', hint(0.75), 'blue'])(0.5),
-            Color('rgb(212 66.119 93.278)')
+            Color('oklab(0.59484 0.17643 0.04352)')
         )
 
     def test_interpolate_channel_all(self):
@@ -521,15 +521,15 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_interpolate_space(self):
         """Test color mix in different space."""
 
-        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(1), Color("rgb(0 0 255)"))
+        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(1), Color("lab(29.568 68.287 -112.03)"))
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space='lab')(0.75), Color("rgb(144.85 -24.864 194.36)")
+            Color.interpolate(['red', 'blue'], space='lab')(0.75), Color("lab(35.749 71.417 -66.55)")
         )
-        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(0.5), Color("rgb(192.99 -29.503 136.17)"))
+        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(0.5), Color("lab(41.929 74.546 -21.069)"))
         self.assertColorEqual(
-            Color.interpolate(['red', 'blue'], space='lab')(0.25), Color("rgb(226.89 -24.304 79.188)")
+            Color.interpolate(['red', 'blue'], space='lab')(0.25), Color("lab(48.11 77.676 24.411)")
         )
-        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(0), Color("rgb(255 0 0)"))
+        self.assertColorEqual(Color.interpolate(['red', 'blue'], space='lab')(0), Color("lab(54.291 80.805 69.891)"))
 
     def test_interpolate_empty_list(self):
         """Test interpolate with empty list."""
@@ -541,85 +541,85 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test multiple inputs for interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'])
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(266.95 161.01 145.22)'))
-        self.assertColorEqual(func(0.5), Color('red'))
-        self.assertColorEqual(func(0.75), Color('rgb(99.086 0 0)'))
-        self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
-        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.81398 0.11243 0.06292 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.31398 0.11243 0.06292 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
 
     def test_interpolate_multi_bspline(self):
         """Test multiple inputs for B-spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'], method='bspline')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(259.69 162.64 147.89)'))
-        self.assertColorEqual(func(0.5), Color('rgb(205.87 72.188 58.186)'))
-        self.assertColorEqual(func(0.75), Color('rgb(93.946 7.74 4.4259)'))
-        self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
-        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+        self.assertColorEqual(func(0), Color('oklab(1 0 0)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.80865 0.10306 0.05768 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.5853 0.14991 0.0839 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.30865 0.10306 0.05768 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
 
     def test_interpolate_multi_natural(self):
         """Test multiple inputs for Natural B-spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'], method='natural')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(299 152.05 132.27)'))
-        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
-        self.assertColorEqual(func(0.75), Color('rgb(122.19 -30.589 -18.259)'))
-        self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
-        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.83797 0.15459 0.08652 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.33797 0.15459 0.08652 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
 
     def test_interpolate_multi_natural_more(self):
         """Test more inputs for Natural B-spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black', 'purple'], method='natural')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(303.04 93.841 78.947)'))
-        self.assertColorEqual(func(0.5), Color('rgb(83.613 -20.05 -14.914)'))
-        self.assertColorEqual(func(0.75), Color('rgb(0.08759 -0.13753 0.7319)'))
-        self.assertColorEqual(func(1), Color('purple'))
-        self.assertColorEqual(func(-0.1), Color('white'))
-        self.assertColorEqual(func(1.1), Color('purple'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.7663 0.21652 0.11694 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.25451 0.11694 0.07997 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.00785 -0.00275 -0.03301 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0.42091 0.1647 -0.10147 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0.42091 0.1647 -0.10147 / 1)'))
 
     def test_interpolate_multi_natural_even_more(self):
         """Test even more inputs for Natural B-spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black', 'purple', 'green'], method='natural')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('red'))
-        self.assertColorEqual(func(0.5), Color('black'))
-        self.assertColorEqual(func(0.75), Color('purple'))
-        self.assertColorEqual(func(1), Color('green'))
-        self.assertColorEqual(func(-0.1), Color('white'))
-        self.assertColorEqual(func(1.1), Color('green'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.42091 0.1647 -0.10147 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0.51975 -0.1403 0.10768 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0.51975 -0.1403 0.10768 / 1)'))
 
     def test_interpolate_multi_catmull_rom(self):
         """Test multiple inputs for Catmull-Rom spline interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'], method='catrom')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(288.41 155.36 136.77)'))
-        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
-        self.assertColorEqual(func(0.75), Color('rgb(114.48 -22.696 -13.176)'))
-        self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
-        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.82997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.32997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
 
     def test_interpolate_multi_monotone(self):
         """Test multiple inputs for monotone interpolation."""
 
         func = Color.interpolate(['white', 'red', 'black'], method='monotone')
-        self.assertColorEqual(func(0), Color('white'))
-        self.assertColorEqual(func(0.25), Color('rgb(288.41 155.36 136.77)'))
-        self.assertColorEqual(func(0.5), Color('rgb(255 0 0)'))
-        self.assertColorEqual(func(0.75), Color('rgb(114.48 -22.696 -13.176)'))
-        self.assertColorEqual(func(1), Color('black'))
-        self.assertColorEqual(func(-0.1), Color('rgb(255 255 255)'))
-        self.assertColorEqual(func(1.1), Color('rgb(0 0 0)'))
+        self.assertColorEqual(func(0), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(0.25), Color('color(--oklab 0.82997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(0.5), Color('color(--oklab 0.62796 0.22486 0.12585 / 1)'))
+        self.assertColorEqual(func(0.75), Color('color(--oklab 0.32997 0.14054 0.07865 / 1)'))
+        self.assertColorEqual(func(1), Color('color(--oklab 0 0 0 / 1)'))
+        self.assertColorEqual(func(-0.1), Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(func(1.1), Color('color(--oklab 0 0 0 / 1)'))
 
     def test_interpolate_out_space(self):
         """Test interpolation."""
@@ -711,23 +711,23 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(85% 100 805)')
         self.assertColorEqual(
             Color.interpolate([c1, c2.mask("hue", invert=True)], hue="shorter", space="lch")(0.25),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             Color.interpolate([c1, c2.mask("hue", invert=True)], hue="longer", space="lch")(0.25),
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             Color.interpolate([c1, c2.mask("hue", invert=True)], hue="increasing", space="lch")(0.25),
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             Color.interpolate([c1, c2.mask("hue", invert=True)], hue="decreasing", space="lch")(0.25),
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             Color.interpolate([c1, c2.mask("hue", invert=True)], hue="specified", space="lch")(0.25),
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("lch(32.393 61.244 432.89)")
         )
 
     def test_interpolate_progress(self):
@@ -790,9 +790,9 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test steps with multiple color ranges."""
 
         colors = Color('white').steps(['white', 'red', 'black'], steps=3)
-        self.assertColorEqual(colors[0], Color('white'))
-        self.assertColorEqual(colors[1], Color('red'))
-        self.assertColorEqual(colors[2], Color('black'))
+        self.assertColorEqual(colors[0], Color('color(--oklab 1 0 0 / 1)'))
+        self.assertColorEqual(colors[1], Color('oklab(0.62796 0.22486 0.12585)'))
+        self.assertColorEqual(colors[2], Color('color(--oklab 0 0 0 / 1)'))
 
     def test_steps_multi_max_delta_e(self):
         """Test steps with multiple color ranges and max_delta_e."""
@@ -842,11 +842,11 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         """Test steps different space."""
 
         colors = Color.steps(['red', 'blue'], space="lab", steps=5)
-        self.assertColorEqual(colors[4], Color("rgb(0 0 255)"))
-        self.assertColorEqual(colors[3], Color("rgb(144.85 -24.864 194.36)"))
-        self.assertColorEqual(colors[2], Color("rgb(192.99 -29.503 136.17)"))
-        self.assertColorEqual(colors[1], Color("rgb(226.89 -24.304 79.188)"))
-        self.assertColorEqual(colors[0], Color("rgb(255 0 0)"))
+        self.assertColorEqual(colors[4], Color("lab(29.568 68.287 -112.03)"))
+        self.assertColorEqual(colors[3], Color("lab(35.749 71.417 -66.55)"))
+        self.assertColorEqual(colors[2], Color("lab(41.929 74.546 -21.069)"))
+        self.assertColorEqual(colors[1], Color("lab(48.11 77.676 24.411)"))
+        self.assertColorEqual(colors[0], Color("lab(54.291 80.805 69.891)"))
 
     def test_steps_out_space(self):
         """Test steps with output in different space."""
@@ -932,7 +932,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 steps=5,
                 hue="shorter"
             )[1],
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             Color.steps(
@@ -941,7 +941,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 steps=5,
                 hue="longer"
             )[1],
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             Color.steps(
@@ -950,7 +950,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 steps=5,
                 hue="increasing"
             )[1],
-            Color("rgb(146.72 -3.9233 106.41)")
+            Color("lch(32.393 61.244 342.89)")
         )
         self.assertColorEqual(
             Color.steps(
@@ -959,7 +959,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 steps=5,
                 hue="decreasing"
             )[1],
-            Color("rgb(-86.817 87.629 170)")
+            Color("lch(32.393 61.244 252.89)")
         )
         self.assertColorEqual(
             Color.steps(
@@ -968,7 +968,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 steps=5,
                 hue="specified"
             )[1],
-            Color("rgb(112.83 63.969 -28.821)")
+            Color("lch(32.393 61.244 432.89)")
         )
 
     def test_steps_progress(self):

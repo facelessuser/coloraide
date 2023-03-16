@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
-from .. import algebra as alg
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, cast, TYPE_CHECKING
 

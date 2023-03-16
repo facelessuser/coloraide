@@ -10,7 +10,6 @@ from .jzazbz import xyz_d65_to_jzazbz
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 import math
-from .. import algebra as alg
 from ..types import Vector
 
 # The transform consistently yields ~216 for achromatic hues for positive lightness
@@ -66,15 +65,7 @@ class JzCzhz(LChish, Space):
     }
 
     def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
-
-        This is our ideal hue, and since the results are based off
-        CAM16, it should be no surprise that the chroma gets larger
-        as lightness increases, just like CAM16 with no discounting.
-
-        Because of this, we cannot reslove undefined hues as zero.
-        """
+        """Ideal hue for conversion."""
 
         return self.ACHROMATIC_HUE
 
