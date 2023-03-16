@@ -6,7 +6,6 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 from __future__ import annotations
 from ..distance import DeltaE
 import math
-from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -21,8 +20,8 @@ class DEZ(DeltaE):
     def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
-        jz1, az1, bz1 = color.convert('jzazbz').coords(nan=False)
-        jz2, az2, bz2 = sample.convert('jzazbz').coords(nan=False)
+        jz1, az1, bz1 = color.convert('jzazbz').coords(undef=False)
+        jz2, az2, bz2 = sample.convert('jzazbz').coords(undef=False)
 
         cz1 = math.sqrt(az1 ** 2 + bz1 ** 2)
         cz2 = math.sqrt(az2 ** 2 + bz2 ** 2)

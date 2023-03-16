@@ -34,7 +34,7 @@ class LChChroma(Fit):
     MAX_LIGHTNESS = 100
     MIN_CONVERGENCE = 0.0001
 
-    def fit(self, color: Color, **kwargs: Any) -> None:
+    def fit(self, color: Color, undef: bool = True, **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
 
         # If within gamut, just normalize hues by calling clip
@@ -43,23 +43,27 @@ class LChChroma(Fit):
             return
 
         space = color.space()
-        mapcolor = color.convert(self.SPACE)
+        mapcolor = color.convert(self.SPACE, undef=False)
         lightness = mapcolor['lightness']
         sdr = color._space.DYNAMIC_RANGE == 'sdr'
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
         if sdr and lightness >= self.MAX_LIGHTNESS:
-            clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1]))
+            clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1], undef=False))
+            if undef:
+                color.normalize()
             return
         elif lightness <= self.MIN_LIGHTNESS:
-            clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1]))
+            clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1], undef=False))
+            if undef:
+                color.normalize()
             return
 
         # Set initial chroma boundaries
         low = 0.0
         high = mapcolor['chroma']
-        clip_channels(color.update(mapcolor))
+        clip_channels(color._hotswap(mapcolor.convert(space, undef=False)))
 
         # Adjust chroma if we are not under the JND yet.
         if mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS) >= self.LIMIT:
@@ -75,7 +79,7 @@ class LChChroma(Fit):
                 if lower_in_gamut and mapcolor.in_gamut(space, tolerance=0):
                     low = mapcolor['chroma']
                 else:
-                    clip_channels(color.update(mapcolor))
+                    clip_channels(color._hotswap(mapcolor.convert(space, undef=False)))
                     de = mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS)
                     if de < self.LIMIT:
                         # Kick out as soon as we are close enough to the JND.
@@ -92,3 +96,5 @@ class LChChroma(Fit):
                     else:
                         # We are still outside the gamut and outside the JND
                         high = mapcolor['chroma']
+        if undef:
+            color.normalize()

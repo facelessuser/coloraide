@@ -425,7 +425,8 @@ def convert(
     space: str,
     *,
     fit: bool | str = False,
-    in_place: bool = False
+    in_place: bool = False,
+    undef: bool = True
 ) -> Color:
     ...
 ```
@@ -445,6 +446,7 @@ Parameters
     `space`    |               | A string representing the desired final color space.
     `fit`      | `#!py False`  | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used.
     `in_place` | `#!py False`  | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
+    `undef`    | `#!py True`   | Perform hue normalization (setting hue to undefined if the color is achromatic).
 
 Return
 
@@ -474,18 +476,26 @@ Return
 ## `#!py Color.normalize` {#normalize}
 
 ```py
-def to_dict(
-    self
-) -> Mapping[str, Any]:
+def normalize(
+    self,
+    undef: bool = True
+) -> Color:
     ...
 ```
 
 /// define
 Description
 
--   Force normalization of a color's channels by cleaning up channels that shouldn't be undefined and setting any
-    channels to undefined if they meet the specific color's criteria dictating such, e.g., hue is undefined in HSL when
-    saturation is zero. Normalize modifies the current color in place.
+-   Force normalization of a color's channels by cleaning up channels that setting hue to undefined if the color is
+    achromatic. if `undef` is set to `#!py False`, the hue normalization step (setting hue to undefined) will be 
+    skipped. Normalize modifies the current color in place.
+
+Parameters
+
+- 
+    Parameters | Defaults      | Description
+    ---------- | ------------- | -----------
+    `undef`    | `#!py True`   | Perform hue normalization (setting hue to undefined if the color is achromatic).
 
 Return
 
@@ -1223,7 +1233,8 @@ Parameters
 Return
 
 -   Returns a numerical value that is stored internally for the specified channel, or a calculated value in the case
-    that a channel in a different color space is requested.
+    that a channel in a different color space is requested. If more than one value is requested, the a list of numerical
+    values will be returned.
 ///
 
 ## `#!py Color.set` {#set}
@@ -1264,10 +1275,66 @@ Return
 -   Returns a reference to the current [`Color`](#color) object.
 ///
 
-## `#!py Color.is_nan` {#is_nan}
+## `#!py Color.coords` {#coords}
 
 ```py
-def is_nan(
+def coords(
+    self,
+    undef: bool = True
+) -> Vector:
+    ...
+```
+
+/// define
+Description
+
+-   Get the color channels (no alpha). If `undef` is set to `#!py False`, all undefined values will be returned as
+    defined.
+
+Parameters
+
+- 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `undef`    | `#!py True`  | If `undef` is set to `#!py False`, all undefined values will be returned as defined.
+
+Return
+
+-   Returns a list of `#!py float` values, one for each color channel.
+
+///
+
+## `#!py Color.alpha` {#coords}
+
+```py
+def alpha(
+    self,
+    undef: bool = True
+) -> float:
+    ...
+```
+
+/// define
+Description
+
+-   Get the alpha channel's value. If `undef` is set to `#!py False`, an undefined value will be returned as defined.
+
+Parameters
+
+- 
+    Parameters | Defaults     | Description
+    ---------- | ------------ | -----------
+    `undef`    | `#!py True`  | If `undef` is set to `#!py False`, an undefined value will be returned as defined.
+
+Return
+
+-   Returns a `#!py float`.
+///
+
+## `#!py Color.is_undef` {#is_undef}
+
+```py
+def is_undef(
     self,
     name: str
 ) -> bool:
@@ -1277,9 +1344,9 @@ def is_nan(
 /// define
 Description
 
--   Retrieves the coordinate value from the specified channel and checks whether the value is `NaN`. Channel must be a
-    channel name in the current color space or a channel name in the specified color space using the syntax:
-    `space.channel`.
+-   Retrieves the coordinate value from the specified channel and checks whether the value is undefined (set to NaN).
+    Channel must be a channel name in the current color space or a channel name in the specified color space using the
+    syntax: `space.channel`.
 
 Parameters
 

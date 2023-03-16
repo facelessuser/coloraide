@@ -22,7 +22,6 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Cylindrical, LChish, Labish  # noqa: E402
-from coloraide.algebra import is_nan  # noqa: E402
 
 # Special cases for certain color spaces
 color_options = {
@@ -124,13 +123,10 @@ def add_cyl_color(space, color, x, y, z, c):
     Handles cylindrical spaces. Returns x (hue), y (chroma/saturation), z (value/lightness).
     """
 
-    cyl = color.convert(space)
+    cyl = color.convert(space, undef=False)
     lightness = cyl.get(color_options.get(space, {}).get('lightness', 'lightness'))
     chroma = cyl.get(color_options.get(space, {}).get('chroma', 'chroma'))
     hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))
-
-    if is_nan(hue):
-        hue = cyl.coords(nan=False)[cyl._space.hue_index()]
 
     x.append(chroma * math.sin(math.radians(hue)))
     y.append(chroma * math.cos(math.radians(hue)))

@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 from .spaces import Cylindrical
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
@@ -57,52 +57,58 @@ class Monochromatic(Harmony):
             space = color.HARMONY
 
         orig_space = color.space()
-        color0 = color.convert(space).normalize()
+        color1 = color.convert(space, undef=False).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         # Trim off black and white unless the color is achromatic,
         # But always trim duplicate target color from left side.
-        if not color0.is_nan('hue'):
+        if not color1.is_undef('hue'):
             ltrim, rtrim = slice(1, -1, None), slice(None, -1, None)
         else:
             ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
 
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
-        w = color.new('srgb', [1, 1, 1], alg.NaN).convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
-        b = color.new('srgb', [0, 0, 0], alg.NaN).convert(space, in_place=True).mask(['hue', 'alpha'], in_place=True)
+        w = color.new('srgb', [1, 1, 1], alg.NaN)
+        w.convert(space, in_place=True, undef=False).mask(['hue', 'alpha'], in_place=True)
+        b = color.new('srgb', [0, 0, 0], alg.NaN)
+        b.convert(space, in_place=True, undef=False).mask(['hue', 'alpha'], in_place=True)
 
         # Calculate how many tints and shades we need to generate
-        db = b.delta_e(color0, method=self.DELTA_E)
-        dw = w.delta_e(color0, method=self.DELTA_E)
+        db = b.delta_e(color1, method=self.DELTA_E)
+        dw = w.delta_e(color1, method=self.DELTA_E)
         steps_w = int(alg.round_half_up((dw / (db + dw)) * self.RANGE))
         steps_b = self.RANGE - steps_w
+
+        kwargs = {
+            'space': space,
+            'method': 'linear',
+            'out_space': orig_space
+        }  # type: dict[str, Any]
 
         # Very close to black or is black, no need to interpolate from black to current color
         if steps_b <= 1:
             left = []
             if steps_b == 1:
-                left.extend(color.steps([b, color], steps=steps_b, space=space, out_space=orig_space, method='linear'))
+                left.extend(color.steps([b, color], steps=steps_b, **kwargs))
             steps = min(self.RANGE - (1 + steps_b), steps_w)
-            right = color.steps([color0, w], steps=steps, space=space, out_space=orig_space, method='linear')[rtrim]
+            right = color.steps([color1, w], steps=steps, **kwargs)[rtrim]
 
         # Very close to white or is white, no need to interpolate from current color to white
         elif steps_w <= 1:
             right = []
             if steps_w == 1:
-                right.extend(
-                    color.steps([color0, w], steps=steps_w, space=space, out_space=orig_space, method='linear')
-                )
+                right.extend(color.steps([color1, w], steps=steps_w, **kwargs))
             steps = min(self.RANGE - (1 + steps_w), steps_b)
             right.insert(0, color.clone())
-            left = color.steps([b, color], steps=steps, space=space, out_space=orig_space, method='linear')[ltrim]
+            left = color.steps([b, color], steps=steps, **kwargs)[ltrim]
 
+        # Anything else in between
         else:
-            # Anything else in between
-            left = color.steps([b, color], steps=steps_b, space=space, out_space=orig_space, method='linear')[ltrim]
-            right = color.steps([color0, w], steps=steps_w, space=space, out_space=orig_space, method='linear')[rtrim]
+            left = color.steps([b, color], steps=steps_b, **kwargs)[ltrim]
+            right = color.steps([color1, w], steps=steps_w, **kwargs)[rtrim]
 
         # Extract a subset of the results
         len_l = len(left)
@@ -128,20 +134,22 @@ class Geometric(Harmony):
             space = color.HARMONY
 
         orig_space = color.space()
-        color0 = color.convert(space)
+        color1 = color.convert(space, undef=False).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
-        name = color0._space.hue_name()
+        name = color1._space.hue_name()
 
         degree = current = 360.0 / self.COUNT
-        colors = [color]
+        colors = []
         for _ in range(self.COUNT - 1):
+            obj = color1.clone()
             colors.append(
-                color0.clone().set(name, lambda x: adjust_hue(x, current)).convert(orig_space, in_place=True)
+                obj.set(name, lambda x: adjust_hue(x, current)).convert(orig_space, in_place=True)
             )
             current += degree
+        colors.insert(0, color1.convert(orig_space, in_place=True))
         return colors
 
 
@@ -173,19 +181,17 @@ class SplitComplementary(Harmony):
             space = color.HARMONY
 
         orig_space = color.space()
-        color0 = color.convert(space)
+        color1 = color.convert(space, undef=False).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
-        name = color0._space.hue_name()
+        name = color1._space.hue_name()
 
-        color2 = color0.clone()
-        color3 = color0.clone()
-        color2.set(name, lambda x: adjust_hue(x, 210))
-        color3.set(name, lambda x: adjust_hue(x, -210))
+        color2 = color1.clone().set(name, lambda x: adjust_hue(x, 210))
+        color3 = color1.clone().set(name, lambda x: adjust_hue(x, -210))
         return [
-            color,
+            color1.convert(orig_space, in_place=True),
             color2.convert(orig_space, in_place=True),
             color3.convert(orig_space, in_place=True)
         ]
@@ -201,19 +207,17 @@ class Analogous(Harmony):
             space = color.HARMONY
 
         orig_space = color.space()
-        color0 = color.convert(space)
+        color1 = color.convert(space, undef=False).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
-        name = color0._space.hue_name()
+        name = color1._space.hue_name()
 
-        color2 = color0.clone()
-        color3 = color0.clone()
-        color2.set(name, lambda x: adjust_hue(x, 30))
-        color3.set(name, lambda x: adjust_hue(x, -30))
+        color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
+        color3 = color1.clone().set(name, lambda x: adjust_hue(x, -30))
         return [
-            color,
+            color1.convert(orig_space, in_place=True),
             color2.convert(orig_space, in_place=True),
             color3.convert(orig_space, in_place=True)
         ]
@@ -229,21 +233,18 @@ class TetradicRect(Harmony):
             space = color.HARMONY
 
         orig_space = color.space()
-        color0 = color.convert(space)
+        color1 = color.convert(space, undef=False).normalize()
 
-        if not isinstance(color0._space, Cylindrical):
+        if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
-        name = color0._space.hue_name()
+        name = color1._space.hue_name()
 
-        color2 = color0.clone()
-        color3 = color0.clone()
-        color4 = color0.clone()
-        color2.set(name, lambda x: adjust_hue(x, 30))
-        color3.set(name, lambda x: adjust_hue(x, 180))
-        color4.set(name, lambda x: adjust_hue(x, 210))
+        color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
+        color3 = color1.clone().set(name, lambda x: adjust_hue(x, 180))
+        color4 = color1.clone().set(name, lambda x: adjust_hue(x, 210))
         return [
-            color,
+            color1.convert(orig_space, in_place=True),
             color2.convert(orig_space, in_place=True),
             color3.convert(orig_space, in_place=True),
             color4.convert(orig_space, in_place=True)
@@ -264,9 +265,8 @@ SUPPORTED = {
 def harmonize(color: Color, name: str, space: str | None) -> list[Color]:
     """Get specified color harmonies."""
 
-    try:
-        h = SUPPORTED[name]
-    except KeyError:
+    h = SUPPORTED.get(name)
+    if not h:
         raise ValueError("The color harmony '{}' cannot be found".format(name))
 
     return h.harmonize(color, space)

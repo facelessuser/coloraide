@@ -82,6 +82,33 @@ color[:-1] = [0, 0, 1]
 color
 ```
 
+### Access by Type
+
+/// new | New 2.0
+///
+
+When dealing with colors, you have two types of channels: color channels and an alpha channel. These values can be
+accessed and separated by [slicing](#access-by-slicing) as mentioned earlier, but some convenience functions have
+been added to make this easier. `coords()` and `alpha()` will retrieve the color channels and the alpha channel
+respectively.
+
+```py play
+color = Color("srgb", [1, 0, 1], 0.5)
+color
+color.alpha()
+color.coords()
+```
+
+In addition, both of these functions offer a special parameter `undef` that controls whether undefined values are
+returned as specified or whether they are resolved to defined values.
+
+```py play
+color = Color("hsl", [NaN, 0, 0.75], 0.5)
+color
+color.coords()
+color.coords(undef=False)
+```
+
 ### Access By Functions
 
 Colors can also be accessed and modified in more advanced ways with special access functions `get()` and `set()`.
@@ -159,20 +186,58 @@ and then converts it back making it susceptible to any possible [round trip erro
 /// new | New in 1.5: Getting/Setting Multiple Channels
 ///
 
+## Checking For Achromatic Colors
+
+/// new | New 2.0
+///
+
+It can be useful to check whether a color is achromatic or not. With cylindrical color spaces, you can usually, but not
+always, check if the hue is undefined. If you are dealing with a non-cylindrical color space, or a cylindrical space
+where the hue has been manually defined despite it being achromatic, you can use `is_achromatic()` to verify if the
+color is achromatic, or at least very close to achromatic.
+
+```py play
+color1 = Color('orange')
+color1
+color1.is_achromatic()
+color2 = Color('gray').convert('lab')
+color2
+color2.is_achromatic()
+color3 = Color('darkgray').convert('hsl').set('hue', 270)
+color3
+color3.is_achromatic()
+```
+
+## Normalizing Achromatic Colors
+
+When converting, all channels become defined, and only if the color is achromatic will the hue be undefined. When
+manually editing a color, or maybe reading a color in from an external source, the values may not be in this
+configuration. If desired, `normalize()`  can remove unnecessary undefined channels and set achromatic hues as
+undefined.
+
+```py play
+color = Color('hsl', [30, NaN, 0.75])
+color
+color.normalize()
+```
+
+If the return of undefined hues is not desired, just set `undef` to `#!py False`.
+
+```py play
+color = Color('hsl', [30, NaN, 0.75])
+color
+color.normalize(undef=False)
+```
+
 ## Undefined Values
 
 Colors in general can sometimes have undefined channels. This can actually happen in a number of ways.
 
 1. Channels can naturally be undefined under certain situations as defined by the color space. For instance, spaces
-   with hues will have powerless hues when the color is achromatic. As an example, this can occur if saturation or
-   chroma is zero.
+   with hues will have powerless hues when the color is achromatic.
 
-    If an achromatic color manually has its hue defined, then the hue is considered defined, though that value will
-    still be powerless during conversions. But lets considered an achromatic color in a rectangular color space being
-    converted to a cylindrical color space with hue. During the conversion process, there is nothing to suggest to the
-    algorithm what the hue should be. For instance, if saturation is zero, one could argue the hue should be `0`, but
-    that is actually a red hue, and achromatic colors have no hue. In the end, no hue is actually satisfactory, so an
-    undefined hue is applied.
+    ColorAide will always respect a manually defined hue, even on an achromatic color, but during conversion to a
+    cylindrical color space, hue will be set to undefined if the color is achromatic.
 
     ```py play
     color = Color('white').convert('hsl')
@@ -229,6 +294,10 @@ Colors in general can sometimes have undefined channels. This can actually happe
 
 ### Checking for Undefined Values
 
+/// new | New 2.0 `is_undef`
+Renamed from `is_nan`. `is_nan` is now deprecated.
+///
+
 As previously mentioned, a color channel can be undefined for a number of reasons. And in cases such as interpolation,
 undefined values can even be useful. On the other hand, sometimes an undefined value may need to be handled special.
 
@@ -246,13 +315,14 @@ color = Color('color(srgb 1 none 1)')
 color['green'] + 0.5
 ```
 
-Because a `NaN` may cause surprising results, it can be useful to check if a hue (or any channel) is `NaN` before
-applying certain operations where `NaN` may be undesirable, especially if the color potentially came from an unknown
-source. To make checking for `NaN`s easy, the convenience function `is_nan` has been made available. You can simply give
-`is_nan` the property you wish to check, and it will return either return `#!py3 True` or `#!py3 False`.
+Because a `NaN` (or undefined value) may cause surprising results, it can be useful to check if a hue (or any channel)
+is undefined before applying certain operations where such a value may be undesirable, especially if the color
+potentially came from an unknown source. To make checking for undefined values easy, the convenience function
+`is_undef` has been made available. You can simply give `is_undef` the property you wish to check, and it will return
+either `#!py3 True` or `#!py3 False`.
 
 ```py play
-Color('hsl(none 0% 100%)').is_nan('hue')
+Color('hsl(none 0% 100%)').is_undef('hue')
 ```
 
 This is equivalent to using the `math` library and comparing the value directly:
@@ -261,3 +331,44 @@ This is equivalent to using the `math` library and comparing the value directly:
 import math
 math.isnan(Color('hsl(none 0% 100%)')['hue'])
 ```
+
+### Resolving Undefined Values
+
+ColorAide generally resolves undefined numbers on string output (when `none` is not allowed), some internal cases when
+required, and when a user specifically asks for defined values only.
+
+Normally, an undefined value defaults to `0` when forced to be defined, but there are a few cases where this may not
+always be true.
+
+1. Most cylindrical color spaces, when the color is achromatic, the hue becomes meaningless in the calculations. This
+   makes sense as achromatic colors have no hues. In these cases, when a hue must be defined, we will generally assume
+   `0`, but there are some color spaces that while the a given achromatic color should have no hue, the conversion
+   algorithm actually works better when using a specific hue when translating from an achromatic color. Some examples
+   are: CAM16 JMh, HCT, or even JzCzhz. In these cases, an undefined hue will be treated with the best hue for round
+   trip translation.
+
+    We can see in the example below that using `0` for an undefined hues in CAM16 JMh will not convert `#!py gray` back
+    to sRGB properly, but using the one calculated for the color space does.
+
+    ```py play
+    jmh = Color('gray').convert('cam16-jmh')
+    jmh.coords(undef=False)
+    jmh.convert('srgb')
+    jmh.set('hue', 0).convert('srgb')
+    ```
+
+2. Most of the time, if you set all color channels to undefined, when resolved, the color will be black (or white in
+   the case of CMYK). Unfortunately, setting using `0` for undefined channels in some color spaces can create colors
+   outside the viewable gamut. One such example is ACEScct which has a lower value that is greater than zero for black.
+   In this case, setting undefined channels to zero will cause nonsense colors. In this specific case, we use the value
+   for black.
+
+    ```py play
+    aces = Color('black').convert('acescct')
+    aces
+    aces.mask(['alpha'], invert=True, in_place=True)
+    aces.coords(undef=False)
+    aces.in_gamut()
+    aces[:] = [0] * 3
+    aces.in_gamut()
+    ```

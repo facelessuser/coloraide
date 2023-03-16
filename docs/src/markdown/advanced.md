@@ -57,7 +57,7 @@ color[:]
 color.convert('prophoto-rgb').convert('srgb')[:]
 ```
 
-### Special Handling: RGB Cylindrical Spaces
+### Special Handling: Cylindrical Spaces
 
 Sometimes, round trip accuracy can be compromised further for practical reasons. A common case where we make compromises
 is with cylindrical color models.
@@ -103,50 +103,19 @@ Color('darkgray').convert('hsl')[:-1]
 Color('darkgray').convert('xyz-d65').convert('hsl')[:-1]
 ```
 
-A similar problem can occur with HSL near `#!color white`. If we take white and run it through XYZ, we'll get a value
-not that is not only just slightly not achromatic, but values that are slightly out of range (above 1).
+This problem can exist in various scenarios. in pretty much all cylindrical color spaces. Some have tighter algorithms
+and may give really good results with sRGB, but then when converting from some other color space we'll see maybe not as
+tight a translation to and from.
 
-```py play
-c1 = Color('white')
-c1[:-1]
-c2 = c1.convert('xyz-d65').convert('srgb')
-c2[:-1]
-```
+There are various ways to identify when a color is achromatic. In LCh, you may consider a color achromatic if chroma is
+zero (or near zero). You can consider it achromatic when lightness is at minimum or maximum lightness. Similar logic
+applies to other color spaces, but with varying accuracy across the many color spaces, you can often identify an
+achromatic color in one color space, but miss it in another because you don't have the precision quite nailed down in
+that color space.
 
-Without any correction, we'd get the following:
-
-```py
->>> Color('white').convert('xyz-d65').convert('hsl')[:]
-[60.0, 0.5, 0.9999999999999998, 1.0]
-```
-
-Again, we all know this is `#!color white`, so we relax the rules a bit and say if a value is very, very close to max
-lightness, we will consider saturation to be zero. This provides a little leniency if lightness is slightly over or
-under.
-
-```py play
-Color('white').convert('hsl')[:-1]
-Color('white').convert('xyz-d65').convert('hsl')[:-1]
-```
-
-Not all RGB cylindrical models have the exact same rules, but we apply similar logic to all HSL, HSV, and HWB like
-models. The approach might be slightly different depending on the model, but the idea is the same.
-
-### Special Handling: LCh Cylindrical Spaces
-
-Lastly, LCh like cylindrical models have a similar issues as the RGB cylindrical models. Since the algorithms are
-usually consistent even when extending from SDR to HDR, lightness can usually exceed the upper boundary without the
-algorithm breaking down. As a matter of fact, there are a number of LCh models that are based on HDR color spaces. The
-real issue is that many of these color spaces do not always have their contrast resolve perfectly to their lower limit
-(usually zero) to signify an achromatic color. So, just like with RGB cylindrical models, when contrast gets very, very
-close to the lower limit, we consider the hue to be undefined and set it to `NaN`.
-
-```py play
-Color('darkgray').convert('lch')[:]
-```
-
-Some may have the bottom chroma limit rise slightly as the achromatic colors approach and surpass `#!color white`. We
-can see this behavior occur with JzCzhz:
+As an interesting example, let's consider JzCzhz. This color space actually has its lower limit for achromatic colors
+gradually rise higher and higher as lightness increases. This can be hard to set a simple chroma check that preserves
+high accuracy, and this phenomenon is even more exaggerated in color spaces like CAM16 JMh and HCT.
 
 ```py play
 Color('color(srgb 0 0 0)').convert('jzczhz')[:]
@@ -155,38 +124,29 @@ Color('color(srgb 1 1 1)').convert('jzczhz')[:]
 Color('color(--rec2100-pq 1 1 1)').convert('jzczhz')[:]
 ```
 
-Generally, as long as the lower chroma limit is quite low, the hue value has little impact on the conversion back and we
-can set a lower threshold such that any chroma that falls below that threshold can be considered achromatic. Generally,
-conversion will be pretty good, but some round trip accuracy is lost when the lower chroma limit is slightly larger.
+Because chroma keeps creeping higher, we find that the hue can actually start to affect translations even though
+achromatic colors have no hue. This is just due to how the math works. In most color spaces chroma gets so small that
+that it dwarfs the impact that hue has in the equation.
 
-For spaces that have a larger chroma limit like JzCzhz has, we may even track the ideal hue to use in the conversion
-back from an achromatic color to mitigate round trip errors being introduced. That hue can be acquired from the LCh like
-color space object:
+ColorAide, in order to handle achromatic colors across all color spaces in a sane way, tackles the problem by converting
+any given color space to some common space for achromatic evaluation. We've chosen XYZ D65 as it is already a
+requirement to have that color space registered for anything. We can then take the cross product of a particular color
+in the XYZ space, crossing its value with XYZ value for `#!color white`. If the result is a vector with all zeros (or
+in reality close enough to zero under some threshold) we know we have an achromatic color. We try to strike a nice
+compromise with the threshold to preserve as much accuracy as we can, but provide decent achromatic results.
 
-```py play
-color = Color('gray').convert('jzczhz')
-color._space.achromatic_hue()
-```
-
-There are some slightly more complicated cases, such as CAM16 JMh and HCT (which is based off of CAM16), but the basic
-idea remains relatively the same.
-
-Do keep in mind that there are color space transformations which may vary in precision due to their algorithm. There are
-times when we do all we can, and we can still end up not being able to predict an achromatic color as the
-transformations can cause values to fall right outside our thresholds. CAM16 JMh and HCT (which is derived from CAM16
-JMh) are a bit more difficult to calculate the achromatic threshold to the high degree of precision, and there is only
-so far we are willing to drop accuracy for the sake of convenience, so converting between these cylindrical spaces and
-other cylindrical spaces may not get us the achromatic hues we desire.
-
-Notice in the example below that we get the achromatic hue in all cases except when we convert from `cam16-jmh` to
-`hsl`.
+In the end, we pay a little cost in accuracy, but provide more reasonable achromatic detection with a reasonable amount
+of error around achromatic colors.
 
 ```py play
-Color('gray').convert('cam16-jmh')
-Color('gray').convert('hsl')
-Color('gray').convert('hsl').convert('cam16-jmh')
-Color('gray').convert('cam16-jmh').convert('hsl')
+
+hsl = Color('gray').convert('hsl')
+hsl
+jmh = hsl.convert('cam16-jmh')
+jmh
+lch = jmh.convert('lch')
+lch
 ```
 
-When it comes to cylindrical color spaces, it is best to choose one instead of bouncing between multiple cylindrical
-spaces. If you choose to do so, you may need to manually check for achromatic colors with an even lower threshold.
+Keep in mind that certain color spaces may introduce more errors than others, and if you truncate precision, or even
+translate through a lot of spaces, you may introduce enough error that a given color cannot be detected as achromatic.

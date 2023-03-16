@@ -116,25 +116,25 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('jzczhz', [90, 50, NaN], 1)
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('color(--jzczhz 90% 0 none / 1)')
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
         c = Color(Color('white').convert('jzczhz').to_string(precision=6)).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
         c = Color(Color('gray').convert('jzczhz').to_string(precision=6)).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
         c = Color(Color('darkgray').convert('jzczhz').to_string(precision=6)).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to OkLCh with a null hue."""
@@ -143,7 +143,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
             for x in range(0, 256):
                 color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
                 color2 = color.convert('jzczhz')
-                self.assertTrue(color2.is_nan('hue'))
+                self.assertTrue(color2.is_undef('hue'))
 
 
 class TestQuirks(util.ColorAsserts, unittest.TestCase):

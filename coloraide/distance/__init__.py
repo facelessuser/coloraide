@@ -16,9 +16,8 @@ def closest(color: Color, colors: Sequence[ColorInput], method: str | None = Non
     if method is None:
         method = color.DELTA_E
 
-    try:
-        algorithm = color.DE_MAP[method]
-    except KeyError:
+    algorithm = color.DE_MAP.get(method)
+    if not algorithm:
         raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
 
     lowest = alg.INF
@@ -43,8 +42,8 @@ def distance_euclidean(color: Color, sample: Color, space: str = "lab-d65") -> f
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    coords1 = color.convert(space).coords(nan=False)
-    coords2 = sample.convert(space).coords(nan=False)
+    coords1 = color.convert(space, undef=False).coords(undef=False)
+    coords2 = sample.convert(space, undef=False).coords(undef=False)
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 

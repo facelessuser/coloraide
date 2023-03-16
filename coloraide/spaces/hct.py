@@ -57,9 +57,8 @@ from ..channels import Channel, FLG_ANGLE
 from .cam16 import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
+from ..util import xy_to_xyz
 import math
-
-ACHROMATIC_HUE = 209.5429359788321
 
 
 def y_to_lstar(y: float, white: VectorLike) -> float:
@@ -149,8 +148,17 @@ class HCT(LChish, Space):
     BASE = "xyz-d65"
     NAME = "hct"
     SERIALIZE = ("--hct",)
+    WHITE = WHITES['2deg']['D65']
+    ENV = Environment(
+        WHITE,
+        200 / math.pi * lstar_to_y(50.0, util.xy_to_xyz(WHITE)),
+        lstar_to_y(50.0, util.xy_to_xyz(WHITE)) * 100,
+        'average',
+        False
+    )
+    ACHROMATIC_HUE = xyz_to_hct(xy_to_xyz(WHITE), env=ENV)[0]
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, undef=ACHROMATIC_HUE),
         Channel("c", 0.0, 145.0, limit=(0.0, None)),
         Channel("t", 0.0, 100.0, limit=(0.0, None))
     )
@@ -160,35 +168,17 @@ class HCT(LChish, Space):
         "chroma": "c",
         "hue": "h"
     }
-    WHITE = WHITES['2deg']['D65']
-    ENV = Environment(
-        WHITE,
-        200 / math.pi * lstar_to_y(50.0, util.xy_to_xyz(WHITE)),
-        lstar_to_y(50.0, util.xy_to_xyz(WHITE)) * 100,
-        'average',
-        False
-    )
 
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""
 
-        return ACHROMATIC_HUE
+        return self.ACHROMATIC_HUE
 
     def lchish_names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
 
         channels = self.channels
         return channels[2], channels[1], channels[0]
-
-    def no_nans(self, coords: Vector) -> Vector:
-        """Return coordinates with no undefined values."""
-
-        if alg.is_nan(coords[0]):
-            coords[1:] = alg.no_nans(coords[1:])
-            coords[0] = ACHROMATIC_HUE
-            return coords
-        else:
-            return alg.no_nans(coords)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from CAM16."""

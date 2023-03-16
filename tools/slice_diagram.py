@@ -42,7 +42,7 @@ def needs_workaround(color):
     return (
         color.space().startswith(('lchuv', 'cam16-jmh', 'hct')) and
         color['lightness'] == 0 and
-        not color.normalize().is_nan('hue')
+        color.is_achromatic()
     )
 
 

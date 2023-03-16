@@ -31,7 +31,7 @@ from ..cat import WHITES
 from ..channels import FLG_ANGLE, Channel
 from .. import util
 from .oklab import oklab_to_linear_srgb
-from .oklch import ACHROMATIC_HUE
+from .oklch import OkLCh
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import math
 from .. import algebra as alg
@@ -92,7 +92,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     """Oklab to Okhsv."""
 
     l = lab[0]
-    h = ACHROMATIC_HUE
+    h = OkLCh.ACHROMATIC_HUE
     s = 0.0
     v = toe(l)
 
@@ -161,7 +161,7 @@ class Okhsv(Cylindrical, Space):
         with accepting 0 as well.
         """
 
-        return ACHROMATIC_HUE
+        return OkLCh.ACHROMATIC_HUE
 
     def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""

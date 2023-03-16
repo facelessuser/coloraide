@@ -26,6 +26,7 @@ def filters(
     amount: float | None = None,
     space: str | None = None,
     in_place: bool = False,
+    undef: bool = True,
     **kwargs: Any
 ) -> Color:
     """Filter."""
@@ -43,6 +44,6 @@ def filters(
         )
 
     current = color.space()
-    c = color.convert(space, in_place=in_place)
+    c = color.convert(space, in_place=in_place, undef=False).normalize()
     f.filter(c, amount, **kwargs)
-    return c.convert(current, in_place=True)
+    return c.convert(current, in_place=True, undef=undef)

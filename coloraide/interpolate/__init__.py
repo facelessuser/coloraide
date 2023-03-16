@@ -19,7 +19,6 @@ import functools
 from abc import ABCMeta, abstractmethod
 from .. import util
 from .. import algebra as alg
-from ..spaces import Cylindrical
 from ..types import Vector, ColorInput, Plugin
 from typing import Callable, Sequence, Mapping, Any, TYPE_CHECKING
 
@@ -82,6 +81,7 @@ class Interpolator(metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        undef: bool = True,
         **kwargs: Any
     ):
         """Initialize."""
@@ -98,9 +98,10 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
+        self.undef = undef
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
-        if isinstance(cs, Cylindrical):
+        if hasattr(cs, 'hue_index'):
             self.hue_index = cs.hue_index()
         else:
             self.hue_index = -1
@@ -270,7 +271,9 @@ class Interpolator(metaclass=ABCMeta):
         # Create the color and ensure it is in the correct color space.
         color = self.create(self.space, coords[:-1], coords[-1])
         if self.out_space != color.space():
-            color.convert(self.out_space, in_place=True)
+            color.convert(self.out_space, in_place=True, undef=self.undef)
+        elif not self.undef:
+            color.normalize(False)
 
         return color
 
@@ -363,6 +366,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        undef: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -551,6 +555,7 @@ def interpolator(
     premultiplied: bool,
     extrapolate: bool,
     domain: list[float] | None = None,
+    undef: bool = True,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -579,7 +584,7 @@ def interpolator(
 
     current.convert(space, in_place=True)
     offset = 0.0
-    hue_index = current._space.hue_index() if isinstance(current._space, Cylindrical) else -1
+    hue_index = current._space.hue_index() if hasattr(current._space, 'hue_index') else -1
     normalize_color(current)
     norm = current[:]
     fallback = None
@@ -609,7 +614,7 @@ def interpolator(
             color = current._handle_color_input(x)
             stops[i] = None
 
-        # Adjust to color to space and ensure it fits
+        # Adjust color to space and ensure it fits
         color = color.convert(space)
         normalize_color(color)
         norm = color[:]
@@ -647,5 +652,6 @@ def interpolator(
         premultiplied,
         extrapolate,
         domain,
+        undef=undef,
         **kwargs
     )

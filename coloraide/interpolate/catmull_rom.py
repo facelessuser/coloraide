@@ -42,6 +42,7 @@ class CatmullRom(Interpolate):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        undef: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Return the Catmull-Rom interpolator."""
@@ -57,5 +58,7 @@ class CatmullRom(Interpolate):
             progress,
             premultiplied,
             extrapolate,
-            domain
+            domain,
+            undef,
+            **kwargs
         )

@@ -427,7 +427,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def random(cls, space: str, *, limits: Sequence[Sequence[float] | None] | None = None) -> Color:
+    def random(cls, space: str, *, limits: Sequence[Sequence[float] | None] | None = None, undef: bool = True) -> Color:
         """Get a random color."""
 
         # Get the color space and number of channels
@@ -452,25 +452,34 @@ class Color(metaclass=ColorMeta):
             coords.append(random.uniform(a, b))
 
         # Create the color
-        return cls(space, coords)
+        obj = cls(space, coords)
+        if undef:
+            obj.normalize()
+        return obj
 
-    def to_dict(self) -> Mapping[str, Any]:
+    def to_dict(self, undef: bool = True) -> Mapping[str, Any]:
         """Return color as a data object."""
 
-        return {'space': self.space(), 'coords': self[:-1], 'alpha': self[-1]}
+        return {'space': self.space(), 'coords': self.coords(undef), 'alpha': self.alpha(undef)}
 
-    def normalize(self) -> Color:
+    def normalize(self, undef: bool = True) -> Color:
         """Normalize the color."""
 
-        self[:-1] = self.coords()
-        if hasattr(self._space, 'hue_index') and self.is_achromatic():
+        self[:-1] = self.coords(undef=False)
+        if undef and hasattr(self._space, 'hue_index') and self.is_achromatic():
             i = self._space.hue_index()
             self[i] = alg.NaN
         self[-1] = alg.no_nan(self[-1])
         return self
 
-    def is_nan(self, name: str) -> bool:
+    @util.deprecated("Please use 'is_undef' instead as 'is_nan' will be removed at some future time.")
+    def is_nan(self, name: str) -> bool:  # pragma: no cover
         """Check if channel is NaN."""
+
+        return self.is_undef(name)
+
+    def is_undef(self, name: str) -> bool:
+        """Check if channel is undefined/not a number."""
 
         return alg.is_nan(self.get(name))
 
@@ -505,24 +514,34 @@ class Color(metaclass=ColorMeta):
 
         return self.new(self.space(), self[:-1], self[-1])
 
-    def convert(self, space: str, *, fit: bool | str = False, in_place: bool = False) -> Color:
+    def convert(
+        self,
+        space: str,
+        *, fit: bool | str = False,
+        in_place: bool = False,
+        undef: bool = True
+    ) -> Color:
         """Convert to color space."""
 
+        # Convert the color and then fit it.
         if fit:
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
-                converted = self.convert(space, in_place=in_place)
+                converted = self.convert(space, in_place=in_place, undef=undef)
                 return converted.fit(space, method=method)
 
+        # Nothing to do, just return the color with no alterations.
         if space == self.space():
             return self if in_place else self.clone()
 
+        # Actually convert the color
         c, coords = convert.convert(self, space)
         this = self if in_place else self.clone()
         this._space = c
         this._coords[:-1] = coords
 
-        if hasattr(this._space, 'hue_index') and this.is_achromatic():
+        # Normalize achromatic colors, but skip if we internally don't need this.
+        if undef and hasattr(this._space, 'hue_index') and this.is_achromatic():
             this[this._space.hue_index()] = alg.NaN
 
         return this
@@ -530,8 +549,15 @@ class Color(metaclass=ColorMeta):
     def is_achromatic(self) -> bool:
         """Test if color is achromatic."""
 
-        xyz = self.convert('xyz-d65')
-        return all([math.isclose(0, x, abs_tol=9e-6) for x in alg.vcross(xyz.coords(), xyz.white())])
+        # If we are already XYZ D65, just extract the coordinates without `NaN`.
+        # We do this for consistency as any color converting to XYZ will also have `NaN` removed.
+        if self.space() == 'xyz-d65':
+            xyz = self
+            coords = xyz.coords(undef=False)
+        else:
+            xyz = self.convert('xyz-d65')
+            coords = xyz[:-1]
+        return all([math.isclose(0, x, abs_tol=9e-6) for x in alg.vcross(coords, xyz.white())])
 
     def mutate(
         self,
@@ -550,6 +576,8 @@ class Color(metaclass=ColorMeta):
         color: ColorInput,
         data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
+        *,
+        undef: bool = True,
         **kwargs: Any
     ) -> Color:
         """Update the existing color space with the provided color."""
@@ -557,7 +585,17 @@ class Color(metaclass=ColorMeta):
         space = self.space()
         self._space, self._coords = self._parse(color, data=data, alpha=alpha, **kwargs)
         if self._space.NAME != space:
-            self.convert(space, in_place=True)
+            self.convert(space, in_place=True, undef=undef)
+        return self
+
+    def _hotswap(self, color: Color) -> Color:
+        """
+        Hot swap a color object.
+
+        We expect it to be a color object, no special parsing, we just want to go fast.
+        """
+
+        self._space, self._coords = self.CS_MAP[color.space()], color[:]
         return self
 
     def to_string(self, **kwargs: Any) -> str:
@@ -599,7 +637,7 @@ class Color(metaclass=ColorMeta):
         coords = self.chromatic_adaptation(
             xyz._space.WHITE,
             self._space.WHITE,
-            xyz[:-1]
+            xyz.coords(False)
         )
         return util.xyz_to_xyY(coords, self._space.white())[:2]
 
@@ -620,7 +658,7 @@ class Color(metaclass=ColorMeta):
 
         return adapter.adapt(w1, w2, xyz)
 
-    def clip(self, space: str | None = None) -> Color:
+    def clip(self, space: str | None = None, undef: bool = True) -> Color:
         """Clip the color channels."""
 
         orig_space = self.space()
@@ -628,17 +666,18 @@ class Color(metaclass=ColorMeta):
             space = self.space()
 
         # Convert to desired space
-        c = self.convert(space, in_place=True)
+        c = self.convert(space, in_place=True, undef=False)
         gamut.clip_channels(c)
 
         # Adjust "this" color
-        return c.convert(orig_space, in_place=True)
+        return c.convert(orig_space, in_place=True, undef=undef)
 
     def fit(
         self,
         space: str | None = None,
         *,
         method: str | None = None,
+        undef: bool = True,
         **kwargs: Any
     ) -> Color:
         """Fit the gamut using the provided method."""
@@ -648,7 +687,7 @@ class Color(metaclass=ColorMeta):
 
         # Dedicated clip method.
         if method == 'clip':
-            return self.clip(space)
+            return self.clip(space, undef=undef)
 
         orig_space = self.space()
         if space is None:
@@ -661,13 +700,14 @@ class Color(metaclass=ColorMeta):
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        self.convert(space, in_place=True)
+        self.convert(space, in_place=True, undef=False)
 
         # Call the appropriate gamut mapping algorithm
-        mapping.fit(self, **kwargs)
+        mapping.fit(self, undef, **kwargs)
 
         # Convert back to the original color space
-        return self.convert(orig_space, in_place=True)
+        return self.convert(orig_space, in_place=True, undef=undef)
+        # return self.convert(orig_space, in_place=True, undef=undef)
 
     def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
@@ -676,12 +716,15 @@ class Color(metaclass=ColorMeta):
             space = self.space()
 
         # Check if gamut is in the provided space
-        c = self.convert(space) if space is not None and space != self.space() else self
+        c = self.convert(space, undef=False) if space is not None and space != self.space() else self
 
         # Check the color space specified for gamut checking.
         # If it proves to be in gamut, we will then test if the current
         # space is constrained properly.
-        if c._space.GAMUT_CHECK is not None and not c.convert(c._space.GAMUT_CHECK).in_gamut(tolerance=tolerance):
+        if (
+            c._space.GAMUT_CHECK is not None and
+            not c.convert(c._space.GAMUT_CHECK, undef=False).in_gamut(tolerance=tolerance)
+        ):
             return False
 
         return gamut.verify(c, tolerance)
@@ -721,7 +764,7 @@ class Color(metaclass=ColorMeta):
         if i.domain:
             i.domain = interpolate.normalize_domain(i.domain)
         mixed = i(percent)
-        return self.mutate(mixed) if in_place else mixed
+        return self._hotswap(mixed) if in_place else mixed
 
     @classmethod
     def steps(
@@ -755,6 +798,7 @@ class Color(metaclass=ColorMeta):
         extrapolate: bool = False,
         domain: list[float] | None = None,
         method: str = "linear",
+        undef: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """
@@ -780,6 +824,7 @@ class Color(metaclass=ColorMeta):
             premultiplied=premultiplied,
             extrapolate=extrapolate,
             domain=domain,
+            undef=undef,
             **kwargs
         )
 
@@ -790,21 +835,27 @@ class Color(metaclass=ColorMeta):
         *,
         space: str | None = None,
         in_place: bool = False,
+        undef: bool = True,
         **kwargs: Any
     ) -> Color:
         """Filter."""
 
-        return filters.filters(self, name, amount, space, in_place, **kwargs)
+        current = self.space()
+        color = filters.filters(self, name, amount, space, in_place, undef, **kwargs)
+        color.convert(current, in_place=True, undef=undef)
+        return color.normalize(False) if not undef and current == color.space() else color
 
     def harmony(
         self,
         name: str,
         *,
-        space: str | None = None
+        space: str | None = None,
+        undef: bool = True
     ) -> list[Color]:
         """Acquire the specified color harmonies."""
 
-        return harmonies.harmonize(self, name, space)
+        colors = harmonies.harmonize(self, name, space)
+        return [c.normalize(False) for c in colors] if not undef else colors
 
     def compose(
         self,
@@ -814,7 +865,8 @@ class Color(metaclass=ColorMeta):
         operator: str | bool = True,
         space: str | None = None,
         out_space: str | None = None,
-        in_place: bool = False
+        in_place: bool = False,
+        undef: bool = True
     ) -> Color:
         """Blend colors using the specified blend mode."""
 
@@ -828,8 +880,8 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = self.space()
 
-        color.convert(out_space, in_place=True)
-        return self.mutate(color) if in_place else color
+        color.convert(out_space, in_place=True, undef=undef)
+        return self._hotswap(color) if in_place else color
 
     def delta_e(
         self,
@@ -868,7 +920,7 @@ class Color(metaclass=ColorMeta):
     def luminance(self) -> float:
         """Get color's luminance."""
 
-        return self.convert("xyz-d65")['y']
+        return self.convert("xyz-d65").get('y', undef=False)
 
     def contrast(self, color: ColorInput, method: str | None = None) -> float:
         """Compare the contrast ratio of this color and the provided color."""
@@ -877,14 +929,14 @@ class Color(metaclass=ColorMeta):
         return contrast.contrast(method, self, color)
 
     @overload
-    def get(self, name: str) -> float:  # noqa: D105
+    def get(self, name: str, undef: bool = True) -> float:  # noqa: D105
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str, ...]) -> list[float]:  # noqa: D105
+    def get(self, name: list[str] | tuple[str, ...], undef: bool = True) -> list[float]:  # noqa: D105
         ...
 
-    def get(self, name: str | list[str] | tuple[str, ...]) -> float | list[float]:
+    def get(self, name: str | list[str] | tuple[str, ...], undef: bool = True) -> float | list[float]:
         """Get channel."""
 
         # Handle single channel
@@ -892,8 +944,19 @@ class Color(metaclass=ColorMeta):
             # Handle space.channel
             if '.' in name:
                 space, channel = name.split('.', 1)
-                return self.convert(space)[channel]
-            return self[name]
+                if undef:
+                    return self.convert(space)[channel]
+                else:
+                    obj = self.convert(space, undef=undef)
+                    i = obj._space.get_channel_index(channel)
+                    v = obj[i]
+                    return obj._space.channels[i].undef if math.isnan(v) else v
+            elif undef:
+                return self[name]
+            else:
+                i = self._space.get_channel_index(name)
+                v = self[i]
+                return self._space.channels[i].undef if math.isnan(v) else v
 
         # Handle list of channels
         else:
@@ -905,15 +968,21 @@ class Color(metaclass=ColorMeta):
                 # Handle space.channel
                 space, channel = n.split('.', 1) if '.' in n else (original_space, n)
                 if space != current_space:
-                    obj = self if space == original_space else self.convert(space)
+                    obj = self if space == original_space else self.convert(space, undef=undef)
                     current_space = space
-                values.append(obj[channel])
+                if undef:
+                    values.append(obj[channel])
+                else:
+                    i = obj._space.get_channel_index(channel)
+                    v = obj[i]
+                    values.append(obj._space.channels[i].undef if math.isnan(v) else v)
             return values
 
     def set(  # noqa: A003
         self,
         name: str | dict[str, float | Callable[..., float]],
-        value: float | Callable[..., float] | None = None
+        value: float | Callable[..., float] | None = None,
+        undef: bool = True
     ) -> Color:
         """Set channel."""
 
@@ -932,12 +1001,22 @@ class Color(metaclass=ColorMeta):
                 # Handle space.channel
                 space, channel = k.split('.', 1) if '.' in k else (original_space, k)
                 if space != current_space:
-                    obj.convert(space, in_place=True)
+                    obj.convert(space, in_place=True, undef=undef)
                     current_space = space
-                obj[channel] = v(obj[channel]) if callable(v) else v
+                if undef:
+                    obj[channel] = v(obj[channel]) if callable(v) else v
+                else:
+                    if callable(v):
+                        i = obj._space.get_channel_index(channel)
+                        c = obj[i]
+                        if math.isnan(c):
+                            c = obj._space.channels[i].undef
+                        obj[channel] = v(c)
+                    else:
+                        obj[channel] = v
 
             # Update the original color
-            self.update(obj)
+            self.update(obj, undef=undef)
 
         # Set a single channel value
         else:
@@ -947,24 +1026,48 @@ class Color(metaclass=ColorMeta):
             # Handle space.channel
             if '.' in name:
                 space, channel = name.split('.', 1)
-                obj = self.convert(space)
-                obj[channel] = value(obj[channel]) if callable(value) else value
-                return self.update(obj)
+                obj = self.convert(space, undef=undef)
+                if undef:
+                    obj[channel] = value(obj[channel]) if callable(value) else value
+                else:
+                    if callable(value):
+                        i = obj._space.get_channel_index(channel)
+                        c = obj[i]
+                        if math.isnan(c):
+                            c = obj._space.channels[i].undef
+                        obj[channel] = value(c)
+                    else:
+                        obj[channel] = value
+                return self.update(obj, undef=undef)
 
             # Handle a function that modifies the value or a direct value
-            self[name] = value(self[name]) if callable(value) else value
+            if undef:
+                self[name] = value(self[name]) if callable(value) else value
+            else:
+                if callable(value):
+                    i = self._space.get_channel_index(name)
+                    c = self[i]
+                    if math.isnan(c):
+                        c = self._space.channels[i].undef
+                    self[name] = value(c)
+                else:
+                    self[name] = value
 
         return self
 
-    def coords(self, nan=True):
+    def coords(self, undef: bool = True) -> Vector:
         """Get the color channels and optionally remove undefined values."""
 
-        return self[:-1] if nan else self._space.no_nans(self[:-1])
+        if undef:
+            return self[:-1]
+        else:
+            return[c.undef if math.isnan(v) else v for v, c in zip(self[:-1], self._space.CHANNELS)]
 
-    def alpha(self, nan=True):
+    def alpha(self, undef: bool = True) -> float:
         """Get the alpha channel."""
 
-        return self[-1] if nan else alg.no_nan(self[-1])
+        v = self[-1]
+        return self[-1] if undef else (0.0 if math.isnan(v) else v)
 
 
 Color.register(
