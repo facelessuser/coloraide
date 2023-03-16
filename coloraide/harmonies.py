@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 from .spaces import Cylindrical
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color

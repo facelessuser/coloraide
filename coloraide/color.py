@@ -707,7 +707,6 @@ class Color(metaclass=ColorMeta):
 
         # Convert back to the original color space
         return self.convert(orig_space, in_place=True, undef=undef)
-        # return self.convert(orig_space, in_place=True, undef=undef)
 
     def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
@@ -1063,7 +1062,7 @@ class Color(metaclass=ColorMeta):
         if undef:
             return self[:-1]
         else:
-            return[c.undef if math.isnan(v) else v for v, c in zip(self[:-1], self._space.CHANNELS)]
+            return [c.undef if math.isnan(v) else v for v, c in zip(self[:-1], self._space.CHANNELS)]
 
     def alpha(self, undef: bool = True) -> float:
         """Get the alpha channel."""

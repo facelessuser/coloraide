@@ -2,6 +2,10 @@
 
 ## 2.0
 
+- **BREAK**: Interpolation will no longer base the output color on the first input color. Colors will be evaluated in
+  the specified interpolation space and be output in that space unless `out_space` is defined. This affects `mix`,
+  `steps`, and `interpolate`.
+
 - **NEW**: Interpolation will carry forward undefined channels as specified by the CSS specification. In addition,
   any HSV-ish color spaces will carry forward hue and saturation to HSL-ish and LCh-ish color spaces. HSV will also
   carry forward V undefined channels to other HSV-ish color spaces.
