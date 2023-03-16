@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.0
+
+- **NEW**: Deprecate `is_nan` if favor of `is_undef`. At some future time, `is_nan` will be removed.
+
+- **NEW**: Rework achromatic normalization. There is now a generic way to perform achromatic detection and normalization
+  of a cylindrical color's hue. This makes achromatic translations between color spaces much more reliable.
+
+- **NEW**: Expose `Color.is_achromatic()` which will report if any color is achromatic (or extremely close to).
+
+- **NEW**: Some color spaces actually do not convert as well or have bad side effects if zero is used as a replacement
+  for an undefined value. Allow color spaces to define ways to specify what should actually be used. Some color spaces
+  will now report a non-zero value for certain undefined channels.
+
+    Color space plugins will no longer use the `normalize()` function, but instead can provide `achromatic_hue()` to
+    report the best hue for achromatic colors and `remove_undef()` which will be called when that color space needs to
+    translate undefined values.
+
+    JzCzhz, CAM16 JMh, and HCT all convert better in the achromatic region if undefined is treated as a hue other than 0.
+    These color spaces will now use and return a non-zero hue for achromatic colors.
+
+    OkLCh, along with Okhsl and Okhsv, actually have much better achromatic round trip translations when using a
+    specific non-zero hue, but will still return 0 for undefined hues to align with the CSS spec. OkLCh and friends is
+    far less sensitive to using zero than spaces like JzCzhz, etc., but it will still use the appropriate hue internally
+    when it can.
+
+    Lastly, some color spaces (ACEScct) will actually report out of gamut if an undefined channel is treated as zero.
+    ACEScct black is actually above zero, and while ACESScct will allow values that far exceed the lower boundary, for
+    practical purposes, undefined channels will now be treated with the value for black.
+
+- **NEW**: `Color.normalize()` a new `undef` parameter that when set to `False` will prevent achromatic hue
+  normalization (setting hue to undefined if achromatic).
+
+- **NEW**: Convert now accepts a keyword argument `undef` that when set to `False` will skip achromatic hue
+  normalization and just return the value assigned during the conversion process, assuming the color wasn't already in
+  the requested color space. This can be faster when converting to a cylindrical color space as the achromatic check is
+  generically performed in XYZ D65, so this removes an additional conversion.
+
+- **NEW**: `Color.coords()` and `Color.alpha()`, which used to be available during the alpha/beta period have been
+  re-added. `coords()` accesses just the color channels (no alpha) while `alpha()` gets the alpha channel. If the
+  `undef` parameter is set to `False`, undefined values will be returned as defined values.
+
 ## 1.8.2
 
 - **FIX**: Fix some exception messages.

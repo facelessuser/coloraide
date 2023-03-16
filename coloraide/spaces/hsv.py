@@ -4,7 +4,6 @@ from ..spaces import Space, Cylindrical
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
-from .. import algebra as alg
 from ..types import Vector
 
 

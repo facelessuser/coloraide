@@ -6,7 +6,6 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9698626/pdf/sensors-22-08869.pdf
 from __future__ import annotations
 import math
 from ..distance import DeltaE
-from .. import algebra as alg
 from typing import Any, TYPE_CHECKING
 from ..spaces.cam16_ucs import COEFFICENTS
 
@@ -24,8 +23,8 @@ class DECAM16(DeltaE):
 
         space = 'cam16-{}'.format(model)
         kl = COEFFICENTS[model][0]
-        j1, a1, b1 = color.convert(space).coords(nan=False)
-        j2, a2, b2 = sample.convert(space).coords(nan=False)
+        j1, a1, b1 = color.convert(space).coords(undef=False)
+        j2, a2, b2 = sample.convert(space).coords(undef=False)
 
         dj = j1 - j2
         da = a1 - a2

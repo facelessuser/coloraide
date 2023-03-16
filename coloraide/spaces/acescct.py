@@ -53,16 +53,11 @@ class ACEScct(sRGB):
     SERIALIZE = ("--acescct",)  # type: tuple[str, ...]
     WHITE = (0.32168, 0.33767)
     CHANNELS = (
-        Channel("r", CCT_MIN, CCT_MAX, bound=True),
-        Channel("g", CCT_MIN, CCT_MAX, bound=True),
-        Channel("b", CCT_MIN, CCT_MAX, bound=True)
+        Channel("r", CCT_MIN, CCT_MAX, bound=True, undef=CCT_MIN),
+        Channel("g", CCT_MIN, CCT_MAX, bound=True, undef=CCT_MIN),
+        Channel("b", CCT_MIN, CCT_MAX, bound=True, undef=CCT_MIN)
     )
     DYNAMIC_RANGE = 'hdr'
-
-    def no_nans(self, coords: Vector) -> Vector:
-        """Return color channels with the proper lower boundary."""
-
-        return [CCT_MIN if math.isnan(c) else c for c in coords]
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

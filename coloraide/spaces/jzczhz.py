@@ -6,6 +6,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 from __future__ import annotations
 from ..spaces import Space, LChish
 from ..cat import WHITES
+from .jzazbz import xyz_d65_to_jzazbz
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 import math
@@ -50,18 +51,19 @@ class JzCzhz(LChish, Space):
     BASE = "jzazbz"
     NAME = "jzczhz"
     SERIALIZE = ("--jzczhz",)
+    WHITE = WHITES['2deg']['D65']
+    DYNAMIC_RANGE = 'hdr'
+    ACHROMATIC_HUE = jzazbz_to_jzczhz(xyz_d65_to_jzazbz(util.xy_to_xyz(WHITE)))[-1]
     CHANNELS = (
         Channel("jz", 0.0, 1.0, limit=(0.0, None)),
         Channel("cz", 0.0, 0.5, limit=(0.0, None)),
-        Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
+        Channel("hz", 0.0, 360.0, flags=FLG_ANGLE, undef=ACHROMATIC_HUE)
     )
     CHANNEL_ALIASES = {
         "lightness": "jz",
         "chroma": "cz",
         "hue": "hz"
     }
-    WHITE = WHITES['2deg']['D65']
-    DYNAMIC_RANGE = 'hdr'
 
     def achromatic_hue(self) -> float:
         """
@@ -74,17 +76,7 @@ class JzCzhz(LChish, Space):
         Because of this, we cannot reslove undefined hues as zero.
         """
 
-        return ACHROMATIC_HUE
-
-    def no_nans(self, coords: Vector) -> Vector:
-        """Return coordinates with no undefined values."""
-
-        if alg.is_nan(coords[2]):
-            coords[:2] = alg.no_nans(coords[:2])
-            coords[2] = ACHROMATIC_HUE
-            return coords
-        else:
-            return alg.no_nans(coords)
+        return self.ACHROMATIC_HUE
 
     def hue_name(self) -> str:
         """Hue name."""

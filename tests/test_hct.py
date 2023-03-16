@@ -114,25 +114,25 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('hct', [NaN, 20, 30], 1)
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('color(--hct none 20 30 / 1)')
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
         c = Color(Color('white').convert('hct').to_string()).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
         c = Color(Color('gray').convert('hct').to_string()).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
         c = Color(Color('darkgray').convert('hct').to_string()).normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to HCT with a null hue."""
@@ -141,4 +141,4 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
             for x in range(0, 256):
                 color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
                 color2 = color.convert('hct')
-                self.assertTrue(color2.is_nan('hue'))
+                self.assertTrue(color2.is_undef('hue'))

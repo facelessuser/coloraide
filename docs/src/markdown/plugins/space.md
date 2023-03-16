@@ -179,34 +179,29 @@ space that has a different white point. In ColorAide, any time XYZ D65 is either
 other color space has a different white point, the XYZ coordinates, will either be adapted to XYZ D65 or XYZ (new white
 point) respectively. This all happens without The `Space` plugin needing to do anything additional.
 
-
 White points are specified via the `WHITE` property, and should contain a tuple of `xy` coordinates of the white point.
 
-## Color Normalization
+## Resolve Undefined Values
 
-In addition to the aforementioned methods, some color spaces, such as cylindrical spaces, have some additional logic
-that determines when a `hue` is undefined. During conversion, undefined channels are initially thrown away, but a color
-may be returned with undefined hues if it is a cylindrical color space and the the color is achromatic, or in some cases,
-very close to achromatic.
+By default, undefined color channels are resolved as `0`, but there are color spaces where zero just does not work well
+for them. Such color spaces can choose a different default for undefined values. Generally, `0` is encouraged, but if
+zero is fundamentally a bad value for a color space and/or can decrease accuracy of colors, `remove_undef` can be
+overridden to resolve them to something else.
 
-The `Space.normalize` function is not used during conversion, but provides logic for specifically normalizing an exiting
-color when `Color.normalize` is called. Logic should generally match whatever occurs during conversion.
-
-Usually, for rectangular spaces, `normalize` simply eliminates undefined channels. For cylindrical spaces, it will also
-set the hue to "undefined" if the color meets the criteria of the color space. This may be when chroma is zero, or maybe
-even when very close to zero. This can vary from color space to color space.
-
-`normalize` can be specified as an function of the `Space` plugin.
+If modifying this for a cylindrical color space, you may want to tie this function to the cylindrical
+[`achromatic_hue`](#mix-ins) method to resolve hues. `achromatic_hue` is used during conversion when an undefined hue
+is encountered. `remove_undef` controls how values are resolved for serialization. Normally these are the same, but it
+may be desirable to serialize as `0` for convenience, but if possible, use the more accurate hue during conversion. This
+works best in color spaces where the actual hue has only a slight impact during conversion.
 
 ```py
-    def normalize(self, coords: Vector) -> Vector:
-        """Normalize color."""
+############################
+# Can be overridden to control how undefined values resolve.
+############################
+def remove_undef(self, coords: Vector) -> Vector:
+    """Return coordinates with no undefined values."""
 
-        coords = alg.no_nans(coords)
-        if coords[1] == 0 or coords[2] in (0, 1):
-            coords[0] = alg.NaN
-
-        return coords
+    return alg.no_nans(coords)
 ```
 
 ## Mix-ins
@@ -237,12 +232,25 @@ class Cylindrical:
         For most color spaces, the hue has little affect when the color is achromatic,
         but on rare occasions, a color space algorithm may require a specific hue
         in order to more accurately translate an achromatic hue, CAM16 JMh (without
-        discounting) being an example. Color spaces internally handle this during
-        conversion, but there are times such as when plotting where knowing the
-        hue can be useful.
+        discounting) being an example. This defines the hue used during conversion.
+
+        This only affects what is used when converting, to serialize to a non-zero
+        hue, override `remove_undef`. You can have `remove_undef` rely on this method.
         """
 
         return 0.0
+
+    def remove_undef(self, coords: Vector) -> Vector:
+        """Return coordinates with no undefined values."""
+
+        i = self.hue_index()
+        if alg.is_nan(coords[i]):
+            coords[:i] = alg.no_nans(coords[:i])
+            coords[i + 1:] = alg.no_nans(coords[i + 1:])
+            coords[i] = self.achromatic_hue()
+            return coords
+        else:
+            return alg.no_nans(coords)
 ```
 ///
 

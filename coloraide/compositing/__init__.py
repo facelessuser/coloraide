@@ -40,10 +40,10 @@ def apply_compositing(
     """Perform the actual blending."""
 
     # Get the color coordinates
-    csa = color1.alpha(nan=False)
-    cba = color2.alpha(nan=False)
-    coords1 = color1.coords(nan=False)
-    coords2 = color2.coords(nan=False)
+    csa = color1.alpha(undef=False)
+    cba = color2.alpha(undef=False)
+    coords1 = color1.coords(undef=False)
+    coords2 = color2.coords(undef=False)
 
     # Setup compositing
     compositor = None  # type: porter_duff.PorterDuff | None

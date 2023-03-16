@@ -24,18 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
+from ..oklab import xyz_d65_to_oklab
 from ...spaces import Space, LChish
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 import math
 from ...types import Vector
-
-# The transform consistently yields ~90˚ for achromatic hues for positive lightness
-# Replacing achromatic NaN hues with this hue gives us closer translations back.
-# Negative lightness uses ~270, but not worth handling as real world colors don't
-# use inverse lightness.
-ACHROMATIC_HUE = 90.00000025580869
 
 
 def oklab_to_oklch(oklab: Vector) -> Vector:
@@ -78,6 +73,10 @@ class OkLCh(LChish, Space):
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D65']
+    # OkLCh serializes undefined hues to 0 in CSS, so we will use this to improve conversions,
+    # but still serialize undefined hues to 0 as it puts us still in range, but we get better
+    # round tripping with the hue below.
+    ACHROMATIC_HUE = oklab_to_oklch(xyz_d65_to_oklab(util.xy_to_xyz(WHITE)))[-1]
 
     def achromatic_hue(self) -> float:
         """
@@ -87,7 +86,7 @@ class OkLCh(LChish, Space):
         with accepting 0 as well.
         """
 
-        return ACHROMATIC_HUE
+        return self.ACHROMATIC_HUE
 
     def to_base(self, oklch: Vector) -> Vector:
         """To Lab."""

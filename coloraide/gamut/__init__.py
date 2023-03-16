@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def clip_channels(color: Color) -> None:
+def clip_channels(color: Color, undef: bool = True) -> None:
     """Clip channels."""
 
     for i, value in enumerate(color[:-1]):
@@ -55,5 +55,5 @@ class Fit(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def fit(self, color: Color, **kwargs: Any) -> None:
+    def fit(self, color: Color, undef: bool = True, **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""

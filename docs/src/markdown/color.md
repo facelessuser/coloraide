@@ -198,6 +198,19 @@ call the `convert` method with the desired color space.
 Color('yellow').convert("lab")
 ```
 
+Cylindrical colors often have their hue normalized (achromatic hues set to undefined). For speed, or for other reasons,
+if you'd like to convert the color without this normalization, turn off undefined values by setting `undef` to
+`#!py False`.
+
+```py play
+Color('gray').convert("hsl", undef=False)
+Color('gray').convert("oklch", undef=False)
+Color('gray').convert("cam16-jmh", undef=False)
+```
+
+/// new | New 2.0 `undef`
+///
+
 /// note | Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
 ///
 

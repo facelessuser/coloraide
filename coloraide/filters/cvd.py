@@ -223,7 +223,7 @@ class Protan(Filter):
     VIENOT = VIENOT_PROTAN
     MACHADO = MACHADO_PROTAN
 
-    def __init__(self, severe: str = 'vienot', anomalous: str = 'machado') -> None:
+    def __init__(self, severe: str = 'vienot', anomalous: str = 'machado', **kwargs: Any) -> None:
         """Initialize."""
 
         self.severe = severe
@@ -290,7 +290,7 @@ class Tritan(Protan):
     VIENOT = VIENOT_TRITAN
     MACHADO = MACHADO_TRITAN
 
-    def __init__(self, severe: str = 'brettel', anomalous: str = 'brettel') -> None:
+    def __init__(self, severe: str = 'brettel', anomalous: str = 'brettel', **kwargs: Any) -> None:
         """Initialize."""
 
         super().__init__(severe, anomalous)

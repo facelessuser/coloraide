@@ -110,13 +110,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('lchuv', [90, 50, NaN], 1)
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('color(--lchuv 90% 0 none / 1)')
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_near_zero_null(self):
         """
@@ -127,7 +127,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """
 
         c = Color('color(--lchuv 90% 0.000000000009 120 / 1)').convert('luv').convert('lchuv')
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_from_luv(self):
         """Test null from Luv conversion."""
@@ -135,13 +135,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c1 = Color('color(--luv 90% 0 0)')
         c2 = c1.convert('lchuv')
         self.assertColorEqual(c2, Color('color(--lchuv 90% 0 0)'))
-        self.assertTrue(c2.is_nan('hue'))
+        self.assertTrue(c2.is_undef('hue'))
 
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
         c = Color('color(--lchuv 90% 0 120 / 1)').normalize()
-        self.assertTrue(c.is_nan('hue'))
+        self.assertTrue(c.is_undef('hue'))
 
     def test_achromatic_hue(self):
         """Test that all RGB-ish colors convert to LChuv with a null hue."""
@@ -150,7 +150,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
             for x in range(0, 256):
                 color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
                 color2 = color.convert('lchuv')
-                self.assertTrue(color2.is_nan('hue'))
+                self.assertTrue(color2.is_undef('hue'))
 
 
 class TestQuirks(util.ColorAsserts, unittest.TestCase):

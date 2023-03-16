@@ -2,7 +2,6 @@
 from __future__ import annotations
 from ..distance import DeltaE
 import math
-from .. import algebra as alg
 from ..spaces import Labish
 from typing import TYPE_CHECKING, Any
 
@@ -36,8 +35,11 @@ class DEHyAB(DeltaE):
         if not isinstance(color._space, Labish):
             raise ValueError("The space '{}' is not a 'lab-ish' color space and cannot use HyAB".format(space))
 
-        names = color._space.labish_names()
-        l1, a1, b1 = alg.no_nans(color.get(names))
-        l2, a2, b2 = alg.no_nans(sample.get(names))
+        i = color._space.labish_indexes()
+        coords1 = color.coords(undef=False)
+        coords2 = sample.coords(undef=False)
 
-        return abs(l1 - l2) + math.sqrt((a1 - a2) ** 2 + (b1 - b2) ** 2)
+        return (
+            abs(coords1[i[0]] - coords2[i[0]]) +
+            math.sqrt((coords1[i[1]] - coords2[i[1]]) ** 2 + (coords1[i[2]] - coords2[i[2]]) ** 2)
+        )

@@ -2,7 +2,6 @@
 from __future__ import annotations
 from ..distance import DeltaE
 import math
-from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -44,8 +43,8 @@ class DECMC(DeltaE):
         if c is None:
             c = self.c
 
-        l1, a1, b1 = color.convert("lab").coords(nan=False)
-        l2, a2, b2 = sample.convert("lab").coords(nan=False)
+        l1, a1, b1 = color.convert("lab").coords(undef=False)
+        l2, a2, b2 = sample.convert("lab").coords(undef=False)
 
         # Equation (3)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)

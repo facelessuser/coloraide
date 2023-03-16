@@ -175,6 +175,7 @@ class BSpline(Interpolate):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        undef: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Return the B-spline interpolator."""
@@ -190,5 +191,7 @@ class BSpline(Interpolate):
             progress,
             premultiplied,
             extrapolate,
-            domain
+            domain,
+            undef,
+            **kwargs
         )

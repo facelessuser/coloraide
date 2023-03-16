@@ -17,6 +17,7 @@ class Channel(str):
     bound: bool
     flags: int
     limit: tuple[float | None, float | None]
+    undef: float
 
     def __new__(
         cls,
@@ -26,7 +27,8 @@ class Channel(str):
         mirror_range: bool = False,
         bound: bool = False,
         flags: int = 0,
-        limit: tuple[float | None, float | None] = (None, None)
+        limit: tuple[float | None, float | None] = (None, None),
+        undef: float = 0.0
     ) -> 'Channel':
         """Initialize."""
 
@@ -39,5 +41,6 @@ class Channel(str):
         obj.bound = bound
         obj.flags = flags
         obj.limit = limit
+        obj.undef = undef
 
         return obj
