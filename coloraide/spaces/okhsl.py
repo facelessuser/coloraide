@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import Space, Cylindrical
+from ..spaces import HSLish, Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .oklab import oklab_to_linear_srgb
@@ -410,7 +410,7 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
     return [util.constrain_hue(h * 360), s, l]
 
 
-class Okhsl(Cylindrical, Space):
+class Okhsl(HSLish, Space):
     """HSL class."""
 
     BASE = "oklab"

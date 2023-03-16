@@ -798,6 +798,7 @@ class Color(metaclass=ColorMeta):
         extrapolate: bool = False,
         domain: list[float] | None = None,
         method: str = "linear",
+        carryforward: bool = True,
         undef: bool = True,
         **kwargs: Any
     ) -> Interpolator:
@@ -824,6 +825,7 @@ class Color(metaclass=ColorMeta):
             premultiplied=premultiplied,
             extrapolate=extrapolate,
             domain=domain,
+            carryforward=carryforward,
             undef=undef,
             **kwargs
         )

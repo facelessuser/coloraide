@@ -40,6 +40,48 @@ class Cylindrical:
         return 0.0
 
 
+class RGBish:
+    """RGB-ish space."""
+
+    def rgbish_names(self) -> tuple[str, ...]:
+        """Return RGB-ish names in order R G B."""
+
+        return cast(Space, self).channels[:-1]
+
+    def rgbish_indexes(self) -> list[int]:
+        """Return the index of RGB-ish channels."""
+
+        return [cast(Space, self).get_channel_index(name) for name in self.rgbish_names()]
+
+
+class HSLish(Cylindrical):
+    """HSL-ish space."""
+
+    def hslish_names(self) -> tuple[str, ...]:
+        """Return HSL-ish names in order H S L."""
+
+        return cast(Space, self).channels[:-1]
+
+    def hslish_indexes(self) -> list[int]:
+        """Return the index of HSL-ish channels."""
+
+        return [cast(Space, self).get_channel_index(name) for name in self.hslish_names()]
+
+
+class HSVish(Cylindrical):
+    """HSV-ish space."""
+
+    def hsvish_names(self) -> tuple[str, ...]:
+        """Return HSV-ish names in order H S V."""
+
+        return cast(Space, self).channels[:-1]
+
+    def hsvish_indexes(self) -> list[int]:
+        """Return the index of HSV-ish channels."""
+
+        return [cast(Space, self).get_channel_index(name) for name in self.hsvish_names()]
+
+
 class Labish:
     """Lab-ish color spaces."""
 

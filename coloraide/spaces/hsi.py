@@ -4,7 +4,7 @@ HSI class.
 https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
 """
 from __future__ import annotations
-from ..spaces import Space, Cylindrical
+from ..spaces import Space, HSLish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import algebra as alg
@@ -73,7 +73,7 @@ def hsi_to_srgb(hsi: Vector) -> Vector:
     return [chan + m for chan in rgb]
 
 
-class HSI(Cylindrical, Space):
+class HSI(HSLish, Space):
     """HSI class."""
 
     BASE = "srgb"

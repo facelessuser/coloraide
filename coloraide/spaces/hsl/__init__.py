@@ -1,6 +1,6 @@
 """HSL class."""
 from __future__ import annotations
-from ...spaces import Space, Cylindrical
+from ...spaces import HSLish, Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
@@ -50,7 +50,7 @@ def hsl_to_srgb(hsl: Vector) -> Vector:
     return [f(0), f(8), f(4)]
 
 
-class HSL(Cylindrical, Space):
+class HSL(HSLish, Space):
     """HSL class."""
 
     BASE = "srgb"
