@@ -435,8 +435,8 @@ def convert(
 Description
 
 -   Converts a [`Color`](#color) object from one color space to another. If the current color space matches the
-    specified color space, the object will be cloned. If `in_place` is `#!py True`, the current object will be modified
-    in place.
+    specified color space, a clone of the current color will be returned with no changes to the channel values. If
+    `in_place` is `#!py True`, the current object will be modified in place.
 
 Parameters
 
@@ -446,7 +446,7 @@ Parameters
     `space`    |               | A string representing the desired final color space.
     `fit`      | `#!py False`  | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used.
     `in_place` | `#!py False`  | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
-    `undef`    | `#!py True`   | Perform hue normalization (setting hue to undefined if the color is achromatic).
+    `undef`    | `#!py True`   | Perform hue normalization on converted colors (setting hue to undefined if the color is achromatic).
 
 Return
 
@@ -506,7 +506,8 @@ Return
 
 ```py
 def to_dict(
-    self
+    self,
+    undef: bool = True
 ) -> Mapping[str, Any]:
     ...
 ```
@@ -523,6 +524,13 @@ Description
         'alpha': 1.0                # Alpha channel value
     }
     ```
+
+Parameters
+
+- 
+    Parameters | Defaults      | Description
+    ---------- | ------------- | -----------
+    `undef`    | `#!py True`   | Return channel values having undefined values resolved as defined values.
 
 Return
 
@@ -1212,7 +1220,8 @@ Return
 ```py
 def get(
     self,
-    name: str | list[str] | tuple[str, ...]
+    name: str | list[str] | tuple[str, ...],
+    undef: bool = True
 ) -> float | list[float]:
 ```
 
@@ -1229,7 +1238,7 @@ Parameters
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
     `name`     |                    | Channel name or sequence of channel names. Channel names can define the color space and channel name to retrieve value from a different color space.
-
+    `undef`    | `#!py True`        | Determines whether an undefined value is allowed to be returned. If disabled, undefined values will be resolved before returning.
 Return
 
 -   Returns a numerical value that is stored internally for the specified channel, or a calculated value in the case
@@ -1243,7 +1252,8 @@ Return
 def set(
     self,
     name: str | dict[str, float | Callable[..., float]],
-    value: float | Callable[..., float] | None = None
+    value: float | Callable[..., float] | None = None,
+    undef: bool = True
 ) -> Color:
 ```
 
@@ -1269,7 +1279,7 @@ Parameters
     ---------- | ------------------ | -----------
     `name`     |                    | A string containing a channel name or color space and channel separated by a `.` specifying the what channel to set. If `value` is omitted, `name` can also be a dictionary containing multiple channels, each specifying their own value to set.
     `value`    |                    | A numerical value, a string value accepted by the specified color space, or a function.
-
+    `undef`    | `#!py True`        | Determines whether an undefined value is allowed to be returned when setting a value during a callback. If disabled, undefined values sent to the callback will be resolved before the callback is executed.
 Return
 
 -   Returns a reference to the current [`Color`](#color) object.
@@ -1331,6 +1341,26 @@ Return
 -   Returns a `#!py float`.
 ///
 
+## `#!py Color.is_achromatic` {#is_undef}
+
+```py
+def is_achromatic(
+    self
+) -> bool:
+    ...
+```
+
+/// define
+Description
+
+-   Can be called on any color to determine if the color is achromatic. If a color is achromatic, or very close to
+    achromatic, it will return `#!py True`.
+
+Return
+
+-   Returns a boolean indicating whether the color is achromatic.
+///
+
 ## `#!py Color.is_undef` {#is_undef}
 
 ```py
@@ -1389,7 +1419,8 @@ def chromatic_adaptation(
     w2: tuple[float, float],
     xyz: VectorLike,
     *,
-    method: str | None = None
+    method: str | None = None,
+    undef: bool = True
 ) -> Vector:
     ...
 ```

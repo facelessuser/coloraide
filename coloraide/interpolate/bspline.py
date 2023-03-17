@@ -27,7 +27,7 @@ class InterpolatorBSpline(Interpolator):
         Additionally, any undefined value have a new control point generated via
         linear interpolation. This is the only approach to provide a non-bias, non-breaking
         way to handle things like achromatic hues in a cylindrical space. It also balances
-        not cylindrical values. Since the B-spline needs a a continual path and since we
+        non cylindrical values. Since the B-spline needs a a continual path and since we
         have a sliding window that takes into account 4 points at a time, we must consider
         a more broad context than what is done in piecewise linear.
         """

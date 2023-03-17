@@ -457,12 +457,12 @@ class Color(metaclass=ColorMeta):
             obj.normalize()
         return obj
 
-    def to_dict(self, undef: bool = True) -> Mapping[str, Any]:
+    def to_dict(self, *, undef: bool = True) -> Mapping[str, Any]:
         """Return color as a data object."""
 
-        return {'space': self.space(), 'coords': self.coords(undef), 'alpha': self.alpha(undef)}
+        return {'space': self.space(), 'coords': self.coords(undef=undef), 'alpha': self.alpha(undef=undef)}
 
-    def normalize(self, undef: bool = True) -> Color:
+    def normalize(self, *, undef: bool = True) -> Color:
         """Normalize the color."""
 
         self[:-1] = self.coords(undef=False)
@@ -637,7 +637,7 @@ class Color(metaclass=ColorMeta):
         coords = self.chromatic_adaptation(
             xyz._space.WHITE,
             self._space.WHITE,
-            xyz.coords(False)
+            xyz.coords(undef=False)
         )
         return util.xyz_to_xyY(coords, self._space.white())[:2]
 
@@ -658,7 +658,7 @@ class Color(metaclass=ColorMeta):
 
         return adapter.adapt(w1, w2, xyz)
 
-    def clip(self, space: str | None = None, undef: bool = True) -> Color:
+    def clip(self, space: str | None = None, *, undef: bool = True) -> Color:
         """Clip the color channels."""
 
         orig_space = self.space()
@@ -702,8 +702,15 @@ class Color(metaclass=ColorMeta):
         # Convert to desired space
         self.convert(space, in_place=True, undef=False)
 
-        # Call the appropriate gamut mapping algorithm
-        mapping.fit(self, undef, **kwargs)
+        # If within gamut, just normalize hues by calling clip
+        if self.in_gamut(tolerance=0):
+            gamut.clip_channels(self)
+
+        # Perform gamut mapping and normalize hues if required
+        else:
+            mapping.fit(self, **kwargs)
+            if undef:
+                self.normalize()
 
         # Convert back to the original color space
         return self.convert(orig_space, in_place=True, undef=undef)
@@ -844,7 +851,7 @@ class Color(metaclass=ColorMeta):
         current = self.space()
         color = filters.filters(self, name, amount, space, in_place, undef, **kwargs)
         color.convert(current, in_place=True, undef=undef)
-        return color.normalize(False) if not undef and current == color.space() else color
+        return color.normalize(undef=False) if not undef and current == color.space() else color
 
     def harmony(
         self,
@@ -856,7 +863,7 @@ class Color(metaclass=ColorMeta):
         """Acquire the specified color harmonies."""
 
         colors = harmonies.harmonize(self, name, space)
-        return [c.normalize(False) for c in colors] if not undef else colors
+        return [c.normalize(undef=False) for c in colors] if not undef else colors
 
     def compose(
         self,
@@ -930,14 +937,14 @@ class Color(metaclass=ColorMeta):
         return contrast.contrast(method, self, color)
 
     @overload
-    def get(self, name: str, undef: bool = True) -> float:  # noqa: D105
+    def get(self, name: str, *, undef: bool = True) -> float:  # noqa: D105
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str, ...], undef: bool = True) -> list[float]:  # noqa: D105
+    def get(self, name: list[str] | tuple[str, ...], *, undef: bool = True) -> list[float]:  # noqa: D105
         ...
 
-    def get(self, name: str | list[str] | tuple[str, ...], undef: bool = True) -> float | list[float]:
+    def get(self, name: str | list[str] | tuple[str, ...], *, undef: bool = True) -> float | list[float]:
         """Get channel."""
 
         # Handle single channel
@@ -983,6 +990,7 @@ class Color(metaclass=ColorMeta):
         self,
         name: str | dict[str, float | Callable[..., float]],
         value: float | Callable[..., float] | None = None,
+        *,
         undef: bool = True
     ) -> Color:
         """Set channel."""
@@ -1056,7 +1064,7 @@ class Color(metaclass=ColorMeta):
 
         return self
 
-    def coords(self, undef: bool = True) -> Vector:
+    def coords(self, *, undef: bool = True) -> Vector:
         """Get the color channels and optionally remove undefined values."""
 
         if undef:
@@ -1064,7 +1072,7 @@ class Color(metaclass=ColorMeta):
         else:
             return [c.undef if math.isnan(v) else v for v, c in zip(self[:-1], self._space.CHANNELS)]
 
-    def alpha(self, undef: bool = True) -> float:
+    def alpha(self, *, undef: bool = True) -> float:
         """Get the alpha channel."""
 
         v = self[-1]

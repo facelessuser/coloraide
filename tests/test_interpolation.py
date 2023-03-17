@@ -3,6 +3,83 @@ import unittest
 from coloraide.everything import ColorAll as Color
 from coloraide import NaN, stop, hint, ease_in
 from . import util
+import pytest
+
+
+class TestCarryFoward(util.ColorAssertsPyTest):
+
+    CASES = [
+        [
+            'oklab',
+            4,
+            ['lch(none 30 270)', 'lab(none -2 12)', 'hsl(30 80 none)', 'oklab(0.5 0.3 -0.1)'],
+            ('l', 0.5)
+        ],
+        [
+            'oklch',
+            5,
+            [
+                'lch(40 none 270)', 'hsl(30 none 75)', 'color(--hsv 300 none 0.5)',
+                'color(--hsi 90 none 0.2)', 'color(--oklch 0.5 0.2 30)'],
+            ('c', 0.2)
+        ],
+        [
+            'hsl',
+            5,
+            [
+                'lch(40 none 270)', 'color(--hsv 300 none 0.5)', 'color(--hsi 90 none 0.2)',
+                'color(--oklch 0.5 none 30)', 'hsl(30 30 75)'],
+            ('s', 0.3)
+        ],
+        [
+            'hsv',
+            5,
+            [
+                'lch(40 none 270)', 'hsl(30 none 75)', 'color(--hsi 90 none 0.2)',
+                'color(--oklch 0.5 none 30)', 'color(--hsv 300 0.3 0.5)'],
+            ('s', 0.3)
+        ],
+        [
+            'hsl',
+            6,
+            [
+                'lch(40 10 none)', 'color(--hsv none 0.1 0.5)', 'hwb(none 30 75)',
+                'color(--hsi none 0.1 0.2)', 'color(--oklch 0.5 0.1 none)', 'hsl(30 30 75)'],
+            ('h', 30)
+        ],
+        [
+            'hwb',
+            6,
+            [
+                'lch(40 10 none)', 'color(--hsv none 0.1 0.5)', 'hsl(none 30 75)',
+                'color(--hsi none 0.1 0.2)', 'color(--oklch 0.5 0.1 none)', 'hwb(30 30 75)'],
+            ('h', 30)
+        ],
+        [
+            'oklab',
+            3,
+            [
+                'lch(40 10 270 / none)', 'rgb(220 0 47 / none)', 'hsl(30 30 75 / 0.5)',
+            ],
+            ('alpha', 0.5)
+        ],
+        [
+            'srgb',
+            3,
+            [
+                'color(xyz-d65 0.24 0.34 none)', 'color(display-p3 0 1 none)', 'rgb(30 30 75)'
+            ],
+            ('blue', 75 / 255)
+        ]
+    ]
+
+    @pytest.mark.parametrize('space, steps, colors, cmp', CASES)
+    def test_round_trip(self, space, steps, colors, cmp):
+        """Test round trip."""
+
+        results = Color.steps(colors, steps=steps, space=space, method='monotone')
+        if not all([abs(r[cmp[0]] - cmp[1]) < 1e-6 for r in results]):
+            assert False, "{} != {} : {}".format(cmp[0], cmp[1], results)
 
 
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
