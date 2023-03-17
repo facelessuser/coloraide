@@ -274,7 +274,7 @@ class Interpolator(metaclass=ABCMeta):
         if self.out_space != color.space():
             color.convert(self.out_space, in_place=True, undef=self.undef)
         elif not self.undef:
-            color.normalize(False)
+            color.normalize(undef=False)
 
         return color
 

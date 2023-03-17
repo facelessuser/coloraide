@@ -34,13 +34,8 @@ class LChChroma(Fit):
     MAX_LIGHTNESS = 100
     MIN_CONVERGENCE = 0.0001
 
-    def fit(self, color: Color, undef: bool = True, **kwargs: Any) -> None:
+    def fit(self, color: Color, **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
-
-        # If within gamut, just normalize hues by calling clip
-        if color.in_gamut(tolerance=0):
-            clip_channels(color)
-            return
 
         space = color.space()
         mapcolor = color.convert(self.SPACE, undef=False)
@@ -51,13 +46,9 @@ class LChChroma(Fit):
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
         if sdr and lightness >= self.MAX_LIGHTNESS:
             clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1], undef=False))
-            if undef:
-                color.normalize()
             return
         elif lightness <= self.MIN_LIGHTNESS:
             clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1], undef=False))
-            if undef:
-                color.normalize()
             return
 
         # Set initial chroma boundaries
@@ -96,5 +87,3 @@ class LChChroma(Fit):
                     else:
                         # We are still outside the gamut and outside the JND
                         high = mapcolor['chroma']
-        if undef:
-            color.normalize()

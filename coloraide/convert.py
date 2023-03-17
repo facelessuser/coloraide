@@ -131,10 +131,10 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     if hasattr(color._space, 'hue_index'):
         i = color._space.hue_index()
         h = alg.no_nan(color[i], color._space.achromatic_hue())  # type: ignore[attr-defined]
-        coords = color.coords(False)
+        coords = color.coords(undef=False)
         coords[i] = h
     else:
-        coords = color.coords(False)
+        coords = color.coords(undef=False)
 
     # Navigate the conversion chain translating the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).
