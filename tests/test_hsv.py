@@ -109,19 +109,19 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('hsv', [NaN, 0.5, 0.75], 1)
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('color(--hsv none 0% 0.75 / 1)')
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_sat(self):
         """Test minimum saturation."""
 
         c = Color('color(--hsv 270 0% 0.75 / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_to_hsl(self):
         """Test null from Lab conversion."""
@@ -129,7 +129,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c1 = Color('color(--hsv 0 0% 50%)')
         c2 = c1.convert('hsl')
         self.assertColorEqual(c2, Color('hsl(0 0% 50%)'))
-        self.assertTrue(c2.is_undef('hue'))
+        self.assertTrue(c2.is_nan('hue'))
 
     def test_from_hsl(self):
         """Test null from Lab conversion."""
@@ -137,4 +137,4 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c1 = Color('hsl(0 0% 50%)')
         c2 = c1.convert('hsv')
         self.assertColorEqual(c2, Color('color(--hsv 0 0% 50%)'))
-        self.assertTrue(c2.is_undef('hue'))
+        self.assertTrue(c2.is_nan('hue'))

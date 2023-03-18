@@ -36,8 +36,8 @@ class DEHyAB(DeltaE):
             raise ValueError("The space '{}' is not a 'lab-ish' color space and cannot use HyAB".format(space))
 
         i = color._space.labish_indexes()
-        coords1 = color.coords(undef=False)
-        coords2 = sample.coords(undef=False)
+        coords1 = color.coords(nans=False)
+        coords2 = sample.coords(nans=False)
 
         return (
             abs(coords1[i[0]] - coords2[i[0]]) +

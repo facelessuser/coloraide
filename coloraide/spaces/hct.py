@@ -158,7 +158,7 @@ class HCT(LChish, Space):
     )
     ACHROMATIC_HUE = xyz_to_hct(xy_to_xyz(WHITE), env=ENV)[0]
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, undef=ACHROMATIC_HUE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC_HUE),
         Channel("c", 0.0, 145.0, limit=(0.0, None)),
         Channel("t", 0.0, 100.0, limit=(0.0, None))
     )

@@ -45,18 +45,18 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c = Color('color(srgb 1 none 1)')
         self.assertEqual(c[:-1:2], [1, 1])
-        self.assertTrue(c.is_undef('green'))
-        self.assertTrue(Color('color(srgb 1 1 1 / none)').is_undef('alpha'))
+        self.assertTrue(c.is_nan('green'))
+        self.assertTrue(Color('color(srgb 1 1 1 / none)').is_nan('alpha'))
 
     def test_percent_none(self):
         """Test none for percents."""
 
         c = Color('color(--lch none 0 none)')
         self.assertEqual(c[1], 0)
-        self.assertTrue(c.is_undef('l') and c.is_undef('h'))
+        self.assertTrue(c.is_nan('l') and c.is_nan('h'))
         c = Color('hsl(30 none none)')
         self.assertEqual(c[0], 30)
-        self.assertTrue(c.is_undef('s') and c.is_undef('l'))
+        self.assertTrue(c.is_nan('s') and c.is_nan('l'))
 
     def test_normalize(self):
         """
@@ -391,25 +391,25 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             c1.set("red", "bad")
 
-    def test_is_undef_false(self):
-        """Test when `is_undef` is false."""
+    def test_is_nan_false(self):
+        """Test when `is_nan` is false."""
 
-        self.assertFalse(Color('red').convert('hsl').is_undef('hue'))
+        self.assertFalse(Color('red').convert('hsl').is_nan('hue'))
 
-    def test_is_undef_true(self):
-        """Test when `is_undef` is true."""
+    def test_is_nan_true(self):
+        """Test when `is_nan` is true."""
 
-        self.assertTrue(Color('white').convert('hsl').is_undef('hue'))
+        self.assertTrue(Color('white').convert('hsl').is_nan('hue'))
 
-    def test_is_undef_false_different_space(self):
-        """Test when `is_undef` is false."""
+    def test_is_nan_false_different_space(self):
+        """Test when `is_nan` is false."""
 
-        self.assertFalse(Color('red').is_undef('hsl.hue'))
+        self.assertFalse(Color('red').is_nan('hsl.hue'))
 
-    def test_is_undef_true_different_space(self):
-        """Test when `is_undef` is true."""
+    def test_is_nan_true_different_space(self):
+        """Test when `is_nan` is true."""
 
-        self.assertTrue(Color('white').is_undef('hsl.hue'))
+        self.assertTrue(Color('white').is_nan('hsl.hue'))
 
     def test_match(self):
         """Test match."""

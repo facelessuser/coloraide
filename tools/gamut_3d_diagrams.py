@@ -123,7 +123,7 @@ def add_cyl_color(space, color, x, y, z, c):
     Handles cylindrical spaces. Returns x (hue), y (chroma/saturation), z (value/lightness).
     """
 
-    cyl = color.convert(space, undef=False)
+    cyl = color.convert(space, norm=False)
     lightness = cyl.get(color_options.get(space, {}).get('lightness', 'lightness'))
     chroma = cyl.get(color_options.get(space, {}).get('chroma', 'chroma'))
     hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))

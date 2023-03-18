@@ -23,8 +23,8 @@ class DECAM16(DeltaE):
 
         space = 'cam16-{}'.format(model)
         kl = COEFFICENTS[model][0]
-        j1, a1, b1 = color.convert(space).coords(undef=False)
-        j2, a2, b2 = sample.convert(space).coords(undef=False)
+        j1, a1, b1 = color.convert(space).coords(nans=False)
+        j2, a2, b2 = sample.convert(space).coords(nans=False)
 
         dj = j1 - j2
         da = a1 - a2

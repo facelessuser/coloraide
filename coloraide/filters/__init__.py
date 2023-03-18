@@ -27,7 +27,7 @@ def filters(
     space: str | None = None,
     out_space: str | None = None,
     in_place: bool = False,
-    undef: bool = True,
+    norm: bool = True,
     **kwargs: Any
 ) -> Color:
     """Filter."""
@@ -47,6 +47,6 @@ def filters(
     if out_space is None:
         out_space = space
 
-    c = color.convert(space, in_place=in_place)
+    c = color.convert(space, in_place=in_place, norm=False).normalize()
     f.filter(c, amount, **kwargs)
-    return c.convert(out_space, in_place=True, undef=undef)
+    return c.convert(out_space, in_place=True, norm=norm)
