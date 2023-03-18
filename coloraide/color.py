@@ -427,7 +427,7 @@ class Color(metaclass=ColorMeta):
             cls._get_convert_chain.cache_clear()
 
     @classmethod
-    def random(cls, space: str, *, limits: Sequence[Sequence[float] | None] | None = None, undef: bool = True) -> Color:
+    def random(cls, space: str, *, limits: Sequence[Sequence[float] | None] | None = None) -> Color:
         """Get a random color."""
 
         # Get the color space and number of channels
@@ -453,7 +453,7 @@ class Color(metaclass=ColorMeta):
 
         # Create the color
         obj = cls(space, coords)
-        if undef:
+        if hasattr(obj._space, 'hue_index'):
             obj.normalize()
         return obj
 
@@ -842,28 +842,37 @@ class Color(metaclass=ColorMeta):
         amount: float | None = None,
         *,
         space: str | None = None,
+        out_space: str | None = None,
         in_place: bool = False,
         undef: bool = True,
         **kwargs: Any
     ) -> Color:
         """Filter."""
 
-        current = self.space()
-        color = filters.filters(self, name, amount, space, in_place, undef, **kwargs)
-        color.convert(current, in_place=True, undef=undef)
-        return color.normalize(undef=False) if not undef and current == color.space() else color
+        return filters.filters(self, name, amount, space, out_space, in_place, undef, **kwargs)
 
     def harmony(
         self,
         name: str,
         *,
         space: str | None = None,
+        out_space: str | None = None,
         undef: bool = True
     ) -> list[Color]:
         """Acquire the specified color harmonies."""
 
+        if space is None:
+            space = self.HARMONY
+
+        if out_space is None:
+            out_space = space
+
+        orig_space = self.space()
         colors = harmonies.harmonize(self, name, space)
-        return [c.normalize(undef=False) for c in colors] if not undef else colors
+        if space != orig_space:
+            [c.convert(out_space, in_place=True, undef=undef) for c in colors]
+
+        return colors
 
     def compose(
         self,
@@ -883,12 +892,7 @@ class Color(metaclass=ColorMeta):
         else:
             bcolor = [self._handle_color_input(backdrop)]
 
-        color = compositing.compose(self, bcolor, blend, operator, space)
-
-        if out_space is None:
-            out_space = self.space()
-
-        color.convert(out_space, in_place=True, undef=undef)
+        color = compositing.compose(self, bcolor, blend, operator, space, out_space)
         return self._hotswap(color) if in_place else color
 
     def delta_e(

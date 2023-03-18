@@ -123,7 +123,7 @@ class TestHarmonies(util.ColorAssertsPyTest):
     def test_harmonies(self, color, name, colors, space):
         """Test color harmonies."""
 
-        results = Color(color).harmony(name, space=space)
+        results = Color(color).harmony(name, space=space, out_space='srgb')
         for c1, c2 in zipl(results, [Color(c) for c in colors]):
             self.assertColorEqual(c1, c2)
 

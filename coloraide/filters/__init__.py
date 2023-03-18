@@ -25,6 +25,7 @@ def filters(
     name: str,
     amount: float | None = None,
     space: str | None = None,
+    out_space: str | None = None,
     in_place: bool = False,
     undef: bool = True,
     **kwargs: Any
@@ -43,7 +44,9 @@ def filters(
             "The '{}' only supports filtering in the {} spaces, not '{}'".format(name, str(f.ALLOWED_SPACES), space)
         )
 
-    current = color.space()
-    c = color.convert(space, in_place=in_place, undef=False).normalize()
+    if out_space is None:
+        out_space = space
+
+    c = color.convert(space, in_place=in_place)
     f.filter(c, amount, **kwargs)
-    return c.convert(current, in_place=True, undef=undef)
+    return c.convert(out_space, in_place=True, undef=undef)

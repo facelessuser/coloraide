@@ -154,12 +154,6 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color(BLUISH).compose(REDISH, blend='hue'), Color('rgb(13.23 172.67 204.23)'))
         self.assertColorEqual(Color(BLUISH).compose(YELLOWISH, blend='hue'), Color('rgb(113.71 231.66 255)'))
 
-        # sRGB must be forced
-        self.assertColorEqual(
-            Color(BLUISH).compose(YELLOWISH, blend='hue', space="display-p3"),
-            Color(BLUISH).compose(YELLOWISH, blend='hue', space="srgb")
-        )
-
     def test_saturation(self):
         """Test hue."""
 
@@ -172,12 +166,6 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color(BLUISH).compose(REDISH, blend='saturation'), Color('rgb(255 59.357 153.59)'))
         self.assertColorEqual(Color(BLUISH).compose(YELLOWISH, blend='saturation'), Color('rgb(245.4 211.1 15.403)'))
 
-        # sRGB must be forced
-        self.assertColorEqual(
-            Color(BLUISH).compose(YELLOWISH, blend='saturation', space="display-p3"),
-            Color(BLUISH).compose(YELLOWISH, blend='saturation', space="srgb")
-        )
-
     def test_luminosity(self):
         """Test luminosity."""
 
@@ -187,12 +175,6 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color(BLUISH).compose(REDISH, blend='luminosity'), Color('rgb(255 86.175 167.49)'))
         self.assertColorEqual(Color(BLUISH).compose(YELLOWISH, blend='luminosity'), Color('rgb(182.76 155.5 0)'))
 
-        # sRGB must be forced
-        self.assertColorEqual(
-            Color(BLUISH).compose(YELLOWISH, blend='luminosity', space="display-p3"),
-            Color(BLUISH).compose(YELLOWISH, blend='luminosity', space="srgb")
-        )
-
     def test_color(self):
         """Test color."""
 
@@ -201,12 +183,6 @@ class TestBlendModes(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(Color(REDISH).compose(YELLOWISH, blend='color'), Color('rgb(255 168.4 210.11)'))
         self.assertColorEqual(Color(BLUISH).compose(REDISH, blend='color'), Color('rgb(0 177.73 212.9)'))
         self.assertColorEqual(Color(BLUISH).compose(YELLOWISH, blend='color'), Color('rgb(113.71 231.66 255)'))
-
-        # sRGB must be forced
-        self.assertColorEqual(
-            Color(BLUISH).compose(YELLOWISH, blend='color', space="display-p3"),
-            Color(BLUISH).compose(YELLOWISH, blend='color', space="srgb")
-        )
 
 
 class TestBlend(util.ColorAsserts, unittest.TestCase):
@@ -226,7 +202,7 @@ class TestBlend(util.ColorAsserts, unittest.TestCase):
         c2 = Color('yellow')
         self.assertColorEqual(
             c1.compose(c2, blend='normal', space="display-p3"),
-            Color('rgb(127.5 127.5 167.63)')
+            Color('color(display-p3 0.5 0.5 0.64524)')
         )
 
     def test_blend_different_space_and_output(self):
@@ -235,8 +211,8 @@ class TestBlend(util.ColorAsserts, unittest.TestCase):
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
         self.assertColorEqual(
-            c1.compose(c2, blend='normal', space="display-p3", out_space="display-p3"),
-            Color('color(display-p3 0.5 0.5 0.64524)')
+            c1.compose(c2, blend='normal', space="display-p3", out_space="srgb"),
+            Color('rgb(127.5 127.5 167.63)')
         )
 
     def test_blend_bad_mode(self):
