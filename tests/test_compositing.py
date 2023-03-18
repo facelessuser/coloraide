@@ -100,7 +100,7 @@ class TestCompositing(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             c1.compose(c2, space="bad")
 
     def test_compose_no_alpha(self):
@@ -135,4 +135,5 @@ class TestCompositing(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('blue').set('alpha', 0.5)
         c2 = Color('yellow')
-        self.assertEqual(c1.compose(c2, space="hsl"), Color('color(srgb 0 1 0.5)'))
+        with self.assertRaises(ValueError):
+            c1.compose(c2, space="hsl")

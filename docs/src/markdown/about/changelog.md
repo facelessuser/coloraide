@@ -2,13 +2,20 @@
 
 ## 2.0
 
-- **BREAK**: Interpolation will no longer base the output color on the first input color. Colors will be evaluated in
-  the specified interpolation space and be output in that space unless `out_space` is defined. This affects `mix`,
-  `steps`, and `interpolate`.
+- **BREAK**: Functions like `interpolate`, `steps`, `mix`, `filter`, `compose`, and `harmony` will no longer base the
+  output color on the first (or only) input color. Colors will be evaluated in the specified color space and be output
+  in that space unless `out_space` is defined.
+
+- **NEW**: `filter`, `compose`, and `harmony` all support the `out_space` parameter.
+
+- **NEW**: Separable blend modes will not be evaluated in whatever RGB-ish color space is provided.
+
+- **NEW**: `compose` will throw an error in a non-RGB-ish color space is provided.
 
 - **NEW**: Interpolation will carry forward undefined channels as specified by the CSS specification. In addition,
   any HSV-ish color spaces will carry forward hue and saturation to HSL-ish and LCh-ish color spaces. HSV will also
-  carry forward V undefined channels to other HSV-ish color spaces.
+  carry forward V undefined channels to other HSV-ish color spaces. This can be disabled by setting `carryforward` to
+  `False`.
 
 - **NEW**: Deprecate `is_nan` if favor of `is_undef`. At some future time, `is_nan` will be removed.
 
@@ -20,10 +27,6 @@
 - **NEW**: Some color spaces actually do not convert as well or have bad side effects if zero is used as a replacement
   for an undefined value. Allow color spaces to define ways to specify what should actually be used. Some color spaces
   will now report a non-zero value for certain undefined channels.
-
-    Color space plugins will no longer use the `normalize()` function, but instead can provide `achromatic_hue()` to
-    report the best hue for achromatic colors and `remove_undef()` which will be called when that color space needs to
-    translate undefined values.
 
     JzCzhz, CAM16 JMh, and HCT all convert better in the achromatic region if undefined is treated as a hue other than 0.
     These color spaces will now use and return a non-zero hue for achromatic colors.

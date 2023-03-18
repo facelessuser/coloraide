@@ -116,12 +116,12 @@ class TestCVD(util.ColorAssertsPyTest):
             ('red', 'rgb(146.57 84.574 10.552)', 'protan', 'vienot', 0.8),
             ('red', 'rgb(123.88 89.533 11.788)', 'protan', 'vienot', 0.9),
 
-            ('red', Color('red').filter('tritan'), 'tritan', 'brettel', 1),
-            ('red', Color('red').filter('protan'), 'protan', 'vienot', 1),
-            ('red', Color('red').filter('deutan'), 'deutan', 'vienot', 1),
-            ('red', Color('red').filter('tritan', 0.5), 'tritan', 'brettel', 0.5),
-            ('red', Color('red').filter('protan', 0.5), 'protan', 'machado', 0.5),
-            ('red', Color('red').filter('deutan', 0.5), 'deutan', 'machado', 0.5)
+            ('red', Color('red').filter('tritan', out_space='srgb'), 'tritan', 'brettel', 1),
+            ('red', Color('red').filter('protan', out_space='srgb'), 'protan', 'vienot', 1),
+            ('red', Color('red').filter('deutan', out_space='srgb'), 'deutan', 'vienot', 1),
+            ('red', Color('red').filter('tritan', 0.5, out_space='srgb'), 'tritan', 'brettel', 0.5),
+            ('red', Color('red').filter('protan', 0.5, out_space='srgb'), 'protan', 'machado', 0.5),
+            ('red', Color('red').filter('deutan', 0.5, out_space='srgb'), 'deutan', 'machado', 0.5)
         ]
     )
     def test_cvd(self, color1, color2, deficiency, method, severity):
@@ -130,7 +130,7 @@ class TestCVD(util.ColorAssertsPyTest):
         print('color1: ', color1)
         print('color2: ', color2)
         self.assertColorEqual(
-            Color(color1).filter(deficiency, severity, method=method),
+            Color(color1).filter(deficiency, severity, out_space='srgb', method=method),
             Color(color2) if isinstance(color2, str) else color2
         )
 

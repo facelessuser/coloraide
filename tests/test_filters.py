@@ -68,7 +68,7 @@ class TestFilters(util.ColorAssertsPyTest):
         print('color1: ', color1)
         print('color2: ', color2)
         self.assertColorEqual(
-            Color(color1).filter(name, amount),
+            Color(color1).filter(name, amount, out_space='srgb'),
             Color(color2) if isinstance(color2, str) else color2
         )
 
@@ -86,7 +86,7 @@ class TestFilterMisc(util.ColorAsserts, unittest.TestCase):
         """Test a bad input space."""
 
         with self.assertRaises(ValueError):
-            Color('red').filter('sepia', space='display-p3')
+            Color('red').filter('sepia', space='display-p3', out_space='srgb')
 
     def test_bad_filter(self):
         """Test bad filter."""

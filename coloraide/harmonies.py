@@ -19,7 +19,7 @@ class Harmony(metaclass=ABCMeta):
     """Color harmony."""
 
     @abstractmethod
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
 
@@ -50,11 +50,8 @@ class Monochromatic(Harmony):
     RANGE = 12
     STEPS = 5
 
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
-
-        if space is None:
-            space = color.HARMONY
 
         orig_space = color.space()
         color1 = color.convert(space, undef=False).normalize()
@@ -127,11 +124,8 @@ class Geometric(Harmony):
 
     COUNT = 0
 
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
-
-        if space is None:
-            space = color.HARMONY
 
         orig_space = color.space()
         color1 = color.convert(space, undef=False).normalize()
@@ -174,11 +168,8 @@ class TetradicSquare(Geometric):
 class SplitComplementary(Harmony):
     """Split Complementary colors."""
 
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
-
-        if space is None:
-            space = color.HARMONY
 
         orig_space = color.space()
         color1 = color.convert(space, undef=False).normalize()
@@ -200,11 +191,8 @@ class SplitComplementary(Harmony):
 class Analogous(Harmony):
     """Analogous colors."""
 
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
-
-        if space is None:
-            space = color.HARMONY
 
         orig_space = color.space()
         color1 = color.convert(space, undef=False).normalize()
@@ -226,11 +214,8 @@ class Analogous(Harmony):
 class TetradicRect(Harmony):
     """Tetradic (rectangular) colors."""
 
-    def harmonize(self, color: Color, space: str | None) -> list[Color]:
+    def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
-
-        if space is None:
-            space = color.HARMONY
 
         orig_space = color.space()
         color1 = color.convert(space, undef=False).normalize()
@@ -262,7 +247,7 @@ SUPPORTED = {
 }  # type: dict[str, Harmony]
 
 
-def harmonize(color: Color, name: str, space: str | None) -> list[Color]:
+def harmonize(color: Color, name: str, space: str) -> list[Color]:
     """Get specified color harmonies."""
 
     h = SUPPORTED.get(name)

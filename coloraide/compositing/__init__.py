@@ -4,6 +4,7 @@ Compositing and RGB blend modes.
 https://www.w3.org/TR/compositing/
 """
 from __future__ import annotations
+from .. spaces import RGBish
 from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
@@ -79,7 +80,9 @@ def compose(
     backdrop: list[Color],
     blend: str | bool = True,
     operator: str | bool = True,
-    space: str | None = None
+    space: str | None = None,
+    out_space: str | None = None,
+    undef: bool = True
 ) -> Color:
     """Blend colors using the specified blend mode."""
 
@@ -89,12 +92,16 @@ def compose(
         blender = blend_modes.get_blender(blend)
     elif blend is True:
         blender = blend_modes.get_blender('normal')
-    is_seperable = blender is not None and isinstance(blender, blend_modes.NonSeperableBlend)
 
     # If we are doing non-separable, we are converting to a special space that
     # can only be done from sRGB, so we have to force sRGB anyway.
-    if space is None or is_seperable:
+    if space is None:
         space = 'srgb'
+    if out_space is None:
+        out_space = space
+
+    if not isinstance(color.CS_MAP[space], RGBish):
+        raise ValueError("Can only compose in an RGBish color space, not {}".format(type(color.CS_MAP[space])))
 
     if not backdrop:
         return color
@@ -109,4 +116,4 @@ def compose(
 
     src = color.convert(space)
 
-    return apply_compositing(src, dest, blender, operator)
+    return apply_compositing(src, dest, blender, operator).convert(out_space, in_place=True, undef=undef)
