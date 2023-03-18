@@ -38,23 +38,23 @@ class LChChroma(Fit):
         """Gamut mapping via CIELCh chroma."""
 
         space = color.space()
-        mapcolor = color.convert(self.SPACE, undef=False)
+        mapcolor = color.convert(self.SPACE, norm=False)
         lightness = mapcolor['lightness']
         sdr = color._space.DYNAMIC_RANGE == 'sdr'
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
         if sdr and lightness >= self.MAX_LIGHTNESS:
-            clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1], undef=False))
+            clip_channels(color.update('srgb', [1.0, 1.0, 1.0], mapcolor[-1], norm=False))
             return
         elif lightness <= self.MIN_LIGHTNESS:
-            clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1], undef=False))
+            clip_channels(color.update('srgb', [0.0, 0.0, 0.0], mapcolor[-1], norm=False))
             return
 
         # Set initial chroma boundaries
         low = 0.0
         high = mapcolor['chroma']
-        clip_channels(color._hotswap(mapcolor.convert(space, undef=False)))
+        clip_channels(color._hotswap(mapcolor.convert(space, norm=False)))
 
         # Adjust chroma if we are not under the JND yet.
         if mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS) >= self.LIMIT:
@@ -70,7 +70,7 @@ class LChChroma(Fit):
                 if lower_in_gamut and mapcolor.in_gamut(space, tolerance=0):
                     low = mapcolor['chroma']
                 else:
-                    clip_channels(color._hotswap(mapcolor.convert(space, undef=False)))
+                    clip_channels(color._hotswap(mapcolor.convert(space, norm=False)))
                     de = mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS)
                     if de < self.LIMIT:
                         # Kick out as soon as we are close enough to the JND.

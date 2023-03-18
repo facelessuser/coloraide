@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def clip_channels(color: Color, undef: bool = True) -> None:
+def clip_channels(color: Color, nans: bool = True) -> None:
     """Clip channels."""
 
     for i, value in enumerate(color[:-1]):

@@ -82,7 +82,7 @@ class Interpolator(metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        undef: bool = True,
+        norm: bool = True,
         **kwargs: Any
     ):
         """Initialize."""
@@ -99,7 +99,7 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
-        self.undef = undef
+        self.norm = norm
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
@@ -272,7 +272,7 @@ class Interpolator(metaclass=ABCMeta):
         # Create the color and ensure it is in the correct color space.
         color = self.create(self.space, coords[:-1], coords[-1])
         if self.out_space != color.space():
-            color.convert(self.out_space, in_place=True, undef=self.undef)
+            color.convert(self.out_space, in_place=True, norm=self.norm)
 
         return color
 
@@ -365,7 +365,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        undef: bool = True,
+        norm: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -626,7 +626,7 @@ def interpolator(
     extrapolate: bool,
     domain: list[float] | None = None,
     carryforward: bool = True,
-    undef: bool = True,
+    norm: bool = True,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -741,6 +741,6 @@ def interpolator(
         premultiplied,
         extrapolate,
         domain,
-        undef=undef,
+        norm=norm,
         **kwargs
     )

@@ -130,19 +130,19 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('hwb', [NaN, 0.1, 0.2], 1)
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('hwb(none 100% 0% / 1)')
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_max_white_black(self):
         """Test maximum lightness."""
 
         c = Color('hwb(270 20% 100% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_to_hsv(self):
         """Test null from Lab conversion."""
@@ -150,7 +150,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c1 = Color('color(--hsv 0 0% 50%)')
         c2 = c1.convert('hwb')
         self.assertColorEqual(c2, Color('hwb(0 50% 50%)'))
-        self.assertTrue(c2.is_undef('hue'))
+        self.assertTrue(c2.is_nan('hue'))
 
     def test_from_hsv(self):
         """Test null from Lab conversion."""
@@ -158,4 +158,4 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c1 = Color('hwb(0 50% 50%)')
         c2 = c1.convert('hsv')
         self.assertColorEqual(c2, Color('color(--hsv 0 0% 50%)'))
-        self.assertTrue(c2.is_undef('hue'))
+        self.assertTrue(c2.is_nan('hue'))

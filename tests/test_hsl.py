@@ -168,34 +168,34 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('hsl', [NaN, 0.5, 1], 1)
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('hsl(none 0% 75% / 1)')
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_sat(self):
         """Test minimum saturation."""
 
         c = Color('hsl(270 0% 75% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_max_light(self):
         """Test maximum lightness."""
 
         c = Color('hsl(270 20% 100% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_light(self):
         """Test minimum lightness."""
 
         c = Color('hsl(270 20% 0% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_corner_case_null(self):
         """Test corner case that produces null."""
 
         c = Color('color(srgb -2 0 2)').convert('hsl')
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))

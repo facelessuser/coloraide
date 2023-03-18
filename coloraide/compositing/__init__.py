@@ -41,10 +41,10 @@ def apply_compositing(
     """Perform the actual blending."""
 
     # Get the color coordinates
-    csa = color1.alpha(undef=False)
-    cba = color2.alpha(undef=False)
-    coords1 = color1.coords(undef=False)
-    coords2 = color2.coords(undef=False)
+    csa = color1.alpha(nans=False)
+    cba = color2.alpha(nans=False)
+    coords1 = color1.coords(nans=False)
+    coords2 = color2.coords(nans=False)
 
     # Setup compositing
     compositor = None  # type: porter_duff.PorterDuff | None
@@ -82,7 +82,7 @@ def compose(
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None,
-    undef: bool = True
+    norm: bool = True
 ) -> Color:
     """Blend colors using the specified blend mode."""
 
@@ -116,4 +116,4 @@ def compose(
 
     src = color.convert(space)
 
-    return apply_compositing(src, dest, blender, operator).convert(out_space, in_place=True, undef=undef)
+    return apply_compositing(src, dest, blender, operator).convert(out_space, in_place=True, norm=norm)

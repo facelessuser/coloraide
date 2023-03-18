@@ -35,7 +35,7 @@ class CAM16JMh(LChish, Space):
     CHANNELS = (
         Channel("j", 0.0, 100.0, limit=(0.0, None)),
         Channel("m", 0, 105.0, limit=(0.0, None)),
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, undef=ACHROMATIC_HUE)
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC_HUE)
     )
 
     def achromatic_hue(self) -> float:

@@ -42,8 +42,8 @@ def distance_euclidean(color: Color, sample: Color, space: str = "lab-d65") -> f
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    coords1 = color.convert(space, undef=False).coords(undef=False)
-    coords2 = sample.convert(space, undef=False).coords(undef=False)
+    coords1 = color.convert(space, norm=False).coords(nans=False)
+    coords2 = sample.convert(space, norm=False).coords(nans=False)
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 

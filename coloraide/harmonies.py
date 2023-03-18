@@ -54,14 +54,14 @@ class Monochromatic(Harmony):
         """Get color harmonies."""
 
         orig_space = color.space()
-        color1 = color.convert(space, undef=False).normalize()
+        color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
 
         # Trim off black and white unless the color is achromatic,
         # But always trim duplicate target color from left side.
-        if not color1.is_undef('hue'):
+        if not color1.is_nan('hue'):
             ltrim, rtrim = slice(1, -1, None), slice(None, -1, None)
         else:
             ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
@@ -69,9 +69,9 @@ class Monochromatic(Harmony):
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
         w = color.new('srgb', [1, 1, 1], alg.NaN)
-        w.convert(space, in_place=True, undef=False).mask(['hue', 'alpha'], in_place=True)
+        w.convert(space, in_place=True, norm=False).mask(['hue', 'alpha'], in_place=True)
         b = color.new('srgb', [0, 0, 0], alg.NaN)
-        b.convert(space, in_place=True, undef=False).mask(['hue', 'alpha'], in_place=True)
+        b.convert(space, in_place=True, norm=False).mask(['hue', 'alpha'], in_place=True)
 
         # Calculate how many tints and shades we need to generate
         db = b.delta_e(color1, method=self.DELTA_E)
@@ -128,7 +128,7 @@ class Geometric(Harmony):
         """Get color harmonies."""
 
         orig_space = color.space()
-        color1 = color.convert(space, undef=False).normalize()
+        color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
@@ -172,7 +172,7 @@ class SplitComplementary(Harmony):
         """Get color harmonies."""
 
         orig_space = color.space()
-        color1 = color.convert(space, undef=False).normalize()
+        color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
@@ -195,7 +195,7 @@ class Analogous(Harmony):
         """Get color harmonies."""
 
         orig_space = color.space()
-        color1 = color.convert(space, undef=False).normalize()
+        color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')
@@ -218,7 +218,7 @@ class TetradicRect(Harmony):
         """Get color harmonies."""
 
         orig_space = color.space()
-        color1 = color.convert(space, undef=False).normalize()
+        color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
             raise ValueError('Color space must be cylindrical')

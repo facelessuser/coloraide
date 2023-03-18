@@ -20,8 +20,8 @@ class DEZ(DeltaE):
     def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """Delta E z color distance formula."""
 
-        jz1, az1, bz1 = color.convert('jzazbz').coords(undef=False)
-        jz2, az2, bz2 = sample.convert('jzazbz').coords(undef=False)
+        jz1, az1, bz1 = color.convert('jzazbz').coords(nans=False)
+        jz2, az2, bz2 = sample.convert('jzazbz').coords(nans=False)
 
         cz1 = math.sqrt(az1 ** 2 + bz1 ** 2)
         cz2 = math.sqrt(az2 ** 2 + bz2 ** 2)

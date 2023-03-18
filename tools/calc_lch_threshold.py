@@ -69,7 +69,7 @@ def run(lch, lab, verify):
                 c_name = lchish._space.lchish_names()[1]
                 chroma = lchish.get(c_name)
                 if verify:
-                    assert lchish.is_undef('hue'), str(lchish) + " <-> " + str(color)
+                    assert lchish.is_nan('hue'), str(lchish) + " <-> " + str(color)
                 if chroma > max_chroma:
                     max_chroma = chroma
 

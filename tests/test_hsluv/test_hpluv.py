@@ -100,28 +100,28 @@ class TestHPLuvNull(util.ColorAsserts, unittest.TestCase):
         """Test null input."""
 
         c = Color('hpluv', [NaN, 0.5, 1], 1)
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_none_input(self):
         """Test `none` null."""
 
         c = Color('color(--hpluv none 0% 75% / 1)')
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_sat(self):
         """Test minimum saturation."""
 
         c = Color('color(--hpluv 270 0% 0.75 / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_max_light(self):
         """Test maximum lightness."""
 
         c = Color('color(--hpluv 270 20% 100% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_min_light(self):
         """Test minimum lightness."""
 
         c = Color('color(--hpluv 270 20% 0% / 1)').normalize()
-        self.assertTrue(c.is_undef('hue'))
+        self.assertTrue(c.is_nan('hue'))
