@@ -557,7 +557,7 @@ class Color(metaclass=ColorMeta):
         else:
             xyz = self.convert('xyz-d65')
             coords = xyz[:-1]
-        return all([math.isclose(0, x, abs_tol=9e-6) for x in alg.vcross(coords, xyz.white())])
+        return all([math.isclose(0, x, abs_tol=9e-5) for x in alg.vcross(coords, xyz.white())])
 
     def mutate(
         self,
