@@ -101,7 +101,6 @@ class CAM16LCD(CAM16UCS):
 
     NAME = "cam16-lcd"
     SERIALIZE = ("--cam16-lcd",)
-    ENV = ENV = CAM16.ENV
     MODEL = 'lcd'
     CHANNELS = (
         Channel("j", 0.0, 100.0, limit=(0.0, None)),
@@ -115,7 +114,6 @@ class CAM16SCD(CAM16UCS):
 
     NAME = "cam16-scd"
     SERIALIZE = ("--cam16-scd",)
-    ENV = ENV = CAM16.ENV
     MODEL = 'scd'
     CHANNELS = (
         Channel("j", 0.0, 100.0, limit=(0.0, None)),

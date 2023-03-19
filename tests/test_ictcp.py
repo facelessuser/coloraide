@@ -100,4 +100,4 @@ class TestICtCpProperties(util.ColorAsserts, unittest.TestCase):
         """Test `labish_names`."""
 
         c = Color('color(--ictcp 1 0.2 -0.3 / 1)')
-        self.assertEqual(c._space.labish_names(), ('i', 'cp', 'ct'))
+        self.assertEqual(c._space.names(), ('i', 'cp', 'ct'))

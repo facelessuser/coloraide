@@ -3,8 +3,9 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
+from ..util import deprecated
 from ..types import VectorLike, Vector, Plugin
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -21,7 +22,7 @@ class Cylindrical:
     def hue_index(self) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return cast(Space, self).get_channel_index(self.hue_name())
+        return self.get_channel_index(self.hue_name())  # type: ignore
 
     def achromatic_hue(self) -> float:
         """
@@ -42,71 +43,95 @@ class Cylindrical:
 class RGBish:
     """RGB-ish space."""
 
-    def rgbish_names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """Return RGB-ish names in order R G B."""
 
-        return cast(Space, self).channels[:-1]
+        return self.channels[:-1]  # type: ignore
 
-    def rgbish_indexes(self) -> list[int]:
+    def indexes(self) -> list[int]:
         """Return the index of RGB-ish channels."""
 
-        return [cast(Space, self).get_channel_index(name) for name in self.rgbish_names()]
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore
 
 
 class HSLish(Cylindrical):
     """HSL-ish space."""
 
-    def hslish_names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """Return HSL-ish names in order H S L."""
 
-        return cast(Space, self).channels[:-1]
+        return self.channels[:-1]  # type: ignore
 
-    def hslish_indexes(self) -> list[int]:
+    def indexes(self) -> list[int]:
         """Return the index of HSL-ish channels."""
 
-        return [cast(Space, self).get_channel_index(name) for name in self.hslish_names()]
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore
 
 
 class HSVish(Cylindrical):
     """HSV-ish space."""
 
-    def hsvish_names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """Return HSV-ish names in order H S V."""
 
-        return cast(Space, self).channels[:-1]
+        return self.channels[:-1]  # type: ignore
 
-    def hsvish_indexes(self) -> list[int]:
+    def indexes(self) -> list[int]:
         """Return the index of HSV-ish channels."""
 
-        return [cast(Space, self).get_channel_index(name) for name in self.hsvish_names()]
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore
 
 
 class Labish:
     """Lab-ish color spaces."""
 
+    @deprecated("Please use 'names' instead.")
     def labish_names(self) -> tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast(Space, self).channels[:-1]
+        return self.names()
 
+    @deprecated("Please use 'indexes' instead.")
     def labish_indexes(self) -> list[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        return [cast(Space, self).get_channel_index(name) for name in self.labish_names()]
+        return self.indexes()
+
+    def names(self) -> tuple[str, ...]:
+        """Return Lab-ish names in the order L a b."""
+
+        return self.channels[:-1]  # type: ignore
+
+    def indexes(self) -> list[int]:  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
+
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore
 
 
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
 
+    @deprecated("Please use 'names' instead.")
     def lchish_names(self) -> tuple[str, ...]:  # pragma: no cover
         """Return LCh-ish names in the order L c h."""
 
-        return cast(Space, self).channels[:-1]
+        return self.names()
 
+    @deprecated("Please use 'indexes' instead.")
     def lchish_indexes(self) -> list[int]:  # pragma: no cover
         """Return the index of the Lab-ish channels."""
 
-        return [cast(Space, self).get_channel_index(name) for name in self.lchish_names()]
+        return self.indexes()
+
+    def names(self) -> tuple[str, ...]:  # pragma: no cover
+        """Return LCh-ish names in the order L c h."""
+
+        return self.channels[:-1]  # type: ignore
+
+    def indexes(self) -> list[int]:  # pragma: no cover
+        """Return the index of the Lab-ish channels."""
+
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore
 
 
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))

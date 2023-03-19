@@ -102,7 +102,7 @@ class ICtCp(Labish, Space):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
-    def labish_names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """
         Return Lab-ish names in the order L a b.
 
