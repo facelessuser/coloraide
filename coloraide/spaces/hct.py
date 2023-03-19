@@ -174,7 +174,7 @@ class HCT(LChish, Space):
 
         return self.ACHROMATIC_HUE
 
-    def lchish_names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
 
         channels = self.channels

@@ -56,7 +56,7 @@ def run(lch, lab, verify):
             color = Color(space, [x / 1000] * 3)
             if lab:
                 labish = color.convert(lab)
-                a_name, b_name = labish._space.labish_names()[1:]
+                a_name, b_name = labish._space.names()[1:]
                 a = labish.get(a_name)
                 b = labish.get(b_name)
                 if abs(a) > max_a:
@@ -66,7 +66,7 @@ def run(lch, lab, verify):
 
             if lch:
                 lchish = color.convert(lch)
-                c_name = lchish._space.lchish_names()[1]
+                c_name = lchish._space.names()[1]
                 chroma = lchish.get(c_name)
                 if verify:
                     assert lchish.is_nan('hue'), str(lchish) + " <-> " + str(color)

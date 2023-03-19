@@ -553,22 +553,22 @@ def carryforward_convert(color: Color, space: str) -> None:
 
     # Gather undefined channels
     if isinstance(cs1, RGBish):
-        for i, name in zip(cs1.rgbish_indexes(), ('r', 'g', 'b')):
+        for i, name in zip(cs1.indexes(), ('r', 'g', 'b')):
             if alg.is_nan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, LChish):
-        for i, name in zip(cs1.lchish_indexes(), ('l', 'c', 'h')):
+        for i, name in zip(cs1.indexes(), ('l', 'c', 'h')):
             if alg.is_nan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, Labish):
-        if alg.is_nan(color[cs1.labish_indexes()[0]]):
+        if alg.is_nan(color[cs1.indexes()[0]]):
             channels['l'] = True
     elif isinstance(cs1, HSLish):
-        for i, name in zip(cs1.hslish_indexes(), ('h', 'c', 'l')):
+        for i, name in zip(cs1.indexes(), ('h', 'c', 'l')):
             if alg.is_nan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, HSVish):
-        for i, name in zip(cs1.hsvish_indexes(), ('h', 'c', 'v')):
+        for i, name in zip(cs1.indexes(), ('h', 'c', 'v')):
             if alg.is_nan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, Cylindrical):
@@ -581,26 +581,26 @@ def carryforward_convert(color: Color, space: str) -> None:
 
     # Channels that need to be carried forward
     if isinstance(cs2, RGBish):
-        indexes = cs2.rgbish_indexes()
+        indexes = cs2.indexes()
         for e, name in enumerate(('r', 'g', 'b')):
             if channels[name]:
                 carry.append(indexes[e])
     elif isinstance(cs2, Labish):
-        indexes = cs2.labish_indexes()
+        indexes = cs2.indexes()
         if channels['l']:
             carry.append(indexes[0])
     elif isinstance(cs2, LChish):
-        indexes = cs2.lchish_indexes()
+        indexes = cs2.indexes()
         for e, name in enumerate(('l', 'c', 'h')):
             if channels[name]:
                 carry.append(indexes[e])
     elif isinstance(cs2, HSLish):
-        indexes = cs2.hslish_indexes()
+        indexes = cs2.indexes()
         for e, name in enumerate(('h', 'c', 'l')):
             if channels[name]:
                 carry.append(indexes[e])
     elif isinstance(cs2, HSVish):
-        indexes = cs2.hsvish_indexes()
+        indexes = cs2.indexes()
         for e, name in enumerate(('h', 'c', 'v')):
             if channels[name]:
                 carry.append(indexes[e])
@@ -667,17 +667,17 @@ def interpolator(
     normalize_color(current)
 
     # Normalize hue
-    norm = current[:]
+    norm_coords = current[:]
     fallback = None
     if hue_index >= 0:
-        h = norm[hue_index]
-        norm, offset = normalize_hue(norm, None, hue_index, offset, hue, fallback)
+        h = norm_coords[hue_index]
+        norm_coords, offset = normalize_hue(norm_coords, None, hue_index, offset, hue, fallback)
         if not alg.is_nan(h):
             fallback = h
 
     easing = None  # type: Any
     easings = []  # type: Any
-    coords = [norm]
+    coords = [norm_coords]
 
     i = 0
     for x in colors[1:]:
@@ -706,15 +706,15 @@ def interpolator(
         normalize_color(color)
 
         # Normalize the hue
-        norm = color[:]
+        norm_coords = color[:]
         if hue_index >= 0:
-            h = norm[hue_index]
-            norm, offset = normalize_hue(current[:], norm, hue_index, offset, hue, fallback)
+            h = norm_coords[hue_index]
+            norm_coords, offset = normalize_hue(current[:], norm_coords, hue_index, offset, hue, fallback)
             if not alg.is_nan(h):
                 fallback = h
 
         # Create an entry interpolating the current color and the next color
-        coords.append(norm)
+        coords.append(norm_coords)
         easings.append(easing if easing is not None else progress)
 
         # The "next" color is now the "current" color

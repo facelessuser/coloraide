@@ -90,7 +90,7 @@ def linear_srgb_to_oklab(rgb: Vector) -> Vector:  # pragma: no cover
 
     return alg.dot(
         LMS3_TO_OKLAB,
-        [alg.cbrt(c) for c in alg.dot(SRGBL_TO_LMS, rgb, dims=alg.D2_D1)],
+        [alg.nth_root(c, 3) for c in alg.dot(SRGBL_TO_LMS, rgb, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 
@@ -110,7 +110,7 @@ def xyz_d65_to_oklab(xyz: Vector) -> Vector:
 
     return alg.dot(
         LMS3_TO_OKLAB,
-        [alg.cbrt(c) for c in alg.dot(XYZD65_TO_LMS, xyz, dims=alg.D2_D1)],
+        [alg.nth_root(c, 3) for c in alg.dot(XYZD65_TO_LMS, xyz, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 

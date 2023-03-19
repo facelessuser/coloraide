@@ -21,19 +21,13 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import Cylindrical, LChish, Labish  # noqa: E402
+from coloraide.spaces import Cylindrical, LChish, Labish, HSLish, HSVish  # noqa: E402
 
 # Special cases for certain color spaces
 color_options = {
-    'hsluv': {'factor': 100, 'chroma': 's', 'force_top': True, 'force_bottom': True, 'is_hsl': True},
-    'hpluv': {'factor': 100, 'chroma': 'p', 'force_top': True, 'force_bottom': True, 'is_hsl': True},
-    'hsl': {'chroma': 's', 'force_top': True, 'force_bottom': True},
-    'okhsl': {'chroma': 's', 'force_top': True, 'force_bottom': True, "is_hsl": True},
-    'hsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
-    'okhsv': {'chroma': 's', 'lightness': 'v', 'force_bottom': True, 'is_hsv': True},
-    'hsi': {'chroma': 's', 'lightness': 'i', 'force_bottom': True},
-    'hwb': {'chroma': 'w', 'lightness': 'b', 'force_max_radius': True, 'force_top': True, 'force_bottom': True},
-    'cam16-jmh': {'chroma': 'm'}
+    'hsluv': {'factor': 100},
+    'hpluv': {'factor': 100},
+    'hwb': {'force_max_radius': True}
 }
 
 
@@ -90,7 +84,7 @@ def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
     return ColorCyl
 
 
-def add_rect_color(space, color, x, y, z, c):
+def add_rect_color(space, stype, color, x, y, z, c):
     """Add rectangular color to the provided arrays."""
 
     coords = color.convert(space)[:-1]
@@ -103,7 +97,7 @@ def add_rect_color(space, color, x, y, z, c):
     c.append(color.to_string(hex=True))
 
 
-def add_lab_color(space, color, x, y, z, c):
+def add_lab_color(space, stype, color, x, y, z, c):
     """Add Lab like color to the provided arrays."""
 
     coords = color.convert(space)[:-1]
@@ -116,7 +110,7 @@ def add_lab_color(space, color, x, y, z, c):
     c.append(color.to_string(hex=True))
 
 
-def add_cyl_color(space, color, x, y, z, c):
+def add_cyl_color(space, stype, color, x, y, z, c):
     """
     Add color to the provided arrays.
 
@@ -124,9 +118,15 @@ def add_cyl_color(space, color, x, y, z, c):
     """
 
     cyl = color.convert(space, norm=False)
-    lightness = cyl.get(color_options.get(space, {}).get('lightness', 'lightness'))
-    chroma = cyl.get(color_options.get(space, {}).get('chroma', 'chroma'))
-    hue = cyl.get(color_options.get(space, {}).get('hue', 'hue'))
+
+    if stype in ('hslish', 'hsvish'):
+        names = cyl._space.names()
+        hue, chroma, lightness = cyl.get(names)
+    elif stype == 'lchish':
+        names = cyl._space.names()
+        lightness, chroma, hue = cyl.get(names)
+    else:
+        hue, chroma, lightness = cyl.coords()
 
     x.append(chroma * math.sin(math.radians(hue)))
     y.append(chroma * math.cos(math.radians(hue)))
@@ -158,10 +158,22 @@ def render_space(space, gamut, resolution, factor, x, y, z, c):
     spaces.
     """
 
-    is_hsv = color_options.get(space, {}).get('is_hsv', False)
-    is_hsl = color_options.get(space, {}).get('is_hsl', False)
-    if not is_hsv:
-        ColorCyl = create_custom_hsv(space, gamut, is_hsl, factor)
+    cs = Color.CS_MAP[space]
+
+    is_cyl = isinstance(cs, Cylindrical)
+    if isinstance(cs, Labish):
+        space_type = 'labish'
+    elif isinstance(cs, LChish):
+        space_type = 'lchish'
+    elif isinstance(cs, HSVish):
+        space_type = 'hsvish'
+    elif isinstance(cs, HSLish):
+        space_type = 'hslish'
+    else:
+        space_type = 'other'
+
+    if space_type != 'hsvish' or space == 'hsi':
+        ColorCyl = create_custom_hsv(space, gamut, space_type == 'hslish', factor)
         gamut_space = 'hsv-{}'.format(gamut)
     else:
         ColorCyl = Color
@@ -171,18 +183,17 @@ def render_space(space, gamut, resolution, factor, x, y, z, c):
     res2 = int(resolution * 1.5)
 
     color = ColorCyl('srgb', [])
-    is_cyl = isinstance(ColorCyl.CS_MAP[space], Cylindrical)
-    is_labish = isinstance(ColorCyl.CS_MAP[space], Labish)
-    is_lchish = isinstance(ColorCyl.CS_MAP[space], LChish)
-    if is_labish:
+
+    if space_type == 'labish':
         add = add_lab_color
     elif not is_cyl:
         add = add_rect_color
     else:
         add = add_cyl_color
-    force_max_radius = not is_lchish and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
-    force_bottom = color_options.get(space, {}).get('force_bottom', False)
-    force_top = color_options.get(space, {}).get('force_top', False)
+
+    force_max_radius = space_type != 'lchish' and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
+    force_bottom = space_type != 'lchish' and is_cyl
+    force_top = space_type == 'hslish'
 
     # We are rendering the spaces using sRGB, so just do a shell by picking
     # all the colors on the outside of the sRGB space. Render will be hollow.
@@ -199,17 +210,17 @@ def render_space(space, gamut, resolution, factor, x, y, z, c):
                 c1 += (360 / resolution) * 0.5
 
         if not force_max_radius:
-            add(space, color.update(gamut_space, [c1, c2, 1]), x, y, z, c)
-            add(space, color.update(gamut_space, [c1, 1, c2]), x, y, z, c)
+            add(space, space_type, color.update(gamut_space, [c1, c2, 1], norm=False), x, y, z, c)
+            add(space, space_type, color.update(gamut_space, [c1, 1, c2], norm=False), x, y, z, c)
         else:
             # Certain color spaces, like HWB, we must force max radius as the space
             # is constructed in a way that just doesn't translate to how we map other spaces.
             x.append(factor * math.sin(math.radians(c1)))
             y.append(factor * math.cos(math.radians(c1)))
             z.append(c2)
-            c.append(color.update(space, [c1, factor, c2]).to_string(hex=True))
+            c.append(color.update(space, [c1, factor, c2], norm=False).to_string(hex=True))
 
-        if not is_lchish and is_cyl:
+        if space_type != 'lchish' and is_cyl:
             # RGB cylinders often map max lightness to a single point instead of rendering a full cylinder
             # top an bottom. The alternative is to map the radius with a magnitude that lessens as we approach
             # achromatic, or just render the top and bottom of the cylinder with a disc. We've chosen the latter.
@@ -220,17 +231,17 @@ def render_space(space, gamut, resolution, factor, x, y, z, c):
                 x.append(c2 * factor * math.sin(math.radians(c1)))
                 y.append(c2 * factor * math.cos(math.radians(c1)))
                 z.append(factor)
-                c.append(color.update(space, [c1, c2, factor]).to_string(hex=True))
+                c.append(color.update(space, [c1, c2, factor], norm=False).to_string(hex=True))
 
             if force_bottom:
                 # Bottom disc
                 x.append(c2 * factor * math.sin(math.radians(c1)))
                 y.append(c2 * factor * math.cos(math.radians(c1)))
                 z.append(0)
-                c.append(color.update(space, [c1, c2 * factor, 0]).to_string(hex=True))
+                c.append(color.update(space, [c1, c2 * factor, 0], norm=False).to_string(hex=True))
         else:
             # Some spaces require a higher resolution in the black region to fill in any holes
-            add(space, color.update(gamut_space, [c1, 1, c2 * 0.005]), x, y, z, c)
+            add(space, space_type, color.update(gamut_space, [c1, 1, c2 * 0.005], norm=False), x, y, z, c)
 
 
 def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotate_elev=30.0, rotate_azim=-60.0):
@@ -253,10 +264,10 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
-        c1, c2, c3 = target.labish_indexes()
+        c1, c2, c3 = target.indexes()
         axm = [c2, c3, c1]
     elif is_lchish:
-        c1, c2, c3 = target.lchish_indexes()
+        c1, c2, c3 = target.indexes()
         axm = [c3, c2, c1]
     elif is_cyl:
         axm = [0, 1, 2]

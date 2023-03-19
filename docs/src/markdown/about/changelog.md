@@ -6,21 +6,21 @@
   output color on the first (or only) input color. Colors will be evaluated in the specified color space and be output
   in that space unless `out_space` is defined.
 
-- **NEW**: `filter`, `compose`, and `harmony` all support the `out_space` parameter.
+- **NEW**: `filter`, `compose`, and `harmony` all now support the `out_space` parameter.
 
 - **NEW**: Separable blend modes will not be evaluated in whatever RGB-ish color space is provided.
 
-- **NEW**: `compose` will throw an error in a non-RGB-ish color space is provided.
+- **NEW**: `compose` will throw an error if a non-RGB-ish color space is provided.
 
 - **NEW**: Interpolation will carry forward undefined channels as specified by the CSS specification. In addition,
   any HSV-ish color spaces will carry forward hue and saturation to HSL-ish and LCh-ish color spaces. HSV will also
   carry forward V undefined channels to other HSV-ish color spaces. This can be disabled by setting `carryforward` to
   `False`.
 
-- **NEW**: Deprecate `is_nan` if favor of `is_undef`. At some future time, `is_nan` will be removed.
-
 - **NEW**: Rework achromatic normalization. There is now a generic way to perform achromatic detection and normalization
-  of a cylindrical color's hue. This makes achromatic translations between color spaces much more reliable.
+  of a cylindrical color's hue. This is necessary for more complex color spaces that do not simply become achromatic
+  when chroma is zero. This also makes achromatic translations between color spaces much more reliable through
+  conversion.
 
 - **NEW**: Expose `Color.is_achromatic()` which will report if any color is achromatic (or extremely close to).
 
@@ -28,11 +28,12 @@
   for an undefined value. Allow color spaces to define ways to specify what should actually be used. Some color spaces
   will now report a non-zero value for certain undefined channels.
 
-    JzCzhz, CAM16 JMh, and HCT all convert better in the achromatic region if undefined is treated as a hue other than 0.
-    These color spaces will now use and return a non-zero hue for achromatic colors.
+    Since achromatic hues are set to undefined by default it is necessary to ensure the default makes sense for all
+    color spaces. JzCzhz, CAM16 JMh, and HCT all convert better in the achromatic region if the undefined hue is treated
+    as a specific value other than 0. These color spaces will now use and return a non-zero hue for achromatic hues.
 
     OkLCh, along with Okhsl and Okhsv, actually have much better achromatic round trip translations when using a
-    specific non-zero hue, but will still return 0 for undefined hues to align with the CSS spec. OkLCh and friends is
+    specific non-zero hue, but will still return 0 for undefined hues to align with the CSS spec. OkLCh and friends are
     far less sensitive to using zero than spaces like JzCzhz, etc., but it will still use the appropriate hue internally
     when it can.
 
@@ -40,13 +41,20 @@
     ACEScct black is actually above zero, and while ACESScct will allow values that far exceed the lower boundary, for
     practical purposes, undefined channels will now be treated with the value for black.
 
-- **NEW**: `Color.normalize()` a new `undef` parameter that when set to `False` will prevent achromatic hue
+- **NEW**: `Color.normalize()` added a new `nans` parameter that when set to `False` will prevent achromatic hue
   normalization (setting hue to undefined if achromatic).
 
-- **NEW**: Convert now accepts a keyword argument `undef` that when set to `False` will skip achromatic hue
-  normalization and just return the value assigned during the conversion process, assuming the color wasn't already in
-  the requested color space. This can be faster when converting to a cylindrical color space as the achromatic check is
-  generically performed in XYZ D65, so this removes an additional conversion.
+- **NEW**: Coordinate get and set functions now have a `nans` parameter that when set to `False` will ensure the
+  component is returned as a real number instead of NaN. Set operations only apply this when passing the current value
+  to a callback for relative modification.
+
+- **NEW**: `Color.coords()` and `Color.alpha()`, which used to be available during the alpha/beta period have been
+  re-added. `coords()` accesses just the color channels (no alpha) while `alpha()` gets the alpha channel.
+
+- **NEW**: A `norm` parameter is now added to any function that may cause a color conversion. If a conversion occurs,
+  and normalization is not integral to the operation, color normalization will be skipped. This normalization is what
+  causes achromatic hues to be set to undefined. This is used internally to make operations that do not require color
+  normalization faster and can be used. This does not remove undefined values if they exist in the working color space.
 
 - **NEW**: `Color.coords()` and `Color.alpha()`, which used to be available during the alpha/beta period have been
   re-added. `coords()` accesses just the color channels (no alpha) while `alpha()` gets the alpha channel. If the
