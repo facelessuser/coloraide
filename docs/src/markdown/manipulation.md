@@ -99,14 +99,14 @@ color.alpha()
 color.coords()
 ```
 
-In addition, both of these functions offer a special parameter `undef` that controls whether undefined values are
+In addition, both of these functions offer a special parameter `nans` that controls whether undefined values are
 returned as specified or whether they are resolved to defined values.
 
 ```py play
 color = Color("hsl", [NaN, 0, 0.75], 0.5)
 color
 color.coords()
-color.coords(undef=False)
+color.coords(nans=False)
 ```
 
 ### Access By Functions
@@ -221,12 +221,12 @@ color
 color.normalize()
 ```
 
-If the return of undefined hues is not desired, just set `undef` to `#!py False`.
+If the return of undefined hues (NaN values) are not desired, just set `nans` to `#!py False`.
 
 ```py play
 color = Color('hsl', [30, NaN, 0.75])
 color
-color.normalize(undef=False)
+color.normalize(nans=False)
 ```
 
 ## Undefined Values
@@ -294,10 +294,6 @@ Colors in general can sometimes have undefined channels. This can actually happe
 
 ### Checking for Undefined Values
 
-/// new | New 2.0 `is_undef`
-Renamed from `is_nan`. `is_nan` is now deprecated.
-///
-
 As previously mentioned, a color channel can be undefined for a number of reasons. And in cases such as interpolation,
 undefined values can even be useful. On the other hand, sometimes an undefined value may need to be handled special.
 
@@ -318,11 +314,11 @@ color['green'] + 0.5
 Because a `NaN` (or undefined value) may cause surprising results, it can be useful to check if a hue (or any channel)
 is undefined before applying certain operations where such a value may be undesirable, especially if the color
 potentially came from an unknown source. To make checking for undefined values easy, the convenience function
-`is_undef` has been made available. You can simply give `is_undef` the property you wish to check, and it will return
+`is_nan` has been made available. You can simply give `is_nan` the property you wish to check, and it will return
 either `#!py3 True` or `#!py3 False`.
 
 ```py play
-Color('hsl(none 0% 100%)').is_undef('hue')
+Color('hsl(none 0% 100%)').is_nan('hue')
 ```
 
 This is equivalent to using the `math` library and comparing the value directly:
@@ -352,7 +348,7 @@ always be true.
 
     ```py play
     jmh = Color('gray').convert('cam16-jmh')
-    jmh.coords(undef=False)
+    jmh.coords(nans=False)
     jmh.convert('srgb')
     jmh.set('hue', 0).convert('srgb')
     ```
@@ -367,7 +363,7 @@ always be true.
     aces = Color('black').convert('acescct')
     aces
     aces.mask(['alpha'], invert=True, in_place=True)
-    aces.coords(undef=False)
+    aces.coords(nans=False)
     aces.in_gamut()
     aces[:] = [0] * 3
     aces.in_gamut()

@@ -1341,7 +1341,7 @@ Return
 -   Returns a `#!py float`.
 ///
 
-## `#!py Color.is_achromatic` {#is_undef}
+## `#!py Color.is_achromatic` {#is_achromatic}
 
 ```py
 def is_achromatic(
@@ -1361,10 +1361,10 @@ Return
 -   Returns a boolean indicating whether the color is achromatic.
 ///
 
-## `#!py Color.is_undef` {#is_undef}
+## `#!py Color.is_nan` {#is_nan}
 
 ```py
-def is_undef(
+def is_nan(
     self,
     name: str
 ) -> bool:
