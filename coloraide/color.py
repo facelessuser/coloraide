@@ -545,7 +545,7 @@ class Color(metaclass=ColorMeta):
 
         value = self._space.is_achromatic(self.coords())
 
-        # Can't be detrmined by the space
+        # Can't be determined by the space
         if value is None:
             # If we are already XYZ D65, just extract the coordinates without `NaN`.
             # We do this for consistency as any color converting to XYZ will also have `NaN` removed.

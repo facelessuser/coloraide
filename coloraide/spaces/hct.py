@@ -55,9 +55,9 @@ from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .cam16 import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
+from .cam16_jmh import Achromatic as _Achromatic
 from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
-from ..util import xy_to_xyz
 import math
 
 
@@ -142,6 +142,16 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     return [h, c, alg.clamp(t, 0.0)]
 
 
+class Achromatic(_Achromatic):
+    """Test HCT achromatic response."""
+
+    CONVERTER = staticmethod(xyz_to_hct)
+    # Lightness and chroma (equivalent) index.
+    L_IDX = 2
+    C_IDX = 1
+    H_IDX = 0
+
+
 class HCT(LChish, Space):
     """HCT class."""
 
@@ -156,12 +166,6 @@ class HCT(LChish, Space):
         'average',
         False
     )
-    ACHROMATIC_HUE = xyz_to_hct(xy_to_xyz(WHITE), env=ENV)[0]
-    CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC_HUE),
-        Channel("c", 0.0, 145.0, limit=(0.0, None)),
-        Channel("t", 0.0, 100.0, limit=(0.0, None))
-    )
     CHANNEL_ALIASES = {
         "lightness": "t",
         "tone": "t",
@@ -169,10 +173,29 @@ class HCT(LChish, Space):
         "hue": "h"
     }
 
+    # Achromatic detection
+    ACHROMATIC = Achromatic(
+        {
+            'low': (1, 5, 1, 1000.0),
+            'mid': (1, 40, 1, 200.0),
+            'high': (50, 551, 50, 100.0)
+        },
+        0.0097,
+        0.0787,
+        ENV,
+        'catrom'
+    )
+
+    CHANNELS = (
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue),
+        Channel("c", 0.0, 145.0, limit=(0.0, None)),
+        Channel("t", 0.0, 100.0, limit=(0.0, None))
+    )
+
     def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        cdef, tdef = [math.isnan(c) for c in coords[1:]]
+        hdef, cdef, tdef = [math.isnan(c) for c in coords]
         if cdef and tdef:
             return False
 
@@ -186,12 +209,12 @@ class HCT(LChish, Space):
             return True
 
         # Chroma is complicated
-        return None
+        return self.ACHROMATIC.test(coords[2], coords[1], self.ACHROMATIC.hue if hdef else coords[0])
 
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""
 
-        return self.ACHROMATIC_HUE
+        return self.ACHROMATIC.hue
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""

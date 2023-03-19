@@ -19,20 +19,10 @@ class TestRoundTrip:
         """Local color object."""
 
     Color.deregister('space:hpluv')
-    # Color.deregister('space:hct')
-    # Color.deregister('space:cam16-jmh')
-    # Color.deregister('space:jzczhz')
-    # Color.deregister('space:okhsl')
-    # Color.deregister('space:okhsv')
 
     SPACES = {k: 5 for k in Color.CS_MAP.keys()}
-    # Lowered in general
+    # Not as accurate due to bisect back to CAM16
     SPACES['hct'] = 3
-    # Lowered for achromatic colors
-    SPACES['cam16-jmh'] = 3
-    SPACES['okhsl'] = 4
-    SPACES['okhsv'] = 4
-    SPACES['jzczhz'] = 4
 
     COLORS = [
         Color('red'),
@@ -41,12 +31,7 @@ class TestRoundTrip:
         Color('green'),
         Color('blue'),
         Color('indigo'),
-        Color('violet'),
-        Color('darkgrey'),
-        Color('lightgrey'),
-        Color('gray'),
-        Color('black'),
-        Color('white')
+        Color('violet')
     ]
 
     def assert_round_trip(self, color, space):
@@ -85,37 +70,39 @@ class TestRoundTrip:
             self.assert_round_trip(c, space)
 
 
-# class TestAchromaticRoundTrip(TestRoundTrip):
-#     """
-#     Test achromatic round trip.
+class TestAchromaticRoundTrip(TestRoundTrip):
+    """
+    Test achromatic round trip.
 
-#     For convienance, we determine achromatic colors and set hues to `NaN`.
-#     This can cause a slight drop in precision.
-#     """
+    For convienance, we determine achromatic colors and set hues to `NaN`.
+    This can cause a slight drop in precision.
+    """
 
-#     class Color(Base):
-#         """Local color object."""
+    class Color(Base):
+        """Local color object."""
 
-#     Color.deregister('space:hpluv')
+    Color.deregister('space:hpluv')
 
-#     SPACES = {k: 5 for k in Color.CS_MAP.keys()}
-#     SPACES['hct'] = 3
-#     SPACES['cam16-jmh'] = 3
-#     SPACES['okhsl'] = 4
-#     SPACES['okhsv'] = 4
-#     SPACES['jzczhz'] = 4
+    SPACES = {k: 5 for k in Color.CS_MAP.keys()}
+    # Precision just isn't as high for these in achromatic region
+    # but it is good enough for practical purposes.
+    SPACES['hct'] = 3
+    SPACES['cam16-jmh'] = 3
+    SPACES['okhsl'] = 4
+    SPACES['okhsv'] = 4
+    SPACES['jzczhz'] = 4
 
-#     COLORS = [
-#         Color('darkgrey'),
-#         Color('lightgrey'),
-#         Color('gray'),
-#         Color('black'),
-#         Color('white')
-#     ]
+    COLORS = [
+        Color('darkgrey'),
+        Color('lightgrey'),
+        Color('gray'),
+        Color('black'),
+        Color('white')
+    ]
 
-#     @pytest.mark.parametrize('space', SPACES)
-#     def test_round_trip(self, space):
-#         """Test round trip."""
+    @pytest.mark.parametrize('space', SPACES)
+    def test_round_trip(self, space):
+        """Test round trip."""
 
-#         for c in self.COLORS:
-#             self.assert_round_trip(c, space)
+        for c in self.COLORS:
+            self.assert_round_trip(c, space)

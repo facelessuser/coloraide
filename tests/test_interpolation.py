@@ -7,6 +7,7 @@ import pytest
 
 
 class TestCarryFoward(util.ColorAssertsPyTest):
+    """Test carry forward."""
 
     CASES = [
         [

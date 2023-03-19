@@ -38,7 +38,7 @@
     when it can.
 
     Lastly, some color spaces (ACEScct) will actually report out of gamut if an undefined channel is treated as zero.
-    ACEScct black is actually above zero, and while ACESScct will allow values that far exceed the lower boundary, for
+    ACEScct black is actually above zero, and while ACEScct will allow values that far exceed the lower boundary, for
     practical purposes, undefined channels will now be treated with the value for black.
 
 - **NEW**: `Color.normalize()` added a new `nans` parameter that when set to `False` will prevent achromatic hue

@@ -3,7 +3,6 @@ from __future__ import annotations
 from ...spaces import Space, Cylindrical
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
-from ... import algebra as alg
 from ...types import Vector
 import math
 

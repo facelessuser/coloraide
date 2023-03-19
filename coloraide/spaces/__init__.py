@@ -198,7 +198,7 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return self._color_ids
 
-    def is_achromatic(self, coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
         if all([not math.isnan(c) for c in coords]):
