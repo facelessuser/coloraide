@@ -335,7 +335,7 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0.0 and abs(1 - L) >= 1e-7 and abs(s) >= 1e-7:
+    if L != 0.0 and abs(1 - L) >= 1e-7 and s != 0:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -426,6 +426,21 @@ class Okhsl(HSLish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        sdef, ldef = [math.isnan(c) for c in coords[1:]]
+        if sdef and ldef:
+            return False
+
+        elif ldef:
+            return abs(coords[1]) < 1e-4
+
+        elif sdef:
+            return coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
+
+        return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
     def achromatic_hue(self) -> float:
         """

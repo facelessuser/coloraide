@@ -25,7 +25,8 @@ SOFTWARE.
 """
 from __future__ import annotations
 from ..oklab import xyz_d65_to_oklab
-from ...spaces import Space, LChish
+from ..lch import LCh
+from ...spaces import Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
@@ -56,7 +57,7 @@ def oklch_to_oklab(oklch: Vector) -> Vector:
     ]
 
 
-class OkLCh(LChish, Space):
+class OkLCh(LCh, Space):
     """OkLCh class."""
 
     BASE = "oklab"

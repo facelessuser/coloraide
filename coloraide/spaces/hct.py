@@ -169,6 +169,25 @@ class HCT(LChish, Space):
         "hue": "h"
     }
 
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        cdef, tdef = [math.isnan(c) for c in coords[1:]]
+        if cdef and tdef:
+            return False
+
+        elif tdef:
+            return coords[1] < 2e-9
+
+        elif cdef:
+            return coords[0] == 0.0
+
+        elif coords[0] < 2e-9:
+            return True
+
+        # Chroma is complicated
+        return None
+
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""
 

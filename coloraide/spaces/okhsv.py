@@ -151,6 +151,22 @@ class Okhsv(HSVish, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        print(coords)
+        sdef, vdef = [math.isnan(c) for c in coords[1:]]
+        if sdef and vdef:
+            return False
+
+        elif vdef:
+            return abs(coords[1]) < 1e-4
+
+        elif sdef:
+            return coords[2] == 0.0
+
+        return abs(coords[1]) < 1e-4 or coords[2] == 0.0
+
     def achromatic_hue(self) -> float:
         """
         Ideal achromatic hue.
