@@ -92,17 +92,15 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     """Oklab to Okhsv."""
 
     l = lab[0]
-    h = OkLCh.ACHROMATIC_HUE
     s = 0.0
     v = toe(l)
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
     if l != 0.0 and abs(1 - l) >= 1e-7 and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
-
-        h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
         cusp = find_cusp(a_, b_)
         s_max, t_max = to_st(cusp)

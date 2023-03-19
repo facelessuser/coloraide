@@ -374,18 +374,16 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
 def oklab_to_okhsl(lab: Vector) -> Vector:
     """Oklab to Okhsl."""
 
-    h = OkLCh.ACHROMATIC_HUE
     L = lab[0]
     s = 0.0
     l = toe(L)
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
+    h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
     if l != 0.0 and abs(1 - l) >= 1e-7 and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
-
-        h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
         c_0, c_mid, c_max = get_cs([L, a_, b_])
 
