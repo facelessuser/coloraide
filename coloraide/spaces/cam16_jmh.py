@@ -13,6 +13,7 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from ..util import xy_to_xyz
 from ..types import Vector
+import math
 
 
 class CAM16JMh(LChish, Space):
@@ -37,6 +38,25 @@ class CAM16JMh(LChish, Space):
         Channel("m", 0, 105.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC_HUE)
     )
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        jdef, mdef = [math.isnan(c) for c in coords[:2]]
+        if mdef and jdef:
+            return False
+
+        elif jdef:
+            return coords[1] < 2e-9
+
+        elif mdef:
+            return coords[0] == 0.0
+
+        elif coords[0] < 2e-9:
+            return True
+
+        # Chroma is complicated
+        return None
 
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""

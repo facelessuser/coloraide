@@ -543,15 +543,20 @@ class Color(metaclass=ColorMeta):
     def is_achromatic(self) -> bool:
         """Test if color is achromatic."""
 
-        # If we are already XYZ D65, just extract the coordinates without `NaN`.
-        # We do this for consistency as any color converting to XYZ will also have `NaN` removed.
-        if self.space() == 'xyz-d65':
-            xyz = self
-            coords = xyz.coords(nans=False)
-        else:
+        value = self._space.is_achromatic(self.coords())
+
+        # Can't be detrmined by the space
+        if value is None:
+            # If we are already XYZ D65, just extract the coordinates without `NaN`.
+            # We do this for consistency as any color converting to XYZ will also have `NaN` removed.
             xyz = self.convert('xyz-d65')
             coords = xyz[:-1]
-        return all([math.isclose(0, x, abs_tol=9e-5) for x in alg.vcross(coords, xyz.white())])
+            for x in alg.vcross(coords, xyz.white()):
+                if not math.isclose(0.0, x, abs_tol=1e-4):
+                    return False
+            return True
+
+        return value
 
     def mutate(
         self,

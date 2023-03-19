@@ -10,6 +10,7 @@ from ..channels import Channel, FLG_ANGLE
 from .. import algebra as alg
 from .. import util
 from ..types import Vector
+import math
 
 
 def srgb_to_hsi(rgb: Vector) -> Vector:
@@ -91,6 +92,21 @@ class HSI(HSVish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        sdef, idef = [math.isnan(c) for c in coords[1:]]
+        if sdef and idef:
+            return False
+
+        elif idef:
+            return abs(coords[1]) < 1e-4
+
+        elif sdef:
+            return coords[2] == 0.0
+
+        return abs(coords[1]) < 1e-4 or coords[2] == 0.0
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""

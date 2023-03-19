@@ -15,6 +15,7 @@ from ..types import Vector
 # The transform consistently yields ~216 for achromatic hues for positive lightness
 # Replacing achromatic NaN hues with this hue gives us closer translations back.
 ACHROMATIC_HUE = 216.0777045520467
+ACHROMATIC_THRESHOLD = 0.0003
 
 
 def jzazbz_to_jzczhz(jzazbz: Vector) -> Vector:
@@ -63,6 +64,21 @@ class JzCzhz(LChish, Space):
         "chroma": "cz",
         "hue": "hz"
     }
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        ldef, cdef = [math.isnan(c) for c in coords[:2]]
+        if ldef and cdef:
+            return False
+
+        elif cdef:
+            return coords[0] == 0.0
+
+        elif ldef:
+            return coords[1] < ACHROMATIC_THRESHOLD
+
+        return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD
 
     def achromatic_hue(self) -> float:
         """Ideal hue for conversion."""

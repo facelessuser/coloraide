@@ -5,6 +5,7 @@ from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 from ...types import Vector
+import math
 
 
 def srgb_to_hsl(rgb: Vector) -> Vector:
@@ -68,6 +69,21 @@ class HSL(HSLish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        sdef, ldef = [math.isnan(c) for c in coords[1:]]
+        if sdef and ldef:
+            return False
+
+        elif ldef:
+            return abs(coords[1]) < 1e-4
+
+        elif sdef:
+            return coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
+
+        return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSL."""

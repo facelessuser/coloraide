@@ -6,6 +6,7 @@ from ..css import serialize
 from ..util import deprecated
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, TYPE_CHECKING
+import math
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -196,6 +197,13 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Get the serialized name."""
 
         return self._color_ids
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        if all([not math.isnan(c) for c in coords]):
+            return None
+        return False
 
     @classmethod
     def white(cls) -> VectorLike:

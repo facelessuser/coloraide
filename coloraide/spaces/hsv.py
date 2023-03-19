@@ -5,6 +5,7 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 from ..types import Vector
+import math
 
 
 def hsv_to_hsl(hsv: Vector) -> Vector:
@@ -54,6 +55,21 @@ class HSV(HSVish, Space):
     }
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        sdef, vdef = [math.isnan(c) for c in coords[1:]]
+        if sdef and vdef:
+            return False
+
+        elif vdef:
+            return abs(coords[1]) < 1e-4
+
+        elif sdef:
+            return coords[2] == 0.0
+
+        return abs(coords[1]) < 1e-4 or coords[2] == 0.0
 
     def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""

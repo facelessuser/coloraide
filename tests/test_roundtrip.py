@@ -19,9 +19,16 @@ class TestRoundTrip:
         """Local color object."""
 
     Color.deregister('space:hpluv')
+    # Color.deregister('space:hct')
+    # Color.deregister('space:cam16-jmh')
+    # Color.deregister('space:jzczhz')
+    # Color.deregister('space:okhsl')
+    # Color.deregister('space:okhsv')
 
     SPACES = {k: 5 for k in Color.CS_MAP.keys()}
+    # Lowered in general
     SPACES['hct'] = 3
+    # Lowered for achromatic colors
     SPACES['cam16-jmh'] = 3
     SPACES['okhsl'] = 4
     SPACES['okhsv'] = 4

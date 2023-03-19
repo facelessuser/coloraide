@@ -7,6 +7,8 @@ from ... import util
 import math
 from ...types import Vector
 
+ACHROMATIC_THRESHOLD = 1e-4
+
 
 def lab_to_lch(lab: Vector) -> Vector:
     """Lab to LCh."""
@@ -48,6 +50,21 @@ class LCh(LChish, Space):
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D50']
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        ldef, cdef = [math.isnan(c) for c in coords[:2]]
+        if ldef and cdef:
+            return False
+
+        elif cdef:
+            return coords[0] == 0.0
+
+        elif ldef:
+            return coords[1] < ACHROMATIC_THRESHOLD
+
+        return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To Lab from LCh."""
