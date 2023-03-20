@@ -27,23 +27,18 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide import NaN  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import Cylindrical  # noqa: E402
+from coloraide.spaces import Cylindrical, LChish  # noqa: E402
 
 
-def needs_workaround(color):
+def ignore_LCh_high_chroma_black(color):
     """
-    Check if LChuv has high chroma and no lightness.
+    Ignore LCh spaces that will render all lightnes of zero with any chroma as the same color.
 
-    LChuv will have such values all in gamut and create weird graphs.
-    This is just due to how LChuv algorithm handles high chroma and zero lightness,
-    it all gets treated as black which is in gamut for almost any color.
+    Prevents a render of a single black line at lightness zero across all chroma.
     """
 
-    return (
-        color.space().startswith(('lchuv', 'cam16-jmh', 'hct')) and
-        color['lightness'] == 0 and
-        color.is_achromatic()
-    )
+    names = color._space.names()
+    return color[names[0]] == 0 and color[names[1]] != 0
 
 
 def plot_slice(
@@ -72,6 +67,7 @@ def plot_slice(
 
     # Create a color object based on the specified space.
     c = Color(space, [])
+    is_lchish = isinstance(c._space, LChish)
 
     # Parse the channel strings into actual values
     chan_constants = []
@@ -145,7 +141,7 @@ def plot_slice(
         c.update(space, coords)
 
         # Only process colors within the specified gamut.
-        if c.in_gamut(gamut, tolerance=0) and not needs_workaround(c):
+        if c.in_gamut(gamut, tolerance=0) and (is_lchish and ignore_LCh_high_chroma_black(c)):
             if hue_index != -1:
                 c1 = math.radians(c1)
 
