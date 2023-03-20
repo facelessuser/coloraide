@@ -52,15 +52,15 @@ according to the W3C spec will be used instead.
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlSteps(colors)
-HtmlSteps([c.filter('brightness', 0.5).clip() for c in colors])
-HtmlSteps([c.filter('saturate', 0.5).clip() for c in colors])
-HtmlSteps([c.filter('contrast', 1.2).clip() for c in colors])
-HtmlSteps([c.filter('opacity', 0.5).clip() for c in colors])
-HtmlSteps([c.filter('invert', 1).clip() for c in colors])
-HtmlSteps([c.filter('hue-rotate', 90).clip() for c in colors])
-HtmlSteps([c.filter('sepia', 1).clip() for c in colors])
-HtmlSteps([c.filter('grayscale', 1).clip() for c in colors])
+Steps(colors)
+Steps([c.filter('brightness', 0.5).clip() for c in colors])
+Steps([c.filter('saturate', 0.5).clip() for c in colors])
+Steps([c.filter('contrast', 1.2).clip() for c in colors])
+Steps([c.filter('opacity', 0.5).clip() for c in colors])
+Steps([c.filter('invert', 1).clip() for c in colors])
+Steps([c.filter('hue-rotate', 90).clip() for c in colors])
+Steps([c.filter('sepia', 1).clip() for c in colors])
+Steps([c.filter('grayscale', 1).clip() for c in colors])
 ```
 
 ## Color Vision Deficiency Simulation
@@ -125,13 +125,13 @@ appear to be of the same color making it difficult to distinguish between any of
 --8<-- "confusion_lines.md"
 
 confusing_colors = confusion_line(Color('orange'), 'l')
-HtmlSteps([c.clip() for c in confusing_colors])
+Steps([c.clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('hotpink'), 'm')
-HtmlSteps([c.clip() for c in confusing_colors])
+Steps([c.clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('seagreen'), 's')
-HtmlSteps([c.clip() for c in confusing_colors])
+Steps([c.clip() for c in confusing_colors])
 ```
 ///
 
@@ -141,13 +141,13 @@ HtmlSteps([c.clip() for c in confusing_colors])
 ---8<-- "confusion_lines.md"
 
 confusing_colors = confusion_line(Color('orange'), 'l')
-HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+Steps([c.filter('protan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('hotpink'), 'm')
-HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+Steps([c.filter('protan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('seagreen'), 's')
-HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
+Steps([c.filter('protan').clip() for c in confusing_colors])
 ```
 ///
 
@@ -157,13 +157,13 @@ HtmlSteps([c.filter('protan').clip() for c in confusing_colors])
 ---8<-- "confusion_lines.md"
 
 confusing_colors = confusion_line(Color('orange'), 'l')
-HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+Steps([c.filter('deutan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('hotpink'), 'm')
-HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+Steps([c.filter('deutan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('seagreen'), 's')
-HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
+Steps([c.filter('deutan').clip() for c in confusing_colors])
 ```
 ///
 
@@ -173,13 +173,13 @@ HtmlSteps([c.filter('deutan').clip() for c in confusing_colors])
 ---8<-- "confusion_lines.md"
 
 confusing_colors = confusion_line(Color('orange'), 'l')
-HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+Steps([c.filter('tritan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('hotpink'), 'm')
-HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+Steps([c.filter('tritan').clip() for c in confusing_colors])
 
 confusing_colors = confusion_line(Color('seagreen'), 's')
-HtmlSteps([c.filter('tritan').clip() for c in confusing_colors])
+Steps([c.filter('tritan').clip() for c in confusing_colors])
 ```
 ///
 
@@ -190,10 +190,10 @@ probably the best approach for all cases, Viénot is much faster and does quite 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlSteps(colors)
-HtmlSteps([c.filter('protan').clip() for c in colors])
-HtmlSteps([c.filter('deutan').clip() for c in colors])
-HtmlSteps([c.filter('tritan').clip() for c in colors])
+Steps(colors)
+Steps([c.filter('protan').clip() for c in colors])
+Steps([c.filter('deutan').clip() for c in colors])
+Steps([c.filter('tritan').clip() for c in colors])
 ```
 
 If desired, any of the three available methods can be used. Brettel is usually considered best option for accuracy.
@@ -204,10 +204,10 @@ tritanopia.
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlSteps(colors)
-HtmlSteps([c.filter('tritan', method='brettel').clip() for c in colors])
-HtmlSteps([c.filter('tritan', method='vienot').clip() for c in colors])
-HtmlSteps([c.filter('tritan', method='machado').clip() for c in colors])
+Steps(colors)
+Steps([c.filter('tritan', method='brettel').clip() for c in colors])
+Steps([c.filter('tritan', method='vienot').clip() for c in colors])
+Steps([c.filter('tritan', method='machado').clip() for c in colors])
 ```
 
 ### Anomalous Trichromacy
@@ -248,10 +248,10 @@ results. With that said, the `method` can always be overridden to use something 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlSteps(colors)
-HtmlSteps([c.filter('protan', 0.3).clip() for c in colors])
-HtmlSteps([c.filter('protan', 0.5).clip() for c in colors])
-HtmlSteps([c.filter('protan', 0.9).clip() for c in colors])
+Steps(colors)
+Steps([c.filter('protan', 0.3).clip() for c in colors])
+Steps([c.filter('protan', 0.5).clip() for c in colors])
+Steps([c.filter('protan', 0.9).clip() for c in colors])
 ```
 
 ## Usage Details
@@ -281,9 +281,9 @@ designed to be applied in the Linear sRGB space, and cannot be used in any other
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 colors = Color.steps(inputs, steps=10, space='srgb')
-HtmlSteps(colors)
-HtmlSteps([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
-HtmlSteps([c.filter('sepia', 1, space='srgb').clip() for c in colors])
+Steps(colors)
+Steps([c.filter('sepia', 1, space='srgb-linear').clip() for c in colors])
+Steps([c.filter('sepia', 1, space='srgb').clip() for c in colors])
 ```
 
 /// tip | Processing Lots of Colors
