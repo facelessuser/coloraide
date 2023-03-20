@@ -154,7 +154,6 @@ class Okhsv(HSVish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        print(coords)
         sdef, vdef = [math.isnan(c) for c in coords[1:]]
         if sdef and vdef:
             return False
