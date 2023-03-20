@@ -282,7 +282,7 @@ can allow creating good tonal palettes:
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-HtmlSteps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
 
 To HCT Chroma plugin is not registered by default, but can be added by subclassing `Color`. You must register the
@@ -333,12 +333,12 @@ these dark colors and makes them reddish. This is a very undesirable outcome.
 # Gamut mapping in LCh
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow([c.fit('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
+Row([c.fit('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 
 # Clipping
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-HtmlRow([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
+Row([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
 ```
 
 There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is

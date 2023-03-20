@@ -94,20 +94,20 @@ template = '''<div class="playground" id="__playground_{el_id}">
 code_id = 0
 
 
-class HtmlGradient(list):
-    """HTML color gradient."""
+class Ramp(list):
+    """Create a gradient from a list of colors."""
 
 
-class HtmlSteps(list):
-    """HTML color steps."""
+class Steps(list):
+    """Create a special display of steps from a list of colors."""
+
+
+class Row(list):
+    """Restrict only the provided colors to a row."""
 
 
 class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
     """Color tuple."""
-
-
-class HtmlRow(list):
-    """Create a row with the given colors."""
 
 
 class AtomicString(str):
@@ -120,6 +120,12 @@ class Break(Exception):
 
 class Continue(Exception):
     """Continue exception."""
+
+
+# Legacy names
+HtmlRow = Row
+HtmlSteps = Steps
+HtmlGradient = Ramp
 
 
 def _escape(txt):
@@ -170,14 +176,14 @@ def get_colors(result):
     if isinstance(result, AtomicString):
         yield find_colors(result)
 
-    if isinstance(result, HtmlRow):
-        yield HtmlRow(
+    if isinstance(result, Row):
+        yield Row(
             [
                 ColorTuple(c.to_string(fit=False), c.clone()) if isinstance(c, Color) else ColorTuple(c, ColorAll(c))
                 for c in result
             ]
         )
-    elif isinstance(result, (HtmlSteps, HtmlGradient)):
+    elif isinstance(result, (Steps, Ramp)):
         t = type(result)
         yield t([c.clone() if isinstance(c, Color) else ColorAll(c) for c in result])
     elif isinstance(result, Color):
@@ -187,7 +193,7 @@ def get_colors(result):
         if result.domain:
             domain = result.domain
             result.domain = normalize_domain(result.domain)
-        grad = HtmlGradient(result.steps(steps=5, max_delta_e=2.3))
+        grad = Ramp(result.steps(steps=5, max_delta_e=2.3))
         if domain:
             result.domain = domain
             domain = []
@@ -436,6 +442,9 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
     # Setup global initialization
     if g is None:
         g = {
+            "Ramp": Ramp,
+            "Steps": Steps,
+            "Row": Row,
             'HtmlRow': HtmlRow,
             'HtmlSteps': HtmlSteps,
             'HtmlGradient': HtmlGradient
@@ -556,9 +565,9 @@ def _color_command_console(colors, gamut=WEBSPACE):
     bar = False
     values = []
     for item in colors:
-        if isinstance(item, (HtmlGradient, HtmlSteps)):
+        if isinstance(item, (HtmlGradient, Steps)):
             current = total = percent = last = 0
-            if isinstance(item, HtmlSteps):
+            if isinstance(item, Steps):
                 total = len(item)
                 percent = 100 / total
                 current = percent
@@ -591,7 +600,7 @@ def _color_command_console(colors, gamut=WEBSPACE):
             bar = False
         else:
             is_row = False
-            if isinstance(item, HtmlRow):
+            if isinstance(item, Row):
                 is_row = True
                 if bar and values:
                     el += '<div class="swatch-bar">{}</div>'.format(' '.join(values))

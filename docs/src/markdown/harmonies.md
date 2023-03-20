@@ -36,7 +36,7 @@ primary colors of light. Starting with red (0˚), we could extract the colors at
 This would give us our 12 colors for the sRGB color space.
 
 ```py play
-HtmlSteps([Color('hsl', [x, 1, 0.5]) for x in range(0, 360, 30)])
+Steps([Color('hsl', [x, 1, 0.5]) for x in range(0, 360, 30)])
 ```
 
 From this we can construct an sRGB color wheel.
@@ -50,7 +50,7 @@ If we were to select the perceptually uniform OkLCh color space, and seed it wit
 
 ```py play
 c = Color('red').convert('oklch', in_place=True)
-HtmlSteps([Color('oklch', [*c[0:2], x]) for x in range(0, 360, 30)])
+Steps([Color('oklch', [*c[0:2], x]) for x in range(0, 360, 30)])
 ```
 
 This produces colors with visually more uniform lightness, does that mean these are better?
@@ -67,17 +67,17 @@ mainly on the fact it keeps hue more consistent than some other options, and it 
 options like HSL.
 
 ```py play
-HtmlSteps(Color.steps(['black', 'blue', 'white'], steps=11, space='oklch'))
-HtmlSteps(Color.steps(['black', 'blue', 'white'], steps=11, space='hsl'))
-HtmlSteps(Color.steps(['black', 'blue', 'white'], steps=11, space='lch'))
+Steps(Color.steps(['black', 'blue', 'white'], steps=11, space='oklch'))
+Steps(Color.steps(['black', 'blue', 'white'], steps=11, space='hsl'))
+Steps(Color.steps(['black', 'blue', 'white'], steps=11, space='lch'))
 ```
 
 While OkLCh is the default, we understand that there are many reasons to use other spaces, so use what you like, we
 won't judge :smile:.
 
 ```py play
-HtmlSteps(Color('red').harmony('complement'))
-HtmlSteps(Color('red').harmony('complement', space='hsl'))
+Steps(Color('red').harmony('complement'))
+Steps(Color('red').harmony('complement', space='hsl'))
 ```
 
 ## Supported Harmonies
@@ -106,7 +106,7 @@ The monochromatic harmony pairs various tints and shades of a color together to 
 ![Harmony Monochromatic](images/harmony-mono.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('mono'))
+Steps(Color('red').harmony('mono'))
 ```
 
 /// note | Achromatic Colors
@@ -121,7 +121,7 @@ Complementary harmonies use a dyad of colors at opposite ends of the color wheel
 ![Harmony Complementary](images/harmony-complement.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('complement'))
+Steps(Color('red').harmony('complement'))
 ```
 
 ### Split Complementary
@@ -132,7 +132,7 @@ complement, it splits and chooses two colors on the opposite side that are close
 ![Harmony Split Complementary](images/harmony-split-complement.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('split'))
+Steps(Color('red').harmony('split'))
 ```
 
 ### Analogous
@@ -142,7 +142,7 @@ Analogous harmonies consists of 3 adjacent colors.
 ![Harmony Analogous](images/harmony-analogous.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('analogous'))
+Steps(Color('red').harmony('analogous'))
 ```
 
 ### Triadic
@@ -153,7 +153,7 @@ harmony.
 ![Harmony Triadic](images/harmony-triadic.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('triad'))
+Steps(Color('red').harmony('triad'))
 ```
 
 ### Tetradic Square
@@ -164,7 +164,7 @@ between four colors on the color wheel.
 ![Harmony Tetradic](images/harmony-tetradic.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('square'))
+Steps(Color('red').harmony('square'))
 ```
 
 ### Tetradic Rectangular
@@ -175,7 +175,7 @@ four colors instead of a square.
 ![Harmony Tetradic Rectangular](images/harmony-tetradic-rect.png)
 
 ```py play
-HtmlSteps(Color('red').harmony('rectangle'))
+Steps(Color('red').harmony('rectangle'))
 ```
 
 ## Changing the Default Harmony Color Space
@@ -189,5 +189,5 @@ harmony calculations will use the specified color space unless overridden via th
 class Custom(Color):
     HARMONY = 'hsl'
 
-HtmlSteps(Custom('red').harmony('split'))
+Steps(Custom('red').harmony('split'))
 ```

@@ -88,7 +88,7 @@ palettes just like in Material's color utilities.
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-HtmlSteps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
 
 Results in our library may be slightly different in some cases compared to Material's color utilities. This is because
@@ -112,14 +112,14 @@ material1 = ['#000000', '#00006e', '#0001ac',
              '#7c84ff', '#9da3ff', '#bec2ff',
              '#e0e0ff', '#f1efff', '#ffffff']
 c = Color('blue').convert('hct')
-HtmlSteps([x.to_string() for x in tonal_palette(c)])
-HtmlSteps([Color(x).convert('hct').to_string() for x in material1])
+Steps([x.to_string() for x in tonal_palette(c)])
+Steps([Color(x).convert('hct').to_string() for x in material1])
 
 material2 = ['#000000', '#191a2c', '#2e2f42',
              '#444559', '#5c5d72', '#75758b',
              '#8f8fa6', '#a9a9c1', '#c5c4dd',
              '#e1e0f9', '#f1efff', '#ffffff']
 c['chroma'] = 16
-HtmlSteps([x.to_string() for x in tonal_palette(c)])
-HtmlSteps([Color(x).convert('hct').to_string() for x in material2])
+Steps([x.to_string() for x in tonal_palette(c)])
+Steps([Color(x).convert('hct').to_string() for x in material2])
 ```

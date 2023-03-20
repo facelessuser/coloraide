@@ -740,9 +740,9 @@ to -0.5 and 1.5.
 ```py play
 offset, factor = 0.25, 1.5
 i = Color.interpolate(['red', 'blue'])
-HtmlGradient([i((r * factor / 100) - offset) for r in range(101)])
+Ramp([i((r * factor / 100) - offset) for r in range(101)])
 i = Color.interpolate(['red', 'blue'], extrapolate=True)
-HtmlGradient([i((r * factor / 100) - offset) for r in range(101)])
+Ramp([i((r * factor / 100) - offset) for r in range(101)])
 ```
 
 Lastly, it is important to note that this affects stops as well, mainly stops applied to interpolation endpoints. When
