@@ -203,13 +203,12 @@ class HCT(LChish, Space):
             return coords[1] < 2e-9
 
         elif cdef:
-            return coords[0] == 0.0
+            return coords[2] == 0.0
 
-        elif coords[0] < 2e-9:
-            return True
-
-        # Chroma is complicated
-        return self.ACHROMATIC.test(coords[2], coords[1], self.ACHROMATIC.hue if hdef else coords[0])
+        return (
+            coords[2] == 0.0 or
+            self.ACHROMATIC.test(coords[2], coords[1], self.ACHROMATIC.hue if hdef else coords[0])
+        )
 
     def achromatic_hue(self) -> float:
         """Ideal achromatic hue."""
