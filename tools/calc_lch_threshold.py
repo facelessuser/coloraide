@@ -65,11 +65,12 @@ def run(lch, lab, verify):
                     max_b = abs(b)
 
             if lch:
-                lchish = color.convert(lch)
+                lchish = color.convert(lch, norm=False)
                 c_name = lchish._space.names()[1]
                 chroma = lchish.get(c_name)
                 if verify:
-                    assert lchish.is_nan('hue'), str(lchish) + " <-> " + str(color)
+                    lchish_adjusted = color.convert(lch)
+                    assert lchish_adjusted.is_nan('hue'), str(lchish_adjusted) + " <-> " + str(color)
                 if chroma > max_chroma:
                     max_chroma = chroma
 
