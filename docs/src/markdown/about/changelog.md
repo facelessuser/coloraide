@@ -12,11 +12,6 @@
 
 - **NEW**: `compose` will throw an error if a non-RGB-ish color space is provided.
 
-- **NEW**: Interpolation will carry forward undefined channels as specified by the CSS specification. In addition,
-  any HSV-ish color spaces will carry forward hue and saturation to HSL-ish and LCh-ish color spaces. HSV will also
-  carry forward V undefined channels to other HSV-ish color spaces. This can be disabled by setting `carryforward` to
-  `False`.
-
 - **NEW**: Rework achromatic normalization. There is now a generic way to perform achromatic detection and normalization
   of a cylindrical color's hue. This is necessary for more complex color spaces that do not simply become achromatic
   when chroma is zero. This also makes achromatic translations between color spaces much more reliable through
@@ -29,13 +24,11 @@
   will now report a non-zero value for certain undefined channels.
 
     Since achromatic hues are set to undefined by default it is necessary to ensure the default makes sense for all
-    color spaces. JzCzhz, CAM16 JMh, and HCT all convert better in the achromatic region if the undefined hue is treated
-    as a specific value other than 0. These color spaces will now use and return a non-zero hue for achromatic hues.
-
-    OkLCh, along with Okhsl and Okhsv, actually have much better achromatic round trip translations when using a
-    specific non-zero hue, but will still return 0 for undefined hues to align with the CSS spec. OkLCh and friends are
-    far less sensitive to using zero than spaces like JzCzhz, etc., but it will still use the appropriate hue internally
-    when it can.
+    color spaces. CAM16 JMh, and HCT all convert better in the achromatic region as the achromatic line actually leans
+    significantly into the hue 209.5˚. As both CAM16 JMh and HCT require a hue of ~209.5˚, both spaces will now resolve
+    undefined hues within this region. JzCzhz is in a similar situation, though less severe, and will return ~216˚.
+    OkLCh, Okhsl, and Okhsv prefer ~90˚ for hues, and will use it when possible internally, but will still resolve to 0
+    for display as the preference is minor enough that it is not a hard requirement.
 
     Lastly, some color spaces (ACEScct) will actually report out of gamut if an undefined channel is treated as zero.
     ACEScct black is actually above zero, and while ACEScct will allow values that far exceed the lower boundary, for

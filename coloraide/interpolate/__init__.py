@@ -451,7 +451,7 @@ def normalize_color(color: Color) -> None:
     """Normalize color."""
 
     # Adjust to color to space and ensure it fits
-    if not color._space.EXTENDED_RANGE:
+    if False and not color._space.EXTENDED_RANGE:
         if not color.in_gamut():
             color.fit()
 
@@ -543,7 +543,7 @@ def normalize_hue(
     return color2, offset
 
 
-def carryforward_convert(color: Color, space: str) -> None:
+def carryforward_convert(color: Color, space: str) -> None:  # pragma: no cover
     """Carry forward undefined values during conversion."""
 
     cs1 = color._space
@@ -625,7 +625,6 @@ def interpolator(
     premultiplied: bool,
     extrapolate: bool,
     domain: list[float] | None = None,
-    carryforward: bool = True,
     norm: bool = True,
     **kwargs: Any
 ) -> Interpolator:
@@ -655,16 +654,13 @@ def interpolator(
 
     # Adjust to space
     if space != current.space():
-        if carryforward:
+        if kwargs.get('_carryforward', False):  # pragma: no cover
             carryforward_convert(current, space)
         else:
             current.convert(space, in_place=True)
 
     offset = 0.0
     hue_index = current._space.hue_index() if isinstance(current._space, Cylindrical) else -1
-
-    # Fit if required
-    normalize_color(current)
 
     # Normalize hue
     norm_coords = current[:]
@@ -697,13 +693,10 @@ def interpolator(
 
         # Adjust color to space
         if space != color.space():
-            if carryforward:
+            if kwargs.get('_carryforward', False):  # pragma: no cover
                 carryforward_convert(color, space)
             else:
                 color.convert(space, in_place=True)
-
-        # Ensure it fits
-        normalize_color(color)
 
         # Normalize the hue
         norm_coords = color[:]

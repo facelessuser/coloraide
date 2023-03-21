@@ -6,6 +6,7 @@ from . import util
 import pytest
 
 
+@pytest.mark.skipif(False, reason='Experimental')
 class TestCarryFoward(util.ColorAssertsPyTest):
     """Test carry forward."""
 
@@ -78,7 +79,7 @@ class TestCarryFoward(util.ColorAssertsPyTest):
     def test_round_trip(self, space, steps, colors, cmp):
         """Test round trip."""
 
-        results = Color.steps(colors, steps=steps, space=space, method='monotone')
+        results = Color.steps(colors, steps=steps, space=space, method='monotone', _carryforward=True)
         if not all([abs(r[cmp[0]] - cmp[1]) < 1e-6 for r in results]):
             assert False, "{} != {} : {}".format(cmp[0], cmp[1], results)
 
