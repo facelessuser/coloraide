@@ -56,10 +56,10 @@ class HSV(HSVish, Space):
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, coords: Vector) -> bool:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        sdef, vdef = [math.isnan(c) for c in coords[1:]]
+        _, sdef, vdef = undefined
         if sdef and vdef:
             return False
 

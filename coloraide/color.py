@@ -543,7 +543,9 @@ class Color(metaclass=ColorMeta):
     def is_achromatic(self) -> bool:
         """Test if color is achromatic."""
 
-        value = self._space.is_achromatic(self.coords())
+        coords = self.coords()
+        undefined = [math.isnan(c) for c in self.coords()]
+        value = self._space.is_achromatic(undefined, self.coords())
 
         # Can't be determined by the space
         if value is None:

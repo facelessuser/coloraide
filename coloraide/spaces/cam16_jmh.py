@@ -13,7 +13,6 @@ from .cam16 import Environment, CAM16, cam16_jab_to_cam16_jmh, cam16_jmh_to_cam1
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from ..types import Vector
-import math
 import bisect
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
@@ -179,10 +178,10 @@ class CAM16JMh(LChish, Space):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        jdef, mdef, hdef = [math.isnan(c) for c in coords]
+        jdef, mdef, hdef = undefined
         if mdef and jdef:
             return False
 

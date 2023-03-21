@@ -192,10 +192,10 @@ class HCT(LChish, Space):
         Channel("t", 0.0, 100.0, limit=(0.0, None))
     )
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        hdef, cdef, tdef = [math.isnan(c) for c in coords]
+        hdef, cdef, tdef = undefined
         if cdef and tdef:
             return False
 
