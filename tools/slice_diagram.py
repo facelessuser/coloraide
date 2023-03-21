@@ -141,7 +141,7 @@ def plot_slice(
         c.update(space, coords)
 
         # Only process colors within the specified gamut.
-        if c.in_gamut(gamut, tolerance=0) and (is_lchish and not ignore_LCh_high_chroma_black(c)):
+        if c.in_gamut(gamut, tolerance=0) and (not is_lchish or not ignore_LCh_high_chroma_black(c)):
             if hue_index != -1:
                 c1 = math.radians(c1)
 
