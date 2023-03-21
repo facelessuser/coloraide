@@ -53,10 +53,10 @@ class HWB(Cylindrical, Space):
     GAMUT_CHECK = "srgb"
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, coords: Vector) -> bool:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        wdef, bdef = [math.isnan(c) for c in coords[1:]]
+        _, wdef, bdef = undefined
         if wdef:
             return (1 - coords[2]) < 1e-7
         if bdef:

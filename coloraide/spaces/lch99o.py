@@ -1,7 +1,7 @@
 """DIN99o LCh class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .lch import LCh
+from .lch import LCh, ACHROMATIC_THRESHOLD
 from .. import util
 import math
 from ..types import Vector
@@ -42,6 +42,21 @@ class LCh99o(LCh):
         Channel("c", 0.0, 60.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        ldef, cdef, _ = undefined
+        if ldef and cdef:
+            return False
+
+        elif cdef:
+            return coords[0] == 0.0
+
+        elif ldef:
+            return coords[1] < ACHROMATIC_THRESHOLD
+
+        return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To DIN99o from DIN99o LCh."""

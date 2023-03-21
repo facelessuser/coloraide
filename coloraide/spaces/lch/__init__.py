@@ -51,10 +51,10 @@ class LCh(LChish, Space):
     }
     WHITE = WHITES['2deg']['D50']
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        ldef, cdef = [math.isnan(c) for c in coords[:2]]
+        ldef, cdef, _ = undefined
         if ldef and cdef:
             return False
 
@@ -64,7 +64,7 @@ class LCh(LChish, Space):
         elif ldef:
             return coords[1] < ACHROMATIC_THRESHOLD
 
-        return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD
+        return coords[1] < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To Lab from LCh."""

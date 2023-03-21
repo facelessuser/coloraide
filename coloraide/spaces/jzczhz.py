@@ -65,10 +65,10 @@ class JzCzhz(LChish, Space):
         "hue": "hz"
     }
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        ldef, cdef = [math.isnan(c) for c in coords[:2]]
+        ldef, cdef, _ = undefined
         if ldef and cdef:
             return False
 
