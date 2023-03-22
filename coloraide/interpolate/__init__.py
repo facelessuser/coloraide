@@ -447,15 +447,6 @@ def process_mapping(
     return {aliases.get(k, k): v for k, v in progress.items()}
 
 
-def normalize_color(color: Color) -> None:
-    """Normalize color."""
-
-    # Adjust to color to space and ensure it fits
-    if False and not color._space.EXTENDED_RANGE:
-        if not color.in_gamut():
-            color.fit()
-
-
 def adjust_shorter(h1: float, h2: float, offset: float) -> tuple[float, float]:
     """Adjust the given hues."""
 

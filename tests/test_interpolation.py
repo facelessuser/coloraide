@@ -466,14 +466,6 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             results[0]
         )
 
-    def test_interpolate_fit_required(self):
-        """Test interpolation case that requires fitting."""
-
-        self.assertColorEqual(
-            Color.interpolate(['color(display-p3 0 1 1)', 'color(display-p3 0 0 1)'], space='hsl')(0.5),
-            Color('hsl(209.63 100% 49.934%)')
-        )
-
     def test_interpolate(self):
         """Test interpolation."""
 
@@ -1187,18 +1179,6 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 method='bspline'
             )(0.75),
             Color('hsl(152.5 40.104% 44.271%)')
-        )
-
-    def test_bspline_cylindrical_gamut(self):
-        """Test B-spline with a cylindrical space with at least one color out of gamut."""
-
-        self.assertColorEqual(
-            Color.interpolate(
-                ['hsl(250 50% 30%)', 'hsl(none 0% 110%)'],
-                space='hsl',
-                method='bspline'
-            )(0.75),
-            Color('hsl(250 12.5% 82.5%)')
         )
 
     def test_bspline_undefined_alpha(self):
