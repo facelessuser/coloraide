@@ -4,7 +4,6 @@ from ...spaces import Space, Cylindrical
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ...types import Vector
-import math
 
 
 def hwb_to_hsv(hwb: Vector) -> Vector:
