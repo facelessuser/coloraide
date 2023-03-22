@@ -304,7 +304,8 @@ def random(
     cls,
     space: str,
     *,
-    limits: Sequence[Sequence[float] | None] | None = None
+    limits: Sequence[Sequence[float] | None] | None = None,
+    norm: bool = True
 ) -> Color:
     ...
 ```
@@ -322,7 +323,8 @@ Parameters
     Parameters | Defaults     | Description
     ---------- | -------------| -----------
     `space`    |              | The color space name in which to generate a random color in.
-    `limits`   | `#!py  None` | An optional list of constraints for various color channels. Each entry should either be a sequence contain a minimum and maximum value, or should be `#!py  None`. `#!py None` values will be ignored and the color space's specified channel range will be used instead. Any missing entries will be treated as `#!py None`.
+    `limits`   | `#!py None`  | An optional list of constraints for various color channels. Each entry should either be a sequence contain a minimum and maximum value, or should be `#!py  None`. `#!py None` values will be ignored and the color space's specified channel range will be used instead. Any missing entries will be treated as `#!py None`.
+    `norm`     | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -356,6 +358,8 @@ def update(
     color: ColorInput,
     data: VectorLike | None = None,
     alpha: float = util.DEF_ALPHA,
+    *,
+    norm: bool = True,
     **kwargs: Any
 ) -> Color:
     ...
@@ -377,6 +381,7 @@ Parameters
     `color`    |              | A color string, or other `Color` class object. If given `data`, a string must be used and should represent the color space to use.
     `data`     | `#!py None`  | `data` accepts a list of numbers representing the coordinates of the color. If provided, `color` must be a string specifying the color space.
     `alpha`    | `#!py 1`     | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
+    `norm`     | `#!py True`  | Prevent achromatic normalization when updating from a different color space.
 
 Return
 
@@ -426,7 +431,7 @@ def convert(
     *,
     fit: bool | str = False,
     in_place: bool = False,
-    undef: bool = True
+    norm: bool = True
 ) -> Color:
     ...
 ```
@@ -446,7 +451,7 @@ Parameters
     `space`    |               | A string representing the desired final color space.
     `fit`      | `#!py False`  | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used.
     `in_place` | `#!py False`  | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
-    `undef`    | `#!py True`   | Perform hue normalization on converted colors (setting hue to undefined if the color is achromatic).
+    `norm`     | `#!py True`   | Perform hue normalization on converted colors. If the color is not converted, this option has no effect.
 
 Return
 
@@ -478,7 +483,8 @@ Return
 ```py
 def normalize(
     self,
-    undef: bool = True
+    *,
+    nans: bool = True
 ) -> Color:
     ...
 ```
@@ -487,15 +493,15 @@ def normalize(
 Description
 
 -   Force normalization of a color's channels by cleaning up channels that setting hue to undefined if the color is
-    achromatic. if `undef` is set to `#!py False`, the hue normalization step (setting hue to undefined) will be 
-    skipped. Normalize modifies the current color in place.
+    achromatic. if `nans` is set to `#!py False`, the hue normalization step (setting hue to undefined) will be skipped.
+    Normalize modifies the current color in place.
 
 Parameters
 
 - 
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
-    `undef`    | `#!py True`   | Perform hue normalization (setting hue to undefined if the color is achromatic).
+    `nans`    | `#!py True`    | Perform hue normalization (setting hue to undefined if the color is achromatic).
 
 Return
 
@@ -507,7 +513,8 @@ Return
 ```py
 def to_dict(
     self,
-    undef: bool = True
+    *,
+    nans: bool = True
 ) -> Mapping[str, Any]:
     ...
 ```
@@ -530,7 +537,7 @@ Parameters
 - 
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
-    `undef`    | `#!py True`   | Return channel values having undefined values resolved as defined values.
+    `nans`     | `#!py True`   | Return channel values having undefined values resolved as defined values.
 
 Return
 
@@ -797,6 +804,7 @@ def interpolate(
     extrapolate: bool = False,
     domain: list[float] | None = None,
     method: str = "linear",
+    norm: bool = True,
     **kwargs: Any
 ) -> Interpolator:
     ...
@@ -842,13 +850,14 @@ Parameters
     --------------- | ----------------- | -----------
     `colors`        |                   | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
     `space`         | `#!py "lab"`      | Color space to interpolate in.
-    `out_space`     | `#!py None`       | Color space that the new color should be in. If `#!py None`, the color will be in the same color space as the base color.
+    `out_space`     | `#!py None`       | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
     `progress`      | `#!py None`       | An optional function that that allows for custom logic to perform non-linear interpolation.
     `hue`           | `#!py "shorter"`  | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
     `premultiplied` | `#!py True`       | Use premultiplied alpha when interpolating.
     `extrapolate`   | `#!py False`      | Interpolations should extrapolate when values exceed the domain range ([0, 1] by default).
     `domain`        | `#!py None`       | A list of numbers defining the domain range of the interpolation.
     `method`        | `#!py "linear"`   | The interpolation method to use.
+    `norm`          | `#!py True`       | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -951,6 +960,8 @@ def filter(
     *,
     space: str | None = None,
     in_place: bool = False,
+    out_space: str | None = None,
+    norm: bool = True,
     **kwargs: Any
 ) -> Color:
     ...
@@ -988,13 +999,15 @@ Description
 Parameters
 
 - 
-    Parameters                 | Defaults                           | Description
-    -------------------------- | ---------------------------------- | -----------
-    `name`                     |                                    | The name of the filter that should be applied.
-    `amount`                   | See\ above                         | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
-    `space`                    | `#!py3 None`                       | Controls the algorithm used for simulating the given CVD.
-    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned. 
-    `**kwargs`                 |                                    | Additional filter specific parameters.
+    Parameters  | Defaults       | Description
+    ----------- | ---------------| -----------
+    `name`      |                | The name of the filter that should be applied.
+    `amount`    | See\ above     | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
+    `space`     | `#!py3 None`   | Controls the algorithm used for simulating the given CVD.
+    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned. 
+    `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
+    `norm`      | `#!py True`    | Enable/disable achromatic normalization of the returned color.
+    `**kwargs`  |                | Additional filter specific parameters.
 
     CVDs also take an optional `method` parameter that allows for specifying the CVD algorithm to use.
 
@@ -1017,7 +1030,9 @@ def harmony(
     self,
     name: str,
     *,
-    space: str | None = None
+    space: str | None = None,
+    out_space: str | None = None,
+    norm: bool = True
 ) -> list[Color]:
     ...
 ```
@@ -1042,10 +1057,12 @@ Description
 Parameters
 
 - 
-    Parameters                 | Defaults                           | Description
-    -------------------------- | ---------------------------------- | -----------
-    `name`                     |                                    | Name of the color harmony to use.
-    `space`                    | `#!py 'oklch'`                     | Color space under which the harmonies will be calculated. Must be a cylindrical space.
+    Parameters  | Defaults       | Description
+    ----------- | ---------------| -----------
+    `name`      |                | Name of the color harmony to use.
+    `space`     | `#!py 'oklch'` | Color space under which the harmonies will be calculated. Must be a cylindrical space.
+    `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
+    `norm`      | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -1063,7 +1080,8 @@ def compose(
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None,
-    in_place: bool = False
+    in_place: bool = False,
+    norm: bool = True
 ) -> Color:
     ...
 ```
@@ -1100,14 +1118,15 @@ Description
 Parameters
 
 - 
-    Parameters                 | Defaults                           | Description
-    -------------------------- | ---------------------------------- | -----------
-    `backdrop`                 |                                    | A background color represented with either a string or [`Color`](#color) object.
-    `blend`                    | `#!py3 None`                       | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
-    `operator`                 | `#!py3 None`                       | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
-    `space`                    | `#!py3 None`                       | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
-    `out_space`                | `#!py3 None`                       | A color space to output the resultant color to.
-    `in_place`                 | `#!py3 False`                      | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    Parameters  | Defaults       | Description
+    ----------- | -------------- | -----------
+    `backdrop`  |                | A background color represented with either a string or [`Color`](#color) object.
+    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
+    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
+    `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
+    `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
+    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `norm`     | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -1135,6 +1154,7 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `space`    | `#!py None`   | The color space that the color must be mapped to. If space is `#!py None`, then the current color space will be used.
+    `norm`     | `#!py True`   | Prevent achromatic normalization on convert from target color space back to the original.
 
 Return
 
@@ -1181,6 +1201,7 @@ Parameters
     ---------- | ------------------ | -----------
     `space`    | `#!py None`        | The color space that the color must be mapped to. If space is `#!py None`, then the current color space will be used.
     `method`   | `#!py None`        | String that specifies which gamut mapping method to use. If `#!py None`, `lch-chroma` will be used.
+    `norm`     | `#!py True`        | Prevent achromatic normalization on convert from target color space back to the original.
 
 Return
 
@@ -1221,7 +1242,7 @@ Return
 def get(
     self,
     name: str | list[str] | tuple[str, ...],
-    undef: bool = True
+    nans: bool = True
 ) -> float | list[float]:
 ```
 
@@ -1238,7 +1259,7 @@ Parameters
     Parameters | Defaults           | Description
     ---------- | ------------------ | -----------
     `name`     |                    | Channel name or sequence of channel names. Channel names can define the color space and channel name to retrieve value from a different color space.
-    `undef`    | `#!py True`        | Determines whether an undefined value is allowed to be returned. If disabled, undefined values will be resolved before returning.
+    `nans`     | `#!py True`        | Determines whether an undefined value is allowed to be returned. If disabled, undefined values will be resolved before returning.
 Return
 
 -   Returns a numerical value that is stored internally for the specified channel, or a calculated value in the case
@@ -1253,7 +1274,7 @@ def set(
     self,
     name: str | dict[str, float | Callable[..., float]],
     value: float | Callable[..., float] | None = None,
-    undef: bool = True
+    nans: bool = True
 ) -> Color:
 ```
 
@@ -1279,7 +1300,7 @@ Parameters
     ---------- | ------------------ | -----------
     `name`     |                    | A string containing a channel name or color space and channel separated by a `.` specifying the what channel to set. If `value` is omitted, `name` can also be a dictionary containing multiple channels, each specifying their own value to set.
     `value`    |                    | A numerical value, a string value accepted by the specified color space, or a function.
-    `undef`    | `#!py True`        | Determines whether an undefined value is allowed to be returned when setting a value during a callback. If disabled, undefined values sent to the callback will be resolved before the callback is executed.
+    `nans`    | `#!py True`        | Determines whether an undefined value is allowed to be returned when setting a value during a callback. If disabled, undefined values sent to the callback will be resolved before the callback is executed.
 Return
 
 -   Returns a reference to the current [`Color`](#color) object.
@@ -1290,7 +1311,7 @@ Return
 ```py
 def coords(
     self,
-    undef: bool = True
+    nans: bool = True
 ) -> Vector:
     ...
 ```
@@ -1298,7 +1319,7 @@ def coords(
 /// define
 Description
 
--   Get the color channels (no alpha). If `undef` is set to `#!py False`, all undefined values will be returned as
+-   Get the color channels (no alpha). If `nans` is set to `#!py False`, all undefined values will be returned as
     defined.
 
 Parameters
@@ -1306,7 +1327,7 @@ Parameters
 - 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
-    `undef`    | `#!py True`  | If `undef` is set to `#!py False`, all undefined values will be returned as defined.
+    `nans`     | `#!py True`  | If `nans` is set to `#!py False`, all undefined values will be returned as defined.
 
 Return
 
@@ -1319,7 +1340,7 @@ Return
 ```py
 def alpha(
     self,
-    undef: bool = True
+    nans: bool = True
 ) -> float:
     ...
 ```
@@ -1327,14 +1348,14 @@ def alpha(
 /// define
 Description
 
--   Get the alpha channel's value. If `undef` is set to `#!py False`, an undefined value will be returned as defined.
+-   Get the alpha channel's value. If `nans` is set to `#!py False`, an undefined value will be returned as defined.
 
 Parameters
 
 - 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
-    `undef`    | `#!py True`  | If `undef` is set to `#!py False`, an undefined value will be returned as defined.
+    `nans`    | `#!py True`  | If `nans` is set to `#!py False`, an undefined value will be returned as defined.
 
 Return
 
@@ -1419,8 +1440,7 @@ def chromatic_adaptation(
     w2: tuple[float, float],
     xyz: VectorLike,
     *,
-    method: str | None = None,
-    undef: bool = True
+    method: str | None = None
 ) -> Vector:
     ...
 ```

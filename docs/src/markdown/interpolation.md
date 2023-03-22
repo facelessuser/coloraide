@@ -56,14 +56,6 @@ Color.interpolate(
 )
 ```
 
-/// tip | Interpolating in Constrained Gamuts
-Some color spaces, like sRGB, have a limited gamut, but have extended ranges that allow them to represent out of
-gamut colors in a sane way. Other models, like HSL, HSV, and HWB have the same limited gamut, but have no sane way
-to represent out of gamut colors. If colors are requested to be interpolated and are too big to be interpolated
-in the requested color space and cannot properly be represented in that space or model, the colors will be gamut
-mapped before interpolation.
-///
-
 ## Piecewise Interpolation
 
 Piecewise interpolation takes the idea of linear interpolation and then applies it to multiple colors. As drawing a

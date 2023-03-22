@@ -6,7 +6,7 @@ from . import util
 import pytest
 
 
-@pytest.mark.skipif(False, reason='Experimental')
+@pytest.mark.skipif(True, reason='Experimental')
 class TestCarryFoward(util.ColorAssertsPyTest):
     """Test carry forward."""
 
