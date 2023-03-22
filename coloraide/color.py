@@ -703,15 +703,13 @@ class Color(metaclass=ColorMeta):
         # Convert to desired space
         self.convert(space, in_place=True, norm=False)
 
-        # If within gamut, just normalize hues by calling clip
+        # If within gamut, just normalize hue range by calling clip.
         if self.in_gamut(tolerance=0):
             gamut.clip_channels(self)
 
-        # Perform gamut mapping and normalize hues if required
+        # Perform gamut mapping.
         else:
             mapping.fit(self, **kwargs)
-            if norm:
-                self.normalize()
 
         # Convert back to the original color space
         return self.convert(orig_space, in_place=True, norm=norm)
@@ -870,6 +868,8 @@ class Color(metaclass=ColorMeta):
         colors = harmonies.harmonize(self, name, space)
         if space != orig_space:
             [c.convert(out_space, in_place=True, norm=norm) for c in colors]
+        elif not norm:
+            [c.normalize(nans=False) for c in colors]
 
         return colors
 

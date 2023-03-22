@@ -49,4 +49,4 @@ def filters(
 
     c = color.convert(space, in_place=in_place, norm=False).normalize()
     f.filter(c, amount, **kwargs)
-    return c.convert(out_space, in_place=True, norm=norm)
+    return c.convert(out_space, in_place=True, norm=norm) if norm or out_space != space else c.normalize(nans=False)
