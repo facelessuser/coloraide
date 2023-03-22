@@ -4,7 +4,7 @@
 
 - **BREAK**: Functions like `interpolate`, `steps`, `mix`, `filter`, `compose`, and `harmony` will no longer base the
   output color on the first input color. Colors will be evaluated in the specified color space and be output in that
-  space unless `out_space` is defined. For migration specify the desired `out_space` if the working `space` does not
+  space unless `out_space` is defined. For migration, specify the desired `out_space` if the working `space` does not
   match the desired output.
 
 - **BREAK**: Color space objects no longer utilize the `normalize()` method and instead now use an `is_achromatic()`
@@ -14,15 +14,12 @@
 - **NEW**: All `<space>ish` mixin classes now give access to normalized names and indexes as `names()` and `indexes()`
   opposed to `<space>ish_names()` etc. Old methods are still available but are deprecated.
 
-- **NEW**: All RGB, HSL, and HSV color spaces are now created with the respective `RGBish`, `HSLish`, and `HSVish` mixin
+- **NEW**: All RGB, HSL, and HSV color spaces are now created with a respective `RGBish`, `HSLish`, and `HSVish` mixin
   classes.
 
-- **NEW**: `Space` plugins can now specify in a color channel's definition what the ideal resolution for that channel
-  being undefined, the default being zero.
-
-- **NEW**: Some color spaces actually do not convert as well or have bad side effects if zero is used as a replacement
-  for an undefined value. Allow color spaces to specify what should actually be used if the default of zero is not
-  sufficient.
+- **NEW**: Some color spaces do not convert as well or have bad side effects if zero is used as a replacement for an
+  undefined value. Allow color spaces plugins to specify what should actually be used for a given color channel if the
+  default of zero is not sufficient.
 
     CAM16 JMh, HCT, and JzCzhz all have achromatic responses that actually lean more heavily (some quite extremely) into
     a specific hue. As undefined hues are primarily used for masking and for specifying when a hue is achromatic, these
@@ -56,10 +53,17 @@
   operations only apply this when passing the current value to a callback for relative modification.
 
 - **NEW**: A `norm` parameter is now added to `convert` and `update`. When set to `False`, it will prevent achromatic
-  normalization of hues during conversion. `norm` is also added to many other methods, usually methods that have the
-  `out_space` parameter and primarily will prevent achromatic normalization when converting to the `out_space`. If the
-  working color space is the `out_space`, then normalized hues may still be returned, but can be removed with
-  `normalize()` if required.
+  normalization of hues during conversion. If no conversion is needed, the color is returned as is.
+
+- **NEW**: A `norm` parameter is now added to `fit` and `clip`. When `norm` is `False`, achromatic normalization will be
+  prevented on the conversion back from the target/working color space.
+
+- **NEW**: A `norm` parameter has been added to `random`, `filter`, `compose`, `interpolate`, `mix`, `steps`, and
+  `harmony`. When set to `False`, colors will be returned without any undefined values.
+
+- **NEW**: ColorAide used to gamut map colors when HSL, HSV, HWB, etc. were used as interpolation spaces, this is no
+  longer done. It is possible to gamut map wider gamuts with these color spaces, so it will be up to the user to apply
+  gamut mapping when it is determined they need it.
 
 ## 1.8.2
 
