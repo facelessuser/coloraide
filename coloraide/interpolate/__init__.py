@@ -273,6 +273,8 @@ class Interpolator(metaclass=ABCMeta):
         color = self.create(self.space, coords[:-1], coords[-1])
         if self.out_space != color.space():
             color.convert(self.out_space, in_place=True, norm=self.norm)
+        elif not self.norm:
+            color.normalize(nans=False)
 
         return color
 
