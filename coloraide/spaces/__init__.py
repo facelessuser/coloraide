@@ -6,7 +6,6 @@ from ..css import serialize
 from ..util import deprecated
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, TYPE_CHECKING
-import math
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color

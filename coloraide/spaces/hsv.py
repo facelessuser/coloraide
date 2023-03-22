@@ -5,7 +5,6 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 from ..types import Vector
-import math
 
 
 def hsv_to_hsl(hsv: Vector) -> Vector:

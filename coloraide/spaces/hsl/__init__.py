@@ -5,7 +5,6 @@ from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
 from ...types import Vector
-import math
 
 
 def srgb_to_hsl(rgb: Vector) -> Vector:

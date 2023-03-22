@@ -10,7 +10,6 @@ from ..channels import Channel, FLG_ANGLE
 from .. import algebra as alg
 from .. import util
 from ..types import Vector
-import math
 
 
 def srgb_to_hsi(rgb: Vector) -> Vector:
