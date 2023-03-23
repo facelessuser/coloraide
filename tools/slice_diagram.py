@@ -32,7 +32,7 @@ from coloraide.spaces import Cylindrical, LChish  # noqa: E402
 
 def ignore_LCh_high_chroma_black(color):
     """
-    Ignore LCh spaces that will render all lightnes of zero with any chroma as the same color.
+    Ignore LCh spaces that will render all lightness of zero with any chroma as the same color.
 
     Prevents a render of a single black line at lightness zero across all chroma.
     """

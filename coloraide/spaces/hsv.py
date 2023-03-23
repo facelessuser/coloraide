@@ -16,7 +16,7 @@ def hsv_to_hsl(hsv: Vector) -> Vector:
 
     h, s, v = hsv
     l = v * (1.0 - s / 2.0)
-    s = 0.0 if l == 0 or abs(1 - l) < 1e-7 else (v - l) / min(l, 1.0 - l)
+    s = 0.0 if l == 0.0 or l == 1.0 else (v - l) / min(l, 1.0 - l)
 
     return [util.constrain_hue(h), s, l]
 

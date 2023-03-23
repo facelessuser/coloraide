@@ -230,6 +230,7 @@ luma
 luminance
 macOS
 memoization
+mixin
 monochromacy
 monotonicity
 oRGB

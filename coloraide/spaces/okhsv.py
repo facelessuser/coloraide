@@ -49,7 +49,7 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
     a = b = 0.0
 
     # Avoid processing gray or colors with undefined hues
-    if l != 0.0 and abs(s) >= 1e-7:
+    if l != 0.0 and s != 0:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -98,7 +98,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
-    if l != 0.0 and abs(1 - l) >= 1e-7 and c != 0:
+    if l != 0.0 and l != 1 and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -139,7 +139,7 @@ class Okhsv(HSVish, Space):
     NAME = "okhsv"
     SERIALIZE = ("--okhsv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE, nans=OkLCh.ACHROMATIC_HUE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("v", 0.0, 1.0, bound=True)
     )

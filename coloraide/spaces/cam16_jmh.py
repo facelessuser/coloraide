@@ -7,18 +7,137 @@ https://arxiv.org/abs/1802.06067
 https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
-from .. import algebra as alg
 from ..spaces import Space, LChish
 from .cam16 import Environment, CAM16, cam16_jab_to_cam16_jmh, cam16_jmh_to_cam16_jab, xyz_d65_to_cam16_jmh
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector
-import bisect
+from ..types import Vector, VectorLike
+from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
+from typing import Any
+
+ACHROMATIC_RESPONSE = [
+    (0.5197637353103578, 0.10742101902546783, 209.53702017876432),
+    (0.7653410752577902, 0.1428525220483835, 209.53699586564701),
+    (0.9597225272459006, 0.1674639325209385, 209.5369779985614),
+    (1.1268800051398011, 0.18685008110835863, 209.5369633468102),
+    (1.2763267654963262, 0.2030639541700499, 209.53695070009815),
+    (1.8790377054651906, 0.2606154320772664, 209.53690294574977),
+    (2.3559753209404573, 0.2998668559412108, 209.53686786031403),
+    (2.7660324716814633, 0.3305058430743194, 209.536839093849),
+    (3.1325805945142164, 0.3559891904115732, 209.53681426762876),
+    (3.4678031173571573, 0.37799038189311784, 209.53679218878383),
+    (3.77902862541972, 0.3974595006625645, 209.53677216077193),
+    (4.071081036208187, 0.41499276041597405, 209.53675373607226),
+    (4.35987940988476, 0.4317047383578854, 209.53673583657556),
+    (4.653923368359191, 0.44814375233486375, 209.53671791170922),
+    (7.833618587426542, 0.5996289140723938, 209.53653852944092),
+    (11.379933581738413, 0.73419775817062, 209.5363590374096),
+    (15.226965773377025, 0.8572590366765755, 209.53617955383942),
+    (19.331425543357224, 0.9717687075452716, 209.53600014937),
+    (23.662223781347393, 1.0795574256327514, 209.5358208710024),
+    (28.195712492409086, 1.181856050998015, 209.5356417521982),
+    (32.91316356733728, 1.2795417603936534, 209.53546281794735),
+    (37.799294675334956, 1.3732674055098613, 209.53528408756415),
+    (42.841343691205466, 1.4635354939944947, 209.5351055763844),
+    (48.028455187972774, 1.5507433232034882, 209.53492729681835),
+    (53.35125605180922, 1.6352119585004592, 209.53474925909882),
+    (58.80155160494701, 1.7172056265103606, 209.53457147176655),
+    (64.37210171522501, 1.7969451471063824, 209.5343939420231),
+    (70.05645182832635, 1.8746175094579132, 209.53421667601953),
+    (75.8488028092011, 1.95038286970608, 209.53403967901312),
+    (81.74390888832978, 2.0243797747220165, 209.53386295555885),
+    (87.73699639870503, 2.0967291349022923, 209.53368650960735),
+    (93.82369818202439, 2.1675372954936383, 209.53351034459058),
+    (100.0, 2.2368984457707195, 209.5333344635329),
+    (106.26219627903436, 2.304896533525034, 209.53315886906827),
+    (112.60685320678104, 2.3716068043005607, 209.5329835635155),
+    (119.03077768851209, 2.437097052049621, 209.53280854892182),
+    (125.53099102420309, 2.501428645093027, 209.53263382708093),
+    (132.1047064258276, 2.5646573751376196, 209.532459399577),
+    (138.74930968646495, 2.6268341655120837, 209.53228526779512),
+    (145.46234245739691, 2.688005666324115, 209.5321114329661),
+    (152.24148769946316, 2.748214758003532, 209.5319378961533),
+    (159.08455695969053, 2.807500980008346, 209.53176465830455),
+    (165.98947919010237, 2.865900897958051, 209.53159172021918),
+    (172.95429087732893, 2.92344841973748, 209.53141908260915),
+    (179.97712729256875, 2.980175069050156, 209.531246746073),
+    (187.05621470411134, 3.0361102232687336, 209.5310747111302),
+    (194.18986342088985, 3.0912813211607015, 209.53090297820907),
+    (201.3764615567875, 3.145714045061113, 209.5307315476577),
+    (208.6144694227416, 3.199432481261756, 209.53056041976922),
+    (215.90241446789472, 3.252459261745779, 209.5303895947692),
+    (223.23888670275272, 3.3048156898733514, 209.53021907281337),
+    (230.62253454702386, 3.356521852200883, 209.53004885402044),
+    (238.05206105290918, 3.4075967182797573, 209.52987893845008),
+    (245.52622046139462, 3.4580582299851543, 209.52970932613027),
+    (253.04381505480674, 3.5079233817057034, 209.52954001701477),
+    (260.6036922737095, 3.5572082925096393, 209.52937101105175),
+    (268.20474207032214, 3.605928271271525, 209.52920230813686),
+    (275.8458944741247, 3.654097875574637, 209.52903390813748),
+    (283.52611734829725, 3.7017309651178785, 209.52886581088453),
+    (291.24441431821003, 3.748840750239339, 209.52869801618866),
+    (298.9998228553806, 3.795439836103318, 209.52853052381926),
+    (306.7914125022303, 3.841540263013781, 209.52836333353144),
+    (314.61828322461554, 3.8871535432700086, 209.52819644505487),
+    (322.479563880563, 3.9322906949207233, 209.52802985809194),
+    (330.37441079487513, 3.9769622727358533, 209.5278635723298),
+    (338.30200643038665, 4.021178396670985, 209.52769758743247),
+    (346.2615581476034, 4.064948778071929, 209.52753190304955),
+    (354.2522970453064, 4.108282743840222, 209.52736651881136),
+    (362.2734768754491, 4.151189258746347, 209.52720143432805),
+    (370.32437302633326, 4.1936769460683285, 209.52703664919864),
+    (378.40428156863675, 4.235754106704258, 209.52687216301322),
+    (386.51251835937717, 4.277428736903083, 209.5267079753345),
+    (394.648418199364, 4.3187085447228295, 209.52654408572644),
+    (402.8113340400954, 4.359600965341976, 209.52638049373465),
+    (411.00063623642933, 4.400113175309799, 209.52621719889768),
+    (419.2157118416773, 4.440252105831943, 209.52605420073294),
+    (427.45596394207547, 4.480024455165198, 209.52589149876238),
+    (435.7208110278373, 4.519436700202084, 209.52572909248678),
+    (444.00968639824373, 4.558495107300929, 209.52556698141063),
+    (452.32203759843054, 4.597205742430248, 209.5254051650081),
+    (460.65732588572826, 4.635574480668458, 209.52524364277477),
+    (469.01502572358646, 4.67360701512636, 209.52508241417655),
+    (477.39462430127537, 4.711308865316018, 209.52492147868517),
+    (485.79562107768834, 4.7486853850221635, 209.5247608357571),
+    (494.2175273477133, 4.7857417697075455, 209.52460048484275),
+    (502.65986582975273, 4.822483063478878, 209.52444042540557),
+    (511.12217027307815, 4.858914165665327, 209.52428065686505),
+    (519.603985083808, 4.895039837005332, 209.52412117867837),
+    (528.1048649683817, 4.9308647055023425, 209.52396199027322),
+    (536.6243745934894, 4.966393271948785, 209.52380309107085),
+    (545.162088261489, 5.001629915149562, 209.52364448049883),
+    (553.7175896004151, 5.036578896863699, 209.52348615798226),
+    (562.2904712677357, 5.071244366487241, 209.52332812293528),
+    (570.8803346670916, 5.105630365484719, 209.52317037476547),
+    (579.4867896772784, 5.139740831594337, 209.5230129128839),
+    (588.1094543928114, 5.173579602816207, 209.52285573670093),
+    (596.7479548754266, 5.20715042120039, 209.5226988456209),
+    (605.4019249159434, 5.240456936444621, 209.52254223903395),
+    (614.0710058059254, 5.273502709313967, 209.5223859163477),
+    (622.7548461186354, 5.306291214893902, 209.52222987695998),
+    (631.4531014987923, 5.338825845688801, 209.52207412025294),
+    (640.1654344606808, 5.371109914568736, 209.52191864562857),
+    (648.8915141941957, 5.403146657580354, 209.52176345246957),
+    (657.6310163784137, 5.434939236625218, 209.52160854017026),
+    (666.3836230023238, 5.466490742017985, 209.52145390810907),
+    (675.1490221923619, 5.497804194921783, 209.5212995556808),
+    (683.9269080464271, 5.528882549682189, 209.52114548225762),
+    (692.7169804740557, 5.559728696047723, 209.52099168723132),
+    (701.5189450424705, 5.590345461302892, 209.5208381699748),
+    (710.3325128282281, 5.620735612298761, 209.52068492987144),
+    (719.1574002741951, 5.6509018574012, 209.52053196630135),
+    (727.9933290516212, 5.680846848355491, 209.52037927864566),
+    (736.8400259270661, 5.710573182071791, 209.52022686627365),
+    (745.6972226339658, 5.74008340233323, 209.5200747285655),
+    (754.5646557486314, 5.769380001437249, 209.51992286490193),
+    (763.4420665704857, 5.79846542176912, 209.51977127465065),
+    (772.3292010063437, 5.827342057308235, 209.519619957194)]  # type: list[VectorLike]
 
 
-class Achromatic:
+class Achromatic(_Achromatic):
     """
     Test if color is achromatic.
 
@@ -27,122 +146,29 @@ class Achromatic:
     We use a spline mainly to quickly fit the line in a way we do not have to analyze and tune.
     """
 
-    CONVERTER = staticmethod(xyz_d65_to_cam16_jmh)
     L_IDX = 0
     C_IDX = 1
     H_IDX = 2
 
     def __init__(
         self,
-        tuning: dict[str, tuple[int, int, int, float]],
+        tuning: dict[str, tuple[int, int, int, float]] | list[VectorLike],
         threshold_upper: float,
         threshold_lower: float,
+        threshold_cutoff: float,
+        spline: str,
+        *,
         env: Environment,
-        spline: str
+        **kwargs: Any
     ) -> None:
         """Initialize."""
 
-        self.threshold_upper = threshold_upper
-        self.threshold_lower = threshold_lower
+        super().__init__(tuning, threshold_upper, threshold_lower, threshold_cutoff, spline, env=env, **kwargs)
 
-        # Create a spline that maps the achromatic range for the SDR range
-        points = []  # type: list[list[float]]
-        self.domain = []  # type: list[float]
-        self.max_colorfulness = 1e-10
-        self.min_colorfulness = 1e10
-        self.min_lightness = 1e10
-        self.spline = None
-        if not env.discounting:
-            self.iter_achromatic_response(env, points, *tuning['low'])
-            self.iter_achromatic_response(env, points, *tuning['mid'])
-            self.iter_achromatic_response(env, points, *tuning['high'])
-            self.max_colorfulness = round(self.max_colorfulness, 3) + 1
-            self.spline = alg.interpolate(points, method=spline)
-        # Transform seems to favor a particular achromatic hue, capture the one at white
-        # to replace achromatic NaN hues with.
-        self.hue = self.CONVERTER(lin_srgb_to_xyz(lin_srgb([1] * 3)), env)[self.H_IDX]
+    def convert(self, coords: Vector, *, env: Environment, **kwargs: Any) -> Vector:  # type: ignore[override]
+        """Convert to the target color space."""
 
-    def iter_achromatic_response(
-        self,
-        env: Environment,
-        points: list[list[float]],
-        start: int,
-        end: int,
-        step: int,
-        scale: float
-    ) -> None:
-        """
-        Iterate the achromatic response of the space.
-
-        Save points of lightness vs colorfulness. Also, track the domain.
-        """
-
-        for p in range(start, end, step):
-            c = self.CONVERTER(lin_srgb_to_xyz(lin_srgb([p / scale] * 3)), env)
-            j, m, h = c[self.L_IDX], c[self.C_IDX], c[self.H_IDX]
-            if j < self.min_lightness:
-                self.min_lightness = j
-            if m < self.min_colorfulness:
-                self.min_colorfulness = m
-            if m > self.max_colorfulness:
-                self.max_colorfulness = m
-            self.domain.append(j)
-            points.append([j, m, h])
-
-    def scale(self, point: float) -> float:
-        """Scale the lightness to match the range."""
-
-        if point <= self.domain[0]:
-            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0])
-        elif point >= self.domain[-1]:
-            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0])
-        else:
-            regions = len(self.domain) - 1
-            size = (1 / regions)
-            index = 0
-            adjusted = 0.0
-            index = bisect.bisect(self.domain, point) - 1
-            a, b = self.domain[index:index + 2]
-            l = b - a
-            adjusted = ((point - a) / l) if l else 0.0
-            point = size * index + (adjusted * size)
-        return point
-
-    def get_ideal_hue(self, j: float, m: float, h: float) -> float:
-        """Get the ideal chroma."""
-
-        if self.spline is not None:
-            point = self.scale(j)
-            return self.spline(point)[2]
-
-        # This would be for `discounting=True`,
-        # which we do not run with currently.
-        return self.hue  # pragma: no cover
-
-    def test(self, j: float, m: float, h: float) -> bool:
-        """Test if the current color is achromatic."""
-
-        # If colorfulness is past this limit, we'd have to have a lightness
-        # so high, that our test has already broken down.
-        if m > self.max_colorfulness:
-            return False
-
-        # This is for when "discounting" as colorfulness should be very near zero
-        if self.spline is None:  # pragma: no cover
-            return True
-
-        # If we are higher than 1, we are extrapolating;
-        # otherwise, use the spline.
-        point = self.scale(j)
-        if j < self.min_lightness and m < self.min_colorfulness:  # pragma: no cover
-            return True
-        else:
-            m2, h2 = self.spline(point)[1:]
-        diff = m2 - m
-        return (
-            (diff >= 0 and diff < self.threshold_upper) or (diff < 0 and abs(diff) < self.threshold_lower) and
-            (abs(h % 360 - h2) < 0.1)
-        )
+        return xyz_d65_to_cam16_jmh(lin_srgb_to_xyz(lin_srgb(coords)), env)
 
 
 class CAM16JMh(LChish, Space):
@@ -161,16 +187,20 @@ class CAM16JMh(LChish, Space):
     # environment (viewing conditions), we'd have to have our BASE set as
     # a Jab that shared those conditions, or resolve directly from XYZ.
     ENV = CAM16.ENV
+    # If discounting were True, we could remove the dynamic achromatic response
     ACHROMATIC = Achromatic(
-        {
-            'low': (1, 5, 1, 1000.0),
-            'mid': (1, 10, 1, 200.0),
-            'high': (5, 521, 5, 100.0)
-        },
+        # Precalculated from:
+        # {
+        #     'low': (1, 5, 1, 1000.0),
+        #     'mid': (1, 10, 1, 200.0),
+        #     'high': (5, 521, 5, 100.0)
+        # },
+        ACHROMATIC_RESPONSE,
         0.0012,
         0.0141,
-        ENV,
-        'catrom'
+        6.7,
+        'catrom',
+        env=ENV
     )
     CHANNELS = (
         Channel("j", 0.0, 100.0, limit=(0.0, None)),
@@ -186,7 +216,7 @@ class CAM16JMh(LChish, Space):
             return False
 
         elif jdef:
-            return coords[1] < 2e-9
+            return coords[1] < 1e-10
 
         elif mdef:
             return coords[0] == 0.0
