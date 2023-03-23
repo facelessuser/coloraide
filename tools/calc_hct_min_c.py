@@ -40,12 +40,15 @@ def main():
         '--high', '-H', type=str, default='50:551:50:100.0',
         help="Tuning for high range: start:end:step:scale (int:int:int:float)"
     )
+    parser.add_argument(
+        '--dump', action='store_true', help="Dump calculated values."
+    )
     args = parser.parse_args()
 
-    return run(args.spline, args.low, args.mid, args.high, args.res)
+    return run(args.spline, args.low, args.mid, args.high, args.res, args.dump)
 
 
-def run(spline, low, mid, high, res):
+def run(spline, low, mid, high, res, dump):
     """Run."""
 
     tuning = {
@@ -54,7 +57,7 @@ def run(spline, low, mid, high, res):
         "high": [int(i) if e < 3 else float(i) for e, i in enumerate(high.split(':'))]
     }
     env = HCT.ENV
-    test = Achromatic(tuning, 1, 1, env, spline)
+    test = Achromatic(tuning, 1, 1, 100, spline, env=env)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}
@@ -131,6 +134,10 @@ def run(spline, low, mid, high, res):
     plt.plot(m1, h1, t1, '.', color='black')
     plt.plot(m2, h2, t2, '.', color='red', markersize=0.5)
     plt.show()
+
+    if dump:
+        print('===== Data =====')
+        print(test.dump())
 
     return 0
 

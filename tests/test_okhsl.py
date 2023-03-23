@@ -17,7 +17,7 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         ('blue', 'color(--okhsl 264.05 1 0.36657)'),
         ('indigo', 'color(--okhsl 301.68 1.0018 0.24043)'),
         ('violet', 'color(--okhsl 327.21 0.90624 0.7231)'),
-        ('white', 'color(--okhsl none 0 1)'),
+        ('white', 'color(--okhsl none 0.55508 1)'),
         ('gray', 'color(--okhsl none 0 0.53571)'),
         ('black', 'color(--okhsl none 0 0)'),
         # Test color

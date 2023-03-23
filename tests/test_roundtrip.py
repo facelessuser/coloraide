@@ -1,6 +1,6 @@
 """Sanity check that ensures all colors round trip back."""
 from coloraide.everything import ColorAll as Base
-from coloraide.spaces import Cylindrical
+from coloraide.spaces import Cylindrical, HSLish, HSVish
 from coloraide import algebra as alg
 import pytest
 
@@ -50,6 +50,11 @@ class TestRoundTrip:
             if isinstance(c2._space, Cylindrical):
                 if alg.round_half_up(alg.no_nan(c2['hue']), p) == 360:
                     c2.set('hue', 0)
+            # In HSL and HSV spaces particularly, we can get nonsense saturation, ignore if the space is achromatic.
+            if isinstance(c2._space, (HSLish, HSVish)) and alg.is_nan(c2['hue']):
+                c2[c2._space.indexes()[1]] = 0.0
+            if isinstance(c1._space, (HSLish, HSVish)) and alg.is_nan(c1['hue']):
+                c1[c1._space.indexes()[1]] = 0.0
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
             str1 = self.Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
             str2 = self.Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
@@ -74,7 +79,7 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     """
     Test achromatic round trip.
 
-    For convienance, we determine achromatic colors and set hues to `NaN`.
+    For convenience, we determine achromatic colors and set hues to `NaN`.
     This can cause a slight drop in precision.
     """
 

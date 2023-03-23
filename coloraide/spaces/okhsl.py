@@ -335,7 +335,7 @@ def okhsl_to_oklab(hsl: Vector) -> Vector:
     L = toe_inv(l)
     a = b = 0.0
 
-    if L != 0.0 and abs(1 - L) >= 1e-7 and s != 0:
+    if L != 0.0 and L != 1.0 and s != 0:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -381,7 +381,7 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
-    if l != 0.0 and abs(1 - l) >= 1e-7 and c != 0:
+    if l != 0.0 and l != 1.0 and c != 0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -415,7 +415,7 @@ class Okhsl(HSLish, Space):
     NAME = "okhsl"
     SERIALIZE = ("--okhsl",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE, nans=OkLCh.ACHROMATIC_HUE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("l", 0.0, 1.0, bound=True)
     )

@@ -25,7 +25,7 @@ def srgb_to_hsl(rgb: Vector) -> Vector:
             h = (b - r) / c + 2.0
         else:
             h = (r - g) / c + 4.0
-        s = 0 if l == 0.0 or abs(1 - l) < 1e-7 else (mx - l) / min(l, 1 - l)
+        s = 0 if l == 0.0 or l == 1.0 else (mx - l) / min(l, 1 - l)
         h *= 60.0
 
     return [util.constrain_hue(h), s, l]
