@@ -64,6 +64,11 @@ class TestHSVSerialize(util.ColorAssertsPyTest):
 class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
     """Test HSV."""
 
+    def test_names(self):
+        """Test HSV-ish names."""
+
+        self.assertEqual(Color('color(--hsv 120 50% 50% / 1)')._space.names(), ('h', 's', 'v'))
+
     def test_hue(self):
         """Test `hue`."""
 

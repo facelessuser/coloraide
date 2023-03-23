@@ -50,7 +50,8 @@ class TestRoundTrip:
             if isinstance(c2._space, Cylindrical):
                 if alg.round_half_up(alg.no_nan(c2['hue']), p) == 360:
                     c2.set('hue', 0)
-            # In HSL and HSV spaces particularly, we can get nonsense saturation, ignore if the space is achromatic.
+            # In HSL and HSV spaces particularly, we can get nonsense saturation if lightness
+            # is not exactly within 0 - 1 range. Ignore saturation in achromatic cases.
             if isinstance(c2._space, (HSLish, HSVish)) and alg.is_nan(c2['hue']):
                 c2[c2._space.indexes()[1]] = 0.0
             if isinstance(c1._space, (HSLish, HSVish)) and alg.is_nan(c1['hue']):

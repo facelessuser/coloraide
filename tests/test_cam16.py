@@ -2,7 +2,7 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color
-from coloraide.spaces.cam16 import cam16_to_xyz_d65, CAM16
+from coloraide.spaces.cam16_jmh import cam16_to_xyz_d65, CAM16JMh
 from collections import namedtuple
 import pytest
 
@@ -113,19 +113,19 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test conversion failure when no equivalent lightness."""
 
         with self.assertRaises(ValueError):
-            cam16_to_xyz_d65(C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV)
+            cam16_to_xyz_d65(C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV)
 
     def test_no_chroma(self):
         """Test conversion failure when no equivalent chroma."""
 
         with self.assertRaises(ValueError):
-            cam16_to_xyz_d65(J=self.COORDS.J, h=self.COORDS.h, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, h=self.COORDS.h, env=CAM16JMh.ENV)
 
     def test_no_hue(self):
         """Test conversion failure when no equivalent hue."""
 
         with self.assertRaises(ValueError):
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, env=CAM16JMh.ENV)
 
     def test_no_environment(self):
         """Test no test no environment."""
@@ -137,8 +137,8 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test convert lightness."""
 
         for a, b in zip(
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV),
-            cam16_to_xyz_d65(Q=self.COORDS.Q, C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
@@ -146,14 +146,14 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test convert chroma."""
 
         for a, b in zip(
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV),
-            cam16_to_xyz_d65(Q=self.COORDS.Q, s=self.COORDS.s, h=self.COORDS.h, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, s=self.COORDS.s, h=self.COORDS.h, env=CAM16JMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
         for a, b in zip(
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV),
-            cam16_to_xyz_d65(Q=self.COORDS.Q, M=self.COORDS.M, h=self.COORDS.h, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, M=self.COORDS.M, h=self.COORDS.h, env=CAM16JMh.ENV)
         ):
             self.assertCompare(a, b, 14)
 
@@ -161,7 +161,7 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
         """Test convert hue."""
 
         for a, b in zip(
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16.ENV),
-            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16.ENV)
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16JMh.ENV)
         ):
             self.assertCompare(a, b, 14)

@@ -8,7 +8,11 @@ from ..spaces import Space, Labish
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..cat import WHITES
 from .. import algebra as alg
+from .achromatic import Achromatic as _Achromatic
+from .srgb_linear import lin_srgb_to_xyz
+from .srgb import lin_srgb
 from ..types import Vector
+from typing import Any
 
 XYZ_TO_LMS = [
     [2.968, 2.741, -0.649],
@@ -33,6 +37,14 @@ IGPGTG_TO_LMS = [
     [0.6345481937914158, -0.009437923746683553, -0.003270744675229782],
     [0.022656986516578225, -0.0047011518748263665, -0.030048158824914562]
 ]
+
+ACHROMATIC_RESPONSE = [
+    [0.01710472400677632, 7.497407788263028e-05, 289.00717276288583],
+    [0.022996189520032607, 0.00010079777395972956, 289.0071727628907],
+    [0.027343043084773415, 0.00011985106810106645, 289.0071727628969],
+    [0.030916881922897717, 0.00013551605464415584, 289.00717276289157],
+    [0.9741484960046701, 0.004269924798539691, 289.0071727629053],
+    [5.049390603804086, 0.022132681254573808, 289.00717276289043]]  # type: list[Vector]
 
 
 def xyz_to_igpgtg(xyz: Vector) -> Vector:
@@ -59,6 +71,21 @@ def igpgtg_to_xyz(itp: Vector) -> Vector:
     return alg.dot(LMS_TO_XYZ, lms_in, dims=alg.D2_D1)
 
 
+class Achromatic(_Achromatic):
+    """
+    Test if color is achromatic.
+
+    Should work quite well through the SDR range. Can reasonably handle HDR range out to 3
+    which is far enough for anything practical.
+    We use a spline mainly to quickly fit the line in a way we do not have to analyze and tune.
+    """
+
+    def convert(self, coords: Vector, **kwargs: Any) -> Vector:
+        """Convert to the target color space."""
+
+        return xyz_to_igpgtg(lin_srgb_to_xyz(lin_srgb(coords)))
+
+
 class IgPgTg(Labish, Space):
     """The IgPgTg class."""
 
@@ -76,6 +103,35 @@ class IgPgTg(Labish, Space):
         "tritan": "ct"
     }
     WHITE = WHITES['2deg']['D65']
+    ACHROMATIC = Achromatic(
+        # {
+        #     'low': (1, 5, 1, 1000.0),
+        #     'mid': (100, 101, 1, 100),
+        #     'high': (520, 521, 1, 100)
+        # },
+        ACHROMATIC_RESPONSE,
+        1e-5,
+        1e-5,
+        0.03126,
+        'linear'
+    )
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        jdef, mdef, _ = undefined
+        if mdef and jdef:
+            return False
+
+        elif jdef:
+            return coords[1] < 1e-4
+
+        elif mdef:
+            return coords[0] == 0.0
+
+        c, h = alg.rect_to_polar(coords[1], coords[2])
+
+        return self.ACHROMATIC.test(coords[0], c, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

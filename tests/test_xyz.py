@@ -66,6 +66,16 @@ class TestXYZD65Serialize(util.ColorAssertsPyTest):
 class TestXYZD65Properties(util.ColorAsserts, unittest.TestCase):
     """Test XYZ D65."""
 
+    def test_names(self):
+        """Test RGB-ish names."""
+
+        self.assertEqual(Color('color(xyz 0.1 0.2 0.3 / 1)')._space.names(), ('x', 'y', 'z'))
+
+    def test_indexes(self):
+        """Test RGB-ish names."""
+
+        self.assertEqual(Color('color(xyz 0.1 0.2 0.3 / 1)')._space.indexes(), [0, 1, 2])
+
     def test_x(self):
         """Test `x`."""
 

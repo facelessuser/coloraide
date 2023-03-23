@@ -4,7 +4,7 @@ ICtCp class.
 https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
 """
 from __future__ import annotations
-from ..spaces import Space, Labish
+from .lab import Lab
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
@@ -83,7 +83,7 @@ def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     return alg.dot(lms_p_to_ictcp_m, pqlms, dims=alg.D2_D1)
 
 
-class ICtCp(Labish, Space):
+class ICtCp(Lab):
     """ICtCp class."""
 
     BASE = "xyz-d65"

@@ -435,12 +435,12 @@ class Okhsl(HSLish, Space):
             return False
 
         elif ldef:
-            return abs(coords[1]) < 1e-4
+            return abs(coords[1]) < 1e-5
 
         elif sdef:
             return coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
-        return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
+        return abs(coords[1]) < 1e-5 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
     def achromatic_hue(self) -> float:
         """

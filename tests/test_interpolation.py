@@ -87,6 +87,14 @@ class TestCarryFoward(util.ColorAssertsPyTest):
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     """Test interpolation."""
 
+    def test_no_normalization(self):
+        """Test disabling of normalization on output."""
+
+        colors = Color.steps(['white', 'black'], steps=3, space='hsl', norm=False)
+        for c in colors:
+            self.assertTrue(c.is_achromatic())
+            self.assertFalse(c.is_nan('hue'))
+
     def test_domain(self):
         """Test that domains work."""
 
