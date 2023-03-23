@@ -4,12 +4,10 @@ JzCzhz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from __future__ import annotations
-from ..spaces import Space, LChish
 from ..cat import WHITES
+from .lch import LCh, lab_to_lch
 from .jzazbz import xyz_d65_to_jzazbz
 from ..channels import Channel, FLG_ANGLE
-from .. import util
-import math
 from ..types import Vector, VectorLike  # noqa: F401
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
@@ -128,29 +126,6 @@ ACHROMATIC_RESPONSE = [
     (0.971398043330407, 0.0002918653467695802, 216.0751317926928)]  # type: list[VectorLike]
 
 
-def jzazbz_to_jzczhz(jzazbz: Vector) -> Vector:
-    """Jzazbz to JzCzhz."""
-
-    jz, az, bz = jzazbz
-
-    cz = math.sqrt(az ** 2 + bz ** 2)
-    hz = math.degrees(math.atan2(bz, az))
-
-    return [jz, cz, util.constrain_hue(hz)]
-
-
-def jzczhz_to_jzazbz(jzczhz: Vector) -> Vector:
-    """JzCzhz to Jzazbz."""
-
-    jz, cz, hz = jzczhz
-
-    return [
-        jz,
-        cz * math.cos(math.radians(hz)),
-        cz * math.sin(math.radians(hz))
-    ]
-
-
 class Achromatic(_Achromatic):
     """
     Test if color is achromatic.
@@ -169,10 +144,10 @@ class Achromatic(_Achromatic):
     def convert(self, coords: Vector, *args: Any, **kwargs: Any) -> Vector:
         """Convert to the target color space."""
 
-        return jzazbz_to_jzczhz(xyz_d65_to_jzazbz(lin_srgb_to_xyz(lin_srgb(coords))))
+        return lab_to_lch(xyz_d65_to_jzazbz(lin_srgb_to_xyz(lin_srgb(coords))))
 
 
-class JzCzhz(LChish, Space):
+class JzCzhz(LCh):
     """
     JzCzhz class.
 
@@ -235,13 +210,3 @@ class JzCzhz(LChish, Space):
         """Hue name."""
 
         return "hz"
-
-    def to_base(self, coords: Vector) -> Vector:
-        """To Jzazbz from JzCzhz."""
-
-        return jzczhz_to_jzazbz(coords)
-
-    def from_base(self, coords: Vector) -> Vector:
-        """From Jzazbz to JzCzhz."""
-
-        return jzazbz_to_jzczhz(coords)

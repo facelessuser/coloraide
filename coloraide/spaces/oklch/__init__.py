@@ -25,36 +25,11 @@ SOFTWARE.
 """
 from __future__ import annotations
 from ..oklab import xyz_d65_to_oklab
-from ..lch import LCh
+from ..lch import LCh, lab_to_lch
 from ...spaces import Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ... import util
-import math
-from ...types import Vector
-
-
-def oklab_to_oklch(oklab: Vector) -> Vector:
-    """Oklab to OkLCh."""
-
-    l, a, b = oklab
-
-    c = math.sqrt(a ** 2 + b ** 2)
-    h = math.degrees(math.atan2(b, a))
-
-    return [l, c, util.constrain_hue(h)]
-
-
-def oklch_to_oklab(oklch: Vector) -> Vector:
-    """OkLCh to Oklab."""
-
-    l, c, h = oklch
-
-    return [
-        l,
-        c * math.cos(math.radians(h)),
-        c * math.sin(math.radians(h))
-    ]
 
 
 class OkLCh(LCh, Space):
@@ -77,7 +52,7 @@ class OkLCh(LCh, Space):
     # OkLCh serializes undefined hues to 0 in CSS, so we will use this to improve conversions,
     # but still serialize undefined hues to 0 as it puts us still in range, but we get better
     # round tripping with the hue below.
-    ACHROMATIC_HUE = oklab_to_oklch(xyz_d65_to_oklab(util.xy_to_xyz(WHITE)))[-1]
+    ACHROMATIC_HUE = lab_to_lch(xyz_d65_to_oklab(util.xy_to_xyz(WHITE)))[-1]
 
     def achromatic_hue(self) -> float:
         """
@@ -88,13 +63,3 @@ class OkLCh(LCh, Space):
         """
 
         return self.ACHROMATIC_HUE
-
-    def to_base(self, oklch: Vector) -> Vector:
-        """To Lab."""
-
-        return oklch_to_oklab(oklch)
-
-    def from_base(self, oklab: Vector) -> Vector:
-        """To Lab."""
-
-        return oklab_to_oklch(oklab)
