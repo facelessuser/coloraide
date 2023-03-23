@@ -65,6 +65,11 @@ class TestHSISerialize(util.ColorAssertsPyTest):
 class TestHSIPoperties(util.ColorAsserts, unittest.TestCase):
     """Test HSI."""
 
+    def test_names(self):
+        """Test HSV-ish names."""
+
+        self.assertEqual(Color('color(--hsi 60 1 0.66667)')._space.names(), ('h', 's', 'i'))
+
     def test_h(self):
         """Test `h`."""
 

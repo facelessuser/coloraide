@@ -11,6 +11,8 @@ from ..spaces import Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
+from .. import algebra as alg
+import math
 
 
 def srgb_to_lrgb(rgb: Vector) -> Vector:
@@ -50,6 +52,22 @@ class Prismatic(Space):
         "blue": 'b'
     }
     WHITE = WHITES['2deg']['D65']
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+        """Test if color is achromatic."""
+
+        if not undefined[0] and math.isclose(0.0, coords[0], abs_tol=1e-4):
+            return True
+
+        value = super().is_achromatic(undefined[1:], coords[1:])
+        if value is not None:
+            return value
+
+        white = [1, 1, 1]
+        for x in alg.vcross(coords[1:], white):
+            if not math.isclose(0.0, x, abs_tol=1e-5):
+                return False
+        return True
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB."""

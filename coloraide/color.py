@@ -554,7 +554,7 @@ class Color(metaclass=ColorMeta):
             xyz = self.convert('xyz-d65')
             coords = xyz[:-1]
             for x in alg.vcross(coords, xyz.white()):
-                if not math.isclose(0.0, x, abs_tol=1e-4):
+                if not math.isclose(0.0, x, abs_tol=1e-5):
                     return False
             return True
 

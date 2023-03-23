@@ -86,7 +86,7 @@ class Labish:
     """Lab-ish color spaces."""
 
     @deprecated("Please use 'names' instead.")
-    def labish_names(self) -> tuple[str, ...]:
+    def labish_names(self) -> tuple[str, ...]:  # pragma: no cover
         """Return Lab-ish names in the order L a b."""
 
         return self.names()

@@ -15,7 +15,7 @@ class Achromatic(metaclass=ABCMeta):
 
     def __init__(
         self,
-        tuning: dict[str, tuple[int, int, int, float]] | list[VectorLike],
+        tuning: dict[str, tuple[int, int, int, float]] | list[Vector],
         threshold_upper: float,
         threshold_lower: float,
         threshold_cutoff: float,
@@ -62,7 +62,7 @@ class Achromatic(metaclass=ABCMeta):
     def calc_achromatic_response(
         self,
         points: list[list[float]],
-        tuning: dict[str, tuple[int, int, int, float]] | list[VectorLike],
+        tuning: dict[str, tuple[int, int, int, float]] | list[Vector],
         **kwargs: Any
     ) -> None:
         """Calculate the achromatic response."""
@@ -140,5 +140,5 @@ class Achromatic(metaclass=ABCMeta):
             hdiff = 360 - hdiff
         return (
             ((diff >= 0 and diff < self.threshold_upper) or (diff < 0 and abs(diff) < self.threshold_lower)) and
-            (c2 < 1e-10 or hdiff < 0.1)
+            (c2 < 1e-5 or hdiff < 0.1)
         )

@@ -9,7 +9,11 @@ from ..spaces import Space, Labish
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..cat import WHITES
 from .. import algebra as alg
+from .achromatic import Achromatic as _Achromatic
+from .srgb_linear import lin_srgb_to_xyz
+from .srgb import lin_srgb
 from ..types import Vector
+from typing import Any
 
 # The IPT algorithm requires the use of the Hunt-Pointer-Estevez matrix,
 # but it was originally calculated with the assumption of a slightly different
@@ -52,6 +56,14 @@ IPT_TO_LMS_P = [
     [1.0, 0.0326151099170664, -0.6768871830691793]
 ]
 
+ACHROMATIC_RESPONSE = [
+    [0.017066845239980113, 1.3218447776831226e-06, 329.7602673181543],
+    [0.022993026958471587, 1.7808336678784566e-06, 329.76026731797435],
+    [0.027372558329889066, 2.1200328924997904e-06, 329.76026731785475],
+    [0.030976977952230922, 2.399198912177825e-06, 329.7602673177659],
+    [0.9999910919149724, 7.745034210859942e-05, 329.7602673174851],
+    [5.243613106559706, 0.00040612324677300886, 329.7602673178901]]  # type: list[Vector]
+
 
 def xyz_to_ipt(xyz: Vector) -> Vector:
     """XYZ to IPT."""
@@ -65,6 +77,15 @@ def ipt_to_xyz(ipt: Vector) -> Vector:
 
     lms = [alg.nth_root(c, 0.43) for c in alg.dot(IPT_TO_LMS_P, ipt, dims=alg.D2_D1)]
     return alg.dot(LMS_TO_XYZ, lms, dims=alg.D2_D1)
+
+
+class Achromatic(_Achromatic):
+    """Test HCT achromatic response."""
+
+    def convert(self, coords: Vector, **kwargs: Any) -> Vector:
+        """Convert to the target color space."""
+
+        return xyz_to_ipt(lin_srgb_to_xyz(lin_srgb(coords)))
 
 
 class IPT(Labish, Space):
@@ -84,6 +105,35 @@ class IPT(Labish, Space):
         "tritan": "ct"
     }
     WHITE = WHITES['2deg']['D65']
+    ACHROMATIC = Achromatic(
+        # {
+        #     'low': (1, 5, 1, 1000.0),
+        #     'mid': (100, 101, 1, 100),
+        #     'high': (520, 521, 1, 100)
+        # },
+        ACHROMATIC_RESPONSE,
+        1e-5,
+        1e-5,
+        0.00049,
+        'linear'
+    )
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        idef, mdef, _ = undefined
+        if mdef and idef:
+            return False
+
+        elif idef:
+            return coords[1] < 1e-4
+
+        elif mdef:
+            return coords[0] == 0.0
+
+        c, h = alg.rect_to_polar(coords[1], coords[2])
+
+        return self.ACHROMATIC.test(coords[0], c, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

@@ -9,6 +9,8 @@ from ..channels import Channel
 from ..cat import WHITES
 from .. import util
 from ..types import Vector
+from .. import algebra as alg
+import math
 
 
 class xyY(Space):
@@ -23,6 +25,22 @@ class xyY(Space):
         Channel("Y", 0.0, 1.0)
     )
     WHITE = WHITES['2deg']['D65']
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+        """Test if color is achromatic."""
+
+        if not undefined[-1] and math.isclose(0.0, coords[-1], abs_tol=1e-4):
+            return True
+
+        value = super().is_achromatic(undefined[:-1], coords[:-1])
+        if value is not None:
+            return value
+
+        white = [0.3127, 0.3290]
+        for x in alg.vcross(coords[:-1], white):
+            if not math.isclose(0.0, x, abs_tol=1e-6):
+                return False
+        return True
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

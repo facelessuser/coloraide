@@ -63,12 +63,12 @@ class HSV(HSVish, Space):
             return False
 
         elif vdef:
-            return abs(coords[1]) < 1e-4
+            return abs(coords[1]) < 1e-5
 
         elif sdef:
             return coords[2] == 0.0
 
-        return abs(coords[1]) < 1e-4 or coords[2] == 0.0
+        return abs(coords[1]) < 1e-5 or coords[2] == 0.0
 
     def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""

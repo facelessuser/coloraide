@@ -67,6 +67,11 @@ class TestOkhslSerialize(util.ColorAssertsPyTest):
 class TestOkhslProperties(util.ColorAsserts, unittest.TestCase):
     """Test Okhsl."""
 
+    def test_names(self):
+        """Test HSL-ish names."""
+
+        self.assertEqual(Color('color(--okhsl 120 50% 90% / 1)')._space.names(), ('h', 's', 'l'))
+
     def test_hue(self):
         """Test `hue`."""
 

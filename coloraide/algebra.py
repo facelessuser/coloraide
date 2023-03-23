@@ -165,6 +165,23 @@ def nlog(value: float) -> float:
     return math.copysign(1, value) * math.log(abs(value))
 
 
+def rect_to_polar(a: float, b: float) -> tuple[float, float]:
+    """Take rectangular coordinates and make them polar."""
+
+    c = math.sqrt(a ** 2 + b ** 2)
+    h = math.degrees(math.atan2(b, a)) % 360
+    return c, h
+
+
+def polar_to_rect(c: float, h: float) -> tuple[float, float]:
+    """Take rectangular coordinates and make them polar."""
+
+    c = max(0.0, c)
+    a = c * math.cos(math.radians(h))
+    b = c * math.sin(math.radians(h))
+    return a, b
+
+
 ################################
 # Interpolation and splines
 ################################

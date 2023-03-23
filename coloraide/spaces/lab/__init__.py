@@ -7,6 +7,7 @@ from ... import util
 from ... import algebra as alg
 from ...types import VectorLike, Vector
 
+ACHROMATIC_THRESHOLD = 1e-4
 EPSILON = 216 / 24389  # `6^3 / 29^3`
 EPSILON3 = 6 / 29  # Cube root of EPSILON
 KAPPA = 24389 / 27
@@ -78,6 +79,18 @@ class Lab(Labish, Space):
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D50']
+
+    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        ldef, adef, bdef = undefined
+        if ldef and (adef or bdef):
+            return False
+
+        elif adef and bdef:
+            return coords[0] == 0.0
+
+        return alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ D50 from Lab."""
