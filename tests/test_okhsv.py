@@ -134,3 +134,20 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 
         c = Color('color(--okhsv 270 0% 0.75 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('okhsv', [270, 0.5, 0]).is_achromatic(), True)
+        self.assertEqual(Color('okhsv', [270, 0, 0.5]).is_achromatic(), True)
+        self.assertEqual(Color('okhsv', [270, 0.000001, 0.5]).is_achromatic(), True)
+        self.assertEqual(Color('okhsv', [270, NaN, 0]).is_achromatic(), True)
+        self.assertEqual(Color('okhsv', [270, 0.0, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('okhsv', [270, 0.5, 1]).is_achromatic(), False)
+        self.assertEqual(Color('okhsv', [270, NaN, 1]).is_achromatic(), False)
+        self.assertEqual(Color('okhsv', [270, 0.5, NaN]).is_achromatic(), False)
+        self.assertEqual(Color('okhsv', [270, NaN, NaN]).is_achromatic(), False)

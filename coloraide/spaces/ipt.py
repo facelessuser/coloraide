@@ -14,6 +14,9 @@ from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
 from ..types import Vector
 from typing import Any
+import math
+
+ACHROMATIC_THRESHOLD = 1e-4
 
 # The IPT algorithm requires the use of the Hunt-Pointer-Estevez matrix,
 # but it was originally calculated with the assumption of a slightly different
@@ -101,8 +104,8 @@ class IPT(Labish, Space):
     )
     CHANNEL_ALIASES = {
         "intensity": "i",
-        "protan": "cp",
-        "tritan": "ct"
+        "protan": "p",
+        "tritan": "t"
     }
     WHITE = WHITES['2deg']['D65']
     ACHROMATIC = Achromatic(
@@ -116,24 +119,24 @@ class IPT(Labish, Space):
         1e-5,
         0.00049,
         'linear'
-    )
+    )  # type: _Achromatic
 
     def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        idef, mdef, _ = undefined
-        if mdef and idef:
+        idef, pdef, tdef = undefined
+        if idef and (pdef or tdef):
             return False
 
-        elif idef:
-            return coords[1] < 1e-4
-
-        elif mdef:
+        elif pdef and tdef:
             return coords[0] == 0.0
 
-        c, h = alg.rect_to_polar(coords[1], coords[2])
+        elif idef:
+            return alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
 
-        return self.ACHROMATIC.test(coords[0], c, h)
+        m, h = alg.rect_to_polar(coords[1], coords[2])
+
+        return self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

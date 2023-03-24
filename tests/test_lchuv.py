@@ -160,3 +160,19 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
         """Test handling of negative chroma when converting to lab."""
 
         self.assertColorEqual(Color('color(--lchuv 90% -10 120 / 1)').convert('luv'), Color('color(--luv 90% 0 0)'))
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('lchuv', [30, 0, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [30, 0.000001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [NaN, 0.00001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [0, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [0, 100, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [NaN, 20, 270]).is_achromatic(), False)
+        self.assertEqual(Color('lchuv', [30, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('lchuv', [NaN, NaN, 270]).is_achromatic(), False)

@@ -2,7 +2,11 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
+from coloraide.spaces.cam16_jmh import cam16_to_xyz_d65, CAM16JMh
+from collections import namedtuple
 import pytest
+
+CAM16Coords = namedtuple("CAM16Coords", "J C h s Q M H")
 
 
 class TestCAM16JMh(util.ColorAssertsPyTest):
@@ -118,3 +122,88 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
                 color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
                 color2 = color.convert('cam16-jmh')
                 self.assertTrue(color2.is_nan('hue'))
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('#222222').convert('cam16-jmh').is_achromatic(), True)
+        self.assertEqual(
+            Color('srgb', [0.000000001] * 3).convert('cam16-jmh').set('m', lambda x: x + 1e-8).is_achromatic(),
+            True
+        )
+        self.assertEqual(Color('cam16-jmh', [NaN, 0.00001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-jmh', [0, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-jmh', [0, 50, 270]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-jmh', [NaN, 50, 270]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-jmh', [20, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-jmh', [NaN, NaN, 270]).is_achromatic(), False)
+
+
+class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
+    """Test CAM16 appearance model."""
+
+    COORDS = CAM16Coords(
+        45.33435136131785, 45.26195932727762, 258.92464993097565,
+        62.67686398624793, 83.29355481993107, 32.720950777696196, 310.5279473979526
+    )
+
+    def test_no_lightness(self):
+        """Test conversion failure when no equivalent lightness."""
+
+        with self.assertRaises(ValueError):
+            cam16_to_xyz_d65(C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV)
+
+    def test_no_chroma(self):
+        """Test conversion failure when no equivalent chroma."""
+
+        with self.assertRaises(ValueError):
+            cam16_to_xyz_d65(J=self.COORDS.J, h=self.COORDS.h, env=CAM16JMh.ENV)
+
+    def test_no_hue(self):
+        """Test conversion failure when no equivalent hue."""
+
+        with self.assertRaises(ValueError):
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, env=CAM16JMh.ENV)
+
+    def test_no_environment(self):
+        """Test no test no environment."""
+
+        with self.assertRaises(ValueError):
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h)
+
+    def test_lightness_convert(self):
+        """Test convert lightness."""
+
+        for a, b in zip(
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_chroma_convert(self):
+        """Test convert chroma."""
+
+        for a, b in zip(
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, s=self.COORDS.s, h=self.COORDS.h, env=CAM16JMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)
+
+        for a, b in zip(
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(Q=self.COORDS.Q, M=self.COORDS.M, h=self.COORDS.h, env=CAM16JMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)
+
+    def test_hue_convert(self):
+        """Test convert hue."""
+
+        for a, b in zip(
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
+            cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16JMh.ENV)
+        ):
+            self.assertCompare(a, b, 14)

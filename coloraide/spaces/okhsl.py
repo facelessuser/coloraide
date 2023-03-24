@@ -26,8 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import HSLish, Space
-from ..cat import WHITES
+from .hsl import HSL
 from ..channels import Channel, FLG_ANGLE
 from .oklab import oklab_to_linear_srgb
 from .oklch import OkLCh
@@ -408,7 +407,7 @@ def oklab_to_okhsl(lab: Vector) -> Vector:
     return [util.constrain_hue(h * 360), s, l]
 
 
-class Okhsl(HSLish, Space):
+class Okhsl(HSL):
     """HSL class."""
 
     BASE = "oklab"
@@ -424,23 +423,6 @@ class Okhsl(HSLish, Space):
         "saturation": "s",
         "lightness": "l"
     }
-    WHITE = WHITES['2deg']['D65']
-    GAMUT_CHECK = "srgb"
-
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        _, sdef, ldef = undefined
-        if sdef and ldef:
-            return False
-
-        elif ldef:
-            return abs(coords[1]) < 1e-5
-
-        elif sdef:
-            return coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
-
-        return abs(coords[1]) < 1e-5 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
     def achromatic_hue(self) -> float:
         """

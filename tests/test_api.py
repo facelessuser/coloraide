@@ -474,8 +474,8 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c = Color.random('srgb')
         self.assertEqual(c.space(), 'srgb')
 
-        c = Color.random('display-p3')
-        self.assertEqual(c.space(), 'display-p3')
+        c = Color.random('hsl')
+        self.assertEqual(c.space(), 'hsl')
 
     def test_random_range(self):
         """Test that random colors are generated within the space's range."""

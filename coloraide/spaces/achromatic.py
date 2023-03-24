@@ -110,11 +110,6 @@ class Achromatic(metaclass=ABCMeta):
             point = size * index + (adjusted * size)
         return point
 
-    def get_ideal_hue(self, l: float) -> float:
-        """Get the ideal chroma."""
-
-        return self.spline(self.scale(l))[2]
-
     def test(self, l: float, c: float, h: float) -> bool:
         """Test if the current color is achromatic."""
 
@@ -122,10 +117,6 @@ class Achromatic(metaclass=ABCMeta):
         # so high, that our test has already broken down.
         if c > self.threshold_cutoff:
             return False
-
-        # This is for when "discounting" as colorfulness should be very near zero
-        if self.spline is None:  # pragma: no cover
-            return True
 
         # If we are higher than 1, we are extrapolating;
         # otherwise, use the spline.
@@ -136,7 +127,7 @@ class Achromatic(metaclass=ABCMeta):
             c2, h2 = self.spline(point)[1:]
         diff = c2 - c
         hdiff = abs(h % 360 - h2)
-        if hdiff > 180:
+        if hdiff > 180:  # pragma: no cover
             hdiff = 360 - hdiff
         return (
             ((diff >= 0 and diff < self.threshold_upper) or (diff < 0 and abs(diff) < self.threshold_lower)) and

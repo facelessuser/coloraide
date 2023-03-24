@@ -1,7 +1,7 @@
 """Test CAM16 UCS."""
 import unittest
 from . import util
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
@@ -279,3 +279,19 @@ class TestCAM16LCDPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('#222222').convert('cam16').is_achromatic(), True)
+        self.assertEqual(Color('srgb', [0.000000001] * 3).convert('cam16-ucs').set('j', NaN).is_achromatic(), True)
+        self.assertEqual(Color('cam16-ucs', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-ucs', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-ucs', [0, 3, -4]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-ucs', [NaN, 0, -3]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-ucs', [30, NaN, 0]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-ucs', [NaN, NaN, 0]).is_achromatic(), False)

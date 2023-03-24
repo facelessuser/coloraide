@@ -130,3 +130,22 @@ class TestHPLuvNull(util.ColorAsserts, unittest.TestCase):
 
         c = Color('color(--hpluv 270 20% 0% / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('hpluv', [270, 50, 0]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 50, 100]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 0, 50]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 0.000001, 50]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 50, 99.99999999]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, NaN, 0]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, NaN, 100]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 0.0, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('hpluv', [270, 50, NaN]).is_achromatic(), False)
+        self.assertEqual(Color('hpluv', [270, NaN, 50]).is_achromatic(), False)
+        self.assertEqual(Color('hpluv', [270, NaN, NaN]).is_achromatic(), False)

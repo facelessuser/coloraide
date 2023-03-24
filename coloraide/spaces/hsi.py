@@ -4,7 +4,7 @@ HSI class.
 https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
 """
 from __future__ import annotations
-from ..spaces import Space, HSVish
+from .hsv import HSV
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import algebra as alg
@@ -73,7 +73,7 @@ def hsi_to_srgb(hsi: Vector) -> Vector:
     return [chan + m for chan in rgb]
 
 
-class HSI(HSVish, Space):
+class HSI(HSV):
     """HSI class."""
 
     BASE = "srgb"
@@ -91,21 +91,6 @@ class HSI(HSVish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
-
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        _, sdef, idef = undefined
-        if sdef and idef:
-            return False
-
-        elif idef:
-            return abs(coords[1]) < 1e-5
-
-        elif sdef:
-            return coords[2] == 0.0
-
-        return abs(coords[1]) < 1e-5 or coords[2] == 0.0
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""

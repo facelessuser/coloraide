@@ -26,8 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..spaces import Space, HSVish
-from ..cat import WHITES
+from .hsv import HSV
 from ..channels import FLG_ANGLE, Channel
 from .. import util
 from .oklab import oklab_to_linear_srgb
@@ -132,7 +131,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     return [util.constrain_hue(h * 360), s, v]
 
 
-class Okhsv(HSVish, Space):
+class Okhsv(HSV):
     """Okhsv class."""
 
     BASE = "oklab"
@@ -148,23 +147,6 @@ class Okhsv(HSVish, Space):
         "saturation": "s",
         "value": "v"
     }
-    WHITE = WHITES['2deg']['D65']
-    GAMUT_CHECK = "srgb"
-
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        _, sdef, vdef = undefined
-        if sdef and vdef:
-            return False
-
-        elif vdef:
-            return abs(coords[1]) < 1e-5
-
-        elif sdef:
-            return coords[2] == 0.0
-
-        return abs(coords[1]) < 1e-5 or coords[2] == 0.0
 
     def achromatic_hue(self) -> float:
         """
