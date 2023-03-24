@@ -4,7 +4,7 @@ The IgPgTg color space.
 https://www.ingentaconnect.com/content/ist/jpi/2020/00000003/00000002/art00002#
 """
 from __future__ import annotations
-from ..spaces import Space, Labish
+from .ipt import IPT
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from ..cat import WHITES
 from .. import algebra as alg
@@ -86,7 +86,7 @@ class Achromatic(_Achromatic):
         return xyz_to_igpgtg(lin_srgb_to_xyz(lin_srgb(coords)))
 
 
-class IgPgTg(Labish, Space):
+class IgPgTg(IPT):
     """The IgPgTg class."""
 
     BASE = "xyz-d65"
@@ -98,9 +98,9 @@ class IgPgTg(Labish, Space):
         Channel("tg", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
-        "intensity": "i",
-        "protan": "cp",
-        "tritan": "ct"
+        "intensity": "ig",
+        "protan": "pg",
+        "tritan": "tg"
     }
     WHITE = WHITES['2deg']['D65']
     ACHROMATIC = Achromatic(
@@ -115,23 +115,6 @@ class IgPgTg(Labish, Space):
         0.03126,
         'linear'
     )
-
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
-        """Check if color is achromatic."""
-
-        jdef, mdef, _ = undefined
-        if mdef and jdef:
-            return False
-
-        elif jdef:
-            return coords[1] < 1e-4
-
-        elif mdef:
-            return coords[0] == 0.0
-
-        c, h = alg.rect_to_polar(coords[1], coords[2])
-
-        return self.ACHROMATIC.test(coords[0], c, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

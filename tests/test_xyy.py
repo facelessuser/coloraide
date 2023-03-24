@@ -1,7 +1,7 @@
 """Test xyY."""
 import unittest
 from . import util
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
@@ -95,3 +95,18 @@ class TestxyYPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('xyy', [0.3127, 0.3290, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('xyy', [0.3127, 0.32900001, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('xyy', [0.3127, 0.3290, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('xyy', [0.3127, 0.2290, 0.0]).is_achromatic(), True)
+        self.assertEqual(Color('xyy', [0.3127, NaN, 0]).is_achromatic(), True)
+        self.assertEqual(Color('xyy', [0.3127, 0.2290, 0.3]).is_achromatic(), False)
+        self.assertEqual(Color('xyy', [0.3127, NaN, 0.3]).is_achromatic(), False)

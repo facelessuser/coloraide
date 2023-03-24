@@ -53,7 +53,6 @@ class Monochromatic(Harmony):
     def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
-        orig_space = color.space()
         color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
@@ -82,7 +81,7 @@ class Monochromatic(Harmony):
         kwargs = {
             'space': space,
             'method': 'linear',
-            'out_space': orig_space
+            'out_space': space
         }  # type: dict[str, Any]
 
         # Very close to black or is black, no need to interpolate from black to current color
@@ -127,7 +126,6 @@ class Geometric(Harmony):
     def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
-        orig_space = color.space()
         color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
@@ -140,10 +138,10 @@ class Geometric(Harmony):
         for _ in range(self.COUNT - 1):
             obj = color1.clone()
             colors.append(
-                obj.set(name, lambda x: adjust_hue(x, current)).convert(orig_space, in_place=True)
+                obj.set(name, lambda x: adjust_hue(x, current))
             )
             current += degree
-        colors.insert(0, color1.convert(orig_space, in_place=True))
+        colors.insert(0, color1)
         return colors
 
 
@@ -171,7 +169,6 @@ class SplitComplementary(Harmony):
     def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
-        orig_space = color.space()
         color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
@@ -181,11 +178,7 @@ class SplitComplementary(Harmony):
 
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 210))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, -210))
-        return [
-            color1.convert(orig_space, in_place=True),
-            color2.convert(orig_space, in_place=True),
-            color3.convert(orig_space, in_place=True)
-        ]
+        return [color1, color2, color3]
 
 
 class Analogous(Harmony):
@@ -194,7 +187,6 @@ class Analogous(Harmony):
     def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
-        orig_space = color.space()
         color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
@@ -204,11 +196,7 @@ class Analogous(Harmony):
 
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, -30))
-        return [
-            color1.convert(orig_space, in_place=True),
-            color2.convert(orig_space, in_place=True),
-            color3.convert(orig_space, in_place=True)
-        ]
+        return [color1, color2, color3]
 
 
 class TetradicRect(Harmony):
@@ -217,7 +205,6 @@ class TetradicRect(Harmony):
     def harmonize(self, color: Color, space: str) -> list[Color]:
         """Get color harmonies."""
 
-        orig_space = color.space()
         color1 = color.convert(space, norm=False).normalize()
 
         if not isinstance(color1._space, Cylindrical):
@@ -228,12 +215,7 @@ class TetradicRect(Harmony):
         color2 = color1.clone().set(name, lambda x: adjust_hue(x, 30))
         color3 = color1.clone().set(name, lambda x: adjust_hue(x, 180))
         color4 = color1.clone().set(name, lambda x: adjust_hue(x, 210))
-        return [
-            color1.convert(orig_space, in_place=True),
-            color2.convert(orig_space, in_place=True),
-            color3.convert(orig_space, in_place=True),
-            color4.convert(orig_space, in_place=True)
-        ]
+        return [color1, color2, color3, color4]
 
 
 SUPPORTED = {

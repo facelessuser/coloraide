@@ -1,7 +1,7 @@
 """Test Jzazbz library."""
 import unittest
 from . import util
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
@@ -95,3 +95,19 @@ class TestJzazbzProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('#222222').convert('jzazbz').is_achromatic(), True)
+        self.assertEqual(Color('#222222').convert('jzazbz').set('jz', NaN).is_achromatic(), True)
+        self.assertEqual(Color('jzazbz', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('jzazbz', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('jzazbz', [0, 0.3, -0.4]).is_achromatic(), True)
+        self.assertEqual(Color('jzazbz', [NaN, 0, -0.3]).is_achromatic(), False)
+        self.assertEqual(Color('jzazbz', [0.3, NaN, 0]).is_achromatic(), False)
+        self.assertEqual(Color('jzazbz', [NaN, NaN, 0]).is_achromatic(), False)

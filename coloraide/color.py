@@ -864,9 +864,8 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = space
 
-        orig_space = self.space()
         colors = harmonies.harmonize(self, name, space)
-        if space != orig_space:
+        if space != out_space:
             [c.convert(out_space, in_place=True, norm=norm) for c in colors]
         elif not norm:
             [c.normalize(nans=False) for c in colors]

@@ -32,8 +32,6 @@ def cam16_jab_to_cam16_jmh(jab: Vector) -> Vector:
     """Translate a CAM16 Jab to JMh of the same viewing conditions."""
 
     J, a, b = jab
-    if J <= 0.0:
-        J = a = b = 0.0
     M = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
 

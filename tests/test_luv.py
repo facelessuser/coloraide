@@ -1,7 +1,7 @@
 """Test Luv library."""
 import unittest
 from . import util
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
@@ -95,3 +95,19 @@ class TestLuvProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('luv', [30, 0, 0]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [30, 0.000001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [NaN, 0.00001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [0, 30, -40]).is_achromatic(), True)
+        self.assertEqual(Color('luv', [NaN, 0, -30]).is_achromatic(), False)
+        self.assertEqual(Color('luv', [30, NaN, 0]).is_achromatic(), False)
+        self.assertEqual(Color('luv', [NaN, NaN, 0]).is_achromatic(), False)

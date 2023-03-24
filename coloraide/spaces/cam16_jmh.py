@@ -494,13 +494,18 @@ def xyz_d65_to_cam16_jmh(xyzd65: Vector, env: Environment) -> Vector:
     """XYZ to CAM16 JMh."""
 
     cam16 = xyz_d65_to_cam16(xyzd65, env)
-    return [cam16[0], cam16[5], cam16[2]]
+    J, M, h = cam16[0], cam16[5], cam16[2]
+    if J <= 0.0:
+        J = M = h = 0.0
+    return [J, M, h]
 
 
 def cam16_jmh_to_xyz_d65(jmh: Vector, env: Environment) -> Vector:
     """CAM16 JMh to XYZ."""
 
     J, M, h = jmh
+    if J <= 0.0:
+        J = M = h = 0.0
     return cam16_to_xyz_d65(J=J, M=M, h=h, env=env)
 
 
@@ -547,7 +552,7 @@ class CAM16JMh(LChish, Space):
             return False
 
         elif jdef:
-            return coords[1] < 1e-5
+            return coords[1] < 1e-4
 
         elif mdef:
             return coords[0] == 0.0

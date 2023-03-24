@@ -1,7 +1,7 @@
 """Test Prismatic."""
 import unittest
 from . import util
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color, NaN
 import pytest
 
 
@@ -103,3 +103,18 @@ class TestPrismaticPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('prismatic', [0.3, 0.3, 0.3, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('prismatic', [0.3, 0.3000001, 0.3, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('prismatic', [NaN, 0.3, 0.3, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('prismatic', [0.0, 0.4, 0.3, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('prismatic', [0.0, NaN, 0.3, 0.0]).is_achromatic(), True)
+        self.assertEqual(Color('prismatic', [0.3, 0.4, 0.3, 0.3]).is_achromatic(), False)
+        self.assertEqual(Color('prismatic', [0.3, NaN, 0.3, 0.3]).is_achromatic(), False)

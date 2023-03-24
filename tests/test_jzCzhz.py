@@ -155,3 +155,21 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(
             Color('color(--jzczhz 90% -10 120 / 1)').convert('jzazbz'), Color('color(--jzazbz 0.9 0 0)')
         )
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('#222222').convert('jzczhz').is_achromatic(), True)
+        self.assertEqual(Color('#222222').convert('jzczhz').set('cz', lambda x: x + 1e-8).is_achromatic(), True)
+        self.assertEqual(Color('srgb', [5.2, 5.2, 5.2]).convert('jzczhz').is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [NaN, 0.00001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [0, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [0, 0.5, 270]).is_achromatic(), True)
+        self.assertEqual(Color('pink').convert('jzczhz').is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [0.2, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [NaN, NaN, 270]).is_achromatic(), False)

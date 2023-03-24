@@ -192,12 +192,10 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
     t = y_to_lstar(coords[1], env.ref_white)
-    # We have no interest in trying to calculate inverse lightness
-    # colors forward and backwards.
-    if t <= 0:
-        return [0.0, 0.0, 0.0]
-    c, h = xyz_d65_to_cam16(coords, env)[1:3]
-
+    if t <= 0.0:
+        t = c = h = 0.0
+    else:
+        c, h = xyz_d65_to_cam16(coords, env)[1:3]
     return [h, c, alg.clamp(t, 0.0)]
 
 

@@ -1,7 +1,7 @@
 """Test sRGB library."""
 import unittest
 from . import util
-from coloraide import Color
+from coloraide import Color, NaN
 import pytest
 
 
@@ -170,3 +170,15 @@ class TestsRGBProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('srgb', [0.3, 0.3, 0.3]).is_achromatic(), True)
+        self.assertEqual(Color('srgb', [0.3, 0.3, 0.30000001]).is_achromatic(), True)
+        self.assertEqual(Color('srgb', [0.3, 0.4, 0.3]).is_achromatic(), False)
+        self.assertEqual(Color('srgb', [0.3, 0.3, NaN]).is_achromatic(), False)
