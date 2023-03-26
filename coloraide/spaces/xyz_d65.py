@@ -1,8 +1,11 @@
 """XYZ D65 class."""
 from __future__ import annotations
+import math
 from ..spaces import Space, RGBish
 from ..cat import WHITES
 from ..channels import Channel
+from .. import util
+from .. import algebra as alg
 from ..types import Vector
 
 
@@ -18,6 +21,14 @@ class XYZD65(RGBish, Space):
         Channel("z", 0.0, 1.0)
     )
     WHITE = WHITES['2deg']['D65']
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Is achromatic."""
+
+        for x in alg.vcross(coords, util.xy_to_xyz(self.white())):
+            if not math.isclose(0.0, x, abs_tol=1e-5):
+                return False
+        return True
 
     def to_base(self, coords: Vector) -> Vector:
         """

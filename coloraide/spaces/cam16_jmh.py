@@ -14,10 +14,10 @@ from .. import algebra as alg
 from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector, VectorLike
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
+from ..types import Vector, VectorLike
 from typing import Any
 
 # CAT16
@@ -186,18 +186,30 @@ class Achromatic(_Achromatic):
 
     def __init__(
         self,
-        tuning: dict[str, tuple[int, int, int, float]] | list[Vector],
-        threshold_upper: float,
-        threshold_lower: float,
-        threshold_cutoff: float,
-        spline: str,
+        data: list[Vector] | None = None,
+        threshold_upper: float = 0.0,
+        threshold_lower: float = 0.0,
+        threshold_cutoff: float = float('inf'),
+        spline: str = 'linear',
+        mirror: bool = False,
         *,
         env: Environment,
         **kwargs: Any
     ) -> None:
         """Initialize."""
 
-        super().__init__(tuning, threshold_upper, threshold_lower, threshold_cutoff, spline, env=env, **kwargs)
+        super().__init__(data, threshold_upper, threshold_lower, threshold_cutoff, spline, mirror, env=env, **kwargs)
+
+    def calc_achromatic_response(  # type: ignore[override]
+        self,
+        parameters: list[tuple[int, int, int, float]],
+        *,
+        env: Environment,
+        **kwargs: Any
+    ) -> None:  # pragma: no cover
+        """Precalculate the achromatic response."""
+
+        super().calc_achromatic_response(parameters, env=env, **kwargs)
 
     def convert(self, coords: Vector, *, env: Environment, **kwargs: Any) -> Vector:  # type: ignore[override]
         """Convert to the target color space."""
@@ -526,11 +538,11 @@ class CAM16JMh(LChish, Space):
     # If discounting were True, we could remove the dynamic achromatic response
     ACHROMATIC = Achromatic(
         # Precalculated from:
-        # {
-        #     'low': (1, 5, 1, 1000.0),
-        #     'mid': (1, 10, 1, 200.0),
-        #     'high': (5, 521, 5, 100.0)
-        # },
+        # [
+        #     (1, 5, 1, 1000.0),
+        #     (1, 10, 1, 200.0),
+        #     (5, 521, 5, 100.0)
+        # ],
         ACHROMATIC_RESPONSE,
         0.0012,
         0.0141,
@@ -544,28 +556,24 @@ class CAM16JMh(LChish, Space):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index == 2:
+            h = coords[2]
+            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+
+        elif index == 1:
+            c = coords[1]
+            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        jdef, mdef, hdef = undefined
-        if mdef and jdef:
-            return False
-
-        elif jdef:
-            return coords[1] < 1e-4
-
-        elif mdef:
-            return coords[0] == 0.0
-
-        return (
-            coords[0] == 0.0 or
-            self.ACHROMATIC.test(coords[0], coords[1], self.ACHROMATIC.hue if hdef else coords[2])
-        )
-
-    def achromatic_hue(self) -> float:
-        """Ideal achromatic hue."""
-
-        return self.ACHROMATIC.hue
+        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], coords[1], coords[2])
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""

@@ -118,18 +118,8 @@ class HPLuv(HSLish, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
-
-        _, sdef, ldef = undefined
-        if sdef and ldef:
-            return False
-
-        elif ldef:
-            return abs(coords[1]) < 1e-4
-
-        elif sdef:
-            return coords[2] > (100 - 1e-7) or coords[2] < 1e-08
 
         return abs(coords[1]) < 1e-4 or coords[2] > (100 - 1e-7) or coords[2] < 1e-08
 

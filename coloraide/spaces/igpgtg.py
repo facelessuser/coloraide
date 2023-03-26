@@ -13,6 +13,7 @@ from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
 from ..types import Vector
 from typing import Any
+import math
 
 XYZ_TO_LMS = [
     [2.968, 2.741, -0.649],
@@ -83,7 +84,10 @@ class Achromatic(_Achromatic):
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
         """Convert to the target color space."""
 
-        return xyz_to_igpgtg(lin_srgb_to_xyz(lin_srgb(coords)))
+        lab = xyz_to_igpgtg(lin_srgb_to_xyz(lin_srgb(coords)))
+        l = lab[0]
+        c, h = alg.rect_to_polar(*lab[1:])
+        return [l, c, h]
 
 
 class IgPgTg(IPT):
@@ -103,18 +107,32 @@ class IgPgTg(IPT):
         "tritan": "tg"
     }
     WHITE = WHITES['2deg']['D65']
+    # Precalculated from:
+    # [
+    #     (1, 5, 1, 1000.0),
+    #     (100, 101, 1, 100),
+    #     (520, 521, 1, 100)
+    # ]
     ACHROMATIC = Achromatic(
-        # {
-        #     'low': (1, 5, 1, 1000.0),
-        #     'mid': (100, 101, 1, 100),
-        #     'high': (520, 521, 1, 100)
-        # },
         ACHROMATIC_RESPONSE,
         1e-5,
         1e-5,
         0.03126,
-        'linear'
+        'linear',
+        mirror=True
     )
+
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index in (1, 2):
+            if not math.isnan(coords[index]):
+                return coords[index]
+
+            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

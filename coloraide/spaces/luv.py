@@ -70,15 +70,8 @@ class Luv(Labish, Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
-
-        ldef, adef, bdef = undefined
-        if ldef and (adef or bdef):
-            return False
-
-        elif adef and bdef:
-            return coords[0] == 0.0
 
         return coords[0] == 0.0 or alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
 

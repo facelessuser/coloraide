@@ -3,10 +3,15 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 from .spaces import Cylindrical
+from .cat import WHITES
+from . import util
 from typing import TYPE_CHECKING, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
+
+WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
+BLACK = [0, 0, 0]
 
 
 def adjust_hue(hue: float, deg: float) -> float:
@@ -67,9 +72,9 @@ class Monochromatic(Harmony):
 
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
-        w = color.new('srgb', [1, 1, 1], alg.NaN)
+        w = color.new('xyz-d65', WHITE, alg.NaN)
         w.convert(space, in_place=True, norm=False).mask(['hue', 'alpha'], in_place=True)
-        b = color.new('srgb', [0, 0, 0], alg.NaN)
+        b = color.new('xyz-d65', BLACK, alg.NaN)
         b.convert(space, in_place=True, norm=False).mask(['hue', 'alpha'], in_place=True)
 
         # Calculate how many tints and shades we need to generate

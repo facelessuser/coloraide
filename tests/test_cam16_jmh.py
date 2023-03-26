@@ -21,8 +21,8 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         ('indigo', 'color(--cam16-jmh 16.046 43.278 310.9)'),
         ('violet', 'color(--cam16-jmh 63.507 46.779 331.39)'),
         ('white', 'color(--cam16-jmh 100 2.2369 209.53)'),
-        ('gray', 'color(--cam16-jmh 43.042 1.467 209.53)'),
-        ('black', 'color(--cam16-jmh 0 0 209.53)'),
+        ('gray', 'color(--cam16-jmh 43.042 1.467 209.54)'),
+        ('black', 'color(--cam16-jmh 0 0 209.54)'),
         # Test color
         ('color(--cam16-jmh 50 30 270)', 'color(--cam16-jmh 50 30 270)'),
         ('color(--cam16-jmh 50 30 270 / 0.5)', 'color(--cam16-jmh 50 30 270 / 0.5)'),
@@ -85,11 +85,6 @@ class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
-    def test_real_achromatic_hue(self):
-        """Test that we get the expected achromatic hue."""
-
-        self.assertEqual(Color('white').convert('cam16-jmh')._space.achromatic_hue(), 209.5333344635329)
-
     def test_null_input(self):
         """Test null input."""
 
@@ -138,9 +133,9 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('cam16-jmh', [NaN, 0.00001, 270]).is_achromatic(), True)
         self.assertEqual(Color('cam16-jmh', [0, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('cam16-jmh', [0, 50, 270]).is_achromatic(), True)
-        self.assertEqual(Color('cam16-jmh', [NaN, 50, 270]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-jmh', [NaN, 50, 270]).is_achromatic(), True)
         self.assertEqual(Color('cam16-jmh', [20, NaN, 270]).is_achromatic(), False)
-        self.assertEqual(Color('cam16-jmh', [NaN, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('cam16-jmh', [NaN, NaN, 270]).is_achromatic(), True)
 
 
 class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):

@@ -107,11 +107,6 @@ class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
-    def test_real_achromatic_hue(self):
-        """Test that we get the expected achromatic hue."""
-
-        self.assertEqual(Color('white').convert('jzczhz')._space.achromatic_hue(), 216.0777045520467)
-
     def test_null_input(self):
         """Test null input."""
 
@@ -170,6 +165,6 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('jzczhz', [0, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0, 0.5, 270]).is_achromatic(), True)
         self.assertEqual(Color('pink').convert('jzczhz').is_achromatic(), False)
-        self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0.2, NaN, 270]).is_achromatic(), False)
-        self.assertEqual(Color('jzczhz', [NaN, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [NaN, NaN, 270]).is_achromatic(), True)

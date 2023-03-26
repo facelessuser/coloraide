@@ -1,6 +1,5 @@
 """Convert the color."""
 from __future__ import annotations
-from . import algebra as alg
 from .types import Vector
 from typing import TYPE_CHECKING
 
@@ -128,13 +127,7 @@ def convert(color: Color, space: str) -> tuple[Space, Vector]:
     chain = color._get_convert_chain(color._space, space)  # type: ignore[attr-defined]
 
     # Get coordinates and convert NaN values to 0
-    if hasattr(color._space, 'hue_index'):
-        i = color._space.hue_index()
-        h = alg.no_nan(color[i], color._space.achromatic_hue())  # type: ignore[attr-defined]
-        coords = color.coords(nans=False)
-        coords[i] = h
-    else:
-        coords = color.coords(nans=False)
+    coords = color.coords(nans=False)
 
     # Navigate the conversion chain translating the coordinates along the way.
     # Perform chromatic adaption if needed (a conversion to or from XYZ D65).

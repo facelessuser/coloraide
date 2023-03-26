@@ -40,7 +40,7 @@ class TestsOkLCh(util.ColorAssertsPyTest):
         ('color(--oklch 50% 50% 50% / 50%)', 'color(--oklch 0.5 0.2 180 / 0.5)'),
         ('color(--oklch none none none / none)', 'color(--oklch none none none / none)'),
         # Test percent ranges
-        ('color(--oklch 0% 0% 0%)', 'color(--oklch 0 0 none)'),
+        ('color(--oklch 0% 0% 0%)', 'color(--oklch 0 0 0)'),
         ('color(--oklch 100% 100% 100%)', 'color(--oklch 1 0.4 360 / 1)'),
         ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 0 -360 / 1)')
     ]
@@ -79,7 +79,20 @@ class TestOkLChSerialize(util.ColorAssertsPyTest):
         ('oklch(none 0.3 50 / 0.5)', {'color': True}, 'color(--oklch 0 0.3 50 / 0.5)'),
         ('oklch(none 0.3 50)', {'color': True, 'none': True}, 'color(--oklch none 0.3 50)'),
         ('oklch(0 0.3 50)', {'color': True, 'alpha': True}, 'color(--oklch 0 0.3 50 / 1)'),
-        ('oklch(0 0.3 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklch 0 0.3 50)')
+        ('oklch(0 0.3 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklch 0 0.3 50)'),
+        # CSS undefined serialization
+        (
+            # Ideal white
+            Color('white').convert('oklch').set({'c': NaN, 'h': NaN}),
+            {'precision': 10},
+            'oklch(0.9999999935 0.0000000373 90.00000026)'
+        ),
+        (
+            # Ideal white
+            Color('white').convert('oklch').set({'c': NaN, 'h': NaN}),
+            {'css_undefined': True, 'precision': 10},
+            'oklch(0.9999999935 0 0)'
+        )
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -128,11 +141,6 @@ class TestOkLChProperties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
-    def test_real_achromatic_hue(self):
-        """Test that we get the expected achromatic hue."""
-
-        self.assertEqual(Color('white').convert('oklch')._space.achromatic_hue(), 90.00000025580869)
-
     def test_null_input(self):
         """Test null input."""
 
@@ -167,7 +175,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('color(--oklab 90% 0 0)')
         c2 = c1.convert('oklch')
-        self.assertColorEqual(c2, Color('color(--oklch 90% 0 0)'))
+        self.assertColorEqual(c2, Color('color(--oklch 90% 0 none)'))
         self.assertTrue(c2.is_nan('hue'))
 
     def test_achromatic_hue(self):
@@ -187,3 +195,19 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
         """Test handling of negative chroma when converting to Oklab."""
 
         self.assertColorEqual(Color('color(--oklch 90% -10 120 / 1)').convert('oklab'), Color('color(--oklab 0.9 0 0)'))
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('oklch', [0.3, 0, 270]).is_achromatic(), True)
+        self.assertEqual(Color('oklch', [0.3, 0.000001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('oklch', [NaN, 0.00001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('oklch', [0, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('oklch', [0, 1, 270]).is_achromatic(), False)
+        self.assertEqual(Color('oklch', [NaN, 0.2, 270]).is_achromatic(), False)
+        self.assertEqual(Color('oklch', [0.3, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('oklch', [NaN, NaN, 270]).is_achromatic(), True)

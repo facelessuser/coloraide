@@ -63,12 +63,8 @@ class sRGB(RGBish, Space):
 
     EXTENDED_RANGE = True
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
-
-        value = super().is_achromatic(undefined, coords)
-        if value is not None:
-            return value
 
         white = [1, 1, 1]
         for x in alg.vcross(coords, white):

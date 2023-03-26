@@ -31,6 +31,11 @@ from ...cat import WHITES
 from ...channels import Channel, FLG_OPT_PERCENT, FLG_MIRROR_PERCENT
 from ... import algebra as alg
 from ...types import Vector
+from ..achromatic import Achromatic as _Achromatic
+from ..srgb_linear import lin_srgb_to_xyz
+from ..srgb import lin_srgb
+import math
+from typing import Any
 
 # sRGB Linear to LMS
 SRGBL_TO_LMS = [
@@ -74,6 +79,14 @@ LMS_TO_XYZD65 = [
     [-0.07637293667466008, -0.42149333240224324, 1.5869240198367818]
 ]
 
+ACHROMATIC_RESPONSE = [
+    [0.042616635427277276, 1.589600506779476e-09, 90.00000050021289],
+    [0.053693596050522235, 2.0027711433723283e-09, 90.00000039701924],
+    [0.061463824132938126, 2.292600657927135e-09, 90.00000060694944],
+    [0.06764969190860518, 2.5233335212981878e-09, 89.99999968488562],
+    [0.9999999935000001, 3.729999997759137e-08, 90.00000025580869],
+    [3.6129022019486947, 1.3476125282352314e-07, 90.00000075524491]]  # type: list[Vector]
+
 
 def oklab_to_linear_srgb(lab: Vector) -> Vector:
     """Convert from Oklab to linear sRGB."""
@@ -115,6 +128,18 @@ def xyz_d65_to_oklab(xyz: Vector) -> Vector:
     )
 
 
+class Achromatic(_Achromatic):
+    """Test HCT achromatic response."""
+
+    def convert(self, coords: Vector, **kwargs: Any) -> Vector:
+        """Convert to the target color space."""
+
+        lab = xyz_d65_to_oklab(lin_srgb_to_xyz(lin_srgb(coords)))
+        l = lab[0]
+        c, h = alg.rect_to_polar(*lab[1:])
+        return [l, c, h]
+
+
 class Oklab(Labish, Space):
     """Oklab class."""
 
@@ -130,6 +155,38 @@ class Oklab(Labish, Space):
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
+    # Precalculated from:
+    # [
+    #     (1, 5, 1, 1000.0),
+    #     (100, 101, 1, 100),
+    #     (520, 521, 1, 100)
+    # ]
+    ACHROMATIC = Achromatic(
+        ACHROMATIC_RESPONSE,
+        1e-5,
+        1e-5,
+        0.00049,
+        'linear',
+        mirror=True
+    )  # type: _Achromatic
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        m, h = alg.rect_to_polar(coords[1], coords[2])
+        return self.ACHROMATIC.test(coords[0], m, h)
+
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index in (1, 2):
+            if not math.isnan(coords[index]):
+                return coords[index]
+
+            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, oklab: Vector) -> Vector:
         """To XYZ."""

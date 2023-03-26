@@ -4,6 +4,7 @@ JzCzhz class.
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 """
 from __future__ import annotations
+import math
 from ..cat import WHITES
 from .lch import LCh
 from .jzazbz import Jzazbz
@@ -35,28 +36,24 @@ class JzCzhz(LCh):
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index == 2:
+            h = coords[2]
+            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+
+        elif index == 1:
+            c = coords[1]
+            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        ldef, cdef, hdef = undefined
-        if ldef and cdef:
-            return False
-
-        elif cdef:
-            return coords[0] == 0.0
-
-        elif ldef:
-            return coords[1] < 1e-4
-
-        return (
-            coords[0] == 0.0 or
-            self.ACHROMATIC.test(coords[0], coords[1], self.ACHROMATIC.hue if hdef else coords[2])
-        )
-
-    def achromatic_hue(self) -> float:
-        """Ideal hue for conversion."""
-
-        return self.ACHROMATIC.hue
+        return coords[0] == 0.0 or self.ACHROMATIC.test(*coords)
 
     def hue_name(self) -> str:
         """Hue name."""

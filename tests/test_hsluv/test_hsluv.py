@@ -106,11 +106,6 @@ class TestHSluvProperties(util.ColorAsserts, unittest.TestCase):
 class TestHSLuvNulls(util.ColorAsserts, unittest.TestCase):
     """Test HSLuv Null cases."""
 
-    def test_real_achromatic_hue(self):
-        """Test that we get the expected achromatic hue."""
-
-        self.assertEqual(Color('white').convert('hsluv')._space.achromatic_hue(), 0.0)
-
     def test_null_input(self):
         """Test null input."""
 
@@ -156,6 +151,6 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('hsluv', [270, NaN, 0]).is_achromatic(), True)
         self.assertEqual(Color('hsluv', [270, NaN, 100]).is_achromatic(), True)
         self.assertEqual(Color('hsluv', [270, 0.0, NaN]).is_achromatic(), True)
-        self.assertEqual(Color('hsluv', [270, 50, NaN]).is_achromatic(), False)
-        self.assertEqual(Color('hsluv', [270, NaN, 50]).is_achromatic(), False)
-        self.assertEqual(Color('hsluv', [270, NaN, NaN]).is_achromatic(), False)
+        self.assertEqual(Color('hsluv', [270, 50, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('hsluv', [270, NaN, 50]).is_achromatic(), True)
+        self.assertEqual(Color('hsluv', [270, NaN, NaN]).is_achromatic(), True)

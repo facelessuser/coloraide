@@ -6,6 +6,7 @@ from ..css import serialize
 from ..util import deprecated
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, TYPE_CHECKING
+import math
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -23,21 +24,6 @@ class Cylindrical:
         """Get hue index."""
 
         return self.get_channel_index(self.hue_name())  # type: ignore
-
-    def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
-
-        Normally, we assume 0 when a cylindrical color space has a powerless hue.
-        For most color spaces, the hue has little affect when the color is achromatic,
-        but on rare occasions, a color space algorithm may require a specific hue
-        in order to more accurately translate an achromatic hue, CAM16 JMh (without
-        discounting) being an example. Color spaces internally handle this during
-        conversion, but there are times such as when plotting where knowing the
-        hue can be useful.
-        """
-
-        return 0.0
 
 
 class RGBish:
@@ -102,7 +88,7 @@ class Labish:
 
         return self.channels[:-1]  # type: ignore
 
-    def indexes(self) -> list[int]:  # pragma: no cover
+    def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
         return [self.get_channel_index(name) for name in self.names()]  # type: ignore
@@ -123,12 +109,12 @@ class LChish(Cylindrical):
 
         return self.indexes()
 
-    def names(self) -> tuple[str, ...]:  # pragma: no cover
+    def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L c h."""
 
         return self.channels[:-1]  # type: ignore
 
-    def indexes(self) -> list[int]:  # pragma: no cover
+    def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
         return [self.get_channel_index(name) for name in self.names()]  # type: ignore
@@ -192,15 +178,21 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return self.channels.index(self.CHANNEL_ALIASES.get(name, name))
 
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
     def _serialize(self) -> tuple[str, ...]:
         """Get the serialized name."""
 
         return self._color_ids
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        return False if any(undefined) else None
+        return None
 
     @classmethod
     def white(cls) -> VectorLike:

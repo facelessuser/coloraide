@@ -81,8 +81,7 @@ def compose(
     blend: str | bool = True,
     operator: str | bool = True,
     space: str | None = None,
-    out_space: str | None = None,
-    norm: bool = True
+    out_space: str | None = None
 ) -> Color:
     """Blend colors using the specified blend mode."""
 
@@ -116,4 +115,4 @@ def compose(
 
     src = color.convert(space)
 
-    return apply_compositing(src, dest, blender, operator).convert(out_space, in_place=True, norm=norm)
+    return apply_compositing(src, dest, blender, operator).convert(out_space, in_place=True)

@@ -101,11 +101,6 @@ class TestLChuvD65Properties(util.ColorAsserts, unittest.TestCase):
 class TestNull(util.ColorAsserts, unittest.TestCase):
     """Test Null cases."""
 
-    def test_real_achromatic_hue(self):
-        """Test that we get the expected achromatic hue."""
-
-        self.assertEqual(Color('white').convert('lchuv')._space.achromatic_hue(), 0.0)
-
     def test_null_input(self):
         """Test null input."""
 
@@ -173,6 +168,6 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('lchuv', [NaN, 0.00001, 270]).is_achromatic(), True)
         self.assertEqual(Color('lchuv', [0, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('lchuv', [0, 100, 270]).is_achromatic(), True)
-        self.assertEqual(Color('lchuv', [NaN, 20, 270]).is_achromatic(), False)
-        self.assertEqual(Color('lchuv', [30, NaN, 270]).is_achromatic(), False)
-        self.assertEqual(Color('lchuv', [NaN, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('lchuv', [NaN, 20, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [30, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('lchuv', [NaN, NaN, 270]).is_achromatic(), True)
