@@ -57,25 +57,23 @@ class CAM16(Labish, Space):
     ENV = CAM16JMh.ENV
     ACHROMATIC = CAM16JMh.ACHROMATIC
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index in (1, 2):
+            if not math.isnan(coords[index]):
+                return coords[index]
+
+            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        jdef, adef, bdef = undefined
-        if jdef and (adef or bdef):
-            return False
-
-        elif adef and bdef:
-            return coords[0] == 0.0
-
-        elif jdef:
-            return alg.rect_to_polar(coords[1], coords[2])[0] < 1e-4
-
         m, h = alg.rect_to_polar(coords[1], coords[2])
-
-        return (
-            coords[0] == 0.0 or
-            self.ACHROMATIC.test(coords[0], m, h)
-        )
+        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

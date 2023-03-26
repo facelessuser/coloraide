@@ -12,8 +12,7 @@ import math
 sys.path.insert(0, os.getcwd())
 
 from coloraide.everything import ColorAll as Color  # noqa: E402
-from coloraide.spaces.cam16 import Environment, xyz_d65_to_cam16  # noqa: E402
-from coloraide.spaces.cam16_jmh import Achromatic  # noqa: E402
+from coloraide.spaces.cam16_jmh import Environment, xyz_d65_to_cam16, Achromatic  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
 
 
@@ -47,16 +46,8 @@ def main():
         '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
-        '--low', '-L', type=str, default='1:5:1:1000.0',
-        help="Tuning for low range: start:end:step:scale (int:int:int:float)"
-    )
-    parser.add_argument(
-        '--mid', '-M', type=str, default='1:10:1:200.0',
-        help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
-    )
-    parser.add_argument(
-        '--high', '-H', type=str, default='5:521:5:100.0',
-        help="Tuning for high range: start:end:step:scale (int:int:int:float)"
+        '--tuning', '-t', type=str, action='append',
+        help="Spline tuning parameters: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
         '--dump', action='store_true', help="Dump calculated values."
@@ -70,28 +61,25 @@ def main():
         args.surround,
         args.discounting,
         args.spline,
-        args.low,
-        args.mid,
-        args.high,
+        args.tuning,
         args.res,
         args.dump
     )
 
 
-def run(white_point, la, ba, surround, discounting, spline, low, mid, high, res, dump):
+def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
     """Run."""
 
     deg, wp = white_point.split(':')
-    tuning = {
-        "low": [int(i) if e < 3 else float(i) for e, i in enumerate(low.split(':'))],
-        "mid": [int(i) if e < 3 else float(i) for e, i in enumerate(mid.split(':'))],
-        "high": [int(i) if e < 3 else float(i) for e, i in enumerate(high.split(':'))]
-    }
+    tune = []
+    for x in tuning:
+        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
 
     env = Environment(WHITES[deg][wp], la, ba, surround, discounting)
     convert = xyz_d65_to_cam16
 
-    test = Achromatic(tuning, 1, 1, 100, spline, env=env)
+    test = Achromatic(spline=spline, env=env)
+    test.calc_achromatic_response(tune, env=env)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}

@@ -33,16 +33,11 @@ def main():
         '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
-        '--low', '-L', type=str, default='1:5:1:1000.0',
-        help="Tuning for low range: start:end:step:scale (int:int:int:float)"
+        '--tuning', '-t', type=str, action='append',
+        help="Spline tuning parameters: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
-        '--mid', '-M', type=str, default='1:9:2:200.0',
-        help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
-    )
-    parser.add_argument(
-        '--high', '-H', type=str, default='5:521:5:100.0',
-        help="Tuning for high range: start:end:step:scale (int:int:int:float)"
+        '--mirror', '-m', action='store_true', help="Mirror response across lightness axis"
     )
     parser.add_argument(
         '--dump', action='store_true', help="Dump calculated values."
@@ -52,22 +47,19 @@ def main():
     return run(
         args.space,
         args.spline,
-        args.low,
-        args.mid,
-        args.high,
+        args.tuning,
+        args.mirror,
         args.res,
         args.dump
     )
 
 
-def run(space, spline, low, mid, high, res, dump):
+def run(space, spline, tuning, mirror, res, dump):
     """Run."""
 
-    tuning = {
-        "low": [int(i) if e < 3 else float(i) for e, i in enumerate(low.split(':'))],
-        "mid": [int(i) if e < 3 else float(i) for e, i in enumerate(mid.split(':'))],
-        "high": [int(i) if e < 3 else float(i) for e, i in enumerate(high.split(':'))]
-    }
+    tune = []
+    for x in tuning:
+        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
 
     class Achroma(Achromatic):
         """Setup special dynamic achromatic class."""
@@ -84,7 +76,8 @@ def run(space, spline, low, mid, high, res, dump):
             c, h = alg.rect_to_polar(*lab[1:-1])
             return l, c, h
 
-    test = Achroma(tuning, 100, 100, 100, spline)
+    test = Achroma(spline=spline, mirror=mirror)
+    test.calc_achromatic_response(tune)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}

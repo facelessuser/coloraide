@@ -20,17 +20,7 @@ class LChuv(LCh, Space):
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
-
-        ldef, cdef, _ = undefined
-        if ldef and cdef:
-            return False
-
-        elif cdef:
-            return coords[0] == 0.0
-
-        elif ldef:
-            return coords[1] < ACHROMATIC_THRESHOLD
 
         return coords[0] == 0.0 or coords[1] < ACHROMATIC_THRESHOLD

@@ -235,13 +235,13 @@ class HCT(LChish, Space):
     }
 
     # Achromatic detection
+    # Precalculated from:
+    # [
+    #     (1, 5, 1, 1000.0),
+    #     (1, 40, 1, 200.0),
+    #     (50, 551, 50, 100.0)
+    # ]
     ACHROMATIC = Achromatic(
-        # Precalculated from:
-        # {
-        #     'low': (1, 5, 1, 1000.0),
-        #     'mid': (1, 40, 1, 200.0),
-        #     'high': (50, 551, 50, 100.0)
-        # },
         ACHROMATIC_RESPONSE,
         0.0097,
         0.0787,
@@ -251,33 +251,35 @@ class HCT(LChish, Space):
     )
 
     CHANNELS = (
-        Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("c", 0.0, 145.0, limit=(0.0, None)),
         Channel("t", 0.0, 100.0, limit=(0.0, None))
     )
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index == 0:
+            h = coords[0]
+            return self.ACHROMATIC.get_ideal_hue(coords[2]) if math.isnan(h) else h
+
+        elif index == 1:
+            c = coords[1]
+            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        hdef, cdef, tdef = undefined
-        if cdef and tdef:
-            return False
+        return coords[2] == 0.0 or self.ACHROMATIC.test(coords[2], coords[1], coords[0])
 
-        elif tdef:
-            return coords[1] < 1e-4
+    def achromatic_normalization(self, coords: list['float']):
+        """Perfrom achromatic normalization."""
 
-        elif cdef:
-            return coords[2] == 0.0
-
-        return (
-            coords[2] == 0.0 or
-            self.ACHROMATIC.test(coords[2], coords[1], self.ACHROMATIC.hue if hdef else coords[0])
-        )
-
-    def achromatic_hue(self) -> float:
-        """Ideal achromatic hue."""
-
-        return self.ACHROMATIC.hue
+        coords[0] = math.nan
+        coords[1] = math.nan
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""

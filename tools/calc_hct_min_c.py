@@ -29,35 +29,26 @@ def main():
         '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
-        '--low', '-L', type=str, default='1:5:1:1000.0',
-        help="Tuning for low range: start:end:step:scale (int:int:int:float)"
-    )
-    parser.add_argument(
-        '--mid', '-M', type=str, default='1:40:1:200.0',
-        help="Tuning for mid range: start:end:step:scale (int:int:int:float)"
-    )
-    parser.add_argument(
-        '--high', '-H', type=str, default='50:551:50:100.0',
-        help="Tuning for high range: start:end:step:scale (int:int:int:float)"
+        '--tuning', '-t', type=str, action='append',
+        help="Spline tuning parameters: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
         '--dump', action='store_true', help="Dump calculated values."
     )
     args = parser.parse_args()
 
-    return run(args.spline, args.low, args.mid, args.high, args.res, args.dump)
+    return run(args.spline, args.tuning, args.res, args.dump)
 
 
-def run(spline, low, mid, high, res, dump):
+def run(spline, tuning, res, dump):
     """Run."""
 
-    tuning = {
-        "low": [int(i) if e < 3 else float(i) for e, i in enumerate(low.split(':'))],
-        "mid": [int(i) if e < 3 else float(i) for e, i in enumerate(mid.split(':'))],
-        "high": [int(i) if e < 3 else float(i) for e, i in enumerate(high.split(':'))]
-    }
+    tune = []
+    for x in tuning:
+        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
     env = HCT.ENV
-    test = Achromatic(tuning, 1, 1, 100, spline, env=env)
+    test = Achromatic(spline=spline, env=env)
+    test.calc_achromatic_response(tune, env=env)
 
     color = Color('srgb', [0, 0, 0])
     points1 = {}

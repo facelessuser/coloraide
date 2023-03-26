@@ -128,18 +128,6 @@ class TestHarmonies(util.ColorAssertsPyTest):
             self.assertColorEqual(c1, c2)
 
 
-class TestHarmonyMisc(util.ColorAsserts, unittest.TestCase):
-    """Test harmony miscellaneous cases."""
-
-    def test_norm(self):
-        """Test disabling of normalization."""
-
-        self.assertEqual(
-            [str(c) for c in Color('gray').convert('oklch').harmony('complement', norm=False)],
-            ['color(--oklch 0.59987 0 0 / 1)', 'color(--oklch 0.59987 0 0 / 1)']
-        )
-
-
 class TestHarmonyError(util.ColorAsserts, unittest.TestCase):
     """Test harmony errors."""
 

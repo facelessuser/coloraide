@@ -1,7 +1,7 @@
 """Test Oklab library."""
 import unittest
 from . import util
-from coloraide import Color as Color
+from coloraide import Color as Color, NaN
 import pytest
 
 
@@ -72,7 +72,32 @@ class TestOklabSerialize(util.ColorAssertsPyTest):
         ('oklab(none 0.1 -0.1 / 0.5)', {'color': True}, 'color(--oklab 0 0.1 -0.1 / 0.5)'),
         ('oklab(none 0.1 -0.1)', {'color': True, 'none': True}, 'color(--oklab none 0.1 -0.1)'),
         ('oklab(0 0.1 -0.1)', {'color': True, 'alpha': True}, 'color(--oklab 0 0.1 -0.1 / 1)'),
-        ('oklab(0 0.1 -0.1 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklab 0 0.1 -0.1)')
+        ('oklab(0 0.1 -0.1 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklab 0 0.1 -0.1)'),
+        # CSS undefined serialization
+        (
+            # Ideal white
+            Color('white').convert('oklab').set({'a': NaN, 'b': NaN}),
+            {'precision': 10},
+            'oklab(0.9999999935 0 0.0000000373)'
+        ),
+        (
+            # Ideal white
+            Color('white').convert('oklab').set({'a': NaN, 'b': NaN}),
+            {'css_undefined': True, 'precision': 10},
+            'oklab(0.9999999935 0 0)'
+        ),
+        (
+            # Mirrored across lightness axis
+            Color('srgb', [-1] * 3).convert('oklab').set({'a': NaN, 'b': NaN}),
+            {'precision': 10},
+            'oklab(-0.9999999935 0 -0.0000000373)'
+        ),
+        (
+            # Mirrored across lightness axis
+            Color('srgb', [-1] * 3).convert('oklab').set({'a': NaN, 'b': NaN}),
+            {'css_undefined': True, 'precision': 10},
+            'oklab(-0.9999999935 0 0)'
+        )
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -116,3 +141,21 @@ class TestOklabProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
+    """Test achromatic."""
+
+    def test_achromatic(self):
+        """Test when color is achromatic."""
+
+        self.assertEqual(Color('oklab', [0.3, 0, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [-0.3, 0, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [0.3, 0.000001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [NaN, 0.00001, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [0, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [0, 0.3, -0.4]).is_achromatic(), False)
+        self.assertEqual(Color('oklab', [NaN, 0, -0.3]).is_achromatic(), False)
+        self.assertEqual(Color('oklab', [0.3, NaN, 0]).is_achromatic(), True)
+        self.assertEqual(Color('oklab', [NaN, NaN, 0]).is_achromatic(), True)

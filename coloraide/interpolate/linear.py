@@ -104,7 +104,6 @@ class Linear(Interpolate):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        norm: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Return the linear interpolator."""
@@ -121,6 +120,5 @@ class Linear(Interpolate):
             premultiplied,
             extrapolate,
             domain,
-            norm,
             **kwargs
         )

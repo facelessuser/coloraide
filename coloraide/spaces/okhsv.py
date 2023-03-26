@@ -30,7 +30,6 @@ from .hsv import HSV
 from ..channels import FLG_ANGLE, Channel
 from .. import util
 from .oklab import oklab_to_linear_srgb
-from .oklch import OkLCh
 from .okhsl import toe, toe_inv, find_cusp, to_st
 import math
 from .. import algebra as alg
@@ -138,7 +137,7 @@ class Okhsv(HSV):
     NAME = "okhsv"
     SERIALIZE = ("--okhsv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE, nans=OkLCh.ACHROMATIC_HUE),
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("v", 0.0, 1.0, bound=True)
     )
@@ -148,15 +147,20 @@ class Okhsv(HSV):
         "value": "v"
     }
 
-    def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
 
-        This is the ideal achromatic hue. It tightens up translation, but we can get away
-        with accepting 0 as well.
-        """
+        if index == 0:
+            v, h = coords[2], coords[0]
+            if not math.isnan(h):
+                return h
 
-        return OkLCh.ACHROMATIC_HUE
+            # Okhsv is not as precise as Oklab and OkLCh.
+            # ~90 (or ~270 for negative lightness) is plenty sufficient.
+            return 0.0 if math.isnan(v) else 270.0 if v < 0 else 90.0
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""

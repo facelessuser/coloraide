@@ -29,7 +29,6 @@ from __future__ import annotations
 from .hsl import HSL
 from ..channels import Channel, FLG_ANGLE
 from .oklab import oklab_to_linear_srgb
-from .oklch import OkLCh
 from .. import util
 import math
 import sys
@@ -414,7 +413,7 @@ class Okhsl(HSL):
     NAME = "okhsl"
     SERIALIZE = ("--okhsl",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE, nans=OkLCh.ACHROMATIC_HUE),
+        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("l", 0.0, 1.0, bound=True)
     )
@@ -424,15 +423,19 @@ class Okhsl(HSL):
         "lightness": "l"
     }
 
-    def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
 
-        This is the ideal achromatic hue. It tightens up translation, but we can get away
-        with accepting 0 as well.
-        """
+        if index == 0:
+            l, h = coords[2], coords[0]
+            if not math.isnan(h):
+                return h
 
-        return OkLCh.ACHROMATIC_HUE
+            # Okhsl is not as precise as Oklab and OkLCh.
+            # ~90 (or ~270 for negative lightness) is plenty sufficient
+            return 0.0 if math.isnan(l) else 270.0 if l < 0 else 90.0
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""

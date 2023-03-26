@@ -38,12 +38,8 @@ class CMY(Space):
     }
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""
-
-        value = super().is_achromatic(undefined, coords)
-        if value is not None:
-            return value
 
         black = [1, 1, 1]
         for x in alg.vcross(coords, black):

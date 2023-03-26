@@ -69,18 +69,8 @@ class HSL(HSLish, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
-
-        _, sdef, ldef = undefined
-        if sdef and ldef:
-            return False
-
-        elif ldef:
-            return abs(coords[1]) < 1e-4
-
-        elif sdef:
-            return coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 
         return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
 

@@ -88,7 +88,10 @@ class Achromatic(_Achromatic):
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
         """Convert to the target color space."""
 
-        return xyz_to_ipt(lin_srgb_to_xyz(lin_srgb(coords)))
+        lab = xyz_to_ipt(lin_srgb_to_xyz(lin_srgb(coords)))
+        l = lab[0]
+        c, h = alg.rect_to_polar(*lab[1:])
+        return [l, c, h]
 
 
 class IPT(Labish, Space):
@@ -108,34 +111,37 @@ class IPT(Labish, Space):
         "tritan": "t"
     }
     WHITE = WHITES['2deg']['D65']
+    # Precalculated from:
+    # [
+    #     (1, 5, 1, 1000.0),
+    #     (100, 101, 1, 100),
+    #     (520, 521, 1, 100)
+    # ]
     ACHROMATIC = Achromatic(
-        # {
-        #     'low': (1, 5, 1, 1000.0),
-        #     'mid': (100, 101, 1, 100),
-        #     'high': (520, 521, 1, 100)
-        # },
         ACHROMATIC_RESPONSE,
         1e-5,
         1e-5,
         0.00049,
-        'linear'
+        'linear',
+        mirror=True
     )  # type: _Achromatic
 
-    def is_achromatic(self, undefined: list[bool], coords: Vector) -> bool | None:
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index in (1, 2):
+            if not math.isnan(coords[index]):
+                return coords[index]
+
+            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
-        idef, pdef, tdef = undefined
-        if idef and (pdef or tdef):
-            return False
-
-        elif pdef and tdef:
-            return coords[0] == 0.0
-
-        elif idef:
-            return alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
-
         m, h = alg.rect_to_polar(coords[1], coords[2])
-
         return self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:

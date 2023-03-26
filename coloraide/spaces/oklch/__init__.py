@@ -24,12 +24,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..oklab import xyz_d65_to_oklab
-from ..lch import LCh, lab_to_lch
+from ..oklab import Oklab
+from ..lch import LCh
 from ...spaces import Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
-from ... import util
+import math
+from ...types import Vector
 
 
 class OkLCh(LCh, Space):
@@ -49,17 +50,23 @@ class OkLCh(LCh, Space):
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D65']
-    # OkLCh serializes undefined hues to 0 in CSS, so we will use this to improve conversions,
-    # but still serialize undefined hues to 0 as it puts us still in range, but we get better
-    # round tripping with the hue below.
-    ACHROMATIC_HUE = lab_to_lch(xyz_d65_to_oklab(util.xy_to_xyz(WHITE)))[-1]
+    ACHROMATIC = Oklab.ACHROMATIC
 
-    def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
 
-        This is the ideal achromatic hue. It tightens up translation, but we can get away
-        with accepting 0 as well.
-        """
+        if index == 2:
+            h = coords[2]
+            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
 
-        return self.ACHROMATIC_HUE
+        elif index == 1:
+            c = coords[1]
+            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
+
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        return self.ACHROMATIC.test(*coords)

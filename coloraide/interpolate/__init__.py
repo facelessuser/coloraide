@@ -82,7 +82,6 @@ class Interpolator(metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        norm: bool = True,
         **kwargs: Any
     ):
         """Initialize."""
@@ -99,7 +98,6 @@ class Interpolator(metaclass=ABCMeta):
         self.space = space
         self.out_space = out_space
         self.extrapolate = extrapolate
-        self.norm = norm
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[out_space]
         if isinstance(cs, Cylindrical):
@@ -271,12 +269,7 @@ class Interpolator(metaclass=ABCMeta):
 
         # Create the color and ensure it is in the correct color space.
         color = self.create(self.space, coords[:-1], coords[-1])
-        if self.out_space != color.space():
-            color.convert(self.out_space, in_place=True, norm=self.norm)
-        elif not self.norm:
-            color.normalize(nans=False)
-
-        return color
+        return color.convert(self.out_space, in_place=True)
 
     def ease(self, t: float, channel_index: int) -> float:
         """Provide a progression time and channel index."""
@@ -367,7 +360,6 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        norm: bool = True,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -618,7 +610,6 @@ def interpolator(
     premultiplied: bool,
     extrapolate: bool,
     domain: list[float] | None = None,
-    norm: bool = True,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -727,6 +718,5 @@ def interpolator(
         premultiplied,
         extrapolate,
         domain,
-        norm=norm,
         **kwargs
     )

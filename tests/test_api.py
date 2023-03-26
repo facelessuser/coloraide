@@ -275,6 +275,12 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('orange')
         self.assertEqual(c1.get("red"), 1.0)
 
+    def test_get_no_nans(self):
+        """Test get with no NaN."""
+
+        self.assertEqual(Color('white').convert('lch').get('h', nans=False), 0.0)
+        self.assertEqual(Color('white').convert('lch').get(['c', 'h'], nans=False), [0.0, 0.0])
+
     def test_space_get(self):
         """Test get with another space."""
 
@@ -311,6 +317,52 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('orange')
         c1.set("red", 0.5)
         self.assertEqual(c1.get("red"), 0.5)
+
+    def test_set_undefined(self):
+        """Test set."""
+
+        def set_test(value):
+            """Test that value is not NaN."""
+
+            assert not math.isnan(value)
+            return value
+
+        c1 = Color('gray').convert('hsl')
+        c1.set("hue", set_test, nans=False)
+
+    def test_set_undefined_space(self):
+        """Test set."""
+
+        def set_test(value):
+            """Test that value is not NaN."""
+
+            assert not math.isnan(value)
+            return value
+
+        Color('gray').set('hsl.hue', set_test, nans=False)
+
+    def test_multi_set_undefined(self):
+        """Test set."""
+
+        def set_test(value):
+            """Test that value is not NaN."""
+
+            assert not math.isnan(value)
+            return value
+
+        c1 = Color('gray').convert('hsl')
+        c1.set({'lightness': 0.5, "hue": set_test}, nans=False)
+
+    def test_multi_set_undefined_space(self):
+        """Test set."""
+
+        def set_test(value):
+            """Test that value is not NaN."""
+
+            assert not math.isnan(value)
+            return value
+
+        Color('gray').set({'hsl.saturation': 0.5, 'hsl.hue': set_test}, nans=False)
 
     def test_multi_set(self):
         """Test setting multiple channels via set."""
@@ -390,6 +442,31 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             c1.set("red", "bad")
+
+    def test_is_achromatic(self):
+        """Test the default `is_achroamtic` (evaluation in XYZ-d65) when space reports it does't know."""
+
+        from coloraide.spaces.srgb.css import sRGB
+
+        class TempsRGB(sRGB):
+            """Construct an sRGB class that defaults to fallback achromatic test."""
+
+            def is_achromatic(self, coords) -> bool:
+                """
+                If no undefined, report we don't know if the color is achromatic.
+
+                This is the default and allows us to test the fallback achromatic test.
+                """
+
+                return None
+
+        class TempColor(Color):
+            """Temporary color class."""
+
+        TempColor.register(TempsRGB(), overwrite=True)
+
+        self.assertFalse(TempColor('red').is_achromatic())
+        self.assertTrue(TempColor('gray').is_achromatic())
 
     def test_is_nan_false(self):
         """Test when `is_nan` is false."""
