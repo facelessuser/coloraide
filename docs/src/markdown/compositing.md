@@ -51,6 +51,14 @@ c1.compose(c2, blend='multiply', space="srgb")
 ```
 ///
 
+/// tip
+`compose()` can output the results in any color space you need by setting `out_space`.
+
+```py play
+Color('#07c7ed').compose(Color('#fc3d99'), blend='multiply', space='srgb', out_space='hsl')
+```
+///
+
 /// note | Display Differences
 As some browsers apply compositing based on the display's current color space, we've provided examples in both sRGB
 and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?

@@ -22,6 +22,12 @@ matrix:
       - '.md-social__link'
       - '.swatch[title]'
       - '.playground .gamut'
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore possessive endings
+      - open: '(?<=\w)’s(?!\w)'
+        close: '\b'
   - pyspelling.filters.url:
 
 - name: markdown

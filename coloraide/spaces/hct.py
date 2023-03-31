@@ -257,7 +257,7 @@ class HCT(LChish, Space):
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
+        """Resolve channels."""
 
         if index == 0:
             h = coords[0]

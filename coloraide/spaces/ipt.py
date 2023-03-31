@@ -125,7 +125,7 @@ class IPT(Labish, Space):
     )  # type: _Achromatic
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
+        """Resolve channels."""
 
         if index in (1, 2):
             if not math.isnan(coords[index]):

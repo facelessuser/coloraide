@@ -63,6 +63,14 @@ Steps([c.filter('sepia', 1).clip() for c in colors])
 Steps([c.filter('grayscale', 1).clip() for c in colors])
 ```
 
+/// tip
+`filter()` can output the results in any color space you need by setting `out_space`.
+
+```py play
+Color('#07c7ed').filter('grayscale', 1, out_space='hsl')
+```
+///
+
 ## Color Vision Deficiency Simulation
 
 Color blindness or color vision deficiency (CVD) affects approximately 1 in 12 men (8%) and 1 in 200 women. CVD affects

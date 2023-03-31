@@ -117,7 +117,7 @@ class IgPgTg(IPT):
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
+        """Resolve channels."""
 
         if index in (1, 2):
             if not math.isnan(coords[index]):

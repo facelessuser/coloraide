@@ -1,11 +1,11 @@
 # The Color Object
 
 The `Color` object is where all the magic of ColorAide happens and provides access to all the color manipulation
-methods available. The `Color` object is used to represent a given color within a particular color space, and in order
+methods available. The `Color` object is used to represent a given color within a particular color space. In order
 to perform most operations, you will need to create a color instance to begin.
 
-There are a number of ways to instantiate new colors. Here we will cover basic creating, cloning, and updating of the
-`Color` class object and a few other class specific topics.
+There are a number of ways to instantiate new colors. Here we will cover the basics of creating colors, cloning colors,
+converting colors, and a few other `Color` class specific topics.
 
 ## Importing
 
@@ -198,19 +198,6 @@ call the `convert` method with the desired color space.
 Color('yellow').convert("lab")
 ```
 
-Cylindrical colors often have their hue normalized (achromatic hues set to undefined). For speed, or for other reasons,
-if you'd like to convert the color without this normalization, turn off undefined values by setting `norm` to 
-`#!py False`.
-
-```py play
-Color('gray').convert("hsl", norm=False)
-Color('gray').convert("oklch", norm=False)
-Color('gray').convert("cam16-jmh", norm=False)
-```
-
-/// new | New 2.0 `undef`
-///
-
 /// note | Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
 ///
 
@@ -257,7 +244,18 @@ ends up being much more efficient!
 import re
 from coloraide import Color
 
-RE_COLOR_START = re.compile(r"(?i)(?:\b(?<![-#&$])(?:color\((?!\s*-)|(?:hsla?|lch|lab|hwb|rgba?)\()|\b(?<![-#&$])[\w]{3,}(?![(-])\b|(?<![&])#)")
+RE_COLOR_START = re.compile(
+    r"""(?ix)
+    (?:
+        # CSS functions
+        \b(?<![-#&$])(?:color\((?!\s*-)|(?:hsla?|(?:ok)?(?:lch|lab)|hwb|rgba?)\()|
+        # Color words
+        \b(?<![-#&$])[\w]{3,}(?![(-])\b|
+        # Hex codes
+        (?<![&])\#
+    )
+    """
+)
 
 text = """
 <html>

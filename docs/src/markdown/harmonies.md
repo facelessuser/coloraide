@@ -80,6 +80,15 @@ Steps(Color('red').harmony('complement'))
 Steps(Color('red').harmony('complement', space='hsl'))
 ```
 
+/// tip
+`harmony()` can output the results in any color space you need by setting `out_space`.
+
+```py play
+Steps(Color('red').harmony('complement', out_space='srgb'))
+```
+///
+
+
 ## Supported Harmonies
 
 ColorAide currently supports 7 theorized color harmonies: [monochromatic](#monochromatic),

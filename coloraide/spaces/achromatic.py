@@ -34,7 +34,7 @@ class Achromatic(metaclass=ABCMeta):
         `threshold_lower`: threshold below achromatic curve.
         `threshold_cutoff`: threshold of chroma above which we will assume colors are not achromatic.
         `spline`: spline type.
-        `mirror`: Mirror response across lightness axix at zero.
+        `mirror`: Mirror response across lightness axis at zero.
         """
 
         self.mirror = mirror
