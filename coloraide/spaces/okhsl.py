@@ -97,7 +97,8 @@ def get_st_mid(a: float, b: float) -> Vector:
     return [s, t]
 
 
-def oklab_to_linear_srgb(lab):
+def oklab_to_linear_srgb(lab: Vector) -> Vector:
+    """Convert from Oklab to linear sRGB."""
 
     L, a, b = lab
     l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3
