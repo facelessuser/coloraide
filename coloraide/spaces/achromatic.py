@@ -1,4 +1,5 @@
 """Tools for dynamic achromatic response."""
+from __future__ import annotations
 from .. import algebra as alg
 import bisect
 from typing import Any
