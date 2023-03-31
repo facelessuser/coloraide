@@ -23,7 +23,6 @@ class OkLCh(base.OkLCh):
         none: bool = False,
         color: bool = False,
         percent: bool = False,
-        css_undefined: bool = False,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
@@ -36,8 +35,7 @@ class OkLCh(base.OkLCh):
             fit=fit,
             none=none,
             color=color,
-            percent=percent,
-            css_undefined=css_undefined
+            percent=percent
         )
 
     def match(

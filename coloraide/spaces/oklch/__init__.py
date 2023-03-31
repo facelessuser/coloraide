@@ -24,16 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from __future__ import annotations
-from ..oklab import Oklab
 from ..lch import LCh
-from ...spaces import Space
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
-import math
-from ...types import Vector
 
 
-class OkLCh(LCh, Space):
+class OkLCh(LCh):
     """OkLCh class."""
 
     BASE = "oklab"
@@ -50,23 +46,3 @@ class OkLCh(LCh, Space):
         "hue": "h"
     }
     WHITE = WHITES['2deg']['D65']
-    ACHROMATIC = Oklab.ACHROMATIC
-
-    def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
-
-        if index == 2:
-            h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
-
-        elif index == 1:
-            c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
-
-        value = coords[index]
-        return self.channels[index].nans if math.isnan(value) else value
-
-    def is_achromatic(self, coords: Vector) -> bool | None:
-        """Check if color is achromatic."""
-
-        return self.ACHROMATIC.test(*coords)

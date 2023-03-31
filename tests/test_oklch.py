@@ -79,20 +79,7 @@ class TestOkLChSerialize(util.ColorAssertsPyTest):
         ('oklch(none 0.3 50 / 0.5)', {'color': True}, 'color(--oklch 0 0.3 50 / 0.5)'),
         ('oklch(none 0.3 50)', {'color': True, 'none': True}, 'color(--oklch none 0.3 50)'),
         ('oklch(0 0.3 50)', {'color': True, 'alpha': True}, 'color(--oklch 0 0.3 50 / 1)'),
-        ('oklch(0 0.3 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklch 0 0.3 50)'),
-        # CSS undefined serialization
-        (
-            # Ideal white
-            Color('white').convert('oklch').set({'c': NaN, 'h': NaN}),
-            {'precision': 10},
-            'oklch(0.9999999935 0.0000000373 90.00000026)'
-        ),
-        (
-            # Ideal white
-            Color('white').convert('oklch').set({'c': NaN, 'h': NaN}),
-            {'css_undefined': True, 'precision': 10},
-            'oklch(0.9999999935 0 0)'
-        )
+        ('oklch(0 0.3 50 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklch 0 0.3 50)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
