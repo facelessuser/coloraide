@@ -55,6 +55,8 @@
 
 - **NEW**: `EXTENDED_RANGE` is no longer needed and is removed from current color space classes.
 
+- **NEW**: Improved accuracy for Oklab, OkLCh, Okhsl, and Okhsv.
+
 - **FIX**: Fix aliases in IPT and IgPgTg.
 
 - **FIX**: Fix some conversion issues with CAM16 based color spaces that was caused due to bad achromatic handling.
