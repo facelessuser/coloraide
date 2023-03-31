@@ -33,6 +33,19 @@ import math
 import sys
 from .. import algebra as alg
 from ..types import Vector
+from . oklab import OKLAB_TO_LMS3
+
+SRGBL_TO_LMS = [
+    [0.41222146947076277, 0.536332537261735, 0.051445993267502196],
+    [0.21190349581782508, 0.6806995506452346, 0.10739695353694051],
+    [0.08830245919005636, 0.2817188391361215, 0.6299787016738223]
+]
+
+LMS_TO_SRGBL = [
+    [4.07674163607596, -3.3077115392580643, 0.23096990318210434],
+    [-1.268437973285031, 2.6097573492876878, -0.3413193760026569],
+    [-0.004196076138675668, -0.7034186179359357, 1.707614694074611]
+]
 
 FLT_MAX = sys.float_info.max
 
@@ -100,16 +113,11 @@ def get_st_mid(a: float, b: float) -> Vector:
 def oklab_to_linear_srgb(lab: Vector) -> Vector:
     """Convert from Oklab to linear sRGB."""
 
-    L, a, b = lab
-    l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3
-    m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3
-    s = (L - 0.0894841775 * a - 1.2914855480 * b) ** 3
-
-    return [
-        4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
-    ]
+    return alg.dot(
+        LMS_TO_SRGBL,
+        [c ** 3 for c in alg.dot(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
+        dims=alg.D2_D1
+    )
 
 
 def find_cusp(a: float, b: float) -> Vector:
@@ -168,9 +176,9 @@ def find_gamut_intersection(
         dl = l1 - l0
         dc = c1
 
-        k_l = +0.3963377774 * a + 0.2158037573 * b
-        k_m = -0.1055613458 * a - 0.0638541728 * b
-        k_s = -0.0894841775 * a - 1.2914855480 * b
+        k_l = alg.vdot(OKLAB_TO_LMS3[0][1:], [a, b])
+        k_m = alg.vdot(OKLAB_TO_LMS3[1][1:], [a, b])
+        k_s = alg.vdot(OKLAB_TO_LMS3[2][1:], [a, b])
 
         l_dt = dl + dc * k_l
         m_dt = dl + dc * k_m
@@ -196,23 +204,23 @@ def find_gamut_intersection(
         mdt2 = 6 * (m_dt ** 2) * m_
         sdt2 = 6 * (s_dt ** 2) * s_
 
-        r = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s - 1
-        r1 = 4.0767416621 * ldt - 3.3077115913 * mdt + 0.2309699292 * sdt
-        r2 = 4.0767416621 * ldt2 - 3.3077115913 * mdt2 + 0.2309699292 * sdt2
+        r = alg.vdot(LMS_TO_SRGBL[0], [l, m, s]) - 1
+        r1 = alg.vdot(LMS_TO_SRGBL[0], [ldt, mdt, sdt])
+        r2 = alg.vdot(LMS_TO_SRGBL[0], [ldt2, mdt2, sdt2])
 
         u_r = r1 / (r1 * r1 - 0.5 * r * r2)
         t_r = -r * u_r
 
-        g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s - 1
-        g1 = -1.2684380046 * ldt + 2.6097574011 * mdt - 0.3413193965 * sdt
-        g2 = -1.2684380046 * ldt2 + 2.6097574011 * mdt2 - 0.3413193965 * sdt2
+        g = alg.vdot(LMS_TO_SRGBL[1], [l, m, s]) - 1
+        g1 = alg.vdot(LMS_TO_SRGBL[1], [ldt, mdt, sdt])
+        g2 = alg.vdot(LMS_TO_SRGBL[1], [ldt2, mdt2, sdt2])
 
         u_g = g1 / (g1 * g1 - 0.5 * g * g2)
         t_g = -g * u_g
 
-        b = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s - 1
-        b1 = -0.0041960863 * ldt - 0.7034186147 * mdt + 1.7076147010 * sdt
-        b2 = -0.0041960863 * ldt2 - 0.7034186147 * mdt2 + 1.7076147010 * sdt2
+        b = alg.vdot(LMS_TO_SRGBL[2], [l, m, s]) - 1
+        b1 = alg.vdot(LMS_TO_SRGBL[2], [ldt, mdt, sdt])
+        b2 = alg.vdot(LMS_TO_SRGBL[2], [ldt2, mdt2, sdt2])
 
         u_b = b1 / (b1 * b1 - 0.5 * b * b2)
         t_b = -b * u_b
@@ -269,38 +277,32 @@ def compute_max_saturation(a: float, b: float) -> float:
 
     # Select different coefficients depending on which component goes below zero first.
 
-    if (-1.88170328 * a - 0.80936493 * b) > 1:
+    if (-1.8817031 * a - 0.80936501 * b) > 1:
         # Red component
         k0 = 1.19086277
         k1 = 1.76576728
         k2 = 0.59662641
         k3 = 0.75515197
         k4 = 0.56771245
-        wl = 4.0767416621
-        wm = -3.3077115913
-        ws = 0.2309699292
+        wl, wm, ws = LMS_TO_SRGBL[0]
 
-    elif (1.81444104 * a - 1.19445276 * b) > 1:
+    elif (1.81444079 * a - 1.19445267 * b) > 1:
         # Green component
         k0 = 0.73956515
         k1 = -0.45954404
         k2 = 0.08285427
-        k3 = 0.12541070
-        k4 = 0.14503204
-        wl = -1.2684380046
-        wm = 2.6097574011
-        ws = -0.3413193965
+        k3 = 0.12541073
+        k4 = -0.14503204
+        wl, wm, ws = LMS_TO_SRGBL[1]
 
     else:
         # Blue component
-        k0 = 1.35733652
-        k1 = -0.00915799
-        k2 = -1.15130210
-        k3 = -0.50559606
-        k4 = 0.00692167
-        wl = -0.0041960863
-        wm = -0.7034186147
-        ws = 1.7076147010
+        k0 = 1.35692055
+        k1 = -0.00927503
+        k2 = -1.15077658
+        k3 = -0.50648323
+        k4 = 0.00645566
+        wl, wm, ws = LMS_TO_SRGBL[2]
 
     # Approximate max saturation using a polynomial:
     sat = k0 + k1 * a + k2 * b + k3 * (a ** 2) + k4 * a * b
@@ -309,9 +311,9 @@ def compute_max_saturation(a: float, b: float) -> float:
     # This gives an error less than 10e6, except for some blue hues where the `dS/dh` is close to infinite.
     # This should be sufficient for most applications, otherwise do two/three steps.
 
-    k_l = 0.3963377774 * a + 0.2158037573 * b
-    k_m = -0.1055613458 * a - 0.0638541728 * b
-    k_s = -0.0894841775 * a - 1.2914855480 * b
+    k_l = alg.vdot(OKLAB_TO_LMS3[0][1:], [a, b])
+    k_m = alg.vdot(OKLAB_TO_LMS3[1][1:], [a, b])
+    k_s = alg.vdot(OKLAB_TO_LMS3[2][1:], [a, b])
 
     l_ = 1.0 + sat * k_l
     m_ = 1.0 + sat * k_m
