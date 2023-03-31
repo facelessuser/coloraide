@@ -179,7 +179,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         return self.channels.index(self.CHANNEL_ALIASES.get(name, name))
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
+        """Resolve channels."""
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value

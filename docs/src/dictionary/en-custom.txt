@@ -71,8 +71,10 @@ HPLuv
 HSB
 HSI
 HSL
+HSLish
 HSLuv
 HSV
+HSVish
 HUSL
 HWB
 Horner's
@@ -146,6 +148,7 @@ QCh
 QMh
 Qsh
 RGB
+RGBish
 RLAB
 ROMM
 RYB
@@ -231,6 +234,7 @@ luminance
 macOS
 memoization
 mixin
+mixins
 monochromacy
 monotonicity
 oRGB
@@ -240,6 +244,7 @@ opto
 performant
 piecewise
 pre
+precalculate
 precalculated
 precalculating
 preformatted

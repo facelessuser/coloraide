@@ -2,48 +2,42 @@
 
 ## 2.0
 
-- **BREAK**: Functions like `interpolate`, `steps`, `mix`, `filter`, `compose`, and `harmony` will no longer base the
-  output color on the first input color. Colors will be evaluated in the specified color space and be output in that
-  space unless `out_space` is defined. For migration, specify the desired `out_space` if the working `space` does not
-  match the desired output.
+- **BREAK**: `interpolate`, `steps`, `mix`, `filter`, `compose`, and `harmony` will no longer base the output color on
+  the first input color. Colors will be evaluated in the specified color space and be output in that space unless
+  `out_space` is used to specify a specific output color space. For migration, specify the desired `out_space` if the
+  working `space` does not match the desired output.
 
-- **BREAK**: Color space objects no longer utilize the `normalize()` method and instead now use an `is_achromatic()`
-  method. `Color` objects will use this to determine if a hue should be set to achromatic. This could break 3rd party
-  color space normalization of achromatic hues.
+- **BREAK**: Achromatic and undefined color channel handling has been rewritten. Color space objects no longer utilize
+  the `normalize()` or `achromatic_hue()` method and instead now use a new `is_achromatic()` and `resolve_channel()`
+  methods.
+
+- **NEW**: Expose the new `Color.is_achromatic()` method to tell if colors, even non-cylindrical colors, are achromatic
+  or reasonably close to achromatic.
+
+- **NEW**: Color channel definitions can specify a non-zero default for an undefined channel. Use `resolve_channel()`
+  for more advanced handling.
+
+- **NEW**: CAM16, CAM16 UCS, CAM16 SCD, CAM15 LCD, CAM16 JMh, HCT, Jzazbz, JzCzhz, and IPT all currently require a
+  dynamic approach to detect achromatic colors. Undefined LCh chroma and hue channels and Lab a and b channels can now
+  resolve to non-zero values when undefined for better achromatic interpolation.
+
+- **NEW** (ACEScct) will now resolve undefined color channels (non-alpha) with a non-zero default that represents black
+  as zero is actually out of gamut for that space.
+
+- **NEW**: `filter`, `compose`, and `harmony` all now support the `out_space` parameter.
 
 - **NEW**: All `<space>ish` mixin classes now give access to normalized names and indexes as `names()` and `indexes()`
   opposed to `<space>ish_names()` etc. Old methods are still available but are deprecated.
 
 - **NEW**: All RGB, HSL, and HSV color spaces are now created with a respective `RGBish`, `HSLish`, and `HSVish` mixin
-  classes.
-
-- **NEW**: Some color spaces do not convert as well or have bad side effects if zero is used as a replacement for an
-  undefined value. Allow color spaces plugins to specify what should actually be used for a given color channel if the
-  default of zero is not sufficient.
-
-    CAM16 JMh, HCT, and JzCzhz all have achromatic responses that actually lean more heavily (some quite extremely) into
-    a specific hue. As undefined hues are primarily used for masking and for specifying when a hue is achromatic, these
-    spaces will now resolve as a more ideal hue for achromatic conversions.
-
-    OkLCh, Okhsl, and Okhsv have an achromatic response that leans into the 90˚ hue. Where possible, we will try to
-    utilize that angle for the best conversion, but the impact is slight enough that undefined hues will still resolve
-    to zero.
-
-    Lastly, some color spaces (ACEScct) will actually report out of gamut if an undefined channel is treated as zero.
-    ACEScct black is actually above zero, and while ACEScct will allow values that far exceed the lower boundary, for
-    practical purposes, undefined channels will now resolve with the value for black.
-
-- **NEW**: Rework achromatic normalization internally and expose the `Color.is_achromatic()` method to tell if colors,
-  even non-cylindrical colors, are achromatic or reasonably close to achromatic.
-
-- **NEW**: `filter`, `compose`, and `harmony` all now support the `out_space` parameter.
+  class.
 
 - **NEW**: Separable blend modes will now be evaluated in whatever RGB-ish color space is provided.
 
 - **NEW**: `compose` will throw an error if a non-RGB-ish color space is provided.
 
 - **NEW**: `Color.normalize()` added a new `nans` parameter that when set to `False` will prevent achromatic hue
-  normalization and ensure that all values are defined, even hues.
+  normalization and will just force all channels to be defined.
 
 - **NEW**: `Color.coords()` and `Color.alpha()`, which used to be available during the alpha/beta period have been
   re-added. `coords()` accesses just the color channels (no alpha channel) while `alpha()` gets the alpha channel.
@@ -55,15 +49,15 @@
 - **NEW**: A `norm` parameter is now added to `convert` and `update`. When set to `False`, it will prevent achromatic
   normalization of hues during conversion. If no conversion is needed, the color is returned as is.
 
-- **NEW**: A `norm` parameter is now added to `fit` and `clip`. When `norm` is `False`, achromatic normalization will be
-  prevented on the conversion back from the target/working color space.
-
-- **NEW**: A `norm` parameter has been added to `random`, `filter`, `compose`, `interpolate`, `mix`, `steps`, and
-  `harmony`. When set to `False`, colors will be returned without any undefined values.
-
-- **NEW**: ColorAide used to gamut map colors when HSL, HSV, HWB, etc. were used as interpolation spaces, this is no
+- **NEW**: ColorAide used to gamut map colors such as HSL, HSV, and HWB when interpolating into those spaces. This is no
   longer done. It is possible to gamut map wider gamuts with these color spaces, so it will be up to the user to apply
   gamut mapping when it is determined they need it.
+
+- **NEW**: `EXTENDED_RANGE` is no longer needed and is removed from current color space classes.
+
+- **FIX**: Fix aliases in IPT and IgPgTg.
+
+- **FIX**: Fix some conversion issues with CAM16 based color spaces that was caused due to bad achromatic handling.
 
 ## 1.8.2
 

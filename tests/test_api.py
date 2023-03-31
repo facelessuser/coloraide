@@ -444,7 +444,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
             c1.set("red", "bad")
 
     def test_is_achromatic(self):
-        """Test the default `is_achroamtic` (evaluation in XYZ-d65) when space reports it does't know."""
+        """Test the default `is_achroamtic` (evaluation in XYZ-d65) when space reports it doesn't know."""
 
         from coloraide.spaces.srgb.css import sRGB
 

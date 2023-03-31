@@ -48,7 +48,8 @@ class XYZD65(Space):
     #        high: float,
     #        bound: bool = False,
     #        flags: int = 0,
-    #        limit: Tuple[float | None, float | None] = (None, None)
+    #        limit: Tuple[float | None, float | None] = (None, None),
+    #        nans: float = 0.0
     #    ) -> 'Channel':
     #```
     #
@@ -62,6 +63,8 @@ class XYZD65(Space):
     #            do not naturally occur, not even with normal out of gamut colors. So, we could clamp the lower
     #            bound: `(0, None)`.
     # - `flags`: Flags used to provide additional context for the channel.
+    # - `nans`: Default value to use for a given channel when it is undefined. More advanced handling can be
+    #           done by overriding `resolve_channel()` on the color space object.
     #
     # The following flags are supported:
     # - FLG_ANGLE: denotes that channel is a angle or degree value.
@@ -70,7 +73,7 @@ class XYZD65(Space):
     #                percentage format. The CSS `color()` function ignores this flags as no channels are always
     #                required to be percentages. Percentage range will be determined by `high` and `low`.
     # - FLG_OPT_PERCENT: denotes the value can optionally be considered as a percent.
-    #                    This is also only used for CSS string input and output. CSS `oklab`, `lab()`, `oklch`,
+    #                    This is also only used for CSS string input and output. CSS `oklab()`, `lab()`, `oklch()`,
     #                    `lch()`, and `srgb()` allow for channels to be provided as percentages or normal
     #                    numbers in certain cases. This tells the parser and serializer which channels allow this.
     #                    Percentage range will be determined by `high` and `low`.
@@ -109,12 +112,6 @@ class XYZD65(Space):
     #   space, the values can be greatly out of specification (looking at you HSL).
     GAMUT_CHECK = None
 
-    # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
-    # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
-    # interpolated, and that color is "bound" to a gamut, the colors will usually be gamut mapped, but if the
-    # interpolation space happens to support extended ranges, then the colors will not be gamut mapped even if their
-    # gamut is larger than the target interpolation space.
-    EXTENDED_RANGE = False
     # What is the color space's dynamic range
     DYNAMIC_RANGE = 'sdr'
 
@@ -181,33 +178,62 @@ point) respectively. This all happens without The `Space` plugin needing to do a
 
 White points are specified via the `WHITE` property, and should contain a tuple of `xy` coordinates of the white point.
 
+## Achromatic Rules
+
+A given color space can define its rules for determining whether a color is achromatic. If one is not defined, the
+color will be convert to XYZ D65 and its achromatic method will be used. In order to have reasonably fast checks, it is
+better to evaluate the achromatic state without converting to another color. In order to define achromatic rules, simply
+override `is_achromatic()`. For instance, LCh is achromatic when chroma is very close to zero:
+
+```py
+    def is_achromatic(self, coords: Vector) -> bool | None:
+        """Check if color is achromatic."""
+
+        return coords[1] < ACHROMATIC_THRESHOLD
+```
+
 ## Resolve Undefined Values
 
 By default, undefined color channels are resolved as `0`, but there are color spaces where zero just does not work well
-for them. Such color spaces can choose a different default for undefined values. Generally, `0` is encouraged, but if
-zero is fundamentally a bad value for a color space and/or can decrease accuracy of colors, `remove_undef` can be
-overridden to resolve them to something else.
-
-If modifying this for a cylindrical color space, you may want to tie this function to the cylindrical
-[`achromatic_hue`](#mix-ins) method to resolve hues. `achromatic_hue` is used during conversion when an undefined hue
-is encountered. `remove_undef` controls how values are resolved for serialization. Normally these are the same, but it
-may be desirable to serialize as `0` for convenience, but if possible, use the more accurate hue during conversion. This
-works best in color spaces where the actual hue has only a slight impact during conversion.
+for a given channel. Such color spaces can choose a different default for undefined values. Generally, `0` is
+encouraged, but if zero is fundamentally a bad value for a color space and/or can decrease accuracy of colors, a
+different default can be specified when defining a channel on the color space via the `nans` parameter.
 
 ```py
-############################
-# Can be overridden to control how undefined values resolve.
-############################
-def remove_undef(self, coords: Vector) -> Vector:
-    """Return coordinates with no undefined values."""
+class ACEScct(sRGB):
+    """The ACEScct color class."""
 
-    return alg.no_nans(coords)
+    BASE = "acescg"
+    NAME = "acescct"
+    SERIALIZE = ("--acescct",)
+    WHITE = (0.32168, 0.33767)
+    CHANNELS = (
+        Channel("r", CCT_MIN, CCT_MAX, bound=True, nans=CCT_MIN),
+        Channel("g", CCT_MIN, CCT_MAX, bound=True, nans=CCT_MIN),
+        Channel("b", CCT_MIN, CCT_MAX, bound=True, nans=CCT_MIN)
+    )
+```
+
+If the channel requires more advanced handling, you can override `resolve_channel()` on the color space itself:
+
+```py
+    def resolve_channel(self, index: int, coords: Vector) -> float:
+        """Resove channels."""
+
+        if index in (1, 2):
+            if not math.isnan(coords[index]):
+                return coords[index]
+
+            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+
+        value = coords[index]
+        return self.channels[index].nans if math.isnan(value) else value
 ```
 
 ## Mix-ins
 
-If the color is a cylindrical space, Lab-ish space, or LCh-ish space, you can additionally add in the respective
-mix-in class: `Cylindrical`, `Labish`, or `LChish`. It should be noted that `LChish` is subclassed from `Cylindrical`.
+ColorAide provides some various mixins for some common color space types. It should be noted that all cylindrical type
+color mixins are derived from `Cylindrical`.
 
 /// tab | Cylindrical
 ```py
@@ -219,38 +245,62 @@ class Cylindrical:
 
         return "h"
 
-    def hue_index(self) -> int:  # pragma: no cover
+    def hue_index(self) -> int:
         """Get hue index."""
 
         return cast('Space', self).get_channel_index(self.hue_name())
+```
+///
 
-    def achromatic_hue(self) -> float:
-        """
-        Ideal achromatic hue.
+/// tab | RGBish
+```py
+class RGBish:
+    """RGB-ish space."""
 
-        Normally, we assume 0 when a cylindrical color space has a powerless hue.
-        For most color spaces, the hue has little affect when the color is achromatic,
-        but on rare occasions, a color space algorithm may require a specific hue
-        in order to more accurately translate an achromatic hue, CAM16 JMh (without
-        discounting) being an example. This defines the hue used during conversion.
+    def names(self) -> tuple[str, ...]:
+        """Return RGB-ish names in order R G B."""
 
-        This only affects what is used when converting, to serialize to a non-zero
-        hue, override `remove_undef`. You can have `remove_undef` rely on this method.
-        """
+        return self.channels[:-1]
 
-        return 0.0
+    def indexes(self) -> list[int]:
+        """Return the index of RGB-ish channels."""
 
-    def remove_undef(self, coords: Vector) -> Vector:
-        """Return coordinates with no undefined values."""
+        return [self.get_channel_index(name) for name in self.names()]
+```
+///
 
-        i = self.hue_index()
-        if alg.is_nan(coords[i]):
-            coords[:i] = alg.no_nans(coords[:i])
-            coords[i + 1:] = alg.no_nans(coords[i + 1:])
-            coords[i] = self.achromatic_hue()
-            return coords
-        else:
-            return alg.no_nans(coords)
+
+/// tab | HSLish
+```py
+class HSLish(Cylindrical):
+    """HSL-ish space."""
+
+    def names(self) -> tuple[str, ...]:
+        """Return HSL-ish names in order H S L."""
+
+        return self.channels[:-1]
+
+    def indexes(self) -> list[int]:
+        """Return the index of HSL-ish channels."""
+
+        return [self.get_channel_index(name) for name in self.names()]
+```
+///
+
+/// tab | HSVish
+```py
+class HSVish(Cylindrical):
+    """HSV-ish space."""
+
+    def names(self) -> tuple[str, ...]:
+        """Return HSV-ish names in order H S V."""
+
+        return self.channels[:-1]
+
+    def indexes(self) -> list[int]:
+        """Return the index of HSV-ish channels."""
+
+        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
@@ -259,15 +309,15 @@ class Cylindrical:
 class Labish:
     """Lab-ish color spaces."""
 
-    def labish_names(self) -> Tuple[str, ...]:
+    def names(self) -> tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return cast('Space', self).channels[:-1]
+        return self.channels[:-1]
 
-    def labish_indexes(self) -> List[int]:  # pragma: no cover
+    def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
-        return [cast('Space', self).get_channel_index(name) for name in self.labish_names()]
+        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
@@ -276,15 +326,15 @@ class Labish:
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
 
-    def lchish_names(self) -> Tuple[str, ...]:  # pragma: no cover
+    def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L c h."""
 
-        return cast('Space', self).channels[:-1]
+        return self.channels[:-1]
 
-    def lchish_indexes(self) -> List[int]:  # pragma: no cover
+    def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
-        return [cast('Space', self).get_channel_index(name) for name in self.lchish_names()]
+        return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
 
@@ -309,16 +359,10 @@ ictcp = srgb.convert('ictcp')
 for c in (srgb, jzazbz, ictcp):
     if isinstance(c._space, Labish):
         print('color: ', c)
-        l = c._space.labish_names()[0]
+        l = c._space.names()[0]
         print('channel: ', l)
         print('value: ', c.get(l))
 ```
-
-It should be noted that just because a color space identifies in a specific, generic category, it doesn't mean it is
-precisely that thing. For instance, the color space CIELab is clearly a Lab-ish space, or more precisely, it is a Lab
-color space. Oklab, DIN99o, and others are very much Lab spaces as well. ICtCp, on the other hand, is very Lab *like* as
-its `Ct` and `Cp` channels control redness/greenness and blueness/yellowness, but the `I` channel represents intensity,
-not lightness which is similar but not precisely the same thing.
 
 ## Adding New Input/Output Formats
 

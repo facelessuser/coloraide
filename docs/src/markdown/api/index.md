@@ -304,8 +304,7 @@ def random(
     cls,
     space: str,
     *,
-    limits: Sequence[Sequence[float] | None] | None = None,
-    norm: bool = True
+    limits: Sequence[Sequence[float] | None] | None = None
 ) -> Color:
     ...
 ```
@@ -324,7 +323,6 @@ Parameters
     ---------- | -------------| -----------
     `space`    |              | The color space name in which to generate a random color in.
     `limits`   | `#!py None`  | An optional list of constraints for various color channels. Each entry should either be a sequence contain a minimum and maximum value, or should be `#!py  None`. `#!py None` values will be ignored and the color space's specified channel range will be used instead. Any missing entries will be treated as `#!py None`.
-    `norm`     | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -369,9 +367,10 @@ def update(
 Description
 
 -   The `update` method provides a way to update the underlying color space with coordinates from any color space. The
-    method's signature is the same as [`new`](#new) and accepts color strings, `Color` objects, or raw data points
-    specified with a color space string and coordinates. The object itself will be updated and remain in its current
-    color space.
+    method's signature is the same as [`new`](#new) except that it adds an additional `norm` parameter used to skip
+    achromatic hue normalization when converting to the current color space. The object itself will assume the
+    equivalent color in the current color space that matches the input color's value (assuming no algorithmic
+    limitations preventing an equivalent color).
 
 Parameters
 
@@ -381,7 +380,7 @@ Parameters
     `color`    |              | A color string, or other `Color` class object. If given `data`, a string must be used and should represent the color space to use.
     `data`     | `#!py None`  | `data` accepts a list of numbers representing the coordinates of the color. If provided, `color` must be a string specifying the color space.
     `alpha`    | `#!py 1`     | `alpha` accepts a number specifying the `alpha` channel. Must be used in conjunction with `data` or it will be ignored.
-    `norm`     | `#!py True`  | Prevent achromatic normalization when updating from a different color space.
+    `norm`     | `#!py True`  | When set to `#!py False`, this prevents achromatic normalization when updating from a different color space. If no update occurs, nothing is done.
 
 Return
 
@@ -405,8 +404,8 @@ def mutate(
 /// define
 Description
 
--   The `mutate` method is just like [`update`](#update) except that it will not only update the color space, but mutate
-    it to the provided color space.
+-   The `mutate` method is similar to [`update`](#update) except that it does not convert the input color to the current
+    color space, but instead replaces the current color space and values with the input color's color space and values.
 
 Parameters
 
@@ -451,7 +450,7 @@ Parameters
     `space`    |               | A string representing the desired final color space.
     `fit`      | `#!py False`  | Parameter specifying whether the current color should be gamut mapped into the final, desired color space. If set to `#!py3 True`, the color will be gamut mapped using the default gamut mapping method. If set to a string, the string will be interpreted as the name of the gamut mapping method to be used.
     `in_place` | `#!py False`  | Boolean specifying whether the convert should alter the current [`Color`](#color) object or return a new one.
-    `norm`     | `#!py True`   | Perform hue normalization on converted colors. If the color is not converted, this option has no effect.
+    `norm`     | `#!py True`   | When set to `#!py False`, this prevents achromatic normalization when converting from a different color space. If no update occurs, nothing is done.
 
 Return
 
@@ -804,7 +803,6 @@ def interpolate(
     extrapolate: bool = False,
     domain: list[float] | None = None,
     method: str = "linear",
-    norm: bool = True,
     **kwargs: Any
 ) -> Interpolator:
     ...
@@ -857,7 +855,6 @@ Parameters
     `extrapolate`   | `#!py False`      | Interpolations should extrapolate when values exceed the domain range ([0, 1] by default).
     `domain`        | `#!py None`       | A list of numbers defining the domain range of the interpolation.
     `method`        | `#!py "linear"`   | The interpolation method to use.
-    `norm`          | `#!py True`       | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -961,7 +958,6 @@ def filter(
     space: str | None = None,
     in_place: bool = False,
     out_space: str | None = None,
-    norm: bool = True,
     **kwargs: Any
 ) -> Color:
     ...
@@ -1006,7 +1002,6 @@ Parameters
     `space`     | `#!py3 None`   | Controls the algorithm used for simulating the given CVD.
     `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned. 
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
-    `norm`      | `#!py True`    | Enable/disable achromatic normalization of the returned color.
     `**kwargs`  |                | Additional filter specific parameters.
 
     CVDs also take an optional `method` parameter that allows for specifying the CVD algorithm to use.
@@ -1031,8 +1026,7 @@ def harmony(
     name: str,
     *,
     space: str | None = None,
-    out_space: str | None = None,
-    norm: bool = True
+    out_space: str | None = None
 ) -> list[Color]:
     ...
 ```
@@ -1062,7 +1056,6 @@ Parameters
     `name`      |                | Name of the color harmony to use.
     `space`     | `#!py 'oklch'` | Color space under which the harmonies will be calculated. Must be a cylindrical space.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
-    `norm`      | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -1080,8 +1073,7 @@ def compose(
     operator: str | bool = True,
     space: str | None = None,
     out_space: str | None = None,
-    in_place: bool = False,
-    norm: bool = True
+    in_place: bool = False
 ) -> Color:
     ...
 ```
@@ -1126,7 +1118,6 @@ Parameters
     `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
     `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
-    `norm`     | `#!py True`  | Enable/disable achromatic normalization of the returned color.
 
 Return
 
@@ -1154,7 +1145,6 @@ Parameters
     Parameters | Defaults      | Description
     ---------- | ------------- | -----------
     `space`    | `#!py None`   | The color space that the color must be mapped to. If space is `#!py None`, then the current color space will be used.
-    `norm`     | `#!py True`   | Prevent achromatic normalization on convert from target color space back to the original.
 
 Return
 
@@ -1201,7 +1191,6 @@ Parameters
     ---------- | ------------------ | -----------
     `space`    | `#!py None`        | The color space that the color must be mapped to. If space is `#!py None`, then the current color space will be used.
     `method`   | `#!py None`        | String that specifies which gamut mapping method to use. If `#!py None`, `lch-chroma` will be used.
-    `norm`     | `#!py True`        | Prevent achromatic normalization on convert from target color space back to the original.
 
 Return
 
@@ -1242,6 +1231,7 @@ Return
 def get(
     self,
     name: str | list[str] | tuple[str, ...],
+    *,
     nans: bool = True
 ) -> float | list[float]:
 ```
@@ -1274,6 +1264,7 @@ def set(
     self,
     name: str | dict[str, float | Callable[..., float]],
     value: float | Callable[..., float] | None = None,
+    *,
     nans: bool = True
 ) -> Color:
 ```
@@ -1300,7 +1291,8 @@ Parameters
     ---------- | ------------------ | -----------
     `name`     |                    | A string containing a channel name or color space and channel separated by a `.` specifying the what channel to set. If `value` is omitted, `name` can also be a dictionary containing multiple channels, each specifying their own value to set.
     `value`    |                    | A numerical value, a string value accepted by the specified color space, or a function.
-    `nans`    | `#!py True`        | Determines whether an undefined value is allowed to be returned when setting a value during a callback. If disabled, undefined values sent to the callback will be resolved before the callback is executed.
+    `nans`     | `#!py True`        | When doing relative sets via a callback input, ensure the channel value passed to the callback is a real number, not an undefined value.
+
 Return
 
 -   Returns a reference to the current [`Color`](#color) object.
@@ -1311,6 +1303,7 @@ Return
 ```py
 def coords(
     self,
+    *,
     nans: bool = True
 ) -> Vector:
     ...
@@ -1340,6 +1333,7 @@ Return
 ```py
 def alpha(
     self,
+    *,
     nans: bool = True
 ) -> float:
     ...

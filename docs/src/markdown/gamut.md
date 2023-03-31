@@ -105,9 +105,9 @@ hsl.to_string(fit=False)
 hsl.in_gamut('srgb')
 ```
 
-This happens because these cylindrical color models do not represent colors out of gamut in a very sane way. They are
-simply not designed to extend past the color gamut. So even a slightly out of gamut sRGB color can translate to a value
-way outside the cylindrical color model's boundaries.
+This happens because these cylindrical color models do not represent colors in a very sane way when lightness exceeds
+the SDR range of 0 - 1. They are simply not designed to extend past such limits in a sane way. So even a slightly out of
+gamut sRGB color _could_ translate to a value way outside the cylindrical color model's boundaries.
 
 For this reason, gamut checks in the HSL, HSV, or HWB models apply tolerance checks on the color's coordinates in the
 sRGB color space **and** the respective cylindrical model ensuring we have coordinates that are close to the color's

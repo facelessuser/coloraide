@@ -37,7 +37,7 @@ class JzCzhz(LCh):
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
+        """Resolve channels."""
 
         if index == 2:
             h = coords[2]
