@@ -16,8 +16,6 @@ from ..types import Vector
 from typing import Any
 import math
 
-ACHROMATIC_THRESHOLD = 1e-4
-
 # The IPT algorithm requires the use of the Hunt-Pointer-Estevez matrix,
 # but it was originally calculated with the assumption of a slightly different
 # D65 white point than what we use.
@@ -83,7 +81,7 @@ def ipt_to_xyz(ipt: Vector) -> Vector:
 
 
 class Achromatic(_Achromatic):
-    """Test HCT achromatic response."""
+    """Test achromatic response."""
 
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
         """Convert to the target color space."""

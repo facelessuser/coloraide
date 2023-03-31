@@ -73,13 +73,7 @@ def igpgtg_to_xyz(itp: Vector) -> Vector:
 
 
 class Achromatic(_Achromatic):
-    """
-    Test if color is achromatic.
-
-    Should work quite well through the SDR range. Can reasonably handle HDR range out to 3
-    which is far enough for anything practical.
-    We use a spline mainly to quickly fit the line in a way we do not have to analyze and tune.
-    """
+    """Test if color is achromatic."""
 
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
         """Convert to the target color space."""

@@ -275,12 +275,6 @@ class HCT(LChish, Space):
 
         return coords[2] == 0.0 or self.ACHROMATIC.test(coords[2], coords[1], coords[0])
 
-    def achromatic_normalization(self, coords: list['float']):
-        """Perfrom achromatic normalization."""
-
-        coords[0] = math.nan
-        coords[1] = math.nan
-
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""
 
