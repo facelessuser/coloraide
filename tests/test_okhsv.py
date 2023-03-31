@@ -10,7 +10,7 @@ class TestsOkhsv(util.ColorAssertsPyTest):
     """Test Okhsv."""
 
     COLORS = [
-        ('red', 'color(--okhsv 29.234 1 1)'),
+        ('red', 'color(--okhsv 29.234 0.99952 1)'),
         ('orange', 'color(--okhsv 70.67 1 1)'),
         ('yellow', 'color(--okhsv 109.77 1 1)'),
         ('green', 'color(--okhsv 142.5 1 0.52704)'),

@@ -29,8 +29,7 @@ from __future__ import annotations
 from .hsv import HSV
 from ..channels import FLG_ANGLE, Channel
 from .. import util
-from .oklab import oklab_to_linear_srgb
-from .okhsl import toe, toe_inv, find_cusp, to_st
+from .okhsl import toe, toe_inv, find_cusp, to_st, oklab_to_linear_srgb
 import math
 from .. import algebra as alg
 from ..types import Vector
@@ -47,7 +46,7 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
     a = b = 0.0
 
     # Avoid processing gray or colors with undefined hues
-    if l != 0.0 and s != 0:
+    if l != 0.0 and s != 0.0:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
@@ -96,7 +95,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
     h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
 
-    if l != 0.0 and l != 1 and c != 0:
+    if l != 0.0 and l != 1 and c != 0.0:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
@@ -146,21 +145,6 @@ class Okhsv(HSV):
         "saturation": "s",
         "value": "v"
     }
-
-    def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
-
-        if index == 0:
-            v, h = coords[2], coords[0]
-            if not math.isnan(h):
-                return h
-
-            # Okhsv is not as precise as Oklab and OkLCh.
-            # ~90 (or ~270 for negative lightness) is plenty sufficient.
-            return 0.0 if math.isnan(v) else 270.0 if v < 0 else 90.0
-
-        value = coords[index]
-        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""

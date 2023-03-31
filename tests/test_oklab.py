@@ -72,32 +72,7 @@ class TestOklabSerialize(util.ColorAssertsPyTest):
         ('oklab(none 0.1 -0.1 / 0.5)', {'color': True}, 'color(--oklab 0 0.1 -0.1 / 0.5)'),
         ('oklab(none 0.1 -0.1)', {'color': True, 'none': True}, 'color(--oklab none 0.1 -0.1)'),
         ('oklab(0 0.1 -0.1)', {'color': True, 'alpha': True}, 'color(--oklab 0 0.1 -0.1 / 1)'),
-        ('oklab(0 0.1 -0.1 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklab 0 0.1 -0.1)'),
-        # CSS undefined serialization
-        (
-            # Ideal white
-            Color('white').convert('oklab').set({'a': NaN, 'b': NaN}),
-            {'precision': 10},
-            'oklab(0.9999999935 0 0.0000000373)'
-        ),
-        (
-            # Ideal white
-            Color('white').convert('oklab').set({'a': NaN, 'b': NaN}),
-            {'css_undefined': True, 'precision': 10},
-            'oklab(0.9999999935 0 0)'
-        ),
-        (
-            # Mirrored across lightness axis
-            Color('srgb', [-1] * 3).convert('oklab').set({'a': NaN, 'b': NaN}),
-            {'precision': 10},
-            'oklab(-0.9999999935 0 -0.0000000373)'
-        ),
-        (
-            # Mirrored across lightness axis
-            Color('srgb', [-1] * 3).convert('oklab').set({'a': NaN, 'b': NaN}),
-            {'css_undefined': True, 'precision': 10},
-            'oklab(-0.9999999935 0 0)'
-        )
+        ('oklab(0 0.1 -0.1 / 0.5)', {'color': True, 'alpha': False}, 'color(--oklab 0 0.1 -0.1)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

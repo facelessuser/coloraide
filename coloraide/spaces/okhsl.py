@@ -28,7 +28,6 @@ SOFTWARE.
 from __future__ import annotations
 from .hsl import HSL
 from ..channels import Channel, FLG_ANGLE
-from .oklab import oklab_to_linear_srgb
 from .. import util
 import math
 import sys
@@ -96,6 +95,20 @@ def get_st_mid(a: float, b: float) -> Vector:
     )
 
     return [s, t]
+
+
+def oklab_to_linear_srgb(lab):
+
+    L, a, b = lab
+    l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3
+    m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3
+    s = (L - 0.0894841775 * a - 1.2914855480 * b) ** 3
+
+    return [
+        4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
+    ]
 
 
 def find_cusp(a: float, b: float) -> Vector:
@@ -422,20 +435,6 @@ class Okhsl(HSL):
         "saturation": "s",
         "lightness": "l"
     }
-
-    def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resove channels."""
-
-        if index == 0:
-            l, h = coords[2], coords[0]
-            if not math.isnan(h):
-                return h
-
-            # Okhsl is not as precise as Oklab and OkLCh.
-            # ~90 (or ~270 for negative lightness) is plenty sufficient
-            return 0.0 if math.isnan(l) else 270.0 if l < 0 else 90.0
-        value = coords[index]
-        return self.channels[index].nans if math.isnan(value) else value
 
     def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""

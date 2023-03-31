@@ -92,8 +92,6 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     SPACES = {k: 5 for k in Color.CS_MAP.keys()}
     # Precision just isn't as high for these in achromatic region
     # but it is good enough for practical purposes.
-    SPACES['okhsl'] = 4
-    SPACES['okhsv'] = 4
 
     COLORS = [
         Color('darkgrey'),

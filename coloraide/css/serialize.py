@@ -23,15 +23,14 @@ EMPTY = ''
 def named_color(
     obj: 'Color',
     alpha: bool | None,
-    fit: str | bool,
-    css_undefined: bool
+    fit: str | bool
 ) -> str | None:
     """Get the CSS color name."""
 
     a = get_alpha(obj, alpha, False, False)
     if a is None:
         a = 1
-    return to_name(get_coords(obj, fit, False, False, css_undefined) + [a])
+    return to_name(get_coords(obj, fit, False, False) + [a])
 
 
 def named_color_function(
@@ -43,8 +42,7 @@ def named_color_function(
     none: bool,
     percent: bool,
     legacy: bool,
-    scale: float,
-    css_undefined: bool
+    scale: float
 ) -> str:
     """Translate to CSS function form `name(...)`."""
 
@@ -53,7 +51,7 @@ def named_color_function(
     string = ['{}{}('.format(func, 'a' if legacy and a is not None else EMPTY)]
 
     # Iterate the coordinates formatting them for percent, not percent, and even scaling them (sRGB).
-    coords = get_coords(obj, fit, none, legacy, css_undefined)
+    coords = get_coords(obj, fit, none, legacy)
     channels = obj._space.CHANNELS
     for idx, value in enumerate(coords):
         channel = channels[idx]
@@ -85,13 +83,12 @@ def color_function(
     alpha: bool | None,
     precision: int,
     fit: str | bool,
-    none: bool,
-    css_undefined: bool
+    none: bool
 ) -> str:
     """Color format."""
 
     # Export in the `color(space ...)` format
-    coords = get_coords(obj, fit, none, False, css_undefined)
+    coords = get_coords(obj, fit, none, False)
     a = get_alpha(obj, alpha, none, False)
     return (
         'color({} {}{})'.format(
@@ -106,16 +103,12 @@ def get_coords(
     obj: 'Color',
     fit: str | bool,
     none: bool,
-    legacy: bool,
-    css_undefined: bool
+    legacy: bool
 ) -> Vector:
     """Get the coordinates."""
 
     color = (obj.fit(method=None if not isinstance(fit, str) else fit) if fit else obj)
-    if not css_undefined:
-        return color.coords(nans=False if legacy or not none else True)
-    else:
-        return [0.0 if math.isnan(c) else c for c in color[:-1]] if legacy or not None else color[:-1]
+    return color.coords(nans=False if legacy or not none else True)
 
 
 def get_alpha(
@@ -137,11 +130,10 @@ def hexadecimal(
     fit: str | bool = True,
     upper: bool = False,
     compress: bool = False,
-    css_undefined: bool = False
 ) -> str:
     """Get the hex `RGB` value."""
 
-    coords = get_coords(obj, fit, False, False, css_undefined)
+    coords = get_coords(obj, fit, False, False)
     a = get_alpha(obj, alpha, False, False)
 
     if a is not None:
@@ -182,8 +174,7 @@ def serialize_css(
     compress: bool = False,
     name: bool = False,
     legacy: bool = False,
-    scale: float = 1.0,
-    css_undefined: bool = False
+    scale: float = 1.0
 ) -> str:
     """Convert color to CSS."""
 
@@ -192,20 +183,20 @@ def serialize_css(
 
     # Color format
     if color:
-        return color_function(obj, alpha, precision, fit, none, css_undefined)
+        return color_function(obj, alpha, precision, fit, none)
 
     # CSS color names
     if name:
-        n = named_color(obj, alpha, fit, css_undefined)
+        n = named_color(obj, alpha, fit)
         if n is not None:
             return n
 
     # Hex RGB
     if hexa:
-        return hexadecimal(obj, alpha, fit, upper, compress, css_undefined)
+        return hexadecimal(obj, alpha, fit, upper, compress)
 
     # Normal CSS named function format
     if func:
-        return named_color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale, css_undefined)
+        return named_color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
 
     raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover
