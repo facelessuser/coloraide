@@ -57,6 +57,8 @@
 
 - **NEW**: Improved accuracy for Oklab, OkLCh, Okhsl, and Okhsv.
 
+- **NEW**: New "continuous" interpolation method.
+
 - **FIX**: Fix aliases in IPT and IgPgTg.
 
 - **FIX**: Fix some conversion issues with CAM16 based color spaces that was caused due to bad achromatic handling.

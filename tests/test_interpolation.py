@@ -1109,6 +1109,96 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color.interpolate(['green', lambda t: t * 3])
 
+    def test_continuous_undefined_middle(self):
+        """Test continuous with undefined middle."""
+
+        colors = [
+            Color('oklab', [0, 0, 0]),
+            Color('oklab', [NaN, -0.03246, -0.31153]),
+            Color('oklab', [1, 0, 0])
+        ]
+        i = Color.interpolate(colors, space='oklab', method='continuous')
+        self.assertColorEqual(
+            i(0),
+            Color("oklab(0 0 0)")
+        )
+        self.assertColorEqual(
+            i(0.25),
+            Color("oklab(0.25 -0.01623 -0.15576)")
+        )
+        self.assertColorEqual(
+            i(0.5),
+            Color("oklab(0.5 -0.03246 -0.31153)")
+        )
+        self.assertColorEqual(
+            i(0.75),
+            Color("oklab(0.75 -0.01623 -0.15576)")
+        )
+        self.assertColorEqual(
+            i(1),
+            Color("oklab(1 0 0)")
+        )
+
+    def test_continuous_undefined_left(self):
+        """Test continuous with undefined left."""
+
+        colors = [
+            Color('oklab', [NaN, 0.22486, 0.12585]),
+            Color('oklab', [NaN, -0.1403, 0.10768]),
+            Color('oklab', [0.45201, -0.03246, -0.31153])
+        ]
+        i = Color.interpolate(colors, space='oklab', method='continuous')
+        self.assertColorEqual(
+            i(0),
+            Color("oklab(0.45201 0.22486 0.12585)")
+        )
+        self.assertColorEqual(
+            i(0.25),
+            Color("oklab(0.45201 0.04228 0.11677)")
+        )
+        self.assertColorEqual(
+            i(0.5),
+            Color("oklab(0.45201 -0.1403 0.10768)")
+        )
+        self.assertColorEqual(
+            i(0.75),
+            Color("oklab(0.45201 -0.08638 -0.10192)")
+        )
+        self.assertColorEqual(
+            i(1),
+            Color("oklab(0.45201 -0.03246 -0.31153)")
+        )
+
+    def test_continuous_undefined_right(self):
+        """Test continuous with undefined right."""
+
+        colors = [
+            Color('oklab', [0.45201, 0.22486, 0.12585]),
+            Color('oklab', [NaN, -0.1403, 0.10768]),
+            Color('oklab', [NaN, -0.03246, -0.31153])
+        ]
+        i = Color.interpolate(colors, space='oklab', method='continuous')
+        self.assertColorEqual(
+            i(0),
+            Color("oklab(0.45201 0.22486 0.12585)")
+        )
+        self.assertColorEqual(
+            i(0.25),
+            Color("oklab(0.45201 0.04228 0.11677)")
+        )
+        self.assertColorEqual(
+            i(0.5),
+            Color("oklab(0.45201 -0.1403 0.10768)")
+        )
+        self.assertColorEqual(
+            i(0.75),
+            Color("oklab(0.45201 -0.08638 -0.10192)")
+        )
+        self.assertColorEqual(
+            i(1),
+            Color("oklab(0.45201 -0.03246 -0.31153)")
+        )
+
     def test_too_few_colors_bspline(self):
         """Test too few colors during B-spline interpolation."""
 

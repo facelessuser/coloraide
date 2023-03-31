@@ -78,6 +78,48 @@ Color.interpolate(['black', 'red', 'white'])
 This approach generally works well, but since the placement of colors may not be in a straight line, you will often
 have pivot points and the transition may not be quite as smooth at these locations.
 
+## Continuous Interpolation
+
+/// success | Continuous interpolation is registered in `Color` by Default
+///
+
+Piecewise interpolation only considers the two segments under interpolation. When channels are undefined, the undefined
+channel will adopt the value of the other defined channel, and if that other channel is also undefined, then the color
+will have no defined value.
+
+Continuous is a linear piecewise approach created for ColorAide that will actually interpolate through undefined
+channels. What this means is that if you have multiple colors, and one or more colors in the middle have an undefined
+channel, the interpolation will be carried on between the colors that have defined values on either side. This is
+probably better illustrated with an example.
+
+In this example, we have 3 colors. The end colors both define lightness, but the middle color is undefined. We can see
+when we use normal, linear piecewise interpolation that we get a discontinuity. But with continuous linear
+interpolation, we get a smooth interpolation through the gap.
+
+```py play
+colors = [
+    Color('oklab', [0, 0, 0]),
+    Color('oklab', [NaN, -0.03246, -0.31153]),
+    Color('oklab', [1, 0, 0])
+]
+Color.interpolate(colors, space='oklab', method='linear')
+Color.interpolate(colors, space='oklab', method='continuous')
+```
+
+Now, if have colors on the side that are not between two defined colors, all those colors will adopt the defined value
+of the one that is defined. This time we have a single color with all components defined, but all the colors to the
+left are missing the lightness.
+
+```py play
+colors = [
+    Color('oklab', [NaN, 0.22486, 0.12585]),
+    Color('oklab', [NaN, -0.1403, 0.10768]),
+    Color('oklab', [0.45201, -0.03246, -0.31153])
+]
+Color.interpolate(colors, space='oklab', method='linear')
+Color.interpolate(colors, space='oklab', method='continuous')
+```
+
 ## Cubic Spline Interpolation
 
 Linear interpolation is nice because it is easy to implement, and due to its straight forward nature, pretty fast. With
@@ -86,6 +128,9 @@ interpolate that can yield smoother results.
 
 Inspired by some efforts seen on the [web](catmull-observe) and in the great JavaScript library
 [Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods.
+
+Because splines require taking into account more than two colors at a time, all spline based interpolation methods are
+built off of the [Continuous interpolation](#continuous-interpolation) approach of handling undefined values.
 
 ### B-Spline
 
@@ -777,11 +822,11 @@ When performing linear interpolation, where only two color's channels are ever b
 if one color's channel has a `NaN`, the other color's channel will be used as the result. If both colors have a `NaN`
 for the same channel, then `NaN` will be returned.
 
-/// tip | NaN Handling in B-Spline Interpolation
-`NaN` handling is a bit different for B-spline interpolation. Linear only evaluates colors at a given time, while
-B-spline uses a sliding window on four colors. Because the context is much wider and more complicated, `NaN` values
-will often get contexts from both side and create a new "control point" for the curve using linear interpolation.
-So the curve will use data from the defined points while ignoring the point that is undefined.
+/// tip | Continuous NaN Handling
+`NaN` handling is a bit different for the [Continuous](#continuous-interpolation) and
+[Cubic Spline](#cubic-spline-interpolaton) interpolation approaches. Linear only evaluates colors at a given time, while
+the others will take into consideration more than two colors. Because the context is much wider and more complicated,
+`NaN` values will often get context from both sides.
 ///
 
 Notice that in this example, because white's saturation is zero, the hue is undefined. Because the hue is undefined,
