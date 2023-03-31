@@ -263,8 +263,8 @@ extra_css:
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
   - playground-config-4c088c14.js
-  - https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-23a5be25.js
+  - https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js
+  - assets/coloraide-extras/extra-notebook-463f4668.js
 
 extra:
   social:
