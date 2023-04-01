@@ -131,6 +131,10 @@ nav:
       - Color Spaces: plugins/space.md
       - Interpolation: plugins/interpolate.md
 
+  - Demos:
+    - demos/index.md
+    - Color Picker: demos/colorpicker.html
+
   - API:
       - Color API: api/index.md
   - Playground: playground.md

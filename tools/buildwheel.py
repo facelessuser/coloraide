@@ -150,6 +150,13 @@ if __name__ == "__main__":
         with open('docs/theme/playground-config-{}.js'.format(hsh), 'wb') as f:
             f.write(config)
 
+        colorpicker = ''
+        with open('docs/src/markdown/demos/colorpicker.html', 'r') as f:
+            colorpicker = re.sub(r"(?m)(^[ ]+let package = ').*?(')", r'\1{}\2'.format(package), f.read())
+        if colorpicker:
+            with open('docs/src/markdown/demos/colorpicker.html', 'w') as f:
+                f.write(colorpicker)
+
         # Update `mkdocs` source to reference wheel config
         with open(MKDOCS_YML, 'rb') as f:
             mkdocs = f.read().decode('utf-8')
