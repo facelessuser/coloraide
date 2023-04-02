@@ -1,19 +1,21 @@
 :root {
+  --swatch-bar-border-color: hsl(0, 0%, 90%);
   --swatch-border-color: hsl(0, 0%, 85%);
-  --swatch-bg-color: hsl(0, 0%, 100%);
-  --swatch-bg-alt-color: hsl(0, 0%, 90%);
   --swatch-gamut-border-color: hsl(340 82% 52%);
   --swatch-stops: transparent, transparent;
+  --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity="0.1"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
+  0 0 / 20px 20px #fefefe;
 
   [data-md-color-scheme="slate"] {
     --swatch-border-color: hsla(232, 15%, 25%, 1);
   }
 
   [data-md-color-scheme="dracula"] {
-    --swatch-bg-color: var(--md-default-bg-color);
-    --swatch-bg-alt-color: hsl(231deg 15% 20%);
+    --swatch-bar-border-color: hsl(231deg 15% 20%);
     --swatch-border-color: hsl(231deg 15% 25%);
     --swatch-gamut-border-color: hsl(326, 100%, 74%);
+    --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity="0.45"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
+  0 0 / 20px 20px #2b2e3b;
   }
 }
 
@@ -26,13 +28,7 @@
   margin-left: 0.25em;
   line-height: 0;
   vertical-align: text-bottom;
-  background-color: var(--swatch-bg-color);
-  background-image: linear-gradient(45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
-                    linear-gradient(-45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
-                    linear-gradient(45deg, transparent 75%, var(--swatch-bg-alt-color) 75%),
-                    linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
-  background-position: 0 0, 0 0.24em, 0.24em -0.24em, -0.24em 0px;
-  background-size: 0.5em 0.5em;
+  background: var(--transparency);
   border: 2px solid var(--swatch-border-color);
   border-radius: 100px;
   box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, .3);
@@ -74,14 +70,8 @@
 
 div.swatch-bar {
   box-sizing: border-box;
-  background-color: var(--swatch-bg-color);
-  background-image: linear-gradient(45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
-                    linear-gradient(-45deg, var(--swatch-bg-alt-color) 25%, transparent 25%),
-                    linear-gradient(45deg, transparent 75%, var(--swatch-bg-alt-color) 75%),
-                    linear-gradient(-45deg, transparent 75%, var(--swatch-bg-alt-color) 75%);
-  background-position: 0 0, 0 0.49em, 0.49em -0.49em, -0.49em 0px;
-  background-size: 1em 1em;
-  border: 2px solid var(--swatch-bg-alt-color);
+  background: var(--transparency);
+  border: 2px solid var(--swatch-bar-border-color);
 
   .swatch {
     background-position: 0 0, 0 0.50em, 0.50em -0.50em, -0.50em 0px;
