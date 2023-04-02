@@ -79,7 +79,7 @@
           appearance: none;
         }
 
-        div.main {
+        #main {
           display: flex;
           background-color: #222;
           border: 2px solid var(--border);
@@ -250,7 +250,7 @@
 
         .loading .loader~div{
           position: absolute;
-          top: 55%;
+          top: 52%;
           width: 100%;
           margin-top: 40px;
           font-weight: 800;
@@ -302,7 +302,7 @@
       <div id="color-input">
         <label class='hidden'>Color Value</label><input id="color-label" type="text" value="" spellcheck="false">
       </div>
-      <div class="main">
+      <div id="main">
         <div id="dialog">
           <div id="color-space">
             <label class="hidden" for="spaces">Color Space:</label>
@@ -376,7 +376,7 @@
           Display gamut: <span id='gamut'></span> <span class='hidden' id='warn2'>(Out of display gamut!)</span>
           </div>
         </div>
-      </main>
+      </div>
       <footer>
         <div>Created with <a href="/coloraide" target="_blank", rel="noopener">ColorAide</a></div>
         <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
@@ -393,7 +393,7 @@
     let pyodide = null
     let webspace = ''
     let initial = 'oklab(0.69 0.13 -0.1 / 0.85)'
-    let package = 'coloraide-2.0-py3-none-any.whl'
+    let package = 'coloraide-2.0.1-py3-none-any.whl'
 
     const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/playground/`
     package = base + package
