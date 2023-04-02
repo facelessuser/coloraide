@@ -9,6 +9,9 @@
           --swatch-bg-color: hsl(0, 0%, 100%);
           --swatch-bg-alt-color: hsl(0, 0%, 90%);
           --header-footer: hsl(0, 0%, 100%, 0.1);
+          --border: #353535;
+          --input: #2b2b2b;
+          --diag-text: #cdcdcd;
           --slider-stops: transparent, transparent;
           --text: black;
           --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity=".05"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
@@ -36,10 +39,7 @@
             padding: 16px;
             background: var(--header-footer);
             color: var(--text);
-        }
-
-        footer {
-          padding: 16px 0;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -73,18 +73,18 @@
           margin: 1em auto;
           padding: 0;
           border: none;
-          outline: none;
           background-color: transparent;
           -moz-appearance: none;
           -webkit-appearance: none;
+          appearance: none;
         }
 
         div.main {
           display: flex;
           background-color: #222;
-          border: 2px solid #353535;
+          border: 2px solid var(--border);
           border-radius: 1em;
-          color: #cdcdcd;
+          color: var(--diag-text);
           padding: 32px;
           margin: 3em auto;
           max-width: 60rem;
@@ -108,6 +108,7 @@
           width: 100%;
           -moz-appearance: none;
           -webkit-appearance: none;
+          appearance: none;
         }
 
         .hidden {
@@ -117,14 +118,29 @@
 
         .range {
           background: var(--transparency);
-          border: 3px solid #353535;
+          border: 3px solid var(--border);
           border-radius: 0.5em;
+        }
+
+        select{
+          background: url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHBvbHlnb24gY2xhc3M9ImNscy0yIiBwb2ludHM9IjEuNDEgNC42NyAyLjQ4IDMuMTggMy41NCA0LjY3IDEuNDEgNC42NyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIzLjU0IDUuMzMgMi40OCA2LjgyIDEuNDEgNS4zMyAzLjU0IDUuMzMiLz48L3N2Zz4=) no-repeat 95% 50%;
+          -moz-appearance: none;
+          -webkit-appearance: none;
+          appearance: none;
+          height: 3rem;
+          padding: 5px 30px 5px 5px;
+          color: var(--diag-text);
+          background-color: var(--input);
+          border-radius: 0.3em;
+          border: 2px solid var(--border);
+          font-size: 13px;
+          text-overflow: ellipsis;
         }
 
         input[type=range] {
           margin: 0;
           position: relative;
-          height: 5em;
+          height: 3rem;
           background: linear-gradient(to right, var(--slider-stops));
           border-radius: 0.3em;
           z-index: 2;
@@ -136,7 +152,7 @@
 
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
-          height: 5em;
+          height: 3rem;
           width: 1.5em;
           border: 2px solid #222;
           outline: 1px solid #ddd;
@@ -148,7 +164,7 @@
         input[type=range]::-moz-range-thumb {
           -moz-appearance: none;
           background: transparent;
-          height: 5em;
+          height: 3rem;
           width: 1.5em;
           border: 2px solid #222;
           outline: 1px solid #ddd;
@@ -160,18 +176,22 @@
         input[type=number] {
           margin: 0 0 0 16px;
           text-align: center;
+          height: 3rem;
           padding: 0;
           width: 6em;
-          color: #cdcdcd;
-          border: 2px solid #353535;
-          background-color: #2b2b2b;
+          max-width: 6em;
+          color: var(--diag-text);
+          border: 2px solid var(--border);
+          background-color: var(--input);
           border-radius: 0.5em;
+          font-size: 13px;
         }
 
         /* Chrome, Safari, Edge, Opera */
         input:not(:hover)::-webkit-outer-spin-button,
         input:not(:hover)::-webkit-inner-spin-button {
           -webkit-appearance: none;
+          appearance: none;
           margin: 0;
         }
 
@@ -184,6 +204,12 @@
           font-weight: 800;
           display: inline-block;
           margin: 1em 0 0.5em 0;
+        }
+
+        #environment-info {
+          margin: 1em 0 0 0;
+          border-top: 3px solid var(--border);
+          padding-top: 8px;
         }
 
         [id^=warn] {
@@ -279,10 +305,10 @@
       <div class="main">
         <div id="dialog">
           <div id="color-space">
-            <label for="spaces">Color Space:</label>
+            <label class="hidden" for="spaces">Color Space:</label>
             <select name="spaces" id="spaces">
             </select>
-            <span class='hidden' id='warn1'> Out of color space gamut!</span>
+            <span class='hidden' id='warn1'>(Out of color space gamut!)</span>
           </div>
           <div id="sliders">
             <div class="slider-wrapper">
@@ -294,7 +320,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider1-num">Slider 1 Number Input</label>
-                <input id="slider1-text" type="number">
+                <input id="slider1-num" type="number">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -306,7 +332,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider2-num">Slider 2 Number Input</label>
-                <input id="slider2-text" type="number">
+                <input id="slider2-num" type="number">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -318,7 +344,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider3-num">Slider 3 Number Input</label>
-                <input id="slider3-text" type="number">
+                <input id="slider3-num" type="number">
               </div>
             </div>
             <div class="hidden slider-wrapper">
@@ -330,7 +356,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider4-num">Slider 4 Number Input</label>
-                <input id="slider4-text" type="number">
+                <input id="slider4-num" type="number">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -342,12 +368,12 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider5-num">Slider 5 Number Input</label>
-                <input id="slider5-text" type="number">
+                <input id="slider5-num" type="number">
               </div>
             </div>
           </div>
           <div id="environment-info">
-          Display gamut: <span id='gamut'></span> <span class='hidden' id='warn2'>Out of display gamut!</span>
+          Display gamut: <span id='gamut'></span> <span class='hidden' id='warn2'>(Out of display gamut!)</span>
           </div>
         </div>
       </main>
