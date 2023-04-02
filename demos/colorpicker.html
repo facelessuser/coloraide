@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <meta name="viewport" content="initial-scale=1">
+    <title>ColorAide Color Picker</title>
     <style>
         :root {
           --swatch-bg-color: hsl(0, 0%, 100%);
           --swatch-bg-alt-color: hsl(0, 0%, 90%);
-          --header-footer: hsl(0, 0%, 0%, 0.2);
+          --header-footer: hsl(0, 0%, 100%, 0.1);
           --slider-stops: transparent, transparent;
           --text: black;
           --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity=".05"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
@@ -17,6 +17,7 @@
 
         .dark {
           --text: white;
+          --header-footer: hsl(0, 0%, 0%, 0.1);
         }
         body {
           font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
@@ -404,6 +405,14 @@
       }
     }
 
+    function encodeuri(uri) {
+      // Encode the URI component.
+
+      return encodeURIComponent(uri).replace(/[.!'()*]/g, c => {
+        return `%${c.charCodeAt(0).toString(16)}`
+      })
+    }
+
     /* Update/display colors. */
     async function updateColor(kwargs) {
         const values = []
@@ -411,6 +420,7 @@
         const textInput = kwargs.textInput
         const numericalInput = kwargs.numericalInput
         const spaceChange = kwargs.spaceChange
+        const fallback = kwargs.fallback
 
         if (!textInput) {
           // Get color from slider or numerical inputs
@@ -426,6 +436,9 @@
             c = coloraide.ColorAll(textInput)
           } catch (error) {
             console.log(error)
+            if (fallback) {
+              c = coloraide.ColorAll(initial)
+            }
             return
           }
           cs = c.space()
@@ -466,7 +479,11 @@
 
         // Hide show channels as needed to accomodate color space
         space = c.space()
-        document.getElementById('color-label').value = c.to_string.callKwargs({'fit': false})
+        const colorStr = c.to_string.callKwargs({'fit': false})
+        document.getElementById('color-label').value = colorStr
+        const uri = encodeuri(colorStr)
+        history.pushState({color: uri}, "", `?${new URLSearchParams(`color=${uri}`).toString()}`)
+
         const entry = colorSpaces.get(space)
         if (entry.get('count') === 5) {
           const s4 = document.getElementById('slider4')
@@ -520,6 +537,8 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_spa
     document.addEventListener("DOMContentLoaded", async () => {
         // Display detected display gamut
         document.getElementById('gamut').innerHTML = webspace
+        const params = new URLSearchParams(window.location.search)
+        const initialColor = (params.has('color')) ? params.get('color') : initial
 
         // Setup Pyodide
         busyTarget = document.getElementById('color-display')
@@ -575,7 +594,7 @@ space_info
         }
 
         // Update the color
-        await updateColor({textInput: initial})
+        await updateColor({textInput: initialColor, fallback: initial})
 
         // Setup change events for slider/numerical/text inputs
         for (const slider of document.querySelectorAll('.slider-wrapper')) {
