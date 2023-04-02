@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- **FIX**:  Incorrect result when interpolating from a cylindrical space to a rectangular space and using `out_space`.
+
 ## 2.0
 
 - **BREAK**: `interpolate`, `steps`, `mix`, `filter`, `compose`, and `harmony` will no longer base the output color on

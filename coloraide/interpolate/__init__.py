@@ -99,7 +99,7 @@ class Interpolator(metaclass=ABCMeta):
         self.out_space = out_space
         self.extrapolate = extrapolate
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
-        cs = self.create.CS_MAP[out_space]
+        cs = self.create.CS_MAP[space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cs.hue_index()
         else:

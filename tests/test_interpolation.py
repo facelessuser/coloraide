@@ -87,6 +87,12 @@ class TestCarryFoward(util.ColorAssertsPyTest):
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     """Test interpolation."""
 
+    def test_out_space_cylindrical(self):
+        """Test out space with cylindrical color space."""
+
+        i = Color.interpolate(['transparent', 'hsl(30deg 30% 40%)'], steps=100, space='hsl', out_space='srgb')
+        self.assertColorEqual(i(0.5), Color('srgb', [0.52, 0.4, 0.28], 0.5))
+
     def test_domain(self):
         """Test that domains work."""
 
