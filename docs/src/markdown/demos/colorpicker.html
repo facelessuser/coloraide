@@ -447,7 +447,7 @@
 
         // Convert to color space if needed
         if (spaceChange) {
-          c.convert.callKwargs(spaceChange, {'in_place': true})
+          c.convert.callKwargs(spaceChange, {'in_place': true, 'norm': false})
           space = spaceChange
         }
 
@@ -496,17 +496,19 @@
         // Update min/max/step for each slider and numerical input
         // Generate new interpolations for each slider.
         const sliders = document.querySelectorAll('.slider-wrapper:not(.hidden)')
+        c.normalize.callKwargs({'nans': false})
+        const coords = c.coords()
+        coords.append(c.alpha())
+        const chan_values = coords.toJs()
+        coords.destroy()
         for (let i = 0; i < entry.get('count'); i++) {
           const chan = entry.get('channels').get(i)
           const slider = sliders[i]
           const rangeInput = slider.querySelector('.range input')
           const label = slider.querySelector('label')
           const text = slider.querySelector('input[type=number]')
-          label.innerHTML = chan.get('name')
-          let value = c.get(chan.get('name'))
-          if (isNaN(value)) {
-            value = 0.0
-          }
+          label.innerHTML = `${chan.get('name')} (${chan.get('low')} - ${chan.get('high')})`
+          let value = chan_values[i]
           const scale = (chan.get('angle')) ? 360 : 100
           rangeInput.setAttribute('min', chan.get('low'))
           rangeInput.setAttribute('max', chan.get('high'))
