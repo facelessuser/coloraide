@@ -513,7 +513,7 @@ class Color(metaclass=ColorMeta):
         self,
         space: str,
         *,
-		fit: bool | str = False,
+        fit: bool | str = False,
         in_place: bool = False,
         norm: bool = True
     ) -> Color:
