@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+- **FIX**: Consistent normalization of HWB hue.
+
 ## 2.0.1
 
 - **FIX**:  Incorrect result when interpolating from a cylindrical space to a rectangular space and using `out_space`.

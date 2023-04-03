@@ -2,6 +2,7 @@
 from __future__ import annotations
 from ...spaces import Space, Cylindrical
 from ...cat import WHITES
+from ... import util
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
 from ...types import Vector
 
@@ -12,25 +13,19 @@ def hwb_to_hsv(hwb: Vector) -> Vector:
     h, w, b = hwb
 
     wb = w + b
-    if 1 - wb < 2e-07:
-        gray = w / wb
-        return [0.0, 0.0, gray]
+    if wb >= 1:
+        return [h, 0.0, w / wb]
 
     v = 1 - b
     s = 0 if v == 0 else 1 - w / v
-
-    return [h, s, v]
+    return [util.constrain_hue(h), s, v]
 
 
 def hsv_to_hwb(hsv: Vector) -> Vector:
     """HSV to HWB."""
 
     h, s, v = hsv
-    w = v * (1 - s)
-    b = 1 - v
-    if 1 - (w + b) < 2e-07:
-        h = 0.0
-    return [h, w, b]
+    return [util.constrain_hue(h), v * (1 - s), 1 - v]
 
 
 class HWB(Cylindrical, Space):
@@ -55,7 +50,7 @@ class HWB(Cylindrical, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        if 1 - (coords[1] + coords[2]) < 2e-07:
+        if (coords[1] + coords[2]) >= (1 - 1e-07):
             return True
 
         v = 1 - coords[2]
