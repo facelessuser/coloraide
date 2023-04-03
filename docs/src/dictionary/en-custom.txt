@@ -38,6 +38,7 @@ Changelog
 Chroma
 Chromaticities
 Chromaticity
+Colaboratory
 ColorAide
 ColorAide's
 ColorHelper
