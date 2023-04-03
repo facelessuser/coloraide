@@ -93,23 +93,23 @@ class Monochromatic(Harmony):
         if steps_b <= 1:
             left = []
             if steps_b == 1:
-                left.extend(color.steps([b, color], steps=steps_b, **kwargs))
+                left.extend(color1.steps([b, color1], steps=steps_b, **kwargs))
             steps = min(self.RANGE - (1 + steps_b), steps_w)
-            right = color.steps([color1, w], steps=steps, **kwargs)[rtrim]
+            right = color1.steps([color1, w], steps=steps, **kwargs)[rtrim]
 
         # Very close to white or is white, no need to interpolate from current color to white
         elif steps_w <= 1:
             right = []
             if steps_w == 1:
-                right.extend(color.steps([color1, w], steps=steps_w, **kwargs))
+                right.extend(color1.steps([color1, w], steps=steps_w, **kwargs))
             steps = min(self.RANGE - (1 + steps_w), steps_b)
-            right.insert(0, color.clone())
-            left = color.steps([b, color], steps=steps, **kwargs)[ltrim]
+            right.insert(0, color1.clone())
+            left = color1.steps([b, color1], steps=steps, **kwargs)[ltrim]
 
         # Anything else in between
         else:
-            left = color.steps([b, color], steps=steps_b, **kwargs)[ltrim]
-            right = color.steps([color1, w], steps=steps_w, **kwargs)[rtrim]
+            left = color1.steps([b, color1], steps=steps_b, **kwargs)[ltrim]
+            right = color1.steps([color1, w], steps=steps_w, **kwargs)[rtrim]
 
         # Extract a subset of the results
         len_l = len(left)

@@ -3,6 +3,7 @@
 ## 2.0.2
 
 - **FIX**: Consistent normalization of HWB hue.
+- **FIX**: Consistent normalization of color in harmony monochromatic.
 
 ## 2.0.1
 
