@@ -22,7 +22,7 @@ class XYZD65(RGBish, Space):
     )
     WHITE = WHITES['2deg']['D65']
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Is achromatic."""
 
         for x in alg.vcross(coords, util.xy_to_xyz(self.white())):

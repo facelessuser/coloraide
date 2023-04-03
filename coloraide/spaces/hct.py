@@ -270,7 +270,7 @@ class HCT(LChish, Space):
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         return coords[2] == 0.0 or self.ACHROMATIC.test(coords[2], coords[1], coords[0])

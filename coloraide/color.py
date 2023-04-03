@@ -512,7 +512,8 @@ class Color(metaclass=ColorMeta):
     def convert(
         self,
         space: str,
-        *, fit: bool | str = False,
+        *,
+		fit: bool | str = False,
         in_place: bool = False,
         norm: bool = True
     ) -> Color:

@@ -51,7 +51,7 @@ class LCh(LChish, Space):
     }
     WHITE = WHITES['2deg']['D50']
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         return coords[1] < ACHROMATIC_THRESHOLD

@@ -50,7 +50,7 @@ class JzCzhz(LCh):
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         return coords[0] == 0.0 or self.ACHROMATIC.test(*coords)

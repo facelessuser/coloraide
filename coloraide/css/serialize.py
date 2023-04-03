@@ -129,7 +129,7 @@ def hexadecimal(
     alpha: bool | None = None,
     fit: str | bool = True,
     upper: bool = False,
-    compress: bool = False,
+    compress: bool = False
 ) -> str:
     """Get the hex `RGB` value."""
 

@@ -451,7 +451,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         class TempsRGB(sRGB):
             """Construct an sRGB class that defaults to fallback achromatic test."""
 
-            def is_achromatic(self, coords) -> bool:
+            def is_achromatic(self, coords):
                 """
                 If no undefined, report we don't know if the color is achromatic.
 

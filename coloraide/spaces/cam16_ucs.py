@@ -86,7 +86,7 @@ class CAM16UCS(CAM16):
         Channel("b", -50.0, 50.0, flags=FLG_MIRROR_PERCENT)
     )
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         j, a, b = cam16_ucs_to_cam16(coords, self.MODEL)

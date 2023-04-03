@@ -136,7 +136,7 @@ class IPT(Labish, Space):
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
 
-    def is_achromatic(self, coords: Vector) -> bool | None:
+    def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         m, h = alg.rect_to_polar(coords[1], coords[2])
