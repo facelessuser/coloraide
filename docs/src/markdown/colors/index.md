@@ -68,7 +68,7 @@ flowchart TB
 
     xyz-d65 --- lab-d65 --- lch-d65
 
-    xyz-d65 --- cam16 --- cam16-jmh
+    xyz-d65 --- cam16-jmh --- cam16
         cam16 --- cam16-ucs
         cam16 --- cam16-scd
         cam16 --- cam16-lcd
