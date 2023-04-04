@@ -174,7 +174,7 @@
           z-index: 4;
         }
 
-        input[type=number] {
+        input[inputmode=numeric] {
           margin: 0 0 0 16px;
           text-align: center;
           height: 3rem;
@@ -186,19 +186,6 @@
           background-color: var(--input);
           border-radius: 0.5em;
           font-size: 1em;
-        }
-
-        /* Chrome, Safari, Edge, Opera */
-        input:not(:hover)::-webkit-outer-spin-button,
-        input:not(:hover)::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          appearance: none;
-          margin: 0;
-        }
-
-        /* Firefox */
-        input[type=number]:not(:hover) {
-          -moz-appearance: textfield;
         }
 
         #color-space {
@@ -343,7 +330,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider1-num">Slider 1 Number Input</label>
-                <input id="slider1-num" type="number">
+                <input id="slider1-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -355,7 +342,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider2-num">Slider 2 Number Input</label>
-                <input id="slider2-num" type="number">
+                <input id="slider2-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -367,7 +354,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider3-num">Slider 3 Number Input</label>
-                <input id="slider3-num" type="number">
+                <input id="slider3-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="hidden slider-wrapper">
@@ -379,7 +366,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider4-num">Slider 4 Number Input</label>
-                <input id="slider4-num" type="number">
+                <input id="slider4-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -391,7 +378,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider5-num">Slider 5 Number Input</label>
-                <input id="slider5-num" type="number">
+                <input id="slider5-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
           </div>
@@ -498,7 +485,6 @@
         const values = []
         let c = null
         const textInput = kwargs.textInput
-        const numericalInput = kwargs.numericalInput
         const fullChange = kwargs.fullChange
         let output = document.getElementById('output').value
         let working = document.getElementById('spaces').value
@@ -508,8 +494,7 @@
 
         if (!textInput) {
           // Get color from slider or numerical inputs
-          const sel = (numericalInput) ? '.slider-wrapper:not(.hidden) input[type=number]' : '.slider-wrapper:not(.hidden) .range input'
-          document.querySelectorAll(sel).forEach(s => {
+          document.querySelectorAll('.slider-wrapper:not(.hidden) input[inputmode=numeric]').forEach(s => {
             values.push(parseFloat(s.value))
           })
           c = coloraide.ColorAll(space || working, values.slice(0, -1), values[values.length - 1])
@@ -541,12 +526,12 @@
 
         // Convert to color space if needed
         if (space !== working) {
-          c.convert.callKwargs(working, {'in_place': true, 'norm': false})
+          c.convert.callKwargs(working, {'in_place': true})
           space = working
         }
 
         // Save input color to URI
-        let colorStr = c.to_string.callKwargs({'fit': false})
+        let colorStr = c.to_string.callKwargs({'fit': false, 'none': true})
         if (!skipPush) {
           const uri = encodeuri(colorStr)
           const uri2 = encodeuri((is_current) ? 'current' : output)
@@ -559,6 +544,8 @@
           const c2 = c.convert(output)
           colorStr = c2.to_string.callKwargs({'fit': false})
           c2.destroy()
+        } else {
+          colorStr = c.to_string.callKwargs({'fit': false})
         }
         document.getElementById('color-label').value = colorStr
 
@@ -608,7 +595,6 @@
         // Generate new interpolations for each slider.
         document.getElementById('current-space').value = working
         const sliders = document.querySelectorAll('.slider-wrapper:not(.hidden)')
-        c.normalize.callKwargs({'nans': false})
         const coords = c.coords()
         coords.append(c.alpha())
         const chan_values = coords.toJs()
@@ -618,17 +604,14 @@
           const slider = sliders[i]
           const rangeInput = slider.querySelector('.range input')
           const label = slider.querySelector('label')
-          const text = slider.querySelector('input[type=number]')
+          const text = slider.querySelector('input[inputmode=numeric]')
           label.innerHTML = `${chan.get('name')} (${chan.get('low')} - ${chan.get('high')})`
           let value = chan_values[i]
           const scale = (chan.get('angle')) ? 360 : 100
           rangeInput.setAttribute('min', chan.get('low'))
           rangeInput.setAttribute('max', chan.get('high'))
           rangeInput.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
-          text.setAttribute('min', chan.get('low'))
-          text.setAttribute('max', chan.get('high'))
-          text.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
-          text.value = value
+          text.value = value.toString()
           rangeInput.value = value
           const result = pyodide.runPython(`
 from coloraide.everything import ColorAll as Color
@@ -741,18 +724,22 @@ space_info
         // Setup change events for slider/numerical/text inputs
         for (const slider of document.querySelectorAll('.slider-wrapper')) {
           const range = slider.querySelector('.range input')
-          const text = slider.querySelector('input[type=number]')
-          range.addEventListener('input', async e => {updateColor({})})
-          text.addEventListener('change', async e => {updateColor({numericalInput: true})})
+          const text = slider.querySelector('input[inputmode=numeric]')
+          range.addEventListener('input', e => {
+            const id = e.target.id
+            document.getElementById(id.concat('-num')).value = e.target.value
+            updateColor({})
+          })
+          text.addEventListener('change', e => {updateColor({})})
         }
-        options.addEventListener('change', async e => {
+        options.addEventListener('change', e => {
           updateColor({})
         })
-        options2.addEventListener('change', async e => {
+        options2.addEventListener('change', e => {
           updateColor({})
         })
         const textInput = document.getElementById('color-label')
-        textInput.addEventListener('change', async e => {
+        textInput.addEventListener('change', e => {
           updateColor({textInput: textInput.value})
         })
 
