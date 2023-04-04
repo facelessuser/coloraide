@@ -66,7 +66,7 @@
         #color-label {
           display: block;
           text-align: center;
-          font-size: 300%;
+          font-size: 2em;
           color: var(--text);
           font-weight: 800;
           width: 100%;
@@ -80,6 +80,7 @@
         }
 
         #main {
+          font-weight: 800;
           display: flex;
           background-color: #222;
           border: 2px solid var(--border);
@@ -128,12 +129,13 @@
           -webkit-appearance: none;
           appearance: none;
           height: 3rem;
+          margin-left: 16px;
           padding: 5px 30px 5px 5px;
           color: var(--diag-text);
           background-color: var(--input);
           border-radius: 0.3em;
           border: 2px solid var(--border);
-          font-size: 13px;
+          font-size: 1em;
           text-overflow: ellipsis;
         }
 
@@ -173,7 +175,7 @@
           z-index: 4;
         }
 
-        input[type=number] {
+        input[inputmode=numeric] {
           margin: 0 0 0 16px;
           text-align: center;
           height: 3rem;
@@ -184,24 +186,21 @@
           border: 2px solid var(--border);
           background-color: var(--input);
           border-radius: 0.5em;
-          font-size: 13px;
+          font-size: 1em;
         }
 
-        /* Chrome, Safari, Edge, Opera */
-        input:not(:hover)::-webkit-outer-spin-button,
-        input:not(:hover)::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          appearance: none;
-          margin: 0;
+        #color-space {
+          display: flex;
+          flex-flow: wrap;
+          border-bottom: 3px solid var(--border);
         }
 
-        /* Firefox */
-        input[type=number]:not(:hover) {
-          -moz-appearance: textfield;
+        #color-space span {
+          margin: 0 32px 1em 0;
+          white-space: nowrap;
         }
 
         .slider-label {
-          font-weight: 800;
           display: inline-block;
           margin: 1em 0 0.5em 0;
         }
@@ -299,16 +298,28 @@
       <header>
         <h1>ColorAide Color Picker</h1>
       </header>
-      <div id="color-input">
-        <label class='hidden'>Color Value</label><input id="color-label" type="text" value="" spellcheck="false">
+      <div id="color-result">
+        <label class='hidden'>Color Value</label>
+        <input id="color-label" type="text" value="" spellcheck="false">
       </div>
       <div id="main">
         <div id="dialog">
           <div id="color-space">
-            <label class="hidden" for="spaces">Color Space:</label>
+            <span>
+            <label for="spaces">Color Space:</label>
             <select name="spaces" id="spaces">
             </select>
-            <span class='hidden' id='warn1'>(Out of color space gamut!)</span>
+            </span>
+            <span>
+            <label for="output">Output Space:</label>
+            <select name="output" id="output">
+            <option value='current' selected>current</option>
+            </select>
+            </span>
+          </div>
+          <div class="hidden">
+            <label class='hidden'>Current Space</label>
+            <input id="current-space" type="text" value="" spellcheck="false">
           </div>
           <div id="sliders">
             <div class="slider-wrapper">
@@ -320,7 +331,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider1-num">Slider 1 Number Input</label>
-                <input id="slider1-num" type="number">
+                <input id="slider1-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -332,7 +343,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider2-num">Slider 2 Number Input</label>
-                <input id="slider2-num" type="number">
+                <input id="slider2-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -344,7 +355,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider3-num">Slider 3 Number Input</label>
-                <input id="slider3-num" type="number">
+                <input id="slider3-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="hidden slider-wrapper">
@@ -356,7 +367,7 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider4-num">Slider 4 Number Input</label>
-                <input id="slider4-num" type="number">
+                <input id="slider4-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
             <div class="slider-wrapper">
@@ -368,12 +379,12 @@
                   </div>
                 </div>
                 <label class="hidden" for="slider5-num">Slider 5 Number Input</label>
-                <input id="slider5-num" type="number">
+                <input id="slider5-num" type="text" inputmode="numeric" pattern="(?:[+\-]?(?:[0-9]*\.)?[0-9]+(?:e[-+]?[0-9]+)?)|NaN">
               </div>
             </div>
           </div>
           <div id="environment-info">
-          Display gamut: <span id='gamut'></span> <span class='hidden' id='warn2'>(Out of display gamut!)</span>
+          Display gamut: <span id='gamut'></span><br><span class='hidden' id='warn1'></span>
           </div>
         </div>
       </div>
@@ -393,7 +404,7 @@
     let pyodide = null
     let webspace = ''
     let initial = 'oklab(0.69 0.13 -0.1 / 0.85)'
-    let package = 'coloraide-2.0.1-py3-none-any.whl'
+    let package = 'coloraide-2.0.2-py3-none-any.whl'
 
     const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/playground/`
     package = base + package
@@ -439,56 +450,124 @@
       })
     }
 
+    function outputExist(name) {
+      // See if output name exists
+
+      let exists = false
+      var ddloption =  document.getElementById('output').options
+      for(var i = 0; i < ddloption.length; i++) {
+        if(ddloption[i].value === name ) {
+            exists = true
+            break
+        }
+      }
+      return exists
+    }
+
+    function popState() {
+      // Handle notebook history
+
+      const base = window.location.pathname.split('/')[1]
+      if (
+        window.location.pathname === `/${base}/demos/colorpicker.html`
+      ) {
+        const params = new URLSearchParams(window.location.search)
+        const text = (params.has('color')) ? params.get('color') : initial
+        let output = (params.has('out')) ? params.get('out') : 'current'
+        if (!outputExist(output)) {
+          output = 'current'
+        }
+        updateColor({textInput: text, fullChange: output, skipPush: true})
+      }
+    }
+
     /* Update/display colors. */
     async function updateColor(kwargs) {
         const values = []
         let c = null
         const textInput = kwargs.textInput
-        const numericalInput = kwargs.numericalInput
-        const spaceChange = kwargs.spaceChange
-        const fallback = kwargs.fallback
+        const fullChange = kwargs.fullChange
+        let output = document.getElementById('output').value
+        let working = document.getElementById('spaces').value
+        let space = document.getElementById('current-space').value
+        const skipPush = kwargs.skipPush
+        const is_current = (fullChange || output) === 'current'
 
         if (!textInput) {
           // Get color from slider or numerical inputs
-          const sel = (numericalInput) ? '.slider-wrapper:not(.hidden) input[type=number]' : '.slider-wrapper:not(.hidden) .range input'
-          document.querySelectorAll(sel).forEach(s => {
+          document.querySelectorAll('.slider-wrapper:not(.hidden) input[inputmode=numeric]').forEach(s => {
             values.push(parseFloat(s.value))
           })
-
-          c = coloraide.ColorAll(space, values.slice(0, -1), values[values.length - 1])
+          c = coloraide.ColorAll(space || working, values.slice(0, -1), values[values.length - 1])
+          if (is_current) {
+            output = c.space()
+          }
         } else {
-          // Get color from text input
+          // Get color from result
           try {
             c = coloraide.ColorAll(textInput)
           } catch (error) {
-            console.log(error)
-            if (fallback) {
-              c = coloraide.ColorAll(initial)
-            }
             return
           }
-          cs = c.space()
-          document.getElementById('spaces').value = cs
+          space = c.space()
+          if (is_current) {
+            working = space
+            document.getElementById('spaces').value = working
+            document.getElementById('output').value = 'current'
+            output = working
+          } else {
+            output = fullChange || space
+            document.getElementById('output').value = output
+            if (fullChange) {
+              working = space
+            }
+            document.getElementById('spaces').value = working
+          }
         }
 
         // Convert to color space if needed
-        if (spaceChange) {
-          c.convert.callKwargs(spaceChange, {'in_place': true, 'norm': false})
-          space = spaceChange
+        if (space !== working) {
+          c.convert.callKwargs(working, {'in_place': true})
+          space = working
         }
 
-        // Add gamut warning if out of display gamut
+        // Save input color to URI
+        let colorStr = c.to_string.callKwargs({'fit': false, 'none': true})
+        if (!skipPush) {
+          const uri = encodeuri(colorStr)
+          const uri2 = encodeuri((is_current) ? 'current' : output)
+          history.pushState({color: uri}, "", `?${new URLSearchParams(`color=${uri}&out=${uri2}`).toString()}`)
+        }
+
+        // Output color value
+        space = c.space()
+        if (!is_current && output !== space) {
+          const c2 = c.convert(output)
+          colorStr = c2.to_string.callKwargs({'fit': false})
+          c2.destroy()
+        } else {
+          colorStr = c.to_string.callKwargs({'fit': false})
+        }
+        document.getElementById('color-label').value = colorStr
+
+        // Add gamut warnings if out of display, input, or output gamut
+        let outOfGamut = ''
         if (!c.in_gamut(webspace)) {
-          document.getElementById('warn2').classList.remove('hidden')
-        } else {
-          document.getElementById('warn2').classList.add('hidden')
+          outOfGamut = 'display'
         }
-
-        // Add gamut warning if out of color space gamut
-        if (!c.in_gamut()) {
-          document.getElementById('warn1').classList.remove('hidden')
+        if (!c.in_gamut(working)) {
+          outOfGamut = (outOfGamut) ? outOfGamut.concat(' + input') : 'input'
+        }
+        if (!c.in_gamut(output)) {
+          outOfGamut = (outOfGamut) ? outOfGamut.concat(' + output') : 'output'
+        }
+        const og = document.getElementById('warn1')
+        if (outOfGamut) {
+          og.classList.remove('hidden')
+          og.innerHTML = `Out of gamut: ${outOfGamut}`
         } else {
-          document.getElementById('warn1').classList.add('hidden')
+          og.classList.add('hidden')
+          og.innerHTML = ''
         }
 
         // Display color as background
@@ -504,12 +583,6 @@
         }
 
         // Hide show channels as needed to accomodate color space
-        space = c.space()
-        const colorStr = c.to_string.callKwargs({'fit': false})
-        document.getElementById('color-label').value = colorStr
-        const uri = encodeuri(colorStr)
-        history.pushState({color: uri}, "", `?${new URLSearchParams(`color=${uri}`).toString()}`)
-
         const entry = colorSpaces.get(space)
         if (entry.get('count') === 5) {
           const s4 = document.getElementById('slider4')
@@ -521,29 +594,24 @@
 
         // Update min/max/step for each slider and numerical input
         // Generate new interpolations for each slider.
+        document.getElementById('current-space').value = working
         const sliders = document.querySelectorAll('.slider-wrapper:not(.hidden)')
-        c.normalize.callKwargs({'nans': false})
-        const coords = c.coords()
-        coords.append(c.alpha())
-        const chan_values = coords.toJs()
-        coords.destroy()
+        const coords = c.coords.callKwargs({'nans': false})
+        coords.append(c.alpha.callKwargs({'nans': false}))
+        const defined = coords.toJs()
         for (let i = 0; i < entry.get('count'); i++) {
           const chan = entry.get('channels').get(i)
           const slider = sliders[i]
-          const rangeInput = slider.querySelector('.range input')
+          const range = slider.querySelector('.range input')
           const label = slider.querySelector('label')
-          const text = slider.querySelector('input[type=number]')
+          const text = slider.querySelector('input[inputmode=numeric]')
           label.innerHTML = `${chan.get('name')} (${chan.get('low')} - ${chan.get('high')})`
-          let value = chan_values[i]
           const scale = (chan.get('angle')) ? 360 : 100
-          rangeInput.setAttribute('min', chan.get('low'))
-          rangeInput.setAttribute('max', chan.get('high'))
-          rangeInput.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
-          text.setAttribute('min', chan.get('low'))
-          text.setAttribute('max', chan.get('high'))
-          text.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
-          text.value = value
-          rangeInput.value = value
+          range.setAttribute('min', chan.get('low'))
+          range.setAttribute('max', chan.get('high'))
+          range.setAttribute('step', (chan.get('high') - chan.get('low')) / scale)
+          text.value = c.get(i)
+          range.value = defined[i].toString()
           const result = pyodide.runPython(`
 from coloraide.everything import ColorAll as Color
 c = Color('${c.to_string.callKwargs({'precision': 10, 'fit': false})}')
@@ -556,7 +624,7 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_spa
     stops.append(i.to_string(fit=False))
 '--slider-stops: ' + ','.join(stops)
 `)
-          rangeInput.setAttribute('style', result)
+          range.setAttribute('style', result)
         }
         c.destroy()
     }
@@ -566,7 +634,11 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_spa
         // Display detected display gamut
         document.getElementById('gamut').innerHTML = webspace
         const params = new URLSearchParams(window.location.search)
-        const initialColor = (params.has('color')) ? params.get('color') : initial
+        const initialColor = (params.has('color')) ? params.get('color') : ''
+        let initialOutput = (params.has('out')) ? params.get('out') : ''
+        if (initialOutput && !outputExist(initialOutput)) {
+          initialOutput = 'current'
+        }
 
         // Setup Pyodide
         busyTarget = document.getElementById('color-display')
@@ -581,7 +653,7 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_spa
         coloraide = pyodide.pyimport("coloraide.everything")
         hideBusy(busyTarget)
 
-        // Get all teh color spaces and setup selector
+        // Get all the color spaces and setup selector
         const result = pyodide.runPython(`
 from coloraide.everything import ColorAll as Color
 space_info = {}
@@ -610,34 +682,68 @@ space_info
 `)
         colorSpaces = result.toJs()
         result.destroy()
+        let outSet = null;
         const options = document.getElementById('spaces')
+        const options2 = document.getElementById('output')
+        const defaultOutput = document.createElement('option')
+        defaultOutput.innerHTML = 'current'
+        defaultOutput.setAttribute('value', 'current')
         for (let key of colorSpaces.keys()) {
-          const opt = document.createElement('option')
-          opt.innerHTML = key
-          opt.setAttribute('value', key)
+          const opt1 = document.createElement('option')
+          const opt2 = document.createElement('option')
+          opt1.innerHTML = key
+          opt1.setAttribute('value', key)
           if (key === 'srgb') {
-            opt.setAttribute('selected', 'selected')
+            opt1.setAttribute('selected', 'selected')
           }
-          options.append(opt)
+          if (key === initialOutput) {
+            outSet = opt2
+          }
+          opt2.innerHTML = key
+          opt2.setAttribute('value', key)
+          options.append(opt1)
+          options2.append(opt2)
+        }
+        if (!outSet) {
+          defaultOutput.setAttribute('selected', 'selected')
         }
 
-        // Update the color
-        await updateColor({textInput: initialColor, fallback: initial})
+        // Initialize color
+        await updateColor({textInput: initial})
+
+        // Load up specified color if there is one
+        if (initialColor) {
+          if (initialOutput) {
+            await updateColor({textInput: initialColor, fullChange: initialOutput})
+          } else {
+            await updateColor({textInput: initialColor})
+          }
+        }
 
         // Setup change events for slider/numerical/text inputs
         for (const slider of document.querySelectorAll('.slider-wrapper')) {
           const range = slider.querySelector('.range input')
-          const text = slider.querySelector('input[type=number]')
-          range.addEventListener('input', async e => {updateColor({})})
-          text.addEventListener('change', async e => {updateColor({numericalInput: true})})
+          const text = slider.querySelector('input[inputmode=numeric]')
+          range.addEventListener('input', e => {
+            const id = e.target.id
+            document.getElementById(id.concat('-num')).value = e.target.value
+            updateColor({})
+          })
+          text.addEventListener('change', e => {updateColor({})})
         }
-        options.addEventListener('change', async e => {
-          updateColor({spaceChange: options.value})
+        options.addEventListener('change', e => {
+          updateColor({})
+        })
+        options2.addEventListener('change', e => {
+          updateColor({})
         })
         const textInput = document.getElementById('color-label')
-        textInput.addEventListener('change', async e => {
+        textInput.addEventListener('change', e => {
           updateColor({textInput: textInput.value})
         })
+
+        // Handle history of notebook pages as they are loaded dynamically
+        window.addEventListener("popstate", popState)
     })
 })()
   </script>
