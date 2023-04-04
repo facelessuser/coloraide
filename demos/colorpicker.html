@@ -405,6 +405,7 @@
     let webspace = ''
     let initial = 'oklab(0.69 0.13 -0.1 / 0.85)'
     let package = 'coloraide-2.0.2-py3-none-any.whl'
+    const displayMapping = 'clip'
 
     const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/playground/`
     package = base + package
@@ -553,7 +554,7 @@
         // Add gamut warnings if out of display, input, or output gamut
         let outOfGamut = ''
         if (!c.in_gamut(webspace)) {
-          outOfGamut = 'display'
+          outOfGamut = 'display (clipped)'
         }
         if (!c.in_gamut(working)) {
           outOfGamut = (outOfGamut) ? outOfGamut.concat(' + input') : 'input'
@@ -572,7 +573,10 @@
 
         // Display color as background
         let display = document.getElementById('color-display')
-        display.setAttribute('style', `background-color: ${c.convert(webspace).to_string.callKwargs({'fit': false})}`)
+        display.setAttribute(
+          'style',
+          `background-color: ${c.convert(webspace).to_string.callKwargs({'fit': displayMapping})}`
+        )
 
         // Adjust text color to accomodate contrast
         const alpha = c.get('alpha')
@@ -621,7 +625,7 @@ stops = []
 p = 1
 angle = ${(chan.get('angle')) ? 'True' : 'False'}
 for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_space='${webspace}', hue='specified')):
-    stops.append(i.to_string(fit=False))
+    stops.append(i.to_string(fit='${displayMapping}'))
 '--slider-stops: ' + ','.join(stops)
 `)
           range.setAttribute('style', result)
