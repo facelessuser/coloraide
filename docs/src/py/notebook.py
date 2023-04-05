@@ -370,7 +370,11 @@ def evaluate(node, g, loop=False):
                 yield from evaluate(n, g, loop)
     elif isinstance(node, ast.For):
         for x in eval(compile(ast.Expression(node.iter), '<string>', 'eval'), g):
-            g[node.target.id] = x
+            if isinstance(node.target, ast.Tuple):
+                for e, t in enumerate(node.target.dims):
+                    g[t.id] = x[e]
+            else:
+                g[node.target.id] = x
             try:
                 for n in node.body:
                     yield from evaluate(n, g, True)
