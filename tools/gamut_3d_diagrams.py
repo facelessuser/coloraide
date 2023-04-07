@@ -8,12 +8,12 @@ Only sRGB and related sRGB cylindrical models are precise,
 all others are approximations of the shape due to our
 approach.
 """
-import itertools
 import matplotlib.pyplot as plt
 import sys
 import os
 import math
 import argparse
+import numpy as np
 
 sys.path.insert(0, os.getcwd())
 
@@ -25,141 +25,119 @@ from coloraide.spaces import Cylindrical, LChish, Labish, HSLish, HSVish  # noqa
 
 # Special cases for certain color spaces
 color_options = {
-    'hsluv': {'factor': 100},
-    'hpluv': {'factor': 100},
-    'hwb': {'force_max_radius': True}
+    'hpluv': {'gamut_self': True, 'factor': 100},
+    'hwb': {'gamut_self': True, 'zsort': 'max'}
 }
 
 
-def create_custom_hsv(space, gamut, is_hsl=False, factor=1):
-    """Create a custom color object that has access to special `hsv-gamut` space to map surface in."""
+def create_custom_hsl(gamut):
+    """Create a custom color object that has access to special `hsl-gamut` space to map surface in."""
 
-    cs = Color.CS_MAP[space]
+    cs = Color.CS_MAP[gamut]
 
-    if is_hsl:
-        # Create a custom HSV space based off the HSL space
-        class HSV(type(Color.CS_MAP['hsv'])):
-            NAME = 'hsv-{}'.format(gamut)
-            BASE = space
-            GAMUT_CHECK = cs.GAMUT_CHECK
-            WHITE = cs.WHITE
-            DYAMIC_RANGE = cs.DYNAMIC_RANGE
+    class HSL(type(Color.CS_MAP['hsl'])):
+        NAME = 'hsl-{}'.format(gamut)
+        BASE = gamut
+        GAMUT_CHECK = gamut
+        WHITE = cs.WHITE
+        DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
-            def to_base(self, coords):
-                """To HSL from HSV."""
+    class ColorCyl(Color):
+        """Custom color."""
 
-                coords = super().to_base(coords)
-                return [coords[0], coords[1] * factor, coords[2] * factor]
-
-            def from_base(self, coords):
-                """From HSL to HSV."""
-
-                return super().from_base([coords[0], coords[1] / factor, coords[2] / factor])
-
-        class ColorCyl(Color):
-            """Custom color."""
-
-        ColorCyl.register(HSV())
-    else:
-        # Create custom cylindrical spaces based on the specified gamut
-        class HSV(type(Color.CS_MAP['hsv'])):
-            NAME = 'hsv-{}'.format(gamut)
-            BASE = 'hsl-{}'.format(gamut)
-            GAMUT_CHECK = gamut
-            WHITE = cs.WHITE
-            DYAMIC_RANGE = cs.DYNAMIC_RANGE
-
-        class HSL(type(Color.CS_MAP['hsl'])):
-            NAME = 'hsl-{}'.format(gamut)
-            BASE = gamut
-            GAMUT_CHECK = gamut
-            WHITE = cs.WHITE
-            DYAMIC_RANGE = cs.DYNAMIC_RANGE
-
-        class ColorCyl(Color):
-            """Custom color."""
-
-        ColorCyl.register([HSV(), HSL()])
+    ColorCyl.register(HSL())
 
     return ColorCyl
 
 
-def add_rect_color(space, stype, color, x, y, z, c):
-    """Add rectangular color to the provided arrays."""
+def cyl_disc(ColorCyl, space, gamut, factor, location, mode, x, y, z, cmap, resolution, opacity):
+    """Plot cylindrical disc."""
 
-    coords = color.convert(space)[:-1]
-    x.append(coords[0])
-    y.append(coords[1])
-    z.append(coords[2])
-    if not color.in_gamut():
-        m = max(color[:-1])
-        color.update('srgb', [(i / m if m != 0 else 0) for i in color[:-1]], color[-1])
-    c.append(color.to_string(hex=True))
-
-
-def add_lab_color(space, stype, color, x, y, z, c):
-    """Add Lab like color to the provided arrays."""
-
-    coords = color.convert(space)[:-1]
-    x.append(coords[1])
-    y.append(coords[2])
-    z.append(coords[0])
-    if not color.in_gamut():
-        m = max(color[:-1])
-        color.update('srgb', [(i / m if m != 0 else 0) for i in color[:-1]], color[-1])
-    c.append(color.to_string(hex=True))
-
-
-def add_cyl_color(space, stype, color, x, y, z, c):
-    """
-    Add color to the provided arrays.
-
-    Handles cylindrical spaces. Returns x (hue), y (chroma/saturation), z (value/lightness).
-    """
-
-    cyl = color.convert(space, norm=False)
-
-    if stype in ('hslish', 'hsvish'):
-        names = cyl._space.names()
-        hue, chroma, lightness = cyl.get(names)
-    elif stype == 'lchish':
-        names = cyl._space.names()
-        lightness, chroma, hue = cyl.get(names)
+    cs = ColorCyl.CS_MAP[space]
+    if isinstance(cs, (HSVish, HSLish)):
+        space_type = 'hslish/hsvish'
     else:
-        hue, chroma, lightness = cyl.coords()
+        space_type = space
 
-    x.append(chroma * math.sin(math.radians(hue)))
-    y.append(chroma * math.cos(math.radians(hue)))
-    z.append(lightness)
+    b = 0.0 if location == 'bottom' else 1.0 * factor
+    start, end = (1.0 * factor, 0.0) if location == 'bottom' else (0.0, 1.0 * factor)
 
-    s = color.convert('srgb')
-    if not color.in_gamut():
-        m = max(s[:-1])
-        s.update('srgb', [(i / m if m != 0 else 0) for i in s[:-1]], s[-1])
-    c.append(s.to_string(hex=True))
+    # Simple style, just create a dot in the center to complete the mesh
+    if mode == 'simple':
+        c = ColorCyl(gamut, [0, 0, b], opacity).convert(space, norm=False)
+        if space_type == 'hslish/hsvish':
+            hue, saturation, lightness = c._space.indexes()
+            x.append([c[saturation] * math.sin(math.radians(c[hue]))] * resolution)
+            y.append([c[saturation] * math.cos(math.radians(c[hue]))] * resolution)
+            z.append([c[lightness]] * resolution)
+        else:
+            hue = c._space.hue_index()
+            a, b = 1, 2
+            x.append([c[a] * math.sin(math.radians(c[hue]))] * resolution)
+            y.append([c[a] * math.cos(math.radians(c[hue]))] * resolution)
+            z.append([c[b]] * resolution)
+        s = c.convert('srgb')
+        if not s.in_gamut():
+            s.fit()
+        cmap.append([s.to_string(hex=True)] * resolution)
+        return
+
+    # Create concentric circles
+    c1 = ColorCyl(gamut, [0, start, b], opacity)
+    c2 = ColorCyl(gamut, [359.99999, start, b], opacity)
+    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut, hue='specified')
+    s2 = [c.clone().set('w', end) for c in s1]
+
+    step = int(resolution / 2)
+    for r in range(step + 1):
+        if location == 'bottom':
+            r = step - r
+        x.append([])
+        y.append([])
+        z.append([])
+        cmap.append([])
+        for t1, t2 in zip(s1, s2):
+            c = t1.mix(t2, r / step, space=gamut, hue='specified')
+            c.convert(space, norm=False, in_place=True)
+            if space_type == 'hslish/hsvish':
+                hue, saturation, lightness = c._space.indexes()
+                x[-1].append(c[saturation] * math.sin(math.radians(c[hue])))
+                y[-1].append(c[saturation] * math.cos(math.radians(c[hue])))
+                z[-1].append(c[lightness])
+            else:
+                hue = c._space.hue_index()
+                a, b = 1, 2
+                x[-1].append(c[a] * math.sin(math.radians(c[hue])))
+                y[-1].append(c[a] * math.cos(math.radians(c[hue])))
+                z[-1].append(c[b])
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit()
+            cmap[-1].append(s.to_string(hex=True))
 
 
-def render_space(space, gamut, resolution, factor, x, y, z, c):
+def render_space(space, gamut, ax, mode, resolution, opacity):
     """
     Render the space with the given resolution and factor.
 
     Any normal RGB gamut can be used, assuming it has ranges [0,1].
-    The HSV space is used as to map though as it generally maps creates
-    better color shells for most spaces.
-
-    Very close to black on some spaces the models doesn't cover quite as
-    well, so we make an additional pass at a higher resolution very close
-    to black.
+    The HSL space is used to map as it makes it easy to get the outermost
+    colors of RGB spaces.
 
     There are a number of special options to handle RGB cylinder spaces.
-    Some require us to generate top and bottom caps, some require us to
-    force a max radius. This is mainly because these models are special
-    and don't quite fit generically with things like Lab, LCh, and rectangular
-    spaces.
+    Some require us to generate top and bottom caps. This is mainly because
+    these models are special and don't quite fit generically with things like
+    Lab, LCh, and rectangular spaces.
     """
+
+    x = []
+    y = []
+    z = []
+    cmap = []
 
     cs = Color.CS_MAP[space]
 
+    # What kind of space are we dealing with?
     is_cyl = isinstance(cs, Cylindrical)
     if isinstance(cs, Labish):
         space_type = 'labish'
@@ -170,85 +148,155 @@ def render_space(space, gamut, resolution, factor, x, y, z, c):
     elif isinstance(cs, HSLish):
         space_type = 'hslish'
     else:
-        space_type = 'other'
+        space_type = space
 
-    if space_type != 'hsvish' or space == 'hsi':
-        ColorCyl = create_custom_hsv(space, gamut, space_type == 'hslish', factor)
-        gamut_space = 'hsv-{}'.format(gamut)
-    else:
+    # Create an HSL color space for the gamut for easily creating
+    # a shell of the gamut. If we are rendering in sRGB gamut, we
+    # can use the already present HSL space. Some spaces are special
+    # and we must use themselves as the gamut, skip this step if
+    # required.
+    if color_options.get(space, {}).get('gamut_self'):
         ColorCyl = Color
         gamut_space = space
-
-    # Resolution increase in non-hue channels helps smooth out some spaces a bit more.
-    res2 = int(resolution * 1.5)
-
-    color = ColorCyl('srgb', [])
-
-    if space_type == 'labish':
-        add = add_lab_color
-    elif not is_cyl:
-        add = add_rect_color
+    elif gamut != 'srgb':
+        ColorCyl = create_custom_hsl(gamut)
+        gamut_space = 'hsl-{}'.format(gamut)
     else:
-        add = add_cyl_color
+        ColorCyl = Color
+        gamut_space = 'hsl'
 
-    force_max_radius = space_type != 'lchish' and is_cyl and color_options.get(space, {}).get('force_max_radius', False)
-    force_bottom = space_type != 'lchish' and is_cyl
-    force_top = space_type == 'hslish'
+    # Does the space require special factoring?
+    factor = color_options.get(space, {}).get('factor', 1)
 
-    # We are rendering the spaces using sRGB, so just do a shell by picking
-    # all the colors on the outside of the sRGB space. Render will be hollow.
-    for c1, t in itertools.product(
-        ((x / resolution) * 360 for x in range(0, resolution + 1)),
-        (((x / res2), i) for i, x in enumerate(range(0, res2 + 1), 0)),
-    ):
+    # Calculate top disc
+    if space_type in ('hslish', 'hwb'):
+        cyl_disc(
+            ColorCyl,
+            space,
+            gamut_space,
+            factor,
+            'top',
+            'full' if space_type == 'hwb' else 'simple',
+            x,
+            y,
+            z,
+            cmap,
+            resolution,
+            opacity
+        )
 
-        # Offset the plot on every other iteration blend the rows into a mesh
-        # Better looking when low resolution zoomed into higher resolution
-        c2, count = t
-        if is_cyl:
-            if count % 2 and c1 < 360:
-                c1 += (360 / resolution) * 0.5
+    # Calculate top cylinder
+    c1 = ColorCyl(gamut_space, [0, 1 * factor, 1 * factor], opacity)
+    c2 = ColorCyl(gamut_space, [0, 1 * factor, 0], opacity)
+    c3 = ColorCyl(gamut_space, [359.99999, 1 * factor, 1 * factor], opacity)
+    c4 = ColorCyl(gamut_space, [359.99999, 1 * factor, 0], opacity)
+    s1 = ColorCyl.steps([c1, c2], steps=int(resolution / 2), space=gamut_space)
+    s2 = ColorCyl.steps([c3, c4], steps=int(resolution / 2), space=gamut_space)
 
-        if not force_max_radius:
-            add(space, space_type, color.update(gamut_space, [c1, c2, 1], norm=False), x, y, z, c)
-            add(space, space_type, color.update(gamut_space, [c1, 1, c2], norm=False), x, y, z, c)
-        else:
-            # Certain color spaces, like HWB, we must force max radius as the space
-            # is constructed in a way that just doesn't translate to how we map other spaces.
-            x.append(factor * math.sin(math.radians(c1)))
-            y.append(factor * math.cos(math.radians(c1)))
-            z.append(c2)
-            c.append(color.update(space, [c1, factor, c2], norm=False).to_string(hex=True))
+    for t1, t2 in zip(s1, s2):
+        x.append([])
+        y.append([])
+        z.append([])
+        cmap.append([])
+        for c in ColorCyl.steps([t1, t2], steps=resolution, space=gamut_space, hue='specified'):
+            c = c.convert(space, norm=False)
 
-        if space_type != 'lchish' and is_cyl:
-            # RGB cylinders often map max lightness to a single point instead of rendering a full cylinder
-            # top an bottom. The alternative is to map the radius with a magnitude that lessens as we approach
-            # achromatic, or just render the top and bottom of the cylinder with a disc. We've chosen the latter.
-            # Some cylinder spaces, like HSV, do not require a top.
+            if space_type in ('hslish', 'hsvish'):
+                hue, saturation, lightness = c._space.indexes()
+                x[-1].append(c[saturation] * math.sin(math.radians(c[hue])))
+                y[-1].append(c[saturation] * math.cos(math.radians(c[hue])))
+                z[-1].append(c[lightness])
+            elif space_type == 'lchish':
+                lightness, chroma, hue = c._space.indexes()
+                x[-1].append(c[chroma] * math.sin(math.radians(c[hue])))
+                y[-1].append(c[chroma] * math.cos(math.radians(c[hue])))
+                z[-1].append(c[lightness])
+            elif space_type == 'labish':
+                lightness, a, b = c._space.indexes()
+                x[-1].append(c[a])
+                y[-1].append(c[b])
+                z[-1].append(c[lightness])
+            elif is_cyl:
+                hue = c._space.hue_index()
+                if hue == 0:
+                    a, b = 1, 2
+                elif hue == 1:
+                    a, b = 0, 2
+                else:
+                    a, b = 0, 1
+                x[-1].append(c[a] * math.sin(math.radians(c[hue])))
+                y[-1].append(c[a] * math.cos(math.radians(c[hue])))
+                z[-1].append(c[b])
+            else:
+                x[-1].append(c[0])
+                y[-1].append(c[1])
+                z[-1].append(c[2])
 
-            if force_top:
-                # Top disc
-                x.append(c2 * factor * math.sin(math.radians(c1)))
-                y.append(c2 * factor * math.cos(math.radians(c1)))
-                z.append(factor)
-                c.append(color.update(space, [c1, c2, factor], norm=False).to_string(hex=True))
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit()
+            cmap[-1].append(s.to_string(hex=True))
 
-            if force_bottom:
-                # Bottom disc
-                x.append(c2 * factor * math.sin(math.radians(c1)))
-                y.append(c2 * factor * math.cos(math.radians(c1)))
-                z.append(0)
-                c.append(color.update(space, [c1, c2 * factor, 0], norm=False).to_string(hex=True))
-        else:
-            # Some spaces require a higher resolution in the black region to fill in any holes
-            add(space, space_type, color.update(gamut_space, [c1, 1, c2 * 0.005], norm=False), x, y, z, c)
+    # Calculate bottom disc
+    if space_type in ('hslish', 'hsvish', 'hwb'):
+        cyl_disc(
+            ColorCyl,
+            space,
+            gamut_space,
+            factor,
+            'bottom',
+            'full' if space_type == 'hwb' else 'simple',
+            x,
+            y,
+            z,
+            cmap,
+            resolution,
+            opacity
+        )
+
+    # Plot the data
+    if mode == 'wireframe':
+        ax.plot_wireframe(
+            np.asarray(x), np.asarray(y), np.asarray(z),
+            color=Color('blue').set('alpha', opacity).to_string(hex=True),
+            rcount=resolution,
+            ccount=resolution,
+            antialiased=True
+        )
+    elif mode == 'scatter':
+        scatter_cmap = []
+        for m in cmap:
+            scatter_cmap.extend(m)
+        ax.scatter(
+            np.asarray(x).ravel(), np.asarray(y).ravel(), np.asarray(z).ravel(),
+            c=scatter_cmap,
+            s=20 * 4
+        )
+    else:
+        # Plot the data as a 3D surface.
+        ax.plot_surface(
+            np.asarray(x), np.asarray(y), np.asarray(z),
+            rcount=resolution,
+            ccount=resolution,
+            zsort=color_options.get(space, {}).get('zsort', 'average'),
+            facecolors=cmap,
+            shade=False,
+            antialiased=True,
+        )
 
 
-def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotate_elev=30.0, rotate_azim=-60.0):
+def plot_gamut_in_space(
+    space,
+    gamut,
+    title="",
+    dark=False,
+    rotate_elev=30.0,
+    rotate_azim=-60.0,
+    mode='surface',
+    resolution=200,
+    opacity=1.0
+):
     """Plot the given space in sRGB."""
-
-    data = [[], [], []]
-    c = []
 
     # Get names for
     target = Color.CS_MAP[space]
@@ -256,11 +304,7 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     is_cyl = isinstance(target, Cylindrical)
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
-
-    if not is_lchish and is_cyl:
-        g = Color.CS_MAP[space].GAMUT_CHECK
-        if g is not None:
-            gamut = g
+    is_hslish_hsvish = isinstance(target, (HSLish, HSVish))
 
     # Some spaces need us to rearrange the order of the data
     if is_labish:
@@ -269,12 +313,10 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     elif is_lchish:
         c1, c2, c3 = target.indexes()
         axm = [c3, c2, c1]
-    elif is_cyl:
+    elif is_hslish_hsvish:
         axm = [0, 1, 2]
     else:
-        axm = color_options.get(space, {}).get('axis', [0, 1, 2])
-
-    factor = color_options.get(space, {}).get('factor', 1)
+        axm = [0, 1, 2]
 
     # Select the right theme
     if dark:
@@ -298,16 +340,15 @@ def plot_gamut_in_space(space, gamut, title="", dark=False, resolution=70, rotat
     figure.add_axes(ax)
 
     # Add title
-    plt.title(title if title else "'{}' Rendered in '{}'".format(gamut, space), pad=20)
-
-    # Render the space
-    render_space(space, gamut, resolution, factor, data[axm[0]], data[axm[1]], data[axm[2]], c)
+    acutal_gamut = space if color_options.get(space, {}).get('gamut_self') else gamut
+    plt.title(title if title else "'{}' Rendered in '{}'".format(acutal_gamut, space), pad=20)
 
     # Setup the aspect ratio
     ax.set_box_aspect((1, 1, 1))
 
-    # Plot the data
-    ax.scatter3D(data[axm[0]], data[axm[1]], data[axm[2]], c=c, s=20 * 4)
+    # Render the space
+    render_space(space, gamut, ax, mode, resolution, opacity)
+
     ax.view_init(rotate_elev, rotate_azim)
 
 
@@ -328,6 +369,8 @@ def main():
             'this option.'
         )
     )
+    parser.add_argument('--opacity', default=1.0, type=float, help="opacity")
+    parser.add_argument('--render-mode', '-m', default="surface", help="Render mode: surface, wireframe, scatter.")
     parser.add_argument(
         '--resolution', '-r',
         default="200",
@@ -344,14 +387,19 @@ def main():
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     args = parser.parse_args()
 
+    if args.render_mode not in ('surface', 'wireframe', 'scatter'):
+        raise TypeError("Render mode '{}' not supported".format(args.render_mode))
+
     plot_gamut_in_space(
         args.space,
         args.gamut,
         title=args.title,
         dark=args.dark,
-        resolution=int(args.resolution),
         rotate_elev=args.rotate_elev,
-        rotate_azim=args.rotate_azim
+        rotate_azim=args.rotate_azim,
+        mode=args.render_mode,
+        resolution=int(args.resolution),
+        opacity=args.opacity
     )
 
     if args.output:
