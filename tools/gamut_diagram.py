@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--color', '-c', help="Color to gamut map.")
     parser.add_argument('--method', '-m', default='lch-chroma', help="Gamut map method")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
+    parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
     parser.add_argument('--clip-space', '-p', default='lch', help="LCh space to show clipping in.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
@@ -80,7 +81,8 @@ def main():
         resolution=int(args.resolution),
         title=title,
         subtitle=subtitle,
-        dark=args.dark
+        dark=args.dark,
+        border=not args.no_border
     )
 
     plt.plot(

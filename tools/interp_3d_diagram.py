@@ -76,7 +76,7 @@ def main():
     # Create title
     if not args.title:
         title = "{} Interpolation in '{}' space displayed in the '{}' space.".format(
-            args.method.title(), args.space, args.display
+            args.method.title(), args.space, d
         )
     else:
         title = args.title

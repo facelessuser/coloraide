@@ -24,7 +24,7 @@ relation to the Display P3 color space.
 ////
 
 //// html | figure
-![HCT](../images/hct.png)
+![HCT](../images/hct-3d.png)
 
 ///// html | figcaption
 The sRGB gamut represented within the HCT color space.

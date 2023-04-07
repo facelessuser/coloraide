@@ -24,7 +24,7 @@ relation to the Display P3 color space.
 ////
 
 //// html | figure
-![CAM16 LCD](../images/cam16-lcd.png)
+![CAM16 LCD](../images/cam16-lcd-3d.png)
 
 ///// html | figcaption
 The sRGB gamut represented within the CAM16 LCD color space.
@@ -72,20 +72,3 @@ class Color(Base): ...
 
 Color.register(CAM16LCD())
 ```
-
-## Subclassing
-
-CAM16 LCD is a color model that can vary due to viewing conditions. Factors such as coefficients used (UCS/LCD/LCD),
-surround (average/dim/dark), adapting luminance, background luminance, white point, and whether the eye is assumed to be
-fully adapted to the illuminant can all play into how the color model responds.
-
-If it is desired to create a CAM16 LCD that uses different viewing conditions, the `CAM16LCD` class can be subclassed.
-A new `Environment` object should be set to the class describing the viewing conditions. As CAM16 LCD is directly uses
-the CAM16 (Jab) color space as its base for conversion, that base would also need to be subclassed with the correct
-environment, or the the CAM16 LCD class would need to make the transform directly from XYZ. All the helper functions are
-available to pull this off if needed.
-
-When subclassing, always use a new, unique name, like `cam16-custom` as other features or color spaces may depend on the
-`cam16-lcd` name converting a certain way.
-
-You can check out the source to learn more.

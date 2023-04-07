@@ -408,6 +408,8 @@ def main():
         plt.gcf().set_dpi(args.dpi)
         plt.show()
 
+    plt.close()
+
 
 if __name__ == "__main__":
     sys.exit(main())

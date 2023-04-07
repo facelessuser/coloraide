@@ -24,7 +24,7 @@ relation to the Display P3 color space.
 ////
 
 //// html | figure
-![CAM16 UCS](../images/cam16-ucs.png)
+![CAM16 UCS](../images/cam16-ucs-3d.png)
 
 ///// html | figcaption
 The sRGB gamut represented within the CAM16 UCS color space.
@@ -79,20 +79,3 @@ class Color(Base): ...
 
 Color.register(CAM16UCS())
 ```
-
-## Subclassing
-
-CAM16 UCS is a color model that can vary due to viewing conditions. Factors such as coefficients used (UCS/SCD/LCD),
-surround (average/dim/dark), adapting luminance, background luminance, white point, and whether the eye is assumed to be
-fully adapted to the illuminant can all play into how the color model responds.
-
-If it is desired to create a CAM16 UCS that uses different viewing conditions, the `CAM16UCS` class can be subclassed.
-A new `Environment` object should be set to the class describing the viewing conditions. As CAM16 UCS is directly uses
-the CAM16 (Jab) color space as its base for conversion, that base would also need to be subclassed with the correct
-environment, or the the CAM16 UCS class would need to make the transform directly from XYZ. All the helper functions are
-available to pull this off if needed.
-
-When subclassing, always use a new, unique name, like `cam16-custom` as other features or color spaces may depend on the
-`cam16-ucs` name converting a certain way.
-
-You can check out the source to learn more.

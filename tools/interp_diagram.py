@@ -49,6 +49,7 @@ def main():
     parser.add_argument('--xaxis', '-x', help="The channel to plot on X axis 'name:min:max'.")
     parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis 'name:min:max'.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
+    parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
@@ -81,7 +82,8 @@ def main():
         title=title,
         subtitle=args.subtitle,
         dark=args.dark,
-        polar=True
+        polar=True,
+        border=not args.no_border
     )
 
     # Get the actual indexes of the specified channels

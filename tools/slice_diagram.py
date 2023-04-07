@@ -8,7 +8,6 @@ from -0.5 to 0.5.
 
 The constant channel is given in the form `name:value` where value is the constant value for the channel.
 """
-import itertools
 import matplotlib.pyplot as plt
 import argparse
 import sys
@@ -51,7 +50,8 @@ def plot_slice(
     dark=False,
     title="",
     subtitle='',
-    polar=False
+    polar=False,
+    border=False
 ):
     """Plot a slice."""
 
@@ -82,14 +82,10 @@ def plot_slice(
     name1, start1, end1 = [
         c if i == 0 else float(c) for i, c in enumerate(channel1.split(':'), 0)
     ]
-    factor1 = abs(start1 - end1) if end1 < 0 else (end1 - start1)
-    offset1 = start1
 
     name2, start2, end2 = [
         c if i == 0 else float(c) for i, c in enumerate(channel2.split(':'), 0)
     ]
-    factor2 = abs(start2 - end2) if end2 < 0 else (end2 - start2)
-    offset2 = start2
 
     # Get the actual indexes of the specified channels
     name1 = c._space.CHANNEL_ALIASES.get(name1, name1)
@@ -127,63 +123,86 @@ def plot_slice(
     ex = []
     ey = []
 
-    # Iterate through the two specified channels
-    for c1, c2 in itertools.product(
-        ((x / res * factor1) + offset1 for x in range(0, res + 1)),
-        ((x / res * factor2) + offset2 for x in range(0, res + 1))
-    ):
-        # Set the appropriate channels and update the color object
-        coords = [NaN] * (2 + len(chan_constants))
-        for chan in chan_constants:
-            coords[chan[2]] = chan[1]
-        coords[index1] = c1
-        coords[index2] = c2
-        c.update(space, coords)
+    # Create initial coordinates for our 4 corners
+    coords1 = [NaN] * (2 + len(chan_constants))
+    for chan in chan_constants:
+        coords1[chan[2]] = chan[1]
+    coords1[index1] = start1
+    coords1[index2] = start2
 
-        # Only process colors within the specified gamut.
-        if c.in_gamut(gamut, tolerance=0) and (not is_lchish or not ignore_LCh_high_chroma_black(c)):
-            if hue_index != -1:
-                c1 = math.radians(c1)
+    coords2 = [NaN] * (2 + len(chan_constants))
+    for chan in chan_constants:
+        coords2[chan[2]] = chan[1]
+    coords2[index1] = end1
+    coords2[index2] = start2
 
-            # Get the absolute min and max value plotted
-            if c1 < c1_mn:
-                c1_mn = c1
-            if c1 > c1_mx:
-                c1_mx = c1
+    coords3 = [NaN] * (2 + len(chan_constants))
+    for chan in chan_constants:
+        coords3[chan[2]] = chan[1]
+    coords3[index1] = start1
+    coords3[index2] = end2
 
-            if c2 < c2_mn:
-                c2_mn = c2
-            if c2 > c2_mx:
-                c2_mx = c2
+    coords4 = [NaN] * (2 + len(chan_constants))
+    for chan in chan_constants:
+        coords4[chan[2]] = chan[1]
+    coords4[index1] = end1
+    coords4[index2] = end2
 
-            # Create an edge map so we can draw an outline
-            # This should be all we need for polar.
-            if c1 not in edge_map_x:
-                mn = mx = c2
-            else:
-                mn, mx = edge_map_x[c1]
-                if c2 < mn:
-                    mn = c2
-                elif c2 > mx:
-                    mx = c2
-            edge_map_x[c1] = [mn, mx]
+    # Interplate our min/max values along the x axis
+    s1 = Color.steps([Color(space, coords1), Color(space, coords2)], steps=res, space=space, hue='specified')
+    s2 = Color.steps([Color(space, coords3), Color(space, coords4)], steps=res, space=space, hue='specified')
 
-            # If we aren't doing polar, we need both the X and Y perspective
-            if hue_index == -1:
-                if c2 not in edge_map_y:
-                    mn = mx = c1
-                else:
-                    mn, mx = edge_map_y[c2]
-                    if c1 < mn:
-                        mn = c1
-                    elif c1 > mx:
-                        mx = c1
-                edge_map_y[c2] = [mn, mx]
+    # Interpolate between each x axis color along the y axis
+    for t1, t2 in zip(s1, s2):
+        for r in Color.steps([t1, t2], steps=res, space=space, hue='specified'):
+            # Only process colors within the specified gamut.
+            if r.in_gamut(gamut, tolerance=0) and (not is_lchish or not ignore_LCh_high_chroma_black(r)):
+                c1 = r[index1]
+                c2 = r[index2]
 
-            # Save the points
-            xaxis.append(c1)
-            yaxis.append(c2)
-            c_map.append(c.convert('srgb').to_string(hex=True))
+                if hue_index != -1:
+                    c1 = math.radians(c1)
+
+                # Get the absolute min and max value plotted
+                if c1 < c1_mn:
+                    c1_mn = c1
+                if c1 > c1_mx:
+                    c1_mx = c1
+
+                if c2 < c2_mn:
+                    c2_mn = c2
+                if c2 > c2_mx:
+                    c2_mx = c2
+
+                if border:
+                    # Create an edge map so we can draw an outline
+                    # This should be all we need for polar.
+                    if c1 not in edge_map_x:
+                        mn = mx = c2
+                    else:
+                        mn, mx = edge_map_x[c1]
+                        if c2 < mn:
+                            mn = c2
+                        elif c2 > mx:
+                            mx = c2
+                    edge_map_x[c1] = [mn, mx]
+
+                    # If we aren't doing polar, we need both the X and Y perspective
+                    if hue_index == -1:
+                        if c2 not in edge_map_y:
+                            mn = mx = c1
+                        else:
+                            mn, mx = edge_map_y[c2]
+                            if c1 < mn:
+                                mn = c1
+                            elif c1 > mx:
+                                mx = c1
+                        edge_map_y[c2] = [mn, mx]
+
+                # Save the points
+                xaxis.append(c1)
+                yaxis.append(c2)
+                c_map.append(r.convert('srgb').to_string(hex=True))
 
     # Create axes
     ax = plt.axes(
@@ -218,55 +237,56 @@ def plot_slice(
         s=2
     )
 
-    # Create a border from the X axis perspective
-    edge_x = []
-    temp = []
-    for p1, edges in edge_map_x.items():
+    if border:
+        # Create a border from the X axis perspective
+        edge_x = []
+        temp = []
+        for p1, edges in edge_map_x.items():
+            if hue_index == -1:
+                # Min and max
+                edge_x.append((p1, edges[0]))
+                temp.append((p1, edges[1]))
+            else:
+                # Just need max for polar
+                edge_x.append((p1, edges[1]))
+
         if hue_index == -1:
-            # Min and max
-            edge_x.append((p1, edges[0]))
-            temp.append((p1, edges[1]))
+            # Combine the min/max values in one shape
+            edge_x.extend(reversed(temp))
+            # Close shape
+            edge_x.append(edge_x[0])
+
+        # Create a border from the Y axis perspective
+        if hue_index == -1:
+            edge_y = []
+            temp.clear()
+
+            for p1 in sorted(edge_map_y.keys()):
+                edges = edge_map_y[p1]
+                edge_y.append((edges[0], p1))
+                temp.append((edges[1], p1))
+
+            edge_y.extend(reversed(temp))
+            edge_y.append(edge_y[0])
+
+            # Get the intersection of X and Y to get the most accurate border
+            poly = Polygon(edge_x).intersection(Polygon(edge_y))
+            if isinstance(poly, GeometryCollection):
+                for a in poly.geoms:
+                    # Sometimes the intersection can have weird, unnecessary `LineString`.
+                    # This occurs with very complex polygons. Just throw them away as
+                    # they seem to be a bug.
+                    if isinstance(a, LineString):
+                        continue
+                    ex, ey = zip(*dump_coords(a))
+            else:
+                ex, ey = zip(*dump_coords(poly))
         else:
-            # Just need max for polar
-            edge_x.append((p1, edges[1]))
+            # Using polar, so just split the data by axis
+            ex, ey = zip(*edge_x)
 
-    if hue_index == -1:
-        # Combine the min/max values in one shape
-        edge_x.extend(reversed(temp))
-        # Close shape
-        edge_x.append(edge_x[0])
-
-    # Create a border from the Y axis perspective
-    if hue_index == -1:
-        edge_y = []
-        temp.clear()
-
-        for p1 in sorted(edge_map_y.keys()):
-            edges = edge_map_y[p1]
-            edge_y.append((edges[0], p1))
-            temp.append((edges[1], p1))
-
-        edge_y.extend(reversed(temp))
-        edge_y.append(edge_y[0])
-
-        # Get the intersection of X and Y to get the most accurate border
-        poly = Polygon(edge_x).intersection(Polygon(edge_y))
-        if isinstance(poly, GeometryCollection):
-            for a in poly.geoms:
-                # Sometimes the intersection can have weird, unnecessary `LineString`.
-                # This occurs with very complex polygons. Just throw them away as
-                # they seem to be a bug.
-                if isinstance(a, LineString):
-                    continue
-                ex, ey = zip(*dump_coords(a))
-        else:
-            ex, ey = zip(*dump_coords(poly))
-    else:
-        # Using polar, so just split the data by axis
-        ex, ey = zip(*edge_x)
-
-    # Plot the edge border
-    plt.plot(ex, ey, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
+        # Plot the edge border
+        plt.plot(ex, ey, color=default_color, marker="", linewidth=2, markersize=0, antialiased=True)
 
 
 def main():
@@ -286,6 +306,7 @@ def main():
     parser.add_argument(
         '--sub-title', default='', help="Provide a subtitle, if none is provided, will show contant channel."
     )
+    parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
@@ -302,7 +323,8 @@ def main():
         title=args.title,
         subtitle=args.sub_title,
         dark=args.dark,
-        polar=args.polar
+        polar=args.polar,
+        border=not args.no_border
     )
 
     if args.output:

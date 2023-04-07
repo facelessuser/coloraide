@@ -24,7 +24,7 @@ relation to the Display P3 color space.
 ////
 
 //// html | figure
-![CAM16](../images/cam16.png)
+![CAM16](../images/cam16-3d.png)
 
 ///// html | figcaption
 The sRGB gamut represented within the CAM16 color space.
@@ -90,17 +90,3 @@ class Color(Base): ...
 
 Color.register(CAM16())
 ```
-
-## Subclassing
-
-CAM16 is a color model that can vary due to viewing conditions. Factors such as surround (average/dim/dark), adapting
-luminance, background luminance, white point, and whether the eye is assumed to be fully adapted to the illuminant can
-all play into how the color model responds.
-
-If it is desired to create a CAM16 variant that uses different viewing conditions, the `CAM16` class can be subclassed.
-A new `Environment` object should be set to the class describing the viewing conditions.
-
-When subclassing, always use a new, unique name, like `cam16-custom` as other features or color spaces may depend on the
-`cam16` name converting a certain way.
-
-You can check out the source to learn more.
