@@ -148,7 +148,7 @@ def plot_slice(
     coords4[index1] = end1
     coords4[index2] = end2
 
-    # Interplate our min/max values along the x axis
+    # Interpolate our min/max values along the x axis
     s1 = Color.steps([Color(space, coords1), Color(space, coords2)], steps=res, space=space, hue='specified')
     s2 = Color.steps([Color(space, coords3), Color(space, coords4)], steps=res, space=space, hue='specified')
 
