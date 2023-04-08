@@ -43,15 +43,35 @@ import os
 sys.path.insert(0, os.getcwd())
 
 # Use higher precision Oklab conversion matrix along with LMS matrix with our exact white point
-from tools.calc_oklab_matrices import SRGBL_TO_LMS, LMS_TO_SRGBL, LMS3_TO_OKLAB, OKLAB_TO_LMS3 # noqa: E402
+from tools.calc_oklab_matrices import SRGBL_TO_LMS, LMS_TO_SRGBL, LMS3_TO_OKLAB, OKLAB_TO_LMS3, XYZ_TO_LMS # noqa: E402
 
+PRINT_DIAGS = False
+GAMUT = 'srgb'
 np.set_printoptions(precision=8)
+
+# Use P3 gamut (or some other gamut)
+# Calculate the gamut <-> LMS matrices to adjust the working gamut
+if GAMUT == 'p3':
+    import coloraide.spaces.display_p3_linear as p3
+    from coloraide import algebra as alg
+
+    RGBL_TO_LMS = alg.dot(XYZ_TO_LMS, p3.RGB_TO_XYZ)
+    LMS_TO_RGBL = alg.inv(RGBL_TO_LMS)
+else:
+    RGBL_TO_LMS = SRGBL_TO_LMS
+    LMS_TO_RGBL = LMS_TO_SRGBL
+
+print(RGBL_TO_LMS)
+print(LMS_TO_RGBL)
+
+RGBL_TO_LMS = np.asfarray(RGBL_TO_LMS)
+LMS_TO_RGBL = np.asfarray(LMS_TO_RGBL)
 
 
 def linear_srgb_to_oklab(c):
-    l = SRGBL_TO_LMS[0][0] * c[0,...] + SRGBL_TO_LMS[0][1] * c[1,...] + SRGBL_TO_LMS[0][2] * c[2,...];
-    m = SRGBL_TO_LMS[1][0] * c[0,...] + SRGBL_TO_LMS[1][1] * c[1,...] + SRGBL_TO_LMS[1][2] * c[2,...];
-    s = SRGBL_TO_LMS[2][0] * c[0,...] + SRGBL_TO_LMS[2][1] * c[1,...] + SRGBL_TO_LMS[2][2] * c[2,...];
+    l = RGBL_TO_LMS[0][0] * c[0,...] + RGBL_TO_LMS[0][1] * c[1,...] + RGBL_TO_LMS[0][2] * c[2,...];
+    m = RGBL_TO_LMS[1][0] * c[0,...] + RGBL_TO_LMS[1][1] * c[1,...] + RGBL_TO_LMS[1][2] * c[2,...];
+    s = RGBL_TO_LMS[2][0] * c[0,...] + RGBL_TO_LMS[2][1] * c[1,...] + RGBL_TO_LMS[2][2] * c[2,...];
 
     l_ = np.cbrt(l);
     m_ = np.cbrt(m);
@@ -110,39 +130,39 @@ def to_lms_dS2(S,h):
 
 def to_R(S,h):
   (l,m,s) = to_lms(S,h)
-  return LMS_TO_SRGBL[0][0]*l + LMS_TO_SRGBL[0][1]*m + LMS_TO_SRGBL[0][2]*s
+  return LMS_TO_RGBL[0][0]*l + LMS_TO_RGBL[0][1]*m + LMS_TO_RGBL[0][2]*s
 
 def to_R_dS(S,h):
   (l,m,s) = to_lms_dS(S,h)
-  return LMS_TO_SRGBL[0][0]*l + LMS_TO_SRGBL[0][1]*m + LMS_TO_SRGBL[0][2]*s
+  return LMS_TO_RGBL[0][0]*l + LMS_TO_RGBL[0][1]*m + LMS_TO_RGBL[0][2]*s
 
 def to_R_dS2(S,h):
   (l,m,s) = to_lms_dS2(S,h)
-  return LMS_TO_SRGBL[0][0]*l + LMS_TO_SRGBL[0][1]*m + LMS_TO_SRGBL[0][2]*s
+  return LMS_TO_RGBL[0][0]*l + LMS_TO_RGBL[0][1]*m + LMS_TO_RGBL[0][2]*s
 
 def to_G(S,h):
   (l,m,s) = to_lms(S,h)
-  return LMS_TO_SRGBL[1][0]*l + LMS_TO_SRGBL[1][1]*m + LMS_TO_SRGBL[1][2]*s
+  return LMS_TO_RGBL[1][0]*l + LMS_TO_RGBL[1][1]*m + LMS_TO_RGBL[1][2]*s
 
 def to_G_dS(S,h):
   (l,m,s) = to_lms_dS(S,h)
-  return LMS_TO_SRGBL[1][0]*l + LMS_TO_SRGBL[1][1]*m + LMS_TO_SRGBL[1][2]*s
+  return LMS_TO_RGBL[1][0]*l + LMS_TO_RGBL[1][1]*m + LMS_TO_RGBL[1][2]*s
 
 def to_G_dS2(S,h):
   (l,m,s) = to_lms_dS2(S,h)
-  return LMS_TO_SRGBL[1][0]*l + LMS_TO_SRGBL[1][1]*m + LMS_TO_SRGBL[1][2]*s
+  return LMS_TO_RGBL[1][0]*l + LMS_TO_RGBL[1][1]*m + LMS_TO_RGBL[1][2]*s
 
 def to_B(S,h):
   (l,m,s) = to_lms(S,h)
-  return LMS_TO_SRGBL[2][0]*l + LMS_TO_SRGBL[2][1]*m + LMS_TO_SRGBL[2][2]*s
+  return LMS_TO_RGBL[2][0]*l + LMS_TO_RGBL[2][1]*m + LMS_TO_RGBL[2][2]*s
 
 def to_B_dS(S,h):
   (l,m,s) = to_lms_dS(S,h)
-  return LMS_TO_SRGBL[2][0]*l + LMS_TO_SRGBL[2][1]*m + LMS_TO_SRGBL[2][2]*s
+  return LMS_TO_RGBL[2][0]*l + LMS_TO_RGBL[2][1]*m + LMS_TO_RGBL[2][2]*s
 
 def to_B_dS2(S,h):
   (l,m,s) = to_lms_dS2(S,h)
-  return LMS_TO_SRGBL[2][0]*l + LMS_TO_SRGBL[2][1]*m + LMS_TO_SRGBL[2][2]*s
+  return LMS_TO_RGBL[2][0]*l + LMS_TO_RGBL[2][1]*m + LMS_TO_RGBL[2][2]*s
 
 hs,Ss = np.meshgrid(np.linspace(-np.pi,np.pi,720),np.linspace(0,1,200))
 
@@ -152,9 +172,10 @@ Bs = to_B(Ss, hs)
 
 gamut = np.minimum(Rs, np.minimum(Gs, Bs))
 
-plt.imshow(np.sign(gamut), cmap='gray', vmin=0, vmax=1)
-plt.show()
-plt.figure()
+if PRINT_DIAGS:
+    plt.imshow(np.sign(gamut), cmap='gray', vmin=0, vmax=1)
+    plt.show()
+    plt.figure()
 
 r_lab = linear_srgb_to_oklab(np.array([1,0,0]))
 g_lab = linear_srgb_to_oklab(np.array([0,1,0]))
@@ -168,7 +189,6 @@ print(r_h)
 print(g_h)
 print(b_h)
 
-
 r_dir = 0.5*np.array([np.cos(b_h)+np.cos(g_h),np.sin(b_h)+np.sin(g_h)])
 g_dir = 0.5*np.array([np.cos(b_h)+np.cos(r_h),np.sin(b_h)+np.sin(r_h)])
 b_dir = 0.5*np.array([np.cos(r_h)+np.cos(g_h),np.sin(r_h)+np.sin(g_h)])
@@ -176,8 +196,6 @@ b_dir = 0.5*np.array([np.cos(r_h)+np.cos(g_h),np.sin(r_h)+np.sin(g_h)])
 r_dir /= r_dir[0]**2 + r_dir[1]**2
 g_dir /= g_dir[0]**2 + g_dir[1]**2
 b_dir /= b_dir[0]**2 + b_dir[1]**2
-
-
 
 # These are coefficients to quickly test which component goes below zero first.
 # Used like this in compute_max_saturation:
@@ -191,25 +209,28 @@ r_hs,r_Ss = np.meshgrid(np.linspace(g_h,2*np.pi + b_h,200),np.linspace(0,1,200))
 
 r_Rs = to_R(r_Ss, r_hs)
 
-plt.imshow(np.sign(r_Rs), cmap='gray', vmin=0, vmax=1)
-plt.show()
-plt.figure()
+if PRINT_DIAGS:
+    plt.imshow(np.sign(r_Rs), cmap='gray', vmin=0, vmax=1)
+    plt.show()
+    plt.figure()
 
 g_hs,g_Ss = np.meshgrid(np.linspace(b_h,r_h,200),np.linspace(0,1,200))
 
 g_Gs = to_G(g_Ss, g_hs)
 
-plt.imshow(np.sign(g_Gs), cmap='gray', vmin=0, vmax=1)
-plt.show()
-plt.figure()
+if PRINT_DIAGS:
+    plt.imshow(np.sign(g_Gs), cmap='gray', vmin=0, vmax=1)
+    plt.show()
+    plt.figure()
 
 b_hs,b_Ss = np.meshgrid(np.linspace(r_h,g_h,200),np.linspace(0,1,200))
 
 b_Bs = to_B(b_Ss, b_hs)
 
-plt.imshow(np.sign(b_Bs), cmap='gray', vmin=0, vmax=1)
-plt.show()
-plt.figure()
+if PRINT_DIAGS:
+    plt.imshow(np.sign(b_Bs), cmap='gray', vmin=0, vmax=1)
+    plt.show()
+    plt.figure()
 
 # These are numerical fits to the edge of the chroma
 # The resulting coefficient, x_R, x_G and x_B are used in compute_max_saturation, as values for k0

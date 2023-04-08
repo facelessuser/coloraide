@@ -29,13 +29,17 @@ from __future__ import annotations
 from .hsv import HSV
 from ..channels import FLG_ANGLE, Channel
 from .. import util
-from .okhsl import toe, toe_inv, find_cusp, to_st, oklab_to_linear_srgb
+from .okhsl import toe, toe_inv, find_cusp, to_st, oklab_to_linear_rgb, LMS_TO_SRGBL, SRGBL_COEFF
 import math
 from .. import algebra as alg
-from ..types import Vector
+from ..types import Vector, Matrix
 
 
-def okhsv_to_oklab(hsv: Vector) -> Vector:
+def okhsv_to_oklab(
+    hsv: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
@@ -50,7 +54,7 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
-        cusp = find_cusp(a_, b_)
+        cusp = find_cusp(a_, b_, lms_to_rgb, ok_coeff)
         s_max, t_max = to_st(cusp)
         s_0 = 0.5
         k = 1 - s_0 / s_max
@@ -73,7 +77,7 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
         l = l_new
 
         # RGB scale
-        rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
+        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], lms_to_rgb)
         scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l * scale_l
@@ -85,7 +89,11 @@ def okhsv_to_oklab(hsv: Vector) -> Vector:
     return [l, a, b]
 
 
-def oklab_to_okhsv(lab: Vector) -> Vector:
+def oklab_to_okhsv(
+    lab: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Oklab to Okhsv."""
 
     l = lab[0]
@@ -99,7 +107,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
         a_ = lab[1] / c
         b_ = lab[2] / c
 
-        cusp = find_cusp(a_, b_)
+        cusp = find_cusp(a_, b_, lms_to_rgb, ok_coeff)
         s_max, t_max = to_st(cusp)
         s_0 = 0.5
         k = 1 - s_0 / s_max
@@ -113,7 +121,7 @@ def oklab_to_okhsv(lab: Vector) -> Vector:
         c_vt = c_v * l_vt / l_v
 
         # we can then use these to invert the step that compensates for the toe and the curved top part of the triangle:
-        rs, gs, bs = oklab_to_linear_srgb([l_vt, a_ * c_vt, b_ * c_vt])
+        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], lms_to_rgb)
         scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l / scale_l
@@ -149,9 +157,9 @@ class Okhsv(HSV):
     def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""
 
-        return okhsv_to_oklab(okhsv)
+        return okhsv_to_oklab(okhsv, LMS_TO_SRGBL, SRGBL_COEFF)
 
     def from_base(self, oklab: Vector) -> Vector:
         """From Oklab to Okhsv."""
 
-        return oklab_to_okhsv(oklab)
+        return oklab_to_okhsv(oklab, LMS_TO_SRGBL, SRGBL_COEFF)
