@@ -35,7 +35,11 @@ from .. import algebra as alg
 from ..types import Vector, Matrix
 
 
-def okhsv_to_oklab(hsv: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def okhsv_to_oklab(
+    hsv: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Convert from Okhsv to Oklab."""
 
     h, s, v = hsv
@@ -50,7 +54,7 @@ def okhsv_to_oklab(hsv: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
-        cusp = find_cusp(a_, b_, mat, coeff)
+        cusp = find_cusp(a_, b_, lms_to_rgb, ok_coeff)
         s_max, t_max = to_st(cusp)
         s_0 = 0.5
         k = 1 - s_0 / s_max
@@ -73,7 +77,7 @@ def okhsv_to_oklab(hsv: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         l = l_new
 
         # RGB scale
-        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], mat)
+        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], lms_to_rgb)
         scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l * scale_l
@@ -85,7 +89,11 @@ def okhsv_to_oklab(hsv: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
     return [l, a, b]
 
 
-def oklab_to_okhsv(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def oklab_to_okhsv(
+    lab: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Oklab to Okhsv."""
 
     l = lab[0]
@@ -99,7 +107,7 @@ def oklab_to_okhsv(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         a_ = lab[1] / c
         b_ = lab[2] / c
 
-        cusp = find_cusp(a_, b_, mat, coeff)
+        cusp = find_cusp(a_, b_, lms_to_rgb, ok_coeff)
         s_max, t_max = to_st(cusp)
         s_0 = 0.5
         k = 1 - s_0 / s_max
@@ -113,7 +121,7 @@ def oklab_to_okhsv(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         c_vt = c_v * l_vt / l_v
 
         # we can then use these to invert the step that compensates for the toe and the curved top part of the triangle:
-        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], mat)
+        rs, gs, bs = oklab_to_linear_rgb([l_vt, a_ * c_vt, b_ * c_vt], lms_to_rgb)
         scale_l = alg.nth_root(1.0 / max(max(rs, gs), max(bs, 0.0)), 3)
 
         l = l / scale_l

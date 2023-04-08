@@ -47,20 +47,29 @@ LMS_TO_SRGBL = [
     [-0.004196076138675668, -0.7034186179359357, 1.707614694074611]
 ]
 
-SRGBL_COEFF = {
-    'r': {
-        'limit': [-1.8817031, -0.80936501],
-        'coeff': [1.19086277, 1.76576728, 0.59662641, 0.75515197, 0.56771245]
-    },
-    'g': {
-        'limit': [1.81444079, -1.19445267],
-        'coeff': [0.73956515, -0.45954404, 0.08285427, 0.12541073, -0.14503204]
-    },
-    'b': {
-        'limit': [0.13110758, 1.81333971],
-        'coeff': [1.35692055, -0.00927503, -1.15077658, -0.50648323, 0.00645566]
-    }
-}  # type: dict[str, dict[str, Vector]]
+SRGBL_COEFF = [
+    # Red
+    [
+        # Limit
+        [-1.8817031, -0.80936501],
+        # `Kn` coefficients
+        [1.19086277, 1.76576728, 0.59662641, 0.75515197, 0.56771245]
+    ],
+    # Green
+    [
+        # Limit
+        [1.81444079, -1.19445267],
+        # `Kn` coefficients
+        [0.73956515, -0.45954404, 0.08285427, 0.12541073, -0.14503204]
+    ],
+    # Blue
+    [
+        # Limit
+        [0.13110758, 1.81333971],
+        # `Kn` coefficients
+        [1.35692055, -0.00927503, -1.15077658, -0.50648323, 0.00645566]
+    ]
+]  # type: list[list[Vector]]
 
 FLT_MAX = sys.float_info.max
 
@@ -125,17 +134,27 @@ def get_st_mid(a: float, b: float) -> Vector:
     return [s, t]
 
 
-def oklab_to_linear_rgb(lab: Vector, mat: Matrix) -> Vector:
-    """Convert from Oklab to linear RGB."""
+def oklab_to_linear_rgb(lab: Vector, lms_to_rgb: Matrix) -> Vector:
+    """
+    Convert from Oklab to linear RGB.
+
+    Can be any gamut as long as `lms_to_rgb` is a matrix
+    that transform the LMS values to the linear RGB space.
+    """
 
     return alg.dot(
-        mat,
+        lms_to_rgb,
         [c ** 3 for c in alg.dot(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 
 
-def find_cusp(a: float, b: float, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def find_cusp(
+    a: float,
+    b: float,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """
     Finds L_cusp and C_cusp for a given hue.
 
@@ -143,10 +162,10 @@ def find_cusp(a: float, b: float, mat: Matrix, coeff: dict[str, dict[str, Vector
     """
 
     # First, find the maximum saturation (saturation `S = C/L`)
-    s_cusp = compute_max_saturation(a, b, mat, coeff)
+    s_cusp = compute_max_saturation(a, b, lms_to_rgb, ok_coeff)
 
     # Convert to linear RGB to find the first point where at least one of r, g or b >= 1:
-    r, g, b = oklab_to_linear_rgb([1, s_cusp * a, s_cusp * b], mat)
+    r, g, b = oklab_to_linear_rgb([1, s_cusp * a, s_cusp * b], lms_to_rgb)
     l_cusp = alg.nth_root(1.0 / max(max(r, g), b), 3)
     c_cusp = l_cusp * s_cusp
 
@@ -159,8 +178,8 @@ def find_gamut_intersection(
     l1: float,
     c1: float,
     l0: float,
-    mat: Matrix,
-    coeff: dict[str, dict[str, Vector]],
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]],
     cusp: Vector | None = None,
 ) -> float:
     """
@@ -177,7 +196,7 @@ def find_gamut_intersection(
     """
 
     if cusp is None:  # pragma: no cover
-        cusp = find_cusp(a, b, mat, coeff)
+        cusp = find_cusp(a, b, lms_to_rgb, ok_coeff)
 
     # Find the intersection for upper and lower half separately
     if ((l1 - l0) * cusp[1] - (cusp[0] - l0) * c1) <= 0.0:
@@ -221,23 +240,23 @@ def find_gamut_intersection(
         mdt2 = 6 * (m_dt ** 2) * m_
         sdt2 = 6 * (s_dt ** 2) * s_
 
-        r = alg.vdot(mat[0], [l, m, s]) - 1
-        r1 = alg.vdot(mat[0], [ldt, mdt, sdt])
-        r2 = alg.vdot(mat[0], [ldt2, mdt2, sdt2])
+        r = alg.vdot(lms_to_rgb[0], [l, m, s]) - 1
+        r1 = alg.vdot(lms_to_rgb[0], [ldt, mdt, sdt])
+        r2 = alg.vdot(lms_to_rgb[0], [ldt2, mdt2, sdt2])
 
         u_r = r1 / (r1 * r1 - 0.5 * r * r2)
         t_r = -r * u_r
 
-        g = alg.vdot(mat[1], [l, m, s]) - 1
-        g1 = alg.vdot(mat[1], [ldt, mdt, sdt])
-        g2 = alg.vdot(mat[1], [ldt2, mdt2, sdt2])
+        g = alg.vdot(lms_to_rgb[1], [l, m, s]) - 1
+        g1 = alg.vdot(lms_to_rgb[1], [ldt, mdt, sdt])
+        g2 = alg.vdot(lms_to_rgb[1], [ldt2, mdt2, sdt2])
 
         u_g = g1 / (g1 * g1 - 0.5 * g * g2)
         t_g = -g * u_g
 
-        b = alg.vdot(mat[2], [l, m, s]) - 1
-        b1 = alg.vdot(mat[2], [ldt, mdt, sdt])
-        b2 = alg.vdot(mat[2], [ldt2, mdt2, sdt2])
+        b = alg.vdot(lms_to_rgb[2], [l, m, s]) - 1
+        b1 = alg.vdot(lms_to_rgb[2], [ldt, mdt, sdt])
+        b2 = alg.vdot(lms_to_rgb[2], [ldt2, mdt2, sdt2])
 
         u_b = b1 / (b1 * b1 - 0.5 * b * b2)
         t_b = -b * u_b
@@ -251,14 +270,18 @@ def find_gamut_intersection(
     return t
 
 
-def get_cs(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def get_cs(
+    lab: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Get Cs."""
 
     l, a, b = lab
 
-    cusp = find_cusp(a, b, mat, coeff)
+    cusp = find_cusp(a, b, lms_to_rgb, ok_coeff)
 
-    c_max = find_gamut_intersection(a, b, l, 1, l, mat, coeff, cusp)
+    c_max = find_gamut_intersection(a, b, l, 1, l, lms_to_rgb, ok_coeff, cusp)
     st_max = to_st(cusp)
 
     # Scale factor to compensate for the curved part of gamut shape:
@@ -282,7 +305,12 @@ def get_cs(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vec
     return [c_0, c_mid, c_max]
 
 
-def compute_max_saturation(a: float, b: float, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> float:
+def compute_max_saturation(
+    a: float,
+    b: float,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> float:
     """
     Finds the maximum saturation possible for a given hue that fits in RGB.
 
@@ -294,19 +322,19 @@ def compute_max_saturation(a: float, b: float, mat: Matrix, coeff: dict[str, dic
 
     # Select different coefficients depending on which component goes below zero first.
 
-    if alg.vdot(coeff['r']['limit'], [a, b]) > 1:
+    if alg.vdot(ok_coeff[0][0], [a, b]) > 1:
         # Red component
-        k0, k1, k2, k3, k4 = coeff['r']['coeff']
-        wl, wm, ws = mat[0]
+        k0, k1, k2, k3, k4 = ok_coeff[0][1]
+        wl, wm, ws = lms_to_rgb[0]
 
-    elif alg.vdot(coeff['g']['limit'], [a, b]) > 1:
+    elif alg.vdot(ok_coeff[1][0], [a, b]) > 1:
         # Green component
-        k0, k1, k2, k3, k4 = coeff['g']['coeff']
-        wl, wm, ws = mat[1]
+        k0, k1, k2, k3, k4 = ok_coeff[1][1]
+        wl, wm, ws = lms_to_rgb[1]
     else:
         # Blue component
-        k0, k1, k2, k3, k4 = coeff['b']['coeff']
-        wl, wm, ws = mat[2]
+        k0, k1, k2, k3, k4 = ok_coeff[2][1]
+        wl, wm, ws = lms_to_rgb[2]
 
     # Approximate max saturation using a polynomial:
     sat = k0 + k1 * a + k2 * b + k3 * (a ** 2) + k4 * a * b
@@ -344,7 +372,11 @@ def compute_max_saturation(a: float, b: float, mat: Matrix, coeff: dict[str, dic
     return sat
 
 
-def okhsl_to_oklab(hsl: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def okhsl_to_oklab(
+    hsl: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Convert Okhsl to Oklab."""
 
     h, s, l = hsl
@@ -357,7 +389,7 @@ def okhsl_to_oklab(hsl: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         a_ = math.cos(2.0 * math.pi * h)
         b_ = math.sin(2.0 * math.pi * h)
 
-        c_0, c_mid, c_max = get_cs([L, a_, b_], mat, coeff)
+        c_0, c_mid, c_max = get_cs([L, a_, b_], lms_to_rgb, ok_coeff)
 
         # Interpolate the three values for C so that:
         # ```
@@ -389,7 +421,11 @@ def okhsl_to_oklab(hsl: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
     return [L, a, b]
 
 
-def oklab_to_okhsl(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]) -> Vector:
+def oklab_to_okhsl(
+    lab: Vector,
+    lms_to_rgb: Matrix,
+    ok_coeff: list[list[Vector]]
+) -> Vector:
     """Oklab to Okhsl."""
 
     L = lab[0]
@@ -403,7 +439,7 @@ def oklab_to_okhsl(lab: Vector, mat: Matrix, coeff: dict[str, dict[str, Vector]]
         a_ = lab[1] / c
         b_ = lab[2] / c
 
-        c_0, c_mid, c_max = get_cs([L, a_, b_], mat, coeff)
+        c_0, c_mid, c_max = get_cs([L, a_, b_], lms_to_rgb, ok_coeff)
 
         mid = 0.8
         mid_inv = 1.25
