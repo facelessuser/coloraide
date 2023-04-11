@@ -4,7 +4,7 @@
   --swatch-gamut-border-color: hsl(340 82% 52%);
   --swatch-stops: transparent;
   --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity="0.1"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
-  0 0 / 20px 20px #fefefe;
+  0 0 / 0.5em 0.5em #fefefe;
 
   [data-md-color-scheme="slate"] {
     --swatch-border-color: hsla(232, 15%, 25%, 1);
@@ -15,7 +15,7 @@
     --swatch-border-color: hsl(231deg 15% 25%);
     --swatch-gamut-border-color: hsl(326, 100%, 74%);
     --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity="0.45"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
-  0 0 / 20px 20px #2b2e3b;
+  0 0 / 0.5em 0.5em #2b2e3b;
   }
 }
 
@@ -71,6 +71,7 @@
 div.swatch-bar {
   box-sizing: border-box;
   background: var(--transparency);
+  background-size: 1em 1em;
   border: 2px solid var(--swatch-bar-border-color);
 
   .swatch {

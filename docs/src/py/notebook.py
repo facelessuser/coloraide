@@ -570,7 +570,7 @@ def _color_command_console(colors, gamut=WEBSPACE):
     values = []
     for item in colors:
         if isinstance(item, (HtmlGradient, Steps)):
-            current = total = percent = last = 0
+            current = total = percent = 0
             if isinstance(item, Steps):
                 total = len(item)
                 percent = 100 / total
@@ -587,7 +587,6 @@ def _color_command_console(colors, gamut=WEBSPACE):
                 if current:
                     stops.append('{}'.format(color.convert(gamut).to_string()))
                     stops.append('{}'.format(color.convert(gamut).to_string()))
-                    last = current
                     if e < (total - 1):
                         current += percent
                     else:

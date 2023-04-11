@@ -11,7 +11,6 @@ approach.
 import matplotlib.pyplot as plt
 import sys
 import os
-import math
 import argparse
 import numpy as np
 

@@ -314,12 +314,10 @@ during the transition. This is because `#!color transparent` is actually black. 
 transition looks just as one would expect as the transparent color's channels are weighted less due to the high
 transparency.
 
-/// html | div[style="--swatch-bg-color: hsl(0, 0%, 100%); --swatch-bg-alt-color: hsl(0, 0%, 90%);"]
 ```py play
 Color.interpolate(['white', 'transparent'], space='srgb', premultiplied=False)
 Color.interpolate(['white', 'transparent'], space='srgb')
 ```
-///
 
 As a final example, below we have an opaque orange and a blue that is quite transparent. Logically, the blue shouldn't
 have as big an affect on the overall color as it is so faint, and yet, in the un-premultiplied example, when mixing the
