@@ -2,7 +2,7 @@
   --swatch-bar-border-color: hsl(0, 0%, 90%);
   --swatch-border-color: hsl(0, 0%, 85%);
   --swatch-gamut-border-color: hsl(340 82% 52%);
-  --swatch-stops: transparent, transparent;
+  --swatch-stops: transparent;
   --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity="0.1"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
   0 0 / 20px 20px #fefefe;
 
@@ -113,12 +113,12 @@ div.swatch-bar {
 
 @media (color-gamut: p3) {
   .swatch-color {
-    background: linear-gradient(in xyz to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
+    background: linear-gradient(in xyz-d65 to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
   }
 }
 
 @media (color-gamut: rec2020) {
   .swatch-color {
-    background: linear-gradient(in xyz to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
+    background: linear-gradient(in xyz-d65 to right, var(--swatch-stops)); /* stylelint-disable-line function-linear-gradient-no-nonstandard-direction */
   }
 }

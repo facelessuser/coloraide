@@ -585,8 +585,8 @@ def _color_command_console(colors, gamut=WEBSPACE):
             for e, color in enumerate(item):
                 color.fit(gamut)
                 if current:
-                    stops.append('{} {}%'.format(color.convert(gamut).to_string(), str(last)))
-                    stops.append('{} {}%'.format(color.convert(gamut).to_string(), str(current)))
+                    stops.append('{}'.format(color.convert(gamut).to_string()))
+                    stops.append('{}'.format(color.convert(gamut).to_string()))
                     last = current
                     if e < (total - 1):
                         current += percent

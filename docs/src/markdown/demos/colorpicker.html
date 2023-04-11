@@ -281,13 +281,13 @@
 
         @media (color-gamut: p3) {
           input[type=range] {
-            background: linear-gradient(in xyz to right, var(--slider-stops));
+            background: linear-gradient(in xyz-d65 to right, var(--slider-stops));
           }
         }
 
         @media (color-gamut: rec2020) {
           input[type=range] {
-            background: linear-gradient(in xyz to right, var(--slider-stops));
+            background: linear-gradient(in xyz-d65 to right, var(--slider-stops));
           }
         }
 
