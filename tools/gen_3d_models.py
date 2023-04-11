@@ -119,14 +119,14 @@ plot_model(
     'lch',
     TEMPLATE.format('CIELCh D50'),
     'lch-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
     'lch-d65',
     TEMPLATE.format('CIELCh D65'),
     'lch-d65-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
@@ -139,7 +139,7 @@ plot_model(
     'oklch',
     TEMPLATE.format('OkLCh'),
     'oklch-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
@@ -152,7 +152,7 @@ plot_model(
     'lchuv',
     TEMPLATE.format('LChuv'),
     'lchuv-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
@@ -179,7 +179,7 @@ plot_model(
     'jzczhz',
     TEMPLATE.format('JzCzhz'),
     'jzczhz-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
@@ -205,7 +205,7 @@ plot_model(
     'lch99o',
     TEMPLATE.format('DIN99o LCh'),
     'lch99o-3d.png',
-    azim=120
+    azim=300
 )
 
 plot_model(
@@ -235,15 +235,13 @@ plot_model(
 plot_model(
     'cam16-jmh',
     TEMPLATE.format('CAM16 JMh'),
-    'cam16-jmh-3d.png',
-    azim=145
+    'cam16-jmh-3d.png'
 )
 
 plot_model(
     'hct',
     TEMPLATE.format('HCT'),
-    'hct-3d.png',
-    azim=145
+    'hct-3d.png'
 )
 
 plot_model(

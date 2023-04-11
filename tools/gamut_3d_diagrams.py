@@ -22,6 +22,7 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Cylindrical, LChish, Labish, HSLish, HSVish  # noqa: E402
+from coloraide import algebra as alg  # noqa: E402
 
 # Special cases for certain color spaces
 color_options = {
@@ -67,15 +68,16 @@ def cyl_disc(ColorCyl, space, gamut, factor, location, mode, x, y, z, cmap, reso
         c = ColorCyl(gamut, [0, 0, b], opacity).convert(space, norm=False)
         if space_type == 'hslish/hsvish':
             hue, saturation, lightness = c._space.indexes()
-            x.append([c[saturation] * math.sin(math.radians(c[hue]))] * resolution)
-            y.append([c[saturation] * math.cos(math.radians(c[hue]))] * resolution)
+            a, b = alg.polar_to_rect(c[saturation], c[hue])
+            x.append([a] * resolution)
+            y.append([b] * resolution)
             z.append([c[lightness]] * resolution)
         else:
             hue = c._space.hue_index()
-            a, b = 1, 2
-            x.append([c[a] * math.sin(math.radians(c[hue]))] * resolution)
-            y.append([c[a] * math.cos(math.radians(c[hue]))] * resolution)
-            z.append([c[b]] * resolution)
+            a, b = alg.polar_to_rect(c[1], c[hue])
+            x.append([a] * resolution)
+            y.append([b] * resolution)
+            z.append([c[2]] * resolution)
         s = c.convert('srgb')
         if not s.in_gamut():
             s.fit()
@@ -101,15 +103,16 @@ def cyl_disc(ColorCyl, space, gamut, factor, location, mode, x, y, z, cmap, reso
             c.convert(space, norm=False, in_place=True)
             if space_type == 'hslish/hsvish':
                 hue, saturation, lightness = c._space.indexes()
-                x[-1].append(c[saturation] * math.sin(math.radians(c[hue])))
-                y[-1].append(c[saturation] * math.cos(math.radians(c[hue])))
+                a, b = alg.polar_to_rect(c[saturation], c[hue])
+                x[-1].append(a)
+                y[-1].append(b)
                 z[-1].append(c[lightness])
             else:
                 hue = c._space.hue_index()
-                a, b = 1, 2
-                x[-1].append(c[a] * math.sin(math.radians(c[hue])))
-                y[-1].append(c[a] * math.cos(math.radians(c[hue])))
-                z[-1].append(c[b])
+                a, b = alg.polar_to_rect(c[1], c[hue])
+                x[-1].append(a)
+                y[-1].append(b)
+                z[-1].append(c[2])
             s = c.convert('srgb')
             if not s.in_gamut():
                 s.fit()
@@ -203,13 +206,15 @@ def render_space(space, gamut, ax, mode, resolution, opacity):
 
             if space_type in ('hslish', 'hsvish'):
                 hue, saturation, lightness = c._space.indexes()
-                x[-1].append(c[saturation] * math.sin(math.radians(c[hue])))
-                y[-1].append(c[saturation] * math.cos(math.radians(c[hue])))
+                a, b = alg.polar_to_rect(c[saturation], c[hue])
+                x[-1].append(a)
+                y[-1].append(b)
                 z[-1].append(c[lightness])
             elif space_type == 'lchish':
                 lightness, chroma, hue = c._space.indexes()
-                x[-1].append(c[chroma] * math.sin(math.radians(c[hue])))
-                y[-1].append(c[chroma] * math.cos(math.radians(c[hue])))
+                a, b = alg.polar_to_rect(c[chroma], c[hue])
+                x[-1].append(a)
+                y[-1].append(b)
                 z[-1].append(c[lightness])
             elif space_type == 'labish':
                 lightness, a, b = c._space.indexes()
@@ -219,14 +224,15 @@ def render_space(space, gamut, ax, mode, resolution, opacity):
             elif is_cyl:
                 hue = c._space.hue_index()
                 if hue == 0:
-                    a, b = 1, 2
+                    i, j = 1, 2
                 elif hue == 1:
-                    a, b = 0, 2
+                    i, j = 0, 2
                 else:
-                    a, b = 0, 1
-                x[-1].append(c[a] * math.sin(math.radians(c[hue])))
-                y[-1].append(c[a] * math.cos(math.radians(c[hue])))
-                z[-1].append(c[b])
+                    i, j = 0, 1
+                a, b = alg.polar_to_rect(c[i], c[hue])
+                x[-1].append(a)
+                y[-1].append(b)
+                z[-1].append(c[j])
             else:
                 x[-1].append(c[0])
                 y[-1].append(c[1])
