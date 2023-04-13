@@ -137,6 +137,7 @@ PQ
 Perceptibility
 Piecewise
 Planckian
+Plotly
 Pokorny
 Precalculate
 Premultiply
