@@ -4,3 +4,4 @@ shapely
 pillow
 matplotlib
 plotly
+kaleido

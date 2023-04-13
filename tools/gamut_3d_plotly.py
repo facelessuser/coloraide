@@ -4,11 +4,10 @@ import argparse
 from coloraide.everything import ColorAll as Color
 from scipy.spatial import Delaunay
 from coloraide import algebra as alg
-from plotly.figure_factory._trisurf import trisurf
-import math
+from plotly.figure_factory import create_trisurf as trisurf
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish
 import plotly.graph_objects as go
-import plotly.io as io
+import math
 
 
 def create_custom_hsl(gamut):
@@ -31,81 +30,91 @@ def create_custom_hsl(gamut):
     return ColorCyl
 
 
-def cyl_disc(ColorCyl, space, location, resolution, opacity, edges):
+def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
 
-    Excpectation is either a HSL, HSV, or HSB style cylinder.
+    Expectation is either a HSL, HSV, or HSB style cylinder.
     """
 
-    x = []
-    y = []
-    z = []
-    cmap = []
     cs = ColorCyl.CS_MAP[space]
-    factor = cs.channels[1].high
     if isinstance(cs, (HSVish, HSLish)):
         space_type = 'hslish/hsvish'
     else:
         space_type = space
+    gspace = ColorCyl.CS_MAP[gamut]
+    factor = gspace.channels[1].high
 
-    b = 0.0 if location == 'bottom' else 1.0 * factor
-    start, end = (1.0 * factor, 0.0) if location == 'bottom' else (0.0, 1.0 * factor)
+    zpos = 0.0 if location == 'bottom' else 1.0 * factor
+    start, end = 1.0 * factor, 0.0
+    traces = []
 
-    # Interpolate a circle on the outer edge
-    c1 = ColorCyl(space, [0, start, b], opacity)
-    c2 = ColorCyl(space, [359.99999, start, b], opacity)
-    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=space, hue='specified')
-    chan_name = str(c1._space.channels[1])
-    s2 = [c.clone().set(chan_name, end) for c in s1]
+    # Render the two halves of the disc
+    for hue_start, hue_end in ((0, 180), (180, 360)):
+        x = []
+        y = []
+        z = []
+        u = []
+        v = []
+        cmap = []
 
-    # Interpolate concentrical circle to the center of the disc
-    step = int(resolution / 4)
-    for r in range(step + 1):
-        if location == 'bottom':
-            r = step - r
+        # Interpolate a circle on the outer edge
+        c1 = ColorCyl(gamut, [hue_start, start, zpos])
+        c2 = ColorCyl(gamut, [hue_end, start, zpos])
+        chan_name = str(c1._space.channels[1])
+        s1 = ColorCyl.steps([c1, c2], steps=int(resolution / 2), space=gamut, hue='specified')
+        s2 = [t.clone().set(chan_name, end) for t in s1]
 
-        for t1, t2 in zip(s1, s2):
-            c = t1.mix(t2, r / step, space=space, hue='specified')
-
-            # HSL and HSV spaces
-            if space_type == 'hslish/hsvish':
-                hue, saturation, lightness = c._space.indexes()
-                x.append(c[saturation] * math.cos(math.radians(c[hue])))
-                y.append(c[saturation] * math.sin(math.radians(c[hue])))
-                z.append(c[lightness])
-
-            # HWB
-            else:
+        # Interpolate concentric circles to the center of the disc
+        step = int(resolution / 4)
+        for r in range(step):
+            for t1, t2 in zip(s1, s2):
+                c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
                 hue = c._space.hue_index()
-                a, b = 1, 2
-                x.append(c[a] * math.cos(math.radians(c[hue])))
-                y.append(c[a] * math.sin(math.radians(c[hue])))
-                z.append(c[b])
+                a, b = alg.polar_to_rect(c[1], c[hue])
+                u.append(a)
+                v.append(b)
+                c.convert(space, norm=False, in_place=True)
 
-            # Ensure colors fit in output color gamut.
-            s = c.convert('srgb')
-            if not s.in_gamut():
-                s.fit()
-            else:
-                s.clip()
-            cmap.append(s.to_string(hex=True))
+                # HSL and HSV spaces
+                if space_type == 'hslish/hsvish':
+                    hue, saturation, lightness = c._space.indexes()
+                    a, b = alg.polar_to_rect(c[saturation], c[hue])
+                    x.append(a)
+                    y.append(b)
+                    z.append(c[lightness])
 
-    # Calcualte triangles
-    tri = Delaunay(list(zip(x, y)))
+                # HWB
+                else:
+                    hue = c._space.hue_index()
+                    a, b = alg.polar_to_rect(c[1], c[hue])
+                    x.append(a)
+                    y.append(b)
+                    z.append(c[2])
 
-    # Generate triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        edges_color="rgb(50, 50, 50)",
-        scale=None,
-        plot_edges=edges,
-        color_func=[cmap[t[1]] for t in tri.simplices]
-    )
-    trace[0].update(opacity=opacity)
-    return trace
+                # Ensure colors fit in output color gamut.
+                s = c.convert('srgb')
+                if not s.in_gamut():
+                    s.fit()
+                else:
+                    s.clip()
+                cmap.append(s.to_string(hex=True))
+
+        # Calculate triangles
+        tri = Delaunay(list(zip(u, v)))
+
+        # Generate triangulated surface
+        trace = trisurf(
+            x=x, y=y, z=z,
+            simplices=tri.simplices,
+            show_colorbar=False,
+            plot_edges=edges,
+            color_func=[cmap[t[1]] for t in tri.simplices]
+        ).data
+        trace[0].update(opacity=opacity)
+        traces.append(trace)
+
+    return traces[0] + traces[1]
 
 
 def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
@@ -116,13 +125,6 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     as the Z axis. Lab-ish colors are performed in the mode as they are essentially cylindrical
     with the chroma and hue converted to Cartesian a and b.
     """
-
-    u = []
-    v = []
-    x = []
-    y = []
-    z = []
-    cmap = []
 
     target = Color.CS_MAP[space]
     is_cyl = isinstance(target, Cylindrical)
@@ -144,94 +146,99 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     # Adjust scaling factor if the mapping space requires it
     factor = gspace.channels[1].high
 
-    # Interpolate the sides of the cylincer at 0 and 180 degrees
-    c1 = ColorCyl(gamut_space, [0, 1 * factor, 1 * factor], opacity)
-    c2 = ColorCyl(gamut_space, [0, 1 * factor, 0], opacity)
-    c3 = ColorCyl(gamut_space, [359.99999, 1 * factor, 1 * factor], opacity)
-    c4 = ColorCyl(gamut_space, [359.99999, 1 * factor, 0], opacity)
-    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space)
-    s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space)
+    # Render the two halves of the cylinder
+    for start, end in ((0, 180), (180, 360)):
+        u = []
+        v = []
+        x = []
+        y = []
+        z = []
+        cmap = []
 
-    # Create a 3D mesh by interpolating the the degree ring at each point down the cylinder side.
-    for t1, t2 in zip(s1, s2):
-        for c in ColorCyl.steps([t1, t2], steps=resolution, space=gamut_space, hue='specified'):
-            u.append(c[2])
-            v.append(c['hue'])
-            c.convert(space, norm=False, in_place=True)
-            # LCh spaces
-            if is_lchish:
-                light, chroma, hue = c._space.names()
-                a, b = alg.polar_to_rect(c[chroma], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
+        # Interpolate the sides of the cylinder at 0 and 180 degrees
+        c1 = ColorCyl(gamut_space, [start, 1 * factor, 1 * factor])
+        c2 = ColorCyl(gamut_space, [start, 1 * factor, 0])
+        c3 = ColorCyl(gamut_space, [end, 1 * factor, 1 * factor])
+        c4 = ColorCyl(gamut_space, [end, 1 * factor, 0])
+        s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space, hue='specified')
+        s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space, hue='specified')
 
-            # HSL and HSV spaces
-            elif is_hslish_hsvish:
-                hue, sat, light = c._space.names()
-                a, b = alg.polar_to_rect(c[sat], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
+        # Create a 3D mesh by interpolating the the degree ring at each point down the cylinder side.
+        for t1, t2 in zip(s1, s2):
+            for c in ColorCyl.steps([t1, t2], steps=int(resolution / 2), space=gamut_space, hue='specified'):
+                u.append(c[2])
+                v.append(c['hue'])
+                c.convert(space, norm=False, in_place=True)
+                # LCh spaces
+                if is_lchish:
+                    light, chroma, hue = c._space.names()
+                    a, b = alg.polar_to_rect(c[chroma], c[hue])
+                    x.append(a)
+                    y.append(b)
+                    z.append(c[light])
 
-            # HWB or any other cylindrical space that doesn't fit in the categories above.
-            elif is_cyl:
-                hue = c._space.hue_index()
-                a, b = alg.polar_to_rect(c[1], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[2])
+                # HSL and HSV spaces
+                elif is_hslish_hsvish:
+                    hue, sat, light = c._space.names()
+                    a, b = alg.polar_to_rect(c[sat], c[hue])
+                    x.append(a)
+                    y.append(b)
+                    z.append(c[light])
 
-            # Lab spaces
-            elif is_labish:
-                light, a, b = c._space.names()
-                x.append(c[a])
-                y.append(c[b])
-                z.append(c[light])
+                # HWB or any other cylindrical space that doesn't fit in the categories above.
+                elif is_cyl:
+                    hue = c._space.hue_index()
+                    a, b = alg.polar_to_rect(c[1], c[hue])
+                    x.append(a)
+                    y.append(b)
+                    z.append(c[2])
 
-            # Non-cylindrical spaces could be done here, but normally are not.
-            else:
-                x.append(c[0])
-                y.append(c[1])
-                z.append(c[2])
+                # Lab spaces
+                elif is_labish:
+                    light, a, b = c._space.names()
+                    x.append(c[a])
+                    y.append(c[b])
+                    z.append(c[light])
 
-            # Adjust gamut to precicely fit
-            s = c.convert('srgb')
-            if not s.in_gamut():
-                s.fit()
-            else:
-                s.clip()
+                # Non-cylindrical spaces could be done here, but normally are not.
+                else:
+                    x.append(c[0])
+                    y.append(c[1])
+                    z.append(c[2])
 
-            cmap.append(s.to_string(hex=True))
+                # Adjust gamut to fit the display space
+                s = c.convert('srgb')
+                if not s.in_gamut():
+                    s.fit()
+                else:
+                    s.clip()
 
-    # Calculate the triangles
-    tri = Delaunay(list(zip(u, v)))
+                cmap.append(s.to_string(hex=True))
 
-    # Build the triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        edges_color="rgb(50, 50, 50)",
-        scale=None,
-        plot_edges=edges,
-        color_func=[cmap[t[1]] for t in tri.simplices]
-    )
-    trace[0].update(opacity=opacity)
-    fig.add_traces(trace)
+        # Calculate the triangles
+        tri = Delaunay(list(zip(u, v)))
 
-    # In cases of RGB cylinders, it makes sense to generate the tops and bottoms if they are missing.
-    # Since these are unique to the space, we normally generate them in the space itself instead of some
-    # mapping space. These are only needed with HSL and HWB spaces.
-    if is_hslish or space == 'hwb':
-        target = gspace.channels[1].high
-        # Tops are not usually present in either HSL or HWB without explicitely generating them.
-        fig.add_traces(cyl_disc(ColorCyl, space, 'top', resolution, opacity, edges))
+        # Build the triangulated surface
+        trace = trisurf(
+            x=x, y=y, z=z,
+            simplices=tri.simplices,
+            show_colorbar=False,
+            plot_edges=edges,
+            color_func=[cmap[t[1]] for t in tri.simplices]
+        ).data
+        trace[0].update(opacity=opacity)
+        fig.add_traces(trace)
+
+    # Generate tops for spaces that do not normally get tops automatically.
+    if space in ('hwb', 'hpluv'):
+        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
+
+    if not is_labish and not is_lchish:
         # We normally get a bottom except in the case of HWB.
-        if space == 'hwb':
-            fig.add_traces(cyl_disc(ColorCyl, space, 'bottom', resolution, opacity, edges))
+        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges))
 
     return fig
+
 
 def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
     """Render the RGB rectangular face."""
@@ -244,7 +251,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
     c = []
     cmap = []
 
-    # Render an RGB face by taking to interpolated sides and interplating the points across the face
+    # Render an RGB face by taking to interpolated sides and interpolating the points across the face
     for c1, c2 in zip(s1, s2):
         for t in Color.steps([c1, c2], steps=int(resolution / 4), space=gamut):
             x.append(t[0])
@@ -271,12 +278,11 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
         x=a, y=b, z=c,
         simplices=tri.simplices,
         show_colorbar=False,
-        edges_color="rgb(50, 50, 50)",
-        scale=None,
         plot_edges=edges,
         color_func=[cmap[t[1]] for t in tri.simplices]
-    )
+    ).data
     trace[0].update(opacity=opacity)
+
     return trace
 
 
@@ -284,14 +290,14 @@ def render_space_rect(fig, space, gamut, resolution, opacity, edges):
     """Render rectangular space."""
 
     # Six corners of the RGB cube
-    ck = Color(gamut, [0, 0, 0], opacity)
-    cw = Color(gamut, [1, 1, 1], opacity)
-    cr = Color(gamut, [1, 0, 0], opacity)
-    cg = Color(gamut, [0, 1, 0], opacity)
-    cb = Color(gamut, [0, 0, 1], opacity)
-    cy = Color(gamut, [1, 1, 0], opacity)
-    cc = Color(gamut, [0, 1, 1], opacity)
-    cm = Color(gamut, [1, 0, 1], opacity)
+    ck = Color(gamut, [0, 0, 0])
+    cw = Color(gamut, [1, 1, 1])
+    cr = Color(gamut, [1, 0, 0])
+    cg = Color(gamut, [0, 1, 0])
+    cb = Color(gamut, [0, 0, 1])
+    cy = Color(gamut, [1, 1, 0])
+    cc = Color(gamut, [0, 1, 1])
+    cm = Color(gamut, [1, 0, 1])
 
     # Interpolate two sides of a given face and interpolate the rest
     s1 = Color.steps([cy, cw], steps=resolution, space=gamut)
@@ -319,11 +325,46 @@ def plot_gamut_in_space(
     dark=False,
     resolution=200,
     opacity=1.0,
-    edges=False
+    edges=False,
+    size=(800, 800),
+    camera=None
 ):
     """Plot the given space in sRGB."""
 
-    # Setup axis
+    # I have no idea why this number causes HSL to lose its bottom
+    if resolution == 50:
+        resolution = 51
+
+    if camera is None:
+        camera = {'a': 45, 'e': 45, 'r': math.sqrt(1.25 ** 2 + 1.25 ** 2 + 1.25 ** 2)}
+
+    a = math.radians((90 - camera['a']) % 360)
+    e = math.radians(90 - camera['e'])
+    r = camera['r']
+    y = r * math.sin(e) * math.cos(a)
+    x = r * math.sin(e) * math.sin(a)
+    z = r * math.cos(e)
+
+    # Get names for
+    target = Color.CS_MAP[space]
+    names = target.CHANNELS
+    is_cyl = isinstance(target, Cylindrical)
+    is_labish = isinstance(target, Labish)
+    is_lchish = isinstance(target, LChish)
+    is_hslish_hsvish = isinstance(target, (HSLish, HSVish))
+
+    # Setup axes
+    if is_labish:
+        c1, c2, c3 = target.indexes()
+        axm = [c2, c3, c1]
+    elif is_lchish:
+        c1, c2, c3 = target.indexes()
+        axm = [c3, c2, c1]
+    elif is_hslish_hsvish:
+        axm = [0, 1, 2]
+    else:
+        axm = [0, 1, 2]
+
     showbackground = True
     backgroundcolor = "rgb(230, 230, 230)"
     gridcolor = "rgb(255, 255, 255)"
@@ -334,28 +375,34 @@ def plot_gamut_in_space(
         gridcolor=gridcolor,
         zerolinecolor=zerolinecolor,
     )
+    xaxis = str(names[axm[0]]) if not is_cyl else "{} (0˚ - 360˚)".format(names[axm[0]])
+    yaxis = str(names[axm[1]])
+    zaxis = str(names[axm[2]])
 
     # Setup plot layout
     layout = go.Layout(
         # General figure characteristics
         title=title,
-        width=800,
-        height=800,
+        width=size[0],
+        height=size[1],
 
         # Specify scene layout
         scene=go.layout.Scene(
-            xaxis=go.layout.scene.XAxis(**axis),
-            yaxis=go.layout.scene.YAxis(**axis),
-            zaxis=go.layout.scene.ZAxis(**axis),
+            xaxis=go.layout.scene.XAxis(title=xaxis, showticklabels=not is_cyl, **axis),
+            yaxis=go.layout.scene.YAxis(title=yaxis, **axis),
+            zaxis=go.layout.scene.ZAxis(title=zaxis, **axis),
             aspectratio=dict(
                 x=1, y=1, z=1
             ),
         ),
 
         # Control camera position
-        # scene_camera = dict(
-        #     eye=dict(x=2, y=2, z=0.1)
-        # )
+        scene_camera=dict(
+            projection=go.layout.scene.camera.Projection(type='perspective'),
+            center=dict(x=0, y=0, z=0),
+            up=dict(x=0, y=0, z=1),
+            eye=dict(x=x, y=y, z=z)
+        )
     )
 
     # Create figure to store the plot
@@ -392,14 +439,19 @@ def main():
         default="200",
         help=(
             "How densely to render the figure. Some spaces need higher resolution to flesh out certain areas, "
-            "but it comes at the cost of speed."
+            "but it comes at the cost of speed. Minimum is 60, default is 200."
         )
     )
+    parser.add_argument('--pos', '-p', default=None, help="Position of camara 'x:y:z'")
     parser.add_argument('--edges', '-e', action="store_true", help="Plot edges.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
-    parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
+    parser.add_argument('--height', '-H', type=int, default=800, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
+    parser.add_argument('--azimuth', '-A', type=float, default=45, help="Camera X position")
+    parser.add_argument('--elevation', '-E', type=float, default=45, help="Camera Y position")
+    parser.add_argument('--distance', '-D', type=float, default=2.5, help="Camera Z position")
     args = parser.parse_args()
 
     # Plot the color space
@@ -408,14 +460,22 @@ def main():
         args.gamut,
         title=args.title,
         dark=args.dark,
-        resolution=int(args.resolution),
+        resolution=max(8, int(args.resolution)),
         opacity=args.opacity,
-        edges=args.edges
+        edges=args.edges,
+        size=(args.width, args.height),
+        camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance}
     )
 
     # Show or save the data as an image, etc.
-    fig.show()
-    io.write_json(fig, 'fig.json')
+    if args.output:
+        with open(args.output, 'wb') as f:
+            f.write(fig.to_image(format='png'))
+    else:
+        fig.show()
+
+    # Dump JSON data
+    # `io.write_json(fig, 'fig.json')`
 
 
 if __name__ == "__main__":

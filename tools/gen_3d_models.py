@@ -1,32 +1,31 @@
 """Generate all 3D models."""
 import sys
 import os
-import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.getcwd())
 
-import tools.gamut_3d_diagrams as diagrams  # noqa: E402
+import tools.gamut_3d_plotly as diagrams  # noqa: E402
 
 LOCATION = 'docs/src/markdown/images'
 TEMPLATE = 'sRGB Gamut Plotted in {} Color Space'
 
 
-def plot_model(name, title, filename, gamut='srgb', elev=30, azim=-60.0):
+def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
     """Generate the models."""
 
     print('===> Generating {} model...'.format(name))
-    diagrams.plot_gamut_in_space(
+    fig = diagrams.plot_gamut_in_space(
         name,
         gamut=gamut,
         title=title,
         resolution=200,
-        rotate_elev=elev,
-        rotate_azim=azim
+        size=(800, 800),
+        camera={'a': azim, 'e': elev, 'r': 2.5}
     )
-    plt.savefig(os.path.join(LOCATION, filename), dpi=200)
-    plt.close()
-    plt.cla()
-    plt.clf()
+
+    with open(os.path.join(LOCATION, filename), 'wb') as f:
+        f.write(fig.to_image(format='png'))
+    del fig
     print('[complete]')
 
 
