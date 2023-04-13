@@ -666,13 +666,13 @@ def interpolator(
         if isinstance(x, stop):
             i += 1
             stops[i] = x.stop
-            color = current._handle_color_input(x.color)
+            color = current.new(x.color)
         elif callable(x):
             easing = x
             continue
         else:
             i += 1
-            color = current._handle_color_input(x)
+            color = current.new(x)
             stops[i] = None
 
         # Adjust color to space
