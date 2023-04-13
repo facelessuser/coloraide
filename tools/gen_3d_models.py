@@ -1,6 +1,7 @@
 """Generate all 3D models."""
 import sys
 import os
+import argparse
 
 sys.path.insert(0, os.getcwd())
 
@@ -29,229 +30,63 @@ def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
     print('[complete]')
 
 
-plot_model(
-    'srgb',
-    'sRGB Color Space',
-    'srgb-3d.png'
-)
+models = {
+    'srgb': {'title': 'sRGB Color Space', 'filename': 'srgb-3d.png'},
+    'hsl': {'title': 'HSL Color Space', 'filename': 'hsl-3d.png'},
+    'hsi': {'title': 'HSI Color Space', 'filename': 'hsi-3d.png'},
+    'hsv': {'title': 'HSV Color Space', 'filename': 'hsv-3d.png'},
+    'hwb': {'title': 'HWB Color Space', 'filename': 'hwb-3d.png', 'elev': 210},
+    'okhsl': {'title': 'Okhsl Color Space', 'filename': 'okhsl-3d.png'},
+    'okhsv': {'title': 'Okhsv Color Space', 'filename': 'okhsv-3d.png'},
+    'hsluv': {'title': 'HSLuv Color Space', 'filename': 'hsluv-3d.png'},
+    'hpluv': {'title': 'HPLuv Color Space', 'filename': 'hpluv-3d.png'},
+    'xyz-d50': {'title': TEMPLATE.format('XYZ D50'), 'filename': 'xyz-d50-3d.png'},
+    'xyz-d65': {'title': TEMPLATE.format('XYZ D65'), 'filename': 'xyz-d65-3d.png'},
+    'xyy': {'title': TEMPLATE.format('xyY'), 'filename': 'xyy-3d.png'},
+    'lab': {'title': TEMPLATE.format('CIELab D50'), 'filename': 'lab-3d.png'},
+    'lab-d65': {'title': TEMPLATE.format('CIELab D65'), 'filename': 'lab-d65-3d.png'},
+    'lch': {'title': TEMPLATE.format('CIELCh D50'), 'filename': 'lch-3d.png', 'azim': 300},
+    'lch-d65': {'title': TEMPLATE.format('CIELCh D65'), 'filename': 'lch-d65-3d.png', 'azim': 300},
+    'oklab': {'title': TEMPLATE.format('Oklab'), 'filename': 'oklab-3d.png'},
+    'oklch': {'title': TEMPLATE.format('OkLCh'), 'filename': 'oklch-3d.png', 'azim': 300},
+    'luv': {'title': TEMPLATE.format('CIELuv'), 'filename': 'luv-3d.png'},
+    'lchuv': {'title': TEMPLATE.format('LChuv'), 'filename': 'lchuv-3d.png', 'azim': 300},
+    'din99o': {'title': TEMPLATE.format('DIN99o'), 'filename': 'din99o-3d.png'},
+    'lch99o': {'title': TEMPLATE.format('DIN99o LCh'), 'filename': 'lch99o-3d.png', 'azim': 300},
+    'jzazbz': {'title': TEMPLATE.format('Jzazbz'), 'filename': 'jzazbz-3d.png'},
+    'jzczhz': {'title': TEMPLATE.format('JzCzhz'), 'filename': 'jzczhz-3d.png', 'azim': 300},
+    'rlab': {'title': TEMPLATE.format('RLAB'), 'filename': 'rlab-3d.png'},
+    'hunter-lab': {'title': TEMPLATE.format('Hunter Lab'), 'filename': 'hunter-lab-3d.png', 'elev': 5, 'azim': -30},
+    'ipt': {'title': TEMPLATE.format('IPT'), 'filename': 'ipt-3d.png'},
+    'ictcp': {'title': TEMPLATE.format('ICtCp'), 'filename': 'ictcp-3d.png', 'azim': 60},
+    'igpgtg': {'title': TEMPLATE.format('IgPgTg'), 'filename': 'igpgtg-3d.png'},
+    'cam16': {'title': TEMPLATE.format('CAM16'), 'filename': 'cam16-3d.png'},
+    'cam16-ucs': {'title': TEMPLATE.format('CAM16 UCS'), 'filename': 'cam16-ucs-3d.png'},
+    'cam16-scd': {'title': TEMPLATE.format('CAM16 SCD'), 'filename': 'cam16-scd-3d.png'},
+    'cam16-lcd': {'title': TEMPLATE.format('CAM16 LCD'), 'filename': 'cam16-lcd-3d.png'},
+    'cam16-jmh': {'title': TEMPLATE.format('CAM16 JMh'), 'filename': 'cam16-jmh-3d.png'},
+    'hct': {'title': TEMPLATE.format('HCT'), 'filename': 'hct-3d.png'},
+    'cmy': {'title': TEMPLATE.format('CMY'), 'filename': 'cmy-3d.png'},
+    'orgb': {'title': TEMPLATE.format('oRGB'), 'filename': 'orgb-3d.png', 'elev': 72}
+}
 
-plot_model(
-    'hsl',
-    'HSL Color Space',
-    'hsl-3d.png'
-)
 
-plot_model(
-    'hsi',
-    'HSI Color Space',
-    'hsi-3d.png'
-)
+def main():
+    """Main."""
 
-plot_model(
-    'hsv',
-    'HSV Color Space',
-    'hsv-3d.png'
-)
+    parser = argparse.ArgumentParser(prog='gen_3d_models', description='Generate 3D models of color spaces.')
+    parser.add_argument('--space', '-s', action='append', help="Color space.")
+    args = parser.parse_args()
 
-plot_model(
-    'hwb',
-    'HWB Color Space',
-    'hwb-3d.png',
-    elev=210
-)
+    if args.space:
+        for space in args.space:
+            kwargs = models.get(space)
+            if kwargs is not None:
+                plot_model(space, **kwargs)
+    else:
+        for space, kwargs in models.items():
+            plot_model(space, **kwargs)
 
-plot_model(
-    'okhsl',
-    'Okhsl Color Space',
-    'okhsl-3d.png'
-)
 
-plot_model(
-    'okhsv',
-    'Okhsv Color Space',
-    'okhsv-3d.png'
-)
-
-plot_model(
-    'hsluv',
-    'HSLuv Color Space',
-    'hsluv-3d.png'
-)
-
-plot_model(
-    'hpluv',
-    'HPLuv Color Space',
-    'hpluv-3d.png'
-)
-
-plot_model(
-    'xyz-d50',
-    TEMPLATE.format('XYZ D50'),
-    'xyz-d50-3d.png'
-)
-
-plot_model(
-    'xyz-d65',
-    TEMPLATE.format('XYZ D65'),
-    'xyz-d65-3d.png'
-)
-
-plot_model(
-    'xyy',
-    TEMPLATE.format('xyY'),
-    'xyy-3d.png'
-)
-
-plot_model(
-    'lab',
-    TEMPLATE.format('CIELab D50'),
-    'lab-3d.png'
-)
-
-plot_model(
-    'lab-d65',
-    TEMPLATE.format('CIELab D65'),
-    'lab-d65-3d.png'
-)
-
-plot_model(
-    'lch',
-    TEMPLATE.format('CIELCh D50'),
-    'lch-3d.png',
-    azim=300
-)
-
-plot_model(
-    'lch-d65',
-    TEMPLATE.format('CIELCh D65'),
-    'lch-d65-3d.png',
-    azim=300
-)
-
-plot_model(
-    'oklab',
-    TEMPLATE.format('Oklab'),
-    'oklab-3d.png'
-)
-
-plot_model(
-    'oklch',
-    TEMPLATE.format('OkLCh'),
-    'oklch-3d.png',
-    azim=300
-)
-
-plot_model(
-    'luv',
-    TEMPLATE.format('CIELuv'),
-    'luv-3d.png'
-)
-
-plot_model(
-    'lchuv',
-    TEMPLATE.format('LChuv'),
-    'lchuv-3d.png',
-    azim=300
-)
-
-plot_model(
-    'hunter-lab',
-    TEMPLATE.format('Hunter Lab'),
-    'hunter-lab-3d.png',
-    elev=5,
-    azim=-30
-)
-
-plot_model(
-    'rlab',
-    TEMPLATE.format('RLAB'),
-    'rlab-3d.png'
-)
-
-plot_model(
-    'jzazbz',
-    TEMPLATE.format('Jzazbz'),
-    'jzazbz-3d.png'
-)
-
-plot_model(
-    'jzczhz',
-    TEMPLATE.format('JzCzhz'),
-    'jzczhz-3d.png',
-    azim=300
-)
-
-plot_model(
-    'ipt',
-    TEMPLATE.format('IPT'),
-    'ipt-3d.png'
-)
-
-plot_model(
-    'ictcp',
-    TEMPLATE.format('ICtCp'),
-    'ictcp-3d.png',
-    azim=60
-)
-
-plot_model(
-    'din99o',
-    TEMPLATE.format('DIN99o'),
-    'din99o-3d.png'
-)
-
-plot_model(
-    'lch99o',
-    TEMPLATE.format('DIN99o LCh'),
-    'lch99o-3d.png',
-    azim=300
-)
-
-plot_model(
-    'cam16',
-    TEMPLATE.format('CAM16'),
-    'cam16-3d.png'
-)
-
-plot_model(
-    'cam16-ucs',
-    TEMPLATE.format('CAM16 UCS'),
-    'cam16-ucs-3d.png'
-)
-
-plot_model(
-    'cam16-scd',
-    TEMPLATE.format('CAM16 SCD'),
-    'cam16-scd-3d.png'
-)
-
-plot_model(
-    'cam16-lcd',
-    TEMPLATE.format('CAM16 LCD'),
-    'cam16-lcd-3d.png'
-)
-
-plot_model(
-    'cam16-jmh',
-    TEMPLATE.format('CAM16 JMh'),
-    'cam16-jmh-3d.png'
-)
-
-plot_model(
-    'hct',
-    TEMPLATE.format('HCT'),
-    'hct-3d.png'
-)
-
-plot_model(
-    'cmy',
-    TEMPLATE.format('CMY'),
-    'cmy-3d.png'
-)
-
-plot_model(
-    'orgb',
-    TEMPLATE.format('oRGB'),
-    'orgb-3d.png',
-    elev=72
-)
+if __name__ == "__main__":
+    sys.exit(main())

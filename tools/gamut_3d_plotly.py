@@ -8,6 +8,8 @@ from plotly.figure_factory import create_trisurf as trisurf
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish
 import plotly.graph_objects as go
 import math
+import plotly.io as io
+import os
 
 
 def create_custom_hsl(gamut):
@@ -469,13 +471,17 @@ def main():
 
     # Show or save the data as an image, etc.
     if args.output:
-        with open(args.output, 'wb') as f:
-            f.write(fig.to_image(format='png'))
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
         fig.show()
-
-    # Dump JSON data
-    # `io.write_json(fig, 'fig.json')`
 
 
 if __name__ == "__main__":
