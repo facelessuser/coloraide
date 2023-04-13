@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- **FIX**: Interpolation should not modify any input colors.
+
 ## 2.0.2
 
 - **FIX**: Consistent normalization of HWB hue.

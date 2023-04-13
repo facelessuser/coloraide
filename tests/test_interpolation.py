@@ -87,6 +87,15 @@ class TestCarryFoward(util.ColorAssertsPyTest):
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     """Test interpolation."""
 
+    def test_inputs_unmodified(self):
+        """Test that interpolation inputs are unmodified."""
+
+        c1 = Color('red')
+        c2 = Color('blue')
+        _ = Color.interpolate([c1, c2], space='oklab')
+        self.assertEqual(c1.to_string(), 'rgb(255 0 0)')
+        self.assertEqual(c2.to_string(), 'rgb(0 0 255)')
+
     def test_out_space_cylindrical(self):
         """Test out space with cylindrical color space."""
 
