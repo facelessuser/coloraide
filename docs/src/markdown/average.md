@@ -1,6 +1,6 @@
 # Color Averaging
 
-Color averaging is the process of calculated an average color from a set of other colors by taking the mean of each
+Color averaging is the process of calculating an average color from a set of other colors by taking the mean of each
 color channel. It can take as many colors as desired and will return a color that represents the average. This is not
 to be confused with interpolation which employs a different technique, but in certain situations, it can sort of
 function like mixing multiple colors.
@@ -30,6 +30,14 @@ space, hues will be averaged taking the circular mean.
 ```py play
 Color.average(['orange', 'yellow', 'red'], space='srgb')
 Color.average(['orange', 'yellow', 'red'], space='hsl')
+```
+
+Because calculations are done in a cylindrical space, the averaged colors can be different than what is acquired with
+rectangular space averaging.
+
+```py play
+Color.average(['purple', 'green', 'blue'], space='srgb')
+Color.average(['purple', 'green', 'blue'], space='hsl')
 ```
 
 ## Averaging with Transparency
