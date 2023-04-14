@@ -40,6 +40,7 @@ nav:
       - The Color Object: color.md
       - Manipulating Colors: manipulation.md
       - Color Interpolation: interpolation.md
+      - Color Averaging: average.md
       - Compositing and Blending: compositing.md
       - Color Distance and Delta E: distance.md
       - Gamut Mapping: gamut.md
@@ -266,7 +267,7 @@ extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
-  - playground-config-c87dd48d.js
+  - playground-config-c8a475b3.js
   - https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 

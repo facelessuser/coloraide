@@ -16,6 +16,7 @@ DEF_INTERPOLATE = "oklab"
 DEF_FIT = "lch-chroma"
 DEF_HARMONY = "oklch"
 DEF_DELTA_E = "76"
+DEF_AVERAGE = 'oklab'
 
 # Maximum luminance in PQ is 10,000 cd/m^2
 # Relative XYZ has Y=1 for media white

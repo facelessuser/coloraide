@@ -1,15 +1,21 @@
 """Plot color space using Plotly."""
 import sys
 import argparse
-from coloraide.everything import ColorAll as Color
 from scipy.spatial import Delaunay
-from coloraide import algebra as alg
 from plotly.figure_factory import create_trisurf as trisurf
-from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish
 import plotly.graph_objects as go
 import math
 import plotly.io as io
 import os
+
+sys.path.insert(0, os.getcwd())
+
+try:
+    from coloraide_extras.everything import ColorAll as Color
+except ImportError:
+    from coloraide.everything import ColorAll as Color
+from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish  # noqa: E402
+from coloraide import algebra as alg  # noqa: E402
 
 
 def create_custom_hsl(gamut):
@@ -30,6 +36,12 @@ def create_custom_hsl(gamut):
     ColorCyl.register(HSL())
 
     return ColorCyl
+
+
+def get_face_color(cmap, simplex):
+    """Get best color."""
+
+    return Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb').to_string(hex=True)
 
 
 def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
@@ -100,7 +112,7 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
                     s.fit()
                 else:
                     s.clip()
-                cmap.append(s.to_string(hex=True))
+                cmap.append(s)
 
         # Calculate triangles
         tri = Delaunay(list(zip(u, v)))
@@ -111,7 +123,7 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
             simplices=tri.simplices,
             show_colorbar=False,
             plot_edges=edges,
-            color_func=[cmap[t[1]] for t in tri.simplices]
+            color_func=[get_face_color(cmap, t) for t in tri.simplices]
         ).data
         trace[0].update(opacity=opacity)
         traces.append(trace)
@@ -215,7 +227,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
                 else:
                     s.clip()
 
-                cmap.append(s.to_string(hex=True))
+                cmap.append(s)
 
         # Calculate the triangles
         tri = Delaunay(list(zip(u, v)))
@@ -226,7 +238,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
             simplices=tri.simplices,
             show_colorbar=False,
             plot_edges=edges,
-            color_func=[cmap[t[1]] for t in tri.simplices]
+            color_func=[get_face_color(cmap, t) for t in tri.simplices]
         ).data
         trace[0].update(opacity=opacity)
         fig.add_traces(trace)
@@ -270,7 +282,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
                 s.fit()
             else:
                 s.clip()
-            cmap.append(s.to_string(hex=True))
+            cmap.append(s)
 
     # Calculate triangles
     tri = Delaunay(list(zip(locals().get(dim[0]), locals().get(dim[1]))))
@@ -281,7 +293,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
         simplices=tri.simplices,
         show_colorbar=False,
         plot_edges=edges,
-        color_func=[cmap[t[1]] for t in tri.simplices]
+        color_func=[get_face_color(cmap, t) for t in tri.simplices]
     ).data
     trace[0].update(opacity=opacity)
 
