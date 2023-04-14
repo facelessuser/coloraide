@@ -1,7 +1,8 @@
 # Changelog
 
-## Next
+## 2.1
 
+- **NEW**: Add new color averaging method.
 - **FIX**: Interpolation should not modify any input colors.
 
 ## 2.0.2

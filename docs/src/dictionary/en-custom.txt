@@ -253,6 +253,7 @@ preformatted
 premultiplication
 premultiplied
 premultiply
+premultiplying
 prepended
 preprocessing
 prerelease
