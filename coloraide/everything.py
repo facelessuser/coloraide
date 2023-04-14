@@ -20,6 +20,7 @@ from .spaces.igpgtg import IgPgTg
 from .spaces.cmy import CMY
 from .spaces.cmyk import CMYK
 from .spaces.xyy import xyY
+from .spaces.xyb import XYB
 from .spaces.hunter_lab import HunterLab
 from .spaces.prismatic import Prismatic
 from .spaces.rlab import RLAB
@@ -74,6 +75,7 @@ ColorAll.register(
         CMY(),
         CMYK(),
         xyY(),
+        XYB(),
         HunterLab(),
         Prismatic(),
         RLAB(),
