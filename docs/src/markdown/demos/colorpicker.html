@@ -579,12 +579,13 @@
         )
 
         // Adjust text color to accomodate contrast
-        const alpha = c.get('alpha')
-        if (c.contrast('black') < 4.5 && alpha > 0.5) {
+        const compose = c.compose('white')
+        if (compose.contrast('black') < 4.5) {
           document.querySelector('body').classList.add('dark')
         } else {
           document.querySelector('body').classList.remove('dark')
         }
+        compose.destroy()
 
         // Hide show channels as needed to accomodate color space
         const entry = colorSpaces.get(space)

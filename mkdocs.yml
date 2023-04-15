@@ -136,6 +136,7 @@ nav:
   - Demos:
     - demos/index.md
     - Color Picker: demos/colorpicker.html
+    - 3D Color Space Models: demos/3d_models.html
 
   - API:
       - Color API: api/index.md
