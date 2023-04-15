@@ -75,11 +75,10 @@ class XYB(Labish, Space):
     NAME = "xyb"
     SERIALIZE = ("--xyb",)
     WHITE = WHITES['2deg']['D65']
-    # Range in Display-P3
     CHANNELS = (
-        Channel("x", -0.02, 0.033),
-        Channel("y", 0.0, 0.845, flags=FLG_MIRROR_PERCENT),
-        Channel("b", 0.0, 0.845, flags=FLG_MIRROR_PERCENT)
+        Channel("x", -0.45, 0.45, flags=FLG_MIRROR_PERCENT),
+        Channel("y", 0.0, 0.845),
+        Channel("b", -0.45, 0.45, flags=FLG_MIRROR_PERCENT)
     )
 
     def names(self) -> tuple[str, ...]:
