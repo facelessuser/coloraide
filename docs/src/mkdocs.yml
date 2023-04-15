@@ -98,6 +98,7 @@ nav:
         - CAM16 UCS: colors/cam16_ucs.md
         - CAM16 SCD: colors/cam16_scd.md
         - CAM16 LCD: colors/cam16_lcd.md
+        - XYB: colors/xyb.md
 
       - LCh Like Spaces:
         - LCh D50: colors/lch.md

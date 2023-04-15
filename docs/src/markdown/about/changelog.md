@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- **NEW**: Add XYB color space.
+
 ## 2.1
 
 - **NEW**: Add new color averaging method.

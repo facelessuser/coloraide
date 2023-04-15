@@ -98,6 +98,7 @@ nav:
         - CAM16 UCS: colors/cam16_ucs.md
         - CAM16 SCD: colors/cam16_scd.md
         - CAM16 LCD: colors/cam16_lcd.md
+        - XYB: colors/xyb.md
 
       - LCh Like Spaces:
         - LCh D50: colors/lch.md
@@ -269,7 +270,7 @@ extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
   - playground-config-c8a475b3.js
   - https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-3d99782d.js
+  - assets/coloraide-extras/extra-notebook-b5858b87.js
 
 extra:
   social:
