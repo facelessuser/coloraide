@@ -58,6 +58,9 @@ def rgb_to_xyb(rgb: Vector) -> Vector:
 def xyb_to_rgb(xyb: Vector) -> Vector:
     """XYB to linear sRGB."""
 
+    if not any(xyb):
+        return [0.0] * 3
+
     return alg.dot(
         LMS_TO_LRGB,
         [(c + BIAS_CBRT) ** 3 - BIAS for c in alg.dot(XYB_TO_XYB_LMS, xyb, dims=alg.D2_D1)],
