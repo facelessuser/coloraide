@@ -189,11 +189,14 @@ from coloraide.everything import ColorAll as Color
 from coloraide.spaces import RGBish
 import json
 ignore = {'prismatic', 'cmyk'}
+ignore_gamut = {'acescct', 'acescc', 'xyz-d50', 'xyz-d65'}
 options = {'spaces': [], 'gamuts': []}
 for key, value in sorted(Color.CS_MAP.items()):
     if key in ignore:
         continue
     options['spaces'].append(key)
+    if key in ignore_gamut:
+        continue
     if isinstance(value, RGBish):
         options['gamuts'].append(key)
 json.dumps(options)
