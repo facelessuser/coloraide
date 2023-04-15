@@ -58,6 +58,7 @@ def rgb_to_xyb(rgb: Vector) -> Vector:
 def xyb_to_rgb(xyb: Vector) -> Vector:
     """XYB to linear sRGB."""
 
+    # This cleans up the round trip on black.
     if not any(xyb):
         return [0.0] * 3
 
