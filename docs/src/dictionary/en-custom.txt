@@ -179,6 +179,7 @@ Vos
 WCAG
 WCG
 XD
+XYB
 XYZ
 YCbCr
 ZD
@@ -229,6 +230,7 @@ io
 ish
 iterable
 ixora
+jonsneyers
 js
 jz
 luma
