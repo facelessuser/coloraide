@@ -466,7 +466,7 @@
     }
 
     function popState() {
-      // Handle notebook history
+      // Handle history
 
       const base = window.location.pathname.split('/')[1]
       if (
@@ -747,7 +747,7 @@ space_info
           updateColor({textInput: textInput.value})
         })
 
-        // Handle history of notebook pages as they are loaded dynamically
+        // Handle history of pages as they are loaded dynamically
         window.addEventListener("popstate", popState)
     })
 })()

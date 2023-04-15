@@ -656,16 +656,60 @@ function hideBusy(target) {
   }
 }
 
-async function generate3D(space, gamut, edges) {
+function encodeuri(uri) {
+  // Encode the URI component.
+
+  return encodeURIComponent(uri).replace(/[.!'()*]/g, c => {
+    return `%${c.charCodeAt(0).toString(16)}`
+  })
+}
+
+async function popState() {
+  // Handle history
+
+  const base = window.location.pathname.split('/')[1]
+  if (
+    window.location.pathname === `/${base}/demos/3d_models.html`
+  ) {
+    const params = new URLSearchParams(window.location.search)
+    let space = (params.has('space')) ? params.get('space') : defaultSpace
+    if (!colorSpaces.includes(space)) {
+        space = defaultSpace
+    }
+    let gamut = (params.has('gamut')) ? params.get('gamut') : defaultGamut
+    if (!colorGamuts.includes(gamut)) {
+        gamut = defaultGamut
+    }
+    const edges = (params.has('edges') && params.get('edges').toLowerCase() == 'true') ? true : false
+
+    document.getElementById('spaces').value = space
+    document.getElementById('gamuts').value = gamut
+    document.getElementById('edges').checked = edges
+
+    showBusy(busyTarget, 'Generating 3D Model...')
+    await generate3D(space, gamut, edges, false)
+    hideBusy(busyTarget)
+  }
+}
+
+async function generate3D(space, gamut, edges, push_history) {
   if (lastModel && space === lastModel[0] && gamut === lastModel[1] && edges === lastModel[2]) {
       return
+  }
+
+  if (push_history) {
+    const uri = encodeuri(space)
+    const uri2 = encodeuri(gamut)
+    const uri3 = (edges) ? 'true' : 'false'
+    history.pushState(
+      {space: uri}, "", `?${new URLSearchParams(`space=${uri}&gamut=${uri2}&edges=${uri3}`).toString()}`
+    )
   }
   lastModel = [space, gamut, edges]
   const div = document.querySelector('div#model')
   if (exceptions.has(space)) {
     gamut = space
   }
-  console.log(space, gamut, edges)
   div.innerHTML = ""
   let data = await pyodide.runPythonAsync(
     document.getElementById('payload').innerHTML + `
@@ -751,14 +795,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   button.addEventListener('click', async e => {
     showBusy(busyTarget, 'Generating 3D Model...')
     await randomizeColor()
-    await generate3D(options.value, options2.value, check.checked)
+    await generate3D(options.value, options2.value, check.checked, true)
     hideBusy(busyTarget)
   })
   hideBusy(busyTarget)
 
+  // Determine default properties
+  const params = new URLSearchParams(window.location.search)
+  let space = (params.has('space')) ? params.get('space') : defaultSpace
+  if (!colorSpaces.includes(space)) {
+      space = defaultSpace
+  }
+  let gamut = (params.has('gamut')) ? params.get('gamut') : defaultGamut
+  if (!colorGamuts.includes(gamut)) {
+      gamut = defaultGamut
+  }
+  const edges = (params.has('edges') && params.get('edges').toLowerCase() == 'true') ? true : false
+  options.value = space
+  options2.value = gamut
+  check.checked = edges
+
+  // Handle history of pages as they are loaded dynamically
+  window.addEventListener("popstate", popState)
+
   // Generate initial model
   showBusy(busyTarget, 'Generating 3D Model...')
-  await generate3D(defaultSpace, defaultGamut, false)
+  await generate3D(space, gamut, edges, true)
   hideBusy(busyTarget)
 })
 </script>
