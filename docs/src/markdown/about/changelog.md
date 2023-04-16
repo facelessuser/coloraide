@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1
+
+- **FIX**: Averaging of a channel set with only undefined values should return an undefined value.
+- **FIX**: Averaging should be done in linear light by default for a sane default. Default is now `srgb-linear`.
+
 ## 2.2
 
 - **NEW**: Add XYB color space.

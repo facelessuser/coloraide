@@ -320,6 +320,7 @@ Properties             | Defaults            | Description
 `CHROMATIC_ADAPTATION` | `#!py "bradford"`   | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
 `HARMONY`              | `#!py "oklch"`      | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
 `CONTRAST`             | `#!py "wcag21"`     | Default contrast algorithm.
+`AVERAGE`              | `#!py "average"`    | Default color space for averaging.
 
 ### Plugins
 

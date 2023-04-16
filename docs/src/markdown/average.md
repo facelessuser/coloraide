@@ -7,13 +7,13 @@ function like mixing multiple colors.
 
 ## Rectangular Space Averaging
 
-ColorAide, by default, averages in rectangular color spaces, the default being Oklab. If desired, other color spaces
-can be used.
+ColorAide, by default, averages in rectangular color spaces, the default being Linear sRGB. If desired, other color
+spaces can be used, such as perceptually uniform spaces like Oklab.
 
 ```py play
-Color('red').mix('blue')
 Color.average(['red', 'blue'])
 Color.average(['red', 'blue'], space='srgb')
+Color.average(['red', 'blue'], space='oklab')
 ```
 
 Averaging is not restricted to any certain amount of colors.

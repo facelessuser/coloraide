@@ -17,7 +17,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
     def test_one_colors(self):
         """Test averaging one color."""
 
-        self.assertColorEqual(Color.average(['red']), Color('oklab(0.62796 0.22486 0.12585)'))
+        self.assertColorEqual(Color.average(['red']), Color('color(srgb-linear 1 0 0)'))
 
     def test_average_premultiplied(self):
         """Test averaging with premultiplication."""
