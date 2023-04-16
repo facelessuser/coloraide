@@ -8,16 +8,19 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
-def premultiply(color: Color, hue_index: int, enabled: bool) -> tuple[Vector, float]:
+def premultiply(coords: Vector, hue_index: int, enabled: bool) -> Vector:
     """Premultiply the color before averaging."""
 
-    alpha = color.alpha()
-    # alphas.append(alpha)
+    alpha = coords[-1]
 
     if not enabled or math.isnan(alpha) or alpha == 1.0:
-        return color.coords(), alpha
+        return coords
 
-    return [c if e == hue_index else c * alpha for e, c in enumerate(color.coords())], alpha
+    for i in range(len(coords) - 1):
+        if i != hue_index:
+            coords[i] *= alpha
+
+    return coords
 
 
 def postdivide(coords: Vector, hue_index: int) -> Vector:
@@ -28,12 +31,9 @@ def postdivide(coords: Vector, hue_index: int) -> Vector:
     if math.isnan(alpha) or alpha in (0.0, 1.0):
         return coords
 
-    for i, value in enumerate(coords[:-1]):
-
-        if i == hue_index:
-            continue
-
-        coords[i] = value / alpha
+    for i in range(len(coords) - 1):
+        if i != hue_index:
+            coords[i] /= alpha
 
     return coords
 
@@ -56,11 +56,7 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
     # Sum channel values
     e = -1
     for e, c in enumerate(colors):
-        coords, alpha = premultiply(obj.new(c).convert(space, in_place=True), hue_index, premultiplied)
-        if not math.isnan(alpha):
-            sums[-1] += alpha
-            totals[-1] += 1
-
+        coords = premultiply(obj.update(c)[:], hue_index, premultiplied)
         for e, coord in enumerate(coords):
             if math.isnan(coord):
                 continue
@@ -76,14 +72,13 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
         raise ValueError('At least one color must be provided in order to average colors')
 
     # Get the mean
-    for i in range(chan_count):
-        total = totals[i]
+    for e, total in enumerate(totals):
         if not total:
-            sums[i] == float('nan')
-        elif i == hue_index:
-            sums[i] = math.degrees(math.atan2(sin / total, cos / total))
+            sums[e] = float('nan')
+        elif e == hue_index:
+            sums[e] = math.degrees(math.atan2(sin / total, cos / total))
         else:
-            sums[i] = sums[i] / total
+            sums[e] /= total
 
     # Undo premultiplication
     if premultiplied:

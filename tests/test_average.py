@@ -2,6 +2,7 @@
 import unittest
 from coloraide.everything import ColorAll as Color
 from . import util
+import math
 
 
 class TestAverage(util.ColorAsserts, unittest.TestCase):
@@ -112,12 +113,13 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
     def test_all_undefined_hue(self):
         """Test all hues undefined."""
 
-        self.assertColorEqual(Color.average(['white', 'gray', 'black'], space='hsl'), Color('hsl(none 0% 50.065%)'))
+        a = Color.average(['white', 'gray', 'black'], space='hsl')
+        self.assertColorEqual(a, Color('hsl(none 0% 50.065%)'))
+        self.assertTrue(math.isnan(a[0]))
 
     def test_all_undefined_non_hue(self):
         """Test all non hue undefined."""
 
-        self.assertColorEqual(
-            Color.average(['color(srgb 1 none 0)', 'color(srgb 0.1 none 0.3)', 'color(srgb 0.7 none 0)'], space='srgb'),
-            Color('rgb(153 none 25.5)')
-        )
+        a = Color.average(['color(srgb 1 none 0)', 'color(srgb 0.1 none 0.3)', 'color(srgb 0.7 none 0)'], space='srgb')
+        self.assertColorEqual(a, Color('rgb(153 none 25.5)'))
+        self.assertTrue(math.isnan(a[1]))

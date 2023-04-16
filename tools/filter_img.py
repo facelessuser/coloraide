@@ -71,17 +71,16 @@ def process_image(img, output, name, amount, space, cvd_approach, fit):
                 im = im.convert('RGBA')
 
         pixels = im.load()
-        total = im.size[0]
         start = time.perf_counter_ns()
         total = im.size[0] * im.size[1]
         factor = 100 / total
         i = j = 0
         print('Pixels: {}'.format(total))
         print('> 0%', end='\r')
-        for e, i in enumerate(range(im.size[0])):
+        for i in range(im.size[0]):
             for j in range(im.size[1]):
                 pixels[i, j] = apply_filter(name, amount, space, cvd_approach, pixels[i, j], fit)
-            print('> {}%'.format(int((e * j) * factor)), end="\r")
+            print('> {}%'.format(int((i * j) * factor)), end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
         printt(t)

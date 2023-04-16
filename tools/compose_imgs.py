@@ -78,7 +78,6 @@ def process_image(imgs, bg, output, blend, porter_duff, fit, space):
         images.append(img)
         pixels.append(img.load())
 
-    total = images[0].size[0]
     start = time.perf_counter_ns()
     x, y = images[0].size
     total = images[0].size[0] * images[0].size[1]
@@ -88,10 +87,10 @@ def process_image(imgs, bg, output, blend, porter_duff, fit, space):
     i = j = 0
     print('Pixels: {}'.format(total))
     print('> 0%', end='\r')
-    for e, i in enumerate(range(x)):
+    for i in range(x):
         for j in range(y):
             pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit, space)
-        print('> {}%'.format(int((e * j) * factor)), end="\r")
+        print('> {}%'.format(int((i * j) * factor)), end="\r")
     print('> 100%')
     t = time.perf_counter_ns() - start
     printt(t)
