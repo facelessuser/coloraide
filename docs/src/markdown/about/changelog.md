@@ -1,8 +1,10 @@
 # Changelog
 
-## Next
+## 2.2
 
 - **NEW**: Add XYB color space.
+- **ENHANCE**: More efficient averaging.
+- **FIX**: Fix issue where if all colors have the same channel undefined that a divide by zero can occur.
 
 ## 2.1
 

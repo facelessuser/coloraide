@@ -153,7 +153,7 @@ if __name__ == "__main__":
         for demo in ['colorpicker', '3d_models']:
             colorpicker = ''
             with open(f'docs/src/markdown/demos/{demo}.html', 'r') as f:
-                colorpicker = re.sub(r"(?m)(^[ ]+let package = ').*?(')", r'\1{}\2'.format(package), f.read())
+                colorpicker = re.sub(r"(?m)(^[ ]*let package = ').*?(')", r'\1{}\2'.format(package), f.read())
             if colorpicker:
                 with open(f'docs/src/markdown/demos/{demo}.html', 'w') as f:
                     f.write(colorpicker)

@@ -936,7 +936,7 @@ Parameters
 - 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A color string or [`Color`](#color) object representing a color.
+    `color`                    |                                    | A color string, [`Color`](#color) object, and/or dictionary representing a color.
     `percent`                  | `#!py 0.5`                         | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
     `in_place`                 | `#!py False`                       | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py **interpolate_args`  | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
@@ -945,6 +945,42 @@ Return
 
 -   Returns a reference to the new [`Color`](#color) object or a reference to the current [`Color`](#color) if
     `in_place` is `#!py3 True`.
+///
+
+## `#!py3 Color.average` {#average}
+
+```py
+@classmethod
+def average(
+    cls,
+    colors: Iterable[ColorInput],
+    *,
+    space: str | None = None,
+    out_space: str | None = None,
+    premultiplied: bool = True,
+    **kwargs: Any
+) -> Color:
+```
+
+/// define
+Description
+
+-   Get the average mean of all channels given a particular set of input colors.
+
+Parameters
+
+- 
+    Parameters       | Defaults    | Description
+    ---------------- | ------------| -----------
+    `colors`         |             | An iterable of color strings, [`Color`](#color) objects, and/or dictionaries representing a color.
+    `space`          | `#!py None` | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
+    `out_space`      | `#!py None` | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
+    `premultiplied`  | `#!py True` | Specify whether colors should be premultiplied during the averaging process.
+
+Return
+
+-   Returns a reference to the new [`Color`](#color) object representing the average of the input colors.
+
 ///
 
 ## `#!py Color.filter` {#cvd}
