@@ -2,22 +2,22 @@
 from __future__ import annotations
 import math
 from .types import ColorInput, Vector
-from typing import Sequence, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
-def premultiply(color: Color, hue_index: int, alphas: Vector, enabled: bool) -> Vector:
+def premultiply(color: Color, hue_index: int, enabled: bool) -> tuple[Vector, float]:
     """Premultiply the color before averaging."""
 
     alpha = color.alpha()
-    alphas.append(alpha)
+    # alphas.append(alpha)
 
     if not enabled or math.isnan(alpha) or alpha == 1.0:
-        return color.coords()
+        return color.coords(), alpha
 
-    return [c if e == hue_index else c * alpha for e, c in enumerate(color.coords())]
+    return [c if e == hue_index else c * alpha for e, c in enumerate(color.coords())], alpha
 
 
 def postdivide(coords: Vector, hue_index: int) -> Vector:
@@ -38,67 +38,56 @@ def postdivide(coords: Vector, hue_index: int) -> Vector:
     return coords
 
 
-def average(create: type[Color], colors: Sequence[ColorInput], space: str, premultiplied: bool = True) -> Color:
+def average(create: type[Color], colors: Iterable[ColorInput], space: str, premultiplied: bool = True) -> Color:
     """Average a list of colors together."""
 
     obj = create(space, [])
-
-    # Check if there are enough colors to average.
-    length = len(colors)
-    if not length:
-        raise ValueError('At least one color must be provided in order to average colors')
-    elif length == 1:
-        return obj.new(colors[0]).convert(space, in_place=True)
 
     # Get channel information
     cs = obj.CS_MAP[space]
     hue_index = cs.hue_index() if hasattr(cs, 'hue_index') else -1
     channels = cs.channels
-    coords = [] * len(channels)
+    chan_count = len(channels)
+    sums = [0.0] * chan_count
+    totals = [0.0] * chan_count
+    sin = 0.0
+    cos = 0.0
 
-    # Convert to desired space and premultiply values. Wrap in zip to iterate values per channel.
-    # Alpha will be collected in a separate list.
-    alphas = []  # type: Vector
-    zipped = zip(
-        *[premultiply(obj.new(c).convert(space, in_place=True), hue_index, alphas, premultiplied) for c in colors]
-    )
+    # Sum channel values
+    e = -1
+    for e, c in enumerate(colors):
+        coords, alpha = premultiply(obj.new(c).convert(space, in_place=True), hue_index, premultiplied)
+        if not math.isnan(alpha):
+            sums[-1] += alpha
+            totals[-1] += 1
 
-    # Average each color channel
-    for e, points in enumerate(zipped):
-        div = s = c = value = 0.0
-        for e2, p in enumerate(points):
-            alpha = alphas[e2]
-            # Undefined values do not contribute
-            if not math.isnan(p):
-                if e == hue_index:
-                    # Hue doesn't care about alpha
-                    div += 1
-                    rad = math.radians(p)
-                    s += math.sin(rad)
-                    c += math.cos(rad)
-                else:
-                    # Non-hues are weighted averages based on transparency
-                    div += 1
-                    value += p
+        for e, coord in enumerate(coords):
+            if math.isnan(coord):
+                continue
+            totals[e] += 1
+            if e == hue_index:
+                rad = math.radians(coord)
+                sin += math.sin(rad)
+                cos += math.cos(rad)
+            else:
+                sums[e] += coord
 
-        # Divide by the weighted average.
-        if e == hue_index:
-            coords.append(math.degrees(math.atan2(s / div, c / div)))
+    if e == -1:
+        raise ValueError('At least one color must be provided in order to average colors')
+
+    # Get the mean
+    for i in range(chan_count):
+        total = totals[i]
+        if not total:
+            sums[i] == float('nan')
+        elif i == hue_index:
+            sums[i] = math.degrees(math.atan2(sin / total, cos / total))
         else:
-            coords.append(value / div if div else value)
-
-    # Average alpha
-    alpha = count = 0.0
-    for a in alphas:
-        if math.isnan(a):
-            continue
-        count += 1
-        alpha += a
-    coords.append(alpha / count if count else alpha)
+            sums[i] = sums[i] / total
 
     # Undo premultiplication
     if premultiplied:
-        coords = postdivide(coords, hue_index)
+        sums = postdivide(sums, hue_index)
 
     # Return the color
-    return obj.update(space, coords[:-1], coords[-1])
+    return obj.update(space, sums[:-1], sums[-1])

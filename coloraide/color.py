@@ -63,7 +63,7 @@ from .interpolate.bspline import BSpline
 from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .types import Plugin
-from typing import overload, Sequence, Any, Callable, Mapping
+from typing import overload, Sequence, Iterable, Any, Callable, Mapping
 
 
 class ColorMatch:
@@ -826,7 +826,7 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def average(
         cls,
-        colors: Sequence[ColorInput],
+        colors: Iterable[ColorInput],
         *,
         space: str | None = None,
         out_space: str | None = None,
