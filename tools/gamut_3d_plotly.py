@@ -126,6 +126,8 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
             color_func=[get_face_color(cmap, t) for t in tri.simplices]
         ).data
         trace[0].update(opacity=opacity)
+        if edges:
+            trace[1].update(hoverinfo='skip')
         traces.append(trace)
 
     return traces[0] + traces[1]
@@ -241,6 +243,8 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
             color_func=[get_face_color(cmap, t) for t in tri.simplices]
         ).data
         trace[0].update(opacity=opacity)
+        if edges:
+            trace[1].update(hoverinfo='skip')
         fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
@@ -296,6 +300,8 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
         color_func=[get_face_color(cmap, t) for t in tri.simplices]
     ).data
     trace[0].update(opacity=opacity)
+    if edges:
+        trace[1].update(hoverinfo='skip')
 
     return trace
 
