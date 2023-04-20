@@ -351,6 +351,8 @@ def plot_gamut_in_space(
 ):
     """Plot the given space in sRGB."""
 
+    io.templates.default = 'plotly_dark' if dark else 'plotly'
+
     # I have no idea why this number causes HSL to lose its bottom
     if resolution == 50:
         resolution = 51
@@ -386,9 +388,9 @@ def plot_gamut_in_space(
         axm = [0, 1, 2]
 
     showbackground = True
-    backgroundcolor = "rgb(230, 230, 230)"
-    gridcolor = "rgb(255, 255, 255)"
-    zerolinecolor = "rgb(255, 255, 255)"
+    backgroundcolor = "rgb(230, 230, 230)" if not dark else '#282830'
+    gridcolor = "rgb(255, 255, 255)" if not dark else '#111'
+    zerolinecolor = "rgb(255, 255, 255)" if not dark else '#111'
     axis = dict(
         showbackground=showbackground,
         backgroundcolor=backgroundcolor,
