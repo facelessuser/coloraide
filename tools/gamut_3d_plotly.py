@@ -17,6 +17,8 @@ except ImportError:
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
+FORCE_RECT = ('cmy',)
+
 
 def create_custom_hsl(gamut):
     """Create a custom color object that has access to a special `hsl-gamut` space to map surface in."""
@@ -436,7 +438,7 @@ def plot_gamut_in_space(
     fig = go.Figure(layout=layout)
 
     target = Color.CS_MAP[space]
-    if is_rgbish:
+    if is_rgbish or space in FORCE_RECT:
         # Use a rectangular space for RGB-ish spaces to give a sharper cube
         return render_space_rect(fig, space, gamut, resolution, opacity, edges)
     else:
