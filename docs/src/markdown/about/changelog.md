@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2
+
+- **FIX**: Greatly improve round trip conversion speed for HCT color space.
+
 ## 2.2.1
 
 - **FIX**: Averaging of a channel set with only undefined values should return an undefined value.
