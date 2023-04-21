@@ -14,7 +14,7 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish  # noqa: E402
+from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
 
@@ -251,7 +251,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     if space in ('hwb', 'hpluv'):
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
 
-    if not is_labish and not is_lchish:
+    if is_cyl and not is_labish and not is_lchish:
         # We normally get a bottom except in the case of HWB.
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges))
 
@@ -369,7 +369,12 @@ def plot_gamut_in_space(
 
     # Get names for
     target = Color.CS_MAP[space]
+    if len(target.CHANNELS) > 3:
+        print('Color spaces with dimensions greater than 3 are not supported')
+        return None
+
     names = target.CHANNELS
+    is_rgbish = isinstance(target, RGBish)
     is_cyl = isinstance(target, Cylindrical)
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
@@ -430,11 +435,12 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    # Render the space plot using a cylindrical space as the gamut space
     target = Color.CS_MAP[space]
-    if not isinstance(target, Cylindrical) and not isinstance(target, Labish):
+    if is_rgbish:
+        # Use a rectangular space for RGB-ish spaces to give a sharper cube
         return render_space_rect(fig, space, gamut, resolution, opacity, edges)
     else:
+        # Render the space plot using a cylindrical space as the gamut space
         return render_space_cyl(fig, space, gamut, resolution, opacity, edges)
 
 
@@ -490,18 +496,21 @@ def main():
     )
 
     # Show or save the data as an image, etc.
-    if args.output:
-        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
-        if filetype == 'html':
-            with open(args.output, 'w') as f:
-                f.write(io.to_html(fig))
-        elif filetype == 'json':
-            io.write_json(fig, args.output)
+    if fig:
+        if args.output:
+            filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+            if filetype == 'html':
+                with open(args.output, 'w') as f:
+                    f.write(io.to_html(fig))
+            elif filetype == 'json':
+                io.write_json(fig, args.output)
+            else:
+                with open(args.output, 'wb') as f:
+                    f.write(fig.to_image(format=filetype))
         else:
-            with open(args.output, 'wb') as f:
-                f.write(fig.to_image(format=filetype))
-    else:
-        fig.show()
+            fig.show()
+        return 0
+    return 1
 
 
 if __name__ == "__main__":
