@@ -58,7 +58,7 @@ from .cam16_jmh import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
 from .cam16_jmh import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
-from .lab import EPSILON, KAPPA, KE
+from .lab import EPSILON, KAPPA, KE, xyz_to_lab, lab_to_xyz
 from ..types import Vector, VectorLike
 from typing import Any
 import math
@@ -140,51 +140,51 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
     Convert HCT to XYZ.
 
-    Utilize bisect to find the best J that fulfills the current XYZ Y while
-    keeping hue and chroma the same (assuming color is not achromatic).
-    Not the most efficient, especially if you want to provide the best round
-    trip possible. The official Material library that implements HCT, most
-    likely has a number of shortcuts to help resolve the color faster, some
-    may come at the cost of precision. Worth looking into in the future.
+    Originally, we utilized bisect to find the best J that fulfills the
+    current XYZ Y while keeping hue and chroma the same, but this was very
+    slow and would sometimes take 20+ iterations to causing numerous CAM16
+    conversions.
+
+    Now we calculate the target Y from the current T and then convert to XYZ
+    using some J and test to see if the delta is close enough. If the delta Y
+    is too great, we convert to Lab, set L* to T, and then convert back to
+    CAM16 and get then new J.
+
+    This seems to converge on a solution in less than 15 iterations, some times
+    as few as 4. In some cases, this cuts the converting time in half or greater.
+    We end up doing more conversions per iteration, but converge on average faster.
     """
 
     # Threshold of how close is close enough
-    # Precision requires more iterations...maybe too many :)
-    threshold = 0.000000002
+    threshold = 2e-10
 
     h, c, t = coords[:]
 
+    # Shortcut out for black or white
     if t == 0:
         return [0.0, 0.0, 0.0]
-    elif t == 100.0:
-        return env.ref_white[:]
 
-    # Initialize J with our T, set our bisect bounds,
-    # and get our target XYZ Y from T
+    # Initialize J with our T and get our target XYZ Y from T
     j = t
-    low = 0.0
-    # SDR or HDR, give a little room for SDR colors a little over the limit
-    high = 105.0 if t < 100.05 else 1000.0
     y = lstar_to_y(t, env.ref_white)
 
     # Try to find a J such that the returned y matches the returned y of the L*
-    while (high - low) > threshold:
+    attempt = 0
+    while attempt < 15:
+        attempt += 1
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
-        delta = xyz[1] - y
-
-        # We are within range, so return XYZ
-        if abs(delta) <= threshold:
+        # If we are within range, return XYZ
+        if abs(xyz[1] - y) <= threshold:
             return xyz
 
-        if delta < 0:
-            low = j
-        else:
-            high = j
+        # Calculate a closer J
+        lab = xyz_to_lab(xyz, env.ref_white)
+        lab[0] = t
+        xyz = lab_to_xyz(lab, env.ref_white)
+        j = xyz_d65_to_cam16(xyz, env)[0]
 
-        j = (high + low) * 0.5
-
-    # Return the best that we have
+    # Return the best that we have. We should never hit this, but just in case...
     return cam16_to_xyz_d65(J=j, C=coords[1], h=coords[0], env=env)  # pragma: no cover
 
 

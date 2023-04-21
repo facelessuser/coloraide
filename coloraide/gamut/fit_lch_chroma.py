@@ -3,6 +3,7 @@ from __future__ import annotations
 from ..gamut import Fit, clip_channels
 from ..cat import WHITES
 from .. import util
+import math
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -50,7 +51,7 @@ class LChChroma(Fit):
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
-        if sdr and lightness >= self.MAX_LIGHTNESS:
+        if sdr and (lightness >= self.MAX_LIGHTNESS or math.isclose(lightness, self.MAX_LIGHTNESS, abs_tol=1e-6)):
             clip_channels(color.update('xyz-d65', WHITE, mapcolor[-1]))
             return
         elif lightness <= self.MIN_LIGHTNESS:
