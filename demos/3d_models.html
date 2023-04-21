@@ -210,7 +210,7 @@ import plotly.graph_objects as go
 import math
 import plotly.io as io
 from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish
+from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish
 from coloraide import algebra as alg
 
 
@@ -447,7 +447,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     if space in ('hwb', 'hpluv'):
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
 
-    if not is_labish and not is_lchish:
+    if is_cyl and not is_labish and not is_lchish:
         # We normally get a bottom except in the case of HWB.
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges))
 
@@ -547,6 +547,8 @@ def plot_gamut_in_space(
 ):
     """Plot the given space in sRGB."""
 
+    io.templates.default = 'plotly_dark' if dark else 'plotly'
+
     # I have no idea why this number causes HSL to lose its bottom
     if resolution == 50:
         resolution = 51
@@ -563,7 +565,12 @@ def plot_gamut_in_space(
 
     # Get names for
     target = Color.CS_MAP[space]
+    if len(target.CHANNELS) > 3:
+        print('Color spaces with dimensions greater than 3 are not supported')
+        return None
+
     names = target.CHANNELS
+    is_rgbish = isinstance(target, RGBish)
     is_cyl = isinstance(target, Cylindrical)
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
@@ -582,9 +589,9 @@ def plot_gamut_in_space(
         axm = [0, 1, 2]
 
     showbackground = True
-    backgroundcolor = "rgb(230, 230, 230)"
-    gridcolor = "rgb(255, 255, 255)"
-    zerolinecolor = "rgb(255, 255, 255)"
+    backgroundcolor = "rgb(230, 230, 230)" if not dark else '#282830'
+    gridcolor = "rgb(255, 255, 255)" if not dark else '#111'
+    zerolinecolor = "rgb(255, 255, 255)" if not dark else '#111'
     axis = dict(
         showbackground=showbackground,
         backgroundcolor=backgroundcolor,
@@ -624,11 +631,12 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    # Render the space plot using a cylindrical space as the gamut space
     target = Color.CS_MAP[space]
-    if not isinstance(target, Cylindrical) and not isinstance(target, Labish):
+    if is_rgbish:
+        # Use a rectangular space for RGB-ish spaces to give a sharper cube
         return render_space_rect(fig, space, gamut, resolution, opacity, edges)
     else:
+        # Render the space plot using a cylindrical space as the gamut space
         return render_space_cyl(fig, space, gamut, resolution, opacity, edges)
 </script>
 <script type="text/javascript">
