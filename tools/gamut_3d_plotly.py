@@ -349,7 +349,9 @@ def plot_gamut_in_space(
     opacity=1.0,
     edges=False,
     size=(800, 800),
-    camera=None
+    camera=None,
+    aspect=None,
+    projection='perspective'
 ):
     """Plot the given space in sRGB."""
 
@@ -368,6 +370,9 @@ def plot_gamut_in_space(
     y = r * math.sin(e) * math.cos(a)
     x = r * math.sin(e) * math.sin(a)
     z = r * math.cos(e)
+
+    if aspect is None:
+        aspect = {'x': 1, 'y': 1, 'z': 1}
 
     # Get names for
     target = Color.CS_MAP[space]
@@ -420,14 +425,12 @@ def plot_gamut_in_space(
             xaxis=go.layout.scene.XAxis(title=xaxis, showticklabels=not is_cyl, **axis),
             yaxis=go.layout.scene.YAxis(title=yaxis, **axis),
             zaxis=go.layout.scene.ZAxis(title=zaxis, **axis),
-            aspectratio=dict(
-                x=1, y=1, z=1
-            ),
+            aspectratio=aspect
         ),
 
         # Control camera position
         scene_camera=dict(
-            projection=go.layout.scene.camera.Projection(type='perspective'),
+            projection=go.layout.scene.camera.Projection(type=projection),
             center=dict(x=0, y=0, z=0),
             up=dict(x=0, y=0, z=1),
             eye=dict(x=x, y=y, z=z)
@@ -482,7 +485,19 @@ def main():
     parser.add_argument('--azimuth', '-A', type=float, default=45, help="Camera X position")
     parser.add_argument('--elevation', '-E', type=float, default=45, help="Camera Y position")
     parser.add_argument('--distance', '-D', type=float, default=2.5, help="Camera Z position")
+    parser.add_argument(
+        '--aspect-ratio', '-R',
+        default='1:1:1',
+        help="Aspect ratio. Set to 0:0:0 to leave aspect ratio untouched."
+    )
+    parser.add_argument(
+        '--projection', '-P',
+        default='perspective',
+        help="Projection mode, perspective or orthographic"
+    )
     args = parser.parse_args()
+
+    aspect = {k: float(v) for k, v in zip(['x', 'y', 'z'], args.aspect_ratio.split(':'))}
 
     # Plot the color space
     fig = plot_gamut_in_space(
@@ -494,7 +509,9 @@ def main():
         opacity=args.opacity,
         edges=args.edges,
         size=(args.width, args.height),
-        camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance}
+        camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance},
+        aspect=aspect,
+        projection=args.projection
     )
 
     # Show or save the data as an image, etc.

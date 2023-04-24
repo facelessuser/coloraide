@@ -545,7 +545,9 @@ def plot_gamut_in_space(
     opacity=1.0,
     edges=False,
     size=(800, 800),
-    camera=None
+    camera=None,
+    aspect=None,
+    projection='perspective'
 ):
     """Plot the given space in sRGB."""
 
@@ -564,6 +566,9 @@ def plot_gamut_in_space(
     y = r * math.sin(e) * math.cos(a)
     x = r * math.sin(e) * math.sin(a)
     z = r * math.cos(e)
+
+    if aspect is None:
+        aspect = {'x': 1, 'y': 1, 'z': 1}
 
     # Get names for
     target = Color.CS_MAP[space]
@@ -616,14 +621,12 @@ def plot_gamut_in_space(
             xaxis=go.layout.scene.XAxis(title=xaxis, showticklabels=not is_cyl, **axis),
             yaxis=go.layout.scene.YAxis(title=yaxis, **axis),
             zaxis=go.layout.scene.ZAxis(title=zaxis, **axis),
-            aspectratio=dict(
-                x=1, y=1, z=1
-            ),
+            aspectratio=aspect
         ),
 
         # Control camera position
         scene_camera=dict(
-            projection=go.layout.scene.camera.Projection(type='perspective'),
+            projection=go.layout.scene.camera.Projection(type=projection),
             center=dict(x=0, y=0, z=0),
             up=dict(x=0, y=0, z=1),
             eye=dict(x=x, y=y, z=z)
