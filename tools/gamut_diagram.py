@@ -22,55 +22,55 @@ def main():
     parser.add_argument('--method', '-m', default='lch-chroma', help="Gamut map method")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--no-border', '-b', action="store_true", help='Draw no border around the graphed content.')
-    parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
+    parser.add_argument('--resolution', '-r', default="500", help="How densely to render the figure.")
     parser.add_argument('--clip-space', '-p', default='lch', help="LCh space to show clipping in.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
 
     args = parser.parse_args()
+    method = args.method
 
-    if args.method == 'lch-chroma':
+    if method == 'clip':
+        if args.clip_space not in ('lch', 'oklch', 'hct'):
+            raise ValueError('"{}" is an unsupported clipping space'.format(args.clip_space))
+        method = args.clip_space + '-chroma'
+
+    if method == 'lch-chroma':
         space = 'lch'
-        color = Color(args.color).convert(space, in_place=True)
-        color2 = color.clone().fit('srgb', method=args.method)
-        mapcolor = color.convert(space)
-        mapcolor2 = color2.convert(space)
-        xaxis = 'c:0:160'
+        t_space = 'CIELCh'
+        xaxis = 'c:0:264'
         yaxis = 'l:0:100'
-        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        title = 'MINDE and Chroma Reduction in CIELCh'
-        subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
-    elif args.method in ('oklch-chroma', 'css-color-4'):
+        x = 'c'
+        y = 'l'
+    elif method == 'oklch-chroma':
         space = 'oklch'
-        color = Color(args.color).convert(space, in_place=True)
-        color2 = color.clone().fit('srgb', method=args.method)
-        mapcolor = color.convert(space)
-        mapcolor2 = color2.convert(space)
-        xaxis = 'c:0:0.5'
+        t_space = 'OkLCh'
+        xaxis = 'c:0:1.5'
         yaxis = 'l:0:1'
-        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        t = 'MINDE and Chroma Reduction in OkLCh'
-        if args.method == 'css-color-4':
-            t += ' (CSS Color Level 4)'
-        title = '{}'.format(t)
-        subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
-    elif args.method == 'clip':
-        space = args.clip_space
-        if space not in ('lch', 'oklch'):
-            raise ValueError('"{}" is an unsupported clipping space'.format(space))
-        color = Color(args.color).convert(space, in_place=True)
-        color2 = color.clone().fit('srgb', method=args.method)
-        mapcolor = color.convert(space)
-        mapcolor2 = color2.convert(space)
-        xaxis = 'c:0:160' if space == 'lch' else 'c:0:0.5'
-        yaxis = 'l:0:100' if space == 'lch' else 'l:0:1'
-        constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-        t_space = 'CIELCh' if space == 'lch' else 'OkLCh'
-        title = 'Clipping shown in {}'.format(t_space)
-        subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
+        x = 'c'
+        y = 'l'
+    elif method == 'hct-chroma':
+        space = 'hct'
+        t_space = 'HCT'
+        xaxis = 'c:0:267'
+        yaxis = 't:0:100'
+        x = 'c'
+        y = 't'
     else:
         raise ValueError('"{}" is an unsupported gamut mapping algorithm'.format(args.method))
+
+    if args.method == 'clip':
+        title = 'Clipping shown in {}'.format(t_space)
+    else:
+        title = 'MINDE and Chroma Reduction in {}'.format(t_space)
+
+    color = Color(args.color).convert(space, in_place=True)
+    color2 = color.clone().fit('srgb', method=args.method)
+    mapcolor = color.convert(space)
+    mapcolor2 = color2.convert(space)
+    constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
+    subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
 
     plot_slice(
         space,
@@ -86,8 +86,8 @@ def main():
     )
 
     plt.plot(
-        [mapcolor2['c'], mapcolor['c']],
-        [mapcolor2['l'], mapcolor['l']],
+        [mapcolor2[x], mapcolor[x]],
+        [mapcolor2[y], mapcolor[y]],
         color='black',
         marker="",
         linewidth=1.5,
@@ -96,8 +96,8 @@ def main():
     )
 
     plt.scatter(
-        mapcolor['c'],
-        mapcolor['l'],
+        mapcolor[x],
+        mapcolor[y],
         marker="o",
         color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
@@ -105,8 +105,8 @@ def main():
     )
 
     plt.scatter(
-        mapcolor2['c'],
-        mapcolor2['l'],
+        mapcolor2[x],
+        mapcolor2[y],
         marker="o",
         color=color2.convert('srgb').to_string(hex=True, fit=args.method),
         edgecolor='black',
