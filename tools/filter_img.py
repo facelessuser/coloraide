@@ -52,10 +52,10 @@ def apply_filter(name, amount, space, method, p, fit):
     color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
     if method is not None:
         # This is a CVD filter that allows specifying the method
-        color.filter(name, amount, space=space, in_place=True, method=method)
+        color.filter(name, amount, space=space, in_place=True, method=method, out_space='srgb')
     else:
         # General filter.
-        color.filter(name, amount, space=space, in_place=True)
+        color.filter(name, amount, space=space, in_place=True, out_space='srgb')
     # Fit the color back into the color gamut and return the results
     return tuple([int(x * 255) for x in color.fit(method=fit)[:4 if has_alpha else -1]])
 
