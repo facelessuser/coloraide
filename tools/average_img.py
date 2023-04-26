@@ -77,9 +77,15 @@ def main():
     parser = argparse.ArgumentParser(prog='average_img', description='Get the average color of an image.')
     parser.add_argument('--input', '-i', help='Input image.')
     parser.add_argument('--space', '-s', default='srgb', help='Color space to average in.')
+    parser.add_argument('--out-space', '-o', default='srgb', help='Color space to average in.')
     args = parser.parse_args()
 
-    print(Color.average(iter_image(args.input, args.space), space=args.space).to_string())
+    print(
+        Color.average(
+            iter_image(args.input, args.space),
+            space=args.space
+        ).convert(args.out_space).to_string()
+    )
 
     return 0
 
