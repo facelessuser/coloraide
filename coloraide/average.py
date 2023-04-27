@@ -8,12 +8,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
-def premultiply(coords: Vector, hue_index: int, enabled: bool) -> Vector:
+def premultiply(coords: Vector, hue_index: int) -> Vector:
     """Premultiply the color before averaging."""
 
     alpha = coords[-1]
 
-    if not enabled or math.isnan(alpha) or alpha == 1.0:
+    if math.isnan(alpha) or alpha == 1.0:
         return coords
 
     for i in range(len(coords) - 1):
@@ -56,7 +56,7 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
     # Sum channel values
     e = -1
     for e, c in enumerate(colors):
-        coords = premultiply(obj.update(c)[:], hue_index, premultiplied)
+        coords = premultiply(obj.update(c)[:], hue_index) if premultiplied else obj.update(c)[:]
         for e, coord in enumerate(coords):
             if math.isnan(coord):
                 continue
