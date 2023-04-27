@@ -271,7 +271,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
     Z = []
     cmap = []
 
-    # Render an RGB face by taking to interpolated sides and interpolating the points across the face
+    # Render an RGB face by taking two interpolated sides and interpolating the points across the face
     for c1, c2 in zip(s1, s2):
         for t in Color.steps([c1, c2], steps=int(resolution / 4), space=gamut):
             x.append(t[0])
