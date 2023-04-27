@@ -2,7 +2,7 @@
 
 ## 2.2.2
 
-- **FIX**: Greatly improve round trip conversion speed for HCT color space.
+- **FIX**: Improve round trip conversion speed for HCT color space.
 
 ## 2.2.1
 
