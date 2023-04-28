@@ -147,16 +147,21 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     Now we calculate the target Y from the current T and then convert to XYZ
     using some J and test to see if the delta is close enough. If the delta Y
-    is too great, we convert to Lab, set L* to T, and then convert back to
-    CAM16 and get then new J.
+    is too great, we correct lightness in Lab by setting converting to Lab
+    and setting L* to T.
 
     This seems to converge on a solution in less than 15 iterations, some times
     as few as 4. In some cases, this cuts the converting time in half or greater.
     We end up doing more conversions per iteration, but converge on average faster.
+
+    This starts to struggle during some corner cases (blue region), so if we see the
+    delta start to trend upwards, we will abandon correcting in Lab and switcn to
+    correcting XYZ directly. Using only XYZ converges slower, but using it will ensure
+    we start moving in the proper direction if we hit a difficult region.
     """
 
     # Threshold of how close is close enough
-    threshold = 2e-10
+    threshold = 2e-8
 
     h, c, t = coords[:]
 
@@ -170,18 +175,33 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0
+    last = alg.INF
     while attempt < 15:
         attempt += 1
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
-        if abs(xyz[1] - y) <= threshold:
+        delta = abs(xyz[1] - y)
+        if delta <= threshold:
             return xyz
 
-        # Calculate a closer J
-        lab = xyz_to_lab(xyz, env.ref_white)
-        lab[0] = t
-        xyz = lab_to_xyz(lab, env.ref_white)
+        # In most cases, we'll converge by correcting lightness in Lab D65.
+        # If we can use Lab, it is the quickest way to converge, but in the
+        # blue region (possibly others?), we may start to do worse.
+        elif delta < last:
+            last = delta
+            lab = xyz_to_lab(xyz, env.ref_white)
+            lab[0] = t
+            xyz = lab_to_xyz(lab, env.ref_white)
+
+        # We are heading in the wrong direction.
+        # Force a better correction by correcting in XYZ directly.
+        # Converges slower, but will force a convergance in a difficult region.
+        else:
+            last = -alg.INF
+            xyz[1] = y
+
+        # Get the new J
         j = xyz_d65_to_cam16(xyz, env)[0]
 
     # Return the best that we have. We should never hit this, but just in case...
