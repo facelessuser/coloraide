@@ -154,6 +154,7 @@ RGBish
 RLAB
 ROMM
 RYB
+Raphson
 SCD
 SDR
 SL
