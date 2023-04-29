@@ -91,16 +91,44 @@ tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
 
-Results in our library may be slightly different in some cases compared to Material's color utilities. This is because
-we have implemented the library as _described_, we did not port their implementation and so we do not share the exact
-same quirks of their implementation.
+Results in our library may be slightly different in some cases when compared to Material's color utilities output. This
+is because we have implemented the color space as _described_, but we did not port their implementation or tools as
+their approach did not fit our goals, so we do not share the exact same quirks of their implementation.
 
-Material uses different precision for their transformation matrices between sRGB and XYZ. The exact chroma reduction
-algorithms are likely different, though the end result is very similar.
+Material's color utilities force HCT colors to specific chroma steps giving their implementation a lower resolution of
+chroma. They also limit their implementation to the sRGB color space. Additionally, Material uses different precision
+for their transformation matrices between sRGB and XYZ.
 
-Consider the example below. We've taken the results from Material's tests. We generate the same tonal palettes and
-output both as HCT. We can compare which hues stay overall more constant, which chroma gets reduced more than others,
-and which hue and tone are less affected by the gamut mapping. Can you tell which is doing the job the _best_?
+In contrast, ColorAide implements HCT as a normal color space and does not enforce artificial chroma steps. ColorAide
+also does not clamp translations to the sRGB gamut and employs a generalized method to convert from HCT to sRGB and
+other color space gamuts. This means we can generate tonal palettes in wide gamut color spaces as well.
+
+```py play
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+c1 = Color('display-p3', [1, 0, 1]).convert('hct')
+Steps([c1.clone().set('tone', tone).convert('display-p3').to_string(fit='hct-chroma') for tone in tones])
+c2 = Color('rec2020', [0, 0, 1]).convert('hct')
+Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit='hct-chroma') for tone in tones])
+```
+
+/// note | Conversion from HCT
+HCT will convert from HCT nicely in a number of gamuts, but some extremes in some gamuts may give it a difficult time.
+For instance, ProPhoto, which has regions outside of the viewable spectrum, has regions where round tripping can get
+drop and accurate color conversion can become difficult. This could be improved with tweaks to the algorithm and even
+more iterations at the cost of performance. For now, we've instead opted to optimize for the more reasonable gamuts:
+sRGB, Display P3, Rec2020, etc. It is possible in the future we may be able to further optimize this process with lookup
+tables and other approaches.
+///
+
+Since ColorAide has a different chroma resolution and transformation precision than Material's color utilities, the
+results for tonal palettes are sometimes slightly different, but for all intents and purposes the same. Even though
+there can sometimes be subtle differences, the eye will generally have difficulties perceiving those differences.
+ColorAide did not set out to port the Material color utilities but to give access the the HCT color space generally.
+
+Below we have two examples. We've taken the results from Material's tests and we've generated the same tonal palettes
+and output both as HCT. We can compare which hues stay overall more constant, which chroma gets reduced more than
+others, and which hue and tone are less affected by the gamut mapping. Can you definitively say that one looks more
+correct than the other?
 
 ```py play
 def tonal_palette(c):

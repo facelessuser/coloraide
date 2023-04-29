@@ -140,24 +140,29 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
     Convert HCT to XYZ.
 
-    Originally, we utilized bisect to find the best J that fulfills the
-    current XYZ Y while keeping hue and chroma the same, but this was very
-    slow and would sometimes take 20+ iterations to causing numerous CAM16
-    conversions.
+    Originally, we utilized bisect as the main way to find the best J that
+    fulfills the current XYZ Y while keeping hue and chroma the same, but
+    this was very slow and would sometimes take a lot of iterations causing
+    numerous CAM16 conversions. Additionally, it would not always converge
+    with very wide gamut values.
 
-    Now we calculate the target Y from the current T and then convert to XYZ
-    using some J and test to see if the delta is close enough. If the delta Y
-    is too great, we correct lightness in Lab by setting converting to Lab
-    and setting L* to T.
+    Now we use Newton Raphson method to try and converge (or converge as close
+    as possible) much quicker. If we don't converge in about 6 iterations,
+    we will convert to Lab, correct the lightness and then calculate J. On
+    some occasions J will transition away, not towards our target, and if it
+    does, we correct in XYZ which doesn't converge as fast.
 
-    This seems to converge on a solution in less than 15 iterations, some times
-    as few as 4. In some cases, this cuts the converting time in half or greater.
-    We end up doing more conversions per iteration, but converge on average faster.
+    If we still can't get the precision we are aiming for, we return the best
+    that we found. Colors that are out of the visible gamut are often more
+    difficult for us to correct.
 
-    This starts to struggle during some corner cases (blue region), so if we see the
-    delta start to trend upwards, we will abandon correcting in Lab and switcn to
-    correcting XYZ directly. Using only XYZ converges slower, but using it will ensure
-    we start moving in the proper direction if we hit a difficult region.
+    Generally, this does well for most color spaces with regions that fall
+    within the visible spectrum, color spaces with regions outside the
+    visible spectrum, especially in specific regions, can make corrections
+    difficult and less accurate. We more iterations can help correct this,
+    but is slow. Also, more directed optimizations could help. We've settled
+    for now on favoring speed in visible regions over optimizing for extreme
+    cases.
     """
 
     # Threshold of how close is close enough
@@ -176,8 +181,8 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0
     last = alg.INF
+    best = j
     while attempt < 15:
-        attempt += 1
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
@@ -185,27 +190,40 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         if delta <= threshold:
             return xyz
 
-        # In most cases, we'll converge by correcting lightness in Lab D65.
-        # If we can use Lab, it is the quickest way to converge, but in the
-        # blue region (possibly others?), we may start to do worse.
-        elif delta < last:
-            last = delta
-            lab = xyz_to_lab(xyz, env.ref_white)
-            lab[0] = t
-            xyz = lab_to_xyz(lab, env.ref_white)
+        if delta < last:
+            okay = all(i > 0 for i in xyz)
+            if okay:
+                best = j
+                last = delta
 
-        # We are heading in the wrong direction.
-        # Force a better correction by correcting in XYZ directly.
-        # Converges slower, but will force a convergance in a difficult region.
+            # Use Newton Raphson method to see if we can quickly converge (as close as we can)
+            if attempt < 7 and okay:
+                # ```
+                # f(j_root) = (j ** (1 / 2)) * 0.1
+                # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
+                # f(j_root) = Y = y / 100
+                # f(j) = (y ** 2) / j - 1
+                # f'(j) = (2 * y) / j
+                # ```
+                j = j - (xyz[1] - y) * j / (2 * xyz[1])
+
+            # In most other cases, we'll converge by correcting lightness in Lab D65.
+            # If we can use Lab, it is the quickest way to converge, but in the
+            # blue region (possibly others?), we may start to do worse.
+            else:
+                lab = xyz_to_lab(xyz, env.ref_white)
+                lab[0] = t
+                xyz = lab_to_xyz(lab, env.ref_white)
+                j = xyz_d65_to_cam16(xyz, env)[0]
         else:
-            last = -alg.INF
+            # Correct directly in XYZ.
             xyz[1] = y
+            j = xyz_d65_to_cam16(xyz, env)[0]
 
-        # Get the new J
-        j = xyz_d65_to_cam16(xyz, env)[0]
+        attempt += 1
 
-    # Return the best that we have. We should never hit this, but just in case...
-    return cam16_to_xyz_d65(J=j, C=coords[1], h=coords[0], env=env)  # pragma: no cover
+    # We could not acquire the precision we desired, return our closest attempt
+    return cam16_to_xyz_d65(J=best, C=c, h=h, env=env)  # pragma: no cover
 
 
 def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
