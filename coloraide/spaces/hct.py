@@ -174,9 +174,13 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     if t == 0:
         return [0.0, 0.0, 0.0]
 
-    # Initialize J with our T and get our target XYZ Y from T
-    j = t
+    # Calculate the Y we need to target
     y = lstar_to_y(t, env.ref_white)
+
+    # Try to start with a reasonable J
+    lab = xyz_to_lab(cam16_to_xyz_d65(J=t, C=c, h=h, env=env), env.ref_white)
+    lab[0] = t
+    j = xyz_d65_to_cam16(lab_to_xyz(lab, env.ref_white), env)[0]
 
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0
