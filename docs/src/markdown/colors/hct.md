@@ -35,15 +35,13 @@ The HCT color space is Google's attempt at a perceptually accurate color system.
 glued together, 'H' (hue) and 'C' (chroma) come from the CAM16 color appearance model and 'T' (tone) which is the
 lightness from the CIELAB (D65) color space. The idea was to take the more consistent perceptual hues from CAM16 and use
 the better lightness prediction found in CIELAB, so a new space was created by literally sticking the color components
-together.
-
-This HCT color space has the advantage of being well suited for creating creating better color schemes with decent
-contrast and makes it easy to create nice tonal maps with good contrast.
+together. The color space has the advantage of being well suited for creating creating better color schemes with decent
+contrast and makes it easy to create nice tonal palettes.
 
 The one downside of HCT is that it is an expensive color space to calculate. CAM16 is already an expensive color model
 to calculate, and while HCT isn't that much more expensive to convert in the forward direction to HCT, it is much more
 expensive to calculate from HCT to another color space. This is because the CAM16 color model needs context from the
-CAM16 lightness which gets thrown away when converting to HCT and is replaced with CIELAB lightness. Round trip
+CAM16 lightness which gets thrown away when converting to HCT as it is replaced with CIELAB lightness. Round trip
 conversions then need to apply approximation algorithms which can be expensive.
 
 To Google's credit, they implement the HCT color space in their Material's color utilities and provide many shortcuts
@@ -51,21 +49,16 @@ to help approximate the color space back to sRGB as quick as possible, but it is
 converting to and from sRGB with 8 bit precision. Wide gamut colors such as Display P3 cannot be used. They have further
 restrictions where they snap chroma to specific steps providing less resolution in HCT.
 
-ColorAide's goal was not to port Material's color utilities, but to implement HCT as a proper color spaces that can
-be used in sRGB and other wide gamut color spaces. In ColorAide we implement the HCT color space exactly as described
-and create the space from both CIELAB and CAM16. We then provide as accurate of a general approximation back out of HCT
-as we can, making some compromises for performance. This allows for an HCT implementation that can be used with not only
+ColorAide's goal was not to port Material's color utilities, but to implement HCT as a proper color space that can be
+used in sRGB and other wide gamut color spaces. In ColorAide we implement the HCT color space exactly as described and
+create the space from both CIELAB and CAM16. We then provide as accurate of a general approximation back out of HCT as
+we can, making some compromises for performance. This allows for an HCT implementation that can be used with not only
 sRGB, but with wider color gamuts such as: Display P3, Rec. 2020, A98 RGB, etc.
 
 //// note | Conversion Limitations
-The conversion algorithm in ColorAide may have difficulties with very extreme colors such as ones found in the the ultra
-wide ProPhoto color space. ProPhoto has extreme colors that fall outside the visible spectrum and some of the colors
-on the fringe of the color space can stress the algorithm and not provide good round trip values.
-
-More iterations could help this at the cost of performance. It is also possible that future optimizations/enhancements
-could be used to more intelligently converge on a suitable color faster and/or with more accuracy alleviating these
-extreme cases. Currently, ColorAide as opted to optimize for the more practical color gamuts such as Display P3, Rec.
-2020, etc.
+Extreme colors, like those in ProPhoto RGB that fall outside the visible spectrum, may be difficult to round trip
+with the same high accuracy as other colors well inside the visible spectrum, but most color spaces within the visible
+spectrum should convert reasonably well.
 ////
 
 [Learn more](https://material.io/blog/science-of-color-design).
@@ -118,10 +111,6 @@ c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
-
-Results in our library may be slightly different in some cases when compared to Material's color utilities output. This
-is because we have implemented the color space as _described_, but we did not port their implementation or tools as
-their approach did not fit our goals, so we do not share the exact same quirks of their implementation.
 
 Material's color utilities, as currently implemented, only works within the sRGB color space, but ColorAide implements
 HCT such that it can be used in various wide gamuts as well.

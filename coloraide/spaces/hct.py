@@ -58,7 +58,7 @@ from .cam16_jmh import Environment, cam16_to_xyz_d65, xyz_d65_to_cam16
 from .cam16_jmh import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
-from .lab import EPSILON, KAPPA, KE, xyz_to_lab, lab_to_xyz
+from .lab import EPSILON, KAPPA, KE
 from ..types import Vector, VectorLike
 from typing import Any
 import math
@@ -140,29 +140,14 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
     Convert HCT to XYZ.
 
-    Originally, we utilized bisect as the main way to find the best J that
-    fulfills the current XYZ Y while keeping hue and chroma the same, but
-    this was very slow and would sometimes take a lot of iterations causing
-    numerous CAM16 conversions. Additionally, it would not always converge
-    with very wide gamut values.
+    Use Newton Raphson method to try and converge as quick as possible or
+    converge as close as we can. If we don't converge in about 7 iterations,
+    we will instead correct the Y in XYZ and re-calculate the J. This will
+    incrementally get our J closer. If we do not converge, we will do a final
+    round with Newton Raphson one last time with a more accurate J.
 
-    Now we use Newton Raphson method to try and converge (or converge as close
-    as possible) much quicker. If we don't converge in about 6 iterations,
-    we will convert to Lab, correct the lightness and then calculate J. On
-    some occasions J will transition away, not towards our target, and if it
-    does, we correct in XYZ which doesn't converge as fast.
-
-    If we still can't get the precision we are aiming for, we return the best
-    that we found. Colors that are out of the visible gamut are often more
-    difficult for us to correct.
-
-    Generally, this does well for most color spaces with regions that fall
-    within the visible spectrum, color spaces with regions outside the
-    visible spectrum, especially in specific regions, can make corrections
-    difficult and less accurate. We more iterations can help correct this,
-    but is slow. Also, more directed optimizations could help. We've settled
-    for now on favoring speed in visible regions over optimizing for extreme
-    cases.
+    If, for whatever reason, we cannot achieve the accuracy we seek in the
+    allotted iterations, just return the closest we were able to get.
     """
 
     # Threshold of how close is close enough
@@ -177,56 +162,46 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     # Calculate the Y we need to target
     y = lstar_to_y(t, env.ref_white)
 
-    # Try to start with a reasonable J
-    lab = xyz_to_lab(cam16_to_xyz_d65(J=t, C=c, h=h, env=env), env.ref_white)
-    lab[0] = t
-    j = xyz_d65_to_cam16(lab_to_xyz(lab, env.ref_white), env)[0]
+    # Try to start with a reasonable initial guess for J
+    xyz = cam16_to_xyz_d65(J=t, C=c, h=h, env=env)
+    xyz[1] = y
+    j = xyz_d65_to_cam16(xyz, env)[0]
 
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0
     last = alg.INF
     best = j
-    while attempt < 15:
+    while attempt < 16:
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
+        # If we are closer than last time, save the values
         delta = abs(xyz[1] - y)
-        if delta <= threshold:
-            return xyz
+        if delta < last and j >= 0:
+            if delta <= threshold:
+                return xyz
+            best = j
+            last = delta
 
-        if delta < last:
-            okay = all(i > 0 for i in xyz)
-            if okay:
-                best = j
-                last = delta
+        # Use Newton Raphson method to see if we can quickly converge (or get as close as we can)
+        if (attempt < 7 or attempt >= 13) and xyz[1] != 0:
+            # ```
+            # f(j_root) = (j ** (1 / 2)) * 0.1
+            # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
+            # f(j_root) = Y = y / 100
+            # f(j) = (y ** 2) / j - 1
+            # f'(j) = (2 * y) / j
+            # ```
+            j = j - (xyz[1] - y) * j / (2 * xyz[1])
 
-            # Use Newton Raphson method to see if we can quickly converge (as close as we can)
-            if attempt < 7 and okay:
-                # ```
-                # f(j_root) = (j ** (1 / 2)) * 0.1
-                # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
-                # f(j_root) = Y = y / 100
-                # f(j) = (y ** 2) / j - 1
-                # f'(j) = (2 * y) / j
-                # ```
-                j = j - (xyz[1] - y) * j / (2 * xyz[1])
-
-            # In most other cases, we'll converge by correcting lightness in Lab D65.
-            # If we can use Lab, it is the quickest way to converge, but in the
-            # blue region (possibly others?), we may start to do worse.
-            else:
-                lab = xyz_to_lab(xyz, env.ref_white)
-                lab[0] = t
-                xyz = lab_to_xyz(lab, env.ref_white)
-                j = xyz_d65_to_cam16(xyz, env)[0]
+        # Correct the lightness in XYZ and then re-calculate J
         else:
-            # Correct directly in XYZ.
             xyz[1] = y
             j = xyz_d65_to_cam16(xyz, env)[0]
 
         attempt += 1
 
-    # We could not acquire the precision we desired, return our closest attempt
+    # We could not acquire the precision we desired, return our closest attempt.
     return cam16_to_xyz_d65(J=best, C=c, h=h, env=env)  # pragma: no cover
 
 
