@@ -32,32 +32,33 @@ The sRGB gamut represented within the HCT color space.
 ////
 
 The HCT color space is Google's attempt at a perceptually accurate color system. Essentially, it is two color spaces
-glued together, 'H' (hue) and 'C' (chroma) come from the CAM16 color appearance model and 'T' (tone) which is the
-lightness from the CIELAB (D65) color space. The idea was to take the more consistent perceptual hues from CAM16 and use
-the better lightness prediction found in CIELAB, so a new space was created by literally sticking the color components
-together. The color space has the advantage of being well suited for creating creating better color schemes with decent
-contrast and makes it easy to create nice tonal palettes.
+glued together: 'H' (hue) and 'C' (chroma) come from the CAM16 color appearance model and 'T' (tone) is the lightness
+from the CIELAB (D65) color space. The space was created to take the more consistent perceptual hues from CAM16 and use
+the better lightness prediction found in CIELAB. The color space has the advantage of being well suited for creating
+color schemes with decent contrast and makes it easy to create nice tonal palettes, but the downside is that it is
+expensive to translate to and from compared to other color spaces.
 
-The one downside of HCT is that it is an expensive color space to calculate. CAM16 is already an expensive color model
-to calculate, and while HCT isn't that much more expensive to convert in the forward direction to HCT, it is much more
-expensive to calculate from HCT to another color space. This is because the CAM16 color model needs context from the
-CAM16 lightness which gets thrown away when converting to HCT as it is replaced with CIELAB lightness. Round trip
-conversions then need to apply approximation algorithms which can be expensive.
+Since HCT is partly based on CAM16, it inherits the expensive operations used to translate color to and from the CAM16
+color model. In the forward direction (to HCT) color conversions are only marginally more expensive than CAM16, but in
+the reverse direction (from HCT) the conversions are much more expensive. This is because the CAM16 color model needs
+the context of chroma, hue, and lightness in order to translate any of its components, but HCT throws away CAM16
+lightness and uses CIELAB lightness which has no direct relation to the other components. In order to translate color
+from HCT, more complex methods are needed to approximate the missing CAM16 lightness in order for a good round trip
+conversion.
 
-To Google's credit, they implement the HCT color space in their Material's color utilities and provide many shortcuts
-to help approximate the color space back to sRGB as quick as possible, but it is only implemented with the intent of
-converting to and from sRGB with 8 bit precision. Wide gamut colors such as Display P3 cannot be used. They have further
-restrictions where they snap chroma to specific steps providing less resolution in HCT.
+Google implements the HCT color space in their "Material Color Utilities" library, but in that library it is restricted
+to sRGB and only to 8 bit precision. Wide gamut colors such as Display P3 cannot be used.
 
-ColorAide's goal was not to port Material's color utilities, but to implement HCT as a proper color space that can be
+ColorAide's goal was not to port Material's Color Utilities, but to implement HCT as a proper color space that can be
 used in sRGB and other wide gamut color spaces. In ColorAide we implement the HCT color space exactly as described and
-create the space from both CIELAB and CAM16. We then provide as accurate of a general approximation back out of HCT as
-we can, making some compromises for performance. This allows for an HCT implementation that can be used with not only
-sRGB, but with wider color gamuts such as: Display P3, Rec. 2020, A98 RGB, etc.
+create the space from both CIELAB and CAM16. We then provide a generic approximation back out of HCT at a higher
+precision to better support not only sRGB, but other wide gamut color spaces such as: Display P3, Rec. 2020, A98 RGB,
+etc.
 
 //// note | Conversion Limitations
 Extreme colors, like those in ProPhoto RGB that fall outside the visible spectrum, may be difficult to round trip
-with the same high accuracy as other colors well inside the visible spectrum, but most color spaces within the visible
+with the same high accuracy as other colors well inside the visible spectrum. These colors naturally stress the CAM16
+color model and make approximation from HCT even more difficult. With that said, most color spaces within the visible
 spectrum should convert reasonably well.
 ////
 
@@ -104,7 +105,7 @@ Color.register(HCT())
 
 One of the applications of HCT is generating tonal palettes. When coupled with ColorAide's [∆E~hct~](../distance.md#delta-e-hct)
 distancing algorithm and the [`hct-chroma` gamut mapping algorithm](../gamut.md#hct-chroma), we can produce tonal
-palettes just like in Material's color utilities.
+palettes just like in Material Color Utilities.
 
 ```py play
 c = Color('hct', [325, 24, 50])
@@ -112,8 +113,8 @@ tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
 ```
 
-Material's color utilities, as currently implemented, only works within the sRGB color space, but ColorAide implements
-HCT such that it can be used in various wide gamuts as well.
+Material Color Utilities, as they currently implement it, only works within the sRGB color space, but ColorAide
+implements HCT such that it can be used in various wide gamuts as well.
 
 ```py play
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -123,9 +124,9 @@ c2 = Color('rec2020', [0, 0, 1]).convert('hct')
 Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit='hct-chroma') for tone in tones])
 ```
 
-Due to differences in approximation techniques and general precision of the implementations internally, ColorAide may
-return results slightly different from Material's color utilities. These differences are extremely small and not
-perceptible the eye.
+Due to differences in approximation techniques, general precision differences, and gamut mapping of the two
+implementations internally, ColorAide may return colors slightly different from Material Color Utilities. These
+differences are extremely small and not perceptible to the eye.
 
 Below we have two examples. We've taken the results from Material's tests and we've generated the same tonal palettes
 and output both as HCT. We can compare which hues stay overall more constant, which chroma gets reduced more than
