@@ -163,9 +163,14 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     y = lstar_to_y(t, env.ref_white)
 
     # Try to start with a reasonable initial guess for J
-    xyz = cam16_to_xyz_d65(J=t, C=c, h=h, env=env)
-    xyz[1] = y
-    j = xyz_d65_to_cam16(xyz, env)[0]
+    if c < 142:
+        # Calculated by curve fitting J vs T. Works well with colors within a mid-sized gamut, but not ultra wide.
+        j = 0.00462403 * t ** 2 + 0.51460278 * t + 2.62845677
+    else:
+        # For ultra wide gamuts we can get a better J by correcting Y in XYZ and then calculating our J
+        xyz = cam16_to_xyz_d65(J=t, C=c, h=h, env=env)
+        xyz[1] = y
+        j = xyz_d65_to_cam16(xyz, env)[0]
 
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0

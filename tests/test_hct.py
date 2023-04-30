@@ -61,6 +61,17 @@ class TestHCTSerialize(util.ColorAssertsPyTest):
         self.assertEqual(Color(color1).to_string(**options), color2)
 
 
+class TestHCTMisc(util.ColorAsserts, unittest.TestCase):
+    """Test miscellaneous cases."""
+
+    def test_wide_gamut(self):
+        """Test wide gamut conversion logic."""
+
+        c1 = Color('hct', (330.2920013462662, 484.58580542051413, 91.57114928085913))
+        c2 = c1.convert('xyy').convert('hct')
+        self.assertColorEqual(c1, c2)
+
+
 class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
     """Test HCT properties."""
 
