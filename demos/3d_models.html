@@ -167,11 +167,19 @@
     <label for="gamuts">Gamut Space:</label>
     <select name="gamuts" id="gamuts">
     </select>
-  </span>
+  </span><br>
   <span class='input-wrap'>
     <input type="checkbox" id="edges" name="edges">
-    <label for="edges">Edges</label><br>
+    <label for="edges">Edges</label>
   </span>
+  <span class='input-wrap'>
+    <input type="checkbox" id="aspect" name="aspect">
+    <label for="aspect">Preserve Aspect Ratio</label>
+  </span>
+  <span class='input-wrap'>
+    <input type="checkbox" id="ortho" name="ortho">
+    <label for="ortho">Orthographic</label>
+  </span><br>
   <button id="button" type="button">Generate</button>
 </div>
 
@@ -184,7 +192,7 @@
 </footer>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.20.0/plotly.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import RGBish
@@ -467,7 +475,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
     Z = []
     cmap = []
 
-    # Render an RGB face by taking to interpolated sides and interpolating the points across the face
+    # Render an RGB face by taking two interpolated sides and interpolating the points across the face
     for c1, c2 in zip(s1, s2):
         for t in Color.steps([c1, c2], steps=int(resolution / 4), space=gamut):
             x.append(t[0])
@@ -545,7 +553,9 @@ def plot_gamut_in_space(
     opacity=1.0,
     edges=False,
     size=(800, 800),
-    camera=None
+    camera=None,
+    aspect=None,
+    projection='perspective'
 ):
     """Plot the given space in sRGB."""
 
@@ -564,6 +574,9 @@ def plot_gamut_in_space(
     y = r * math.sin(e) * math.cos(a)
     x = r * math.sin(e) * math.sin(a)
     z = r * math.cos(e)
+
+    if aspect is None:
+        aspect = {'x': 1, 'y': 1, 'z': 1}
 
     # Get names for
     target = Color.CS_MAP[space]
@@ -616,14 +629,12 @@ def plot_gamut_in_space(
             xaxis=go.layout.scene.XAxis(title=xaxis, showticklabels=not is_cyl, **axis),
             yaxis=go.layout.scene.YAxis(title=yaxis, **axis),
             zaxis=go.layout.scene.ZAxis(title=zaxis, **axis),
-            aspectratio=dict(
-                x=1, y=1, z=1
-            ),
+            aspectratio=aspect
         ),
 
         # Control camera position
         scene_camera=dict(
-            projection=go.layout.scene.camera.Projection(type='perspective'),
+            projection=go.layout.scene.camera.Projection(type=projection),
             center=dict(x=0, y=0, z=0),
             up=dict(x=0, y=0, z=1),
             eye=dict(x=x, y=y, z=z)
@@ -647,7 +658,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-2.2.1-py3-none-any.whl'
+let package = 'coloraide-2.2.2-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'hpluv'])
@@ -698,19 +709,25 @@ async function popState() {
         gamut = defaultGamut
     }
     const edges = (params.has('edges') && params.get('edges').toLowerCase() == 'true') ? true : false
+    const aspect = (params.has('aspect') && params.get('aspect').toLowerCase() == 'true') ? true : false
+    const ortho = (params.has('ortho') && params.get('ortho').toLowerCase() == 'true') ? true : false
 
     document.getElementById('spaces').value = space
     document.getElementById('gamuts').value = gamut
     document.getElementById('edges').checked = edges
+    document.getElementById('aspect').checked = aspect
+    document.getElementById('ortho').checked = ortho
 
     showBusy(busyTarget, 'Generating 3D Model...')
-    await generate3D(space, gamut, edges, false)
+    await generate3D(space, gamut, edges, aspect, ortho, false)
     hideBusy(busyTarget)
   }
 }
 
-async function generate3D(space, gamut, edges, push_history) {
-  if (lastModel && space === lastModel[0] && gamut === lastModel[1] && edges === lastModel[2]) {
+async function generate3D(space, gamut, edges, aspect, ortho, push_history) {
+  if (
+    lastModel && space === lastModel[0] && gamut === lastModel[1] &&
+    edges === lastModel[2] && aspect === lastModel[3] && ortho === lastModel[4]) {
       return
   }
 
@@ -718,11 +735,17 @@ async function generate3D(space, gamut, edges, push_history) {
     const uri = encodeuri(space)
     const uri2 = encodeuri(gamut)
     const uri3 = (edges) ? 'true' : 'false'
+    const uri4 = (aspect) ? 'true' : 'false'
+    const uri5 = (ortho) ? 'true' : 'false'
     history.pushState(
-      {space: uri}, "", `?${new URLSearchParams(`space=${uri}&gamut=${uri2}&edges=${uri3}`).toString()}`
+      {space: uri},
+      "",
+      `?${new URLSearchParams(`space=${uri}&gamut=${uri2}&edges=${uri3}&aspect=${uri4}&ortho=${uri5}`).toString()}`
     )
   }
-  lastModel = [space, gamut, edges]
+  lastModel = [space, gamut, edges, aspect, ortho]
+  const ratio = (aspect) ? [0, 0, 0] : [1, 1, 1]
+  const projection = (ortho) ? 'orthographic' : 'perspective'
   const div = document.querySelector('div#model')
   if (exceptions.has(space)) {
     gamut = space
@@ -736,7 +759,9 @@ fig = plot_gamut_in_space(
     title="${space} rendered in the ${gamut} gamut",
     resolution=80,
     size=(600, 600),
-    edges=${(edges) ? 'True' : 'False'}
+    edges=${(edges) ? 'True' : 'False'},
+    aspect={'x': ${ratio[0]}, 'y': ${ratio[1]}, 'z': ${ratio[2]}},
+    projection='${projection}'
 )
 
 fig.to_json()
@@ -768,7 +793,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.1/full/",
     fullStdLib: false
   })
 
@@ -809,10 +834,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   const button = document.getElementById('button')
   const check = document.getElementById('edges')
+  const check2 = document.getElementById('aspect')
+  const check3 = document.getElementById('ortho')
   button.addEventListener('click', async e => {
     showBusy(busyTarget, 'Generating 3D Model...')
     await randomizeColor()
-    await generate3D(options.value, options2.value, check.checked, true)
+    await generate3D(options.value, options2.value, check.checked, check2.checked, check3.checked, true)
     hideBusy(busyTarget)
   })
   hideBusy(busyTarget)
@@ -828,16 +855,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       gamut = defaultGamut
   }
   const edges = (params.has('edges') && params.get('edges').toLowerCase() == 'true') ? true : false
+  const aspect = (params.has('aspect') && params.get('aspect').toLowerCase() == 'true') ? true : false
+  const ortho = (params.has('ortho') && params.get('ortho').toLowerCase() == 'true') ? true : false
   options.value = space
   options2.value = gamut
   check.checked = edges
+  check2.checked = aspect
+  check3.checked = ortho
 
   // Handle history of pages as they are loaded dynamically
   window.addEventListener("popstate", popState)
 
   // Generate initial model
   showBusy(busyTarget, 'Generating 3D Model...')
-  await generate3D(space, gamut, edges, true)
+  await generate3D(space, gamut, edges, aspect, ortho, true)
   hideBusy(busyTarget)
 })
 </script>
