@@ -155,15 +155,11 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     h, c, t = coords[:]
 
-    # Shortcut out for black or white
-    if t == 0:
-        return [0.0, 0.0, 0.0]
-
     # Calculate the Y we need to target
     y = lstar_to_y(t, env.ref_white)
 
     # Try to start with a reasonable initial guess for J
-    if c < 142:
+    if t > 0.0 and c < 142:
         # Calculated by curve fitting J vs T. Works well with colors within a mid-sized gamut, but not ultra wide.
         j = 0.00462403 * t ** 2 + 0.51460278 * t + 2.62845677
     else:
@@ -182,7 +178,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         # If we are within range, return XYZ
         # If we are closer than last time, save the values
         delta = abs(xyz[1] - y)
-        if delta < last and j >= 0:
+        if delta < last:
             if delta <= threshold:
                 return xyz
             best = j
@@ -214,11 +210,8 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
     t = y_to_lstar(coords[1], env.ref_white)
-    if t <= 0.0:
-        t = c = h = 0.0
-    else:
-        c, h = xyz_d65_to_cam16(coords, env)[1:3]
-    return [h, c, alg.clamp(t, 0.0)]
+    c, h = xyz_d65_to_cam16(coords, env)[1:3]
+    return [h, max(0.0, c), max(0.0, t)]
 
 
 class Achromatic(_Achromatic):
