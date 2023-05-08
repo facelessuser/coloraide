@@ -31,7 +31,9 @@ from typing import Callable, Sequence, Iterator, Any, Iterable, overload  # noqa
 
 NaN = float('nan')
 INF = float('inf')
+EPSILON = sys.float_info.epsilon
 PY38 = (3, 8) <= sys.version_info
+TAU = math.pi * 2
 
 if sys.version_info >= (3, 8):
     prod = math.prod

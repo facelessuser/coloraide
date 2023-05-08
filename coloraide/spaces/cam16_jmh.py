@@ -395,13 +395,13 @@ def cam16_to_xyz_d65(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if J == 0.0 or Q == 0.0:
+    if (J == 0.0 or Q == 0.0) and (C == 0.0 or M == 0.0 or s == 0.0):
         return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
     h_rad = 0.0
     if h is not None:
-        h_rad = math.radians(h)
+        h_rad = math.radians(h % 360)
     elif H is not None:
         h_rad = math.radians(inv_hue_quadrature(H))
     cos_h = math.cos(h_rad)
@@ -416,10 +416,11 @@ def cam16_to_xyz_d65(
 
     # Calculate the `t` value from one of the chroma derived coordinates
     alpha = 0.0
+    temp = alg.EPSILON if J_root == 0.0 else J_root
     if C is not None:
-        alpha = C / J_root
+        alpha = C / temp
     elif M is not None:
-        alpha = (M / env.fl_root) / J_root
+        alpha = (M / env.fl_root) / temp
     elif s is not None:
         alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
     t = alg.npow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
@@ -459,10 +460,10 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
         env.fl
     )
 
-    # Red-green and yellow-blue components
+    # Calculate hue from red-green and yellow-blue components
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
-    h_rad = math.atan2(b, a)
+    h_rad = math.atan2(b, a) % alg.TAU
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
