@@ -155,11 +155,15 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     h, c, t = coords[:]
 
+    # Shortcut out for black
+    if t == 0:
+        return [0.0, 0.0, 0.0]
+
     # Calculate the Y we need to target
     y = lstar_to_y(t, env.ref_white)
 
     # Try to start with a reasonable initial guess for J
-    if t > 0.0 and c < 142:
+    if c < 142:
         # Calculated by curve fitting J vs T. Works well with colors within a mid-sized gamut, but not ultra wide.
         j = 0.00462403 * t ** 2 + 0.51460278 * t + 2.62845677
     else:

@@ -395,7 +395,7 @@ def cam16_to_xyz_d65(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if (J == 0.0 or Q == 0.0) and (C == 0.0 or M == 0.0 or s == 0.0):
+    if J == 0.0 or Q == 0.0:
         return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
@@ -416,11 +416,10 @@ def cam16_to_xyz_d65(
 
     # Calculate the `t` value from one of the chroma derived coordinates
     alpha = 0.0
-    temp = alg.EPSILON if J_root == 0.0 else J_root
     if C is not None:
-        alpha = C / temp
+        alpha = C / J_root
     elif M is not None:
-        alpha = (M / env.fl_root) / temp
+        alpha = (M / env.fl_root) / J_root
     elif s is not None:
         alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
     t = alg.npow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
