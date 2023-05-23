@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3
+
+- **NEW** ACEScc will now resolve undefined color channels (non-alpha) with a non-zero default that represents black for
+  consistency with other ACES color spaces.
+- **ENHANCE**: Streamline averaging algorithm to increase performance.
+- **FIX**: Ensure that HCT consistently clamps negative lightness and chroma to zero.
+
 ## 2.2.2
 
 - **FIX**: Improve HCT round trip conversion speed and improve conversion in some weak areas.
@@ -50,7 +57,7 @@
   dynamic approach to detect achromatic colors. Undefined LCh chroma and hue channels and Lab a and b channels can now
   resolve to non-zero values when undefined for better achromatic interpolation.
 
-- **NEW** (ACEScct) will now resolve undefined color channels (non-alpha) with a non-zero default that represents black
+- **NEW**: ACEScct will now resolve undefined color channels (non-alpha) with a non-zero default that represents black
   as zero is actually out of gamut for that space.
 
 - **NEW**: `filter`, `compose`, and `harmony` all now support the `out_space` parameter.
