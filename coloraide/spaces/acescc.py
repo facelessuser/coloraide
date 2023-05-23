@@ -58,9 +58,9 @@ class ACEScc(sRGB):
     SERIALIZE = ("--acescc",)  # type: tuple[str, ...]
     WHITE = (0.32168, 0.33767)
     CHANNELS = (
-        Channel("r", CC_MIN, CC_MAX, bound=True),
-        Channel("g", CC_MIN, CC_MAX, bound=True),
-        Channel("b", CC_MIN, CC_MAX, bound=True)
+        Channel("r", CC_MIN, CC_MAX, bound=True, nans=CC_MIN),
+        Channel("g", CC_MIN, CC_MAX, bound=True, nans=CC_MIN),
+        Channel("b", CC_MIN, CC_MAX, bound=True, nans=CC_MIN)
     )
     DYNAMIC_RANGE = 'hdr'
 

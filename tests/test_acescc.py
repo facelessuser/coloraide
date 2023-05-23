@@ -48,7 +48,7 @@ class TestACESccSerialize(util.ColorAssertsPyTest):
         ('color(--acescc 0 0.3 0.75)', {'alpha': True}, 'color(--acescc 0 0.3 0.75 / 1)'),
         ('color(--acescc 0 0.3 0.75 / 0.5)', {'alpha': False}, 'color(--acescc 0 0.3 0.75)'),
         # Test None
-        ('color(--acescc none 0.3 0.75)', {}, 'color(--acescc 0 0.3 0.75)'),
+        ('color(--acescc none 0.3 0.75)', {}, 'color(--acescc -0.35845 0.3 0.75)'),
         ('color(--acescc none 0.3 0.75)', {'none': True}, 'color(--acescc none 0.3 0.75)'),
         # Test Fit
         ('color(--acescc 1.5 0.2 0)', {}, 'color(--acescc 1.468 0.2 0)'),
