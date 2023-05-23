@@ -348,9 +348,9 @@ always be true.
 
 2. Most of the time, if you set all color channels to undefined, when resolved, the color will be black (or white in
    the case of CMYK). Unfortunately, using `0` for undefined channels in some color spaces can create colors outside the
-   viewable gamut. One such example is ACEScct which has a greater value than zero for black. In this case, setting
-   undefined channels to zero will cause nonsense colors. In this specific case, we use ACEScct's value for black
-   instead of `0` for more a more practical default.
+   viewable gamut. One such example is ACEScct (a logarithmic encoding of ACES) which has a greater value than zero for
+   black. In this case, setting undefined channels to zero will cause nonsense colors. In this specific case, we use
+   ACEScct's value for black instead of `0` for more a more practical default.
 
     ```py play
     aces = Color('black').convert('acescct')
@@ -361,6 +361,12 @@ always be true.
     aces[:] = [0] * 3
     aces.in_gamut()
     ```
+
+    /// new | New 2.3
+    ACEScc, another color space that performs a logarithmic encoding of ACES, will also resolve undefined channels to a
+    non-zero value, not because zero is out of gamut, but to ensure consistency across all ACES color spaces which
+    resolve to zero or non-zero equivalent values.
+    ///
 
 ## Achromatic Colors
 
