@@ -15,6 +15,7 @@ Boronine
 Brettel
 Bz
 CATs
+CCT
 CIE
 CIECAM
 CIEDE
@@ -55,6 +56,7 @@ Deutan
 Deuteranopia
 Dichromacy
 Dormont
+Duv
 EOTF
 Easings
 Ebner
@@ -126,6 +128,7 @@ NaN
 NaNs
 Numpy
 OETF
+Ohno
 OkLCh
 OkLCh's
 Okhsl
@@ -183,6 +186,7 @@ XD
 XYB
 XYZ
 YCbCr
+Yoshi
 ZD
 accessor
 accessors

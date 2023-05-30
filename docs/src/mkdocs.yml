@@ -48,6 +48,7 @@ nav:
       - Contrast: contrast.md
       - Color Harmonies: harmonies.md
       - Filters: filters.md
+      - Correlated Color Temperature: temperature.md
       - String Output: strings.md
       - Advanced Topics: advanced.md
 

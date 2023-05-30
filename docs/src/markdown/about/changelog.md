@@ -3,6 +3,7 @@
 ## 2.4
 
 - **NEW**: Add the 1960 UCS color space.
+- **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` methods.
 
 ## 2.3
 

@@ -720,7 +720,7 @@ Return
 -   Returns a float indicating the delta E distance between the two colors.
 ///
 
-## `#!py color.closest` {#closest}
+## `#!py Color.closest` {#closest}
 
 ```py
 def closest(
@@ -753,7 +753,7 @@ Return
     `#!py3 None` will be returned.
 ///
 
-## `#!py color.mask` {#mask}
+## `#!py Color.mask` {#mask}
 
 ```py
 def mask(
@@ -1458,6 +1458,73 @@ Description
 Return
 
 -   Returns a set of XYZ coordinates that align with the white point for the given color space.
+///
+
+## `#!py Color.blackbody` {#blackbocy}
+
+```py
+@classmethod
+def blackbody(
+    cls,
+    temp: float,
+    duv: float = 0.0,
+    *,
+    space: str | None = 'srgb-linear',
+    out_space: str | None = None,
+    method: str | None = None,
+    **kwargs: Any
+) -> Color:
+```
+
+/// define
+Description
+
+-   Creates a color from a temperature in Kelvin and an optional ∆~uv~. The color will be normalized in the linear RGB
+    space provided via `space`. By default, the Ohno 2013 algorithm is used.
+
+Parameters
+
+- 
+    Parameters  | Defaults             | Description
+    ----------- | -------------------- | -----------
+    `temp`      |                      | A positive temperature in Kelvin. Accepted range of temperature is based on the algorithm.
+    `duv`       | `#!py 0.0`           | An optional ∆~uv~ specifying the distance from the black body curve.
+    `space`     | `#!py 'srgb-linear'` | An RGB color space in which the returned color should be normalized in. The color space should be a linear space for best results. It can be set to `#!py None` if no normalization is desired.
+    `out_space` | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
+    `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+
+Return
+
+-   Returns a reference to the current [`Color`](#color).
+///
+
+## `#!py Color.cct` {#cct}
+
+```py
+def cct(
+    self,
+    *,
+    method: str | None = None,
+    **kwargs: Any
+) -> Vector:
+```
+
+/// define
+Description
+
+-   Returns the associated CCT and ∆~uv~ for a given color. If the color is beyond an acceptable range for the
+    algorithm or the color is very far from the locus, the result may be surprising.
+
+Parameters
+
+- 
+    Parameters  | Defaults             | Description
+    ----------- | -------------------- | -----------
+    `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+
+Return
+
+-   Returns a list containing the correlated color temperature in Kelvin and the ∆~uv~.
 ///
 
 ## `#!py Color.chromatic_adaptation`

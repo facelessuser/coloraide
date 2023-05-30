@@ -13,12 +13,13 @@ from . import filters
 from . import contrast
 from . import harmonies
 from . import average
+from . import temperature
 from . import util
 from . import algebra as alg
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
-from .spaces import Space
+from .spaces import Space, RGBish
 from .spaces.hsv import HSV
 from .spaces.srgb.css import sRGB
 from .spaces.srgb_linear import sRGBLinear
@@ -134,8 +135,9 @@ class Color(metaclass=ColorMeta):
     DELTA_E = util.DEF_DELTA_E
     HARMONY = util.DEF_HARMONY
     AVERAGE = util.DEF_AVERAGE
-    CHROMATIC_ADAPTATION = 'bradford'
-    CONTRAST = 'wcag21'
+    CHROMATIC_ADAPTATION = util.DEF_CHROMATIC_ADAPTATION
+    CONTRAST = util.DEF_CONTRAST
+    CCT = util.DEF_CCT
 
     # It is highly unlikely that a user would ever need to override this, but
     # just in case, it is exposed, but undocumented.
@@ -459,6 +461,70 @@ class Color(metaclass=ColorMeta):
         if hasattr(obj._space, 'hue_index'):
             obj.normalize()
         return obj
+
+    @classmethod
+    def blackbody(
+        cls,
+        temp: float,
+        duv: float = 0.0,
+        *,
+        space: str | None = 'srgb-linear',
+        out_space: str | None = None,
+        method: str | None = None,
+        **kwargs: Any
+    ) -> Color:
+        """
+        Get a color along the black body curve.
+
+        Colors are specified by temperature in Kelvin. Depending on the algorithm, the practical
+        range may differ.
+
+        Colors are returned and normalized to be within the specified RGB space (preferably linear).
+        The returned color, after normalization, is an approximation and may not exactly match the
+        temperature. If `space` is set to `None` the color will not be normalized and may not be in
+        the visible spectrum, but it should correlate with the specified temperature assuming it is
+        not too far from the locus.
+        """
+
+        if method is None:
+            method = cls.CCT
+
+        if out_space is None:
+            out_space = space or 'xyz-d65'
+
+        cct = temperature.from_cct(method)
+        uv = cct(temp, duv, **kwargs)
+
+        # Convert to the RGB color space in which we'd like to normalize (ideally a linear space)
+        color = cls('xyz-d65', util.xy_to_xyz(util.uv_1960_to_xy(uv), 1))
+
+        # Normalize in the given RGB color space (ideally linear).
+        if space is not None and isinstance(cls.CS_MAP[space], RGBish):
+            color.convert(space, in_place=True)
+            coords = color.coords()
+
+            # Add just enough white to make r, g, b all positive.
+            w = -min(0.0, *coords)
+            if w:
+                coords = [c + w for c in coords]
+
+            # Normalize values such that the maximum is 1 (unless all are zero)
+            m = max(coords)
+            color[:-1] = [c / m for c in coords] if m else coords
+
+        if out_space != color.space():
+            color.convert(out_space, in_place=True)
+
+        return color
+
+    def cct(self, *, method: str | None = None, **kwargs: Any) -> Vector:
+        """Get color temperature."""
+
+        if method is None:
+            method = self.CCT
+
+        cct = temperature.to_cct(method)
+        return cct(self.uv('1960'), **kwargs)
 
     def to_dict(self, *, nans: bool = True) -> Mapping[str, Any]:
         """Return color as a data object."""
