@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4
+
+- **NEW**: Add the 1960 UCS color space.
+
 ## 2.3
 
 - **NEW** ACEScc will now resolve undefined color channels (non-alpha) with a non-zero default that represents black for

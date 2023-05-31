@@ -33,6 +33,7 @@ from .spaces.cam16 import CAM16
 from .spaces.cam16_jmh import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
 from .spaces.hct import HCT
+from .spaces.ucs import UCS
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
@@ -90,6 +91,7 @@ ColorAll.register(
         CAM16SCD(),
         CAM16LCD(),
         HCT(),
+        UCS(),
 
         # Delta E
         DEITP(),

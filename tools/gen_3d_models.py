@@ -68,7 +68,8 @@ models = {
     'hct': {'title': TEMPLATE.format('HCT'), 'filename': 'hct-3d.png'},
     'cmy': {'title': TEMPLATE.format('CMY'), 'filename': 'cmy-3d.png'},
     'orgb': {'title': TEMPLATE.format('oRGB'), 'filename': 'orgb-3d.png', 'elev': 72},
-    'xyb': {'title': TEMPLATE.format('XYB'), 'filename': 'xyb-3d.png', 'azim': 45}
+    'xyb': {'title': TEMPLATE.format('XYB'), 'filename': 'xyb-3d.png', 'azim': 45},
+    'ucs': {'title': TEMPLATE.format('UCS'), 'filename': 'ucs-3d.png', 'azim': 60, 'elev': 10},
 }
 
 
