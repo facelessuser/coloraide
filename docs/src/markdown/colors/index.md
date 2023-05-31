@@ -96,6 +96,8 @@ flowchart TB
 
     xyz-d65 --- xyy
 
+    xyz-d65 --- ucs
+
     xyz-d65(XYZ D65)
     xyz-d50(XYZ D50)
     rec2020(Rec. 2020)
@@ -139,6 +141,7 @@ flowchart TB
     cmy(CMY)
     cmyk(CMYK)
     xyy(xyY)
+    ucs(CIE 1960 UCS)
     prismatic(Prismatic)
     aces2065-1(ACES2065-1)
     acescg(ACEScg)
@@ -195,6 +198,7 @@ flowchart TB
     click cmy "./cmy/" _self
     click cmyk "./cmyk/" _self
     click xyy "./xyy/" _self
+    click ucs "./ucs/" _self
     click prismatic "./prismatic/" _self
     click aces2065-1 "./aces2065_1/" _self
     click acescg "./acescg/" _self

@@ -1,5 +1,8 @@
 # CIE 1960 UCS
 
+/// failure | The CIE 1960 UCS color space is not registered in `Color` by default
+///
+
 /// html | div.info-container
 //// info | Properties
     attrs: {class: inline end}
@@ -16,7 +19,7 @@ Name | Range^\*^
 `v`  | [0.0, 1.0]
 `w`  | [0.0, 1.0]
 
-^\*^ current range is quite arbitrary and values can exceed the range, even in an sRGB gamut.
+^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
 ////
 
 //// html | figure

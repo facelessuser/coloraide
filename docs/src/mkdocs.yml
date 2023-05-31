@@ -118,6 +118,7 @@ nav:
 
       - Miscellaneous Spaces:
         - xyY: colors/xyy.md
+        - CIE 1960 UCS: colors/ucs.md
         - CMY: colors/cmy.md
         - CMYK: colors/cmyk.md
         - oRGB: colors/orgb.md
