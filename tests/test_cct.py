@@ -27,8 +27,8 @@ class TestOhno2013(util.ColorAssertsPyTest):
         cct, duv = Color(color).cct()
         c = Color.blackbody(cct, duv)
         cct2, duv2 = c.cct()
-        assert math.isclose(cct, cct2, abs_tol=0.5)
-        assert math.isclose(duv, duv2, abs_tol=0.5)
+        assert math.isclose(cct, cct2, abs_tol=0.05)
+        assert math.isclose(duv, duv2, abs_tol=0.05)
 
 
 class TestRobertson1968(util.ColorAssertsPyTest):
@@ -52,8 +52,8 @@ class TestRobertson1968(util.ColorAssertsPyTest):
         cct, duv = Color(color).cct(method='robertson-1968')
         c = Color.blackbody(cct, duv, method='robertson-1968')
         cct2, duv2 = c.cct(method='robertson-1968')
-        assert math.isclose(cct, cct2, abs_tol=0.5)
-        assert math.isclose(duv, duv2, abs_tol=0.5)
+        assert math.isclose(cct, cct2, abs_tol=0.05)
+        assert math.isclose(duv, duv2, abs_tol=0.05)
 
 
 class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):

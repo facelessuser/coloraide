@@ -88,12 +88,12 @@ c2.cct()
 ## Limitations
 
 All algorithms to calculate to and from CCT have some limitations. This may be that the algorithm is only good for a
-specific range, it may be be it can only maintain accuracy of ∆~uv~ within a specific range.
+specific range of temperature, it may be be that it can only maintain accuracy of ∆~uv~ within a specific range.
 
 The further a color is away from the black body curve, the less accurate CCT may be, or it may be entirely inaccurate
-altogether. Isotherms, the further out the reach, will eventually cross and make associating a color with a temperature
-accurately impossible. If the input exceeds the algorithm's specified temperature range, the values may not be accurate
-as well.
+altogether. Isotherms, the further out they reach, will eventually cross and make associating a color with a temperature
+accurately impossible. If the input exceeds the algorithm's specified temperature range, the values may not be
+inaccurate and/or the behavior undefined
 
 ## Algorithm's
 
