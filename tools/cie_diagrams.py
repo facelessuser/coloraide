@@ -255,7 +255,7 @@ class DiagramOptions:
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, theme='light', title='', show_labels=True, axis=True,
-    show_legend=True, black_body=False
+    show_legend=True, black_body=False, isotherms=False, cct=None
 ):
     """CIE diagram."""
 
@@ -272,6 +272,13 @@ def cie_diagram(
     plt.title(opt.title)
     if show_labels:
         plt.margins(0.15)
+
+    if isotherms:
+        black_body = True
+
+    bb = thermal.DEFAULT_BLACK_BODY
+    if (black_body or cct) and observer == '10deg':
+        bb = thermal.BlackBodyCurve(cmf=opt.observer)
 
     xs = []
     ys = []
@@ -439,15 +446,43 @@ def cie_diagram(
                 ha='center'
             )
 
+    # Add any specified CCT points.
+    if cct:
+        bx = []
+        by = []
+        annot = []
+        for value in cct:
+            temp, duv = [float(v) for v in value.split(':')]
+            bu, bv = thermal.temp_to_uv_ohno_2013(temp, duv, blackbody=bb)
+            if opt.mode != '1960':
+                bu, bv = util.uv_1960_to_xy([bu, bv])
+                if opt.mode != '1931':
+                    bu, bv = util.xy_to_uv([bu, bv])
+            annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
+            bx.append(bu)
+            by.append(bv)
+        plt.scatter(
+            bx,
+            by,
+            marker=".",
+            color=opt.default_colorized_color if colorize else opt.default_color
+        )
+        for pt, a in zip(zip(bx, by), annot):
+            plt.annotate(
+                a,
+                pt,
+                size=8,
+                color=opt.default_colorized_color if colorize else opt.default_color
+            )
+
     # Show the black body (Planckian locus) curve
     # Work in progress.
     if black_body:
         uaxis = []
         vaxis = []
-        for cct in range(1000, 100001, 250):
-            t = cct
-            bbody = thermal.BlackBodyCurve(cmf=opt.observer) if observer == '10deg' else thermal.DEFAULT_BLACK_BODY
-            bu, bv = thermal.temp_to_uv_ohno_2013(t, black_body=bbody)
+        for kelvin in range(1000, 100001, 250):
+            t = kelvin
+            bu, bv = thermal.temp_to_uv_ohno_2013(t, blackbody=bb)
             if opt.mode != '1960':
                 bu, bv = util.uv_1960_to_xy([bu, bv])
                 if opt.mode != '1931':
@@ -455,11 +490,11 @@ def cie_diagram(
             uaxis.append(bu)
             vaxis.append(bv)
 
-            if t in ISOTHERMS:
+            if isotherms and kelvin in ISOTHERMS:
                 duvx = []
                 duvy = []
-                for duv in (-0.02, 0.02) if t < 100000 else (-0.01, 0.01):
-                    bu, bv = thermal.temp_to_uv_ohno_2013(t, duv)
+                for duv in (-0.02, 0.02) if kelvin < 100000 else (-0.01, 0.01):
+                    bu, bv = thermal.temp_to_uv_ohno_2013(kelvin, duv, blackbody=bb)
                     if opt.mode != '1960':
                         bu, bv = util.uv_1960_to_xy([bu, bv])
                         if opt.mode != '1931':
@@ -467,8 +502,8 @@ def cie_diagram(
                     duvx.append(bu)
                     duvy.append(bv)
 
-                offset, label = ISOTHERMS[t]
-                bu, bv = thermal.temp_to_uv_ohno_2013(t, offset)
+                offset, label = ISOTHERMS[kelvin]
+                bu, bv = thermal.temp_to_uv_ohno_2013(kelvin, offset, blackbody=bb)
                 if opt.mode != '1960':
                     bu, bv = util.uv_1960_to_xy([bu, bv])
                     if opt.mode != '1931':
@@ -531,6 +566,7 @@ def main():
     parser.add_argument('--diagram', '-d', default='1931', help='Diagram to generate.')
     parser.add_argument('--cmfs', '-c', default="2deg", help="CMFS to use, e.g., '2deg' (default) or '10deg'.")
     parser.add_argument('--white-point', '-w', action='append', help="A white point to plot.")
+    parser.add_argument('--cct', '-C', action='append', help="A point specified by 'CCT:Duv'.")
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
     parser.add_argument('--transparent', '-p', action="store_true", help="Export with transparent background.")
@@ -541,6 +577,7 @@ def main():
     parser.add_argument('--no-alpha', '-a', action='store_true', help="Disable diagram transparent background.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--black-body', '-k', action='store_true', help="Draw the black body curve (WIP).")
+    parser.add_argument('--isotherms', '-i', action='store_true', help="Show isotherms.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     args = parser.parse_args()
@@ -557,7 +594,9 @@ def main():
         show_legend=not args.no_legend,
         axis=not args.no_axis,
         title=args.title,
-        black_body=args.black_body
+        black_body=args.black_body,
+        isotherms=args.isotherms,
+        cct=args.cct
     )
 
     if args.output:

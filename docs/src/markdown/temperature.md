@@ -13,26 +13,36 @@ expressed as the temperature (in Kelvins) something would need to be heated to g
 This response can be mapped with a Planckian or black body locus/curve.
 
 //// html | figure
-![OkLCh](images/blackbody.png)
+![Black body curve](images/blackbody.png)
 
 ///// html | figcaption
-1960 Chromaticity Diagram with Black Body Curve in the range of 1,000K - 100,000K
+1960 Chromaticity Diagram with black body curve in the range of 1,000K - 100,000K
 /////
 ////
 
 ## D~uv~
 
-In addition to CCT, there is also the concept of D~uv~ or ∆~uv~. In the image above, it can be noted that not only have
-we drawn the Planckian locus, but we've drawn a number of intersecting lines called isotherms. An isotherm is simply a
-line connecting points having the same temperature at a given time or on average over a given period. In the case of
-colors, it connects a number of colors that are close to the locus to the same given temperature. Often, when colors are
-expressed with a CCT they will also have a ∆~uv~.
+In addition to CCT, there is also the concept of D~uv~ or ∆~uv~. In the following image we've now drawn lines that
+intersect the black body curve. These lines are called isotherms. An isotherm is simply a line connecting points having
+the same temperature at a given time or on average over a given period. In the case of colors, it connects a number of
+colors that are close to the locus to the same given temperature. Often, when colors are expressed with a CCT they will
+also have a ∆~uv~.
+
+//// html | figure
+![Isotherms](images/isotherms.png)
+
+///// html | figcaption
+1960 Chromaticity Diagram with black body curve and isotherms.
+/////
+////
+
+We can calculate a color's associated temperature and its offset along the isotherm.
 
 ```py play
 'CCT: {}K Duv: {}'.format(*Color('yellow').cct())
 ```
 
-CCT and ∆~uv~ can also be used together to specify a specific color:
+CCT and ∆~uv~ can also be used together to get a specific color that satisfies those requirements.
 
 ```py play
 Color.blackbody(*Color('yellow').cct())
@@ -41,24 +51,38 @@ Color.blackbody(*Color('yellow').cct())
 ## Out of Gamut Temperatures
 
 It should be noted that `blackbody()` normalizes the returned colors by default as the colors are often much too bright
-initially, all having a max luminance. Sometimes, depending on the range of temperature, the color can also fall
-outside the gamut under evaluation. Colors that are outside the gamut will only be approximations with the specified
-gamut under evaluation and may not convert back to exactly the same temperature.
+initially, all having a max luminance. This normalization is usually done under a linear RGB color space, (linear sRGB
+being the default). Sometimes, depending on the range of temperature, the color can also fall outside the gamut under
+evaluation.
 
-In general, it is recommended to normalize the colors in a linear color space, linear sRGB being the default. If a
-larger gamut is desired, to reduce out of gamut colors, one can be specified by changing `space`. Additionally,
-normalization can be turned off entirely by setting it to `None`.
+//// html | figure
+![Out of gamut CCT](images/cct-gamut.png)
+
+///// html | figcaption
+CCT of 1200K in relation to the sRGB gamut.
+/////
+////
+
+Colors that are outside the gamut will only be approximations under the specified gamut and may not convert back to
+exactly the same temperature.
 
 ```py play
-c1 = Color.blackbody(1200)
+c = Color.blackbody(1200)
+c
+c.cct()
+```
+
+If a larger gamut is desired, to reduce out of gamut colors, one can be specified by changing `space`. Additionally,
+normalization can be turned off entirely by setting it to `None`. When specifying the space under evaluation, it is
+encouraged to use linear spaces RGB spaces.
+
+```py play
+c1 = Color.blackbody(1200, space='display-p3-linear')
 c1
 c1.cct()
-c2 = Color.blackbody(1200, space='display-p3-linear')
+c2 = Color.blackbody(1200, space=None)
 c2
 c2.cct()
-c3 = Color.blackbody(1200, space=None)
-c3
-c3.cct()
 ```
 
 ## Limitations
