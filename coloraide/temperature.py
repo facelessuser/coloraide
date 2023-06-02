@@ -243,11 +243,11 @@ def uv_to_temp_ohno_2013(
     ui, vi = blackbody(ti, exact=True)
     di = math.sqrt((ui - u) ** 2 + (vi - v) ** 2)
 
-    tp = table[index - 1][0] if index > 0 else (ti - 1e-8)
+    tp = table[index - 1][0] if index > 0 else (ti - 1e-4)
     up, vp = blackbody(tp, exact=True)
     dp = math.sqrt((up - u) ** 2 + (vp - v) ** 2)
 
-    tn = table[index + 1][0] if index < last else (ti + 1e-8)
+    tn = table[index + 1][0] if index < last else (ti + 1e-4)
     un, vn = blackbody(tn, exact=True)
     dn = math.sqrt((un - u) ** 2 + (vn - v) ** 2)
 
