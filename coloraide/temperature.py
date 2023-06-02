@@ -94,7 +94,7 @@ class BlackBodyCurve:
         self,
         start: float = 1000.0,
         end: float = 100000.0,
-        steps: int = 500,
+        steps: int = 250,
         cmf: dict[int, tuple[float, float, float]] = cmfs.cie_2_deg_observer,
         white: VectorLike = DEFAULT_WHITE
     ) -> None:
@@ -112,7 +112,7 @@ class BlackBodyCurve:
             u, v = temp_to_uv_planckian_locus(k, cmf, white)
             self.domain.append(k)
             points.append([u, v])
-        self.spline = alg.interpolate(points, method='catrom')
+        self.spline = alg.interpolate(points, method='monotone')
 
     def scale(self, point: float) -> float:
         """Scale the temperature point to match the range 0 - 1."""
@@ -186,16 +186,19 @@ def uv_to_temp_ohno_2013(
 
     The Ohno approach requires a pre-generated table. The more data available, the more precise the values.
     Unfortunately, to span the entire range of 1000 - 100000 with fairly good accuracy, it requires keeping
-    a very large table to keep in memory.
+    a very large table in memory.
 
     To avoid storing a large amount of data in memory, we can use multiple iterations and dynamically sample
     points on the locus, each iteration shrinking the bounds until we converge. Unfortunately, this is very
     slow, millisecond range.
 
-    As a mitigation, we can actually generate a smaller subset of data and create a Catmull-Rom spline and use
-    it as our data table. We can then use the iterative approach using the spline to approximate the values much
-    more quickly to converge on an approximate temperature. Once we converged on a location, we can calculate
-    the more accurate values and proceed forward with the rest of the Ohno approach.
+    An alternative is to use the iterative approach, but generate a smaller subset of data and use a spline
+    to approximate the points in between. Obviously, the points in between will not be as accurate, but the
+    spline is used only as a way to approximate close to the temperature. Once we've sufficiently narrowed
+    the range down to our best 3 temperature points, we can calculate those points with high accuracy and
+    proceed with the solvers. This actually allows us to use an even smaller amount of data then if we had
+    used no spline and pre-calculated enough points for the same accuracy. This is also much faster than
+    dynamically calculating all the points.
 
     After navigating the table of data and determining a temperature that has the lowest delta distance, we can
     then use the triangular and parabolic solver. The triangular works best for values close to the locus (less
@@ -208,7 +211,7 @@ def uv_to_temp_ohno_2013(
     start = 1000.0
     end = 100000.0
     samples = 10
-    iterations = 5
+    iterations = 6
     last = samples - 1
     index = 0
     table = []  # type: list[tuple[float, float, float, float]]
