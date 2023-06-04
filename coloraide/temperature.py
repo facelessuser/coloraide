@@ -6,7 +6,6 @@ https://en.wikipedia.org/wiki/Planckian_locus
 """
 from __future__ import annotations
 import math
-import bisect
 from . import algebra as alg
 from . import util
 from .cat import WHITES
@@ -63,7 +62,10 @@ DEFAULT_WHITE = tuple(util.xy_to_xyz(WHITES['2deg']['D65']))
 def temp_to_uv_planckian_locus(
     temp: float,
     cmf: dict[int, tuple[float, float, float]] = cmfs.cie_2_deg_observer,
-    white: VectorLike = DEFAULT_WHITE
+    white: VectorLike = DEFAULT_WHITE,
+    start: int = 360,
+    end: int = 830,
+    step: int = 5
 ) -> Vector:
     """
     Temperature to Planckian locus.
@@ -72,7 +74,7 @@ def temp_to_uv_planckian_locus(
     """
     x = y = z = 0.0
 
-    for wavelength in range(360, 835, 5):
+    for wavelength in range(start, end + 1, step):
         m = C1 * (wavelength ** -5) * (math.exp(C2 / (wavelength * temp)) - 1.0) ** -1
         x += m * cmf[wavelength][0]
         y += m * cmf[wavelength][1]
@@ -92,57 +94,74 @@ class BlackBodyCurve:
 
     def __init__(
         self,
-        start: float = 1000.0,
-        end: float = 100000.0,
-        steps: int = 250,
         cmf: dict[int, tuple[float, float, float]] = cmfs.cie_2_deg_observer,
         white: VectorLike = DEFAULT_WHITE
     ) -> None:
         """Initialize."""
 
+        keys = list(cmf.keys())
+        self.cmf_start = min(keys)
+        self.cmf_end = max(keys)
+
         points = []
         self.domain = []
+        self.domain2 = []
         self.cmf = cmf
         self.white = white
-        inc = (end - start) / steps
-        count = steps + 1
+        start = 1000
+        end = 20000
+        step = 130
+        inc = (end - start) / step
+        count = step + 1
 
         for r in range(count):
             k = r * inc + start
-            u, v = temp_to_uv_planckian_locus(k, cmf, white)
+            u, v = temp_to_uv_planckian_locus(k, self.cmf, self.white, self.cmf_start, self.cmf_end)
             self.domain.append(k)
             points.append([u, v])
+
         self.spline = alg.interpolate(points, method='monotone')
 
-    def scale(self, point: float) -> float:
+        start = end
+        end = 100000
+        step = 220
+        inc = (end - start) / step
+        count = step + 1
+        points = []
+
+        for r in range(count):
+            k = r * inc + start
+            u, v = temp_to_uv_planckian_locus(k, self.cmf, self.white, self.cmf_start, self.cmf_end)
+            self.domain2.append(k)
+            points.append([u, v])
+
+        self.spline2 = alg.interpolate(points, method='monotone')
+
+    def scale(self, point: float, domain: list[float]) -> float:
         """Scale the temperature point to match the range 0 - 1."""
 
         # Extrapolation
-        if point <= self.domain[0]:
-            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0])
+        if point <= domain[0]:
+            point = (point - domain[0]) / (domain[-1] - domain[0])
         elif point >= self.domain[-1]:
-            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0])
+            point = 1.0 + (point - domain[-1]) / (domain[-1] - domain[0])
 
         # Interpolation
         else:
-            regions = len(self.domain) - 1
-            size = (1 / regions)
-            index = 0
-            adjusted = 0.0
-            index = bisect.bisect(self.domain, point) - 1
-            a, b = self.domain[index:index + 2]
+            a, b = domain[0], domain[len(domain) - 1]
             l = b - a
-            adjusted = ((point - a) / l) if l else 0.0
-            point = size * index + (adjusted * size)
+            point = ((point - a) / l) if l else 0.0
         return point
 
     def __call__(self, temp: float, exact: bool = False) -> Vector:
         """Get the uv for the given temp."""
 
         if exact:
-            return temp_to_uv_planckian_locus(temp, self.cmf, self.white)
+            return temp_to_uv_planckian_locus(temp, self.cmf, self.white, self.cmf_start, self.cmf_end)
         else:
-            return self.spline(self.scale(temp))
+            if temp <= 20000:
+                return self.spline(self.scale(temp, self.domain))
+            return self.spline2(self.scale(temp, self.domain2))
 
 
 DEFAULT_BLACK_BODY = BlackBodyCurve()
@@ -179,6 +198,11 @@ def temp_to_uv_ohno_2013(
 
 def uv_to_temp_ohno_2013(
     uv: VectorLike,
+    start: float = 1000,
+    end: float = 100000,
+    samples: int = 10,
+    iterations: int = 6,
+    exact: bool = False,
     blackbody: BlackBodyCurve = DEFAULT_BLACK_BODY
 ) -> Vector:
     """
@@ -195,23 +219,21 @@ def uv_to_temp_ohno_2013(
     An alternative is to use the iterative approach, but generate a smaller subset of data and use a spline
     to approximate the points in between. Obviously, the points in between will not be as accurate, but the
     spline is used only as a way to approximate close to the temperature. Once we've sufficiently narrowed
-    the range down to our best 3 temperature points, we can calculate those points with high accuracy and
-    proceed with the solvers. This actually allows us to use an even smaller amount of data then if we had
-    used no spline and pre-calculated enough points for the same accuracy. This is also much faster than
+    the range down to our best 3 temperature points, we can calculate those points with higher accuracy and
+    proceed with the solvers. This actually allows us to use an even smaller amount of data than if we had
+    used no spline and pre-calculated enough points for a similar accuracy. This is also much faster than
     dynamically calculating all the points.
 
     After navigating the table of data and determining a temperature that has the lowest delta distance, we can
     then use the triangular and parabolic solver. The triangular works best for values close to the locus (less
     than |0.002| Duv) and the parabolic solution works better for values with a higher Duv.
 
+    For more precision, `exact` will avoid the approximation spline.
+
     https://www.researchgate.net/publication/263373260_Practical_Use_and_Calculation_of_CCT_and_Duv
     """
 
     u, v = uv
-    start = 1000.0
-    end = 100000.0
-    samples = 10
-    iterations = 6
     last = samples - 1
     index = 0
     table = []  # type: list[tuple[float, float, float, float]]
@@ -225,7 +247,7 @@ def uv_to_temp_ohno_2013(
         # Generate the Planckian table while tracking lowest distance
         for j in range(samples):
             k = alg.lerp(start, end, j / last)
-            u2, v2 = blackbody(k)
+            u2, v2 = blackbody(k, exact=exact)
             di = math.sqrt((u2 - u) ** 2 + (v2 - v) ** 2)
             if di < lowest:
                 lowest = di
@@ -240,16 +262,25 @@ def uv_to_temp_ohno_2013(
     # Select the closest 3 values. Get precise values instead of our
     # approximated spline value so we can get the most accurate result.
     ti = table[index][0]
-    ui, vi = blackbody(ti, exact=True)
-    di = math.sqrt((ui - u) ** 2 + (vi - v) ** 2)
+    if not exact:
+        ui, vi = blackbody(ti, exact=True)
+        di = math.sqrt((ui - u) ** 2 + (vi - v) ** 2)
+    else:
+        di = table[index][-1]
 
-    tp = table[index - 1][0] if index > 0 else (ti - 1e-4)
-    up, vp = blackbody(tp, exact=True)
-    dp = math.sqrt((up - u) ** 2 + (vp - v) ** 2)
+    if index == 0 or not exact:
+        tp = ti - 1e-4 if index == 0 else table[index - 1][0]
+        up, vp = blackbody(tp, exact=True)
+        dp = math.sqrt((up - u) ** 2 + (vp - v) ** 2)
+    else:
+        tp, up, vp, dp = table[index - 1]
 
-    tn = table[index + 1][0] if index < last else (ti + 1e-4)
-    un, vn = blackbody(tn, exact=True)
-    dn = math.sqrt((un - u) ** 2 + (vn - v) ** 2)
+    if index == last or not exact:
+        tn = ti + 1e-4 if index == last else table[index + 1][0]
+        un, vn = blackbody(tn, exact=True)
+        dn = math.sqrt((un - u) ** 2 + (vn - v) ** 2)
+    else:
+        tn, un, vn, dn = table[index + 1]
 
     # Triangular solution
     l = math.sqrt((un - up) ** 2 + (vn - vp) ** 2)
