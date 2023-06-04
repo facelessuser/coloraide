@@ -94,7 +94,7 @@ c2.cct()
 ## Algorithms
 
 There are quite a few approaches to calculating to and from CCT, each with their strengths and weaknesses. ColorAide
-currently only supports a few approaches.
+currently only supports a few approaches which are implemented as plugins.
 
 Algorithm       | Key              | Description
 --------------- | ---------------- | -----------
@@ -102,6 +102,9 @@ Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can 
 Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangular and parabolic solver. Current implementation allows for a range of 1000K - 100000K.
 
 ### Robertson 1968
+
+/// success | The Robertson 1968 CCT algorithm is registered in `Color` by default
+///
 
 An approach created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range of 1667K - 100000K.
 This approach uses a look up table containing some precalculated points and approximates the points along the black
@@ -115,6 +118,9 @@ Color.blackbody(5000, duv=0.02, method='robertson-1968').cct(method='robertson-1
 ```
 
 ### Ohno 2013
+
+/// success | The Ohno 2013 CCT algorithm is registered in `Color` by default
+///
 
 This is an approach researched by Yoshi Ohno and aims to provide better accuracy. It uses a look up table similar to
 the Roberson method and employs a combined approach of a triangular solver and a parabolic solver. This can lead to

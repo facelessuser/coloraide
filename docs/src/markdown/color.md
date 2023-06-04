@@ -321,6 +321,7 @@ Properties             | Defaults            | Description
 `HARMONY`              | `#!py "oklch"`      | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
 `CONTRAST`             | `#!py "wcag21"`     | Default contrast algorithm.
 `AVERAGE`              | `#!py "average"`    | Default color space for averaging.
+`CCT`                  | `#!py "ohno-2013`   | Default CCT method.
 
 ### Plugins
 
@@ -369,7 +370,7 @@ Custom('red').delta_e('blue')
 If a deregistration is desired, the `deregister` method can be used. It takes a string that describes the plugin to
 deregister: `category:name`.
 
-Valid categories are `space`, `delta-e`, `cat`, `contrast`, `filter`, `interpolate`, and `fit`.
+Valid categories are `space`, `delta-e`, `cat`, `contrast`, `filter`, `interpolate`, `fit`, and `cct`.
 
 If the given plugin is not found, an error will be thrown, but if this notification is found to be unnecessary, `silent`
 can be enabled and the there will be no error thrown.
