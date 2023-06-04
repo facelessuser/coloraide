@@ -61,7 +61,7 @@ DEFAULT_WHITE = tuple(util.xy_to_xyz(WHITES['2deg']['D65']))
 
 def temp_to_uv_planckian_locus(
     temp: float,
-    cmf: dict[int, tuple[float, float, float]] = cmfs.cie_2_deg_observer,
+    cmf: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
     white: VectorLike = DEFAULT_WHITE,
     start: int = 360,
     end: int = 830,
@@ -80,8 +80,7 @@ def temp_to_uv_planckian_locus(
         y += m * cmf[wavelength][1]
         z += m * cmf[wavelength][2]
 
-    xy = util.xyz_to_xyY([x, y, z], white)[:2]
-    return util.xy_to_uv_1960(xy)
+    return util.xy_to_uv_1960(util.xyz_to_xyY([x, y, z], white)[:2])
 
 
 class BlackBodyCurve:
@@ -94,7 +93,7 @@ class BlackBodyCurve:
 
     def __init__(
         self,
-        cmf: dict[int, tuple[float, float, float]] = cmfs.cie_2_deg_observer,
+        cmf: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
         white: VectorLike = DEFAULT_WHITE
     ) -> None:
         """Initialize."""

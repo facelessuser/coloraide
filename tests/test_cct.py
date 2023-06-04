@@ -86,7 +86,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.blackbody(2000, out_space='display-p3'),
-            Color('color(display-p3 0.93959 0.56696 0.22948)')
+            Color('color(display-p3 0.93958 0.56696 0.22948)')
         )
 
     def test_normalization_space(self):

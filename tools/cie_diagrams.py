@@ -197,9 +197,9 @@ class DiagramOptions:
     def __init__(self, mode="1931", observer='2deg', theme="light", title=""):
         """Initialize."""
 
-        self.observer = cmfs.cie_2_deg_observer
+        self.observer = cmfs.cie_1931_2deg
         if observer == '10deg':
-            self.observer = cmfs.cie_10_deg_observer
+            self.observer = cmfs.cie_1964_10deg
             self.axis_labels = ('CIE u', 'CIE v')
         elif observer != '2deg':
             raise ValueError("Unrecognized 'observer': {}".format(observer))
