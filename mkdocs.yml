@@ -134,6 +134,7 @@ nav:
       - Contrast: plugins/contrast.md
       - Color Spaces: plugins/space.md
       - Interpolation: plugins/interpolate.md
+      - CCT: plugins/cct.md
 
   - Demos:
     - demos/index.md
