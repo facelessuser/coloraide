@@ -61,7 +61,7 @@ DEFAULT_WHITE = tuple(util.xy_to_xyz(WHITES['2deg']['D65']))
 
 def temp_to_uv_planckian_locus(
     temp: float,
-    cmf: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+    cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
     white: VectorLike = DEFAULT_WHITE,
     start: int = 360,
     end: int = 830,
@@ -76,9 +76,9 @@ def temp_to_uv_planckian_locus(
 
     for wavelength in range(start, end + 1, step):
         m = C1 * (wavelength ** -5) * (math.exp(C2 / (wavelength * temp)) - 1.0) ** -1
-        x += m * cmf[wavelength][0]
-        y += m * cmf[wavelength][1]
-        z += m * cmf[wavelength][2]
+        x += m * cmfs[wavelength][0]
+        y += m * cmfs[wavelength][1]
+        z += m * cmfs[wavelength][2]
 
     return util.xy_to_uv_1960(util.xyz_to_xyY([x, y, z], white)[:2])
 
@@ -93,19 +93,19 @@ class BlackBodyCurve:
 
     def __init__(
         self,
-        cmf: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
         white: VectorLike = DEFAULT_WHITE
     ) -> None:
         """Initialize."""
 
-        keys = list(cmf.keys())
-        self.cmf_start = min(keys)
-        self.cmf_end = max(keys)
+        keys = list(cmfs.keys())
+        self.cmfs_start = min(keys)
+        self.cmfs_end = max(keys)
 
         points = []
         self.domain = []
         self.domain2 = []
-        self.cmf = cmf
+        self.cmfs = cmfs
         self.white = white
         start = 1000
         end = 20000
@@ -115,7 +115,7 @@ class BlackBodyCurve:
 
         for r in range(count):
             k = r * inc + start
-            u, v = temp_to_uv_planckian_locus(k, self.cmf, self.white, self.cmf_start, self.cmf_end)
+            u, v = temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
             self.domain.append(k)
             points.append([u, v])
 
@@ -130,7 +130,7 @@ class BlackBodyCurve:
 
         for r in range(count):
             k = r * inc + start
-            u, v = temp_to_uv_planckian_locus(k, self.cmf, self.white, self.cmf_start, self.cmf_end)
+            u, v = temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
             self.domain2.append(k)
             points.append([u, v])
 
@@ -156,7 +156,7 @@ class BlackBodyCurve:
         """Get the uv for the given temp."""
 
         if exact:
-            return temp_to_uv_planckian_locus(temp, self.cmf, self.white, self.cmf_start, self.cmf_end)
+            return temp_to_uv_planckian_locus(temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
         else:
             if temp <= 20000:
                 return self.spline(self.scale(temp, self.domain))
