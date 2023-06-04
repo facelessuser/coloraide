@@ -4,6 +4,7 @@
 
 - **NEW**: Add the 1960 UCS color space.
 - **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` methods.
+- **FIX**: Fix case where deregistering all plugins with `*` was not deregistering `Filter` plugins.
 
 ## 2.3
 

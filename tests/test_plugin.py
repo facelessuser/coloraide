@@ -271,6 +271,28 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             color
         )
 
+    def test_plugin_registration_cct(self):
+        """Test plugin registration of `cct`."""
+
+        from coloraide.temperature.robertson_1968 import Robertson1968
+
+        # Deregistration should have taken place
+        class Custom(Color):
+            pass
+
+        Custom.deregister('cct:robertson-1968')
+        color = Color.blackbody(5000, method='robertson-1968')
+
+        with self.assertRaises(ValueError):
+            Custom.blackbody(5000, method='robertson-1968')
+
+        # Now it is registered again
+        Custom.register(Robertson1968())
+        self.assertColorEqual(
+            Custom.blackbody(5000, method='robertson-1968'),
+            color
+        )
+
     def test_deregister_all_category(self):
         """Test deregistration of all plugins in a category."""
 
@@ -291,6 +313,11 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Custom.FIT_MAP, {})
         self.assertEqual(Custom.CS_MAP, {})
         self.assertEqual(Custom.DE_MAP, {})
+        self.assertEqual(Custom.INTERPOLATE_MAP, {})
+        self.assertEqual(Custom.FILTER_MAP, {})
+        self.assertEqual(Custom.CAT_MAP, {})
+        self.assertEqual(Custom.CONTRAST_MAP, {})
+        self.assertEqual(Custom.CCT_MAP, {})
 
     def test_reserved_registration_fit(self):
         """Test override registration of reserved fit method."""

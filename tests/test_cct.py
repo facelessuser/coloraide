@@ -13,7 +13,11 @@ class TestOhno2013Temp(util.ColorAssertsPyTest):
 
     @pytest.mark.parametrize('cct', list(range(1000, 100000, 100)))
     def test_cct(self, cct):
-        """Test CCT methods."""
+        """
+        Test CCT methods.
+
+        We test at a high resolution to make sure the spline implementation is working as good as without.
+        """
 
         for duv in (-0.03, -0.02, -0.01, 0.0, 0.01, 0.02, 0.03):
             cct2, duv2 = Color.blackbody(cct, duv, space=None).cct()
@@ -22,9 +26,9 @@ class TestOhno2013Temp(util.ColorAssertsPyTest):
 
 
 class TestRobertson1968(util.ColorAssertsPyTest):
-    """Test Ohno 2013."""
+    """Test Robertson 1968."""
 
-    @pytest.mark.parametrize('cct', list(range(1000, 100000, 100)))
+    @pytest.mark.parametrize('cct', list(range(1000, 100000, 1000)))
     def test_cct(self, cct):
         """Test CCT methods."""
 

@@ -204,6 +204,7 @@ cz
 daltonlens
 deregister
 deregistered
+deregistering
 deregistration
 deuteranomaly
 deuteranopia

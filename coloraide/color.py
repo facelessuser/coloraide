@@ -393,11 +393,12 @@ class Color(metaclass=ColorMeta):
             if p == '*':
                 cls.CS_MAP.clear()
                 cls.DE_MAP.clear()
-                cls.FIT_MAP.clear()
                 cls.CAT_MAP.clear()
+                cls.FILTER_MAP.clear()
                 cls.CONTRAST_MAP.clear()
                 cls.INTERPOLATE_MAP.clear()
                 cls.CCT_MAP.clear()
+                cls.FIT_MAP.clear()
                 return
 
             ptype, name = p.split(':', 1)
