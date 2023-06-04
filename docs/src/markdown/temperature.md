@@ -152,13 +152,21 @@ ColorAide only provides the CIE 2˚ and 10˚ observer by default. If providing a
 resolution or better as that is the current default step size.
 
 ```py play
-from coloraide.cmfs import cie_1964_10deg
+from coloraide import cmfs
 from coloraide import cat
-from coloraide.temperature import BlackBodyCurve
+from coloraide.temperature.ohno_2013 import Ohno2013, BlackBodyCurve
 
-bb10 = BlackBodyCurve(cmfs=cie_1964_10deg, white=cat.WHITES['10deg']['D65'])
+
+class Custom(Color):
+    ...
+
+
+Custom.register(
+    Ohno2013(BlackBodyCurve(cmfs=cmfs.cie_1964_10deg, white=cat.WHITES['10deg']['D65'])),
+    overwrite=True
+)
 
 Steps([Color.blackbody(t) for t in range(1000, 15000, 50)])
-Steps([Color.blackbody(t, blackbody=bb10) for t in range(1000, 15000, 50)])
+Steps([Custom.blackbody(t) for t in range(1000, 15000, 50)])
 ```
 ///
