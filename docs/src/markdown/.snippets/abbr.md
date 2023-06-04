@@ -13,5 +13,4 @@
 *[UCS]: Uniform Chromaticity Space
 *[WCAG]: Web Content Accessibility Guidelines
 *[CCT]: correlated color temperature
-*[CMF]: color matching functions
 *[CMFs]: color matching functions

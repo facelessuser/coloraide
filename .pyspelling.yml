@@ -56,6 +56,12 @@ matrix:
       ignores:
       - code
       - pre
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore possessive endings
+      - open: '(?<=\w)''s(?!\w)'
+        close: '\b'
   - pyspelling.filters.url:
 
 - name: python
@@ -98,4 +104,6 @@ matrix:
       # Ignore text between inline back ticks
       - open: '(?P<open>`+)'
         close: '(?P=open)'
+      - open: '(?<=\w)''s(?!\w)'
+        close: '\b'
   - pyspelling.filters.url:
