@@ -198,7 +198,9 @@ class DiagramOptions:
         """Initialize."""
 
         self.observer = cmfs.cie_1931_2deg
+        self.white = ALL_WHITES['2deg']['D65']
         if observer == '10deg':
+            self.white = ALL_WHITES['10deg']['D65']
             self.observer = cmfs.cie_1964_10deg
             self.axis_labels = ('CIE u', 'CIE v')
         elif observer != '2deg':
@@ -278,7 +280,7 @@ def cie_diagram(
 
     bb = thermal.DEFAULT_BLACK_BODY
     if (black_body or cct) and observer == '10deg':
-        bb = thermal.BlackBodyCurve(cmf=opt.observer)
+        bb = thermal.BlackBodyCurve(cmf=opt.observer, white=opt.white)
 
     xs = []
     ys = []
@@ -287,7 +289,7 @@ def cie_diagram(
     # Get points for the spectral locus
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
-        x, y = util.xyz_to_xyY(v, (0.31270, 0.32900))[:2]
+        x, y = util.xyz_to_xyY(v, opt.white)[:2]
         if opt.mode == "1976":
             x, y = util.xy_to_uv([x, y])
         elif opt.mode == "1960":
