@@ -4,6 +4,7 @@ import abc
 import functools
 import random
 import math
+from . import cmfs
 from . import distance
 from . import convert
 from . import gamut
@@ -53,7 +54,7 @@ from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
-from .cat import CAT, Bradford
+from .cat import CAT, Bradford, WHITES
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
@@ -63,6 +64,9 @@ from .interpolate.continuous import Continuous
 from .interpolate.bspline import BSpline
 from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
+from .temperature import CCT
+from .temperature.ohno_2013 import Ohno2013, BlackBodyCurve
+from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
 from typing import overload, Sequence, Iterable, Any, Callable, Mapping
 
@@ -102,6 +106,7 @@ class ColorMeta(abc.ABCMeta):
             cls.FILTER_MAP = cls.FILTER_MAP.copy()  # type: dict[str, Filter]
             cls.CONTRAST_MAP = cls.CONTRAST_MAP.copy()  # type: dict[str, ColorContrast]
             cls.INTERPOLATE_MAP = cls.INTERPOLATE_MAP.copy()  # type: dict[str, Interpolate]
+            cls.CCT_MAP = cls.CCT_MAP.copy()  # type: dict[str, CCT]
 
         # Ensure each derived class tracks its own conversion paths for color spaces
         # relative to the installed color space plugins.
@@ -129,6 +134,7 @@ class Color(metaclass=ColorMeta):
     CONTRAST_MAP = {}  # type: dict[str, ColorContrast]
     FILTER_MAP = {}  # type: dict[str, Filter]
     INTERPOLATE_MAP = {}  # type: dict[str, Interpolate]
+    CCT_MAP = {}  # type: dict[str, CCT]
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
@@ -346,6 +352,9 @@ class Color(metaclass=ColorMeta):
             elif isinstance(i, Interpolate):
                 mapping = cls.INTERPOLATE_MAP
                 p = i
+            elif isinstance(i, CCT):
+                mapping = cls.CCT_MAP
+                p = i
             elif isinstance(i, Fit):
                 mapping = cls.FIT_MAP
                 p = i
@@ -388,6 +397,7 @@ class Color(metaclass=ColorMeta):
                 cls.CAT_MAP.clear()
                 cls.CONTRAST_MAP.clear()
                 cls.INTERPOLATE_MAP.clear()
+                cls.CCT_MAP.clear()
                 return
 
             ptype, name = p.split(':', 1)
@@ -404,6 +414,8 @@ class Color(metaclass=ColorMeta):
                 mapping = cls.CONTRAST_MAP
             elif ptype == 'interpolate':
                 mapping = cls.INTERPOLATE_MAP
+            elif ptype == 'cct':
+                mapping = cls.CCT_MAP
             elif ptype == "fit":
                 mapping = cls.FIT_MAP
                 if name == 'clip':
@@ -486,17 +498,12 @@ class Color(metaclass=ColorMeta):
         not too far from the locus.
         """
 
-        if method is None:
-            method = cls.CCT
+        cct = temperature.cct(method, cls)
 
         if out_space is None:
             out_space = space or 'xyz-d65'
 
-        cct = temperature.from_cct(method)
-        uv = cct(temp, duv, **kwargs)
-
-        # Convert to the RGB color space in which we'd like to normalize (ideally a linear space)
-        color = cls('xyz-d65', util.xy_to_xyz(util.uv_1960_to_xy(uv), 1))
+        color = cct.from_cct(cls, temp, duv, **kwargs)
 
         # Normalize in the given RGB color space (ideally linear).
         if space is not None and isinstance(cls.CS_MAP[space], RGBish):
@@ -520,11 +527,8 @@ class Color(metaclass=ColorMeta):
     def cct(self, *, method: str | None = None, **kwargs: Any) -> Vector:
         """Get color temperature."""
 
-        if method is None:
-            method = self.CCT
-
-        cct = temperature.to_cct(method)
-        return cct(self.uv('1960'), **kwargs)
+        cct = temperature.cct(method, self)
+        return cct.to_cct(self, **kwargs)
 
     def to_dict(self, *, nans: bool = True) -> Mapping[str, Any]:
         """Return color as a data object."""
@@ -1189,6 +1193,10 @@ Color.register(
         Continuous(),
         BSpline(),
         NaturalBSpline(),
-        Monotone()
+        Monotone(),
+
+        # CCT
+        Robertson1968(),
+        Ohno2013(BlackBodyCurve(cmfs.cie_1931_2deg, WHITES['2deg']['D65']))
     ]
 )

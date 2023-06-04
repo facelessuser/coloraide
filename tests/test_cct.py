@@ -2,7 +2,6 @@
 import math
 from coloraide.everything import ColorAll as Color
 from coloraide import cmfs
-from coloraide import temperature
 from coloraide import cat
 from . import util
 import pytest
@@ -124,10 +123,19 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
     def test_ohno_alternate_cmfs(self):
         """Test alternate CMFs."""
 
-        bbody = temperature.BlackBodyCurve(cmfs=cmfs.cie_1964_10deg, white=cat.WHITES['10deg']['D65'])
-        srgbl = Color.blackbody(5000, blackbody=bbody)
+        from coloraide.temperature.ohno_2013 import Ohno2013, BlackBodyCurve
+
+        class Custom(Color):
+            ...
+
+        Custom.register(
+            Ohno2013(BlackBodyCurve(cmfs=cmfs.cie_1964_10deg, white=cat.WHITES['10deg']['D65'])),
+            overwrite=True
+        )
+
+        srgbl = Custom.blackbody(5000)
         self.assertColorEqual(srgbl, Color('color(srgb-linear 1 0.77909 0.61807)'))
-        self.assertEqual(srgbl.cct(blackbody=bbody), [5000.005435889316, 2.770957661628331e-08])
+        self.assertEqual(srgbl.cct(), [5000.005435889316, 2.770957661628331e-08])
 
     def test_ohno_exact(self):
         """Test alternate CMFs."""
