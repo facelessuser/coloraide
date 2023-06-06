@@ -98,7 +98,7 @@ currently only supports a few approaches which are implemented as plugins.
 
 Algorithm       | Key              | Description
 --------------- | ---------------- | -----------
-Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1667K - 100000K.
+Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1667K - ∞.
 Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangular and parabolic solver. Current implementation allows for a range of 1000K - 100000K.
 
 ### Robertson 1968
@@ -106,12 +106,12 @@ Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangula
 /// success | The Robertson 1968 CCT algorithm is registered in `Color` by default
 ///
 
-An approach created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range of 1667K - 100000K.
-This approach uses a look up table containing some precalculated points and approximates the points along the black
-body curve.
+An approach created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range of 1667K - ∞. This
+approach uses a look up table containing some precalculated points and approximates the points along the black body
+curve.
 
-It is not the most accurate method and can suffer from moderate errors in certain ranges, but is generally pretty fast
-and probably "good enough" for values within the 1667K - 100000K.
+The approach is reasonably fast and a decent approximation, but while the algorithm does technically allow conversion up
+to infinity, the margin of error gets increasingly larger at very high temperatures.
 
 ```py play
 Color.blackbody(5000, duv=0.02, method='robertson-1968').cct(method='robertson-1968')
@@ -139,7 +139,7 @@ expansion", ColorAide uses a moderately sized table and creates a spline to inte
 technique is used to get close to the target using the spline as the data table, and then more accurate values are
 calculated for use in the triangular and parabolic solver. This allows us to use a smaller table while mitigating the
 performance issues associated with the expansion technique, all while maintaining good accuracy. The technique is still
-slower than the [Roberson](#robertson-1968) approach, but it is more accurate.
+slower than the [Roberson](#robertson-1968) approach, but it is more accurate approach.
 
 ```py play
 Color.blackbody(5000, duv=0.02).cct()

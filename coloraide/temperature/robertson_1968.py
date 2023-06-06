@@ -51,7 +51,7 @@ RUVT = [
     (525.0, 0.31320, 0.35968, -15.628),
     (550.0, 0.32129, 0.36011, -23.325),
     (575.0, 0.32931, 0.36038, -40.770),
-    (600.0, 0.33724, 0.36051, -116.45),
+    (600.0, 0.33724, 0.36051, -116.45)
 ]
 
 
@@ -84,7 +84,7 @@ class Robertson1968(CCT):
                 # Calculate the temperature, if the mired value is zero
                 # assume the maximum temperature of 100000K.
                 mired = alg.lerp(previous[0], current[0], factor)
-                temp = 1.0E6 / mired if mired > 0 else 1e5
+                temp = 1.0E6 / mired if mired > 0 else float('inf')
 
                 # Interpolate the slope vectors
                 dup = 1 / previous_denom
