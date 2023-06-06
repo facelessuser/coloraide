@@ -108,7 +108,7 @@ class Robertson1968(CCT):
             # Save distance as previous
             previous_di = di
 
-        return [temp, -duv]
+        return [temp, -duv if duv else duv]
 
     def from_cct(self, color: type[Color], kelvin: float, duv: float = 0.0, **kwargs: Any) -> Color:
         """Calculate a color that satisfies the CCT."""
