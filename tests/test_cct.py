@@ -127,13 +127,13 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
     def test_ohno_alternate_cmfs(self):
         """Test alternate CMFs."""
 
-        from coloraide.temperature.ohno_2013 import Ohno2013, BlackBodyCurve
+        from coloraide.temperature.ohno_2013 import Ohno2013
 
         class Custom(Color):
             ...
 
         Custom.register(
-            Ohno2013(BlackBodyCurve(cmfs=cmfs.cie_1964_10deg, white=cat.WHITES['10deg']['D65'])),
+            Ohno2013(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
             overwrite=True
         )
 

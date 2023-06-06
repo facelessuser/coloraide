@@ -65,7 +65,7 @@ from .interpolate.bspline import BSpline
 from .interpolate.bspline_natural import NaturalBSpline
 from .interpolate.monotone import Monotone
 from .temperature import CCT
-from .temperature.ohno_2013 import Ohno2013, BlackBodyCurve
+from .temperature.ohno_2013 import Ohno2013
 from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
 from typing import overload, Sequence, Iterable, Any, Callable, Mapping
@@ -1198,6 +1198,6 @@ Color.register(
 
         # CCT
         Robertson1968(),
-        Ohno2013(BlackBodyCurve(cmfs.cie_1931_2deg, WHITES['2deg']['D65']))
+        Ohno2013(cmfs.cie_1931_2deg, WHITES['2deg']['D65'])
     ]
 )

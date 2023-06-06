@@ -160,7 +160,7 @@ resolution or better as that is the current default step size.
 ```py play
 from coloraide import cmfs
 from coloraide import cat
-from coloraide.temperature.ohno_2013 import Ohno2013, BlackBodyCurve
+from coloraide.temperature.ohno_2013 import Ohno2013
 
 
 class Custom(Color):
@@ -168,7 +168,7 @@ class Custom(Color):
 
 
 Custom.register(
-    Ohno2013(BlackBodyCurve(cmfs=cmfs.cie_1964_10deg, white=cat.WHITES['10deg']['D65'])),
+    Ohno2013(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
     overwrite=True
 )
 

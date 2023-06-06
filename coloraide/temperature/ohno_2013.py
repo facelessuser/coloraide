@@ -132,10 +132,14 @@ class Ohno2013(CCT):
 
     NAME = 'ohno-2013'
 
-    def __init__(self, blackbody: BlackBodyCurve | None = None):
+    def __init__(
+        self,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        white: VectorLike = DEFAULT_WHITE
+    ):
         """Initialize."""
 
-        self.blackbody = BlackBodyCurve(cmfs.cie_1931_2deg, DEFAULT_WHITE) if blackbody is None else blackbody
+        self.blackbody = BlackBodyCurve(cmfs, white)
 
     def to_cct(
         self,

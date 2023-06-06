@@ -11,17 +11,17 @@ import os
 sys.path.insert(0, os.getcwd())
 
 try:
-    from coloraide_extras.everything import ColorAll as Color
+    from coloraide_extras.everything import ColorAll
 except ImportError:
-    from coloraide.everything import ColorAll as Color
+    from coloraide.everything import ColorAll
 from coloraide import util  # noqa: E402
 from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
-from coloraide import temperature as thermal  # noqa: E402
+from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
 
 ALL_WHITES = copy.deepcopy(WHITES)
-ALL_WHITES['2deg']['D60'] = Color.CS_MAP['aces2065-1'].WHITE
+ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
 
 # How dense do we scatter plot the diagram background colors?
 RESOLUTION = 800
@@ -278,9 +278,10 @@ def cie_diagram(
     if isotherms:
         black_body = True
 
-    bb = thermal.DEFAULT_BLACK_BODY
-    if (black_body or cct) and observer == '10deg':
-        bb = thermal.BlackBodyCurve(cmf=opt.observer, white=opt.white)
+    class Color(ColorAll):
+        ...
+
+    Color.register(ohno_2013.Ohno2013(opt.observer, opt.white), overwrite=True)
 
     xs = []
     ys = []
@@ -455,11 +456,8 @@ def cie_diagram(
         annot = []
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
-            bu, bv = thermal.temp_to_uv_ohno_2013(temp, duv, blackbody=bb)
-            if opt.mode != '1960':
-                bu, bv = util.uv_1960_to_xy([bu, bv])
-                if opt.mode != '1931':
-                    bu, bv = util.xy_to_uv([bu, bv])
+            c = Color.blackbody(temp, duv)
+            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
             by.append(bv)
@@ -484,11 +482,8 @@ def cie_diagram(
         vaxis = []
         for kelvin in range(1000, 100001, 250):
             t = kelvin
-            bu, bv = thermal.temp_to_uv_ohno_2013(t, blackbody=bb)
-            if opt.mode != '1960':
-                bu, bv = util.uv_1960_to_xy([bu, bv])
-                if opt.mode != '1931':
-                    bu, bv = util.xy_to_uv([bu, bv])
+            c = Color.blackbody(t, space=None)
+            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
             uaxis.append(bu)
             vaxis.append(bv)
 
@@ -496,20 +491,14 @@ def cie_diagram(
                 duvx = []
                 duvy = []
                 for duv in (-0.02, 0.02) if kelvin < 100000 else (-0.01, 0.01):
-                    bu, bv = thermal.temp_to_uv_ohno_2013(kelvin, duv, blackbody=bb)
-                    if opt.mode != '1960':
-                        bu, bv = util.uv_1960_to_xy([bu, bv])
-                        if opt.mode != '1931':
-                            bu, bv = util.xy_to_uv([bu, bv])
+                    c = Color.blackbody(kelvin, duv, space=None)
+                    bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
                     duvx.append(bu)
                     duvy.append(bv)
 
                 offset, label = ISOTHERMS[kelvin]
-                bu, bv = thermal.temp_to_uv_ohno_2013(kelvin, offset, blackbody=bb)
-                if opt.mode != '1960':
-                    bu, bv = util.uv_1960_to_xy([bu, bv])
-                    if opt.mode != '1931':
-                        bu, bv = util.xy_to_uv([bu, bv])
+                c = Color.blackbody(kelvin, offset, space=None)
+                bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
 
                 plt.annotate(
                     label,
