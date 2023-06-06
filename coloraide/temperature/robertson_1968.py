@@ -78,7 +78,7 @@ class Robertson1968(CCT):
             # Get the distance
             # If a table was generated with values down to 1000K,
             # we would get a positive slope, so to keep logic the
-            # same, adjust distance calcualtion such that negative
+            # same, adjust distance calculation such that negative
             # is still what we are looking for.
             if current[3] < 0:
                 di = (v - current[2]) - current[3] * (u - current[1])
