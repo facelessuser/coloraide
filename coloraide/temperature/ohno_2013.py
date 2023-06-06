@@ -27,6 +27,9 @@ class BlackBodyCurve:
 
     Points between steps are approximated, but actual points can always be
     acquired via `exact`.
+
+    For improved accuracy, we split spline data for low temps and high temps
+    and assign the number of required data points accordingly.
     """
 
     def __init__(
@@ -39,39 +42,37 @@ class BlackBodyCurve:
         keys = list(cmfs.keys())
         self.cmfs_start = min(keys)
         self.cmfs_end = max(keys)
-
-        points = []
-        self.domain = []
-        self.domain2 = []
         self.cmfs = cmfs
         self.white = white
+
+        # Low temperature range
         start = 1000
         end = 20000
         step = 130
         inc = (end - start) / step
         count = step + 1
-
+        points = []
+        self.domain = []
         for r in range(count):
             k = r * inc + start
             u, v = planck.temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
             self.domain.append(k)
             points.append([u, v])
-
         self.spline = alg.interpolate(points, method='monotone')
 
+        # High temperature range
         start = end
         end = 100000
         step = 220
         inc = (end - start) / step
         count = step + 1
         points = []
-
+        self.domain2 = []
         for r in range(count):
             k = r * inc + start
             u, v = planck.temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
             self.domain2.append(k)
             points.append([u, v])
-
         self.spline2 = alg.interpolate(points, method='monotone')
 
     def scale(self, point: float, domain: list[float]) -> float:
