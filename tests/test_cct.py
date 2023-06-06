@@ -148,3 +148,39 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(cct1, [2424.0755046224285, 0.008069417819174918])
         cct2 = Color('orange').cct(exact=True)
         self.assertEqual(cct2, [2424.0755046224285, 0.008069417819174918])
+
+    def test_robertson_custom_table(self):
+        """Test that we can customize Robertson 1968 table."""
+
+        from coloraide.temperature import robertson_1968
+
+        ruvt = robertson_1968.RUVT.copy()
+        # Extend table to approximate down to 1000K
+        ruvt.extend(
+            [(625, 0.34507, 0.36053, 190.08359),
+             (650, 0.35281, 0.36044, 57.76589),
+             (675, 0.36044, 0.36026, 35.98515),
+             (700, 0.36795, 0.36002, 27.0978),
+             (725, 0.37534, 0.35972, 22.30492),
+             (750, 0.38261, 0.35937, 19.32952),
+             (775, 0.38976, 0.35897, 17.31839),
+             (800, 0.39677, 0.35855, 15.87963),
+             (825, 0.40365, 0.3581, 14.80795),
+             (850, 0.4104, 0.35763, 13.98541),
+             (875, 0.41701, 0.35715, 13.33938),
+             (900, 0.42348, 0.35665, 12.82271),
+             (925, 0.42982, 0.35615, 12.40342),
+             (950, 0.43602, 0.35564, 12.05908),
+             (975, 0.44208, 0.35513, 11.7735),
+             (1000, 0.44801, 0.35463, 11.53467)]
+        )
+
+        class Custom(Color):
+            CCT = 'robertson-1968'
+
+        Custom.register(
+            robertson_1968.Robertson1968(ruvt),
+            overwrite=True
+        )
+
+        self.assertEqual(Custom.blackbody(1000, space=None).cct(), [1000.0000000000002, -5.530370757932678e-17])

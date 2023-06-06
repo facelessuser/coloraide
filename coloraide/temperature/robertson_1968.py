@@ -11,8 +11,8 @@ import math
 from .. import algebra as alg
 from .. import util
 from ..temperature import CCT
-from ..types import Vector
-from typing import TYPE_CHECKING, Any
+from ..types import Vector, VectorLike
+from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -60,21 +60,33 @@ class Robertson1968(CCT):
 
     NAME = 'robertson-1968'
 
+    def __init__(self, table: Sequence[VectorLike] = RUVT):
+        """Initialize."""
+
+        self.table = table
+
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
         u, v = color.uv('1960')
+        end = len(self.table) - 1
 
         # Search for line pair coordinate is between.
         previous_di = temp = duv = 0.0
-        end = len(RUVT) - 1
 
-        for index, current in enumerate(RUVT):
+        for index, current in enumerate(self.table):
             # Get the distance
-            di = (v - current[2]) - current[3] * (u - current[1])
+            # If a table was generated with values down to 1000K,
+            # we would get a positive slope, so to keep logic the
+            # same, adjust distance calcualtion such that negative
+            # is still what we are looking for.
+            if current[3] < 0:
+                di = (v - current[2]) - current[3] * (u - current[1])
+            else:
+                di = (current[2] - v) - current[3] * (current[1] - u)
             if index > 0 and (di <= 0.0 or index == end):
                 # Calculate the required interpolation factor between the two lines
-                previous = RUVT[index - 1]
+                previous = self.table[index - 1]
                 current_denom = math.sqrt(1.0 + current[3] ** 2)
                 di /= current_denom
                 previous_denom = math.sqrt(1.0 + previous[3] ** 2)
@@ -116,10 +128,10 @@ class Robertson1968(CCT):
         # Find inverse temperature to use as index.
         r = 1.0E6 / kelvin
         u = v = 0.0
-        end = len(RUVT) - 2
+        end = len(self.table) - 2
 
-        for index, current in enumerate(RUVT):
-            future = RUVT[index + 1]
+        for index, current in enumerate(self.table):
+            future = self.table[index + 1]
 
             # Find the two isotherms that our target temp is between
             if r < future[0] or index == end:
