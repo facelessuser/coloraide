@@ -35,7 +35,8 @@ class BlackBodyCurve:
     def __init__(
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
-        white: VectorLike = DEFAULT_WHITE
+        white: VectorLike = DEFAULT_WHITE,
+        planck_step: int = 5
     ) -> None:
         """Initialize."""
 
@@ -44,6 +45,7 @@ class BlackBodyCurve:
         self.cmfs_end = max(keys)
         self.cmfs = cmfs
         self.white = white
+        self.planck_step = planck_step
 
         # Low temperature range
         start = 1000
@@ -55,7 +57,9 @@ class BlackBodyCurve:
         self.domain = []
         for r in range(count):
             k = r * inc + start
-            u, v = planck.temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
+            u, v = planck.temp_to_uv_planckian_locus(
+                k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            )
             self.domain.append(k)
             points.append([u, v])
         self.spline = alg.interpolate(points, method='monotone')
@@ -70,7 +74,9 @@ class BlackBodyCurve:
         self.domain2 = []
         for r in range(count):
             k = r * inc + start
-            u, v = planck.temp_to_uv_planckian_locus(k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
+            u, v = planck.temp_to_uv_planckian_locus(
+                k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            )
             self.domain2.append(k)
             points.append([u, v])
         self.spline2 = alg.interpolate(points, method='monotone')
@@ -95,7 +101,9 @@ class BlackBodyCurve:
         """Get the uv for the given temp."""
 
         if exact:
-            return planck.temp_to_uv_planckian_locus(temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end)
+            return planck.temp_to_uv_planckian_locus(
+                temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            )
         else:
             if temp <= 20000:
                 return self.spline(self.scale(temp, self.domain))
@@ -136,11 +144,12 @@ class Ohno2013(CCT):
     def __init__(
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
-        white: VectorLike = DEFAULT_WHITE
+        white: VectorLike = DEFAULT_WHITE,
+        planck_step: int = 5
     ):
         """Initialize."""
 
-        self.blackbody = BlackBodyCurve(cmfs, white)
+        self.blackbody = BlackBodyCurve(cmfs, white, planck_step)
 
     def to_cct(
         self,
