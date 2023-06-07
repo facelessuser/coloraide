@@ -69,6 +69,7 @@ class Robertson1968(CCT):
 
         u, v = color.uv('1960')
         end = len(self.table) - 1
+        slope_invert = False
 
         # Search for line pair coordinate is between.
         previous_di = temp = duv = 0.0
@@ -82,6 +83,7 @@ class Robertson1968(CCT):
             if current[3] < 0:
                 di = (v - current[2]) - current[3] * (u - current[1])
             else:
+                slope_invert = True
                 di = (current[2] - v) - current[3] * (current[1] - u)
             if index > 0 and (di <= 0.0 or index == end):
                 # Calculate the required interpolation factor between the two lines
@@ -119,7 +121,7 @@ class Robertson1968(CCT):
             # Save distance as previous
             previous_di = di
 
-        return [temp, -duv if duv else duv]
+        return [temp, -duv if duv and not slope_invert else duv]
 
     def from_cct(self, color: type[Color], kelvin: float, duv: float = 0.0, **kwargs: Any) -> Color:
         """Calculate a color that satisfies the CCT."""
@@ -143,6 +145,8 @@ class Robertson1968(CCT):
 
                 # Calculate the offset along the slope
                 if duv:
+                    slope_invert = current[3] >= 0
+
                     # Calculate the slope vectors
                     u1 = 1.0
                     v1 = current[3]
@@ -164,8 +168,8 @@ class Robertson1968(CCT):
                     dv /= denom
 
                     # Adjust the uv by the calculated offset
-                    u += du * -duv
-                    v += dv * -duv
+                    u += du * (-duv if not slope_invert else duv)
+                    v += dv * (-duv if not slope_invert else duv)
                 break
 
         return color('xyz-d65', util.xy_to_xyz(util.uv_1960_to_xy([u, v]), 1))
