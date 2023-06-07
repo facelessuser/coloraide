@@ -100,6 +100,22 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             Color('blue').cct(method='bad')
 
+    def test_outside_gamut(self):
+        """Test temperature outside of gamut."""
+
+        self.assertColorEqual(
+            Color.blackbody(1500),
+            Color('color(srgb-linear 1 0.14969 0)')
+        )
+
+    def test_robertson_1968_invert_slope(self):
+        """Test colors on the side of the locus where the slope inverts from negative to positive."""
+
+        self.assertEqual(
+            Color('color(xyz-d65 1.4899 1 0.05398 / 1)').cct(method='robertson-1968'),
+            [1500.0170599230767, 4.871531092560021e-07]
+        )
+
     def test_output_space(self):
         """Test output space."""
 
