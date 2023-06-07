@@ -144,7 +144,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         assert math.isclose(duv, 2.771032069214595e-08, rel_tol=1e-11, abs_tol=1e-11)
 
     def test_ohno_exact(self):
-        """Test alternate CMFs."""
+        """Test exact CMFs."""
 
         cct1, duv1 = Color('orange').cct()
         assert math.isclose(cct1, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
