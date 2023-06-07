@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-
 DEFAULT_WHITE = tuple(util.xy_to_xyz(cat.WHITES['2deg']['D65']))
 
 

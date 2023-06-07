@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING, Any, Sequence
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-
 # Table for Robertson 1968 method
 # Data: reciprocal temperature, u, v, slope
 RUVT = [
