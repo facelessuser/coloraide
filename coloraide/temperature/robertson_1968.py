@@ -8,50 +8,23 @@ Uses Robertson 1968 method.
 """
 from __future__ import annotations
 import math
+from . import planck
 from .. import algebra as alg
 from .. import util
+from .. import cat
+from .. import cmfs
 from ..temperature import CCT
 from ..types import Vector, VectorLike
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-# Table for Robertson 1968 method
-# Data: reciprocal temperature, u, v, slope
-RUVT = [
-    (0.0, 0.18006, 0.26352, -0.24341),
-    (10.0, 0.18066, 0.26589, -0.25479),
-    (20.0, 0.18133, 0.26846, -0.26876),
-    (30.0, 0.18208, 0.27119, -0.28539),
-    (40.0, 0.18293, 0.27407, -0.30470),
-    (50.0, 0.18388, 0.27709, -0.32675),
-    (60.0, 0.18494, 0.28021, -0.35156),
-    (70.0, 0.18611, 0.28342, -0.37915),
-    (80.0, 0.18740, 0.28668, -0.40955),
-    (90.0, 0.18880, 0.28997, -0.44278),
-    (100.0, 0.19032, 0.29326, -0.47888),
-    (125.0, 0.19462, 0.30141, -0.58204),
-    (150.0, 0.19962, 0.30921, -0.70471),
-    (175.0, 0.20525, 0.31647, -0.84901),
-    (200.0, 0.21142, 0.32312, -1.0182),
-    (225.0, 0.21807, 0.32909, -1.2168),
-    (250.0, 0.22511, 0.33439, -1.4512),
-    (275.0, 0.23247, 0.33904, -1.7298),
-    (300.0, 0.24010, 0.34308, -2.0637),
-    (325.0, 0.24792, 0.34655, -2.4681),  # Note: 0.24792 is a corrected value for the error found in W&S as 0.24702
-    (350.0, 0.25591, 0.34951, -2.9641),
-    (375.0, 0.26400, 0.35200, -3.5814),
-    (400.0, 0.27218, 0.35407, -4.3633),
-    (425.0, 0.28039, 0.35577, -5.3762),
-    (450.0, 0.28863, 0.35714, -6.7262),
-    (475.0, 0.29685, 0.35823, -8.5955),
-    (500.0, 0.30505, 0.35907, -11.324),
-    (525.0, 0.31320, 0.35968, -15.628),
-    (550.0, 0.32129, 0.36011, -23.325),
-    (575.0, 0.32931, 0.36038, -40.770),
-    (600.0, 0.33724, 0.36051, -116.45)
-]
+DEFAULT_WHITE = tuple(util.xy_to_xyz(cat.WHITES['2deg']['D65']))
+# Original 31 mired points 0 - 600
+MIRED_ORIGINAL = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25))
+# Extended 16 mired points 625 - 1000
+MIRED_EXTENDED = MIRED_ORIGINAL + tuple(range(625, 1001, 25))
 
 
 class Robertson1968(CCT):
@@ -59,10 +32,70 @@ class Robertson1968(CCT):
 
     NAME = 'robertson-1968'
 
-    def __init__(self, table: Sequence[VectorLike] = RUVT):
+    def __init__(
+        self,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        white: VectorLike = DEFAULT_WHITE,
+        mired: VectorLike = MIRED_EXTENDED,
+        sigfig: int = 5,
+        planck_step: int = 1,
+    ) -> None:
         """Initialize."""
 
-        self.table = table
+        self.table = self.generate_table(cmfs, white, mired, sigfig, planck_step)
+
+    def generate_table(
+        self,
+        cmfs: dict[int, tuple[float, float, float]],
+        white: VectorLike,
+        mired: VectorLike,
+        sigfig: int,
+        planck_step: int,
+    ) -> list[tuple[float, float, float, float]]:
+        """
+        Generate the necessary table for the Robertson1968 method.
+
+        The below algorithm, coupled with the 1nm CMFs for the 1931 2 degree table, allows us to replicate the
+        documented 31 points exactly.
+
+        For each mired value we calculate two additional points, one on each side at a distance of 0.1.
+        We use a very small distance so that we can approximate the slope. We calculate the distance between
+        the targeted value and the two neighbors and then calculate the slope of the two small lines. Then we
+        can calculate an interpolation factor and interpolate the slope for our target.
+
+        We are able to calculate the uv pair for each mired point directly except for 0. 0 requires us to
+        interpolate the values as it will cause a divide by zero in the Planckian locus. In this case, we
+        assume a perfect 0.5 (middle) for our interpolation.
+        """
+
+        table = []  # type: list[tuple[float, float, float, float]]
+        for t in mired:
+            uv1 = planck.temp_to_uv_planckian_locus(1e6 / (t - 0.01), cmfs, white, step=planck_step)
+            uv2 = planck.temp_to_uv_planckian_locus(1e6 / (t + 0.01), cmfs, white, step=planck_step)
+            if t == 0:
+                factor = 0.5
+                uv = [alg.lerp(uv1[0], uv2[0], factor), alg.lerp(uv1[1], uv2[1], factor)]
+            else:
+                uv = planck.temp_to_uv_planckian_locus(1e6 / t, cmfs, white, step=planck_step)
+                d1 = math.sqrt((uv[1] - uv1[1]) ** 2 + (uv[0] - uv1[0]) ** 2)
+                d2 = math.sqrt((uv2[1] - uv[1]) ** 2 + (uv2[0] - uv[0]) ** 2)
+                factor = d1 / (d1 + d2)
+            m1 = -((uv[1] - uv1[1]) / (uv[0] - uv1[0])) ** -1
+            m2 = -((uv2[1] - uv[1]) / (uv2[0] - uv[0])) ** -1
+            m = alg.lerp(m1, m2, factor)
+            if sigfig:
+                template = '{{:.{}g}}'.format(sigfig)
+                table.append(
+                    (
+                        float(t),
+                        float(template.format(uv[0])),
+                        float(template.format(uv[1])),
+                        float(template.format(m))
+                    )
+                )
+            else:
+                table.append((t, uv[0], uv[1], m))
+        return table
 
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""

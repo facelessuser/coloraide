@@ -165,33 +165,14 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test that we can customize Robertson 1968 table."""
 
         from coloraide.temperature import robertson_1968
-
-        ruvt = robertson_1968.RUVT.copy()
-        # Extend table to approximate down to 1000K
-        ruvt.extend(
-            [(625.0, 0.34508, 0.36053, 189.78),
-             (650.0, 0.35281, 0.36044, 57.748),
-             (675.0, 0.36044, 0.36026, 35.979),
-             (700.0, 0.36795, 0.36002, 27.095),
-             (725.0, 0.37535, 0.35972, 22.303),
-             (750.0, 0.38262, 0.35937, 19.328),
-             (775.0, 0.38976, 0.35897, 17.318),
-             (800.0, 0.39677, 0.35855, 15.879),
-             (825.0, 0.40366, 0.35810, 14.807),
-             (850.0, 0.41040, 0.35763, 13.985),
-             (875.0, 0.41701, 0.35715, 13.339),
-             (900.0, 0.42349, 0.35665, 12.822),
-             (925.0, 0.42983, 0.35615, 12.403),
-             (950.0, 0.43603, 0.35564, 12.059),
-             (975.0, 0.44209, 0.35513, 11.773),
-             (1000.0, 0.44801, 0.35462, 11.535)]
-        )
+        from coloraide import cmfs
+        from coloraide import cat
 
         class Custom(Color):
             CCT = 'robertson-1968'
 
         Custom.register(
-            robertson_1968.Robertson1968(ruvt),
+            robertson_1968.Robertson1968(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
             overwrite=True
         )
 
