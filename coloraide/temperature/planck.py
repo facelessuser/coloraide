@@ -40,7 +40,7 @@ def temp_to_uv_planckian_locus(
     x = y = z = 0.0
 
     for wavelength in range(start, end + 1, step):
-        m = c1 * (wavelength ** -5) * (math.exp((c2 * 1e9) / (wavelength * temp)) - 1.0) ** -1
+        m = c1 * (wavelength ** -5) * math.expm1((c2 * 1e9) / (wavelength * temp)) ** -1
         cmf = cmfs[wavelength]
         x += m * cmf[0]
         y += m * cmf[1]
