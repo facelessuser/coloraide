@@ -61,7 +61,7 @@ class BlackBodyCurve:
             )
             self.domain.append(k)
             points.append([u, v])
-        self.spline = alg.interpolate(points, method='monotone')
+        self.spline = alg.interpolate(points, method='catrom')
 
         # High temperature range
         start = end
@@ -78,7 +78,7 @@ class BlackBodyCurve:
             )
             self.domain2.append(k)
             points.append([u, v])
-        self.spline2 = alg.interpolate(points, method='monotone')
+        self.spline2 = alg.interpolate(points, method='catrom')
 
     def scale(self, point: float, domain: list[float]) -> float:
         """Scale the temperature point to match the range 0 - 1."""
