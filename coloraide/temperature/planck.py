@@ -41,8 +41,9 @@ def temp_to_uv_planckian_locus(
 
     for wavelength in range(start, end + 1, step):
         m = c1 * (wavelength ** -5) * (math.exp((c2 * 1e9) / (wavelength * temp)) - 1.0) ** -1
-        x += m * cmfs[wavelength][0]
-        y += m * cmfs[wavelength][1]
-        z += m * cmfs[wavelength][2]
+        cmf = cmfs[wavelength]
+        x += m * cmf[0]
+        y += m * cmf[1]
+        z += m * cmf[2]
 
     return util.xy_to_uv_1960(util.xyz_to_xyY([x, y, z], white)[:2])
