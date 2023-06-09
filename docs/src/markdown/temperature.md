@@ -1,16 +1,9 @@
 # Correlated Color Temperature
 
-When anything gets warm enough it will start to give off light, and the hotter it gets, the more energetic the light
-is. As an object increases in temperature, it will shift from the red end of the spectrum to the blue end.
-
-```py play
-Steps([Color.blackbody(t, out_space='srgb') for t in range(1000, 15000, 50)])
-```
-
 Correlated color temperature (CCT) is a measurement of the average hue of light as it appears to the eye. It is
 expressed as the temperature (in Kelvins) something would need to be heated to glow at approximately the same color.
 
-This response can be modeled with a Planckian or black body locus/curve.
+This response can be modeled with a Planckian or black body locus/curve and is often shown in chromaticity diagrams.
 
 //// html | figure
 ![Black body curve](images/blackbody.png)
@@ -19,6 +12,18 @@ This response can be modeled with a Planckian or black body locus/curve.
 1960 Chromaticity Diagram with black body curve in the range of 1,000K - 100,000K
 /////
 ////
+
+## CCT
+
+When anything gets warm enough it will start to give off light, and the hotter it gets, the more energetic the light
+is. As an object increases in temperature, it will shift from the red end of the spectrum to the blue end.
+
+ColorAide provides the `blackbody()` method to generate colors along the black body curve. Simply pass in a temperature
+in Kelvin and ColorAide will return an approximate color along the black body locus.
+
+```py play
+Steps([Color.blackbody(t, out_space='srgb') for t in range(1000, 15000, 50)])
+```
 
 ## D~uv~
 
@@ -49,16 +54,16 @@ Color.blackbody(*Color('yellow').cct())
 
 ## Limitations
 
-All algorithms to calculate to and from CCT have some limitations and are approximations, some being more accurate than
-others. Many algorithms are only accurate up to a certain temperature range. Additionally, it is recommend that colors
-that exhibit a ∆~uv~ larger than |5e-2| should be considered inaccurate, and some algorithm's may not do as well out to
-even this limit.
+All algorithms to calculate to and from CCT have some limitations and are only approximations, some being more accurate
+than others. Many algorithms are only accurate up to a certain temperature range. Additionally, it is recommend that
+colors that exhibit a ∆~uv~ larger than |5e-2| should be considered inaccurate, and some algorithm's may not do as well
+out to even this limit.
 
 ## Out of Gamut Temperatures
 
 It should be noted that `blackbody()` normalizes the returned colors by default as the colors are often much too bright
 initially, all having a max luminance. This normalization is usually done under a linear RGB color space, (linear sRGB
-being the default). Sometimes, depending on the range of temperature, the color can also fall outside the gamut under
+being the default). Sometimes, depending on the range of temperature, the color can fall outside the gamut under
 evaluation.
 
 //// html | figure
@@ -69,8 +74,8 @@ CCT of 1200K in relation to the sRGB gamut.
 /////
 ////
 
-Colors that are outside the gamut will only be approximations under the specified gamut and may not convert back to
-exactly the same temperature.
+Colors that are outside the gamut will only be normalized to be inside the gamut and may not convert back to exactly the
+same temperature.
 
 ```py play
 c = Color.blackbody(1200)
@@ -91,14 +96,20 @@ c2
 c2.cct()
 ```
 
+/// note | Output Space
+`out_space` does not affect normalization, it simply converts the returned color to the color space specified by the
+user.
+///
+
 ## Algorithms
 
 There are quite a few approaches to calculating to and from CCT, each with their strengths and weaknesses. ColorAide
-currently only supports a few approaches which are implemented as plugins.
+currently only supports a few approaches, specifically those that support the concept of CCT and ∆~uv~. Each approach
+is implemented as a CCT plugin.
 
 Algorithm       | Key              | Description
 --------------- | ---------------- | -----------
-Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1667K - ∞.
+Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1000K - ∞.
 Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangular and parabolic solver. Current implementation allows for a range of 1000K - 100000K.
 
 ### Robertson 1968
@@ -106,15 +117,59 @@ Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangula
 /// success | The Robertson 1968 CCT algorithm is registered in `Color` by default
 ///
 
-An approach created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range of 1667K - ∞. This
-approach uses a look up table containing some precalculated points and approximates the points along the black body
-curve.
+The "Robertson 1968" approach was created by A. R. Robertson and is based on the CIE 2˚ Standard Observer with a range
+of 1667K - ∞. This approach uses a look up table containing 31 precalculated points along the black body curve and is
+used to approximate temperatures in between.
 
-The approach is reasonably fast and a decent approximation, but while the algorithm does technically allow conversion up
-to infinity, the margin of error gets increasingly larger at very high temperatures.
+Robertson's approach is a reasonably fast approximation, but can exhibit moderate errors at times. The margin of error
+gets increasingly larger at very high temperatures approaching infinity.
+
+ColorAide implements the Robertson 1968 approach by faithfully calculating the original 31 points (with later
+corrections), but it also uses the same approach to extend the lower range from 1667K to 1000K by calculating 16
+additional points.  There is no change in behavior from 1667K to ∞, but it will now properly resolve values as
+low as 1000K as well.
+
+/// tip | Practical Range
+While Robertson's technically supports a range out to infinity, it becomes increasingly less practical after 100000K due
+to increasingly less accurate results. Even some results below 100000K may already have fairly sizeable errors.
+///
 
 ```py play
-Color.blackbody(5000, duv=0.02, method='robertson-1968').cct(method='robertson-1968')
+color = Color.blackbody(5000, duv=0.02, method='robertson-1968')
+color
+color.cct(method='robertson-1968')
+```
+
+Because the calculation logic is built into the plugin, you can actually use the plugin to generate a higher resolution
+table or even generate one using a different set of CMFs. When registering the plugin, you can configure the CMFs and a
+few other options to customize the look up table.
+
+Parameters        | Description
+----------------- | ------------
+`cmfs`            | Valid CMFs at a resolution greater than or equal to 1nm.
+`white`           | A white point as xy chromaticity coordinates.
+`mired`           | The mired value points to generate in the table (1e6 / T~kelvin~ = mired). Values should not be at a resolution lower than 1 mired as it can give the algorithm issues. 0 is acceptable though.
+`sigfig`          | Significant figures to round to. This is required to faithfully generate the values as documented in the papers and is set to `#!py 5` by default. If set to `#!py 0`, no rounding will be done.
+`planck_step`     | This controls the resolution at which the wavelengths in the CMFs are used to calculate the points along the Planckian locus. The original values are calculated with a 1nm resolution, so the default is set to `#!py 1`. If a given table has a lower resolution, such as 5nm, this value can be adjusted to properly work with that table.
+
+To use a different set of CMFS, such as the CIE 1964 10˚ Standard Observer, we could override the default plugin.
+
+```py play
+from coloraide.temperature import robertson_1968
+from coloraide import cmfs
+from coloraide import cat
+
+mired_points = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25)) + tuple(range(625, 1001, 25))
+
+class Custom(Color):
+    ...
+
+Custom.register(
+    robertson_1968.Robertson1968(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65'], mired_points, 0),
+    overwrite=True
+)
+
+Steps([Color.blackbody(t, out_space='srgb', method='robertson-1968') for t in range(1000, 15000, 50)])
 ```
 
 ### Ohno 2013
@@ -131,31 +186,62 @@ smaller intervals based on the first solution. This can allow for a high accurac
 in memory.
 
 For good accuracy throughout the range of 1000K - 100000K, as ColorAide supports, a very large table would be needed. If
-the "automatic expansion" technique was used, without caching the data which would cause the table to balloon in memory,
-the process is much slower.
+the "automatic expansion" technique was used, without caching the data which would cause the table to balloon in
+memory, the process is much slower.
 
 To mitigate the downside of storing a massive table in memory and to reduce the performance issues when using "automatic
 expansion", ColorAide uses a moderately sized table and creates a spline to interpolate points in between. The expansion
-technique is used to get close to the target using the spline as the data table, and then more accurate values are
-calculated for use in the triangular and parabolic solver. This allows us to use a smaller table while mitigating the
-performance issues associated with the expansion technique, all while maintaining good accuracy. The technique is still
-slower than the [Roberson](#robertson-1968) approach, but it is more accurate approach.
+technique is then used to get close to the target using the spline as the data table. Once points sufficiently close
+are found via the automatic expansion, more accurate values are calculated at those locations and are used in the
+triangular and parabolic solver. This allows us to use a smaller table while mitigating the performance issues
+associated with the expansion technique, all while maintaining good accuracy. The technique is still slower than the
+[Roberson](#robertson-1968) approach, but it is a more accurate approach.
 
 ```py play
-Color.blackbody(5000, duv=0.02).cct()
+color = Color.blackbody(5000, duv=0.02)
+color
+color.cct()
+```
+
+ColorAide exposes some of the knobs to control the automatic expansion.
+
+Parameter    | Description
+------------ | -----------
+`start`      | Used to control the starting range for the search. Default is `#!py 1000`. For accuracy, the start should not be set lower than `#!py 1000`.
+`end`        | Used to control the ending range for the search. Default is `#!py 100000`. For accuracy, the end should not be set higher than `#!py 100000`.
+`samples`    | Number of sample points to use on each iteration of "automatic expansion". The default is `#!py 10`.
+`iterations` | Number of iterations to perform when converging close to the temperature. The default is `#!py 6` as experimentation seemed indicate it yields the best results with a sample size of `#!py 10` and a range of 1000K - 100000K.
+`exact`      | Controls whether the spline approximation is used. When set to `#!py True`, all values are directly calculated, bypassing the spline. Calculations will be slower when enabled. The default is `#!py False` and will utilize the spline providing a performance boost.
+
+By default, the entire range of 1000K to 100000K is explored when resolving CCT, but a smaller range can be used. This
+can be useful if you have an idea of the range, but not the specific value. Using a smaller range may allow for less
+iterations to achieve the same or better accuracy.
+
+```py play
+Color('orange').cct()
+Color('orange').cct(start=2000, end=3000, iterations=3)
 ```
 
 If a more _pure_ approach is desired, `exact` can be used to directly use the "automatic expansion" without using the
-spline. The values for the table will explicitly be calculated on the fly. Performance will be affected.
+spline. The values for the table will be explicitly calculated on the fly. Performance will be affected with minimal
+to no increase in accuracy.
 
 ```py play
+Color.blackbody(5000, duv=0.02).cct()
 Color.blackbody(5000, duv=0.02).cct(exact=True)
 ```
 
-///  tip | Changing Observer
-If desired, the Ohno 2013 approach can use a different standard observer, for instance, the CIE 10˚ Standard Observer.
-ColorAide only provides the CIE 2˚ and 10˚ observer by default. If providing another set of CMFs, they should be at 5nm
-resolution or better as that is the current default step size.
+Lastly, the Ohno 2013 method can be used with other CMFs if desired. To do this, the plugin must be instantiated with
+different CMFs. The plugin supports a few initialization parameters to controls this.
+
+Parameters        | Description
+----------------- | ------------
+`cmfs`            | Valid CMFs at a resolution greater than or equal to 1nm.
+`white`           | A white point as xy chromaticity coordinates.
+`planck_step`     | This controls the resolution at which the wavelengths in the CMFs are used to calculate the points along the Planckian locus. `#!py 5` (5nm) is used as the default as it provides decent performance vs accuracy.
+
+
+To use an different CMFs, such as the CIE 10˚ Standard Observer, we can add the plugin with our desired configuration, overwriting the defaults.
 
 ```py play
 from coloraide import cmfs
@@ -172,7 +258,5 @@ Custom.register(
     overwrite=True
 )
 
-Steps([Color.blackbody(t) for t in range(1000, 15000, 50)])
 Steps([Custom.blackbody(t) for t in range(1000, 15000, 50)])
 ```
-///
