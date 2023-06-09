@@ -25,18 +25,30 @@ in Kelvin and ColorAide will return an approximate color along the black body lo
 Steps([Color.blackbody(t, out_space='srgb') for t in range(1000, 15000, 50)])
 ```
 
+ColorAide provides two methods: `blackbody()` allows you to generate a color on the black body curve by providing it
+a temperature and [∆~uv~](#duv) in Kelvin and `cct()` which allows you to get an associated temperature and [∆~uv~](#duv)
+from a given color. [∆~uv~](#duv) will be discussed later.
+
+```py play
+color = Color.blackbody(2000)
+color
+color.cct()
+```
+
 ## D~uv~
 
 In addition to CCT, there is also the concept of D~uv~ or ∆~uv~. In the following image, we've now drawn perpendicular
 lines that intersect the black body curve. These lines are called isotherms. An isotherm is simply a line connecting
 points having the same temperature at a given time or on average over a given period. In the case of colors, they
-connect a number of colors that are close to the locus with the same temperature.
+connect a number of colors that are close to the locus with the same temperature. ∆~uv~ describes the distance a given
+uv point is away from the associated uv point on the black body curve, positive being above the curve and negative
+being below the curve
 
 //// html | figure
 ![Isotherms](images/isotherms.png)
 
 ///// html | figcaption
-1960 Chromaticity Diagram with black body curve and isotherms.
+1960 Chromaticity Diagram with black body curve and isotherms indicating +/- 0.02 ∆~uv~.
 /////
 ////
 
@@ -111,6 +123,14 @@ Algorithm       | Key              | Description
 --------------- | ---------------- | -----------
 Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1000K - ∞.
 Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangular and parabolic solver. Current implementation allows for a range of 1000K - 100000K.
+
+[Ohno 2013](#ohno-2013) is the current default CCT approach, but any approach can be selected via the `method` parameter
+in `blackbody()` or `cct()`.
+
+```py play
+Color.blackbody(1500, method='ohno-2013').cct(method='ohno-2013')
+Color.blackbody(1500, method='robertson-1968').cct(method='robertson-1968')
+```
 
 ### Robertson 1968
 
