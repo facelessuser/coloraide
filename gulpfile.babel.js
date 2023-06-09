@@ -9,7 +9,7 @@ import yargs from "yargs"
 import {hideBin} from "yargs/helpers"
 import gulp from "gulp"
 import gulpSass from "gulp-sass"
-import sassCompiler from "sass"
+import * as sasCompile from "sass"
 import postcss from "gulp-postcss"
 import scss from "postcss-scss"
 import autoprefixer from "autoprefixer"
@@ -38,7 +38,7 @@ import regenerator from "rollup-plugin-regenerator"
 import fs from "fs"
 import rollupReplace from "@rollup/plugin-replace"
 
-const sass = gulpSass(sassCompiler)
+const sass = gulpSass(sasCompile)
 
 /* Argument Flags */
 const args = yargs(hideBin(process.argv))
