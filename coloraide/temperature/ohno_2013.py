@@ -17,8 +17,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-DEFAULT_WHITE = tuple(util.xy_to_xyz(cat.WHITES['2deg']['D65']))
-
 
 class BlackBodyCurve:
     """
@@ -34,7 +32,7 @@ class BlackBodyCurve:
     def __init__(
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
-        white: VectorLike = DEFAULT_WHITE,
+        white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5
     ) -> None:
         """Initialize."""
@@ -43,7 +41,7 @@ class BlackBodyCurve:
         self.cmfs_start = min(keys)
         self.cmfs_end = max(keys)
         self.cmfs = cmfs
-        self.white = white
+        self.white = util.xy_to_xyz(white)
         self.planck_step = planck_step
 
         # Low temperature range
@@ -143,7 +141,7 @@ class Ohno2013(CCT):
     def __init__(
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
-        white: VectorLike = DEFAULT_WHITE,
+        white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5
     ):
         """Initialize."""
