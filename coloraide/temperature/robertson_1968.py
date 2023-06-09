@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-DEFAULT_WHITE = tuple(util.xy_to_xyz(cat.WHITES['2deg']['D65']))
 # Original 31 mired points 0 - 600
 MIRED_ORIGINAL = tuple(range(0, 100, 10)) + tuple(range(100, 601, 25))
 # Extended 16 mired points 625 - 1000
@@ -35,7 +34,7 @@ class Robertson1968(CCT):
     def __init__(
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
-        white: VectorLike = DEFAULT_WHITE,
+        white: VectorLike = cat.WHITES['2deg']['D65'],
         mired: VectorLike = MIRED_EXTENDED,
         sigfig: int = 5,
         planck_step: int = 1,
@@ -68,15 +67,16 @@ class Robertson1968(CCT):
         assume a perfect 0.5 (middle) for our interpolation.
         """
 
+        xyzw = util.xy_to_xyz(white)
         table = []  # type: list[tuple[float, float, float, float]]
         for t in mired:
-            uv1 = planck.temp_to_uv_planckian_locus(1e6 / (t - 0.01), cmfs, white, step=planck_step)
-            uv2 = planck.temp_to_uv_planckian_locus(1e6 / (t + 0.01), cmfs, white, step=planck_step)
+            uv1 = planck.temp_to_uv_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step)
+            uv2 = planck.temp_to_uv_planckian_locus(1e6 / (t + 0.01), cmfs, xyzw, step=planck_step)
             if t == 0:
                 factor = 0.5
                 uv = [alg.lerp(uv1[0], uv2[0], factor), alg.lerp(uv1[1], uv2[1], factor)]
             else:
-                uv = planck.temp_to_uv_planckian_locus(1e6 / t, cmfs, white, step=planck_step)
+                uv = planck.temp_to_uv_planckian_locus(1e6 / t, cmfs, xyzw, step=planck_step)
                 d1 = math.sqrt((uv[1] - uv1[1]) ** 2 + (uv[0] - uv1[0]) ** 2)
                 d2 = math.sqrt((uv2[1] - uv[1]) ** 2 + (uv2[0] - uv[0]) ** 2)
                 factor = d1 / (d1 + d2)
