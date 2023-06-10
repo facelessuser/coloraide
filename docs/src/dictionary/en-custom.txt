@@ -194,6 +194,7 @@ broadcasted
 bz
 cd
 chroma
+chromaticities
 chromaticity
 colorimetrically
 colorimetry

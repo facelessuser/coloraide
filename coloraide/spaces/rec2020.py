@@ -8,7 +8,8 @@ from ..types import Vector
 
 ALPHA = 1.09929682680944
 BETA = 0.018053968510807
-BETA45 = 0.018053968510807 * 4.5
+BETA45 = BETA * 4.5
+ALPHAM1 = ALPHA - 1
 
 
 def lin_2020(rgb: Vector) -> Vector:
@@ -25,7 +26,7 @@ def lin_2020(rgb: Vector) -> Vector:
         if abs_i < BETA45:
             result.append(i / 4.5)
         else:
-            result.append(math.copysign(alg.nth_root((abs_i + ALPHA - 1) / ALPHA, 0.45), i))
+            result.append(math.copysign(alg.nth_root((abs_i + ALPHAM1) / ALPHA, 0.45), i))
     return result
 
 
@@ -43,7 +44,7 @@ def gam_2020(rgb: Vector) -> Vector:
         if abs_i < BETA:
             result.append(4.5 * i)
         else:
-            result.append(math.copysign(ALPHA * (abs_i ** 0.45) - (ALPHA - 1), i))
+            result.append(math.copysign(ALPHA * (abs_i ** 0.45) - ALPHAM1, i))
     return result
 
 
@@ -55,11 +56,11 @@ class Rec2020(sRGB):
     WHITE = WHITES['2deg']['D65']
 
     def to_base(self, coords: Vector) -> Vector:
-        """To XYZ from Rec 2020."""
+        """To XYZ from Rec. 2020."""
 
         return lin_2020(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From XYZ to Rec 2020."""
+        """From XYZ to Rec. 2020."""
 
         return gam_2020(coords)
