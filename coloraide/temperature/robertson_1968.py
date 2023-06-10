@@ -33,7 +33,7 @@ class Robertson1968(CCT):
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         mired: VectorLike = MIRED_EXTENDED,
         sigfig: int = 5,

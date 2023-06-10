@@ -31,7 +31,7 @@ class BlackBodyCurve:
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5
     ) -> None:
@@ -140,7 +140,7 @@ class Ohno2013(CCT):
 
     def __init__(
         self,
-        cmfs: dict[int, tuple[float, float, float]] = cmfs.cie_1931_2deg,
+        cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
         planck_step: int = 5
     ):

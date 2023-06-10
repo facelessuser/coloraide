@@ -4,7 +4,6 @@ import abc
 import functools
 import random
 import math
-from . import cmfs
 from . import distance
 from . import convert
 from . import gamut
@@ -54,7 +53,7 @@ from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
-from .cat import CAT, Bradford, WHITES
+from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
 from .filters.cvd import Protan, Deutan, Tritan
@@ -1198,6 +1197,6 @@ Color.register(
 
         # CCT
         Robertson1968(),
-        Ohno2013(cmfs.cie_1931_2deg, WHITES['2deg']['D65'])
+        Ohno2013()
     ]
 )

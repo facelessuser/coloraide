@@ -185,7 +185,7 @@ class Custom(Color):
     ...
 
 Custom.register(
-    robertson_1968.Robertson1968(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65'], mired_points, 0),
+    robertson_1968.Robertson1968(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65'], mired_points, 0),
     overwrite=True
 )
 
@@ -274,7 +274,7 @@ class Custom(Color):
 
 
 Custom.register(
-    Ohno2013(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
+    Ohno2013(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
     overwrite=True
 )
 

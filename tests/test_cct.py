@@ -141,7 +141,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             ...
 
         Custom.register(
-            Ohno2013(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
+            Ohno2013(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
             overwrite=True
         )
 
@@ -172,7 +172,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             CCT = 'robertson-1968'
 
         Custom.register(
-            robertson_1968.Robertson1968(cmfs.cie_1964_10deg, cat.WHITES['10deg']['D65']),
+            robertson_1968.Robertson1968(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
             overwrite=True
         )
 
@@ -190,7 +190,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         # Don't use significant figure rounding
         Custom.register(
-            robertson_1968.Robertson1968(cmfs.cie_1931_2deg, cat.WHITES['2deg']['D65'], sigfig=0),
+            robertson_1968.Robertson1968(cmfs.CIE_1931_2DEG, cat.WHITES['2deg']['D65'], sigfig=0),
             overwrite=True
         )
 

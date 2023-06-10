@@ -3,7 +3,10 @@
 ## 2.4
 
 - **NEW**: Add the 1960 UCS color space.
-- **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` methods.
+- **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` API.
+- **NEW**: Add support Robertson 1968 and Ohno 2013 CCT plugins.
+- **NEW**: Include CMFS: CIE 1931 2 Degree Standard Observer, CIE 1964 10 Degree Standard Observer, CIE 2015 2 Degree
+  Standard Observer, and CIE 2015 10 Degree Standard Observer.
 - **FIX**: Fix case where deregistering all plugins with `*` was not deregistering `Filter` plugins.
 
 ## 2.3
