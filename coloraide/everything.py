@@ -34,6 +34,7 @@ from .spaces.cam16_jmh import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
+from .spaces.rec709 import Rec709
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
@@ -57,6 +58,7 @@ class ColorAll(Base):
 ColorAll.register(
     [
         # Spaces
+        Rec709(),
         Rec2100PQ(),
         Rec2100HLG(),
         Jzazbz(),

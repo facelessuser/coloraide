@@ -61,6 +61,7 @@ nav:
         - A98 RGB: colors/a98_rgb.md
         - Rec. 2020: colors/rec2020.md
         - ProPhoto RGB: colors/prophoto_rgb.md
+        - Rec. 709: colors/rec709.md
         - Rec. 2100 PQ: colors/rec2100_pq.md
         - Rec. 2100 HLG: colors/rec2100_hlg.md
         - Linear sRGB: colors/srgb_linear.md

@@ -52,20 +52,26 @@ flowchart TB
 
     a98-rgb --- a98-rgb-linear --- xyz-d65
 
-    hwb --- hsv --- hsl --- srgb --- srgb-linear ----- xyz-d65
-        orgb --- srgb
-        prismatic --- srgb
-        hsi --- srgb
-        cmy --- srgb
-        cmyk --- srgb
-        xyb --- srgb
+    srgb-linear --- xyz-d65
+        rec709 --- srgb-linear
+        srgb --- srgb-linear
+            orgb --- srgb
+            prismatic --- srgb
+            hsi --- srgb
+            cmy --- srgb
+            cmyk --- srgb
+            xyb --- srgb
+            hsl --- srgb
+                hwb --- hsv --- hsl
 
-    rec2020 --- rec2020-linear --- xyz-d65
+    rec2020-linear --- xyz-d65
+        rec2020 --- rec2020-linear
         rec2100-pq --- rec2020-linear
         rec2100-hlg --- rec2020-linear
 
     prophoto-rgb --- prophoto-rgb-linear --- xyz-d50 ----- xyz-d65
-        lch --- lab --- xyz-d50
+
+    lch --- lab --- xyz-d50
 
     xyz-d65 --- lab-d65 --- lch-d65
 
@@ -106,6 +112,7 @@ flowchart TB
     rec2100-hlg(Rec. 2100 HLG)
     srgb-linear(Linear sRGB)
     srgb(sRGB)
+    rec709(Rec. 709)
     hsl(HSL)
     hsv(HSV)
     hwb(HWB)
@@ -163,6 +170,7 @@ flowchart TB
     click rec2100-hlg "./rec2100_hlg/" _self
     click srgb-linear "./srgb_linear/" _self
     click srgb "./srgb/" _self
+    click rec709 "./rec709/" _self
     click hsl "./hsl/" _self
     click hsv "./hsv/" _self
     click hwb "./hwb/" _self
