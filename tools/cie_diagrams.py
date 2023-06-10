@@ -27,8 +27,8 @@ ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
 RESOLUTION = 800
 
 # Pick some arbitrary labels to display.
-labels = {
-    380,
+labels_1931 = {
+    390,
     460,
     470,
     480,
@@ -46,6 +46,27 @@ labels = {
     600,
     620,
     700
+}
+
+labels_1960 = {
+    420,
+    460,
+    470,
+    480,
+    490,
+    500,
+    510,
+    520,
+    530,
+    540,
+    550,
+    560,
+    570,
+    580,
+    590,
+    600,
+    620,
+    680
 }
 
 ISOTHERMS = {
@@ -197,11 +218,11 @@ class DiagramOptions:
     def __init__(self, mode="1931", observer='2deg', theme="light", title=""):
         """Initialize."""
 
-        self.observer = cmfs.cie_1931_2deg
+        self.observer = cmfs.CIE_1931_2DEG
         self.white = ALL_WHITES['2deg']['D65']
         if observer == '10deg':
             self.white = ALL_WHITES['10deg']['D65']
-            self.observer = cmfs.cie_1964_10deg
+            self.observer = cmfs.CIE_1964_10DEG
             self.axis_labels = ('CIE u', 'CIE v')
         elif observer != '2deg':
             raise ValueError("Unrecognized 'observer': {}".format(observer))
@@ -211,6 +232,7 @@ class DiagramOptions:
             raise ValueError("Unrecognized 'mode': {}".format(mode))
 
         if self.mode == "1931":
+            self.spectral_locus_lables = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
             if observer == '2deg':
                 self.locus_labels = cie_xy_2_deg_offsets
@@ -219,6 +241,7 @@ class DiagramOptions:
                 self.locus_labels = cie_xy_10_deg_offsets
                 self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
         elif self.mode == "1976":
+            self.spectral_locus_lables = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
             if observer == '2deg':
                 self.locus_labels = cie_uv_2_deg_offsets
@@ -227,6 +250,7 @@ class DiagramOptions:
                 self.locus_labels = cie_uv_10_deg_offsets
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
         else:
+            self.spectral_locus_lables = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
             if observer == '2deg':
                 self.locus_labels = cie_uv_2_deg_offsets
@@ -299,7 +323,7 @@ def cie_diagram(
         ys.append(y)
 
         # Prepare annotation labels for all points on the spectral locus.
-        if k in labels:
+        if k in opt.spectral_locus_lables:
             annotations.append((k, (x, y)))
 
     xs, ys = get_spline(xs, ys, len(xs) * 3)
@@ -425,7 +449,7 @@ def cie_diagram(
                 wx.append(w[0])
                 wy.append(w[1])
             elif opt.mode == '1976':
-                uv = util.xyz_to_uv(util.xy_to_xyz(w))
+                uv = util.xy_to_uv(w)
                 wx.append(uv[0])
                 wy.append(uv[1])
             else:
