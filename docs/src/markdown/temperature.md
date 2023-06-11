@@ -13,6 +13,27 @@ This response can be modeled with a Planckian or black body locus/curve and is o
 /////
 ////
 
+In order to calculate the Planckian locus, color matching functions (CMFs) are needed. The CMFs are obtained from a
+series of experiments in which subjects set the intensities of three colors required to match a series of monochromatic
+(single wavelength) lights of equal energy that traverse the visible spectrum. CMFs contain the required data from such
+experiments and can be used to calculate a number of things, including the Planckian locus.
+
+/// tip | CMFs
+It should be noted that there isn't one set set of CMFs. Over the years there have been multiple attempts to come up
+with the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE
+via `coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
+though better CMFs have been provided.
+
+CMFS                            |
+------------------------------- |
+`coloraide.cmfs.CIE_1931_2DEG`  |
+`coloraide.cmfs.CIE_1964_10DEG` |
+`coloraide.cmfs.CIE_2015_2DEG`  |
+`coloraide.cmfs.CIE_2015_10DEG` |
+
+External CMFs could be used as long as they are in the appropriate format and not at increments less than 1nm.
+///
+
 ## CCT
 
 When anything gets warm enough it will start to give off light, and the hotter it gets, the more energetic the light
