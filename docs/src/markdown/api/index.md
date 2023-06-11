@@ -1492,6 +1492,7 @@ Parameters
     `space`     | `#!py 'srgb-linear'` | An RGB color space in which the returned color should be normalized in. The color space should be a linear space for best results. It can be set to `#!py None` if no normalization is desired.
     `out_space` | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
     `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+    `**kwargs`  |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return
 
@@ -1521,6 +1522,7 @@ Parameters
     Parameters  | Defaults             | Description
     ----------- | -------------------- | -----------
     `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+    `**kwargs`  |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return
 
