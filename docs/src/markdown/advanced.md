@@ -81,7 +81,7 @@ the requirements to be recognized as achromatic colors.
 
 As an example, HSL colors are achromatic when the sRGB color it is derived from has all color channels equal to each
 other. Let's say we convert the color `#!color darkgray` to the XYZ D65 color space and then back again. We can see that
-what was once was a color with all color channels equal to each other is now a color that has color channels very nearly
+what was once a color with all color channels equal to each other is now a color that has color channels very nearly
 equal to each other.
 
 ```py play
@@ -108,7 +108,7 @@ and may give really good results with sRGB, but then when converting from some o
 tight a translation to and from.
 
 Additionally, some color spaces have very dynamic achromatic responses, as an interesting example, let's consider CAM16
-JMh. This color space actually has its lower limit for achromatic gradually rise higher and higher as lightness
+JMh. This color space actually has its lower limit for achromatic colors gradually rise higher and higher as lightness
 increases. Not only that, the achromatic line actually passes mainly through hue ~209.5 for most achromatic colors
 lighter than black.
 
@@ -118,7 +118,7 @@ Color('color(srgb 0.5 0.5 0.5)').convert('cam16-jmh', norm=False)[:]
 Color('color(srgb 1 1 1)').convert('cam16-jmh', norm=False)[:]
 ```
 
-This can be hard to set a simple chroma check that preserves high accuracy. Simply lowering the chroma or changing the
+This can make it hard to specify a simple chroma check for achromatic colors. Simply lowering the chroma or changing the
 hue can make the color no longer achromatic.
 
 ```py play
@@ -129,7 +129,7 @@ white.convert('cam16-jmh', norm=False).set('m', 0.0).convert('srgb').to_string(h
 ```
 
 For these types of color spaces, ColorAide will map the achromatic response with a spline and use it as a reference
-to give decent achromatic values for undefined chroma and hue.
+to give detect achromatic values for undefined chroma and hue.
 
 ```py play
 Color('cam16-jmh', [100, NaN, NaN]).convert('srgb').to_string(hex=True)
