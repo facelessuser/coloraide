@@ -15,7 +15,18 @@ authors = [
 ]
 keywords = [
     "css",
+    "colour",
     "color",
+    "color-spaces",
+    "color-contrast",
+    "color-difference",
+    "color-vision-deficiency",
+    "color-conversion",
+    "color-harmonies",
+    "color-filters",
+    "color-interpolation",
+    "color-temperature",
+    "color-manipulation"
 ]
 dynamic = [
     "classifiers",
