@@ -11,21 +11,22 @@ Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=8, space='lch', hue='lon
 
 ColorAide particularly has a focus on the following:
 
-- [x] Accurate colors.
+-   [x] Accurate colors.
 
-- [x] Proper round tripping (where reasonable).
+-   [x] Proper round tripping (where reasonable).
 
-- [x] Be generally easy to pick up for the average user.
+-   [x] Be generally easy to pick up for the average user.
 
-- [x] Support modern CSS color spaces and syntax.
+-   [x] Support modern CSS color spaces and syntax.
 
-- [x] Make accessible many new and old non-CSS color spaces.
+-   [x] Make accessible many new and old non-CSS color spaces.
 
-- [x] Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.
+-   [x] Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, filters,
+    correlated color temperature, color vision deficiency simulation, color harmonies, etc.
 
-- [x] Provide a plugin API to extend supported color spaces and more.
+-   [x] Provide a plugin API to extend supported color spaces and approaches to various utilities.
 
-- [x] Allow users to configure defaults to their liking.
+-   [x] Allow users to configure defaults to their liking.
 
 ColorAide is not meant to be the _one_ library to replace all other color libraries. There are many great libraries out
 there such such as: [Colour Science][colour-science], [Colorio][colorio], [Python Color Math][color-math], and many

@@ -309,11 +309,11 @@ distance, convert a color, serialize a color, or various other reasons.
 Normally, an undefined value defaults to `0` when forced to be defined, but there are a few cases where this may not
 always be true.
 
-1. When a color is achromatic the hue becomes meaningless in most cylindrical color spaces. This makes sense as
-   achromatic colors have no hues, but this is also because the algorithms usually work out this way. When chroma is
-   small enough, it usually makes the hue mathematically insignificant. In these cases, when a hue must be defined, we
-   will generally assume `0` as an arbitrary default, but there are some color spaces who have algorithms where the hue
-   actually becomes more important for precise conversions.
+1.  When a color is achromatic the hue becomes meaningless in most cylindrical color spaces. This makes sense as
+    achromatic colors have no hues, but this is also because the algorithms usually work out this way. When chroma is
+    small enough, it usually makes the hue mathematically insignificant. In these cases, when a hue must be defined, we
+    will generally assume `0` as an arbitrary default, but there are some color spaces who have algorithms where the hue
+    actually becomes more important for precise conversions.
 
     The color spaces CAM16 JMh and HCT are color models that allow you to set the viewing environment. One of the
     options determines whether the eye is adapted to the illuminant or not. If not adapted, which is our default for
@@ -346,11 +346,11 @@ always be true.
 
     There are a number of spaces that benefit from this approach: Jzazbz/JzCzhz, IPT, IgPgTg.
 
-2. Most of the time, if you set all color channels to undefined, when resolved, the color will be black (or white in
-   the case of CMYK). Unfortunately, using `0` for undefined channels in some color spaces can create colors outside the
-   viewable gamut. One such example is ACEScct (a logarithmic encoding of ACES) which has a greater value than zero for
-   black. In this case, setting undefined channels to zero will cause nonsense colors. In this specific case, we use
-   ACEScct's value for black instead of `0` for more a more practical default.
+2.  Most of the time, if you set all color channels to undefined, when resolved, the color will be black (or white in
+    the case of CMYK). Unfortunately, using `0` for undefined channels in some color spaces can create colors outside
+    the viewable gamut. One such example is ACEScct (a logarithmic encoding of ACES) which has a greater value than zero
+    for black. In this case, setting undefined channels to zero will cause nonsense colors. In this specific case, we
+    use ACEScct's value for black instead of `0` for more a more practical default.
 
     ```py play
     aces = Color('black').convert('acescct')

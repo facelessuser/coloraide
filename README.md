@@ -38,9 +38,10 @@ ColorAide particularly has a focus on the following:
 
 - Make accessible many new and old non-CSS color spaces.
 
-- Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, etc.
+- Provide a number of useful utilities such as interpolation, color distancing, blending, gamut mapping, filters,
+  correlated color temperature, color vision deficiency simulation, etc.
 
-- Provide a plugin API to extend supported color spaces and more.
+- Provide a plugin API to extend supported color spaces and approaches to various utilities.
 
 - Allow users to configure defaults to their liking.
 
