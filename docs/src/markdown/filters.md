@@ -1,14 +1,14 @@
 # Filters
 
-ColorAide implements a number of filters implemented as plugins. The first set of filters mirror those found in the W3C
-[Filter Effects Module Level 1][filter-effects] specification, specifically the filters that directly apply to colors.
-The second set of filters simulate color vision deficiencies.
+ColorAide implements a number of filters with each filter being provided as a plugin. Filters simply apply some logic
+to transform a color in some specific way. Filters can be used to lighten colors, adjust saturation, or completely
+change the color. Filters can even be used to simulate things like [color vision deficiencies](#color-vision-deficiency-simulation).
 
 ## W3C Filter Effects
 
-The following filters are all supported in ColorAide and generally adhere to the specification in regards to behavior.
-By default, filters are applied in the Linear sRGB color space, but can be applied in sRGB if requested. All other
-color spaces will throw an error.
+The W3C [Filter Effects Module Level 1][filter-effects] specification outline a number of filters for use in SVG and
+CSS. ColorAide implements all the filters that directly apply to colors. By default, filters are applied in the Linear
+sRGB color space, but can be applied in sRGB if requested. All other color spaces will throw an error.
 
 /// tab | Normal
 ![Normal](./images/colorchart.png)
@@ -46,8 +46,8 @@ color spaces will throw an error.
 ![Grayscale](./images/colorchart-grayscale.png)
 ///
 
-In ColorAide, just call the `filter` method and provide the name of the filter. If `amount` is not provided, the default
-according to the W3C spec will be used instead.
+To apply a specific filter in ColorAide, just call the `filter()` method with the name of the filter you wish to use. If
+an `amount` is not provided, the default according to the W3C spec will be used instead.
 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -55,7 +55,7 @@ colors = Color.steps(inputs, steps=10, space='srgb')
 Steps(colors)
 Steps([c.filter('brightness', 0.5).clip() for c in colors])
 Steps([c.filter('saturate', 0.5).clip() for c in colors])
-Steps([c.filter('contrast', 1.2).clip() for c in colors])
+Steps([c.filter('contrast', 0.8).clip() for c in colors])
 Steps([c.filter('opacity', 0.5).clip() for c in colors])
 Steps([c.filter('invert', 1).clip() for c in colors])
 Steps([c.filter('hue-rotate', 90).clip() for c in colors])
@@ -191,9 +191,10 @@ Steps([c.filter('tritan').clip() for c in confusing_colors])
 ```
 ///
 
-By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia and the
-[Viénot, Brettel, and Mollon 1999 approach][vienot] to simulate protanopia and and deuteranopia. While Brettel is
-probably the best approach for all cases, Viénot is much faster and does quite well for protanopia and deuteranopia.
+By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia as it is the only option that has
+decent accuracy for tritanopia. [Viénot, Brettel, and Mollon 1999 approach][vienot] is used to simulate protanopia and
+deuteranopia as it is not only faster than Brettel, but handles extreme case a little better. [Machado 2009][machado]
+has it strengths as well which we will cover in [Anomalous Trichromacy](#anomalous-trichromacy).
 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -204,10 +205,7 @@ Steps([c.filter('deutan').clip() for c in colors])
 Steps([c.filter('tritan').clip() for c in colors])
 ```
 
-If desired, any of the three available methods can be used. Brettel is usually considered best option for accuracy.
-Viénot is faster and does quite well for protanopia and deuteranopia, but is not quite as accurate for tritanopia.
-[Machado 2009][machado] has better logic for severity ranges less than 1, but is probably even further off for
-tritanopia.
+If desired, any of the three available methods can be used.
 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -248,10 +246,10 @@ deuteranomaly (reduced green sensitivity), and tritanomaly (reduced blue sensiti
 ///
 
 To represent anomalous trichromacy, ColorAide leans on the [Machado 2009 approach][machado] which has a more nuanced
-approach to handling severity levels below 1. This approach did not really focus on tritanopia though, and the suggested
-algorithm for tritanopia should only be considered as an approximation. Instead of relying on the Machado approach for
+approach to handling severity levels below 1. This research associated with this method did not really focus on
+tritanopia though, and Brettel is still a better choice for tritanopia. Instead of relying on the Machado approach for
 tritanomaly, we instead just use linear interpolation between the severity 1 results and the severity 0 (no CVD)
-results. With that said, the `method` can always be overridden to use something other than the defaults.
+results.
 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -261,6 +259,10 @@ Steps([c.filter('protan', 0.3).clip() for c in colors])
 Steps([c.filter('protan', 0.5).clip() for c in colors])
 Steps([c.filter('protan', 0.9).clip() for c in colors])
 ```
+
+The Brettel and Viénot approach can be used for serverities below 1 as well, but, like Brettel with tritanopia, they
+will employ simple linear interpolation between a severity 1 case ans the actual color. It is probably debatable as to
+whether this approach is sufficient or not.
 
 ## Usage Details
 
