@@ -154,6 +154,8 @@ SDR
 SL
 SMPTE
 SRGB
+SVG
+Scalable
 Sharma
 TODO
 Tetradic
@@ -270,6 +272,7 @@ repurpose
 rgb
 sRGB
 seperable
+severities
 subclassed
 subclasses
 subclassing

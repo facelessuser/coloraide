@@ -260,7 +260,7 @@ Steps([c.filter('protan', 0.5).clip() for c in colors])
 Steps([c.filter('protan', 0.9).clip() for c in colors])
 ```
 
-The Brettel and Viénot approach can be used for serverities below 1 as well, but, like Brettel with tritanopia, they
+The Brettel and Viénot approach can be used for severities below 1 as well, but, like Brettel with tritanopia, they
 will employ simple linear interpolation between a severity 1 case ans the actual color. It is probably debatable as to
 whether this approach is sufficient or not.
 
