@@ -19,6 +19,9 @@ from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
+from coloraide import pointer_gamut  # noqa: E402
+from coloraide.spaces.lch import LCh  # noqa: E402
+from coloraide.spaces.lab import Lab  # noqa: E402
 
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
@@ -79,6 +82,28 @@ ISOTHERMS = {
     1500: (-0.040, '1500K'),
     1000: (-0.040, '1000K')
 }
+
+
+class LabPointer(Lab):
+    """Lab Pointer's Gamut."""
+
+    BASE = 'xyz-d65'
+    NAME = 'lab-pointer'
+    SERIALIZE = ('--lab-pointer',)
+    WHITE = pointer_gamut.WHITE_POINT_SC
+
+
+class LChPointer(LCh):
+    """LCh Pointer's Gamut."""
+
+    BASE = 'lab-pointer'
+    NAME = 'lch-pointer'
+    SERIALIZE = ('--lch-pointer',)
+    WHITE = pointer_gamut.WHITE_POINT_SC
+
+
+class Color(ColorAll):
+    """Custom class for Pointer conversion."""
 
 
 def get_spline(x, y, steps=100):
@@ -281,7 +306,7 @@ class DiagramOptions:
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, theme='light', title='', show_labels=True, axis=True,
-    show_legend=True, black_body=False, isotherms=False, cct=None
+    show_legend=True, black_body=False, isotherms=False, cct=None, pointer=False
 ):
     """CIE diagram."""
 
@@ -305,7 +330,7 @@ def cie_diagram(
     class Color(ColorAll):
         ...
 
-    Color.register(ohno_2013.Ohno2013(opt.observer, opt.white), overwrite=True)
+    Color.register([ohno_2013.Ohno2013(opt.observer, opt.white), LabPointer(), LChPointer()], overwrite=True)
 
     xs = []
     ys = []
@@ -331,9 +356,42 @@ def cie_diagram(
     # Draw the bottom purple line
     xs.append(xs[0])
     ys.append(ys[0])
+    spaces = []
+
+    # Pointer gamut
+    if pointer:
+        for p in pointer:
+            bounds, color = p.split(':')
+            sx = []
+            sy = []
+            if bounds == 'max':
+                pts = pointer_gamut.pointer_gamut_boundary()
+                label = 'pointer'
+            else:
+                l = min(90, max(15, float(bounds)))
+                pts = pointer_gamut.pointer_gamut_boundary(l)
+                label = 'pointer L*={}'.format(round(l, 2))
+            pts.append(pts[0])
+            for pt in pts:
+                if opt.mode == '1976':
+                    x, y = util.xy_to_uv(pt[:-1])
+                elif opt.mode == '1960':
+                    x, y = util.xy_to_uv_1960(pt[:-1])
+                else:
+                    x, y = pt[:-1]
+                sx.append(x)
+                sy.append(y)
+            spaces.append(
+                (
+                    sx,
+                    sy,
+                    color,
+                    label,
+                    mpltpath.Path(list(zip(sx, sy)))
+                )
+            )
 
     # Calculate RGB triangles if one is specified
-    spaces = []
     if rgb_spaces:
         temp = Color('srgb', [])
         for space, color in rgb_spaces:
@@ -570,8 +628,8 @@ def cie_diagram(
         )
 
     # We current only add labels when drawing RGB triangles
-    if rgb_spaces and show_legend:
-        ax.legend()
+    if (rgb_spaces or pointer) and show_legend:
+        ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 
 
 def main():
@@ -582,6 +640,11 @@ def main():
     parser.add_argument('--cmfs', '-c', default="2deg", help="CMFS to use, e.g., '2deg' (default) or '10deg'.")
     parser.add_argument('--white-point', '-w', action='append', help="A white point to plot.")
     parser.add_argument('--cct', '-C', action='append', help="A point specified by 'CCT:Duv'.")
+    parser.add_argument(
+        '--pointer', '-P', action='append',
+        help="Show Pointer gamut by specifying an L* value and a color for the boundary '30:color'. "
+             "'max' can be used show the maximum gamut instead of the gamut at a specific lightness 'max:color'."
+    )
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
     parser.add_argument('--transparent', '-p', action="store_true", help="Export with transparent background.")
@@ -611,7 +674,8 @@ def main():
         title=args.title,
         black_body=args.black_body,
         isotherms=args.isotherms,
-        cct=args.cct
+        cct=args.cct,
+        pointer=args.pointer
     )
 
     if args.output:
