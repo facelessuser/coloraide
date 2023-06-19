@@ -115,6 +115,45 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
         for v1, v2 in zip(uvy, [0.4507, 0.52289, 0.21264]):
             self.assertCompare(v1, v2)
 
+    def test_new_xy_color(self):
+        """Test new xy color."""
+
+        c1 = Color('red')
+        xyy = c1.get_chromaticity('xy-1931')
+        c2 = Color.chromaticity('srgb', xyy, 'xy-1931')
+        self.assertColorEqual(c1, c2)
+
+    def test_new_uv_1960_color(self):
+        """Test new uv 1960 color."""
+
+        c1 = Color('red')
+        uvy = c1.get_chromaticity('uv-1960')
+        c2 = Color.chromaticity('srgb', uvy, 'uv-1960')
+        self.assertColorEqual(c1, c2)
+
+    def test_new_uv_1976_color(self):
+        """Test new uv 1976 color."""
+
+        c1 = Color('red')
+        uvy = c1.get_chromaticity('uv-1976')
+        c2 = Color.chromaticity('srgb', uvy, 'uv-1976')
+        self.assertColorEqual(c1, c2)
+
+    def test_color_from_2D_chromaticity(self):
+        """Test new color from 2D chromaticity."""
+
+        c1 = Color('red')
+        xy = c1.xy()
+        c2 = Color.chromaticity('srgb', xy, 'xy-1931')
+        self.assertEqual(c2.to_string(fit=False), 'rgb(498.77 0 0)')
+        [self.assertCompare(v1, v2) for v1, v2 in zip(c2.xy(), xy)]
+
+    def test_chromaticity_bad_value(self):
+        """Test bad chromaticity input."""
+
+        with self.assertRaises(ValueError):
+            Color.chromaticity('srgb', [0, 0], 'bad')
+
     def test_uv_1960_to_xy(self):
         """Test `uv` 1960 to `xy`."""
 

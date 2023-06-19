@@ -53,7 +53,7 @@ Color('red').uv('1960')
 Color('red').xy()
 ```
 
-In chromaticty diagrams the luminance is discarded, but if preserving the luminance is desired, the general purpose
+In chromaticity diagrams the luminance is discarded, but if preserving the luminance is desired, the general purpose
 `get_chromaticity()` method is a better choice. By specifying the mode, you can return the coordinates as xyY, uvY, and
 u'v'Y, Y being the luminance. You can specify which form of chromaticity you want by specifying one of the accepted
 modes: `xy-1931`, `uv-1960`, and `uv-1976` (the default).
