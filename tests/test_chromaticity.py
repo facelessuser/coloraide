@@ -94,6 +94,27 @@ class TestChromaticity(util.ColorAssertsPyTest):
 class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
     """Test distance specific cases."""
 
+    def test_xy_luminance(self):
+        """Test xy with luminance."""
+
+        xyy = Color('red').xy(luminance=True)
+        for v1, v2 in zip(xyy, [0.64, 0.33, 0.21264]):
+            self.assertCompare(v1, v2)
+
+    def test_uv_1960_luminance(self):
+        """Test uv 1960 with luminance."""
+
+        uvy = Color('red').uv('1960', luminance=True)
+        for v1, v2 in zip(uvy, [0.4507, 0.34859, 0.21264]):
+            self.assertCompare(v1, v2)
+
+    def test_uv_1976_luminance(self):
+        """Test uv 1976 with luminance."""
+
+        uvy = Color('red').uv('1976', luminance=True)
+        for v1, v2 in zip(uvy, [0.4507, 0.52289, 0.21264]):
+            self.assertCompare(v1, v2)
+
     def test_uv_1960_to_xy(self):
         """Test `uv` 1960 to `xy`."""
 

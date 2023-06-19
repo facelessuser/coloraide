@@ -684,18 +684,19 @@ class Color(metaclass=ColorMeta):
 
         return util.xy_to_xyz(self._space.white())
 
-    def uv(self, mode: str = '1976') -> Vector:
+    def uv(self, mode: str = '1976', *, luminance: bool = False) -> Vector:
         """Convert to `xy`."""
 
+        xyy = self.xy(luminance=True)
         if mode == '1976':
-            uv = util.xy_to_uv(self.xy())
+            uv = util.xy_to_uv(xyy[:-1])
         elif mode == '1960':
-            uv = util.xy_to_uv_1960(self.xy())
+            uv = util.xy_to_uv_1960(xyy[:-1])
         else:
             raise ValueError("'mode' must be either '1960' or '1976' (default), not '{}'".format(mode))
-        return uv
+        return uv + xyy[-1:] if luminance else uv
 
-    def xy(self) -> Vector:
+    def xy(self, *, luminance: bool = False) -> Vector:
         """Convert to `xy`."""
 
         xyz = self.convert('xyz-d65')
@@ -704,7 +705,8 @@ class Color(metaclass=ColorMeta):
             self._space.WHITE,
             xyz.coords(nans=False)
         )
-        return util.xyz_to_xyY(coords, self._space.white())[:2]
+        xyy = util.xyz_to_xyY(coords, self._space.white())
+        return xyy if luminance else xyy[:2]
 
     @classmethod
     def chromatic_adaptation(

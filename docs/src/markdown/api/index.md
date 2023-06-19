@@ -1570,18 +1570,30 @@ Return
 
 ```py
 def xy(
-    self
+    self,
+    *,
+    luminance: bool = False
 ) -> Vector:
 ```
 
 /// define
 Description
 
--   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color.
+-   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color. If requested, luminance (Y) will also be
+    returned.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `luminance` | `#!py False`       | Return the luminance (Y) along with the (x, y) chromaticity points.
 
 Return
 
--   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color.
+-   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color. If `luminance` is `#!py True`, (x, y, Y)
+    coordinates will be returned. The XYZ translation to xyY will use the current color's white point to ensure the
+    values are relative to the proper white point.
 ///
 
 ## `#!py Color.uv` {#xy}
@@ -1589,7 +1601,9 @@ Return
 ```py
 def uv(
     self,
-    mode: str = '1976'
+    mode: str = '1976',
+    *,
+    luminance: bool = False
 ) -> Vector:
     ...
 ```
@@ -1598,16 +1612,19 @@ def uv(
 Description
 
 -   Retrieves the UCS 1960 (u, v) chromaticity coordinates for a given color or the CIE 1976 UCS (u', v') chromaticity
-    coordinates, the latter being the default.
+    coordinates, the latter being the default. If requested, luminance (Y) will also be returned.
 
 Parameters
 
 - 
-    Parameters | Defaults           | Description
-    ---------- | ------------------ | -----------
-    `mode`     | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `mode`      | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    `luminance` | `#!py False`       | Return the luminance (Y) along with the (u, v) chromaticity points.
 
 Return
 
--   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color.
+-   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color. If
+    `luminance` is `#!py True`, (u, v, Y) or (u', v', Y) coordinates will be returned. The XYZ translation to uvY will
+    use the current color's white point to ensure the values are relative to the proper white point.
 ///
