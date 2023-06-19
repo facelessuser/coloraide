@@ -1,5 +1,8 @@
 # Correlated Color Temperature
 
+/// new | New 2.4
+///
+
 Correlated color temperature (CCT) is a measurement of the average hue of light as it appears to the eye. It is
 expressed as the temperature (in Kelvins) something would need to be heated to glow at approximately the same color.
 

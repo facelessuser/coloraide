@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide import pointer_gamut  # noqa: E402
+from coloraide import gamut  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.everything import ColorAll  # noqa: E402
 from coloraide.spaces.lch import LCh  # noqa: E402
@@ -25,7 +25,7 @@ class LabPointer(Lab):
     BASE = 'xyz-d65'
     NAME = 'lab-pointer'
     SERIALIZE = ('--lab-pointer',)
-    WHITE = pointer_gamut.WHITE_POINT_SC
+    WHITE = gamut.pointer.WHITE_POINT_SC
 
 
 class LChPointer(LCh):
@@ -34,7 +34,7 @@ class LChPointer(LCh):
     BASE = 'lab-pointer'
     NAME = 'lch-pointer'
     SERIALIZE = ('--lch-pointer',)
-    WHITE = pointer_gamut.WHITE_POINT_SC
+    WHITE = gamut.pointer.WHITE_POINT_SC
 
 
 class Color(ColorAll):
@@ -44,7 +44,7 @@ class Color(ColorAll):
 Color.register([LabPointer(), LChPointer()])
 
 
-def plot_pointer_gamut(target, gamut, fit, title, dark=False):
+def plot_pointer_gamut(target, space_gamut, fit, title, dark=False):
     """
     Plot the Pointer gamut and random points inside and outside the gamut.
 
@@ -64,19 +64,19 @@ def plot_pointer_gamut(target, gamut, fit, title, dark=False):
         for _ in range(20):
             while True:
                 color = Color.random('lch-pointer', limits=[(lightness, lightness), None, None])
-                if color.in_gamut(gamut, tolerance=0):
+                if color.in_gamut(space_gamut, tolerance=0):
                     colors.append(color)
                     break
     else:
         original = Color(target)
         colors.append(original.convert('lch-pointer', norm=False))
         lightness = colors[0]['l']
-        if fit and not colors[0].in_pointer_gamut(tolerance=0.0):
+        if fit and not colors[0].in_pointer_gamut():
             colors.append(colors[0].clone().fit_pointer_gamut())
     color = colors[0]
     l, c, h = color[:-1]
-    li, lf = pointer_gamut.closest_lightness(l)
-    chroma = [alg.lerp(row[li], row[li + 1], lf) for row in pointer_gamut.LCH_POINTER]
+    li, lf = gamut.pointer.closest_lightness(l)
+    chroma = [alg.lerp(row[li], row[li + 1], lf) for row in gamut.pointer.LCH_POINTER]
     chroma.append(chroma[0])
 
     figure = plt.figure()
@@ -104,7 +104,7 @@ def plot_pointer_gamut(target, gamut, fit, title, dark=False):
             ax.set_title('Color: {}'.format(colors[0].to_string()), fontdict={'fontsize': 8}, pad=2)
 
     plt.plot(
-        [math.radians(hue) for hue in pointer_gamut.LCH_H] + [0.0],
+        [math.radians(hue) for hue in gamut.pointer.LCH_H] + [0.0],
         chroma,
         color=default_color,
         marker="",
@@ -118,7 +118,7 @@ def plot_pointer_gamut(target, gamut, fit, title, dark=False):
 
     for color in colors:
         c, h = color[1:-1]
-        if color.in_pointer_gamut(tolerance=0):
+        if color.in_pointer_gamut():
             inside.append([c, math.radians(h)])
         else:
             outside.append([c, math.radians(h)])
@@ -129,8 +129,9 @@ def plot_pointer_gamut(target, gamut, fit, title, dark=False):
             x,
             y,
             marker="o",
-            color='#00FF00',
-            s=4,
+            color=default_color,
+            edgecolor=default_color,
+            s=16,
             zorder=100
         )
 
@@ -139,9 +140,9 @@ def plot_pointer_gamut(target, gamut, fit, title, dark=False):
         plt.scatter(
             x,
             y,
-            marker="o",
-            color='#FF0000',
-            s=4,
+            marker="x",
+            color=default_color,
+            s=16,
             zorder=100
         )
 
@@ -156,7 +157,10 @@ def main():
         '--gamut', '-g', default="display-p3", help='Gamut to evaluate the color in (default is display-p3).'
     )
     parser.add_argument('--fit', '-f', action="store_true", help="Fit color to pointer gamut.")
-    parser.add_argument('--color', '-c', help="Color to test against the Pointer gamut.")
+    parser.add_argument(
+        '--color', '-c',
+        help="Color to test against the Pointer gamut, single colors will show the original and fitted color."
+    )
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")

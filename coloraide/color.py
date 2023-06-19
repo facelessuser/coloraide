@@ -16,7 +16,6 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
-from . import pointer_gamut
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
@@ -802,12 +801,12 @@ class Color(metaclass=ColorMeta):
     def in_pointer_gamut(self, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if in pointer gamut."""
 
-        return pointer_gamut.in_pointer_gamut(self, tolerance)
+        return gamut.pointer.in_pointer_gamut(self, tolerance)
 
     def fit_pointer_gamut(self) -> Color:
         """Check if in pointer gamut."""
 
-        return pointer_gamut.fit_pointer_gamut(self)
+        return gamut.pointer.fit_pointer_gamut(self)
 
     def mask(self, channel: str | Sequence[str], *, invert: bool = False, in_place: bool = False) -> Color:
         """Mask color channels."""

@@ -19,7 +19,7 @@ from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
-from coloraide import pointer_gamut  # noqa: E402
+from coloraide import gamut  # noqa: E402
 from coloraide.spaces.lch import LCh  # noqa: E402
 from coloraide.spaces.lab import Lab  # noqa: E402
 
@@ -82,24 +82,6 @@ ISOTHERMS = {
     1500: (-0.040, '1500K'),
     1000: (-0.040, '1000K')
 }
-
-
-class LabPointer(Lab):
-    """Lab Pointer's Gamut."""
-
-    BASE = 'xyz-d65'
-    NAME = 'lab-pointer'
-    SERIALIZE = ('--lab-pointer',)
-    WHITE = pointer_gamut.WHITE_POINT_SC
-
-
-class LChPointer(LCh):
-    """LCh Pointer's Gamut."""
-
-    BASE = 'lab-pointer'
-    NAME = 'lch-pointer'
-    SERIALIZE = ('--lch-pointer',)
-    WHITE = pointer_gamut.WHITE_POINT_SC
 
 
 class Color(ColorAll):
@@ -330,7 +312,7 @@ def cie_diagram(
     class Color(ColorAll):
         ...
 
-    Color.register([ohno_2013.Ohno2013(opt.observer, opt.white), LabPointer(), LChPointer()], overwrite=True)
+    Color.register([ohno_2013.Ohno2013(opt.observer, opt.white)], overwrite=True)
 
     xs = []
     ys = []
@@ -365,11 +347,11 @@ def cie_diagram(
             sx = []
             sy = []
             if bounds == 'max':
-                pts = pointer_gamut.pointer_gamut_boundary()
+                pts = gamut.pointer.pointer_gamut_boundary()
                 label = 'pointer'
             else:
                 l = min(90, max(15, float(bounds)))
-                pts = pointer_gamut.pointer_gamut_boundary(l)
+                pts = gamut.pointer.pointer_gamut_boundary(l)
                 label = 'pointer L*={}'.format(round(l, 2))
             pts.append(pts[0])
             for pt in pts:

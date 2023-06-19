@@ -4,13 +4,13 @@ Handle pointer gamut.
 Data used for the gamut: https://www.rit-mcsl.org/UsefulData/PointerData.xls.
 """
 from __future__ import annotations
-from .spaces.lab import xyz_to_lab, lab_to_xyz
-from .spaces.lch import lab_to_lch, lch_to_lab
 import math
-from . import algebra as alg
-from . import util
 import bisect
-from .types import Vector
+from ..spaces.lab import xyz_to_lab, lab_to_xyz
+from ..spaces.lch import lab_to_lch, lch_to_lab
+from .. import algebra as alg
+from .. import util
+from ..types import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -175,7 +175,7 @@ def in_pointer_gamut(color: Color, tolerance: float) -> bool:
         return False
 
     # Test that the color does not exceed the max chroma
-    return c < (get_chroma_limit(l, h) + tolerance)
+    return c <= (get_chroma_limit(l, h) + tolerance)
 
 
 def pointer_gamut_boundary(lightness: float | None = None) -> list[Vector]:
