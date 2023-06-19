@@ -20,8 +20,6 @@ from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
 from coloraide import gamut  # noqa: E402
-from coloraide.spaces.lch import LCh  # noqa: E402
-from coloraide.spaces.lab import Lab  # noqa: E402
 
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE

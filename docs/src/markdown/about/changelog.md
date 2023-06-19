@@ -10,9 +10,11 @@
 -   **NEW**: Add support Robertson 1968 and Ohno 2013 CCT plugins.
 -   **NEW**: Include CMFS: CIE 1931 2 Degree Standard Observer, CIE 1964 10 Degree Standard Observer, CIE 2015 2 Degree
     Standard Observer, and CIE 2015 10 Degree Standard Observer.
--   **NEW**: `xy()` and `uv()` chromaticity methods can now output luminance with the chromaticity points if the new
-    `luminance` parameter is set to `True`.
--   **FIX**: Ensure that went formatting floats for output that infinity is handled properly.
+-   **NEW**: Add `get_chromaticity()` method which will return the current color as specified chromaticity coordinates
+    including the associated luminance (xyY or uvY).
+-   **NEW**: Add `chromaticity()` which will create a new color from a given set of chromaticity coordinates.
+-   **NEW**: `chromatic_adaptation()` will now cast white point chromaticity coordinates that are in mutable lists to
+    the required immutable tuple type.
 -   **FIX**: Fix case where deregistering all plugins with `*` was not deregistering `Filter` plugins.
 
 ## 2.3

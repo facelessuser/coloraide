@@ -683,35 +683,89 @@ class Color(metaclass=ColorMeta):
 
         return util.xy_to_xyz(self._space.white())
 
-    def uv(self, mode: str = '1976', *, luminance: bool = False) -> Vector:
+    def uv(self, mode: str = '1976') -> Vector:
         """Convert to `xy`."""
 
-        xyy = self.xy(luminance=True)
-        if mode == '1976':
-            uv = util.xy_to_uv(xyy[:-1])
-        elif mode == '1960':
-            uv = util.xy_to_uv_1960(xyy[:-1])
-        else:
-            raise ValueError("'mode' must be either '1960' or '1976' (default), not '{}'".format(mode))
-        return uv + xyy[-1:] if luminance else uv
+        return self.get_chromaticity('uv-' + mode)[:-1]
 
-    def xy(self, *, luminance: bool = False) -> Vector:
+    def xy(self) -> Vector:
         """Convert to `xy`."""
 
+        return self.get_chromaticity('xy-1931')[:-1]
+
+    def get_chromaticity(
+        self,
+        mode: str = 'uv-1976',
+        *,
+        white: VectorLike | None = None
+    ) -> Vector:
+        """Return the current color's chromaticity coordinates (including luminance) using the requested mode."""
+
+        # Convert to XYZ D65 as it is a color space that is always required.
+        # Chromatically adapt it to the XYZ color space with the current color's white point.
         xyz = self.convert('xyz-d65')
         coords = self.chromatic_adaptation(
             xyz._space.WHITE,
-            self._space.WHITE,
+            self._space.WHITE if white is None else white,
             xyz.coords(nans=False)
         )
-        xyy = util.xyz_to_xyY(coords, self._space.white())
-        return xyy if luminance else xyy[:2]
+
+        # Convert to xyY 1931 color space.
+        chromaticity = util.xyz_to_xyY(coords, self._space.white())
+
+        # Convert to the the requested uv color space if required.
+        if mode == 'uv-1976':
+            chromaticity = util.xy_to_uv(chromaticity[:-1]) + chromaticity[-1:]
+        elif mode == 'uv-1960':
+            chromaticity = util.xy_to_uv_1960(chromaticity[:-1]) + chromaticity[-1:]
+        elif not mode == 'xy-1931':
+            raise ValueError("Unrecognized chromaticity request '{}'".format(mode))
+
+        return chromaticity
+
+    @classmethod
+    def chromaticity(
+        cls,
+        space: str,
+        coords: VectorLike,
+        mode: str = 'uv-1976',
+        *,
+        white: VectorLike | None = None
+    ) -> Color:
+        """Chromaticity."""
+
+        if len(coords) == 3:
+            pair = coords[:-1]
+            Y = coords[-1]
+        else:
+            pair = coords
+            Y = 1.0
+
+        if mode == 'uv-1960':
+            pair = util.uv_1960_to_xy(pair)
+        elif mode == 'uv-1976':
+            pair = util.uv_to_xy(pair)
+        elif not mode == 'xy-1931':
+            raise ValueError("Unrecognized chromaticity space '{}'".format(mode))
+
+        if white is None:
+            white = cls.CS_MAP[space].WHITE
+
+        color = cls(
+            'xyz-d65',
+            cls.chromatic_adaptation(white, cls.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(pair, Y=Y))
+        )
+
+        if space != color.space():
+            color.convert(space, in_place=True)
+
+        return color
 
     @classmethod
     def chromatic_adaptation(
         cls,
-        w1: tuple[float, float],
-        w2: tuple[float, float],
+        w1: VectorLike,
+        w2: VectorLike,
         xyz: VectorLike,
         *,
         method: str | None = None
@@ -722,7 +776,7 @@ class Color(metaclass=ColorMeta):
         if not adapter:
             raise ValueError("'{}' is not a supported CAT".format(method))
 
-        return adapter.adapt(w1, w2, xyz)
+        return adapter.adapt(tuple(w1), tuple(w2), xyz)  # type: ignore[arg-type]
 
     def clip(self, space: str | None = None) -> Color:
         """Clip the color channels."""

@@ -14,7 +14,7 @@ from ..types import Vector
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .color import Color
+    from ..color import Color
 
 # White point C as defined in the Pointer data spreadsheet
 XYZ_W = (98.0722647623506, 100.0, 118.225418982695)

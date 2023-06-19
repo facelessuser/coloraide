@@ -45,6 +45,7 @@ nav:
       - Color Distance and Delta E: distance.md
       - Gamut Mapping: gamut.md
       - Chromatic Adaptation: cat.md
+      - Chromaticity Coordinates: chromaticity.md
       - Contrast: contrast.md
       - Color Harmonies: harmonies.md
       - Filters: filters.md

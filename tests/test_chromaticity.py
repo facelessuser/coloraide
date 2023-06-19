@@ -97,21 +97,21 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
     def test_xy_luminance(self):
         """Test xy with luminance."""
 
-        xyy = Color('red').xy(luminance=True)
+        xyy = Color('red').get_chromaticity('xy-1931')
         for v1, v2 in zip(xyy, [0.64, 0.33, 0.21264]):
             self.assertCompare(v1, v2)
 
     def test_uv_1960_luminance(self):
         """Test uv 1960 with luminance."""
 
-        uvy = Color('red').uv('1960', luminance=True)
+        uvy = Color('red').get_chromaticity('uv-1960')
         for v1, v2 in zip(uvy, [0.4507, 0.34859, 0.21264]):
             self.assertCompare(v1, v2)
 
     def test_uv_1976_luminance(self):
         """Test uv 1976 with luminance."""
 
-        uvy = Color('red').uv('1976', luminance=True)
+        uvy = Color('red').get_chromaticity('uv-1976')
         for v1, v2 in zip(uvy, [0.4507, 0.52289, 0.21264]):
             self.assertCompare(v1, v2)
 

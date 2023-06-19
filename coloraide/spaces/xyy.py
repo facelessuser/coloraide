@@ -18,7 +18,7 @@ class xyY(Space):
 
     BASE = "xyz-d65"
     NAME = "xyy"
-    SERIALIZE = ("--xyy",)  # type: tuple[str, ...]
+    SERIALIZE = ("--xyy",)
     CHANNELS = (
         Channel("x", 0.0, 1.0),
         Channel("y", 0.0, 1.0),

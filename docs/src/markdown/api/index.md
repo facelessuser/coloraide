@@ -1579,21 +1579,12 @@ def xy(
 /// define
 Description
 
--   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color. If requested, luminance (Y) will also be
-    returned.
-
-Parameters
-
-- 
-    Parameters  | Defaults           | Description
-    ----------- | ------------------ | -----------
-    `luminance` | `#!py False`       | Return the luminance (Y) along with the (x, y) chromaticity points.
+-   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color.
 
 Return
 
--   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color. If `luminance` is `#!py True`, (x, y, Y)
-    coordinates will be returned. The XYZ translation to xyY will use the current color's white point to ensure the
-    values are relative to the proper white point.
+-   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color. The XYZ translation to xy will use the
+    current color's white point to ensure the values are relative to the proper white point.
 ///
 
 ## `#!py Color.uv` {#xy}
@@ -1612,7 +1603,7 @@ def uv(
 Description
 
 -   Retrieves the UCS 1960 (u, v) chromaticity coordinates for a given color or the CIE 1976 UCS (u', v') chromaticity
-    coordinates, the latter being the default. If requested, luminance (Y) will also be returned.
+    coordinates, the latter being the default.
 
 Parameters
 
@@ -1620,11 +1611,79 @@ Parameters
     Parameters  | Defaults           | Description
     ----------- | ------------------ | -----------
     `mode`      | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
-    `luminance` | `#!py False`       | Return the luminance (Y) along with the (u, v) chromaticity points.
 
 Return
 
--   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color. If
-    `luminance` is `#!py True`, (u, v, Y) or (u', v', Y) coordinates will be returned. The XYZ translation to uvY will
-    use the current color's white point to ensure the values are relative to the proper white point.
+-   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color. The XYZ
+   translation to uv will use the current color's white point to ensure the values are relative to the proper white
+   point.
+///
+
+## `#!py Color.get_chromaticity` {#get_chromaticity}
+
+```py
+def get_chromaticity(
+    self,
+    mode: str = 'uv-1976',
+    *,
+    white: VectorLike | None = None
+) -> Vector:
+    ...
+```
+
+/// define
+Description
+
+-   Retrieves the 1931 xy, 1960 uv, or 1976 u'v' chromaticity coordinates with the luminance (Y).
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `mode`      | `#!py 'uv-1976'`   | A string indicating what mode to use. `uv-1976` being the default.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points to, if none are specified, the current color's white point is assumed.
+
+Return
+
+-   Returns a list of chromaticity coordinates. Results will either be in [x, y, Y] for 1931 xy, [u, v, Y] for 1960 uv,
+    or [u', v', Y] for 1976 u'v'.
+///
+
+## `#!py Color.chromaticity` {#get_chromaticity}
+
+```py
+@classmethod
+def chromaticity(
+    cls,
+    space: str,
+    coords: VectorLike,
+    mode: str = 'uv-1976',
+    *,
+    white: VectorLike | None = None
+) -> Color:
+    ...
+```
+
+/// define
+Description
+
+-   Returns a color that satisfies the provided chromaticity coordinates. Coordinates can be in the form 1931 xyY, 1960
+    uvY, or 1976 u'v'Y, mode must be specified to match intent. The Y value can be omitted, and if so, Y will be assumed
+    as 1. The space to convert to should be specified via `space`. If the coordinates are not already using the white
+    point of the targeted space, 2D white point chromaticities can be specified via `white`.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `space`     |                    | Color space to chromaticities to.
+    `coords`    |                    | The chromaticity coordinates. Values can be in either 3D form (with luminance Y) or 2D form (without luminance Y). If no luminance is specified, luminance is assumed as 1.
+    `mode`      | `#!py 'uv-1976'`   | A string indicating what mode to use. `uv-1976` being the default.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none are specified, the targeted color's white point is assumed.
+
+Return
+
+-   Returns a reference to a new [`Color`](#color) object that satisfies the chromaticity coordinates.
 ///

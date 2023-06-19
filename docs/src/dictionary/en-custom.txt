@@ -284,9 +284,12 @@ th
 transmissive
 triadic
 trichromacy
+tristimulus
 tritan
 tritanomaly
 tritanopia
+u'v
+u'v'Y
 un
 uncomment
 uniformities

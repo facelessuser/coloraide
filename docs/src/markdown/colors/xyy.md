@@ -36,8 +36,7 @@ chromaticity of colors.
 /// tip
 The color space, as implemented, is relative to the D65 white point, meaning it is created from XYZ D65. If colors are
 needed relative to different white points, the color space can be subclassed. If proper chromaticity coordinates are
-desired for a given color, you can always use `#!py Color('red').xy()` or `#!py Color('red').uv()`. These methods will
-always use the an XYZ to xyY transform that utilizes the current color's white point.
+desired for a given color, you can checkout the [API for chromaticity coordinates](../chromaticity.md).
 ///
 
 [Learn more](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space).
