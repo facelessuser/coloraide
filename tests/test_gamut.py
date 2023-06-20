@@ -2,6 +2,7 @@
 import unittest
 import math
 from coloraide.everything import ColorAll as Color
+from coloraide import gamut
 from . import util
 
 
@@ -172,3 +173,85 @@ class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
             s2 = [c * 255 for c in Color(answer)[:-1]]
             for c1, c2 in zip(s1, s2):
                 self.assertTrue(math.isclose(c1, c2, abs_tol=1.0))
+
+
+class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
+    """Test Pointer's gamut."""
+
+    def test_in_pointer_gamut_too_light(self):
+        """Test gamut check when too light."""
+
+        self.assertFalse(Color('white').in_pointer_gamut())
+
+    def test_in_pointer_gamut_too_dark(self):
+        """Test gamut check when too dark."""
+
+        self.assertFalse(Color('black').in_pointer_gamut())
+
+    def test_in_pointer_gamut(self):
+        """Test gamut check in gamut."""
+
+        self.assertTrue(Color('orange').in_pointer_gamut())
+
+    def test_out_of_pointer_gamut(self):
+        """Test gamut check out of gamut."""
+
+        self.assertFalse(Color('red').in_pointer_gamut())
+
+    def test_hue_wrap(self):
+        """Test when hue interpolation wraps."""
+
+        self.assertFalse(Color('deeppink').in_pointer_gamut())
+
+    def test_fit_pointer_gamut_too_light(self):
+        """Test fitting gamut when too light."""
+
+        self.assertColorEqual(Color('white').fit_pointer_gamut(), Color('rgb(226.33 226.33 226.33)'))
+
+    def test_fit_pointer_gamut_too_dark(self):
+        """Test fitting gamut when too dark."""
+
+        self.assertColorEqual(Color('black').fit_pointer_gamut(), Color('rgb(37.667 37.667 37.667)'))
+
+    def test_fit_pointer_gamut(self):
+        """Test gamut check out of gamut."""
+
+        self.assertColorEqual(Color('red').fit_pointer_gamut(), Color('rgb(244 46.539 23.139)'))
+
+    def test_pointer_boundary_too_light(self):
+        """Test when pointer boundary is request is too light."""
+
+        with self.assertRaises(ValueError):
+            gamut.pointer.pointer_gamut_boundary(0)
+
+    def test_pointer_boundary_too_dark(self):
+        """Test when pointer boundary is request is too dark."""
+
+        with self.assertRaises(ValueError):
+            gamut.pointer.pointer_gamut_boundary(100)
+
+    def test_pointer_boundary_mid(self):
+        """Test when pointer boundary request."""
+
+        boundary = gamut.pointer.pointer_gamut_boundary(50)
+        # Test a sample of the values
+        test = [boundary[0], boundary[5], boundary[8]]
+        expected = [[0.47971142940104206, 0.2384179501289976, 18.418651851244416],
+                    [0.634800855490809, 0.35129621215430396, 18.418651851244416],
+                    [0.49892034937725527, 0.45347791373057683, 18.418651851244416]]
+
+        for coords1, coords2 in zip(test, expected):
+            [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]
+
+    def test_pointer_boundary_max(self):
+        """Test pointer boundary max request."""
+
+        boundary = gamut.pointer.pointer_gamut_boundary()
+        # Test a sample of the values
+        test = [boundary[0], boundary[5], boundary[8]]
+        expected = [[0.5076988072583095, 0.2255929648510513, 11.250973799663784],
+                    [0.634800855490809, 0.35129621215430396, 18.418651851244416],
+                    [0.5260711281340981, 0.462168144862833, 48.2781043708229]]
+
+        for coords1, coords2 in zip(test, expected):
+            [self.assertCompare(a, b) for a, b in zip(coords1, coords2)]

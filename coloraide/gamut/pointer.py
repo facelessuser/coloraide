@@ -149,12 +149,15 @@ def fit_pointer_gamut(color: Color) -> Color:
     l, c, h = to_lch_sc(color)
 
     # Clamp lightness
-    l = max(LCH_L[0], l)
-    l = min(LCH_L[-1], l)
+    new_l = max(LCH_L[0], l)
+    new_l = min(LCH_L[-1], new_l)
 
-    c = min(c, get_chroma_limit(l, h))
+    new_c = min(c, get_chroma_limit(l, h))
 
-    return from_lch_sc(color, [l, c, h])
+    adjusted = l != new_l or c != new_c
+
+    # Adjust original color only if a modification was made
+    return from_lch_sc(color, [new_l, new_c, h]) if adjusted else color
 
 
 def in_pointer_gamut(color: Color, tolerance: float) -> bool:
