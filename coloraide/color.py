@@ -734,12 +734,8 @@ class Color(metaclass=ColorMeta):
     ) -> Color:
         """Chromaticity."""
 
-        if len(coords) == 3:
-            pair = coords[:-1]
-            Y = coords[-1]
-        else:
-            pair = coords
-            Y = 1.0
+        pair = coords[:-1]
+        Y = coords[-1]
 
         if mode == 'uv-1960':
             pair = util.uv_1960_to_xy(pair)

@@ -1669,9 +1669,9 @@ def chromaticity(
 Description
 
 -   Returns a color that satisfies the provided chromaticity coordinates. Coordinates can be in the form 1931 xyY, 1960
-    uvY, or 1976 u'v'Y, mode must be specified to match intent. The Y value can be omitted, and if so, Y will be assumed
-    as 1. The space to convert to should be specified via `space`. If the coordinates are not already using the white
-    point of the targeted space, 2D white point chromaticities can be specified via `white`.
+    uvY, or 1976 u'v'Y, mode must be specified to match intent. The space to convert to should be specified via `space`.
+    If the coordinates are not already using the white point of the targeted space, 2D white point chromaticities can be
+    specified via `white`.
 
 Parameters
 
@@ -1679,7 +1679,7 @@ Parameters
     Parameters  | Defaults           | Description
     ----------- | ------------------ | -----------
     `space`     |                    | Color space to chromaticities to.
-    `coords`    |                    | The chromaticity coordinates. Values can be in either 3D form (with luminance Y) or 2D form (without luminance Y). If no luminance is specified, luminance is assumed as 1.
+    `coords`    |                    | The chromaticity coordinates. Values can be in either 3D form (with luminance Y).
     `mode`      | `#!py 'uv-1976'`   | A string indicating what mode to use. `uv-1976` being the default.
     `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none are specified, the targeted color's white point is assumed.
 

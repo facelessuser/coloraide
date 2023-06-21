@@ -82,12 +82,6 @@ The chromaticity coordinates should be supplied using the same white point as th
 uvY = Color('red').get_chromaticity()
 Color.chromaticity('srgb', uvY)
 ```
-If only given 2D chromaticity points, Y will be assumed as 1.
-
-```py play
-uv = Color('red').uv()
-Color.chromaticity('srgb', uv)
-```
 
 If the chromaticity points are provided with a different white point than the targeted color space, you can provide
 the white chromaticity points for the chromaticity coordinates to force a proper translation.
@@ -99,3 +93,19 @@ uv = c1.get_chromaticity()
 c2 = Color.chromaticity('srgb', uv, white=cat.WHITES['2deg']['D50'])
 c1, c2.convert('prophoto-rgb')
 ```
+
+/// tip
+If you only have 2D chromaticity points, you can use an arbitrary lightness such as `#!py 1`. As the lightness will be
+too intense, the color can be normalized. The method below mainly works with RGB colors spaces.
+
+```py play
+uv = Color('red').uv()
+color = Color.chromaticity('srgb', uv + [1])
+color
+coords = color.coords()
+m = max(coords)
+color[:-1] = [c / m if m else m for c in coords]
+color
+color.uv(), uv
+```
+///

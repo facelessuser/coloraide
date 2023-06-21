@@ -139,15 +139,6 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
         c2 = Color.chromaticity('srgb', uvy, 'uv-1976')
         self.assertColorEqual(c1, c2)
 
-    def test_color_from_2D_chromaticity(self):
-        """Test new color from 2D chromaticity."""
-
-        c1 = Color('red')
-        xy = c1.xy()
-        c2 = Color.chromaticity('srgb', xy, 'xy-1931')
-        self.assertEqual(c2.to_string(fit=False), 'rgb(498.77 0 0)')
-        [self.assertCompare(v1, v2) for v1, v2 in zip(c2.xy(), xy)]
-
     def test_chromaticity_bad_value(self):
         """Test bad chromaticity input."""
 
