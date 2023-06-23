@@ -69,6 +69,8 @@ from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
 from typing import overload, Sequence, Iterable, Any, Callable, Mapping
 
+SUPPORTED_CHROMATICITY_SPACES = set(('uv-1960', 'uv-1976', 'xy-1931'))
+
 
 class ColorMatch:
     """Color match object."""
@@ -477,11 +479,12 @@ class Color(metaclass=ColorMeta):
     @classmethod
     def blackbody(
         cls,
+        space: str,
         temp: float,
         duv: float = 0.0,
         *,
-        space: str | None = 'srgb-linear',
-        out_space: str | None = None,
+        scale: bool = True,
+        scale_space: str | None= None,
         method: str | None = None,
         **kwargs: Any
     ) -> Color:
@@ -499,29 +502,7 @@ class Color(metaclass=ColorMeta):
         """
 
         cct = temperature.cct(method, cls)
-
-        if out_space is None:
-            out_space = space or 'xyz-d65'
-
-        color = cct.from_cct(cls, temp, duv, **kwargs)
-
-        # Normalize in the given RGB color space (ideally linear).
-        if space is not None and isinstance(cls.CS_MAP[space], RGBish):
-            color.convert(space, in_place=True)
-            coords = color.coords()
-
-            # Add just enough white to make r, g, b all positive.
-            w = -min(0.0, *coords)
-            if w:
-                coords = [c + w for c in coords]
-
-            # Normalize values such that the maximum is 1 (unless all are zero)
-            m = max(coords)
-            color[:-1] = [c / m for c in coords] if m else coords
-
-        if out_space != color.space():
-            color.convert(out_space, in_place=True)
-
+        color = cct.from_cct(cls, space, temp, duv, scale, scale_space, **kwargs)
         return color
 
     def cct(self, *, method: str | None = None, **kwargs: Any) -> Vector:
@@ -695,7 +676,7 @@ class Color(metaclass=ColorMeta):
 
     def get_chromaticity(
         self,
-        mode: str = 'uv-1976',
+        cspace: str = 'uv-1976',
         *,
         white: VectorLike | None = None
     ) -> Vector:
@@ -711,51 +692,82 @@ class Color(metaclass=ColorMeta):
         )
 
         # Convert to xyY 1931 color space.
-        chromaticity = util.xyz_to_xyY(coords, self._space.white())
+        coords = util.xyz_to_xyY(coords, self._space.white())
 
         # Convert to the the requested uv color space if required.
-        if mode == 'uv-1976':
-            chromaticity = util.xy_to_uv(chromaticity[:-1]) + chromaticity[-1:]
-        elif mode == 'uv-1960':
-            chromaticity = util.xy_to_uv_1960(chromaticity[:-1]) + chromaticity[-1:]
-        elif not mode == 'xy-1931':
-            raise ValueError("Unrecognized chromaticity request '{}'".format(mode))
-
-        return chromaticity
+        return (
+            self.convert_chromaticity('xy-1931', cspace, coords[:-1]) + coords[-1:] if cspace != 'xy_1931' else coords
+        )
 
     @classmethod
     def chromaticity(
         cls,
         space: str,
         coords: VectorLike,
-        mode: str = 'uv-1976',
+        cspace: str = 'uv-1976',
         *,
+        scale: bool = False,
+        scale_space: str | None = None,
         white: VectorLike | None = None
     ) -> Color:
         """Chromaticity."""
 
-        pair = coords[:-1]
-        Y = coords[-1]
+        if scale_space is None:
+            scale_space = 'srgb-linear'
 
-        if mode == 'uv-1960':
-            pair = util.uv_1960_to_xy(pair)
-        elif mode == 'uv-1976':
-            pair = util.uv_to_xy(pair)
-        elif not mode == 'xy-1931':
-            raise ValueError("Unrecognized chromaticity space '{}'".format(mode))
+        # Convert to xy 1931 format
+        if len(coords) == 3:
+            pair = coords[:-1]
+            Y = coords[-1]
+        else:
+            pair = coords
+            Y = 1.0
 
+        pair = cls.convert_chromaticity(cspace, 'xy-1931', pair)
+
+        # Use the white point of the target color space unless a white point is given.
         if white is None:
             white = cls.CS_MAP[space].WHITE
 
+        # Apply chromatic adaptation to match XYZ D65 white point
         color = cls(
             'xyz-d65',
             cls.chromatic_adaptation(white, cls.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(pair, Y=Y))
         )
 
+        # Normalize in the given RGB color space (ideally linear).
+        if scale and isinstance(cls.CS_MAP[scale_space], RGBish):
+            color.convert(scale_space, in_place=True)
+            color[:-1] = util.rgb_scale(color.coords())
+
+        # Convert to targeted color space
         if space != color.space():
             color.convert(space, in_place=True)
 
         return color
+
+    @classmethod
+    def convert_chromaticity(cls, cspace1: str, cspace2: str, coords: VectorLike) -> Vector:
+        """Convert chromaticity coordinates."""
+
+        # Check that we know the requested spaces
+        if cspace1 not in SUPPORTED_CHROMATICITY_SPACES:
+            raise ValueError("Unexpected chromaticity space '{}'".format(cspace1))
+        if cspace2 not in SUPPORTED_CHROMATICITY_SPACES:
+            raise ValueError("Unexpected chromaticity space '{}'".format(cspace2))
+
+        # Return if there is nothing to convert
+        if cspace1 == cspace2:
+            return list(coords)
+
+        # Perform conversion
+        elif cspace1 == 'xy-1931':
+            coords = util.xy_to_uv_1960(coords) if cspace2 == 'uv-1960' else util.xy_to_uv(coords)
+        elif cspace1 == 'uv-1960':
+            coords = util.uv_1960_to_xy(coords) if cspace2 == 'xy-1931' else util.xy_to_uv(util.uv_1960_to_xy(coords))
+        else:
+            coords = util.uv_to_xy(coords) if cspace2 == 'xy-1931' else util.xy_to_uv_1960(util.uv_to_xy(coords))
+        return coords
 
     @classmethod
     def chromatic_adaptation(

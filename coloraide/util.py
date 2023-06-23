@@ -92,7 +92,7 @@ def uv_1960_to_xy(uv: VectorLike) -> Vector:
     return [x, y]
 
 
-def xyz_to_xyY(xyz: VectorLike, white: VectorLike) -> Vector:
+def xyz_to_xyY(xyz: VectorLike, white: VectorLike = (0.0, 0.0, 0.0)) -> Vector:
     """XYZ to `xyY`."""
 
     x, y, z = xyz
@@ -116,6 +116,26 @@ def pq_st2084_oetf(
         r = (c1 + c2 * c) / (1 + c3 * c)
         adjusted.append(alg.npow(r, m2))
     return adjusted
+
+
+def rgb_scale(vec: VectorLike) -> Vector:
+    """
+    Scale the RGB vector.
+
+    If minimum is less than zero, behaves like min/max normalization.
+    If minimum is not less than zero, behaves like maximum normalization.
+    """
+
+    # `(v - min_v)`
+    w = min(vec)
+    if w < 0.0:
+        vec = [v - w for v in vec]
+
+    # `(max_v - min_v)`
+    m = max(vec)
+
+    # `(v - min_v) / (max_v - min_v)`
+    return [v / m if m else v for v in vec]
 
 
 def pq_st2084_eotf(

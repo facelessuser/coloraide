@@ -20,7 +20,7 @@ class TestOhno2013Temp(util.ColorAssertsPyTest):
         """
 
         for duv in (-0.03, -0.02, -0.01, 0.0, 0.01, 0.02, 0.03):
-            cct2, duv2 = Color.blackbody(cct, duv, space=None).cct()
+            cct2, duv2 = Color.blackbody('xyz-d65', cct, duv, scale=False).cct()
             assert math.isclose(cct2, cct, rel_tol=(0.00001 if cct < 84000 else 0.0001), abs_tol=0.000001)
             assert math.isclose(duv2, duv, rel_tol=0.000001, abs_tol=0.000001)
 
@@ -33,7 +33,9 @@ class TestRobertson1968(util.ColorAssertsPyTest):
         """Test CCT methods."""
 
         for duv in (-0.03, -0.02, -0.01, 0.0, 0.01, 0.02, 0.03):
-            cct2, duv2 = Color.blackbody(cct, duv, space=None, method='robertson-1968').cct(method='robertson-1968')
+            cct2, duv2 = Color.blackbody(
+                'xyz-d65', cct, duv, scale=False, method='robertson-1968'
+            ).cct(method='robertson-1968')
             assert math.isclose(cct2, cct, rel_tol=0.00001, abs_tol=0.00001)
             assert math.isclose(duv2, duv, rel_tol=0.00001, abs_tol=0.00001)
 
@@ -57,7 +59,7 @@ class TestOhno2013Color(util.ColorAssertsPyTest):
         """Test CCT methods."""
 
         cct, duv = Color(color).cct()
-        c = Color.blackbody(cct, duv, space=None)
+        c = Color.blackbody('xyz-d65', cct, duv, scale=False)
         cct2, duv2 = c.cct()
         assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
         assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
@@ -82,7 +84,7 @@ class TestRobertson1968Color(util.ColorAssertsPyTest):
         """Test CCT methods."""
 
         cct, duv = Color(color).cct(method='robertson-1968')
-        c = Color.blackbody(cct, duv, space=None, method='robertson-1968')
+        c = Color.blackbody('xyz-d65', cct, duv, scale=False, method='robertson-1968')
         cct2, duv2 = c.cct(method='robertson-1968')
         assert math.isclose(cct, cct2, rel_tol=0.00001, abs_tol=0.00001)
         assert math.isclose(duv, duv2, rel_tol=0.00001, abs_tol=0.00001)
@@ -95,7 +97,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test bad algorithm inputs."""
 
         with self.assertRaises(ValueError):
-            Color.blackbody(2000, method='bad')
+            Color.blackbody('srgb', 2000, method='bad')
 
         with self.assertRaises(ValueError):
             Color('blue').cct(method='bad')
@@ -104,7 +106,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test temperature outside of gamut."""
 
         self.assertColorEqual(
-            Color.blackbody(1500),
+            Color.blackbody('srgb-linear', 1500, scale_space='srgb-linear'),
             Color('color(srgb-linear 1 0.14969 0)')
         )
 
@@ -112,7 +114,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test output space."""
 
         self.assertColorEqual(
-            Color.blackbody(2000, out_space='display-p3'),
+            Color.blackbody('display-p3', 2000, scale_space='srgb-linear'),
             Color('color(display-p3 0.93958 0.56696 0.22947)')
         )
 
@@ -120,15 +122,15 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         """Test normalization space."""
 
         self.assertColorEqual(
-            Color.blackbody(2000, space='display-p3'),
-            Color('color(display-p3 1 0.6107 0.25811)')
+            Color.blackbody('display-p3', 2000, scale_space='display-p3-linear'),
+            Color('color(display-p3 1 0.60474 0.24675)')
         )
 
     def test_no_normalization_space(self):
         """Test normalization space."""
 
         self.assertColorEqual(
-            Color.blackbody(2000, space=None),
+            Color.blackbody('xyz-d65', 2000, scale=False),
             Color('color(xyz-d65 1.2743 1 0.14523)')
         )
 
@@ -145,7 +147,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             overwrite=True
         )
 
-        srgbl = Custom.blackbody(5000)
+        srgbl = Custom.blackbody('srgb-linear', 5000, scale_space='srgb-linear')
         self.assertColorEqual(srgbl, Color('color(srgb-linear 1 0.77908 0.61805)'))
         cct, duv = srgbl.cct()
         assert math.isclose(cct, 5000.005435878293, rel_tol=1e-11, abs_tol=1e-11)
@@ -176,7 +178,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
             overwrite=True
         )
 
-        self.assertEqual(Custom.blackbody(1000, space=None).cct(), [1000.0, 0.0])
+        self.assertEqual(Custom.blackbody('xyz-d65', 1000, scale=False).cct(), [1000.0, 0.0])
 
     def test_robertson_sigfig(self):
         """Test that significant figure option."""

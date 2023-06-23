@@ -146,6 +146,7 @@ class Ohno2013(CCT):
     ):
         """Initialize."""
 
+        self.white = white
         self.blackbody = BlackBodyCurve(cmfs, white, planck_step)
 
     def to_cct(
@@ -160,7 +161,7 @@ class Ohno2013(CCT):
     ) -> Vector:
         """Calculate a color's CCT."""
 
-        u, v = color.uv('1960')
+        u, v = color.get_chromaticity('uv-1960')[:-1]
         last = samples - 1
         index = 0
         table = []  # type: list[tuple[float, float, float, float]]
@@ -240,7 +241,16 @@ class Ohno2013(CCT):
 
         return [t, duv]
 
-    def from_cct(self, color: type[Color], kelvin: float, duv: float = 0.0, **kwargs: Any) -> Color:
+    def from_cct(
+        self,
+        color: type[Color],
+        space: str,
+        kelvin: float,
+        duv: float,
+        scale: bool,
+        scale_space: str | None,
+        **kwargs: Any
+    ) -> Color:
         """Calculate a color that satisfies the CCT using Planck's law."""
 
         u0, v0 = self.blackbody(kelvin, exact=True)
@@ -255,4 +265,4 @@ class Ohno2013(CCT):
                 u0 = u0 - duv * dv
                 v0 = v0 + duv * du
 
-        return color('xyz-d65', util.xy_to_xyz(util.uv_1960_to_xy([u0, v0]), 1))
+        return color.chromaticity(space, [u0, v0, 1], 'uv-1960', scale=scale, scale_space=scale_space)

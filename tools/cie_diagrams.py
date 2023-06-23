@@ -71,14 +71,14 @@ labels_1960 = {
 }
 
 ISOTHERMS = {
-    100000: (0.025, '∞'),
-    10000: (0.025, '10000K'),
-    6000: (0.025, '6000K'),
-    4000: (0.025, '4000K'),
-    3000: (-0.040, '3000K'),
-    2000: (-0.034, '2000K'),
-    1500: (-0.040, '1500K'),
-    1000: (-0.040, '1000K')
+    100000: (0.005, '∞'),
+    10000: (0.005, '10000K'),
+    6000: (0.005, '6000K'),
+    4000: (0.005, '4000K'),
+    3000: (-0.020, '3000K'),
+    2000: (-0.014, '2000K'),
+    1500: (-0.020, '1500K'),
+    1000: (-0.020, '1000K')
 }
 
 
@@ -232,11 +232,11 @@ class DiagramOptions:
         elif observer != '2deg':
             raise ValueError("Unrecognized 'observer': {}".format(observer))
 
-        self.mode = mode
         if mode not in ('1931', '1960', '1976'):
             raise ValueError("Unrecognized 'mode': {}".format(mode))
 
-        if self.mode == "1931":
+        self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
+        if mode == "1931":
             self.spectral_locus_lables = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
             if observer == '2deg':
@@ -245,7 +245,7 @@ class DiagramOptions:
             else:
                 self.locus_labels = cie_xy_10_deg_offsets
                 self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
-        elif self.mode == "1976":
+        elif mode == "1976":
             self.spectral_locus_lables = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
             if observer == '2deg':
@@ -319,11 +319,8 @@ def cie_diagram(
     # Get points for the spectral locus
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
-        x, y = util.xyz_to_xyY(v, opt.white)[:2]
-        if opt.mode == "1976":
-            x, y = util.xy_to_uv([x, y])
-        elif opt.mode == "1960":
-            x, y = util.xy_to_uv_1960([x, y])
+        xy = util.xyz_to_xyY(v)[:-1]
+        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)
         xs.append(x)
         ys.append(y)
 
@@ -353,12 +350,7 @@ def cie_diagram(
                 label = 'pointer L*={}'.format(round(l, 2))
             pts.append(pts[0])
             for pt in pts:
-                if opt.mode == '1976':
-                    x, y = util.xy_to_uv(pt[:-1])
-                elif opt.mode == '1960':
-                    x, y = util.xy_to_uv_1960(pt[:-1])
-                else:
-                    x, y = pt[:-1]
+                x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])
                 sx.append(x)
                 sy.append(y)
             spaces.append(
@@ -375,18 +367,9 @@ def cie_diagram(
     if rgb_spaces:
         temp = Color('srgb', [])
         for space, color in rgb_spaces:
-            if opt.mode == '1931':
-                red = temp.mutate(space, [1, 0, 0]).xy()
-                green = temp.mutate(space, [0, 1, 0]).xy()
-                blue = temp.mutate(space, [0, 0, 1]).xy()
-            elif opt.mode == '1976':
-                red = temp.mutate(space, [1, 0, 0]).uv()
-                green = temp.mutate(space, [0, 1, 0]).uv()
-                blue = temp.mutate(space, [0, 0, 1]).uv()
-            else:
-                red = temp.mutate(space, [1, 0, 0]).uv('1960')
-                green = temp.mutate(space, [0, 1, 0]).uv('1960')
-                blue = temp.mutate(space, [0, 0, 1]).uv('1960')
+            red = temp.mutate(space, [1, 0, 0]).get_chromaticity(opt.chromaticity)
+            green = temp.mutate(space, [0, 1, 0]).get_chromaticity(opt.chromaticity)
+            blue = temp.mutate(space, [0, 0, 1]).get_chromaticity(opt.chromaticity)
             sx = [red[0], green[0], blue[0], red[0]]
             sy = [red[1], green[1], blue[1], red[1]]
             spaces.append(
@@ -411,14 +394,7 @@ def cie_diagram(
             (x / RESOLUTION for x in range(0, RESOLUTION + 1)),
             (x / RESOLUTION for x in range(0, RESOLUTION + 1))
         ):
-            srgb = Color('srgb', [])
             if path.contains_point(r):
-                if opt.mode == "1931":
-                    xyz = util.xy_to_xyz(r)
-                elif opt.mode == "1976":
-                    xyz = util.xy_to_xyz(util.uv_to_xy(r))
-                else:
-                    xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
                 o = 0.01 if spaces else opacity
                 if spaces:
                     for s in spaces:
@@ -427,10 +403,14 @@ def cie_diagram(
                             break
                 px.append(r[0])
                 py.append(r[1])
-                srgb.update('xyz-d65', xyz, o)
-                m = max(srgb[:-1])
-                srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb[:-1]], srgb[-1])
-                c.append(srgb.to_string(hex=True, fit="clip"))
+                srgb = Color.chromaticity(
+                    'srgb',
+                    r,
+                    opt.chromaticity,
+                    scale=True,
+                    scale_space='rec2020-linear'
+                ).set('alpha', o)
+                c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
 
         plt.scatter(
             px, py,
@@ -483,17 +463,9 @@ def cie_diagram(
         for wp in white_points:
             w = ALL_WHITES[observer][wp]
             annot.append(wp)
-            if opt.mode == '1931':
-                wx.append(w[0])
-                wy.append(w[1])
-            elif opt.mode == '1976':
-                uv = util.xy_to_uv(w)
-                wx.append(uv[0])
-                wy.append(uv[1])
-            else:
-                uv = util.xy_to_uv_1960(w)
-                wx.append(uv[0])
-                wy.append(uv[1])
+            xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, w)
+            wx.append(xy[0])
+            wy.append(xy[1])
         plt.scatter(
             wx,
             wy,
@@ -518,8 +490,8 @@ def cie_diagram(
         annot = []
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
-            c = Color.blackbody(temp, duv)
-            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+            c = Color.blackbody('xyz-d65', temp, duv, normalize=False)
+            bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
             by.append(bv)
@@ -544,23 +516,25 @@ def cie_diagram(
         vaxis = []
         for kelvin in range(1000, 100001, 250):
             t = kelvin
-            c = Color.blackbody(t, space=None)
-            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+            c = Color.blackbody('xyz-d65', t, normalize=False)
+            bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             uaxis.append(bu)
             vaxis.append(bv)
 
             if isotherms and kelvin in ISOTHERMS:
                 duvx = []
                 duvy = []
-                for duv in (-0.02, 0.02) if kelvin < 100000 else (-0.01, 0.01):
-                    c = Color.blackbody(kelvin, duv, space=None)
-                    bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+                duv_range = (-0.03, 0.03) if kelvin < 100000 else (-0.01, 0.01)
+                for duv in duv_range:
+                    c = Color.blackbody('xyz-d65', kelvin, duv, normalize=False)
+                    bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                     duvx.append(bu)
                     duvy.append(bv)
 
                 offset, label = ISOTHERMS[kelvin]
-                c = Color.blackbody(kelvin, offset, space=None)
-                bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+                offset = duv_range[0 if offset < 0 else 1] + offset
+                c = Color.blackbody('xyz-d65', kelvin, offset, normalize=False)
+                bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
 
                 plt.annotate(
                     label,
@@ -589,7 +563,6 @@ def cie_diagram(
             markersize=0,
             antialiased=True
         )
-        # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
     # Plot the RGB triangles
     for item in spaces:

@@ -18,7 +18,16 @@ class CCT(Plugin, metaclass=ABCMeta):
         """Calculate a color's CCT."""
 
     @abstractmethod
-    def from_cct(self, color: type[Color], kelvin: float, duv: float = 0.0, **kwargs: Any) -> Color:
+    def from_cct(
+        self,
+        color: type[Color],
+        space: str,
+        kelvin: float,
+        duv: float,
+        scale: bool,
+        scale_space: str | None,
+        **kwargs: Any
+    ) -> Color:
         """Calculate a color that satisfies the CCT."""
 
 

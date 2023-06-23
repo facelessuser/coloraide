@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # White point C as defined in the Pointer data spreadsheet
 XYZ_W = (98.0722647623506, 100.0, 118.225418982695)
-WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W, XYZ_W)[0:2])  # type: tuple[float, float]  # type: ignore[assignment]
+WHITE_POINT_SC = tuple(util.xyz_to_xyY(XYZ_W)[:-1])  # type: tuple[float, float]  # type: ignore[assignment]
 # Rows: hue 0 - 350 at steps of 10
 # Columns: lightness 15 - 90 at steps of 5
 LCH_L = list(range(15, 91, 5))

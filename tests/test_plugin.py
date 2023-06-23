@@ -281,15 +281,15 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
             pass
 
         Custom.deregister('cct:robertson-1968')
-        color = Color.blackbody(5000, method='robertson-1968')
+        color = Color.blackbody('srgb-linear', 5000, method='robertson-1968')
 
         with self.assertRaises(ValueError):
-            Custom.blackbody(5000, method='robertson-1968')
+            Custom.blackbody('srgb-linear', 5000, method='robertson-1968')
 
         # Now it is registered again
         Custom.register(Robertson1968())
         self.assertColorEqual(
-            Custom.blackbody(5000, method='robertson-1968'),
+            Custom.blackbody('srgb-linear', 5000, method='robertson-1968'),
             color
         )
 

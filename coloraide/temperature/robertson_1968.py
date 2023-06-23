@@ -41,6 +41,7 @@ class Robertson1968(CCT):
     ) -> None:
         """Initialize."""
 
+        self.white = white
         self.table = self.generate_table(cmfs, white, mired, sigfig, planck_step)
 
     def generate_table(
@@ -100,7 +101,7 @@ class Robertson1968(CCT):
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
-        u, v = color.uv('1960')
+        u, v = color.get_chromaticity('uv-1960')[:-1]
         end = len(self.table) - 1
         slope_invert = False
 
@@ -156,7 +157,16 @@ class Robertson1968(CCT):
 
         return [temp, -duv if duv and not slope_invert else duv]
 
-    def from_cct(self, color: type[Color], kelvin: float, duv: float = 0.0, **kwargs: Any) -> Color:
+    def from_cct(
+        self,
+        color: type[Color],
+        space: str,
+        kelvin: float,
+        duv: float,
+        scale: bool,
+        scale_space: str | None,
+        **kwargs: Any
+    ) -> Color:
         """Calculate a color that satisfies the CCT."""
 
         # Find inverse temperature to use as index.
@@ -205,4 +215,4 @@ class Robertson1968(CCT):
                     v += dv * (-duv if not slope_invert else duv)
                 break
 
-        return color('xyz-d65', util.xy_to_xyz(util.uv_1960_to_xy([u, v]), 1))
+        return color.chromaticity(space, [u, v, 1], 'uv-1960', scale=scale, scale_space=scale_space)
