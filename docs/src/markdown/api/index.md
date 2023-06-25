@@ -595,7 +595,10 @@ Return
 
 ```py
 def luminance(
-    self
+    self,
+    *,
+    white: VectorLike | None = cat.WHITES['2deg']['D65']
+
 ) -> float:
     ...
 ```
@@ -605,6 +608,13 @@ Description
 
 -   Get the relative luminance. Relative luminance is obtained from the Y coordinate in the XYZ color space. XYZ, in
     this case, has a D65 white point.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
@@ -1575,7 +1585,7 @@ Return
 def xy(
     self,
     *,
-    luminance: bool = False
+    white: VectorLike | None = None
 ) -> Vector:
 ```
 
@@ -1583,6 +1593,13 @@ def xy(
 Description
 
 -   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
@@ -1597,7 +1614,7 @@ def uv(
     self,
     mode: str = '1976',
     *,
-    luminance: bool = False
+    white: VectorLike | None = None
 ) -> Vector:
     ...
 ```
@@ -1614,6 +1631,7 @@ Parameters
     Parameters  | Defaults           | Description
     ----------- | ------------------ | -----------
     `mode`      | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
@@ -1646,7 +1664,7 @@ Parameters
     Parameters  | Defaults           | Description
     ----------- | ------------------ | -----------
     `cspace`    | `#!py 'uv-1976'`   | A string indicating what chromaticity space to use. `uv-1976` being the default.
-    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points to, if none are specified, the current color's white point is assumed.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
@@ -1687,7 +1705,7 @@ Parameters
     `space`         |                      | Color space to chromaticities to.
     `coords`        |                      | The chromaticity coordinates. Values can be in either 3D form (with luminance Y).
     `cspace`        | `#!py 'uv-1976'`     | A string indicating what chromaticity space to use. `uv-1976` being the default.
-    `white`         | `#!py None`          | Specify the white in which to chromatically adapt the points from, if none are specified, the targeted color's white point is assumed.
+    `white`         | `#!py None`          | Specify the white in which to chromatically adapt the points from, if none is specified, the targeted color's white point is assumed.
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
     `scale_space`   | `#!py None`          | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
 

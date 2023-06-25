@@ -48,7 +48,19 @@ def xy_to_xyz(xy: VectorLike, Y: float = 1.0, scale: float = 1.0) -> Vector:
     """
 
     x, y = xy
-    return [0, 0, 0] if y == 0 else [(x * Y) / y, Y, (scale - x - y) * Y / y]
+    return [0.0, 0.0, 0.0] if y == 0 else [(x * Y) / y, Y, (scale - x - y) * Y / y]
+
+
+def xyz_to_xyY(xyz: VectorLike, white: VectorLike = (0.0, 0.0)) -> Vector:
+    """
+    XYZ to `xyY`.
+
+    If a white point chromaticity pair is given, black will be aligned with the achromatic axis.
+    """
+
+    x, y, z = xyz
+    d = x + y + z
+    return [white[0], white[1], y] if d == 0 else [x / d, y / d, y]
 
 
 def xy_to_uv(xy: VectorLike) -> Vector:
@@ -90,14 +102,6 @@ def uv_1960_to_xy(uv: VectorLike) -> Vector:
         x = y = 0
 
     return [x, y]
-
-
-def xyz_to_xyY(xyz: VectorLike, white: VectorLike = (0.0, 0.0, 0.0)) -> Vector:
-    """XYZ to `xyY`."""
-
-    x, y, z = xyz
-    d = x + y + z
-    return [white[0], white[1], y] if d == 0 else [x / d, y / d, y]
 
 
 def pq_st2084_oetf(

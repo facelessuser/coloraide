@@ -43,13 +43,13 @@ nav:
       - Color Averaging: average.md
       - Compositing and Blending: compositing.md
       - Color Distance and Delta E: distance.md
-      - Gamut Mapping: gamut.md
-      - Chromatic Adaptation: cat.md
-      - Chromaticity Coordinates: chromaticity.md
-      - Contrast: contrast.md
-      - Color Harmonies: harmonies.md
       - Filters: filters.md
+      - Color Harmonies: harmonies.md
+      - Contrast: contrast.md
+      - Gamut Mapping: gamut.md
+      - Chromaticity: chromaticity.md
       - Correlated Color Temperature: temperature.md
+      - Chromatic Adaptation: cat.md
       - String Output: strings.md
       - Advanced Topics: advanced.md
 

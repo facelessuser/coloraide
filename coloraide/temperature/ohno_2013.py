@@ -33,7 +33,8 @@ class BlackBodyCurve:
         self,
         cmfs: dict[int, tuple[float, float, float]] = cmfs.CIE_1931_2DEG,
         white: VectorLike = cat.WHITES['2deg']['D65'],
-        planck_step: int = 5
+        planck_step: int = 5,
+        chromaticity: str = 'uv-1960'
     ) -> None:
         """Initialize."""
 
@@ -43,6 +44,7 @@ class BlackBodyCurve:
         self.cmfs = cmfs
         self.white = util.xy_to_xyz(white)
         self.planck_step = planck_step
+        self.to_uv = util.xy_to_uv_1960 if chromaticity == 'uv-1960' else util.xy_to_uv
 
         # Low temperature range
         start = 1000
@@ -54,8 +56,10 @@ class BlackBodyCurve:
         self.domain = []
         for r in range(count):
             k = r * inc + start
-            u, v = planck.temp_to_uv_planckian_locus(
-                k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            u, v = self.to_uv(
+                planck.temp_to_xy_planckian_locus(
+                    k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                )
             )
             self.domain.append(k)
             points.append([u, v])
@@ -71,8 +75,10 @@ class BlackBodyCurve:
         self.domain2 = []
         for r in range(count):
             k = r * inc + start
-            u, v = planck.temp_to_uv_planckian_locus(
-                k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            u, v = self.to_uv(
+                planck.temp_to_xy_planckian_locus(
+                    k, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                )
             )
             self.domain2.append(k)
             points.append([u, v])
@@ -98,8 +104,10 @@ class BlackBodyCurve:
         """Get the uv for the given temp."""
 
         if exact:
-            return planck.temp_to_uv_planckian_locus(
-                temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+            return self.to_uv(
+                planck.temp_to_xy_planckian_locus(
+                    temp, self.cmfs, self.white, self.cmfs_start, self.cmfs_end, self.planck_step
+                )
             )
         else:
             if temp <= 20000:
@@ -137,6 +145,7 @@ class Ohno2013(CCT):
     """
 
     NAME = 'ohno-2013'
+    CHROMATICITY = 'uv-1960'
 
     def __init__(
         self,
@@ -147,7 +156,7 @@ class Ohno2013(CCT):
         """Initialize."""
 
         self.white = white
-        self.blackbody = BlackBodyCurve(cmfs, white, planck_step)
+        self.blackbody = BlackBodyCurve(cmfs, white, planck_step, self.CHROMATICITY)
 
     def to_cct(
         self,
@@ -161,7 +170,7 @@ class Ohno2013(CCT):
     ) -> Vector:
         """Calculate a color's CCT."""
 
-        u, v = color.get_chromaticity('uv-1960')[:-1]
+        u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
         last = samples - 1
         index = 0
         table = []  # type: list[tuple[float, float, float, float]]
@@ -265,4 +274,4 @@ class Ohno2013(CCT):
                 u0 = u0 - duv * dv
                 v0 = v0 + duv * du
 
-        return color.chromaticity(space, [u0, v0, 1], 'uv-1960', scale=scale, scale_space=scale_space)
+        return color.chromaticity(space, [u0, v0, 1], self.CHROMATICITY, scale=scale, scale_space=scale_space)

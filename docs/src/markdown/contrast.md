@@ -8,14 +8,17 @@ In the CIE XYZ and xyY color spaces, the Y parameter is linear to changes in the
 refers to the amount of reflected light where 1.0 is assumed to be a perfect reflector in relation to the reference
 white.
 
-The `luminance` method exposes access to this value to make it quick and easy to query the relative luminance, or Y
-parameter from XYZ D65 after converting the current color.
+The `luminance` method exposes access to this value to make it quick and easy to query the relative luminance.
 
 ```py play
 Color("black").luminance()
 Color("white").luminance()
 Color("blue").luminance()
 ```
+
+It should be noted that this luminance is relative to the XYZ D65 color space by default as this is how it is defined
+in the WCAG 2.1. What this means is that luminance is equivalent to the Y value of XYZ D65. We follow this convention
+as many people expect it in this format.
 
 /// tip | Luminance and WCAG 2.1
 Luminance as described in the WCAG 2.1 spec is essentially the exact same as what the luminance method returns. The
@@ -30,6 +33,21 @@ l = (0.2126 * r + 0.7152 * g + 0.0722 * b)
 print(l)
 Color('purple').convert('xyz-d65')['y']
 ```
+///
+
+If you'd like to have luminance in relation to a given color's white point, you can set `white` to `#!py None`. If you'd
+like to get the luminance relative to some other white point, you can specify the white point as
+[xy chromaticity points](./chromaticity.md).
+
+```py play
+from coloraide import cat
+Color('prophoto-rgb', [1, 0, 0]).luminance()
+Color('prophoto-rgb', [1, 0, 0]).luminance(white=None)
+Color('prophoto-rgb', [1, 0, 0]).luminance(white=cat.WHITES['2deg']['E'])
+```
+
+/// new | New 2.4
+The `white` parameter is new in 2.4.
 ///
 
 ## Contrast

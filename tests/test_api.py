@@ -254,13 +254,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c4 = c1.convert("hsl", fit=True)
         self.assertColorNotEqual(c2, c4)
 
-    def test_luminance(self):
-        """Test luminance."""
-
-        c1 = Color('orange')
-        c2 = c1.convert('xyz-d65')
-        self.assertEqual(c1.luminance(), c2.get('y'))
-
     def test_property(self):
         """Test set."""
 

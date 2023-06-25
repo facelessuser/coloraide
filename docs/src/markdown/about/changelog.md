@@ -5,16 +5,19 @@
 -   **NEW**: Add Rec. 709 RGB color space.
 -   **NEW**: Add the 1960 UCS color space.*
 -   **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` API.
+-   **NEW**: Add support for Robertson 1968 and Ohno 2013 CCT plugins.
 -   **NEW**: Add support for determining if a color is in the Pointer Gamut and provide a way to clamp a color to the
     gamut.
--   **NEW**: Add support Robertson 1968 and Ohno 2013 CCT plugins.
 -   **NEW**: Include CMFS: CIE 1931 2 Degree Standard Observer, CIE 1964 10 Degree Standard Observer, CIE 2015 2 Degree
     Standard Observer, and CIE 2015 10 Degree Standard Observer.
--   **NEW**: Add `get_chromaticity()` method which will return the current color as specified chromaticity coordinates
-    including the associated luminance (xyY or uvY).
+-   **NEW**: Add `split_chromaticity()` method which will split a color into its chromaticity and luminance parts.
 -   **NEW**: Add `chromaticity()` which will create a new color from a given set of chromaticity coordinates.
--   **NEW**: `chromatic_adaptation()` will now cast white point chromaticity coordinates that are in mutable lists to
-    the required immutable tuple type.
+-   **NEW**: Relax `chromatic_adaptation()` type requirement of white point chromaticity inputs.
+-   **NEW**: `luminance()`, `xy()`, and `uv()` all now accept an optional white point via the `white` parameter to
+    control the white point in which the returned values are relative to. `luminance()` still defaults to D65 but will
+    use the current color's white point, like `xy()` and `uv()` if `white` is set to `None`.
+-   **NEW**: `white()` now accepts a positional parameter allowing it to output the white point of the current color
+    as various chromaticity coordinates in addition to the default XYZ coordinates.
 -   **FIX**: Fix case where deregistering all plugins with `*` was not deregistering `Filter` plugins.
 
 ## 2.3

@@ -4,6 +4,7 @@ import abc
 import functools
 import random
 import math
+from . import cat
 from . import distance
 from . import convert
 from . import gamut
@@ -69,7 +70,7 @@ from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
 from typing import overload, Sequence, Iterable, Any, Callable, Mapping
 
-SUPPORTED_CHROMATICITY_SPACES = set(('uv-1960', 'uv-1976', 'xy-1931'))
+SUPPORTED_CHROMATICITY_SPACES = set(('xyz', 'uv-1960', 'uv-1976', 'xy-1931'))
 
 
 class ColorMatch:
@@ -484,7 +485,7 @@ class Color(metaclass=ColorMeta):
         duv: float = 0.0,
         *,
         scale: bool = True,
-        scale_space: str | None= None,
+        scale_space: str | None = None,
         method: str | None = None,
         **kwargs: Any
     ) -> Color:
@@ -659,44 +660,54 @@ class Color(metaclass=ColorMeta):
 
     __str__ = __repr__
 
-    def white(self) -> Vector:
+    def white(self, cspace: str = 'xyz') -> Vector:
         """Get the white point."""
 
-        return util.xy_to_xyz(self._space.white())
+        value = self.convert_chromaticity('xy-1931', cspace, self._space.WHITE)
+        return value if cspace == 'xyz' else value[:-1]
 
-    def uv(self, mode: str = '1976') -> Vector:
+    def uv(self, mode: str = '1976', *, white: VectorLike | None = None) -> Vector:
         """Convert to `xy`."""
 
-        return self.get_chromaticity('uv-' + mode)[:-1]
+        return self.split_chromaticity('uv-' + mode)[:-1]
 
-    def xy(self) -> Vector:
+    def xy(self, *, white: VectorLike | None = None) -> Vector:
         """Convert to `xy`."""
 
-        return self.get_chromaticity('xy-1931')[:-1]
+        return self.split_chromaticity('xy-1931')[:-1]
 
-    def get_chromaticity(
+    def split_chromaticity(
         self,
         cspace: str = 'uv-1976',
         *,
         white: VectorLike | None = None
     ) -> Vector:
-        """Return the current color's chromaticity coordinates (including luminance) using the requested mode."""
+        """
+        Split a color into chromaticity and luminance coordinates.
+
+        Colors are split under the XYZ color space using the current color's white point.
+        If results are desired relative to a different white point, one can be provided.
+        """
+
+        if white is None:
+            white = self._space.WHITE
 
         # Convert to XYZ D65 as it is a color space that is always required.
         # Chromatically adapt it to the XYZ color space with the current color's white point.
         xyz = self.convert('xyz-d65')
         coords = self.chromatic_adaptation(
             xyz._space.WHITE,
-            self._space.WHITE if white is None else white,
+            white,
             xyz.coords(nans=False)
         )
 
-        # Convert to xyY 1931 color space.
-        coords = util.xyz_to_xyY(coords, self._space.white())
+        # XYZ is not a chromaticity space
+        if cspace == 'xyz':
+            raise ValueError('XYZ is not a luminant-chromaticity color space.')
 
         # Convert to the the requested uv color space if required.
         return (
-            self.convert_chromaticity('xy-1931', cspace, coords[:-1]) + coords[-1:] if cspace != 'xy_1931' else coords
+            self.convert_chromaticity('xyz', cspace, coords, white=white) if cspace != 'xy_1931' else coords
         )
 
     @classmethod
@@ -710,29 +721,37 @@ class Color(metaclass=ColorMeta):
         scale_space: str | None = None,
         white: VectorLike | None = None
     ) -> Color:
-        """Chromaticity."""
+        """
+        Create a color from chromaticity coordinates.
+
+        A luminance of 1 will be assumed unless luminance is included with the coordinates.
+        The relative white point of the chromaticity coordinates will be assumed as the
+        targeted color space unless one is provided via `white`.
+
+        Lastly, colors can be scaled/normalized within a linear RGB space to normalize
+        luminance and provide a nice viewable color. This is useful when the luminance is
+        not accurate (such as when luminance is assumed 1). Colors that are out of the linear
+        RGB space's gamut will only be rough approximations of the color due to gamut
+        limitations. Default linear RGB space is linear sRGB.
+        """
 
         if scale_space is None:
             scale_space = 'srgb-linear'
-
-        # Convert to xy 1931 format
-        if len(coords) == 3:
-            pair = coords[:-1]
-            Y = coords[-1]
-        else:
-            pair = coords
-            Y = 1.0
-
-        pair = cls.convert_chromaticity(cspace, 'xy-1931', pair)
 
         # Use the white point of the target color space unless a white point is given.
         if white is None:
             white = cls.CS_MAP[space].WHITE
 
+        # XYZ is not a chromaticity space
+        if cspace == 'xyz':
+            raise ValueError('XYZ is not a luminant-chromaticity color space.')
+
+        coords = cls.convert_chromaticity(cspace, 'xyz', coords, white=white)
+
         # Apply chromatic adaptation to match XYZ D65 white point
         color = cls(
             'xyz-d65',
-            cls.chromatic_adaptation(white, cls.CS_MAP['xyz-d65'].WHITE, util.xy_to_xyz(pair, Y=Y))
+            cls.chromatic_adaptation(white, cls.CS_MAP['xyz-d65'].WHITE, coords)
         )
 
         # Normalize in the given RGB color space (ideally linear).
@@ -747,8 +766,20 @@ class Color(metaclass=ColorMeta):
         return color
 
     @classmethod
-    def convert_chromaticity(cls, cspace1: str, cspace2: str, coords: VectorLike) -> Vector:
-        """Convert chromaticity coordinates."""
+    def convert_chromaticity(
+        cls, cspace1: str,
+        cspace2: str,
+        coords: VectorLike,
+        *,
+        white: VectorLike | None = None
+    ) -> Vector:
+        """
+        Convert to or from chromaticity coordinates or between other chromaticity coordinates.
+
+        When converting to or from chromaticity coordinates, the coordinates must be in the XYZ space.
+        A white point can be provided and only serves to align colors like black on the achromatic axis;
+        otherwise, black will be returned as [0, 0] for the two respective chromaticity points.
+        """
 
         # Check that we know the requested spaces
         if cspace1 not in SUPPORTED_CHROMATICITY_SPACES:
@@ -757,17 +788,44 @@ class Color(metaclass=ColorMeta):
             raise ValueError("Unexpected chromaticity space '{}'".format(cspace2))
 
         # Return if there is nothing to convert
+        l = len(coords)
+        if (cspace1 == 'xyz' and l != 3) or l not in (2, 3):
+            raise ValueError('Unexpected number of coordinates ({}) for {}'.format(l, cspace1))
+
+        # Return if already in desired form
         if cspace1 == cspace2:
-            return list(coords)
+            return list(coords) + [1] if l == 2 else list(coords)
+
+        # If starting space is XYZ, then convert to xy
+        if cspace1 == 'xyz':
+            coords = util.xyz_to_xyY(coords, [0.0] * 2 if white is None else white)
+            cspace1 = 'xy-1931'
+
+            # If the end space is xy, we have nothing else to do
+            if cspace2 == cspace1:
+                return coords
+
+        # If we have no luminance, assume 1
+        pair, Y = (coords[:-1], coords[-1]) if l == 3 else (coords, 1.0)
+
+        # If we are targeting XYZ, force conversion to xy first.
+        target = cspace2
+        if cspace2 == 'xyz':
+            cspace2 = 'xy-1931'
 
         # Perform conversion
-        elif cspace1 == 'xy-1931':
-            coords = util.xy_to_uv_1960(coords) if cspace2 == 'uv-1960' else util.xy_to_uv(coords)
+        if cspace1 == 'xy-1931' and cspace2 != 'xy-1931':
+            pair = util.xy_to_uv_1960(pair) if cspace2 == 'uv-1960' else util.xy_to_uv(pair)
         elif cspace1 == 'uv-1960':
-            coords = util.uv_1960_to_xy(coords) if cspace2 == 'xy-1931' else util.xy_to_uv(util.uv_1960_to_xy(coords))
-        else:
-            coords = util.uv_to_xy(coords) if cspace2 == 'xy-1931' else util.xy_to_uv_1960(util.uv_to_xy(coords))
-        return coords
+            pair = util.uv_1960_to_xy(pair) if cspace2 == 'xy-1931' else util.xy_to_uv(util.uv_1960_to_xy(pair))
+        elif cspace1 == 'uv-1976':
+            pair = util.uv_to_xy(pair) if cspace2 == 'xy-1931' else util.xy_to_uv_1960(util.uv_to_xy(pair))
+
+        # Special case to convert to XYZ from xy
+        if target == 'xyz':
+            return util.xy_to_xyz(pair, Y)
+
+        return list(pair) + [Y]
 
     @classmethod
     def chromatic_adaptation(
@@ -1072,10 +1130,22 @@ class Color(metaclass=ColorMeta):
 
         return distance.closest(self, colors, method=method, **kwargs)
 
-    def luminance(self) -> float:
+    def luminance(self, *, white: VectorLike = cat.WHITES['2deg']['D65']) -> float:
         """Get color's luminance."""
 
-        return self.convert("xyz-d65").get('y', nans=False)
+        if white is None:
+            white = self._space.WHITE
+
+        # Convert to XYZ D65 as it is a color space that is always required.
+        # Chromatically adapt it to the XYZ color space with the current color's white point.
+        xyz = self.convert('xyz-d65')
+        coords = self.chromatic_adaptation(
+            xyz._space.WHITE,
+            white,
+            xyz.coords(nans=False)
+        )
+
+        return coords[1]
 
     def contrast(self, color: ColorInput, method: str | None = None) -> float:
         """Compare the contrast ratio of this color and the provided color."""

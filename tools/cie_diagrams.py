@@ -320,7 +320,7 @@ def cie_diagram(
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
         xy = util.xyz_to_xyY(v)[:-1]
-        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)
+        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
         xs.append(x)
         ys.append(y)
 
@@ -350,7 +350,7 @@ def cie_diagram(
                 label = 'pointer L*={}'.format(round(l, 2))
             pts.append(pts[0])
             for pt in pts:
-                x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])
+                x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
                 sx.append(x)
                 sy.append(y)
             spaces.append(
@@ -367,9 +367,9 @@ def cie_diagram(
     if rgb_spaces:
         temp = Color('srgb', [])
         for space, color in rgb_spaces:
-            red = temp.mutate(space, [1, 0, 0]).get_chromaticity(opt.chromaticity)
-            green = temp.mutate(space, [0, 1, 0]).get_chromaticity(opt.chromaticity)
-            blue = temp.mutate(space, [0, 0, 1]).get_chromaticity(opt.chromaticity)
+            red = temp.mutate(space, [1, 0, 0]).split_chromaticity(opt.chromaticity)
+            green = temp.mutate(space, [0, 1, 0]).split_chromaticity(opt.chromaticity)
+            blue = temp.mutate(space, [0, 0, 1]).split_chromaticity(opt.chromaticity)
             sx = [red[0], green[0], blue[0], red[0]]
             sy = [red[1], green[1], blue[1], red[1]]
             spaces.append(
@@ -410,7 +410,7 @@ def cie_diagram(
                     scale=True,
                     scale_space='rec2020-linear'
                 ).set('alpha', o)
-                c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
+                c.append(srgb.convert('srgb').to_string(hex=True))
 
         plt.scatter(
             px, py,
@@ -463,7 +463,7 @@ def cie_diagram(
         for wp in white_points:
             w = ALL_WHITES[observer][wp]
             annot.append(wp)
-            xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, w)
+            xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1]
             wx.append(xy[0])
             wy.append(xy[1])
         plt.scatter(
@@ -491,7 +491,7 @@ def cie_diagram(
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
             c = Color.blackbody('xyz-d65', temp, duv, normalize=False)
-            bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+            bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
             by.append(bv)
@@ -517,7 +517,7 @@ def cie_diagram(
         for kelvin in range(1000, 100001, 250):
             t = kelvin
             c = Color.blackbody('xyz-d65', t, normalize=False)
-            bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+            bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             uaxis.append(bu)
             vaxis.append(bv)
 
@@ -527,14 +527,14 @@ def cie_diagram(
                 duv_range = (-0.03, 0.03) if kelvin < 100000 else (-0.01, 0.01)
                 for duv in duv_range:
                     c = Color.blackbody('xyz-d65', kelvin, duv, normalize=False)
-                    bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+                    bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                     duvx.append(bu)
                     duvy.append(bv)
 
                 offset, label = ISOTHERMS[kelvin]
                 offset = duv_range[0 if offset < 0 else 1] + offset
                 c = Color.blackbody('xyz-d65', kelvin, offset, normalize=False)
-                bu, bv = c.get_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+                bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
 
                 plt.annotate(
                     label,

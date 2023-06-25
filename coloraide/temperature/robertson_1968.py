@@ -30,6 +30,7 @@ class Robertson1968(CCT):
     """Delta E plugin class."""
 
     NAME = 'robertson-1968'
+    CHROMATICITY = 'uv-1960'
 
     def __init__(
         self,
@@ -70,14 +71,15 @@ class Robertson1968(CCT):
 
         xyzw = util.xy_to_xyz(white)
         table = []  # type: list[tuple[float, float, float, float]]
+        to_uv = util.xy_to_uv_1960 if self.CHROMATICITY == 'uv-1960' else util.xy_to_uv
         for t in mired:
-            uv1 = planck.temp_to_uv_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step)
-            uv2 = planck.temp_to_uv_planckian_locus(1e6 / (t + 0.01), cmfs, xyzw, step=planck_step)
+            uv1 = to_uv(planck.temp_to_xy_planckian_locus(1e6 / (t - 0.01), cmfs, xyzw, step=planck_step))
+            uv2 = to_uv(planck.temp_to_xy_planckian_locus(1e6 / (t + 0.01), cmfs, xyzw, step=planck_step))
             if t == 0:
                 factor = 0.5
                 uv = [alg.lerp(uv1[0], uv2[0], factor), alg.lerp(uv1[1], uv2[1], factor)]
             else:
-                uv = planck.temp_to_uv_planckian_locus(1e6 / t, cmfs, xyzw, step=planck_step)
+                uv = to_uv(planck.temp_to_xy_planckian_locus(1e6 / t, cmfs, xyzw, step=planck_step))
                 d1 = math.sqrt((uv[1] - uv1[1]) ** 2 + (uv[0] - uv1[0]) ** 2)
                 d2 = math.sqrt((uv2[1] - uv[1]) ** 2 + (uv2[0] - uv[0]) ** 2)
                 factor = d1 / (d1 + d2)
@@ -101,7 +103,7 @@ class Robertson1968(CCT):
     def to_cct(self, color: Color, **kwargs: Any) -> Vector:
         """Calculate a color's CCT."""
 
-        u, v = color.get_chromaticity('uv-1960')[:-1]
+        u, v = color.split_chromaticity(self.CHROMATICITY)[:-1]
         end = len(self.table) - 1
         slope_invert = False
 
@@ -215,4 +217,4 @@ class Robertson1968(CCT):
                     v += dv * (-duv if not slope_invert else duv)
                 break
 
-        return color.chromaticity(space, [u, v, 1], 'uv-1960', scale=scale, scale_space=scale_space)
+        return color.chromaticity(space, [u, v, 1], self.CHROMATICITY, scale=scale, scale_space=scale_space)

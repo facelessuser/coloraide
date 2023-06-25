@@ -4,6 +4,24 @@ from coloraide.everything import ColorAll as Color
 from . import util
 
 
+class TestLuminance(util.ColorAsserts, unittest.TestCase):
+    """Test luminance cases."""
+
+    def test_luminance(self):
+        """Test luminance."""
+
+        c1 = Color('orange')
+        c2 = c1.convert('xyz-d65')
+        self.assertEqual(c1.luminance(), c2.get('y'))
+
+    def test_luminance_auto(self):
+        """Test luminance auto white point."""
+
+        c1 = Color('orange').convert('prophoto-rgb')
+        self.assertCompare(c1.luminance(), c1.convert('xyz-d65').get('y'))
+        self.assertCompare(c1.luminance(white=None), c1.convert('xyz-d50').get('y'))
+
+
 class TestContrast(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
