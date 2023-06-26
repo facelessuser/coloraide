@@ -1,5 +1,8 @@
 # Correlated Color Temperature
 
+/// new | New 2.4
+///
+
 Correlated color temperature (CCT) is a measurement of the average hue of light as it appears to the eye. It is
 expressed as the temperature (in Kelvins) something would need to be heated to glow at approximately the same color.
 
@@ -39,19 +42,19 @@ External CMFs could be used as long as they are in the appropriate format and no
 When anything gets warm enough it will start to give off light, and the hotter it gets, the more energetic the light
 is. As an object increases in temperature, it will shift from the red end of the spectrum to the blue end.
 
-ColorAide provides the `blackbody()` method to generate colors along the black body curve. Simply pass in a temperature
-in Kelvin and ColorAide will return an approximate color along the black body locus.
+ColorAide provides the `blackbody()` method to generate colors along the black body curve. Simply give it a color space
+in which the color should be generated and a temperature in Kelvin and ColorAide will return an approximate color along
+the black body locus.
 
 ```py play
-Steps([Color.blackbody(t, out_space='srgb') for t in range(1000, 15000, 50)])
+Steps([Color.blackbody('srgb', t) for t in range(1000, 15000, 50)])
 ```
 
-ColorAide provides two methods: `blackbody()` allows you to generate a color on the black body curve by providing it
-a temperature and [∆~uv~](#duv) in Kelvin and `cct()` which allows you to get an associated temperature and [∆~uv~](#duv)
-from a given color. [∆~uv~](#duv) will be discussed later.
+ColorAide also provides a method `cct()` which allows you to get an associated temperature and [∆~uv~](#duv) from a
+given color. [∆~uv~](#duv) will be discussed later.
 
 ```py play
-color = Color.blackbody(2000)
+color = Color.blackbody('srgb', 2000)
 color
 color.cct()
 ```
@@ -82,7 +85,7 @@ We can calculate a color's associated temperature and its ∆~uv~ along the asso
 CCT and ∆~uv~ can also be used together to get a specific color that satisfies those requirements.
 
 ```py play
-Color.blackbody(*Color('yellow').cct())
+Color.blackbody('srgb-linear', *Color('yellow').cct())
 ```
 
 ## Limitations
@@ -94,10 +97,13 @@ out to even this limit.
 
 ## Out of Gamut Temperatures
 
-It should be noted that `blackbody()` normalizes the returned colors by default as the colors are often much too bright
-initially, all having a max luminance. This normalization is usually done under a linear RGB color space, (linear sRGB
-being the default). Sometimes, depending on the range of temperature, the color can fall outside the gamut under
-evaluation.
+It should be noted that `blackbody()` normalizes/scales the returned colors by default as the colors are often much too
+bright initially, all having a max luminance. This scaling is usually done under a linear RGB color space, Linear
+Rec2020 being the default as it encompasses the entire curve.
+
+Keep in mind that if the color is not in the display gamut it will need to be gamut mapped, and the gamut mapped value
+will not exhibit the same temperature. How far off it is will be depends on the disparity of the gamut sizes and how the
+color was gamut mapped.
 
 //// html | figure
 ![Out of gamut CCT](images/cct-gamut.png)
@@ -107,32 +113,29 @@ CCT of 1200K in relation to the sRGB gamut.
 /////
 ////
 
-Colors that are outside the gamut will only be normalized to be inside the gamut and may not convert back to exactly the
-same temperature.
+Colors that are outside the traditional RGB gamut (0 - 1) will be scaled to be within that range. If the color is beyond
+the gamut of the scaling color space, it will not convert back to the same temperature.
 
 ```py play
-c = Color.blackbody(1200)
+c = Color.blackbody('srgb', 1200)
 c
 c.cct()
 ```
 
-If a larger gamut is desired, to reduce out of gamut colors, one can be specified by changing `space`. Additionally,
-normalization can be turned off entirely by setting it to `None`. When specifying the space under evaluation, it is
-encouraged to use linear RGB spaces.
+Using a larger gamut, such as Linear Rec. 2020 that encompasses the entire black body curve, can allow for more accurate
+results throughout the entire range, but this may be impractical if you need to work in a smaller gamut.
+
+The desired RGB color space to scale within can be specified via `scale_space`. And if no scaling is desired, it can be
+turned off by setting `scale` to `#!py False`.
 
 ```py play
-c1 = Color.blackbody(1200, space='display-p3-linear')
+c1 = Color.blackbody('display-p3', 1200, scale_space='display-p3-linear')
 c1
 c1.cct()
-c2 = Color.blackbody(1200, space=None)
+c2 = Color.blackbody('display-p3', 1200, scale=False)
 c2
 c2.cct()
 ```
-
-/// note | Output Space
-`out_space` does not affect normalization, it simply converts the returned color to the color space specified by the
-user.
-///
 
 ## Algorithms
 
@@ -149,8 +152,8 @@ Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangula
 in `blackbody()` or `cct()`.
 
 ```py play
-Color.blackbody(1500, method='ohno-2013').cct(method='ohno-2013')
-Color.blackbody(1500, method='robertson-1968').cct(method='robertson-1968')
+Color.blackbody('srgb-linear', 2500, method='ohno-2013').cct(method='ohno-2013')
+Color.blackbody('srgb-linear', 2500, method='robertson-1968').cct(method='robertson-1968')
 ```
 
 ### Robertson 1968
@@ -176,7 +179,7 @@ to increasingly less accurate results. Even some results below 100000K may alrea
 ///
 
 ```py play
-color = Color.blackbody(5000, duv=0.02, method='robertson-1968')
+color = Color.blackbody('srgb-linear', 5000, duv=0.02, method='robertson-1968')
 color
 color.cct(method='robertson-1968')
 ```
@@ -210,7 +213,7 @@ Custom.register(
     overwrite=True
 )
 
-Steps([Color.blackbody(t, out_space='srgb', method='robertson-1968') for t in range(1000, 15000, 50)])
+Steps([Color.blackbody('srgb', t, method='robertson-1968') for t in range(1000, 15000, 50)])
 ```
 
 ### Ohno 2013
@@ -239,7 +242,7 @@ associated with the expansion technique, all while maintaining good accuracy. Th
 [Roberson](#robertson-1968) approach, but it is a more accurate approach.
 
 ```py play
-color = Color.blackbody(5000, duv=0.02)
+color = Color.blackbody('srgb-linear', 5000, duv=0.02)
 color
 color.cct()
 ```
@@ -268,8 +271,8 @@ spline. The values for the table will be explicitly calculated on the fly. Perfo
 to no increase in accuracy.
 
 ```py play
-Color.blackbody(5000, duv=0.02).cct()
-Color.blackbody(5000, duv=0.02).cct(exact=True)
+Color.blackbody('srgb-linear', 5000, duv=0.02).cct()
+Color.blackbody('srgb-linear', 5000, duv=0.02).cct(exact=True)
 ```
 
 Lastly, the Ohno 2013 method can be used with other CMFs if desired. To do this, the plugin must be instantiated with
@@ -299,5 +302,5 @@ Custom.register(
     overwrite=True
 )
 
-Steps([Custom.blackbody(t) for t in range(1000, 15000, 50)])
+Steps([Custom.blackbody('srgb-linear', t) for t in range(1000, 15000, 50)])
 ```

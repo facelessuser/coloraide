@@ -595,7 +595,10 @@ Return
 
 ```py
 def luminance(
-    self
+    self,
+    *,
+    white: VectorLike | None = cat.WHITES['2deg']['D65']
+
 ) -> float:
     ...
 ```
@@ -605,6 +608,13 @@ Description
 
 -   Get the relative luminance. Relative luminance is obtained from the Y coordinate in the XYZ color space. XYZ, in
     this case, has a D65 white point.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
@@ -1469,7 +1479,8 @@ def blackbody(
     temp: float,
     duv: float = 0.0,
     *,
-    space: str | None = 'srgb-linear',
+    scale: bool = True,
+    scale_space: str | None = None,
     out_space: str | None = None,
     method: str | None = None,
     **kwargs: Any
@@ -1479,20 +1490,22 @@ def blackbody(
 /// define
 Description
 
--   Creates a color from a temperature in Kelvin and an optional ∆~uv~. The color will be normalized in the linear RGB
-    space provided via `space`. By default, the Ohno 2013 algorithm is used.
+-   Creates a color from a temperature in Kelvin and an optional ∆~uv~. The color will be scaled within the linear RGB
+    space specified by `scale_space` and can be disabled by setting `scale` to `#!py False`. By default, the
+    Ohno 2013 algorithm is used and can be configured via `method`.
 
 Parameters
 
 - 
-    Parameters  | Defaults             | Description
-    ----------- | -------------------- | -----------
-    `temp`      |                      | A positive temperature in Kelvin. Accepted range of temperature is based on the algorithm.
-    `duv`       | `#!py 0.0`           | An optional ∆~uv~ specifying the distance from the black body curve.
-    `space`     | `#!py 'srgb-linear'` | An RGB color space in which the returned color should be normalized in. The color space should be a linear space for best results. It can be set to `#!py None` if no normalization is desired.
-    `out_space` | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
-    `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
-    `**kwargs`  |                      | Any plugin specific parameters to pass to the `blackbody` method.
+    Parameters      | Defaults             | Description
+    --------------- | -------------------- | -----------
+    `temp`          |                      | A positive temperature in Kelvin. Accepted range of temperature is based on the algorithm.
+    `duv`           | `#!py 0.0`           | An optional ∆~uv~ specifying the distance from the black body curve.
+    `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
+    `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+    `out_space`     | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
+    `method`        | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+    `**kwargs`      |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return
 
@@ -1570,7 +1583,9 @@ Return
 
 ```py
 def xy(
-    self
+    self,
+    *,
+    white: VectorLike | None = None
 ) -> Vector:
 ```
 
@@ -1579,9 +1594,17 @@ Description
 
 -   Retrieves the CIE 1931 (x, y) chromaticity coordinates for a given color.
 
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
+
 Return
 
--   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color.
+-   Returns a tuple of CIE 1931 (x, y) chromaticity points for the given color. The XYZ translation to xy will use the
+    current color's white point to ensure the values are relative to the proper white point.
 ///
 
 ## `#!py Color.uv` {#xy}
@@ -1589,7 +1612,9 @@ Return
 ```py
 def uv(
     self,
-    mode: str = '1976'
+    mode: str = '1976',
+    *,
+    white: VectorLike | None = None
 ) -> Vector:
     ...
 ```
@@ -1603,11 +1628,120 @@ Description
 Parameters
 
 - 
-    Parameters | Defaults           | Description
-    ---------- | ------------------ | -----------
-    `mode`     | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `mode`      | `#!py3 '1976'`     | A string indicating what mode to use. `1976` refers to the (u', v') points as described by CIE 1976 UCS and `1960` describes the (u, v) points as documented by CIE 1960 UCS.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
 
 Return
 
--   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color.
+-   Returns a tuple of (u, v) -- either 1976 (u', v') or 1960 (u, v) -- chromaticity points for the given color. The XYZ
+   translation to uv will use the current color's white point to ensure the values are relative to the proper white
+   point.
 ///
+
+## `#!py Color.get_chromaticity` {#get_chromaticity}
+
+```py
+def get_chromaticity(
+    self,
+    cspace: str = 'uv-1976',
+    *,
+    white: VectorLike | None = None
+) -> Vector:
+    ...
+```
+
+/// define
+Description
+
+-   Retrieves the 1931 xy, 1960 uv, or 1976 u'v' chromaticity coordinates with the luminance (Y). Coordinates are
+    returned in the format specified by `cspace` and will use the white point of the current color.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `cspace`    | `#!py 'uv-1976'`   | A string indicating what chromaticity space to use. `uv-1976` being the default.
+    `white`     | `#!py None`        | Specify the white in which to chromatically adapt the points from, if none is specified, the current color's white point is assumed.
+
+Return
+
+-   Returns a list of chromaticity coordinates. Results will either be in [x, y, Y] for 1931 xy, [u, v, Y] for 1960 uv,
+    or [u', v', Y] for 1976 u'v'.
+///
+
+## `#!py Color.chromaticity` {#get_chromaticity}
+
+```py
+@classmethod
+def chromaticity(
+    cls,
+    space: str,
+    coords: VectorLike,
+    cspace: str = 'uv-1976',
+    *,
+    scale: bool = False,
+    scale_space: str | None = None,
+    white: VectorLike | None = None
+) -> Color:
+    ...
+```
+
+/// define
+Description
+
+-   Returns a color that satisfies the provided chromaticity coordinates. Coordinates can be in the form 1931 xyY, 1960
+    uvY, or 1976 u'v'Y and can be configured via `cspace`. The target space to convert to should be specified via
+    `space`. Chromaticity coordinates should math the white space of the targeted space, but if they are not the white
+    point of the chromaticity coordinates can be specified with `white`.
+
+Parameters
+
+- 
+    Parameters      | Defaults             | Description
+    --------------- | -------------------- | -----------
+    `space`         |                      | Color space to chromaticities to.
+    `coords`        |                      | The chromaticity coordinates. Values can be in either 3D form (with luminance Y).
+    `cspace`        | `#!py 'uv-1976'`     | A string indicating what chromaticity space to use. `uv-1976` being the default.
+    `white`         | `#!py None`          | Specify the white in which to chromatically adapt the points from, if none is specified, the targeted color's white point is assumed.
+    `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
+    `scale_space`   | `#!py None`          | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
+
+Return
+
+-   Returns a reference to a new [`Color`](#color) object that satisfies the chromaticity coordinates.
+///
+
+## `#!py Color.convert_chromaticity` {#convert_chromaticity}
+
+```py
+@classmethod
+def convert_chromaticity(
+    cls,
+    cspace1: str,
+    cspace2: str,
+    coords: VectorLike
+) -> Vector:
+    ...
+```
+
+/// define
+Description
+
+-   Converts a 2D chromaticity pair from one chromaticity space to another. Supported spaces are `xy-1931`, `uv-1960`,
+    and `uv-1976`.
+
+Parameters
+
+- 
+    Parameters  | Defaults           | Description
+    ----------- | ------------------ | -----------
+    `cspace1`   |                    | Initial chromaticity space for the given coordinates.
+    `cspace2`   |                    | Target chromaticity space for the given coordinates.
+    `coords`    |                    | The 2D chromaticity coordinates to convert.
+
+Return
+
+-   Returns the converted 2D chromaticity coordinates.

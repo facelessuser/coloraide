@@ -112,6 +112,10 @@ def round_to(f: float, p: int = 0) -> float:
     elif p == 0:
         return round_half_up(f)
 
+    # Ignore infinity
+    elif math.isinf(f):
+        return f
+
     # Round to the specified precision
     else:
         whole = int(f)

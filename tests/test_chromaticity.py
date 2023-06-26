@@ -94,6 +94,66 @@ class TestChromaticity(util.ColorAssertsPyTest):
 class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
     """Test distance specific cases."""
 
+    def test_xy_luminance(self):
+        """Test xy with luminance."""
+
+        xyy = Color('red').split_chromaticity('xy-1931')
+        for v1, v2 in zip(xyy, [0.64, 0.33, 0.21264]):
+            self.assertCompare(v1, v2)
+
+    def test_uv_1960_luminance(self):
+        """Test uv 1960 with luminance."""
+
+        uvy = Color('red').split_chromaticity('uv-1960')
+        for v1, v2 in zip(uvy, [0.4507, 0.34859, 0.21264]):
+            self.assertCompare(v1, v2)
+
+    def test_uv_1976_luminance(self):
+        """Test uv 1976 with luminance."""
+
+        uvy = Color('red').split_chromaticity('uv-1976')
+        for v1, v2 in zip(uvy, [0.4507, 0.52289, 0.21264]):
+            self.assertCompare(v1, v2)
+
+    def test_new_xy_color(self):
+        """Test new xy color."""
+
+        c1 = Color('red')
+        xyy = c1.split_chromaticity('xy-1931')
+        c2 = Color.chromaticity('srgb', xyy, 'xy-1931')
+        self.assertColorEqual(c1, c2)
+
+    def test_new_uv_1960_color(self):
+        """Test new uv 1960 color."""
+
+        c1 = Color('red')
+        uvy = c1.split_chromaticity('uv-1960')
+        c2 = Color.chromaticity('srgb', uvy, 'uv-1960')
+        self.assertColorEqual(c1, c2)
+
+    def test_new_uv_1976_color(self):
+        """Test new uv 1976 color."""
+
+        c1 = Color('red')
+        uvy = c1.split_chromaticity('uv-1976')
+        c2 = Color.chromaticity('srgb', uvy, 'uv-1976')
+        self.assertColorEqual(c1, c2)
+
+    def test_chromaticity_bad_value(self):
+        """Test bad chromaticity input."""
+
+        with self.assertRaises(ValueError):
+            Color.chromaticity('srgb', [0, 0], 'bad')
+
+    def test_color_from_2D_chromaticity(self):
+        """Test new color from 2D chromaticity."""
+
+        c1 = Color('red')
+        xy = c1.xy()
+        c2 = Color.chromaticity('srgb', xy, 'xy-1931', scale=True, scale_space='srgb-linear')
+        self.assertEqual(c2.to_string(fit=False), 'rgb(255 0 0)')
+        [self.assertCompare(v1, v2) for v1, v2 in zip(c2.xy(), xy)]
+
     def test_uv_1960_to_xy(self):
         """Test `uv` 1960 to `xy`."""
 
@@ -138,3 +198,43 @@ class TestChromaticitySpecificCases(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').uv('bad')
+
+    def test_chromaticity_no_xyz_value(self):
+        """Test chromaticity does not accept XYZ values."""
+
+        with self.assertRaises(ValueError):
+            Color('red').chromaticity('srgb', [0.33, 0.66], 'xyz')
+
+    def test_split_chromaticity_no_xyz_value(self):
+        """Test that split chromaticity does not convert to XYZ."""
+
+        with self.assertRaises(ValueError):
+            Color('red').split_chromaticity('xyz')
+
+    def test_convert_xyz_bad_coordinates(self):
+        """Test chromaticity conversion with XYZ values."""
+
+        with self.assertRaises(ValueError):
+            Color.convert_chromaticity('xyz', 'xy-1931', [0, 0])
+
+        with self.assertRaises(ValueError):
+            Color.convert_chromaticity('xyz', 'xy-1931', [0, 0, 0, 0])
+
+    def test_convert_chromaticity_bad_coordinates(self):
+        """Test chromaticity conversion with XYZ values."""
+
+        with self.assertRaises(ValueError):
+            Color.convert_chromaticity('xy-1931', 'xyz', [0])
+
+        with self.assertRaises(ValueError):
+            Color.convert_chromaticity('xy-1931', 'xyz', [0, 0, 0, 0])
+
+    def test_convert_chromaticity_no_convert(self):
+        """Test case when no conversion is needed."""
+
+        self.assertEqual(Color.convert_chromaticity('xy-1931', 'xy-1931', [0.33, 0.36, 1.0]), [0.33, 0.36, 1.0])
+
+    def test_convert_chromaticity_no_convert_no_luminance(self):
+        """Test case when no conversion is needed and no luminance is provided."""
+
+        self.assertEqual(Color.convert_chromaticity('xy-1931', 'xy-1931', [0.33, 0.36]), [0.33, 0.36, 1.0])

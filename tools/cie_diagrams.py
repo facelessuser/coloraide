@@ -19,6 +19,7 @@ from coloraide.cat import WHITES  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
+from coloraide import gamut  # noqa: E402
 
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
@@ -70,15 +71,19 @@ labels_1960 = {
 }
 
 ISOTHERMS = {
-    100000: (0.025, '∞'),
-    10000: (0.025, '10000K'),
-    6000: (0.025, '6000K'),
-    4000: (0.025, '4000K'),
-    3000: (-0.040, '3000K'),
-    2000: (-0.034, '2000K'),
-    1500: (-0.040, '1500K'),
-    1000: (-0.040, '1000K')
+    100000: (0.005, '∞'),
+    10000: (0.005, '10000K'),
+    6000: (0.005, '6000K'),
+    4000: (0.005, '4000K'),
+    3000: (-0.020, '3000K'),
+    2000: (-0.014, '2000K'),
+    1500: (-0.020, '1500K'),
+    1000: (-0.020, '1000K')
 }
+
+
+class Color(ColorAll):
+    """Custom class for Pointer conversion."""
 
 
 def get_spline(x, y, steps=100):
@@ -227,11 +232,11 @@ class DiagramOptions:
         elif observer != '2deg':
             raise ValueError("Unrecognized 'observer': {}".format(observer))
 
-        self.mode = mode
         if mode not in ('1931', '1960', '1976'):
             raise ValueError("Unrecognized 'mode': {}".format(mode))
 
-        if self.mode == "1931":
+        self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
+        if mode == "1931":
             self.spectral_locus_lables = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
             if observer == '2deg':
@@ -240,7 +245,7 @@ class DiagramOptions:
             else:
                 self.locus_labels = cie_xy_10_deg_offsets
                 self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
-        elif self.mode == "1976":
+        elif mode == "1976":
             self.spectral_locus_lables = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
             if observer == '2deg':
@@ -281,7 +286,7 @@ class DiagramOptions:
 def cie_diagram(
     mode="1931", observer="2deg", colorize=True, opacity=1, rgb_spaces=None,
     white_points=None, theme='light', title='', show_labels=True, axis=True,
-    show_legend=True, black_body=False, isotherms=False, cct=None
+    show_legend=True, black_body=False, isotherms=False, cct=None, pointer=False
 ):
     """CIE diagram."""
 
@@ -305,7 +310,7 @@ def cie_diagram(
     class Color(ColorAll):
         ...
 
-    Color.register(ohno_2013.Ohno2013(opt.observer, opt.white), overwrite=True)
+    Color.register([ohno_2013.Ohno2013(opt.observer, opt.white)], overwrite=True)
 
     xs = []
     ys = []
@@ -314,11 +319,8 @@ def cie_diagram(
     # Get points for the spectral locus
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
-        x, y = util.xyz_to_xyY(v, opt.white)[:2]
-        if opt.mode == "1976":
-            x, y = util.xy_to_uv([x, y])
-        elif opt.mode == "1960":
-            x, y = util.xy_to_uv_1960([x, y])
+        xy = util.xyz_to_xyY(v)[:-1]
+        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
         xs.append(x)
         ys.append(y)
 
@@ -331,24 +333,43 @@ def cie_diagram(
     # Draw the bottom purple line
     xs.append(xs[0])
     ys.append(ys[0])
+    spaces = []
+
+    # Pointer gamut
+    if pointer:
+        for p in pointer:
+            bounds, color = p.split(':')
+            sx = []
+            sy = []
+            if bounds == 'max':
+                pts = gamut.pointer.pointer_gamut_boundary()
+                label = 'pointer'
+            else:
+                l = min(90, max(15, float(bounds)))
+                pts = gamut.pointer.pointer_gamut_boundary(l)
+                label = 'pointer L*={}'.format(round(l, 2))
+            pts.append(pts[0])
+            for pt in pts:
+                x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
+                sx.append(x)
+                sy.append(y)
+            spaces.append(
+                (
+                    sx,
+                    sy,
+                    color,
+                    label,
+                    mpltpath.Path(list(zip(sx, sy)))
+                )
+            )
 
     # Calculate RGB triangles if one is specified
-    spaces = []
     if rgb_spaces:
         temp = Color('srgb', [])
         for space, color in rgb_spaces:
-            if opt.mode == '1931':
-                red = temp.mutate(space, [1, 0, 0]).xy()
-                green = temp.mutate(space, [0, 1, 0]).xy()
-                blue = temp.mutate(space, [0, 0, 1]).xy()
-            elif opt.mode == '1976':
-                red = temp.mutate(space, [1, 0, 0]).uv()
-                green = temp.mutate(space, [0, 1, 0]).uv()
-                blue = temp.mutate(space, [0, 0, 1]).uv()
-            else:
-                red = temp.mutate(space, [1, 0, 0]).uv('1960')
-                green = temp.mutate(space, [0, 1, 0]).uv('1960')
-                blue = temp.mutate(space, [0, 0, 1]).uv('1960')
+            red = temp.mutate(space, [1, 0, 0]).split_chromaticity(opt.chromaticity)
+            green = temp.mutate(space, [0, 1, 0]).split_chromaticity(opt.chromaticity)
+            blue = temp.mutate(space, [0, 0, 1]).split_chromaticity(opt.chromaticity)
             sx = [red[0], green[0], blue[0], red[0]]
             sy = [red[1], green[1], blue[1], red[1]]
             spaces.append(
@@ -373,14 +394,7 @@ def cie_diagram(
             (x / RESOLUTION for x in range(0, RESOLUTION + 1)),
             (x / RESOLUTION for x in range(0, RESOLUTION + 1))
         ):
-            srgb = Color('srgb', [])
             if path.contains_point(r):
-                if opt.mode == "1931":
-                    xyz = util.xy_to_xyz(r)
-                elif opt.mode == "1976":
-                    xyz = util.xy_to_xyz(util.uv_to_xy(r))
-                else:
-                    xyz = util.xy_to_xyz(util.uv_1960_to_xy(r))
                 o = 0.01 if spaces else opacity
                 if spaces:
                     for s in spaces:
@@ -389,10 +403,14 @@ def cie_diagram(
                             break
                 px.append(r[0])
                 py.append(r[1])
-                srgb.update('xyz-d65', xyz, o)
-                m = max(srgb[:-1])
-                srgb.update('srgb', [(i / m if m != 0 else 0) for i in srgb[:-1]], srgb[-1])
-                c.append(srgb.to_string(hex=True, fit="clip"))
+                srgb = Color.chromaticity(
+                    'srgb',
+                    r,
+                    opt.chromaticity,
+                    scale=True,
+                    scale_space='rec2020-linear'
+                ).set('alpha', o)
+                c.append(srgb.convert('srgb').to_string(hex=True))
 
         plt.scatter(
             px, py,
@@ -445,17 +463,9 @@ def cie_diagram(
         for wp in white_points:
             w = ALL_WHITES[observer][wp]
             annot.append(wp)
-            if opt.mode == '1931':
-                wx.append(w[0])
-                wy.append(w[1])
-            elif opt.mode == '1976':
-                uv = util.xy_to_uv(w)
-                wx.append(uv[0])
-                wy.append(uv[1])
-            else:
-                uv = util.xy_to_uv_1960(w)
-                wx.append(uv[0])
-                wy.append(uv[1])
+            xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1]
+            wx.append(xy[0])
+            wy.append(xy[1])
         plt.scatter(
             wx,
             wy,
@@ -480,8 +490,8 @@ def cie_diagram(
         annot = []
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
-            c = Color.blackbody(temp, duv)
-            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+            c = Color.blackbody('xyz-d65', temp, duv, normalize=False)
+            bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
             by.append(bv)
@@ -506,23 +516,25 @@ def cie_diagram(
         vaxis = []
         for kelvin in range(1000, 100001, 250):
             t = kelvin
-            c = Color.blackbody(t, space=None)
-            bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+            c = Color.blackbody('xyz-d65', t, normalize=False)
+            bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             uaxis.append(bu)
             vaxis.append(bv)
 
             if isotherms and kelvin in ISOTHERMS:
                 duvx = []
                 duvy = []
-                for duv in (-0.02, 0.02) if kelvin < 100000 else (-0.01, 0.01):
-                    c = Color.blackbody(kelvin, duv, space=None)
-                    bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+                duv_range = (-0.03, 0.03) if kelvin < 100000 else (-0.01, 0.01)
+                for duv in duv_range:
+                    c = Color.blackbody('xyz-d65', kelvin, duv, normalize=False)
+                    bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                     duvx.append(bu)
                     duvy.append(bv)
 
                 offset, label = ISOTHERMS[kelvin]
-                c = Color.blackbody(kelvin, offset, space=None)
-                bu, bv = c.xy() if opt.mode == '1931' else c.uv(opt.mode)
+                offset = duv_range[0 if offset < 0 else 1] + offset
+                c = Color.blackbody('xyz-d65', kelvin, offset, normalize=False)
+                bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
 
                 plt.annotate(
                     label,
@@ -551,7 +563,6 @@ def cie_diagram(
             markersize=0,
             antialiased=True
         )
-        # `plt.scatter(uaxis, vaxis, c=opt.default_color)`
 
     # Plot the RGB triangles
     for item in spaces:
@@ -570,8 +581,8 @@ def cie_diagram(
         )
 
     # We current only add labels when drawing RGB triangles
-    if rgb_spaces and show_legend:
-        ax.legend()
+    if (rgb_spaces or pointer) and show_legend:
+        ax.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 
 
 def main():
@@ -582,6 +593,11 @@ def main():
     parser.add_argument('--cmfs', '-c', default="2deg", help="CMFS to use, e.g., '2deg' (default) or '10deg'.")
     parser.add_argument('--white-point', '-w', action='append', help="A white point to plot.")
     parser.add_argument('--cct', '-C', action='append', help="A point specified by 'CCT:Duv'.")
+    parser.add_argument(
+        '--pointer', '-P', action='append',
+        help="Show Pointer gamut by specifying an L* value and a color for the boundary '30:color'. "
+             "'max' can be used show the maximum gamut instead of the gamut at a specific lightness 'max:color'."
+    )
     parser.add_argument('--rgb', '-r', action='append', help="An RGB space to show on diagram: 'space:color'.")
     parser.add_argument('--title', '-t', default='', help="Override title with your own.")
     parser.add_argument('--transparent', '-p', action="store_true", help="Export with transparent background.")
@@ -611,7 +627,8 @@ def main():
         title=args.title,
         black_body=args.black_body,
         isotherms=args.isotherms,
-        cct=args.cct
+        cct=args.cct,
+        pointer=args.pointer
     )
 
     if args.output:

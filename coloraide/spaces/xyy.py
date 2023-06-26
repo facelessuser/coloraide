@@ -18,7 +18,7 @@ class xyY(Space):
 
     BASE = "xyz-d65"
     NAME = "xyy"
-    SERIALIZE = ("--xyy",)  # type: tuple[str, ...]
+    SERIALIZE = ("--xyy",)
     CHANNELS = (
         Channel("x", 0.0, 1.0),
         Channel("y", 0.0, 1.0),
@@ -32,8 +32,7 @@ class xyY(Space):
         if math.isclose(0.0, coords[-1], abs_tol=1e-4):
             return True
 
-        white = [0.3127, 0.3290]
-        for x in alg.vcross(coords[:-1], white):
+        for x in alg.vcross(coords[:-1], self.WHITE):
             if not math.isclose(0.0, x, abs_tol=1e-6):
                 return False
         return True

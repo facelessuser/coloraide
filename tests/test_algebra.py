@@ -892,6 +892,11 @@ class TestAlgebra(unittest.TestCase):
         self.assertFalse(alg.is_nan(3))
         self.assertFalse(alg.is_nan(0))
 
+    def test_round_inf(self):
+        """Test rounding of infinity."""
+
+        self.assertEqual(alg.round_to(alg.INF, 2), alg.INF)
+
     def test_round(self):
         """Test rounding."""
 

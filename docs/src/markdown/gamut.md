@@ -346,3 +346,53 @@ very useful, but if the idea is to present an in gamut color that tries to prese
 original color as possible, other methods may be desired. There are no doubt better gamut methods available than what
 ColorAide offers currently, and more may be added in the future, but ColorAide can also be extended using 3rd party
 plugins as well.
+
+## Pointer's Gamut
+
+/// new | New 2.4
+///
+
+The Pointer’s gamut is (an approximation of) the gamut of real surface colors as can be seen by the human eye, based on
+the research by Michael R. Pointer (1980). What this means is that every color that can be reflected by the surface of
+an object of any material should be is inside the Pointer’s gamut. This does not include, however, those that do not
+occur naturally, such as neon lights, etc.
+
+![Pointer's Gamut](images/pointers-gamut.png)
+
+While in the above image, it may appear that most of sRGB is in the gamut, it is important to note that the image is
+showing the maximum range of the gamut. The actual boundary will be different at different luminance levels.
+
+![Pointer's Gamut lightness Levels](images/pointer-gamut-lightness.png)
+
+The gamuts previously discussed are bound by a color space's limits, but the Pointer's gamut applies to colors more
+generally and was created from observed data via research. Because it doesn't quite fit with the color space gamut API,
+ColorAide exposes two special functions to test if a color is in the Pointer's gamut and to fit a color to the gamut.
+
+To test if a color is within the gamut, simply call `in_pointer_gamut()`:
+
+```py play
+Color('red').in_pointer_gamut()
+Color('orange').in_pointer_gamut()
+```
+
+ColorAide also provides a way to fit a color to the Pointer's gamut. The original gamut's data is described in LCh using
+illuminant C. Using this color space, we can estimate the chroma limit for any color based on it's lightness and hue.
+We can then reduce the chroma, preserving the lightness and hue. The image below shows the out of Pointer's gamut color
+`#!color red` (indicated by the `x`) which is clamped to the Pointer's gamut by reducing the chroma (indicated by the
+dot).
+
+![Pointer's Gamut Fitted](images/pointer-gamut-fit.png)
+
+ColorAide provides the `fit_pointer_gamut()` method to perform this "fitting" of the color.
+
+```py play
+color = Color('red')
+color
+color.in_pointer_gamut()
+color.fit_pointer_gamut()
+color.in_pointer_gamut()
+```
+
+/// tip
+Much like `in_gamut()`, `in_pointer_gamut()` allows adjusting tolerance as well via the `tolerance` parameter.
+///

@@ -22,7 +22,7 @@ C1 = 3.741771e-16
 C2 = 1.4388e-2
 
 
-def temp_to_uv_planckian_locus(
+def temp_to_xy_planckian_locus(
     temp: float,
     cmfs: dict[int, tuple[float, float, float]],
     white: VectorLike,
@@ -46,4 +46,4 @@ def temp_to_uv_planckian_locus(
         y += m * cmf[1]
         z += m * cmf[2]
 
-    return util.xy_to_uv_1960(util.xyz_to_xyY([x, y, z], white)[:2])
+    return util.xyz_to_xyY([x, y, z], white)[:2]

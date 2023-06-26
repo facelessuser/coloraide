@@ -33,6 +33,12 @@ The sRGB gamut represented within the xyY color space.
 A derivative of the CIE 1931 XYZ space, the CIE xyY color space, is often used as a way to graphically present the
 chromaticity of colors.
 
+/// tip
+The color space, as implemented, is relative to the D65 white point, meaning it is created from XYZ D65. If colors are
+needed relative to different white points, the color space can be subclassed. If proper chromaticity coordinates are
+desired for a given color, you can checkout the [API for chromaticity coordinates](../chromaticity.md).
+///
+
 [Learn more](https://en.wikipedia.org/wiki/CIE_1931_color_space#CIE_xy_chromaticity_diagram_and_the_CIE_xyY_color_space).
 ///
 
