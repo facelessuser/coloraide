@@ -7,6 +7,7 @@ import matplotlib.patheffects as path_effects
 import sys
 import copy
 import os
+import math
 
 sys.path.insert(0, os.getcwd())
 
@@ -70,16 +71,7 @@ labels_1960 = {
     680
 }
 
-ISOTHERMS = {
-    100000: (0.005, '∞'),
-    10000: (0.005, '10000K'),
-    6000: (0.005, '6000K'),
-    4000: (0.005, '4000K'),
-    3000: (-0.020, '3000K'),
-    2000: (-0.014, '2000K'),
-    1500: (-0.020, '1500K'),
-    1000: (-0.020, '1000K')
-}
+ISOTHERMS = {100000, 10000, 6000, 4000, 3000, 2000, 1500, 1000}
 
 
 class Color(ColorAll):
@@ -408,9 +400,10 @@ def cie_diagram(
                     r,
                     opt.chromaticity,
                     scale=True,
-                    scale_space='rec2020-linear'
+                    scale_space='rec2020-linear',
+                    white=opt.white
                 ).set('alpha', o)
-                c.append(srgb.convert('srgb').to_string(hex=True))
+                c.append(srgb.convert('srgb').to_string(hex=True, fit="clip"))
 
         plt.scatter(
             px, py,
@@ -490,7 +483,7 @@ def cie_diagram(
         annot = []
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
-            c = Color.blackbody('xyz-d65', temp, duv, normalize=False)
+            c = Color.blackbody('xyz-d65', temp, duv, scale=False)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
@@ -516,7 +509,7 @@ def cie_diagram(
         vaxis = []
         for kelvin in range(1000, 100001, 250):
             t = kelvin
-            c = Color.blackbody('xyz-d65', t, normalize=False)
+            c = Color.blackbody('xyz-d65', t, scale=False)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             uaxis.append(bu)
             vaxis.append(bv)
@@ -526,22 +519,30 @@ def cie_diagram(
                 duvy = []
                 duv_range = (-0.03, 0.03) if kelvin < 100000 else (-0.01, 0.01)
                 for duv in duv_range:
-                    c = Color.blackbody('xyz-d65', kelvin, duv, normalize=False)
+                    c = Color.blackbody('xyz-d65', kelvin, duv, scale=False)
                     bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                     duvx.append(bu)
                     duvy.append(bv)
 
-                offset, label = ISOTHERMS[kelvin]
-                offset = duv_range[0 if offset < 0 else 1] + offset
-                c = Color.blackbody('xyz-d65', kelvin, offset, normalize=False)
+                label = '{}K'.format(kelvin) if kelvin != 100000 else '∞'
+                rotate = math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0]))
+                label_offset = alg.polar_to_rect(2, rotate + 90)
+                bottom = kelvin < 4000
+                offset = duv_range[0 if bottom else 1] / 2
+                c = Color.blackbody('xyz-d65', kelvin, offset, scale=False)
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
+                ha = 'left' if not bottom else 'right'
 
                 plt.annotate(
                     label,
                     [bu, bv],
                     size=6,
                     color=opt.default_colorized_color if colorize else opt.default_color,
-                    ha='center'
+                    rotation=rotate,
+                    rotation_mode="anchor",
+                    textcoords="offset points",
+                    xytext=label_offset,
+                    ha=ha
                 )
 
                 plt.plot(

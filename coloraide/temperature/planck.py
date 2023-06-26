@@ -46,4 +46,4 @@ def temp_to_xy_planckian_locus(
         y += m * cmf[1]
         z += m * cmf[2]
 
-    return util.xyz_to_xyY([x, y, z], white)[:2]
+    return util.xyz_to_xyY([x, y, z], white)[:-1]
