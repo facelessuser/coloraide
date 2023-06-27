@@ -29,7 +29,7 @@ ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
 RESOLUTION = 800
 
 # Pick some arbitrary labels to display.
-labels_1931 = {
+labels_1931 = [
     390,
     460,
     470,
@@ -48,9 +48,9 @@ labels_1931 = {
     600,
     620,
     700
-}
+]
 
-labels_1960 = {
+labels_1960 = [
     420,
     460,
     470,
@@ -69,7 +69,7 @@ labels_1960 = {
     600,
     620,
     680
-}
+]
 
 ISOTHERMS = {100000, 10000, 6000, 4000, 3000, 2000, 1500, 1000}
 
@@ -78,128 +78,90 @@ class Color(ColorAll):
     """Custom class for Pointer conversion."""
 
 
+class SpectralLocus:
+    """
+    Setup a spline that represents the black body curve.
+
+    Points between steps are approximated, but actual points can always be
+    acquired via `exact`.
+
+    For improved accuracy, we split spline data for low temps and high temps
+    and assign the number of required data points accordingly.
+    """
+
+    def __init__(
+        self,
+        x,
+        y,
+        domain
+    ) -> None:
+        """Initialize."""
+
+        self.spline = alg.interpolate(list(zip(x, y)), method='catrom')
+        self.domain = domain
+
+    def scale(self, point):
+        """Scale the temperature point to match the range 0 - 1."""
+
+        # Extrapolation
+        if point <= self.domain[0]:
+            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0])
+        elif point >= self.domain[-1]:
+            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0])
+
+        # Interpolation
+        else:
+            a, b = self.domain[0], self.domain[len(self.domain) - 1]
+            l = b - a
+            point = ((point - a) / l) if l else 0.0
+        return point
+
+    def steps(self, steps):
+        """Get steps."""
+
+        return tuple([list(i) for i in zip(*self.spline.steps(steps))])
+
+    def __call__(self, wave):
+        """Get the uv for the given temp."""
+
+        return self.spline(self.scale(wave))
+
+
 def get_spline(x, y, steps=100):
     """Get spline."""
 
-    return tuple([list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='monotone').steps(steps))])
+    return tuple([list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='catrom').steps(steps))])
 
 
-def cie_xy_2_deg_offsets(wavelength):
-    """
-    Setup labels for CIE 2 deg for `xy` diagrams.
+def get_spectral_locus_labels(locus, waves, distance):
+    """Get the spectral locus wavelength labels."""
 
-    I'm sure there is a more automated way to do this.
-    We could calculate slope and calculate a line with
-    inverse slope and maybe detect direction and calculate
-    needed distance for new point, but this was easy for
-    the limited charts we are doing.
-    """
+    annotations = []
+    for wave in sorted(waves):
+        x, y = locus(wave)
+        x1, y1 = locus(wave - 0.05)
+        x2, y2 = locus(wave + 0.05)
+        d1 = math.sqrt((x - x1) ** 2 + (y - y1) ** 2)
+        d2 = math.sqrt((x2 - x) ** 2 + (y2 - y) ** 2)
+        factor = d1 / (d1 + d2)
 
-    offset = (0, 0)
-    if wavelength == 520:
-        offset = (-5, 10)
-    elif wavelength == 510:
-        offset = (-15, 0)
-    elif wavelength == 530:
-        offset = (5, 12)
-    elif wavelength < 490:
-        offset = (-15, -8)
-    elif wavelength < 500:
-        offset = (-15, -5)
-    elif wavelength < 520:
-        offset = (-15, -3)
-    else:
-        offset = (15, 5)
-    return offset
+        diry = (y - y1) > 0
+        dirx = (x - x1) > 0
+        m1 = -((y - y1) / (x - x1)) ** -1
+        m2 = -((y2 - y) / (x2 - x)) ** -1
+        m = alg.lerp(m1, m2, factor)
 
+        length = math.sqrt(1.0 + m ** 2)
+        dx = 1.0 / length
+        dy = m / length
 
-def cie_xy_10_deg_offsets(wavelength):
-    """
-    Setup labels for CIE 2 deg for `xy` diagrams.
+        # Values really close to 700 extend past the normal locus part and cause the orientation to be off,
+        # so we force values greater than 695 to orient in sanely.
+        x0 = x + dx * (-distance if ((m >= 0 and not dirx) or (m < 0 and dirx and diry)) and wave < 695 else distance)
+        y0 = y + dy * (-distance if ((m >= 0 and diry) or (m < 0 and diry)) and wave < 695 else distance)
 
-    I'm sure there is a more automated way to do this.
-    We could calculate slope and calculate a line with
-    inverse slope and maybe detect direction and calculate
-    needed distance for new point, but this was easy for
-    the limited charts we are doing.
-    """
-
-    offset = (0, 0)
-    if wavelength == 520:
-        offset = (0, 12)
-    elif wavelength == 530:
-        offset = (5, 12)
-    elif wavelength == 510:
-        offset = (-15, 5)
-    elif wavelength < 490:
-        offset = (-15, -5)
-    elif wavelength < 500:
-        offset = (-15, -5)
-    elif wavelength < 520:
-        offset = (-15, -3)
-    else:
-        offset = (15, 5)
-    return offset
-
-
-def cie_uv_2_deg_offsets(wavelength):
-    """
-    Setup labels for CIE 2 deg for `uv` diagrams.
-
-    I'm sure there is a more automated way to do this.
-    We could calculate slope and calculate a line with
-    inverse slope and maybe detect direction and calculate
-    needed distance for new point, but this was easy for
-    the limited charts we are doing.
-    """
-
-    offset = (0, 0)
-    if wavelength == 500:
-        offset = (-15, -5)
-    elif wavelength == 520:
-        offset = (-10, 8)
-    elif wavelength == 530:
-        offset = (-5, 8)
-    elif wavelength > 540:
-        offset = (3, 8)
-    elif wavelength > 520:
-        offset = (0, 8)
-    elif wavelength == 510:
-        offset = (-15, 0)
-    elif wavelength == 380:
-        offset = (5, -15)
-    elif wavelength < 510:
-        offset = (-15, -5)
-    return offset
-
-
-def cie_uv_10_deg_offsets(wavelength):
-    """
-    Setup labels for CIE 2 deg for `uv` diagrams.
-
-    I'm sure there is a more automated way to do this.
-    We could calculate slope and calculate a line with
-    inverse slope and maybe detect direction and calculate
-    needed distance for new point, but this was easy for
-    the limited charts we are doing.
-    """
-
-    offset = (0, 0)
-    if wavelength == 500:
-        offset = (-15, 0)
-    elif wavelength == 520:
-        offset = (-5, 8)
-    elif wavelength == 530:
-        offset = (-3, 8)
-    elif wavelength > 530:
-        offset = (0, 8)
-    elif wavelength == 510:
-        offset = (-15, 8)
-    elif wavelength == 380:
-        offset = (10, -15)
-    elif wavelength < 510:
-        offset = (-15, -5)
-    return offset
+        annotations.append([wave, (x, y), (x0, y0)])
+    return annotations
 
 
 class DiagramOptions:
@@ -229,32 +191,28 @@ class DiagramOptions:
 
         self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
         if mode == "1931":
-            self.spectral_locus_lables = labels_1931
+            self.spectral_locus_labels = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
             if observer == '2deg':
-                self.locus_labels = cie_xy_2_deg_offsets
                 self.title = "CIE 1931 Chromaticy Diagram - 2˚ Degree Standard Observer"
             else:
-                self.locus_labels = cie_xy_10_deg_offsets
                 self.title = "CIE 1931 Chromaticy Diagram - 10˚ Degree Standard Observer"
         elif mode == "1976":
-            self.spectral_locus_lables = labels_1960
+            self.spectral_locus_labels = labels_1960
             self.axis_labels = ("CIE u'", "CIE v'")
             if observer == '2deg':
-                self.locus_labels = cie_uv_2_deg_offsets
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
-                self.locus_labels = cie_uv_10_deg_offsets
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
         else:
-            self.spectral_locus_lables = labels_1960
+            self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
             if observer == '2deg':
-                self.locus_labels = cie_uv_2_deg_offsets
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
-                self.locus_labels = cie_uv_10_deg_offsets
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+
+        self.cct = 'ohno-2013'
 
         if title:
             self.title = title
@@ -306,21 +264,22 @@ def cie_diagram(
 
     xs = []
     ys = []
+    wavelength = []
     annotations = []
 
     # Get points for the spectral locus
     for k, v in opt.observer.items():
         # Get the XYZ values in the correct format
         xy = util.xyz_to_xyY(v)[:-1]
+        wavelength.append(k)
         x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
         xs.append(x)
         ys.append(y)
 
-        # Prepare annotation labels for all points on the spectral locus.
-        if k in opt.spectral_locus_lables:
-            annotations.append((k, (x, y)))
+    spectral_locus = SpectralLocus(xs, ys, wavelength)
+    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.05)
 
-    xs, ys = get_spline(xs, ys, len(xs) * 3)
+    xs, ys = spectral_locus.steps(len(xs) * 3)
 
     # Draw the bottom purple line
     xs.append(xs[0])
@@ -428,18 +387,16 @@ def cie_diagram(
         lx = []
         ly = []
         for annotate in annotations:
-            offset = opt.locus_labels(annotate[0])
             lx.append(annotate[1][0])
             ly.append(annotate[1][1])
             plt.annotate(
                 '{:d}'.format(annotate[0]),
-                annotate[1],
+                annotate[2],
                 size=8,
                 color=opt.locus_label_color,
-                textcoords="offset points",
-                xytext=offset,
                 ha='center'
             )
+
         plt.scatter(
             lx,
             ly,
@@ -483,7 +440,7 @@ def cie_diagram(
         annot = []
         for value in cct:
             temp, duv = [float(v) for v in value.split(':')]
-            c = Color.blackbody('xyz-d65', temp, duv, scale=False)
+            c = Color.blackbody('xyz-d65', temp, duv, scale=False, method=opt.cct)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
             bx.append(bu)
@@ -509,7 +466,7 @@ def cie_diagram(
         vaxis = []
         for kelvin in range(1000, 100001, 250):
             t = kelvin
-            c = Color.blackbody('xyz-d65', t, scale=False)
+            c = Color.blackbody('xyz-d65', t, scale=False, method=opt.cct)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
             uaxis.append(bu)
             vaxis.append(bv)
@@ -519,7 +476,7 @@ def cie_diagram(
                 duvy = []
                 duv_range = (-0.03, 0.03) if kelvin < 100000 else (-0.01, 0.01)
                 for duv in duv_range:
-                    c = Color.blackbody('xyz-d65', kelvin, duv, scale=False)
+                    c = Color.blackbody('xyz-d65', kelvin, duv, scale=False, method=opt.cct)
                     bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                     duvx.append(bu)
                     duvy.append(bv)
@@ -529,7 +486,7 @@ def cie_diagram(
                 label_offset = alg.polar_to_rect(2, rotate + 90)
                 bottom = kelvin < 4000
                 offset = duv_range[0 if bottom else 1] / 2
-                c = Color.blackbody('xyz-d65', kelvin, offset, scale=False)
+                c = Color.blackbody('xyz-d65', kelvin, offset, scale=False, method=opt.cct)
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
                 ha = 'left' if not bottom else 'right'
 
