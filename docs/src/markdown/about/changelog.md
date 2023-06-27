@@ -3,7 +3,7 @@
 ## 2.4
 
 -   **NEW**: Add Rec. 709 RGB color space.
--   **NEW**: Add the 1960 UCS color space.*
+-   **NEW**: Add the 1960 UCS color space.
 -   **NEW**: Add correlated color temperature support with new `cct()` and `blackbody()` API.
 -   **NEW**: Add support for Robertson 1968 and Ohno 2013 CCT plugins.
 -   **NEW**: Add support for determining if a color is in the Pointer Gamut and provide a way to clamp a color to the
