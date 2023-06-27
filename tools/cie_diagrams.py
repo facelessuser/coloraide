@@ -273,12 +273,13 @@ def cie_diagram(
 
     # Get points for the spectral locus
     for k, v in opt.observer.items():
-        # Get the XYZ values in the correct format
-        xy = util.xyz_to_xyY(v)[:-1]
-        wavelength.append(k)
-        x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
-        xs.append(x)
-        ys.append(y)
+        if 360 <= k <= 780:
+            # Get the XYZ values in the correct format
+            xy = util.xyz_to_xyY(v)[:-1]
+            wavelength.append(k)
+            x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, xy)[:-1]
+            xs.append(x)
+            ys.append(y)
 
     spectral_locus = SpectralLocus(xs, ys, wavelength)
     annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.04)
