@@ -160,7 +160,11 @@ def get_spectral_locus_labels(locus, waves, distance):
         x0 = x + dx * (-distance if ((m >= 0 and not dirx) or (m < 0 and dirx and diry)) and wave < 695 else distance)
         y0 = y + dy * (-distance if ((m >= 0 and diry) or (m < 0 and diry)) and wave < 695 else distance)
 
-        annotations.append([wave, (x, y), (x0, y0)])
+        rotate = math.degrees(math.atan2(y0 - y, x0 - x)) % 360
+        if rotate > 150:
+            rotate += 180
+
+        annotations.append([wave, (x, y), (x0, y0), rotate])
     return annotations
 
 
@@ -277,7 +281,7 @@ def cie_diagram(
         ys.append(y)
 
     spectral_locus = SpectralLocus(xs, ys, wavelength)
-    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.05)
+    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.04)
 
     xs, ys = spectral_locus.steps(len(xs) * 3)
 
@@ -394,6 +398,8 @@ def cie_diagram(
                 annotate[2],
                 size=8,
                 color=opt.locus_label_color,
+                rotation=annotate[3],
+                rotation_mode="anchor",
                 ha='center'
             )
 
@@ -481,14 +487,14 @@ def cie_diagram(
                     duvx.append(bu)
                     duvy.append(bv)
 
+                bottom = kelvin < 4000
                 label = '{}K'.format(kelvin) if kelvin != 100000 else '∞'
                 rotate = math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0]))
                 label_offset = alg.polar_to_rect(2, rotate + 90)
-                bottom = kelvin < 4000
                 offset = duv_range[0 if bottom else 1] / 2
                 c = Color.blackbody('xyz-d65', kelvin, offset, scale=False, method=opt.cct)
                 bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
-                ha = 'left' if not bottom else 'right'
+                ha = 'right' if bottom else 'left'
 
                 plt.annotate(
                     label,
