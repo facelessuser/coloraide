@@ -107,7 +107,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.blackbody('srgb-linear', 1500, scale_space='srgb-linear'),
-            Color('color(srgb-linear 1 0.14969 0)')
+            Color('color(srgb-linear 1 0.14966 0)')
         )
 
     def test_output_space(self):
@@ -115,7 +115,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.blackbody('display-p3', 2000, scale_space='srgb-linear'),
-            Color('color(display-p3 0.93958 0.56696 0.22947)')
+            Color('color(display-p3 0.93958 0.56696 0.2294)')
         )
 
     def test_normalization_space(self):
@@ -123,7 +123,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.blackbody('display-p3', 2000, scale_space='display-p3-linear'),
-            Color('color(display-p3 1 0.60474 0.24675)')
+            Color('color(display-p3 1 0.60474 0.24668)')
         )
 
     def test_no_normalization_space(self):
@@ -131,7 +131,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color.blackbody('xyz-d65', 2000, scale=False),
-            Color('color(xyz-d65 1.2743 1 0.14523)')
+            Color('color(xyz-d65 1.2743 1 0.14517)')
         )
 
     def test_ohno_alternate_cmfs(self):
@@ -140,7 +140,7 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         from coloraide.temperature.ohno_2013 import Ohno2013
 
         class Custom(Color):
-            ...
+            CCT = 'ohno-2013'
 
         Custom.register(
             Ohno2013(cmfs.CIE_1964_10DEG, cat.WHITES['10deg']['D65']),
@@ -156,10 +156,10 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
     def test_ohno_exact(self):
         """Test exact CMFs."""
 
-        cct1, duv1 = Color('orange').cct()
+        cct1, duv1 = Color('orange').cct(method='ohno-2013')
         assert math.isclose(cct1, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
         assert math.isclose(duv1, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
-        cct2, duv2 = Color('orange').cct(exact=True)
+        cct2, duv2 = Color('orange').cct(method='ohno-2013', exact=True)
         assert math.isclose(cct2, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
         assert math.isclose(duv2, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
 
@@ -197,8 +197,8 @@ class TestCCTSpecificCases(util.ColorAsserts, unittest.TestCase):
         )
 
         cct1, duv1 = Color('orange').cct()
-        assert math.isclose(cct1, 2424.1146637385255, rel_tol=1e-11, abs_tol=1e-11)
-        assert math.isclose(duv1, 0.008069417642630583, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(cct1, 2423.929632254136, rel_tol=1e-11, abs_tol=1e-11)
+        assert math.isclose(duv1, 0.00811119780855307, rel_tol=1e-11, abs_tol=1e-11)
         cct2, duv2 = Custom('orange').cct()
         assert math.isclose(cct2, 2423.930481644873, rel_tol=1e-11, abs_tol=1e-11)
         assert math.isclose(duv2, 0.008112876273860207, rel_tol=1e-11, abs_tol=1e-11)

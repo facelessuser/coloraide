@@ -224,14 +224,14 @@ class DiagramOptions:
         if theme == 'light':
             plt.style.use('seaborn-v0_8-darkgrid')
             self.default_color = "#00000088"
-            self.default_colorized_color = "#00000088"
+            self.default_colorized_color = "#333333"
             self.locus_label_color = "#00000088"
             self.locus_point_color = "#00000088"
             self.locus_line_color = "#33333388"
         elif theme == 'dark':
             plt.style.use('dark_background')
             self.default_color = "#ffffff"
-            self.default_colorized_color = "#00000088"
+            self.default_colorized_color = "#333333"
             self.locus_label_color = "#ffffff88"
             self.locus_point_color = "#ffffff"
             self.locus_line_color = "#cccccc88"
@@ -412,6 +412,22 @@ def cie_diagram(
             zorder=100
         )
 
+    # Plot the RGB triangles
+    for item in spaces:
+        plt.plot(
+            item[0],
+            item[1],
+            marker='o',
+            color=item[2],
+            label=item[3],
+            linewidth=2,
+            markersize=0,
+            path_effects=[
+                path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
+                path_effects.Normal()
+            ]
+        )
+
     # Add any specified white points.
     if white_points:
         wx = []
@@ -437,7 +453,8 @@ def cie_diagram(
                 color=opt.default_colorized_color if colorize else opt.default_color,
                 textcoords="offset points",
                 xytext=(15, -3),
-                ha='center'
+                ha='center',
+                zorder=100
             )
 
     # Add any specified CCT points.
@@ -456,7 +473,9 @@ def cie_diagram(
             bx,
             by,
             marker=".",
-            color=opt.default_colorized_color if colorize else opt.default_color
+            color=opt.default_colorized_color if colorize else opt.default_color,
+            s=16,
+            zorder=100
         )
         for pt, a in zip(zip(bx, by), annot):
             plt.annotate(
@@ -527,22 +546,6 @@ def cie_diagram(
             linewidth=1,
             markersize=0,
             antialiased=True
-        )
-
-    # Plot the RGB triangles
-    for item in spaces:
-        plt.plot(
-            item[0],
-            item[1],
-            marker='o',
-            color=item[2],
-            label=item[3],
-            linewidth=2,
-            markersize=0,
-            path_effects=[
-                path_effects.SimpleLineShadow(alpha=0.2, offset=(1, -1)),
-                path_effects.Normal()
-            ]
         )
 
     # We current only add labels when drawing RGB triangles

@@ -1504,7 +1504,7 @@ Parameters
     `scale`         | `#!py True`          | Scale the color with a linear RGB color space as defined by `scale_space`.
     `scale_space`   | `#!py 'srgb-linear'` | If `scale` is enabled, `scale_space` defines the RGB color space in which the returned color should be scaled within. The color space should be a linear space for best results. If undefined, `srgb-linear` will be used.
     `out_space`     | `#!py None`          | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space` or `xyz-d65` if `space` is `#!py None`.
-    `method`        | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+    `method`        | `#!py None`          | A string specifying the algorithm to use. By default `robertson-1968` is used.
     `**kwargs`      |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return
@@ -1534,7 +1534,7 @@ Parameters
 - 
     Parameters  | Defaults             | Description
     ----------- | -------------------- | -----------
-    `method`    | `#!py None`          | A string specifying the algorithm to use. By default `ohno-2013` is used.
+    `method`    | `#!py None`          | A string specifying the algorithm to use. By default `robertson-1968` is used.
     `**kwargs`  |                      | Any plugin specific parameters to pass to the `blackbody` method.
 
 Return

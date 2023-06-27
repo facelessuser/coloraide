@@ -311,17 +311,17 @@ Color('rgb(128.12345 0 128.12345)').to_string()
 Color2('rgb(128.12345 0 128.12345)').to_string()
 ```
 
-Properties             | Defaults            | Description
----------------------- | ------------------- | -----------
-`FIT`                  | `#!py "lch-chroma"` | The default gamut mapping method used by the `Color` object.
-`INTERPOLATE`          | `#!py "oklab"`      | The default color space used for interpolation.
-`DELTA_E`              | `#!py "76"`         | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
-`PRECISION`            | `#!py 5`            | The default precision for string outputs.
-`CHROMATIC_ADAPTATION` | `#!py "bradford"`   | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
-`HARMONY`              | `#!py "oklch"`      | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
-`CONTRAST`             | `#!py "wcag21"`     | Default contrast algorithm.
-`AVERAGE`              | `#!py "average"`    | Default color space for averaging.
-`CCT`                  | `#!py "ohno-2013`   | Default CCT method.
+Properties             | Defaults               | Description
+---------------------- | ---------------------- | -----------
+`FIT`                  | `#!py "lch-chroma"`    | The default gamut mapping method used by the `Color` object.
+`INTERPOLATE`          | `#!py "oklab"`         | The default color space used for interpolation.
+`DELTA_E`              | `#!py "76"`            | The default ∆E algorithm used. This applies to when [`delta_e()`](./distance.md#delta-e) is called without specifying a method or when using color distancing to separate color when using the interpolation method called [`steps`](./interpolation.md#steps).
+`PRECISION`            | `#!py 5`               | The default precision for string outputs.
+`CHROMATIC_ADAPTATION` | `#!py "bradford"`      | Chromatic adaptation method used when converting between two color spaces with different white points. See [Chromatic Adaptation](./cat.md) for more information.
+`HARMONY`              | `#!py "oklch"`         | Default color space to use for calculating color harmonies. This should be a cylindrical color space.
+`CONTRAST`             | `#!py "wcag21"`        | Default contrast algorithm.
+`AVERAGE`              | `#!py "average"`       | Default color space for averaging.
+`CCT`                  | `#!py "robertson-1968` | Default CCT method.
 
 ### Plugins
 

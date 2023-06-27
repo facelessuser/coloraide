@@ -19,7 +19,7 @@ DEF_DELTA_E = "76"
 DEF_AVERAGE = 'srgb-linear'
 DEF_CHROMATIC_ADAPTATION = "bradford"
 DEF_CONTRAST = "wcag21"
-DEF_CCT = "ohno-2013"
+DEF_CCT = "robertson-1968"
 
 # Maximum luminance in PQ is 10,000 cd/m^2
 # Relative XYZ has Y=1 for media white

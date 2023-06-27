@@ -72,7 +72,7 @@ being below the curve
 ![Isotherms](images/isotherms.png)
 
 ///// html | figcaption
-1960 Chromaticity Diagram with black body curve and isotherms indicating +/- 0.02 ∆~uv~.
+1960 Chromaticity Diagram with black body curve and isotherms indicating +/- 0.03 ∆~uv~.
 /////
 ////
 
@@ -148,7 +148,7 @@ Algorithm       | Key              | Description
 Robertson\ 1968 | `robertson-1968` | Uses the CIE 2˚ Standard Observer and can handle a range of 1000K - ∞.
 Ohno\ 2013      | `ohno-2013`      | Utilizes a combined approach of a triangular and parabolic solver. Current implementation allows for a range of 1000K - 100000K.
 
-[Ohno 2013](#ohno-2013) is the current default CCT approach, but any approach can be selected via the `method` parameter
+[Robertson 1968](#robertson-1968) is the current default CCT approach, but any approach can be selected via the `method` parameter
 in `blackbody()` or `cct()`.
 
 ```py play
@@ -179,9 +179,9 @@ to increasingly less accurate results. Even some results below 100000K may alrea
 ///
 
 ```py play
-color = Color.blackbody('srgb-linear', 5000, duv=0.02, method='robertson-1968')
+color = Color.blackbody('srgb-linear', 5000, duv=0.02)
 color
-color.cct(method='robertson-1968')
+color.cct()
 ```
 
 Because the calculation logic is built into the plugin, you can actually use the plugin to generate a higher resolution
@@ -213,7 +213,7 @@ Custom.register(
     overwrite=True
 )
 
-Steps([Color.blackbody('srgb', t, method='robertson-1968') for t in range(1000, 15000, 50)])
+Steps([Color.blackbody('srgb', t) for t in range(1000, 15000, 50)])
 ```
 
 ### Ohno 2013
@@ -242,7 +242,7 @@ associated with the expansion technique, all while maintaining good accuracy. Th
 [Roberson](#robertson-1968) approach, but it is a more accurate approach.
 
 ```py play
-color = Color.blackbody('srgb-linear', 5000, duv=0.02)
+color = Color.blackbody('srgb-linear', 5000, duv=0.02, method='ohno-2013')
 color
 color.cct()
 ```
@@ -262,8 +262,8 @@ can be useful if you have an idea of the range, but not the specific value. Usin
 iterations to achieve the same or better accuracy.
 
 ```py play
-Color('orange').cct()
-Color('orange').cct(start=2000, end=3000, iterations=3)
+Color('orange').cct(method='ohno-2013')
+Color('orange').cct(start=2000, end=3000, iterations=3, method='ohno-2013')
 ```
 
 If a more _pure_ approach is desired, `exact` can be used to directly use the "automatic expansion" without using the
@@ -271,8 +271,8 @@ spline. The values for the table will be explicitly calculated on the fly. Perfo
 to no increase in accuracy.
 
 ```py play
-Color.blackbody('srgb-linear', 5000, duv=0.02).cct()
-Color.blackbody('srgb-linear', 5000, duv=0.02).cct(exact=True)
+Color.blackbody('srgb-linear', 5000, duv=0.02).cct(method='ohno-2013')
+Color.blackbody('srgb-linear', 5000, duv=0.02).cct(method='ohno-2013', exact=True)
 ```
 
 Lastly, the Ohno 2013 method can be used with other CMFs if desired. To do this, the plugin must be instantiated with
@@ -302,5 +302,5 @@ Custom.register(
     overwrite=True
 )
 
-Steps([Custom.blackbody('srgb-linear', t) for t in range(1000, 15000, 50)])
+Steps([Custom.blackbody('srgb-linear', t, method='ohno-2013') for t in range(1000, 15000, 50)])
 ```
