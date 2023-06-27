@@ -20,7 +20,7 @@ class TestOhno2013Temp(util.ColorAssertsPyTest):
         """
 
         for duv in (-0.03, -0.02, -0.01, 0.0, 0.01, 0.02, 0.03):
-            cct2, duv2 = Color.blackbody('xyz-d65', cct, duv, scale=False).cct()
+            cct2, duv2 = Color.blackbody('xyz-d65', cct, duv, scale=False, method='ohno-2013').cct(method='ohno-2013')
             assert math.isclose(cct2, cct, rel_tol=(0.00001 if cct < 84000 else 0.0001), abs_tol=0.000001)
             assert math.isclose(duv2, duv, rel_tol=0.000001, abs_tol=0.000001)
 
