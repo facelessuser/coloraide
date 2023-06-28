@@ -1130,7 +1130,7 @@ class Color(metaclass=ColorMeta):
 
         return distance.closest(self, colors, method=method, **kwargs)
 
-    def luminance(self, *, white: VectorLike = cat.WHITES['2deg']['D65']) -> float:
+    def luminance(self, *, white: VectorLike | None = cat.WHITES['2deg']['D65']) -> float:
         """Get color's luminance."""
 
         if white is None:
