@@ -203,9 +203,9 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
         return "none"
 
     value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
-    string = ('{{:{}f}}'.format('.53' if p == -1 else '.' + str(p))).format(value)
-    s = string if value.is_integer() and p == 0 else string.rstrip('0').rstrip('.')
-    return '{}%'.format(s) if percent else s
+    if p == -1:
+        p = 53
+    return ('{{:{}{}g}}{}'.format('' if abs(value) >= 10 ** p else '.', p, '%' if percent else '')).format(value)
 
 
 def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover
