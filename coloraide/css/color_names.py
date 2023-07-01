@@ -169,7 +169,7 @@ val2name_map = dict([(v, k) for k, v in name2val_map.items()])  # type: dict[tup
 def to_name(value: Vector) -> str | None:
     """Convert CSS hex to webcolor name."""
 
-    return val2name_map.get(tuple([alg.round_half_up(c * 255) for c in value]), None)
+    return val2name_map.get(tuple(alg.round_half_up(c * 255) for c in value), None)
 
 
 def from_name(name: str) -> Vector | None:

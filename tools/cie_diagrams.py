@@ -119,7 +119,7 @@ class SpectralLocus:
     def steps(self, steps):
         """Get steps."""
 
-        return tuple([list(i) for i in zip(*self.spline.steps(steps))])
+        return tuple(list(i) for i in zip(*self.spline.steps(steps)))
 
     def __call__(self, wave):
         """Get the uv for the given temp."""
@@ -130,7 +130,7 @@ class SpectralLocus:
 def get_spline(x, y, steps=100):
     """Get spline."""
 
-    return tuple([list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='catrom').steps(steps))])
+    return tuple(list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='catrom').steps(steps)))
 
 
 def get_spectral_locus_labels(locus, waves, distance):

@@ -54,7 +54,7 @@ def apply_compositing(background, blend, operator, pixels, fit, space):
     # Overlay first layer on background color in isolation
     if background != 'transparent':
         color.compose(background, in_place=True).clip()
-    return tuple([int(x * 255) for x in color.fit(method=fit)[:4]])
+    return tuple(int(x * 255) for x in color.fit(method=fit)[:4])
 
 
 def process_image(imgs, bg, output, blend, porter_duff, fit, space):
