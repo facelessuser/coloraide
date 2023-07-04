@@ -225,6 +225,7 @@ illuminants
 indexable
 instantiation
 interpolator
+invertible
 io
 ish
 iterable

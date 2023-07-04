@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.1
+
+-   **NEW**: Fix small typing issue.
+-   **NEW**: Ensure that `coloraide.algebra.inv` can reorder rows to properly handle invertible matrices that initial
+    contain zeros at pivot points.
+
 ## 2.4
 
 -   **NEW**: Add Rec. 709 RGB color space.
