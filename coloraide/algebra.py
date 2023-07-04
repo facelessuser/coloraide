@@ -1864,7 +1864,11 @@ def inv(matrix: MatrixLike) -> Matrix:
 
     ---
 
-    Modified to handle greater than 2 x 2 dimensions.
+    Heavily modified by Isaac Muse.
+
+    - Modified to handle greater than 2 x 2 dimensions.
+    - Modified to shuffle rows to help handle a valid matrix which has a zero
+      at a pivot point.
     """
 
     # Ensure we have a square matrix
@@ -1881,48 +1885,54 @@ def inv(matrix: MatrixLike) -> Matrix:
             invert.append(transpose(inv(c)))  # type: ignore[arg-type]
         return reshape(invert, s)  # type: ignore[return-value]
 
-    indices = list(range(s[0]))
-    m = acopy(matrix)
+    # Get size and calculate augmented size
+    size = s[0]
 
-    # Create an identity matrix of the same size as our provided vector
-    im = identity(s[0])
+    # Create augmented matrix by adding the identity matrix on the right
+    m = [list(row) for row in matrix]
+    mi = identity(size)
 
-    # Iterating through each row, we will scale each row by it's "focus diagonal".
-    # Then using the scaled row, we will adjust the other rows.
-    # ```
-    # [[fd, 0,  0 ]
-    #  [0,  fd, 0 ]
-    #  [0,  0,  fd]]
-    # ```
-    for fd in indices:
-        # We will divide each value in the row by the "focus diagonal" value.
-        # If the we have a zero for the given `fd` value, we cannot invert.
-        denom = m[fd][fd]
-        if denom == 0:
-            raise ValueError('Matrix is not invertable')
+    # Ensure we do not zero values at each pivot point
+    for i in range(size):
+        # Is pivot point zero?
+        if m[i][i] == 0.0:
 
-        # We are converting the matrix to the identity and vice versa,
-        # So scale the diagonal such that it will now equal 1.
-        # Additionally, the same operations will be applied to the identity matrix
-        # and will turn it into `m ** -1` (what we are looking for)
-        fd_scalar = 1.0 / denom
-        for j in indices:
-            m[fd][j] *= fd_scalar
-            im[fd][j] *= fd_scalar
+            # Try to swap with a row where the pivot points in each row are not zero.
+            for j in list(range(i + 1, size)) + list(range(i - 1)):
+                if m[j][i] != 0.0 and m[i][j] != 0.0:
+                    m[i], m[j] = m[j], m[i]
+                    mi[i], mi[j] = mi[j], mi[i]
+                    break
 
-        # Now, using the value found at the index `fd` in the remaining rows (excluding `row[fd]`),
-        # Where `cr` is the current row under evaluation, subtract `row[cr][fd] * row[fd] from row[cr]`.
-        for cr in indices[0:fd] + indices[fd + 1:]:
+            # We cannot invert this matrix
+            else:
+                raise ValueError("Matrix is not invertible")
+
+    for i in range(size):
+
+        # Scale the diagonal such that it will now equal 1
+        scalar = 1 / m[i][i]
+        for j in range(size):
+            m[i][j] *= scalar
+            mi[i][j] *= scalar
+
+        # Now, using the value found at the index `i` in the remaining rows (excluding the pivot point `m[i]`),
+        # Where `r` is the current row under evaluation, subtract `m[r][i] * m[i] from m[r]`.
+        for r in range(size):
+            # Skip the pivot point
+            if r == i:
+                continue
+
             # The scalar for the current row
-            cr_scalar = m[cr][fd]
+            scalar = m[r][i]
 
-            # Scale each item in the `row[fd]` and subtract it from the current row `row[cr]`
-            for j in indices:
-                m[cr][j] -= cr_scalar * m[fd][j]
-                im[cr][j] -= cr_scalar * im[fd][j]
+            # Scale each item in the row (i) and subtract it from the current row (r)
+            for j in range(size):
+                m[r][j] -= scalar * m[i][j]
+                mi[r][j] -= scalar * mi[i][j]
 
-    # The identify matrix is now the inverse matrix and vice versa.
-    return im
+    # Return the inverse from the right side of the augmented matrix
+    return mi
 
 
 def vstack(arrays: tuple[ArrayLike, ...]) -> Array:

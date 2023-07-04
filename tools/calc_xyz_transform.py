@@ -104,7 +104,7 @@ if __name__ == "__main__":
     print('--- xyz -> rgb ---')
     pprint(from_xyz)
 
-    print('===== ACEScc =====')
+    print('===== ACEScg =====')
     to_xyz, from_xyz = get_matrix(white_aces, 'aces-ap1')
     print('--- rgb -> xyz ---')
     pprint(to_xyz)
