@@ -1888,7 +1888,7 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Get size and calculate augmented size
     size = s[0]
 
-    # Create augmented matrix by adding the identity matrix on the right
+    # Create the traditional augmented matrix, but keep the identity matrix and original matrix separate.
     m = [list(row) for row in matrix]
     mi = identity(size)
 
