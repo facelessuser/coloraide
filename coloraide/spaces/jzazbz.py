@@ -199,14 +199,14 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     ya = (ym + ((G - 1) * xa)) / G
 
     # Convert back to normal XYZ D65
-    return util.absxyzd65_to_xyz_d65([xa, ya, za])
+    return util.absxyz_to_xyz([xa, ya, za])
 
 
 def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
-    xa, ya, za = util.xyz_d65_to_absxyzd65(xyzd65)
+    xa, ya, za = util.xyz_to_absxyz(xyzd65)
     xm = (B * xa) - ((B - 1) * za)
     ym = (G * ya) - ((G - 1) * xa)
 
