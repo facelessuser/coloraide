@@ -66,6 +66,8 @@ print(LMS_TO_RGBL)
 
 RGBL_TO_LMS = np.asfarray(RGBL_TO_LMS)
 LMS_TO_RGBL = np.asfarray(LMS_TO_RGBL)
+LMS3_TO_OKLAB = np.asfarray(LMS3_TO_OKLAB)
+OKLAB_TO_LMS3 = np.asfarray(OKLAB_TO_LMS3)
 
 
 def linear_srgb_to_oklab(c):

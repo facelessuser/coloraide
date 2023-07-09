@@ -58,7 +58,7 @@ SRGBL_COEFF = [
     # Green
     [
         # Limit
-        [1.81444079, -1.19445267],
+        [1.8144408, -1.19445267],
         # `Kn` coefficients
         [0.73956515, -0.45954404, 0.08285427, 0.12541073, -0.14503204]
     ],
@@ -67,7 +67,7 @@ SRGBL_COEFF = [
         # Limit
         [0.13110758, 1.81333971],
         # `Kn` coefficients
-        [1.35692777, -0.00927853, -1.15078496, -0.50649074, 0.00645569]
+        [1.35691252, -0.00926974, -1.15076745, -0.50647252, 0.00645584]
     ]
 ]  # type: list[list[Vector]]
 
@@ -331,6 +331,7 @@ def compute_max_saturation(
         # Green component
         k0, k1, k2, k3, k4 = ok_coeff[1][1]
         wl, wm, ws = lms_to_rgb[1]
+
     else:
         # Blue component
         k0, k1, k2, k3, k4 = ok_coeff[2][1]
