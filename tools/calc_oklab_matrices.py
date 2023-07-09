@@ -23,12 +23,12 @@ after about 7 - 8 digits, the precision of 32 bit floats.
 To provide an M2 matrix that works better for 64 bit, we take the inverse M2,
 which provides a perfect transforms to white from Oklab `[1, 0, 0]` in 32 bit
 floating point. We process matrix as a float 32 bit values and emit it as a 64
-double values, rounding at the ~16 digit double accuracy limit. Then we apply a
-slight correction to account for the 64 bit noise to ensure it converts a perfect
-Oklab `[1, 0, 0]` to LMS `[1, 1, 1]`. Once corrected, we then calculate the
-forward matrix. This gives us a transform in 64 bit that drives chroma extremely
-close to zero for 64 bit doubles and maintains 32 bit precision of up to about 7
-digits, the 32 bit accuracy limit (~7.22).
+double values, ~17 digit double accuracy. Then we apply a slight correction to
+account for the 64 bit noise to ensure it converts a perfect Oklab `[1, 0, 0]`
+to LMS `[1, 1, 1]`. Once corrected, we then calculate the forward matrix. This
+gives us a transform in 64 bit that drives chroma extremely close to zero for
+64 bit doubles and maintains 32 bit precision of up to about 7 digits, the 32
+bit accuracy limit (~7.22).
 
 To demonstrate that our 64 bit converted matrices work as we claim and does not
 alter the intent of the values, we can observe by comparing the documented matrices
@@ -64,7 +64,7 @@ first 7 digits to the previous example we get the same values. Anything after
 >>> from coloraide.everything import ColorAll as Color
 >>> import numpy as np
 >>> Color('white').convert('oklab')[:]
-[1.0, 2.7755575615628914e-16, 0.0, 1.0]
+[1.0, -5.551115123125783e-17, 0.0, 1.0]
 >>> [np.float32(c) for c in Color('red').convert('oklab', norm=False)[:]]
 [0.6279554, 0.22486307, 0.12584628, 1.0]
 >>> [np.float32(c) for c in Color('green').convert('oklab', norm=False)[:]]
@@ -103,30 +103,30 @@ color pickers:
 [264.052020638055, 0.9999910912349018, 0.9999999646150918]
 ```
 
-And then ours. Ignoring the authors hue results for white and
-the oddly high chroma for an achromatic white in Okhsl (both
-of which are meaningless in an achromatic color), we can see that
+And then ours. Ignoring the authors hue and our hue results for white
+and the oddly high chroma for the author's achromatic white in Okhsl
+(both of which are meaningless in an achromatic color), we can see that
 that we match quite well up to ~7 digits.
 
 ```
 # Okhsl
 >>> Color('white').convert('okhsl', norm=False)[:]
-[0.0, 0.0, 1.0, 1.0]
+[180.0, 0.0, 1.0, 1.0]
 >>> Color('#ff0000').convert('okhsl', norm=False)[:]
-[29.233880279627837, 1.00000017643807, 0.5680846563197033, 1.0]
+[29.233880279627876, 1.0000001765854427, 0.5680846563197033, 1.0]
 >>> Color('#00ff00').convert('okhsl', norm=False)[:]
-[142.49534504144376, 0.9999999999999999, 0.8445289714936317, 1.0]
->>> Color('#0000ff').convert('okhsl', norm=False)[:]
+[142.4953450414438, 1.0000000000000009, 0.8445289714936317, 1.0]
+>>> [264.05202261637004, 1.0000000005848086, 0.36656533918708145, 1.0]
 [264.05202261637004, 1.0000000005848086, 0.36656533918708145, 1.0]
 # Okhsv
 >>> Color('white').convert('okhsv', norm=False)[:]
-[0.0, 0.0, 1.0, 1.0]
+[180.0, 0.0, 1.0, 1.0]
 >>> Color('#ff0000').convert('okhsv', norm=False)[:]
-[29.233880279627837, 1.0000004016005948, 1.0, 1.0]
+[29.233880279627876, 1.0000004019360378, 0.9999999999999994, 1.0]
 >>> Color('#00ff00').convert('okhsv', norm=False)[:]
-[142.49534504144376, 0.9999998662471932, 1.0000000000000002, 1.0]
+[142.4953450414438, 0.9999998662471965, 1.0000000000000004, 1.0]
 >>> Color('#0000ff').convert('okhsv', norm=False)[:]
-[264.05202261637004, 1.0000000023007063, 1.0000000000000002, 1.0]
+[264.05202261637004, 1.000000002300706, 0.9999999999999999, 1.0]
 """
 import sys
 import os
@@ -154,7 +154,7 @@ def pprint(value):
 def float32(value):
     """Treat as 32 bit float and emit as 64 bit double."""
 
-    return round(struct.unpack('f', struct.pack('f', value))[0], 16)
+    return struct.unpack('f', struct.pack('f', value))[0]
 
 
 # Calculated using our own `calc_xyz_transform.py`
