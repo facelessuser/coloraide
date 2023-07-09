@@ -7,7 +7,6 @@ https://www.researchgate.net/publication/\
 from __future__ import annotations
 from ..spaces import Space, Labish
 from ..channels import Channel, FLG_MIRROR_PERCENT
-from ..cat import WHITES
 from .. import algebra as alg
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
@@ -15,34 +14,18 @@ from .srgb import lin_srgb
 from ..types import Vector
 from typing import Any
 import math
+from .. import util
 
-# The IPT algorithm requires the use of the Hunt-Pointer-Estevez matrix,
-# but it was originally calculated with the assumption of a slightly different
-# D65 white point than what we use.
-#
-# - Theirs: [0.9504, 1.0, 1.0889] -> xy chromaticity points (0.3127035830618893, 0.32902313032606195)
-# - Ours: [0.9504559270516716, 1, 1.0890577507598784] -> calculated from xy chromaticity points [0.31270, 0.32900]
-#
-# For a good conversion, our options were to either set the color space to a slightly different D65 white point,
-# or adjust the algorithm such that it accounted for the difference in white point. We chose the latter.
-#
-# ```
-# theirs = alg.diag([0.9504, 1.0, 1.0889])
-# ours = alg.diag(white_d65)
-# return alg.multi_dot([MHPE, theirs, alg.inv(ours)])
-# ```
-#
-# Below is the Hunter-Pointer-Estevez matrix combined with our white point compensation.
 XYZ_TO_LMS = [
-    [0.4001764512951712, 0.7075, -0.08068831054981859],
-    [-0.2279865839462744, 1.15, 0.061191135138152386],
-    [0.0, 0.0, 0.9182669691320122]
+    [0.4002, 0.7075, -0.0807],
+    [-0.2280, 1.1500, 0.0612],
+    [0.0, 0.0, 0.9184]
 ]
 
 LMS_TO_XYZ = [
-    [1.8503518239760197, -1.1383686221417688, 0.23844898940542367],
-    [0.36683077517134854, 0.6438845448402356, -0.01067344358438],
-    [0.0, 0.0, 1.089007917757562]
+    [1.8502429449432056, -1.1383016378672328, 0.23843495850870136],
+    [0.36683077517134854, 0.6438845448402355, -0.010673443584379992],
+    [0.0, 0.0, 1.088850174216028]
 ]
 
 LMS_P_TO_IPT = [
@@ -58,12 +41,12 @@ IPT_TO_LMS_P = [
 ]
 
 ACHROMATIC_RESPONSE = [
-    [0.017066845239980113, 1.3218447776831226e-06, 329.7602673181543],
-    [0.022993026958471587, 1.7808336678784566e-06, 329.76026731797435],
-    [0.027372558329889066, 2.1200328924997904e-06, 329.76026731785475],
-    [0.030976977952230922, 2.399198912177825e-06, 329.7602673177659],
-    [0.9999910919149724, 7.745034210859942e-05, 329.7602673174851],
-    [5.243613106559706, 0.00040612324677300886, 329.7602673178901]]  # type: list[Vector]
+    (0.017066845239980113, 1.321844777655898e-06, 329.76026731764046),
+    (0.022993026958471587, 1.7808336678784566e-06, 329.76026731797435),
+    (0.02737255832988907, 2.1200328924793134e-06, 329.7602673179663),
+    (0.03097697795223092, 2.3991989122003048e-06, 329.7602673180789),
+    (0.9999910919149724, 7.745034210925492e-05, 329.7602673179579),
+    (5.243613106559707, 0.0004061232467725615, 329.7602673179984)]  # type: list[Vector]
 
 
 def xyz_to_ipt(xyz: Vector) -> Vector:
@@ -108,7 +91,11 @@ class IPT(Labish, Space):
         "protan": "p",
         "tritan": "t"
     }
-    WHITE = WHITES['2deg']['D65']
+
+    # The D65 white point used in the paper was different than what we use.
+    # We use chromaticity points (0.31270, 0.3290) which gives us an XYZ of ~[0.9505, 1.0000, 1.0890]
+    # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
+    WHITE = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])
     # Precalculated from:
     # [
     #     (1, 5, 1, 1000.0),

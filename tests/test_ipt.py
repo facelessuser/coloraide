@@ -9,13 +9,13 @@ class TestIPT(util.ColorAssertsPyTest):
     """Test IPT."""
 
     COLORS = [
-        ('red', 'color(--ipt 0.45616 0.62086 0.44282)'),
-        ('orange', 'color(--ipt 0.64877 0.189 0.5303)'),
-        ('yellow', 'color(--ipt 0.85654 -0.10831 0.65148)'),
+        ('red', 'color(--ipt 0.45616 0.62091 0.44282)'),
+        ('orange', 'color(--ipt 0.64877 0.18903 0.5303)'),
+        ('yellow', 'color(--ipt 0.85655 -0.1083 0.65147)'),
         ('green', 'color(--ipt 0.3933 -0.23454 0.27459)'),
-        ('blue', 'color(--ipt 0.4443 -0.23713 -0.74847)'),
-        ('indigo', 'color(--ipt 0.28318 0.09827 -0.31015)'),
-        ('violet', 'color(--ipt 0.72886 0.31223 -0.24012)'),
+        ('blue', 'color(--ipt 0.44429 -0.2372 -0.74849)'),
+        ('indigo', 'color(--ipt 0.28317 0.09827 -0.31015)'),
+        ('violet', 'color(--ipt 0.72886 0.31225 -0.24012)'),
         ('white', 'color(--ipt 0.99999 0.00007 -0.00004)'),
         ('gray', 'color(--ipt 0.51724 0.00003 -0.00002)'),
         ('black', 'color(--ipt 0 0 0)'),

@@ -5,6 +5,8 @@
 -   **FIX**: Fix small typing issue.
 -   **FIX**: Ensure that `coloraide.algebra.inv` can reorder rows to properly handle invertible matrices that initial
     contain zeros at pivot points.
+-   **FIX**: Ensure IPT uses the exact white point as documented in the paper.
+-   **FIX**: Tweaks to Oklab matrix precision.
 
 ## 2.4
 
