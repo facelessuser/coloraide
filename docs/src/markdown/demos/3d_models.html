@@ -187,12 +187,12 @@
 
 </div>
 <footer>
-  <div>Created with <a href="/coloraide" target="_blank", rel="noopener">ColorAide</a></div>
+  <div>Created with <a href="/coloraide/demos" target="_blank", rel="noopener">ColorAide</a></div>
   <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.2/plotly.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.23.3/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import RGBish
@@ -793,7 +793,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.3/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/",
     fullStdLib: false
   })
 
