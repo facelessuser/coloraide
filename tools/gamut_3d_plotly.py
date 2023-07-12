@@ -63,76 +63,74 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
 
     zpos = 0.0 if location == 'bottom' else 1.0 * factor
     start, end = 1.0 * factor, 0.0
-    traces = []
 
     # Render the two halves of the disc
-    for hue_start, hue_end in ((0, 180), (180, 360)):
-        x = []
-        y = []
-        z = []
-        u = []
-        v = []
-        cmap = []
+    hue_start, hue_end = 0, 360
+    x = []
+    y = []
+    z = []
+    u = []
+    v = []
+    cmap = []
 
-        # Interpolate a circle on the outer edge
-        c1 = ColorCyl(gamut, [hue_start, start, zpos])
-        c2 = ColorCyl(gamut, [hue_end, start, zpos])
-        chan_name = str(c1._space.channels[1])
-        s1 = ColorCyl.steps([c1, c2], steps=int(resolution / 2), space=gamut, hue='specified')
-        s2 = [t.clone().set(chan_name, end) for t in s1]
+    # Interpolate a circle on the outer edge
+    c1 = ColorCyl(gamut, [hue_start, start, zpos])
+    c2 = ColorCyl(gamut, [hue_end, start, zpos])
+    chan_name = str(c1._space.channels[1])
+    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut, hue='specified')
+    s2 = [t.clone().set(chan_name, end) for t in s1]
 
-        # Interpolate concentric circles to the center of the disc
-        step = int(resolution / 4)
-        for r in range(step):
-            for t1, t2 in zip(s1, s2):
-                c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
+    # Interpolate concentric circles to the center of the disc
+    step = int(resolution / 2)
+    for r in range(step):
+        for t1, t2 in zip(s1, s2):
+            c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
+            hue = c._space.hue_index()
+            a, b = alg.polar_to_rect(c[1], c[hue])
+            u.append(a)
+            v.append(b)
+            c.convert(space, norm=False, in_place=True)
+
+            # HSL and HSV spaces
+            if space_type == 'hslish/hsvish':
+                hue, saturation, lightness = c._space.indexes()
+                a, b = alg.polar_to_rect(c[saturation], c[hue])
+                x.append(a)
+                y.append(b)
+                z.append(c[lightness])
+
+            # HWB
+            else:
                 hue = c._space.hue_index()
                 a, b = alg.polar_to_rect(c[1], c[hue])
-                u.append(a)
-                v.append(b)
-                c.convert(space, norm=False, in_place=True)
+                x.append(a)
+                y.append(b)
+                z.append(c[2])
 
-                # HSL and HSV spaces
-                if space_type == 'hslish/hsvish':
-                    hue, saturation, lightness = c._space.indexes()
-                    a, b = alg.polar_to_rect(c[saturation], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[lightness])
+            # Ensure colors fit in output color gamut.
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit()
+            else:
+                s.clip()
+            cmap.append(s)
 
-                # HWB
-                else:
-                    hue = c._space.hue_index()
-                    a, b = alg.polar_to_rect(c[1], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[2])
+    # Calculate triangles
+    tri = Delaunay(list(zip(u, v)))
 
-                # Ensure colors fit in output color gamut.
-                s = c.convert('srgb')
-                if not s.in_gamut():
-                    s.fit()
-                else:
-                    s.clip()
-                cmap.append(s)
+    # Generate triangulated surface
+    trace = trisurf(
+        x=x, y=y, z=z,
+        simplices=tri.simplices,
+        show_colorbar=False,
+        plot_edges=edges,
+        color_func=[get_face_color(cmap, t) for t in tri.simplices]
+    ).data
+    trace[0].update(opacity=opacity)
+    if edges:
+        trace[1].update(hoverinfo='skip')
 
-        # Calculate triangles
-        tri = Delaunay(list(zip(u, v)))
-
-        # Generate triangulated surface
-        trace = trisurf(
-            x=x, y=y, z=z,
-            simplices=tri.simplices,
-            show_colorbar=False,
-            plot_edges=edges,
-            color_func=[get_face_color(cmap, t) for t in tri.simplices]
-        ).data
-        trace[0].update(opacity=opacity)
-        if edges:
-            trace[1].update(hoverinfo='skip')
-        traces.append(trace)
-
-    return traces[0] + traces[1]
+    return trace
 
 
 def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
@@ -165,89 +163,89 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     factor = gspace.channels[1].high
 
     # Render the two halves of the cylinder
-    for start, end in ((0, 180), (180, 360)):
-        u = []
-        v = []
-        x = []
-        y = []
-        z = []
-        cmap = []
+    start, end = 0, 360
+    u = []
+    v = []
+    x = []
+    y = []
+    z = []
+    cmap = []
 
-        # Interpolate the sides of the cylinder at 0 and 180 degrees
-        c1 = ColorCyl(gamut_space, [start, 1 * factor, 1 * factor])
-        c2 = ColorCyl(gamut_space, [start, 1 * factor, 0])
-        c3 = ColorCyl(gamut_space, [end, 1 * factor, 1 * factor])
-        c4 = ColorCyl(gamut_space, [end, 1 * factor, 0])
-        s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space, hue='specified')
-        s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space, hue='specified')
+    # Interpolate the cylinder cylinder from 0 to 360 degrees
+    c1 = ColorCyl(gamut_space, [start, 1 * factor, 1 * factor])
+    c2 = ColorCyl(gamut_space, [start, 1 * factor, 0])
+    c3 = ColorCyl(gamut_space, [end, 1 * factor, 1 * factor])
+    c4 = ColorCyl(gamut_space, [end, 1 * factor, 0])
+    s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space, hue='specified')
+    s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space, hue='specified')
 
-        # Create a 3D mesh by interpolating the the degree ring at each point down the cylinder side.
-        for t1, t2 in zip(s1, s2):
-            for c in ColorCyl.steps([t1, t2], steps=int(resolution / 2), space=gamut_space, hue='specified'):
-                u.append(c[2])
-                v.append(c['hue'])
-                c.convert(space, norm=False, in_place=True)
-                # LCh spaces
-                if is_lchish:
-                    light, chroma, hue = c._space.names()
-                    a, b = alg.polar_to_rect(c[chroma], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[light])
+    # Create a 3D mesh by interpolating the the degree ring at each point down the cylinder side.
+    for t1, t2 in zip(s1, s2):
+        for c in ColorCyl.steps([t1, t2], steps=resolution, space=gamut_space, hue='specified'):
+            u.append(c[2])
+            v.append(c['hue'])
+            c.convert(space, norm=False, in_place=True)
+            # LCh spaces
+            if is_lchish:
+                light, chroma, hue = c._space.names()
+                a, b = alg.polar_to_rect(c[chroma], c[hue])
+                x.append(a)
+                y.append(b)
+                z.append(c[light])
 
-                # HSL and HSV spaces
-                elif is_hslish_hsvish:
-                    hue, sat, light = c._space.names()
-                    a, b = alg.polar_to_rect(c[sat], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[light])
+            # HSL and HSV spaces
+            elif is_hslish_hsvish:
+                hue, sat, light = c._space.names()
+                a, b = alg.polar_to_rect(c[sat], c[hue])
+                x.append(a)
+                y.append(b)
+                z.append(c[light])
 
-                # HWB or any other cylindrical space that doesn't fit in the categories above.
-                elif is_cyl:
-                    hue = c._space.hue_index()
-                    a, b = alg.polar_to_rect(c[1], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[2])
+            # HWB or any other cylindrical space that doesn't fit in the categories above.
+            elif is_cyl:
+                hue = c._space.hue_index()
+                a, b = alg.polar_to_rect(c[1], c[hue])
+                x.append(a)
+                y.append(b)
+                z.append(c[2])
 
-                # Lab spaces
-                elif is_labish:
-                    light, a, b = c._space.names()
-                    x.append(c[a])
-                    y.append(c[b])
-                    z.append(c[light])
+            # Lab spaces
+            elif is_labish:
+                light, a, b = c._space.names()
+                x.append(c[a])
+                y.append(c[b])
+                z.append(c[light])
 
-                # Non-cylindrical spaces could be done here, but normally are not.
-                else:
-                    x.append(c[0])
-                    y.append(c[1])
-                    z.append(c[2])
+            # Non-cylindrical spaces could be done here, but normally are not.
+            else:
+                x.append(c[0])
+                y.append(c[1])
+                z.append(c[2])
 
-                # Adjust gamut to fit the display space
-                s = c.convert('srgb')
-                if not s.in_gamut():
-                    s.fit()
-                else:
-                    s.clip()
+            # Adjust gamut to fit the display space
+            s = c.convert('srgb')
+            if not s.in_gamut():
+                s.fit()
+            else:
+                s.clip()
 
-                cmap.append(s)
+            cmap.append(s)
 
-        # Calculate the triangles
-        tri = Delaunay(list(zip(u, v)))
+    # Calculate the triangles
+    tri = Delaunay(list(zip(u, v)))
 
-        # Build the triangulated surface
-        trace = trisurf(
-            x=x, y=y, z=z,
-            simplices=tri.simplices,
-            show_colorbar=False,
-            plot_edges=edges,
-            color_func=[get_face_color(cmap, t) for t in tri.simplices]
-        ).data
-        trace[0].update(opacity=opacity)
-        if edges:
-            trace[1].update(hoverinfo='skip')
-        fig.add_traces(trace)
+    # Build the triangulated surface
+    trace = trisurf(
+        x=x, y=y, z=z,
+        simplices=tri.simplices,
+        show_colorbar=False,
+        plot_edges=edges,
+        color_func=[get_face_color(cmap, t) for t in tri.simplices]
+    ).data
+    trace[0].update(opacity=opacity)
+    if edges:
+        trace[1].update(hoverinfo='skip')
+    fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
     if space in ('hwb', 'hpluv'):
