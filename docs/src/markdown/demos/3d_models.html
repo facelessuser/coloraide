@@ -375,7 +375,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     z = []
     cmap = []
 
-    # Interpolate the cylinder cylinder from 0 to 360 degrees
+    # Interpolate the cylinder from 0 to 360 degrees
     c1 = ColorCyl(gamut_space, [start, 1 * factor, 1 * factor])
     c2 = ColorCyl(gamut_space, [start, 1 * factor, 0])
     c3 = ColorCyl(gamut_space, [end, 1 * factor, 1 * factor])
@@ -383,7 +383,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     s1 = ColorCyl.steps([c1, c2], steps=resolution, space=gamut_space, hue='specified')
     s2 = ColorCyl.steps([c3, c4], steps=resolution, space=gamut_space, hue='specified')
 
-    # Create a 3D mesh by interpolating the the degree ring at each point down the cylinder side.
+    # Create a 3D mesh by interpolating ring at each lightness down the cylinder side.
     for t1, t2 in zip(s1, s2):
         for c in ColorCyl.steps([t1, t2], steps=resolution, space=gamut_space, hue='specified'):
             u.append(c[2])
