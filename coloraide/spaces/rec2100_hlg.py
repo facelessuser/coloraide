@@ -38,7 +38,7 @@ class Environment:
 
         self.a = 0.17883277
         self.b = 0.28466892  # `1 - 4 * a`
-        self.c = 0.55991073  # `0.5 - a * alg.nlog(4 * a)`
+        self.c = 0.55991073  # `0.5 - a * math.log(4 * a)`
         self.beta = hlg_black_level_lift(lw, lb)
         self.scale = scale
         self.inv_scale = 1 / scale

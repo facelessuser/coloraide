@@ -44,7 +44,7 @@ class stop:
 def midpoint(t: float, h: float = 0.5) -> float:
     """Midpoint easing function."""
 
-    return 0.0 if h <= 0 or h >= 1 else math.pow(t, math.log(0.5) / math.log(h))
+    return 0.0 if h <= 0 or h >= 1 else alg.npow(t, math.log(0.5) / math.log(h))
 
 
 def hint(mid: float) -> Callable[..., float]:

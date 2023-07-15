@@ -165,12 +165,6 @@ def npow(base: float, exp: float) -> float:
     return math.copysign(abs(base) ** exp, base)
 
 
-def nlog(value: float) -> float:
-    """Perform `log` with a negative number."""
-
-    return math.copysign(1, value) * math.log(abs(value))
-
-
 def rect_to_polar(a: float, b: float) -> tuple[float, float]:
     """Take rectangular coordinates and make them polar."""
 

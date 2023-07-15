@@ -7,11 +7,6 @@ import math
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
-    def test_nlog(self):
-        """Test `nlog`."""
-
-        self.assertEqual(alg.nlog(-3), -1.0986122886681098)
-
     def test_cross(self):
         """Test cross product."""
 

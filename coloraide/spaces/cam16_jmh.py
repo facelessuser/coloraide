@@ -263,7 +263,7 @@ def unadapt(adapted: Vector, fl: float) -> Vector:
     """Remove adaptation from coordinates."""
 
     coords = []
-    constant = 100 / fl * math.pow(27.13, ADAPTED_COEF_INV)
+    constant = 100 / fl * (27.13 ** ADAPTED_COEF_INV)
     for c in adapted:
         cabs = abs(c)
         coords.append(math.copysign(constant * alg.npow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
