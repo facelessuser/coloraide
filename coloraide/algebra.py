@@ -1929,10 +1929,10 @@ def inv(matrix: MatrixLike) -> Matrix:
     return mi
 
 
-def vstack(arrays: tuple[ArrayLike, ...]) -> Array:
+def vstack(arrays: Sequence[ArrayLike]) -> Array:
     """Vertical stack."""
 
-    m = []  # type: list[Array]
+    m = []  # type: list[Any]
     first = True
     dims = 0
     for i in arrays:
@@ -1944,12 +1944,12 @@ def vstack(arrays: tuple[ArrayLike, ...]) -> Array:
                 return reshape(arrays, (len(arrays), 1))  # type: ignore[return-value, arg-type]
             elif dims == 1:
                 return reshape(arrays, (len(arrays), cs[-1]))  # type: ignore[return-value, arg-type]
-        m.append(reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:]))  # type: ignore[arg-type]
+        m.extend(reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:]))  # type: ignore[arg-type]
 
     if first:
         raise ValueError("'vstack' requires at least one array")
 
-    return sum(m, [])  # type: ignore[arg-type]
+    return m
 
 
 def _hstack_extract(a: ArrayLike, s: Sequence[int]) -> Iterator[Vector]:
@@ -1961,7 +1961,7 @@ def _hstack_extract(a: ArrayLike, s: Sequence[int]) -> Iterator[Vector]:
         yield [next(data) for _ in range(length)]
 
 
-def hstack(arrays: tuple[ArrayLike, ...]) -> Array:
+def hstack(arrays: Sequence[ArrayLike]) -> Array:
     """Horizontal stack."""
 
     # Gather up shapes
@@ -1992,7 +1992,8 @@ def hstack(arrays: tuple[ArrayLike, ...]) -> Array:
     # Iterate the arrays returning the content per second dimension
     m = []  # type: list[Any]
     for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrays, shapes)]):
-        m.extend(sum(data, []))
+        for d in data:
+            m.extend(d)
 
     # Shape the data to the new shape
     new_shape = first[:1] + tuple([columns]) + first[2:]
