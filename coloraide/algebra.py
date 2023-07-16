@@ -857,371 +857,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
         return value  # type: ignore[no-any-return]
 
 
-def _vector_math(op: Callable[..., float], a: VectorLike, b: VectorLike) -> Vector:
-    """Divide two vectors."""
-
-    # Broadcast the vector
-    if len(a) == 1:
-        a = [a[0]] * len(b)
-    elif len(b) == 1:
-        b = [b[0]] * len(a)
-
-    return [op(x, y) for x, y in zipl(a, b)]
-
-
-@overload
-def _math(
-    op: Callable[..., float],
-    a: float,
-    b: float,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float:
-    ...
-
-
-@overload
-def _math(
-    op: Callable[..., float],
-    a: float | VectorLike,
-    b: VectorLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
-    ...
-
-
-@overload
-def _math(
-    op: Callable[..., float],
-    a: VectorLike,
-    b: float | VectorLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
-    ...
-
-
-@overload
-def _math(
-    op: Callable[..., float],
-    a: MatrixLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
-    ...
-
-
-@overload
-def _math(
-    op: Callable[..., float],
-    a: ArrayLike | float,
-    b: MatrixLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
-    ...
-
-
-def _math(
-    op: Callable[..., float],
-    a: float | ArrayLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """
-    Reuse same logic for basic, multiplication, division, addition and subtraction.
-
-    Optimized methods are provided for:
-    - equal size matrices
-    - operations between two inputs whose number of dimensions are below 2
-    - operations involving at least one scalar
-
-    Matrices will be detected and the appropriate logic applied
-    unless `dims` is provided. `dims` should simply describe the
-    number of dimensions of `a` and `b`: (2, 1) for a 2D and 1D array.
-    Providing `dims` will sidestep analyzing the matrix for a more
-    performant operation. Anything dimensions above 2 will be treated
-    as an ND x MD scenario and the actual dimensions will be extracted
-    regardless due to necessity.
-    """
-
-    if not dims or dims[0] > 2 or dims[1] > 2:
-        shape_a = shape(a)
-        shape_b = shape(b)
-        dims_a = len(shape_a)
-        dims_b = len(shape_b)
-
-        # Handle matrices of N-D and M-D size
-        if dims_a > 2 or dims_b > 2:
-            if dims_a == dims_b:
-                # Apply math to two N-D matrices
-                return reshape(
-                    [op(x, y) for x, y in zip(flatiter(a), flatiter(b))],
-                    shape_a
-                )
-            elif not dims_a or not dims_b:
-                if not dims_a:
-                    # Apply math to a number and an N-D matrix
-                    return reshape([op(a, x) for x in flatiter(b)], shape_b)
-                # Apply math to an N-D matrix and a number
-                return reshape([op(x, b) for x in flatiter(a)], shape_a)
-
-            # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
-            bcast = broadcast(a, b)  # type: ignore[arg-type]
-            return reshape([op(x, y) for x, y in bcast], bcast.shape)
-    else:
-        dims_a, dims_b = dims
-
-    # Inputs are of equal size and shape
-    if dims_a == dims_b:
-        if dims_a == 1:
-            # Apply math to two vectors
-            return _vector_math(op, a, b)  # type: ignore[arg-type]
-        elif dims_a == 2:
-            # Apply math to two 2-D matrices
-            return [_vector_math(op, ra, rb) for ra, rb in zipl(a, b)]  # type: ignore[arg-type]
-        return op(a, b)
-
-    # Inputs containing a scalar on either side
-    elif not dims_a or not dims_b:
-        if dims_a == 1:
-            # Apply math to a vector and number
-            return [op(i, b) for i in a]  # type: ignore[union-attr]
-        elif dims_b == 1:
-            # Apply math to a number and a vector
-            return [op(a, i) for i in b]  # type: ignore[union-attr]
-        elif dims_a == 2:
-            # Apply math to 2-D matrix and number
-            return [[op(i, b) for i in row] for row in a]  # type: ignore[union-attr]
-        # Apply math to a number and a matrix
-        return [[op(a, i) for i in row] for row in b]  # type: ignore[union-attr]
-
-    # Inputs are at least 2-D dimensions or below on both sides
-    if dims_a == 1:
-        # Apply math to vector and 2-D matrix
-        return [_vector_math(op, a, row) for row in b]  # type: ignore[arg-type, union-attr]
-    # Apply math to 2-D matrix and a vector
-    return [_vector_math(op, row, b) for row in a]  # type: ignore[arg-type, union-attr]
-
-
-@overload
-def divide(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
-    ...
-
-
-@overload
-def divide(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def divide(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def divide(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-@overload
-def divide(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-def divide(
-    a: float | ArrayLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """Divide simple numbers, vectors, and 2D matrices."""
-
-    return _math(operator.truediv, a, b, dims=dims)
-
-
-@overload
-def multiply(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
-    ...
-
-
-@overload
-def multiply(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def multiply(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-@overload
-def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-def multiply(
-    a: float | ArrayLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """Multiply simple numbers, vectors, and 2D matrices."""
-
-    return _math(operator.mul, a, b, dims=dims)
-
-
-@overload
-def add(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
-    ...
-
-
-@overload
-def add(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def add(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def add(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-@overload
-def add(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-def add(
-    a: float | ArrayLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """Add simple numbers, vectors, and 2D matrices."""
-
-    return _math(operator.add, a, b, dims=dims)
-
-
-@overload
-def subtract(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
-    ...
-
-
-@overload
-def subtract(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def subtract(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
-    ...
-
-
-@overload
-def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-@overload
-def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
-    ...
-
-
-def subtract(
-    a: float | ArrayLike,
-    b: float | ArrayLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """Subtract simple numbers, vectors, and 2D matrices."""
-
-    return _math(operator.sub, a, b, dims=dims)
-
-
-@overload
-def apply(
-    fn: Callable[..., float],
-    a: float,
-    b: float | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float:
-    ...
-
-
-@overload
-def apply(
-    fn: Callable[..., float],
-    a: float | VectorLike,
-    b: VectorLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
-    ...
-
-
-@overload
-def apply(
-    fn: Callable[..., float],
-    a: VectorLike,
-    b: float | VectorLike | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
-    ...
-
-
-@overload
-def apply(
-    fn: Callable[..., float],
-    a: MatrixLike,
-    b: float | ArrayLike | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
-    ...
-
-
-@overload
-def apply(
-    fn: Callable[..., float],
-    a: ArrayLike | float,
-    b: MatrixLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
-    ...
-
-
-def apply(
-    fn: Callable[..., float],
-    a: float | ArrayLike,
-    b: float | ArrayLike | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float | Array:
-    """Apply a given function over each element of the matrix."""
-
-    if b is None:
-        return reshape([fn(f) for f in flatiter(a)], shape(a))
-
-    return _math(fn, a, b, dims=dims)
-
-
-class BroadcastTo:
+class _BroadcastTo:
     """
     Broadcast to a shape.
 
@@ -1234,7 +870,7 @@ class BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: ArrayLike, old: tuple[int, ...], new: tuple[int, ...]) -> None:
+    def __init__(self, array: ArrayLike | float, old: tuple[int, ...], new: tuple[int, ...]) -> None:
         """Initialize."""
 
         self._loop1 = 0
@@ -1274,6 +910,9 @@ class BroadcastTo:
             else:
                 self.repeat = repeat
                 self.expand = expand
+        elif not self.data:
+            # There is no data
+            self.amount = self.length = self.expand = self.repeat = 0
         else:
             # There is no modifications that need to be made on this array,
             # So we'll be chunking it without any cleverness.
@@ -1293,19 +932,13 @@ class BroadcastTo:
         self._chunk_subindex = 0
         self._chunk_max = self.amount * self.length
         self._chunk_index = 0
-        self._chunk = self._chunk_data()
-
-    def _chunk_data(self) -> list[float]:
-        """Chunk the source data using are pre-calculated understanding of data amounts and length."""
-
-        return self.data[self._chunk_index:self._chunk_index + self.length]
 
     def __next__(self) -> float:
         """Next."""
 
         if self._loop1:
             # Get the data.
-            d = self._chunk[self._chunk_subindex]
+            d = self.data[self._chunk_index + self._chunk_subindex]
 
             self._chunk_subindex += 1
             if self._chunk_subindex >= self.length:
@@ -1325,10 +958,6 @@ class BroadcastTo:
                         if self._loop1:
                             # We need to keep going
                             self._chunk_index = 0
-                            self._chunk = self._chunk_data()
-                    else:
-                        # Still not at the end of the data, so get the next chunk
-                        self._chunk = self._chunk_data()
 
             # Return the current data
             return d
@@ -1342,10 +971,121 @@ class BroadcastTo:
         return self
 
 
+class _SimpleBroadcast:
+    """
+    Special broadcast of less than 2 arrays or 2 small dimension arrays that is faster than the generalized approach.
+
+    A single array can have any dimensions, but two arrays must have dimensions less than 2.
+    """
+
+    def __init__(self, arrays: Sequence[ArrayLike | float], shapes: Sequence[tuple[int, ...]]) -> None:
+        """Initialize."""
+
+        total = len(arrays)
+        if total == 0:
+            a, b = None, None  # type: tuple[Any, Any]
+        elif total == 1:
+            a, b = arrays[0], None
+        else:
+            a, b = arrays
+
+        self.a = a
+        self.dims_a = len(shapes[0]) if a is not None else 0
+
+        self.b = b
+        self.dims_b = len(shapes[1]) if b is not None else 0
+
+        self.reset()
+
+    def vector_broadcast(self, a: VectorLike, b: VectorLike) -> Iterator[tuple[float, ...]]:
+        """Broadcast two vectors."""
+
+        # Broadcast the vector
+        if len(a) == 1:
+            a = [a[0]] * len(b)
+        elif len(b) == 1:
+            b = [b[0]] * len(a)
+
+        yield from zipl(a, b)
+
+    def broadcast(
+        self,
+        a: ArrayLike | float | None,
+        b: ArrayLike | float | None,
+        dims_a: int, dims_b: int
+    ) -> Iterator[tuple[float, ...]]:
+        """Simple broadcast of a single array or two arrays with dimensions less than 2."""
+
+        # Broadcast a single array case or empty set of arrays.
+        if b is None:
+            if a is not None:
+                yield from ((i,) for i in flatiter(a))
+            return
+
+        # Inputs have matching dimensions.
+        if dims_a == dims_b:
+            if dims_a == 1:
+                # Broadcast two vectors
+                yield from self.vector_broadcast(a, b)  # type: ignore[arg-type]
+            elif dims_a == 2:
+                # Broadcast two 2-D matrices
+                for ra, rb in zipl(a, b):  # type: ignore[arg-type]
+                    yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+            else:
+                yield a, b  # type: ignore[misc]
+
+        # Inputs containing a scalar on either side
+        elif not dims_a or not dims_b:
+            if dims_a == 1:
+                # Apply math to a vector and number
+                for i in a:  # type: ignore[union-attr]
+                    yield i, b  # type: ignore[misc]
+            elif dims_b == 1:
+                # Apply math to a number and a vector
+                for i in b:  # type: ignore[union-attr]
+                    yield a, i  # type: ignore[misc]
+            elif dims_a == 2:
+                # Apply math to 2-D matrix and number
+                for row in a:  # type: ignore[union-attr]
+                    for i in row:  # type: ignore[union-attr]
+                        yield i, b  # type: ignore[misc]
+            else:
+                for row in b:  # type: ignore[union-attr]
+                    for i in row:  # type: ignore[union-attr]
+                        yield a, i  # type: ignore[misc]
+
+        # Inputs are at least 2-D dimensions or below on both sides
+        elif dims_a == 1:
+            # Broadcast a vector and 2-D matrix
+            for row in b:  # type: ignore[union-attr]
+                yield from self.vector_broadcast(a, row)  # type: ignore[arg-type]
+        else:
+            # Broadcast a 2-D matrix and a vector
+            for row in a:  # type: ignore[union-attr]
+                yield from self.vector_broadcast(row, b)  # type: ignore[arg-type]
+
+    def reset(self) -> None:
+        """Reset."""
+
+        self._iter = self.broadcast(self.a, self.b, self.dims_a, self.dims_b)
+
+    def __next__(self) -> tuple[float, ...]:
+        """Next."""
+
+        # Get the next chunk of data
+        return next(self._iter)
+
+    def __iter__(self) -> Iterator[tuple[float, ...]]:
+        """Iterate."""
+
+        # Setup and and return the iterator.
+        return self
+
+
 class Broadcast:
     """Broadcast."""
 
-    def __init__(self, *arrays: ArrayLike) -> None:
+    def __init__(self, *arrays: ArrayLike | float) -> None:
         """Broadcast."""
 
         # Determine maximum dimensions
@@ -1353,8 +1093,6 @@ class Broadcast:
         max_dims = 0
         for a in arrays:
             s = shape(a)
-            if not s:
-                s = (1,)
             dims = len(s)
             if dims > max_dims:
                 max_dims = dims
@@ -1379,9 +1117,12 @@ class Broadcast:
         common = tuple(s2)
 
         # Create iterators to "broadcast to"
-        self.iters = []
-        for a, s1 in zip(arrays, stage1_shapes):
-            self.iters.append(BroadcastTo(a, s1, common))
+        total = len(arrays)
+        self.simple = total < 2 or (total == 2 and len(common) <= 2)
+        if self.simple:
+            self.iters = [_SimpleBroadcast(arrays, shapes)]  # type: list[_BroadcastTo] | list[_SimpleBroadcast]
+        else:
+            self.iters = [_BroadcastTo(a, s1, common) for a, s1 in zip(arrays, stage1_shapes)]
 
         # I don't think this is done the same way as `numpy`.
         # But shouldn't matter for what we do.
@@ -1393,7 +1134,7 @@ class Broadcast:
     def _init(self) -> None:
         """Setup main iterator."""
 
-        self._iter = zipl(*self.iters)
+        self._iter = self.iters[0] if self.simple else zipl(*self.iters)
 
     def reset(self) -> None:
         """Reset iterator."""
@@ -1403,13 +1144,13 @@ class Broadcast:
             i.reset()
         self._init()
 
-    def __next__(self) -> tuple[float, float]:
+    def __next__(self) -> tuple[float, ...]:
         """Next."""
 
         # Get the next chunk of data
-        return next(self._iter)  # type: ignore[return-value]
+        return next(self._iter)  # type: ignore[arg-type]
 
-    def __iter__(self) -> 'Broadcast':
+    def __iter__(self) -> Broadcast:
         """Iterate."""
 
         # Setup and and return the iterator.
@@ -1445,7 +1186,305 @@ def broadcast_to(a: ArrayLike, s: int | Sequence[int]) -> Array:
         if d1 != d2 and (d1 != 1 or d1 > d2):
             raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
 
-    return reshape(list(BroadcastTo(a, tuple(s1), tuple(s))), s)  # type: ignore[return-value]
+    m = list(_BroadcastTo(a, tuple(s1), tuple(s)))
+    return reshape(m, s) if len(s) > 1 else m  # type: ignore[return-value]
+
+
+class vectorize:
+    """
+    Vectorize a call.
+
+    We do not currently support signatures, caching, and none of our functions allow specifying output
+    types. All are assumed floats. Specialized methods will be far more performant than using vectorize,
+    but vectorize can be quick to use as far as convenience is concerned.
+
+    There is no optimization for small matrices or matrices that are already the same size. This
+    assumes worst case: N x M matrices of unknown quantity.
+    """
+
+    def __init__(
+        self,
+        pyfunc: Callable[..., Any],
+        doc: str | None = None,
+        excluded: Sequence[str | int] | None = None
+    ) -> None:
+        """Initialize."""
+
+        # Save the function and the exclude list
+        self.func = pyfunc
+        self.excluded = set() if excluded is None else set(excluded)
+
+        # Setup function name and docstring
+        self.__name__ = self.func.__name__
+        self.__doc__ = self.func.__doc__ if doc is None else doc
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """Call the function after once arguments are vectorized."""
+
+        # No arguments to process, just call the function.
+        if not args and not kwargs:
+            return self.func()
+
+        # Determine which keys and indexes we want to vectorize
+        indexes = [a for a in range(len(args)) if a not in self.excluded]
+        keys = [k for k in kwargs if k not in self.excluded]
+        size = len(indexes)
+
+        # Cast to a list so we can update the input arguments with vectorized inputs
+        inputs = list(args)
+
+        # Gather all the input values we need to vectorize so we can broadcast them together
+        vinputs = [inputs[i] for i in indexes] + [kwargs[k] for k in keys]
+
+        if vinputs:
+            # We need to broadcast together the inputs for vectorization.
+            # Once vectorized, use the wrapper function to replace each argument
+            # with the vectorized iteration. Reshape the output to match the input shape.
+            bcast = broadcast(*vinputs)
+            m = []
+            for vargs in bcast:
+                # Update arguments with vectorized arguments
+                for e, i in enumerate(indexes):
+                    inputs[i] = vargs[e]
+
+                # Update keyword arguments with vectorized keyword argument
+                kwargs.update(zip(keys, vargs[size:]))
+
+                # Call the function with vectorized inputs
+                m.append(self.func(*inputs, **kwargs))
+
+            # Reshape return to match input shape
+            return reshape(m, bcast.shape) if len(bcast.shape) != 1 else m
+
+        # Nothing to vectorize, just run the function with the arguments
+        return self.func(*inputs, **kwargs)
+
+
+class vectorize2:
+    """
+    A special version of vectorize that only broadcasts the first two inputs.
+
+    This approach is faster than vectorize because it limits the inputs and allows us
+    to skip a lot of the generalized code that can slow the things down. Additionally,
+    we allow a `dims` keyword that allows you to specify the dimensions of the inputs
+    that can fast track a decision on how to process in the inputs.
+
+    By default, `second` enables the expected second numerical input, but this can be set
+    to `None` to make it optional or `False` to disable it entirely, making it only accept
+    one vectorized input.
+
+    Calls to do not accept arbitrary positional arguments, only one or two depending on
+    what how `second` is set. Keyword arguments are allowed, but will not be vectorized.
+
+    For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
+    all inputs at the cost of speed.
+    """
+
+    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None, second: bool | None = True):
+        """Initialize."""
+
+        self.func = pyfunc
+        self.second = second
+
+        # Setup function name and docstring
+        self.__name__ = self.func.__name__
+        self.__doc__ = self.func.__doc__ if doc is None else doc
+
+    def _vector_apply(self, a: VectorLike, b: VectorLike, **kwargs: Any) -> Vector:
+        """Apply a function to two vectors."""
+
+        # Broadcast the vector
+        if len(a) == 1:
+            a = [a[0]] * len(b)
+        elif len(b) == 1:
+            b = [b[0]] * len(a)
+
+        return [self.func(x, y, **kwargs) for x, y in zipl(a, b)]
+
+    def __call__(
+        self,
+        a: ArrayLike | float,
+        b: ArrayLike | float,
+        *,
+        dims: tuple[int, int] | None = None,
+        **kwargs: Any
+    ) -> Any:
+        """Call the vectorized function."""
+
+        if b is None:
+            if self.second is False or (self.second is None):
+                return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
+            raise ValueError('Function requires 2 positional arguments')
+
+        if not dims or dims[0] > 2 or dims[1] > 2:
+            shape_a = shape(a)
+            shape_b = shape(b)
+            dims_a = len(shape_a)
+            dims_b = len(shape_b)
+
+            # Handle matrices of N-D and M-D size
+            if dims_a > 2 or dims_b > 2:
+                if dims_a == dims_b:
+                    # Apply math to two N-D matrices
+                    return reshape(
+                        [self.func(x, y, **kwargs) for x, y in zip(flatiter(a), flatiter(b))],
+                        shape_a
+                    )
+                elif not dims_a or not dims_b:
+                    if not dims_a:
+                        # Apply math to a number and an N-D matrix
+                        return reshape([self.func(a, x, **kwargs) for x in flatiter(b)], shape_b)
+                    # Apply math to an N-D matrix and a number
+                    return reshape([self.func(x, b, **kwargs) for x in flatiter(a)], shape_a)
+
+                # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
+                bcast = broadcast(a, b)  # type: ignore[arg-type]
+                return reshape([self.func(x, y, **kwargs) for x, y in bcast], bcast.shape)
+        else:
+            dims_a, dims_b = dims
+
+        # Inputs are of equal size and shape
+        if dims_a == dims_b:
+            if dims_a == 1:
+                # Apply math to two vectors
+                return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
+            elif dims_a == 2:
+                # Apply math to two 2-D matrices
+                return [self._vector_apply(ra, rb, **kwargs) for ra, rb in zipl(a, b)]  # type: ignore[arg-type]
+            return self.func(a, b, **kwargs)
+
+        # Inputs containing a scalar on either side
+        elif not dims_a or not dims_b:
+            if dims_a == 1:
+                # Apply math to a vector and number
+                return [self.func(i, b, **kwargs) for i in a]  # type: ignore[union-attr]
+            elif dims_b == 1:
+                # Apply math to a number and a vector
+                return [self.func(a, i, **kwargs) for i in b]  # type: ignore[union-attr]
+            elif dims_a == 2:
+                # Apply math to 2-D matrix and number
+                return [[self.func(i, b, **kwargs) for i in row] for row in a]  # type: ignore[union-attr]
+            # Apply math to a number and a matrix
+            return [[self.func(a, i, **kwargs) for i in row] for row in b]  # type: ignore[union-attr]
+
+        # Inputs are at least 2-D dimensions or below on both sides
+        if dims_a == 1:
+            # Apply math to vector and 2-D matrix
+            return [self._vector_apply(a, row, **kwargs) for row in b]  # type: ignore[arg-type, union-attr]
+        # Apply math to 2-D matrix and a vector
+        return [self._vector_apply(row, b, **kwargs) for row in a]  # type: ignore[arg-type, union-attr]
+
+
+@overload  # type: ignore[no-overload-impl]
+def multiply(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+    ...
+
+
+@overload
+def multiply(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def multiply(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+@overload
+def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")  # type: ignore[assignment]
+
+
+@overload  # type: ignore[no-overload-impl]
+def divide(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+    ...
+
+
+@overload
+def divide(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def divide(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def divide(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+@overload
+def divide(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")  # type: ignore[assignment]
+
+
+@overload  # type: ignore[no-overload-impl]
+def add(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+    ...
+
+
+@overload
+def add(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def add(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def add(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+@overload
+def add(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+add = vectorize2(operator.add, doc="Add two arrays or floats.")  # type: ignore[assignment]
+
+
+@overload  # type: ignore[no-overload-impl]
+def subtract(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+    ...
+
+
+@overload
+def subtract(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def subtract(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+    ...
+
+
+@overload
+def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+@overload
+def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+    ...
+
+
+subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")  # type: ignore[assignment]
 
 
 def full(array_shape: int | Sequence[int], fill_value: float | ArrayLike) -> Array:
@@ -1574,16 +1613,16 @@ def transpose(array: ArrayLike) -> Array:
     idx = [0] * dims
 
     # Traverse the provided array filling our new array
-    for i, v in enumerate(flatiter(array), 0):
+    for i, v in enumerate(flatiter(array)):
 
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
         t = m  # type: Any
-        for d, x in enumerate(range(dims - 1)):
+        for d in range(dims - 1):
             if not t:
                 for _ in range(s[d]):
                     t.append([])
-            t = t[idx[x]]
+            t = t[idx[d]]
 
         # Initialize the last dimension
         # so we can index at the correct position
@@ -1606,8 +1645,12 @@ def transpose(array: ArrayLike) -> Array:
     return m  # type: ignore[no-any-return]
 
 
-def reshape(array: ArrayLike, new_shape: int | Sequence[int]) -> float | Array:
+def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float | Array:
     """Change the shape of an array."""
+
+    # Ensure floats are arrays
+    if not isinstance(array, Sequence):
+        array = [array]
 
     # Normalize shape specifier to a sequence
     if not isinstance(new_shape, Sequence):
@@ -1622,8 +1665,15 @@ def reshape(array: ArrayLike, new_shape: int | Sequence[int]) -> float | Array:
             raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     # Kick out if the requested shape doesn't match the data
+    current_shape = shape(array)
+
+    # Copy the array and quit if we are already the requested shape
+    if current_shape == new_shape:
+        return acopy(array)
+
+    # Make sure we can actually reshape.
     total = prod(new_shape)
-    if total != prod(shape(array)):
+    if total != prod(current_shape):
         raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     # Create the array
@@ -1638,17 +1688,20 @@ def reshape(array: ArrayLike, new_shape: int | Sequence[int]) -> float | Array:
     idx = [0] * (dims - 1)
 
     # Traverse the provided array filling our new array
-    data = flatiter(array)
+    if len(current_shape) > 1:
+        data = flatiter(array)
+    else:
+        data = iter(array)  # type: ignore[arg-type]
     for i in range(count):
 
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
         t = m  # type: Any
-        for d, x in enumerate(range(dims - 1)):
+        for d in range(dims - 1):
             if not t:
                 for _ in range(new_shape[d]):
                     t.append([])
-            t = t[idx[x]]
+            t = t[idx[d]]
 
         # Create the final dimension, writing all the data
         t[:] = [next(data) for _ in range(length)]

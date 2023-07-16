@@ -55,7 +55,7 @@ def xyz_to_lab(xyz: Vector, white: VectorLike) -> Vector:
     # compute `xyz`, which is XYZ scaled relative to reference white
     xyz = alg.divide(xyz, white, dims=alg.D1)
     # Compute `fx`, `fy`, and `fz`
-    fx, fy, fz = [alg.cbrt(i) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
+    fx, fy, fz = [alg.nth_root(i, 3) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz]
 
     return [
         (116.0 * fy) - 16.0,

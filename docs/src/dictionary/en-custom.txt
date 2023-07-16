@@ -169,6 +169,8 @@ UCS
 UHDTV
 UIs
 Uncalibrated
+Vectorize
+Vectorized
 Verou
 Viénot
 Von
@@ -213,6 +215,7 @@ deuteranomaly
 deuteranopia
 dichromacy
 diffuser
+docstring
 dyad
 easings
 fixup
@@ -299,6 +302,9 @@ unsaturate
 uv
 uvY
 validator
+vectorization
+vectorize
+vectorized
 von
 webcolor
 xy

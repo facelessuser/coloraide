@@ -151,10 +151,7 @@ def pprint(value):
     print(']')
 
 
-def float32(value):
-    """Treat as 32 bit float and emit as 64 bit double."""
-
-    return struct.unpack('f', struct.pack('f', value))[0]
+float32 = alg.vectorize(lambda value: struct.unpack('f', struct.pack('f', value))[0])
 
 
 # Calculated using our own `calc_xyz_transform.py`
@@ -192,11 +189,13 @@ LMS_TO_SRGBL = alg.inv(SRGBL_TO_LMS)
 # matrix # that expects `[1, 0, 0]` and work backwards to calculate the 64
 # bit version. Make sure to process the value as 32 bit but emit it as 64
 # bit, then correct the 64 bit matrix to ensure it still aligns for `[1, 0, 0]`.
-OKLAB_TO_LMS3 = [
-    [float32(c) for c in [1.0, 0.3963377774, 0.2158037573]],
-    [float32(c) for c in [1.0, -0.1055613458, -0.0638541728]],
-    [float32(c) for c in [1.0, -0.0894841775, -1.2914855480]]
-]
+OKLAB_TO_LMS3 = float32(
+    [
+        [1.0, 0.3963377774, 0.2158037573],
+        [1.0, -0.1055613458, -0.0638541728],
+        [1.0, -0.0894841775, -1.2914855480]
+    ]
+)
 
 # Calculate what we expect the ideal translation for D65 white to be.
 correct = alg.diag([alg.nth_root(c, 3) for c in alg.dot(XYZ_TO_LMS, xyzt.white_d65)])

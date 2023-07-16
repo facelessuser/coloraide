@@ -1,7 +1,6 @@
 """Test Algebra."""
 import unittest
 from coloraide import algebra as alg
-import math
 
 
 class TestAlgebra(unittest.TestCase):
@@ -1307,20 +1306,4 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(
             i(-0.2),
             [2.4, 2.7]
-        )
-
-    def test_apply_two_inputs(self):
-        """Test apply with two inputs."""
-
-        self.assertEqual(
-            alg.apply(alg.npow, [[1, 2, 3], [4, 5, 6]], 2),
-            [[1, 4, 9], [16, 25, 36]]
-        )
-
-    def test_apply_one_input(self):
-        """Test apply with one input."""
-
-        self.assertEqual(
-            alg.apply(math.sqrt, [[1, 4, 9], [16, 25, 36]]),
-            [[1, 2, 3], [4, 5, 6]]
         )
