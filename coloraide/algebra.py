@@ -885,10 +885,16 @@ class _BroadcastTo:
         self.data = ravel(array)
         self.shape = new
 
+        # One of the common dimensions makes this result empty
+        self.empty = 0 in new
+
         # Is the new shape actually different than the original?
         self.different = old != new
 
-        if self.different:
+        if self.empty:
+            # There is no data
+            self.amount = self.length = self.expand = self.repeat = 0
+        elif self.different:
             # Calculate the shape of the data.
             if len(old) > 1:
                 self.amount = prod(old[:-1])
@@ -910,9 +916,6 @@ class _BroadcastTo:
             else:
                 self.repeat = repeat
                 self.expand = expand
-        elif not self.data:
-            # There is no data
-            self.amount = self.length = self.expand = self.repeat = 0
         else:
             # There is no modifications that need to be made on this array,
             # So we'll be chunking it without any cleverness.
@@ -978,8 +981,15 @@ class _SimpleBroadcast:
     A single array can have any dimensions, but two arrays must have dimensions less than 2.
     """
 
-    def __init__(self, arrays: Sequence[ArrayLike | float], shapes: Sequence[tuple[int, ...]]) -> None:
+    def __init__(
+        self,
+        arrays: Sequence[ArrayLike | float],
+        shapes: Sequence[tuple[int, ...]],
+        new: Sequence[int]
+    ) -> None:
         """Initialize."""
+
+        self.empty = 0 in new
 
         total = len(arrays)
         if total == 0:
@@ -1015,6 +1025,10 @@ class _SimpleBroadcast:
         dims_a: int, dims_b: int
     ) -> Iterator[tuple[float, ...]]:
         """Simple broadcast of a single array or two arrays with dimensions less than 2."""
+
+        # One of the common dimensions makes this result empty
+        if self.empty:
+            return
 
         # Broadcast a single array case or empty set of arrays.
         if b is None:
@@ -1102,25 +1116,25 @@ class Broadcast:
         stage1_shapes = []
         for s in shapes:
             dims = len(s)
-            if dims < max_dims:
-                stage1_shapes.append(((1,) * (max_dims - dims)) + s)
-            else:
-                stage1_shapes.append(s)
+            stage1_shapes.append(((1,) * (max_dims - dims)) + s if dims < max_dims else s)
 
         # Determine a common shape, if possible
         s2 = []
         for dim in zip(*stage1_shapes):
-            maximum = max(dim)
-            if not all([d == 1 or d == maximum for d in dim]):
-                raise ValueError("Could not broadcast arrays as shapes are incompatible")
-            s2.append(maximum)
+            mx = 1
+            for d in dim:
+                if d != 1 and (d != mx and mx != 1):
+                    raise ValueError("Could not broadcast arrays as shapes are incompatible")
+                if d != 1:
+                    mx = d
+            s2.append(mx)
         common = tuple(s2)
 
         # Create iterators to "broadcast to"
         total = len(arrays)
         self.simple = total < 2 or (total == 2 and len(common) <= 2)
         if self.simple:
-            self.iters = [_SimpleBroadcast(arrays, shapes)]  # type: list[_BroadcastTo] | list[_SimpleBroadcast]
+            self.iters = [_SimpleBroadcast(arrays, shapes, common)]  # type: list[_BroadcastTo] | list[_SimpleBroadcast]
         else:
             self.iters = [_BroadcastTo(a, s1, common) for a, s1 in zip(arrays, stage1_shapes)]
 
