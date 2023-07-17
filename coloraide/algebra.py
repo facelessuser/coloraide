@@ -1089,7 +1089,7 @@ class _SimpleBroadcast:
         # Get the next chunk of data
         return next(self._iter)
 
-    def __iter__(self) -> Iterator[tuple[float, ...]]:
+    def __iter__(self) -> Iterator[tuple[float, ...]]:  # pragma: no cover
         """Iterate."""
 
         # Setup and and return the iterator.
@@ -1283,22 +1283,18 @@ class vectorize2:
     we allow a `dims` keyword that allows you to specify the dimensions of the inputs
     that can fast track a decision on how to process in the inputs.
 
-    By default, `second` enables the expected second numerical input, but this can be set
-    to `None` to make it optional or `False` to disable it entirely, making it only accept
-    one vectorized input.
-
-    Calls to do not accept arbitrary positional arguments, only one or two depending on
-    what how `second` is set. Keyword arguments are allowed, but will not be vectorized.
+    If desired, a function that takes either one or two positional arguments is allowed,
+    no more no less. The second positional argument can be optional. The positional
+    arguments are always vectorized and are expected to be numbers.
 
     For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
     all inputs at the cost of speed.
     """
 
-    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None, second: bool | None = True):
+    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None):
         """Initialize."""
 
         self.func = pyfunc
-        self.second = second
 
         # Setup function name and docstring
         self.__name__ = self.func.__name__
@@ -1317,18 +1313,16 @@ class vectorize2:
 
     def __call__(
         self,
-        a: ArrayLike | float,
-        b: ArrayLike | float,
-        *,
+        *args: ArrayLike | float,
         dims: tuple[int, int] | None = None,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
 
-        if b is None:
-            if self.second is False or (self.second is None):
-                return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
-            raise ValueError('Function requires 2 positional arguments')
+        if len(args) == 1:
+            a, = args
+            return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
+        a, b = args
 
         if not dims or dims[0] > 2 or dims[1] > 2:
             shape_a = shape(a)
