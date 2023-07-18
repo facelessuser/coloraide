@@ -124,7 +124,7 @@ def y_to_lstar(y: float, white: VectorLike) -> float:
     """Convert XYZ Y to Lab L*."""
 
     y = y / white[1]
-    fy = alg.cbrt(y) if y > EPSILON else (KAPPA * y + 16) / 116
+    fy = alg.nth_root(y, 3) if y > EPSILON else (KAPPA * y + 16) / 116
     return (116.0 * fy) - 16.0
 
 

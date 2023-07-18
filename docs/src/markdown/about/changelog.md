@@ -1,12 +1,14 @@
 # Changelog
 
-## 2.4.1
+## 2.5
 
+-   **NEW**: Add new algebraic functions to vectorize other functions.
 -   **FIX**: Fix small typing issue.
--   **FIX**: Ensure that `coloraide.algebra.inv` can reorder rows to properly handle invertible matrices that initially
-    contain zeros at pivot points.
 -   **FIX**: Ensure IPT uses the exact white point as documented in the paper.
 -   **FIX**: Tweaks to Oklab 64 bit matrix precision.
+-   **FIX**: Ensure that `coloraide.algebra.inv` can reorder rows to properly handle invertible matrices that initially
+    contain zeros at pivot points.
+-   **FIX**: Fix various other minor corner cases of algebraic functions and implement some performance improvements.
 
 ## 2.4
 

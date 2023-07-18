@@ -1,7 +1,7 @@
 """Test Algebra."""
 import unittest
-from coloraide import algebra as alg
 import math
+from coloraide import algebra as alg
 
 
 class TestAlgebra(unittest.TestCase):
@@ -470,20 +470,89 @@ class TestAlgebra(unittest.TestCase):
     def test_broadcast(self):
         """Test broadcast."""
 
+        b = alg.broadcast(5, 8)
         self.assertEqual(
-            list(alg.broadcast([3], [1, 2, 3])),
+            list(b),
+            [(5, 8)]
+        )
+        self.assertEqual(b.shape, tuple())
+
+        b = alg.broadcast([3], [1, 2, 3])
+        self.assertEqual(
+            list(b),
             [(3, 1), (3, 2), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
 
+        b = alg.broadcast(3, [1, 2, 3])
         self.assertEqual(
-            list(alg.broadcast(3, [1, 2, 3])),
+            list(b),
             [(3, 1), (3, 2), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
 
+        b = alg.broadcast([1, 2, 3], 3)
         self.assertEqual(
-            list(alg.broadcast([1, 2, 3], 3)),
+            list(b),
             [(1, 3), (2, 3), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
+
+        b = alg.broadcast([[1], [2], [3]], [[], [], []])
+        self.assertEqual(
+            list(b),
+            []
+        )
+        self.assertEqual(b.shape, (3, 0))
+
+        b = alg.broadcast([[1], [2], [3]], [[], [], []], [[4], [5], [6]])
+        self.assertEqual(
+            list(b),
+            []
+        )
+        self.assertEqual(b.shape, (3, 0))
+
+        b = alg.broadcast()
+        self.assertEqual(
+            list(b),
+            []
+        )
+        self.assertEqual(b.shape, tuple())
+
+        b = alg.broadcast([[1, 2, 3], [4, 5, 6]], [[7], [8]])
+        self.assertEqual(
+            list(b),
+            [(1, 7), (2, 7), (3, 7), (4, 8), (5, 8), (6, 8)]
+        )
+        self.assertEqual(b.shape, (2, 3))
+
+        b = alg.broadcast([[1, 2], [3, 4]], 5)
+        self.assertEqual(
+            list(b),
+            [(1, 5), (2, 5), (3, 5), (4, 5)]
+        )
+        self.assertEqual(b.shape, (2, 2))
+
+        b = alg.broadcast(5, [[1, 2], [3, 4]])
+        self.assertEqual(
+            list(b),
+            [(5, 1), (5, 2), (5, 3), (5, 4)]
+        )
+        self.assertEqual(b.shape, (2, 2))
+
+        b = alg.broadcast([[1, 2], [3, 4]], [5, 6])
+        self.assertEqual(
+            list(b),
+            [(1, 5), (2, 6), (3, 5), (4, 6)]
+        )
+        self.assertEqual(b.shape, (2, 2))
+
+        b = alg.broadcast([5, 6], [[1, 2], [3, 4]])
+        self.assertEqual(
+            list(b),
+            [(5, 1), (6, 2), (5, 3), (6, 4)]
+        )
+        self.assertEqual(b.shape, (2, 2))
 
         # Can't find common shape between two arrays that have no dimensions that are 1
         with self.assertRaises(ValueError):
@@ -698,8 +767,19 @@ class TestAlgebra(unittest.TestCase):
             1
         )
 
+        self.assertEqual(
+            alg.reshape(5, (1,)),
+            [5]
+        )
+
         with self.assertRaises(ValueError):
             alg.reshape([1, 2], tuple())
+
+        # Reshaping empty data sets
+        self.assertEqual(alg.reshape([], tuple()), [])
+        self.assertEqual(alg.reshape([], (0,)), [])
+        self.assertEqual(alg.reshape([], (2, 0)), [[], []])
+        self.assertEqual(alg.reshape([], (2, 3, 0)), [[[], [], []], [[], [], []]])
 
     def test_transpose(self):
         """Test transpose."""
@@ -1309,18 +1389,71 @@ class TestAlgebra(unittest.TestCase):
             [2.4, 2.7]
         )
 
-    def test_apply_two_inputs(self):
-        """Test apply with two inputs."""
+    def test_vectorize(self):
+        """Test `vectorize`."""
+
+        cbrt = alg.vectorize(lambda x: alg.nth_root(x, 3))
 
         self.assertEqual(
-            alg.apply(alg.npow, [[1, 2, 3], [4, 5, 6]], 2),
-            [[1, 4, 9], [16, 25, 36]]
+            cbrt([8, 27]),
+            [2, 3]
         )
 
-    def test_apply_one_input(self):
-        """Test apply with one input."""
+        log = alg.vectorize(math.log)
+        self.assertEqual(
+            log([10, 100]),
+            [2.302585092994046, 4.605170185988092]
+        )
 
         self.assertEqual(
-            alg.apply(math.sqrt, [[1, 4, 9], [16, 25, 36]]),
-            [[1, 2, 3], [4, 5, 6]]
+            log([10, 100], 10),
+            [1.0, 2.0]
+        )
+
+        # No arguments sanity check (don't do this in the real world :))
+        pi = alg.vectorize(lambda: math.pi)
+        self.assertEqual(pi(), math.pi)
+
+        # Exercise logic when no vectorization is allowed while also testing "excluded"
+        cbrt2 = alg.vectorize(lambda x: alg.nth_root(x, 3), excluded=[0])
+        self.assertEqual(cbrt2(27), 3)
+
+        # Test excluded keywords
+        log = alg.vectorize(lambda x, *, base=math.e: math.log(x, base), excluded=['base'])
+
+        self.assertEqual(
+            log([10, 100], base=10),
+            [1.0, 2.0]
+        )
+
+        with self.assertRaises(TypeError):
+            log([10, 100], base=[10, math.e])
+
+    def test_vectorize2(self):
+        """Test `vectorize2`."""
+
+        cbrt = alg.vectorize2(lambda x: alg.nth_root(x, 3))
+
+        self.assertEqual(
+            cbrt([8, 27]),
+            [2, 3]
+        )
+
+        with self.assertRaises(TypeError):
+            cbrt([8, 27], 4)
+
+        log = alg.vectorize2(math.log)
+        self.assertEqual(
+            log([10, 100]),
+            [2.302585092994046, 4.605170185988092]
+        )
+
+        self.assertEqual(
+            log([10, 100], 10),
+            [1.0, 2.0]
+        )
+
+        self.assertEqual(
+            log([10, 100], [10, math.e]),
+            [1.0, 4.605170185988092]
         )
