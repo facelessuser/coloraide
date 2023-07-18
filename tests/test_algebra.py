@@ -470,65 +470,89 @@ class TestAlgebra(unittest.TestCase):
     def test_broadcast(self):
         """Test broadcast."""
 
+        b = alg.broadcast(5, 8)
         self.assertEqual(
-            list(alg.broadcast(5, 8)),
+            list(b),
             [(5, 8)]
         )
+        self.assertEqual(b.shape, tuple())
 
+        b = alg.broadcast([3], [1, 2, 3])
         self.assertEqual(
-            list(alg.broadcast([3], [1, 2, 3])),
+            list(b),
             [(3, 1), (3, 2), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
 
+        b = alg.broadcast(3, [1, 2, 3])
         self.assertEqual(
-            list(alg.broadcast(3, [1, 2, 3])),
+            list(b),
             [(3, 1), (3, 2), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
 
+        b = alg.broadcast([1, 2, 3], 3)
         self.assertEqual(
-            list(alg.broadcast([1, 2, 3], 3)),
+            list(b),
             [(1, 3), (2, 3), (3, 3)]
         )
+        self.assertEqual(b.shape, (3,))
 
+        b = alg.broadcast([[1], [2], [3]], [[], [], []])
         self.assertEqual(
-            list(alg.broadcast([[1], [2], [3]], [[], [], []])),
+            list(b),
             []
         )
+        self.assertEqual(b.shape, (3, 0))
 
+        b = alg.broadcast([[1], [2], [3]], [[], [], []], [[4], [5], [6]])
         self.assertEqual(
-            list(alg.broadcast([[1], [2], [3]], [[], [], []], [[4], [5], [6]])),
+            list(b),
             []
         )
+        self.assertEqual(b.shape, (3, 0))
 
+        b = alg.broadcast()
         self.assertEqual(
-            list(alg.broadcast()),
+            list(b),
             []
         )
+        self.assertEqual(b.shape, tuple())
 
+        b = alg.broadcast([[1, 2, 3], [4, 5, 6]], [[7], [8]])
         self.assertEqual(
-            list(alg.broadcast([[1, 2, 3], [4, 5, 6]], [[7], [8]])),
+            list(b),
             [(1, 7), (2, 7), (3, 7), (4, 8), (5, 8), (6, 8)]
         )
+        self.assertEqual(b.shape, (2, 3))
 
+        b = alg.broadcast([[1, 2], [3, 4]], 5)
         self.assertEqual(
-            list(alg.broadcast([[1, 2], [3, 4]], 5)),
+            list(b),
             [(1, 5), (2, 5), (3, 5), (4, 5)]
         )
+        self.assertEqual(b.shape, (2, 2))
 
+        b = alg.broadcast(5, [[1, 2], [3, 4]])
         self.assertEqual(
-            list(alg.broadcast(5, [[1, 2], [3, 4]])),
+            list(b),
             [(5, 1), (5, 2), (5, 3), (5, 4)]
         )
+        self.assertEqual(b.shape, (2, 2))
 
+        b = alg.broadcast([[1, 2], [3, 4]], [5, 6])
         self.assertEqual(
-            list(alg.broadcast([[1, 2], [3, 4]], [5, 6])),
+            list(b),
             [(1, 5), (2, 6), (3, 5), (4, 6)]
         )
+        self.assertEqual(b.shape, (2, 2))
 
+        b = alg.broadcast([5, 6], [[1, 2], [3, 4]])
         self.assertEqual(
-            list(alg.broadcast([5, 6], [[1, 2], [3, 4]])),
+            list(b),
             [(5, 1), (6, 2), (5, 3), (6, 4)]
         )
+        self.assertEqual(b.shape, (2, 2))
 
         # Can't find common shape between two arrays that have no dimensions that are 1
         with self.assertRaises(ValueError):
