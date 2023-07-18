@@ -1669,7 +1669,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
         v = ravel(array)
         if len(v) == 1:
             return v[0]
-        else:
+        elif v:
             raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     # Kick out if the requested shape doesn't match the data
@@ -1679,9 +1679,11 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
     if current_shape == new_shape:
         return acopy(array)
 
+    empty = (not new_shape or 0 in new_shape) and (not current_shape or 0 in current_shape)
+
     # Make sure we can actually reshape.
-    total = prod(new_shape)
-    if total != prod(current_shape):
+    total = prod(new_shape) if not empty else prod(new_shape[:-1])
+    if not empty and total != prod(current_shape):
         raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     # Create the array
@@ -1689,8 +1691,12 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
 
     # Calculate data sizes
     dims = len(new_shape)
-    length = new_shape[-1]
-    count = int(total // length)
+    if not empty:
+        length = new_shape[-1]
+        count = int(total // length)
+    else:
+        length = 0
+        count = total
 
     # Initialize indexes so we can properly write our data
     idx = [0] * (dims - 1)
@@ -1700,8 +1706,9 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
         data = flatiter(array)
     else:
         data = iter(array)  # type: ignore[arg-type]
-    for i in range(count):
 
+    # Build the new array
+    for i in range(count):
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
         t = m  # type: Any
