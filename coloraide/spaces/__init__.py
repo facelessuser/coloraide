@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
-from ..util import deprecated
+from ..deprecate import deprecated
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, TYPE_CHECKING
 import math

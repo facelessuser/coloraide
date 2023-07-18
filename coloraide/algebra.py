@@ -26,6 +26,7 @@ import math
 import operator
 import functools
 from itertools import zip_longest as zipl
+from .deprecate import deprecated
 from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload  # noqa: F401
 
@@ -1493,6 +1494,72 @@ def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | Non
 
 
 subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")  # type: ignore[assignment]
+
+
+@overload
+def apply(
+    fn: Callable[..., float],
+    a: float,
+    b: float | None = None,
+    *,
+    dims: tuple[int, int] | None = None
+) -> float:
+    ...
+
+
+@overload
+def apply(
+    fn: Callable[..., float],
+    a: float | VectorLike,
+    b: VectorLike,
+    *,
+    dims: tuple[int, int] | None = None
+) -> Vector:
+    ...
+
+
+@overload
+def apply(
+    fn: Callable[..., float],
+    a: VectorLike,
+    b: float | VectorLike | None = None,
+    *,
+    dims: tuple[int, int] | None = None
+) -> Vector:
+    ...
+
+
+@overload
+def apply(
+    fn: Callable[..., float],
+    a: MatrixLike,
+    b: float | ArrayLike | None = None,
+    *,
+    dims: tuple[int, int] | None = None
+) -> Matrix:
+    ...
+
+
+@overload
+def apply(
+    fn: Callable[..., float],
+    a: ArrayLike | float,
+    b: MatrixLike,
+    *,
+    dims: tuple[int, int] | None = None
+) -> Matrix:
+    ...
+
+
+@deprecated("Please use vectorize2 (comparable in speed and features) or vectorize (more general purpose)")
+def apply(
+    fn: Callable[..., float],
+    *args: ArrayLike | float,
+    dims: tuple[int, int] | None = None
+) -> float | Array:
+    """Apply a given function over each element of the matrix."""
+
+    return vectorize2(fn)(*args, dims=dims)  # type: ignore[no-any-return]
 
 
 def full(array_shape: int | Sequence[int], fill_value: float | ArrayLike) -> Array:

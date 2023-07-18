@@ -1,6 +1,7 @@
 """Test Algebra."""
 import unittest
 import math
+import pytest
 from coloraide import algebra as alg
 
 
@@ -1457,3 +1458,21 @@ class TestAlgebra(unittest.TestCase):
             log([10, 100], [10, math.e]),
             [1.0, 4.605170185988092]
         )
+
+    def test_apply_two_inputs(self):
+        """Test apply with two inputs."""
+
+        with pytest.warns(DeprecationWarning):
+            self.assertEqual(
+                alg.apply(alg.npow, [[1, 2, 3], [4, 5, 6]], 2),
+                [[1, 4, 9], [16, 25, 36]]
+            )
+
+    def test_apply_one_input(self):
+        """Test apply with one input."""
+
+        with pytest.warns(DeprecationWarning):
+            self.assertEqual(
+                alg.apply(math.sqrt, [[1, 4, 9], [16, 25, 36]]),
+                [[1, 2, 3], [4, 5, 6]]
+            )

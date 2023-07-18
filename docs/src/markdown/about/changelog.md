@@ -3,6 +3,7 @@
 ## 2.5
 
 -   **NEW**: Add new algebraic functions to vectorize other functions.
+-   **NEW**: Deprecate `apply` function in favor of vectorize functions.
 -   **FIX**: Fix small typing issue.
 -   **FIX**: Ensure IPT uses the exact white point as documented in the paper.
 -   **FIX**: Tweaks to Oklab 64 bit matrix precision.

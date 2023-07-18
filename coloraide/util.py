@@ -1,11 +1,8 @@
 """Utilities."""
 from __future__ import annotations
 import math
-import warnings
-from functools import wraps
 from . import algebra as alg
 from .types import Vector, VectorLike
-from typing import Any, Callable
 
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
@@ -206,37 +203,3 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
     if p == -1:
         p = 53
     return ('{{:{}{}g}}{}'.format('' if abs(value) >= 10 ** p else '.', p, '%' if percent else '')).format(value)
-
-
-def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover
-    """
-    Raise a `DeprecationWarning` when wrapped function/method is called.
-
-    Usage:
-
-        @deprecated("This method will be removed in version X; use Y instead.")
-        def some_method()"
-            pass
-    """
-
-    def _wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
-        @wraps(func)
-        def _deprecated_func(*args: Any, **kwargs: Any) -> Any:
-            warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
-                category=DeprecationWarning,
-                stacklevel=stacklevel
-            )
-            return func(*args, **kwargs)
-        return _deprecated_func
-    return _wrapper
-
-
-def warn_deprecated(message: str, stacklevel: int = 2) -> None:  # pragma: no cover
-    """Warn deprecated."""
-
-    warnings.warn(
-        message,
-        category=DeprecationWarning,
-        stacklevel=stacklevel
-    )
