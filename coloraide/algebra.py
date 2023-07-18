@@ -567,7 +567,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
         else:
             # Cross a vector and an N-D matrix
             return reshape(  # type: ignore[return-value]
-                [vcross(a, r) for r in _extract_dims(b, dims_b, dims_b - 1)],  # type: ignore[arg-type]
+                [vcross(a, r) for r in _extract_rows(b)],  # type: ignore[arg-type]
                 shape_b
             )
     elif dims_a == 2:
@@ -577,7 +577,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     elif dims_b == 1:
         # Cross an N-D matrix and a vector
         return reshape(  # type: ignore[return-value]
-            [vcross(r, b) for r in _extract_dims(a, dims_a, dims_a - 1)],  # type: ignore[arg-type]
+            [vcross(r, b) for r in _extract_rows(a)],  # type: ignore[arg-type]
             shape_a
         )
 
@@ -600,27 +600,26 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     return reshape(data, bcast.shape)  # type: ignore[return-value]
 
 
-def _extract_dims(
-    m: ArrayLike,
-    total: int,
-    target: int,
-    depth: int = 0
-) -> Iterator[ArrayLike]:
-    """
-    Extract the requested dimension.
+def _extract_rows(m: ArrayLike, depth: int = 0) -> Iterator[Matrix]:
+    """Extract rows from an array."""
 
-    Mainly used only to extract the last two dimensions of a matrix.
-    As not really generalized for "any" dimension, not really good to expose publicly.
-    """
-
-    if depth == target:
-        if total != 1:
-            yield [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[index, arg-type]
-        else:
-            yield m
+    if hasattr(m[0], '__len__'):
+        for m1 in m:
+            yield from _extract_rows(m1, depth + 1)  # type: ignore[arg-type]
     else:
-        for m2 in m:
-            yield from _extract_dims(m2, total - 1, target, depth + 1)  # type: ignore[arg-type]
+        yield m  # type: ignore[misc]
+
+
+def _extract_cols(m: ArrayLike, depth: int = 0) -> Iterator[Matrix]:
+    """Extract columns from an array."""
+
+    if hasattr(m[0], '__len__') and hasattr(m[0][0], '__len__'):  # type: ignore[index]
+        for m1 in m:
+            yield from _extract_cols(m1, depth + 1)  # type: ignore[arg-type]
+    elif not depth:
+        yield m  # type: ignore[misc]
+    else:
+        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
 
 
 @overload
@@ -696,26 +695,21 @@ def dot(
         if dims_a and dims_b and dims_a > 2 or dims_b > 2:
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
-                cols1 = list(_extract_dims(b, dims_b, dims_b - 2))  # type: ignore[arg-type]
                 shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([[vdot(a, c) for c in col] for col in cols1], shape_c)  # type: ignore[arg-type]
+                return reshape([vdot(a, col) for col in _extract_cols(b)], shape_c)  # type: ignore[arg-type]
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
-                cols2 = (
-                    list(_extract_dims(b, dims_b, dims_b - 2))  # type: ignore[arg-type]
-                    if dims_b > 1
-                    else [[b]]  # type: ignore[list-item]
-                )
-                rows = list(_extract_dims(a, dims_a, dims_a - 1))  # type: ignore[arg-type]
+
+                rows = list(_extract_rows(a))  # type: ignore[arg-type]
                 m2 = [
-                    [[sum(multiply(row, c)) for c in col] for col in cols2]  # type: ignore[arg-type]
+                    [sum(multiply(row, col)) for col in _extract_cols(b)]  # type: ignore[arg-type]
                     for row in rows
                 ]
                 shape_c = shape_a[:-1]
                 if dims_b != 1:
                     shape_c += shape_b[:-2] + shape_b[-1:]
-                return reshape(m2, shape_c)  # type: ignore[arg-type]
+                return reshape(m2, shape_c)
 
     else:
         dims_a, dims_b = dims
@@ -2003,15 +1997,17 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Ensure we have a square matrix
     s = shape(matrix)
     dims = len(s)
-    if dims < 2 or min(s) != max(s):
+    last = s[-2:]
+    if dims < 2 or min(last) != max(last):
         raise ValueError('Matrix must be a N x N matrix')
 
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
         invert = []
-        cols = list(_extract_dims(matrix, dims, dims - 2))
-        for c in cols:
-            invert.append(transpose(inv(c)))  # type: ignore[arg-type]
+        cols = list(_extract_cols(matrix))
+        step = last[-1]
+        for r in range(0, len(cols), step):
+            invert.append(transpose(inv(cols[r:r + step])))  # type: ignore[arg-type]
         return reshape(invert, s)  # type: ignore[return-value]
 
     # Get size and calculate augmented size
@@ -2165,14 +2161,14 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
     if dims_a == 1:
         first = [a]  # type: Any
     elif dims_a > 2:
-        first = list(_extract_dims(a, dims_a, dims_a - 1))  # type: ignore[arg-type]
+        first = list(_extract_rows(a))  # type: ignore[arg-type]
     else:
         first = a
 
     if dims_b == 1:
         second = [b]  # type: Any
     elif dims_b > 2:
-        second = list(_extract_dims(b, dims_b, dims_b - 1))  # type: ignore[arg-type]
+        second = list(_extract_rows(b))  # type: ignore[arg-type]
     else:
         second = b
 
