@@ -329,7 +329,7 @@ class Environment:
         yw = xyz_w[1]
 
         # Cone response for reference white
-        rgb_w = alg.dot(M16, xyz_w)
+        rgb_w = alg.dot(M16, xyz_w, dims=alg.D2_D1)
 
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]

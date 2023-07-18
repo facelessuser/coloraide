@@ -55,7 +55,7 @@ def orgb_to_srgb(lcc: Vector) -> Vector:
     elif (math.pi / 2) <= atheta0 <= math.pi:
         theta = math.copysign((math.pi / 3) + (4 / 3) * (atheta0 - math.pi / 2), theta0)
 
-    return alg.dot(LC1C2_TO_RGB, rotate(lcc, theta - theta0))
+    return alg.dot(LC1C2_TO_RGB, rotate(lcc, theta - theta0), dims=alg.D2_D1)
 
 
 class oRGB(Labish, Space):
