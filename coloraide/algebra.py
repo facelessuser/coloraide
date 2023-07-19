@@ -1166,13 +1166,13 @@ class Broadcast:
         return self
 
 
-def broadcast(*arrays: ArrayLike) -> Broadcast:
+def broadcast(*arrays: ArrayLike | float) -> Broadcast:
     """Broadcast."""
 
     return Broadcast(*arrays)
 
 
-def broadcast_to(a: ArrayLike, s: int | Sequence[int]) -> Array:
+def broadcast_to(a: ArrayLike | float, s: int | Sequence[int]) -> Array:
     """Broadcast array to a shape."""
 
     if not isinstance(s, Sequence):
@@ -1209,6 +1209,9 @@ class vectorize:
 
     There is no optimization for small matrices or matrices that are already the same size. This
     assumes worst case: N x M matrices of unknown quantity.
+
+    Inputs and outputs are currently assumed to be scalars. We do not detect alternate sizes nor
+    do we allow specifying function signatures to change it at this time.
     """
 
     def __init__(
@@ -1341,7 +1344,7 @@ class vectorize2:
                     return reshape([self.func(x, b, **kwargs) for x in flatiter(a)], shape_a)
 
                 # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
-                bcast = broadcast(a, b)  # type: ignore[arg-type]
+                bcast = broadcast(a, b)
                 return reshape([self.func(x, y, **kwargs) for x, y in bcast], bcast.shape)
         else:
             dims_a, dims_b = dims
@@ -1376,6 +1379,60 @@ class vectorize2:
             return [self._vector_apply(a, row, **kwargs) for row in b]  # type: ignore[arg-type, union-attr]
         # Apply math to 2-D matrix and a vector
         return [self._vector_apply(row, b, **kwargs) for row in a]  # type: ignore[arg-type, union-attr]
+
+
+@overload
+def linspace(start: float, stop: float) -> Vector:
+    ...
+
+
+@overload
+def linspace(start: VectorLike, stop: VectorLike | float) -> Matrix:
+    ...
+
+
+@overload
+def linspace(start: VectorLike | float, stop: VectorLike) -> Matrix:
+    ...
+
+
+@overload
+def linspace(start: MatrixLike, stop: ArrayLike) -> Matrix:
+    ...
+
+
+@overload
+def linspace(start: ArrayLike, stop: MatrixLike) -> Matrix:
+    ...
+
+
+def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, endpoint: bool = True) -> Array:
+    """Create a series of points in a linear space."""
+
+    if num < 0:
+        raise ValueError('Cannot return a negative amount of values')
+
+    # Return empty results over all the inputs for a request of 0
+    if num == 0:
+        return full(broadcast(start, stop).shape + (0,), [])
+
+    # Calculate denominator
+    d = float(num - 1 if endpoint else num)
+
+    # Scalar case (faster)
+    if not isinstance(start, Sequence) and not isinstance(stop, Sequence):
+        return [lerp(start, stop, r / d if d != 0 else 0.0) for r in range(num)]
+
+    # To apply over N x M inputs, apply the steps over the broadcasted results (slower)
+    m = []
+    bcast = broadcast(start, stop)
+    for r in range(num):
+        bcast.reset()
+        for a, b in bcast:
+            m.append(lerp(a, b, r / d if d != 0 else 0.0))
+
+    # Reshape to the expected shape
+    return reshape(m, (num,) + bcast.shape)  # type: ignore[return-value]
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -1491,57 +1548,27 @@ subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")  # typ
 
 
 @overload
-def apply(
-    fn: Callable[..., float],
-    a: float,
-    b: float | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> float:
+def apply(fn: Callable[..., float], a: float, b: float | None = None) -> float:
     ...
 
 
 @overload
-def apply(
-    fn: Callable[..., float],
-    a: float | VectorLike,
-    b: VectorLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
+def apply(fn: Callable[..., float], a: float | VectorLike, b: VectorLike) -> Vector:
     ...
 
 
 @overload
-def apply(
-    fn: Callable[..., float],
-    a: VectorLike,
-    b: float | VectorLike | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Vector:
+def apply(fn: Callable[..., float], a: VectorLike, b: float | VectorLike | None = None) -> Vector:
     ...
 
 
 @overload
-def apply(
-    fn: Callable[..., float],
-    a: MatrixLike,
-    b: float | ArrayLike | None = None,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
+def apply(fn: Callable[..., float], a: MatrixLike, b: float | ArrayLike | None = None) -> Matrix:
     ...
 
 
 @overload
-def apply(
-    fn: Callable[..., float],
-    a: ArrayLike | float,
-    b: MatrixLike,
-    *,
-    dims: tuple[int, int] | None = None
-) -> Matrix:
+def apply(fn: Callable[..., float], a: ArrayLike | float, b: MatrixLike) -> Matrix:
     ...
 
 
@@ -1795,7 +1822,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
     return m  # type: ignore[no-any-return]
 
 
-def _shape(array: ArrayLike, size: int) -> tuple[int, ...]:
+def _shape(array: Any, size: int) -> tuple[int, ...]:
     """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
 
     s = (size,)
@@ -1816,7 +1843,7 @@ def _shape(array: ArrayLike, size: int) -> tuple[int, ...]:
     return s + s2 if s2 else s
 
 
-def shape(array: float | ArrayLike) -> tuple[int, ...]:
+def shape(array: Any) -> tuple[int, ...]:
     """Get the shape of an array."""
 
     if isinstance(array, Sequence):
@@ -1842,7 +1869,7 @@ def shape(array: float | ArrayLike) -> tuple[int, ...]:
             raise ValueError('Ragged lists are not supported')
 
         # Looks like we only have sequences
-        return s + _shape(array, len(array[0]))  # type: ignore[arg-type]
+        return s + _shape(array, len(array[0]))
     else:
         # Scalar
         return tuple()
