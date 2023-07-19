@@ -1525,7 +1525,7 @@ class TestAlgebra(unittest.TestCase):
             )
 
     def test_linspace(self):
-        """Test linspace."""
+        """Test `linspace`."""
 
         self.assertEqual(
             alg.linspace(0, 10, 11),
@@ -1553,6 +1553,21 @@ class TestAlgebra(unittest.TestCase):
         )
 
         self.assertEqual(
+            alg.linspace([0], [5, 10], 3),
+            [[0.0, 0.0], [2.5, 5.0], [5.0, 10.0]]
+        )
+
+        self.assertEqual(
+            alg.linspace([0, 0], 10, 3),
+            [[0.0, 0.0], [5.0, 5.0], [10.0, 10.0]]
+        )
+
+        self.assertEqual(
+            alg.linspace([0, 0], [10], 3),
+            [[0.0, 0.0], [5.0, 5.0], [10.0, 10.0]]
+        )
+
+        self.assertEqual(
             alg.linspace([0, 1], [1, 2], 3),
             [[0.0, 1.0], [0.5, 1.5], [1.0, 2.0]]
         )
@@ -1574,3 +1589,6 @@ class TestAlgebra(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             alg.linspace(0, 1, -1)
+
+        with self.assertRaises(ValueError):
+            alg.linspace([0, 0], [1, 1, 1], 3)

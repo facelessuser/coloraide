@@ -1419,9 +1419,42 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
     # Calculate denominator
     d = float(num - 1 if endpoint else num)
 
+    s1 = shape(start)
+    s2 = shape(stop)
+    dim1 = len(s1)
+    dim2 = len(s2)
+
     # Scalar case (faster)
-    if not isinstance(start, Sequence) and not isinstance(stop, Sequence):
-        return [lerp(start, stop, r / d if d != 0 else 0.0) for r in range(num)]
+    if dim1 == 0 and dim2 == 0:
+        return [lerp(start, stop, r / d if d != 0 else 0.0) for r in range(num)]  # type: ignore[arg-type]
+
+    # Vector case
+    if dim1 <= 1 and dim2 <= 1:
+        # Broadcast scalars to match vectors
+        if dim1 == 0:
+            start = [start] * s2[0]  # type: ignore[assignment]
+            s1 = s2
+        if dim2 == 0:
+            stop = [stop] * s1[0]  # type: ignore[assignment]
+            s2 = s1
+
+        # Broadcast length 1 vectors to match other vector
+        if s1[0] != s2[0]:
+            if s1[0] == 1:
+                start = start * s2[0]  # type: ignore[operator]
+            elif s2[0] == 1:
+                stop = stop * s1[0]  # type: ignore[operator]
+            else:
+                raise ValueError('Cannot broadcast start ({}) and stop ({})'.format(s1, s2))
+
+        # Apply linear interpolation steps across the vectors
+        values = list(zip(start, stop))  # type: ignore[arg-type]
+        m1 = []  # type: Matrix
+        for r in range(num):
+            m1.append([])
+            for a, b in values:
+                m1[-1].append(lerp(a, b, r / d if d != 0 else 0.0))  # type: ignore[arg-type]
+        return m1
 
     # To apply over N x M inputs, apply the steps over the broadcasted results (slower)
     m = []
