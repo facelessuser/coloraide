@@ -316,6 +316,16 @@ class TestAlgebra(unittest.TestCase):
         )
 
         self.assertEqual(
+            alg.vstack([[[1, 2], [2, 3]], [[3, 4], [4, 5]], [[5, 6], [6, 7]]]),
+            [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]
+        )
+
+        self.assertEqual(
+            alg.vstack([[[], []], [[], []], [[], []]]),
+            [[], [], [], [], [], []]
+        )
+
+        self.assertEqual(
             alg.vstack(
                 (
                     [[[[1, 2], [3, 4], [5, 6], [7, 8]],
@@ -339,6 +349,12 @@ class TestAlgebra(unittest.TestCase):
         )
 
         with self.assertRaises(ValueError):
+            alg.vstack(([1, 2, 3], [], [4, 5, 6]))
+
+        with self.assertRaises(ValueError):
+            alg.vstack(([1, 2, 3], 1, [4, 5, 6]))
+
+        with self.assertRaises(ValueError):
             alg.vstack([])
 
     def test_hstack(self):
@@ -352,6 +368,31 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(
             alg.hstack(([1, 2], [3, 4])),
             [1, 2, 3, 4]
+        )
+
+        self.assertEqual(
+            alg.hstack(([1, 2, 3], [], [4, 5, 6])),
+            [1, 2, 3, 4, 5, 6]
+        )
+
+        self.assertEqual(
+            alg.hstack([[1, 2, 3], 1, [4, 5, 6]]),
+            [1, 2, 3, 1, 4, 5, 6]
+        )
+
+        self.assertEqual(
+            alg.hstack([[[1, 2], [2, 3]], [[3, 4], [4, 5]], [[5, 6], [6, 7]]]),
+            [[1, 2, 3, 4, 5, 6], [2, 3, 4, 5, 6, 7]]
+        )
+
+        self.assertEqual(
+            alg.hstack([[[1, 2], [3, 4]], [[], []], [[4, 5], [6, 7]]]),
+            [[1, 2, 4, 5], [3, 4, 6, 7]]
+        )
+
+        self.assertEqual(
+            alg.hstack([[[], []], [[], []], [[], []]]),
+            [[], []]
         )
 
         self.assertEqual(
@@ -380,6 +421,12 @@ class TestAlgebra(unittest.TestCase):
               [[57, 58], [59, 60], [61, 62], [63, 64]],
               [[41, 42], [43, 44], [45, 46], [47, 48]]]]
         )
+
+        with self.assertRaises(ValueError):
+            alg.hstack([[[1, 2], [3, 4]], 1, [[4, 5], [6, 7]]])
+
+        with self.assertRaises(ValueError):
+            alg.hstack([[[1, 2], [3, 4]], [], [[4, 5], [6, 7]]])
 
         with self.assertRaises(ValueError):
             alg.hstack([])

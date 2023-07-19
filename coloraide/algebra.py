@@ -2060,74 +2060,145 @@ def inv(matrix: MatrixLike) -> Matrix:
     return mi
 
 
-def vstack(arrays: Sequence[ArrayLike]) -> Array:
+def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
     """Vertical stack."""
 
     m = []  # type: list[Any]
-    first = True
     dims = 0
-    for i in arrays:
-        cs = shape(i)
-        if first:
-            dims = len(cs)
-            first = False
-            if dims == 0:
-                return reshape(arrays, (len(arrays), 1))  # type: ignore[return-value, arg-type]
-            elif dims == 1:
-                return reshape(arrays, (len(arrays), cs[-1]))  # type: ignore[return-value, arg-type]
-        m.extend(reshape(i, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:]))  # type: ignore[arg-type]
 
-    if first:
+    # Array tracking for verification
+    axis = 0
+    last = tuple()  # type: tuple[int, ...]
+    last_dims = 0
+
+    for a in arrays:
+        cs = shape(a)
+        dims = len(cs)
+
+        # We need to be working with at least a 2D array
+        if dims == 0:
+            a = [[a]]  # type: ignore[assignment]
+            cs = (1, 1)
+            dims = 2
+        elif dims == 1:
+            a = [a]  # type: ignore[assignment]
+            cs = (1, cs[0])
+            dims = 2
+
+        # Verify that we can apply the stacking
+        if last:
+            end2 = min(last_dims, dims)
+            end1 = min(end2, axis)
+            start = 1
+            start2 = min(end1 + 1, end2)
+            # All axes must match except for the concatenation axis
+            if cs[start:end1] + cs[start2:end2] != last[start:end1] + last[start2:end2]:
+                raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
+
+        # Stack the arrays
+        m.extend(reshape(a, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:]))  # type: ignore[arg-type]
+
+        # Update the last array tracker
+        if not last or len(last) > len(cs):
+            last = cs
+            last_dims = dims
+
+    # Fail if we have nothing to stack
+    if not m:
         raise ValueError("'vstack' requires at least one array")
 
     return m
 
 
-def _hstack_extract(a: ArrayLike, s: Sequence[int]) -> Iterator[Vector]:
-    """Extract data from the second dimension."""
+def _hstack_extract(a: ArrayLike | float, s: Sequence[int]) -> Iterator[Array]:
+    """Extract data from the second axis."""
+
+    if not s:
+        yield [[a]]  # type: ignore[misc]
+        return
 
     data = flatiter(a)
     length = prod(s[1:])
+
     for _ in range(s[0]):
         yield [next(data) for _ in range(length)]
 
 
-def hstack(arrays: Sequence[ArrayLike]) -> Array:
+def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
     """Horizontal stack."""
 
     # Gather up shapes
     columns = 0
     shapes = []
-    first = None  # type: tuple[int, ...] | None
+
+    # Array tracking for verification
+    axis = 1
+    last = tuple()  # type: tuple[int, ...]
+    last_dims = 0
+    largest = tuple()  # type: tuple[int, ...]
+    largest_length = 0
+
+    arrs = []
     for a in arrays:
         cs = shape(a)
+        dims = len(cs)
 
-        # Shortcut out for simple list of numbers or 1-D arrays
-        if first is None:
-            first = cs
-            if not cs:
-                return reshape(arrays, (len(arrays),))  # type: ignore[return-value, arg-type]
-            elif len(cs) == 1:
-                m1 = []  # type: Vector
-                for a1 in arrays:
-                    m1.extend(ravel(a1))
-                return reshape(m1, (len(m1),))  # type: ignore[return-value]
+        # Ensure we are at least 1-D
+        if dims == 0:
+            a = [a]  # type: ignore[assignment]
+            cs = (1,)
+            dims = 1
 
-        # Gather up shapes and tally the size of the new second dimension
-        columns += cs[1]
+        # Store modified arrays to use later
+        arrs.append(a)
+
+        # Get the largest
+        l = len(cs)
+        if l > largest_length:
+            largest = cs
+            largest_length = l
+
+        # Verify that we can apply the stacking
+        if last:
+            end2 = min(last_dims, dims)
+            end1 = min(end2, axis)
+            start = 0
+            start2 = min(end1 + 1, end2)
+            max_dims = max(last_dims, dims)
+            # All axes must match except for the concatenation axis. 1-D arrays can have different lengths.
+            if (max_dims > 1 and cs[start:end1] + cs[start2:end2] != last[start:end1] + last[start2:end2]):
+                raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
+
+        # Gather up shapes and tally the size of axis 1, 1-D arrays do not need this.
+        if dims > 1:
+            columns += cs[axis]
+
         shapes.append(cs)
 
-    if first is None:
+        # Update the last array tracker
+        if not last or len(last) > len(cs):
+            last = cs
+            last_dims = dims
+
+    # Fail if we have nothing to stack
+    if not shapes:
         raise ValueError("'hstack' requires at least one array")
 
-    # Iterate the arrays returning the content per second dimension
+    # Handle 1-D vector cases
+    if largest_length == 1:
+        m1 = []  # type: Vector
+        for a in arrays:
+            m1.extend(ravel(a))
+        return m1
+
+    # Iterate the arrays returning the content per second axis
     m = []  # type: list[Any]
-    for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrays, shapes)]):
+    for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrs, shapes) if s != (0,)]):
         for d in data:
             m.extend(d)
 
     # Shape the data to the new shape
-    new_shape = first[:1] + tuple([columns]) + first[2:]
+    new_shape = largest[:axis] + tuple([columns]) + largest[axis + 1:] if len(largest) > 1 else tuple([columns])
     return reshape(m, new_shape)  # type: ignore[return-value]
 
 
