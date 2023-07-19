@@ -1523,3 +1523,54 @@ class TestAlgebra(unittest.TestCase):
                 alg.apply(math.sqrt, [[1, 4, 9], [16, 25, 36]]),
                 [[1, 2, 3], [4, 5, 6]]
             )
+
+    def test_linspace(self):
+        """Test linspace."""
+
+        self.assertEqual(
+            alg.linspace(0, 10, 11),
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+        )
+
+        self.assertEqual(
+            alg.linspace(0, 10, 11, endpoint=False),
+            [0.0,
+             0.9090909090909092,
+             1.8181818181818183,
+             2.727272727272727,
+             3.6363636363636367,
+             4.545454545454545,
+             5.454545454545454,
+             6.363636363636363,
+             7.272727272727273,
+             8.181818181818182,
+             9.09090909090909]
+        )
+
+        self.assertEqual(
+            alg.linspace(0, [5, 10], 3),
+            [[0.0, 0.0], [2.5, 5.0], [5.0, 10.0]]
+        )
+
+        self.assertEqual(
+            alg.linspace([0, 1], [1, 2], 3),
+            [[0.0, 1.0], [0.5, 1.5], [1.0, 2.0]]
+        )
+
+        self.assertEqual(
+            alg.linspace([[0, 1], [2, 3]], [[4, 5], [6, 7]], 3),
+            [[[0.0, 1.0], [2.0, 3.0]], [[2.0, 3.0], [4.0, 5.0]], [[4.0, 5.0], [6.0, 7.0]]]
+        )
+
+        self.assertEqual(
+            alg.linspace(0, 1, 0),
+            []
+        )
+
+        self.assertEqual(
+            alg.linspace([0, 1], [1, 2], 0),
+            [[], []]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.linspace(0, 1, -1)

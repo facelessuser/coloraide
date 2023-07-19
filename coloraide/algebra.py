@@ -2140,10 +2140,6 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
 def _hstack_extract(a: ArrayLike | float, s: Sequence[int]) -> Iterator[Array]:
     """Extract data from the second axis."""
 
-    if not s:
-        yield [[a]]  # type: ignore[misc]
-        return
-
     data = flatiter(a)
     length = prod(s[1:])
 
