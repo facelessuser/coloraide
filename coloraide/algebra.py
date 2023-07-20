@@ -1822,7 +1822,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
     # Initialize indexes so we can properly write our data
     idx = [0] * (dims - 1)
 
-    # Traverse the provided array filling our new array
+    # Create an iterator to traverse the data
     if len(current_shape) > 1:
         data = flatiter(array)
     else:

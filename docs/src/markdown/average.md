@@ -1,8 +1,10 @@
 # Color Averaging
 
 Color averaging is the process of calculating an average color from a set of other colors by taking the mean of each
-color channel. It can take as many colors as desired and will return a color that represents the average. This is not
-to be confused with interpolation which employs a different technique, but in certain situations, it can sort of
+color channel.
+
+Averaging under ColorAide can take as many colors as desired and will return a color that represents the average. This
+is not to be confused with interpolation which employs a different technique, but in certain situations, it can sort of
 function like mixing multiple colors.
 
 ## Rectangular Space Averaging
@@ -43,7 +45,7 @@ Color.average(['purple', 'green', 'blue'], space='hsl')
 ## Averaging with Transparency
 
 ColorAide, by default, will account for transparency when averaging colors. Colors which which are more transparent
-will have less of an impact in the average. This done by premultiplying the colors before averaging.
+will have less of an impact on the average. This is done by premultiplying the colors before averaging.
 
 ```py play
 Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
