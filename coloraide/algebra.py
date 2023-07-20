@@ -1791,9 +1791,9 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
         if len(v) == 1:
             return v[0]
         elif v:
+            # Kick out if the requested shape doesn't match the data
             raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
-    # Kick out if the requested shape doesn't match the data
     current_shape = shape(array)
 
     # Copy the array and quit if we are already the requested shape
@@ -2261,9 +2261,8 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
 def outer(a: float | ArrayLike, b: float | ArrayLike) -> Matrix:
     """Compute the outer product of two vectors (or flattened matrices)."""
 
-    v1 = ravel(a)
     v2 = ravel(b)
-    return [[x * y for y in v2] for x in v1]
+    return [[x * y for y in v2] for x in flatiter(a)]
 
 
 def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
