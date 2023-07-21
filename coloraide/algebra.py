@@ -567,7 +567,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
         else:
             # Cross a vector and an N-D matrix
             return reshape(  # type: ignore[return-value]
-                [vcross(a, r) for r in _extract_rows(b)],  # type: ignore[arg-type]
+                [vcross(a, r) for r in _extract_rows(b, shape_b)],  # type: ignore[arg-type]
                 shape_b
             )
     elif dims_a == 2:
@@ -577,7 +577,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     elif dims_b == 1:
         # Cross an N-D matrix and a vector
         return reshape(  # type: ignore[return-value]
-            [vcross(r, b) for r in _extract_rows(a)],  # type: ignore[arg-type]
+            [vcross(r, b) for r in _extract_rows(a, shape_a)],  # type: ignore[arg-type]
             shape_a
         )
 
@@ -600,22 +600,22 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     return reshape(data, bcast.shape)  # type: ignore[return-value]
 
 
-def _extract_rows(m: ArrayLike, depth: int = 0) -> Iterator[Matrix]:
+def _extract_rows(m: ArrayLike, s: Sequence[int] | None = None, depth: int = 0) -> Iterator[Matrix]:
     """Extract rows from an array."""
 
-    if hasattr(m[0], '__len__'):
+    if len(s) > 1 and s[1]:
         for m1 in m:
-            yield from _extract_rows(m1, depth + 1)  # type: ignore[arg-type]
+            yield from _extract_rows(m1, s[1:], depth + 1)  # type: ignore[arg-type]
     else:
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, depth: int = 0) -> Iterator[Matrix]:
+def _extract_cols(m: ArrayLike, s: Sequence[int] | None = None, depth: int = 0) -> Iterator[Matrix]:
     """Extract columns from an array."""
 
-    if hasattr(m[0], '__len__') and hasattr(m[0][0], '__len__'):  # type: ignore[index]
+    if len(s) > 2 and s[2]:
         for m1 in m:
-            yield from _extract_cols(m1, depth + 1)  # type: ignore[arg-type]
+            yield from _extract_cols(m1, s[1:], depth + 1)  # type: ignore[arg-type]
     elif not depth:
         yield m  # type: ignore[misc]
     else:
@@ -696,14 +696,14 @@ def dot(
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
                 shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([vdot(a, col) for col in _extract_cols(b)], shape_c)  # type: ignore[arg-type]
+                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
 
-                rows = list(_extract_rows(a))  # type: ignore[arg-type]
+                rows = list(_extract_rows(a, shape_a))  # type: ignore[arg-type]
                 m2 = [
-                    [sum(multiply(row, col)) for col in _extract_cols(b)]  # type: ignore[arg-type]
+                    [sum(multiply(row, col)) for col in _extract_cols(b, shape_b)]  # type: ignore[arg-type]
                     for row in rows
                 ]
                 shape_c = shape_a[:-1]
@@ -1855,57 +1855,38 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
     return m  # type: ignore[no-any-return]
 
 
-def _shape(array: Any, size: int) -> tuple[int, ...]:
-    """Iterate the array ensuring that all dimensions are consistent and return the sizes if they are."""
+def _shape(a, s: tuple[int, ...]):
+    """
+    Get the shape of the array.
 
-    s = (size,)
-    s2 = tuple()  # type: tuple[int, ...]
-    size2 = -1
-    deeper = True
-    for a in array:
-        if not isinstance(a, Sequence) or size != len(a):
-            raise ValueError('Ragged lists are not supported')
-        elif deeper:
-            if a and isinstance(a[0], Sequence):
-                if size2 < 0:
-                    size2 = len(a[0])
-                s2 = _shape(a, size2)
-            else:
-                deeper = False
-                s2 = tuple()
-    return s + s2 if s2 else s
+    We only test the first index at each depth for speed.
+    """
 
+    # Found a scalar input
+    if not isinstance(a, Sequence):
+        return s
 
-def shape(array: Any) -> tuple[int, ...]:
-    """Get the shape of an array."""
+    # Get the length
+    size = len(a)
 
-    if isinstance(array, Sequence):
-        s = (len(array),)
+    # Array is empty, return the shape
+    if not size:
+        return (size,)
 
-        # Zero length vector
-        if not s[0]:
-            return s
-
-        # Handle scalars
-        is_scalar = False
-        all_scalar = True
-        for a in array:
-            if not isinstance(a, Sequence):
-                is_scalar = True
-                if not all_scalar:
-                    break
-            else:
-                all_scalar = False
-        if is_scalar:
-            if all_scalar:
-                return s
+    # Recursively get the shape of the first entry and compare against the others
+    first = _shape(a[0], s)
+    for r in range(1, size):
+        if _shape(a[r], s) != first:
             raise ValueError('Ragged lists are not supported')
 
-        # Looks like we only have sequences
-        return s + _shape(array, len(array[0]))
-    else:
-        # Scalar
-        return tuple()
+    # Construct the final shape
+    return (size,) + first
+
+
+def shape(a: ArrayLike | float):
+    """Get the shape of a list."""
+
+    return _shape(a, ())
 
 
 def fill_diagonal(matrix: MatrixLike, val: float | ArrayLike = 0.0, wrap: bool = False) -> None:
@@ -2064,7 +2045,7 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
         invert = []
-        cols = list(_extract_cols(matrix))
+        cols = list(_extract_cols(matrix, s))
         step = last[-1]
         for r in range(0, len(cols), step):
             invert.append(transpose(inv(cols[r:r + step])))  # type: ignore[arg-type]
@@ -2287,14 +2268,14 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
     if dims_a == 1:
         first = [a]  # type: Any
     elif dims_a > 2:
-        first = list(_extract_rows(a))  # type: ignore[arg-type]
+        first = list(_extract_rows(a, shape_a))  # type: ignore[arg-type]
     else:
         first = a
 
     if dims_b == 1:
         second = [b]  # type: Any
     elif dims_b > 2:
-        second = list(_extract_rows(b))  # type: ignore[arg-type]
+        second = list(_extract_rows(b, shape_b))  # type: ignore[arg-type]
     else:
         second = b
 
