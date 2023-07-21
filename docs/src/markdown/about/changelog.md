@@ -2,6 +2,7 @@
 
 ## 2.5
 
+-   **NEW**: Add new `discrete()` function that creates a discrete interpolation object in contrast.
 -   **NEW**: Add new algebraic functions to vectorize other functions and a `linspace` function.
 -   **NEW**: Deprecate `apply` function in favor of vectorize functions.
 -   **FIX**: Fix small typing issue.

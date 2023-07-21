@@ -35,8 +35,8 @@ returned interpolation function accepts numerical input in the [domain](#domains
 between the specified colors to be returned.
 
 By default, colors are interpolated in the perceptually uniform Oklab color space, though any supported color space can
-be used instead. This also applies to all methods that use interpolation, such as [`steps`](#steps), [`mix`](#mixing),
-etc.
+be used instead. This also applies to all methods that use interpolation, such as [`discrete`](#discrete),
+[`steps`](#steps), [`mix`](#mixing), etc.
 
 As an example, below we create an interpolation between `#!color rebeccapurple` and `#!color lch(85% 100 85)`. We then
 step through values of `0.0`, `0.1`, `0.2`, etc. This returns colors at various positions on the line that connects
@@ -211,6 +211,47 @@ Custom.register(CatmullRom())
 
 Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
 ```
+
+## Discrete Interpolation
+
+/// new | New 2.5
+///
+
+So far, we've only shown examples of continuous interpolation methods. When we say "continuous", we simply mean that the
+colors in the interpolation smoothly transition from one color to the other. But when creating charts or graphs, some
+times you'd like to categorize colors such that a range of values correspond to a specific color. For this, we can use
+`discrete()`, which like `intrpolate`, returns an interpolation object, but the the ranges will be discrete.
+
+By default, ranges are calculated by the number of input colors. So if you had three colors, the interpolation would be
+broken up into 3 ranges.
+
+```py play
+Color.discrete(['red', 'green', 'blue'])
+```
+
+If we specify `step`, we can create a larger or smaller color scale using the input colors to interpolate the new color
+scale. And we can use any of the aforementioned interpolation methods as well.
+
+```py play
+Color.discrete(['red', 'green', 'blue'], steps=5, method='catrom')
+```
+
+What makes this really useful is if you combine it with custom domains to process data. By default, the domain is
+`[0, 1]`, but we an change this to scale with our data. For instance, let's use a series of colors to represent
+temperature. Additionally, let's use [`domain`](#domains) to associate a temperature with a given color. Now when we
+input a temperature value, it will align with our discrete color scale.
+
+```py play
+i = Color.discrete(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
+i(-32)
+i(40)
+i(87)
+i(100)
+i
+```
+
+As `discrete()` is built on [`steps()`](#steps), it can take all the same arguments. Check out [`steps()`](#steps) to
+learn more.
 
 ## Hue Interpolation
 
@@ -689,14 +730,9 @@ Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=1
 
 By default, interpolation has an input domain of [0, 1]. This domain applies to an entire interpolation, even ones that
 span multiple colors. Generally, this is sufficient and can be used to generate color scales, mixes, and steps in any
-way that a user needs, but there are times where a different domain would be helpful.
+way that a user needs. When generating colors that should align with data, custom domains can be quite helpful.
 
-Consider the use case of generating a color scale in relation to temperature. Temperature doesn't operate on a [0, 1]
-domain. We may want our color scale to span a particular range of temperature. We may also want to have the color scale
-align with specific temperature within that range. While the user can certainly craft the logic to translate these
-data points to a [0, 1] domain and calculate and apply color stops to align the, colors, it would be much more
-accessible if the user could simply change the domain to work with their data. Luckily, ColorAide is up to the
-challenge.
+For instance, associating colors with temperature.
 
 ```py play
 i = Color.interpolate(
@@ -736,13 +772,17 @@ i.domain
 i
 ```
 
-Custom domains are most useful when working with `interpolate` directly, but you can use it in other methods like
-[`steps`](#steps) as well. As `steps` does not take a data point inputs like `interpolate`, we do not need to use the
-temperature data as an input except to set the domain, but the steps will be generated with the same alignment relative
-to the domain range.
+Custom domains are most useful when working with [`discrete`](#discrete-interpolation) or
+[`interpolate`](#linear-interpolation) directly, but you can use it in other methods like [`steps`](#steps) as well. As
+`steps` does not take data point inputs like `interpolate`, we do not need to use the temperature data as an input
+except to set the domain, but the steps will be generated with the same alignment relative to the domain range.
 
 ```py play
 Color.interpolate(
+    ['blue', 'green', 'yellow', 'orange', 'red'],
+    domain=[-32, 32, 60, 85, 95]
+)
+Color.discrete(
     ['blue', 'green', 'yellow', 'orange', 'red'],
     domain=[-32, 32, 60, 85, 95]
 )

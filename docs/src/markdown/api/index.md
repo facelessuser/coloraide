@@ -920,6 +920,49 @@ Return
 -   List of [`Color`](#color) objects.
 ///
 
+## `#!py Color.discrete` {#discrete}
+
+```py
+@classmethod
+def discrete(
+    cls,
+    colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
+    *,
+    space: str | None = None,
+    out_space: str | None = None,
+    steps: int | None = None,
+    domain: list[float] | None = None,
+    **interpolate_steps_args: Any
+) -> Interpolator:
+    ...
+```
+
+/// define
+Description
+
+-   Generates an `interpolate` function with discrete color scale. By default it assumes as many discrete colors as the
+    user inputs, but `steps` can be used to generate more or less using the input colors. As `discrete` is built on
+    [`steps`](#steps), it takes all the same arguments.
+
+    Like [`interpolate`](#interpolate), the default interpolation space is `lab`.
+
+Parameters
+
+- 
+    Parameters                       | Defaults               | Description
+    -------------------------------- | ---------------------- | -----------
+    `color`                          |                        | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
+    `space`                          | `#!py "lab"`           | Color space to interpolate in.
+    `out_space`                      | `#!py None`            | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
+    `steps`                          | `#!py None`            | Minimum number of steps. If `None` the `steps` is assumed as the number of input colors.
+    `#!py **interpolate_steps_args`  | See\ [`steps`](#steps) | Keyword arguments defined in [`interpolate`](#interpolate).
+
+Return
+
+-   Returns a function that takes a range within the specified domain, the default being `[0..1]`. The function returns
+    a new, interpolated [`Color`](#color) object.
+///
+
 ## `#!py Color.mix` {#mix}
 
 ```py

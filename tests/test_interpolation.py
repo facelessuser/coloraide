@@ -1345,3 +1345,30 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         )
         self.assertColorEqual(i(-0.5), Color('color(--oklab 0.7 0.25 0.1 / 1)'))
         self.assertColorEqual(i(1.5), Color('color(--oklab 0.7 0 -0.19 / 1)'))
+
+    def test_discrete(self):
+        """Test discrete interpolation."""
+
+        i = Color.discrete(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=[-32, 32, 60, 85, 95],
+            space='srgb'
+        )
+        self.assertColorEqual(i(-20), Color('blue'))
+        self.assertColorEqual(i(60), Color('yellow'))
+        self.assertColorEqual(i(87), Color('orange'))
+        self.assertColorEqual(i(100), Color('red'))
+
+    def test_discrete_steps(self):
+        """Test specifying discrete steps."""
+
+        i = Color.discrete(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=[-32, 32, 60, 85, 95],
+            steps=3,
+            space='srgb'
+        )
+        self.assertColorEqual(i(-20), Color('blue'))
+        self.assertColorEqual(i(60), Color('yellow'))
+        self.assertColorEqual(i(87), Color('red'))
+        self.assertColorEqual(i(100), Color('red'))
