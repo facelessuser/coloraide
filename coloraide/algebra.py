@@ -2125,7 +2125,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
         # We need to be working with at least a 2D array
         if dims == 0:
             a = [[a]]  # type: ignore[assignment]
-            cs = (1, 1)
+            s = (1, 1)
             dims = 2
         elif dims == 1:
             a = [a]  # type: ignore[assignment]
