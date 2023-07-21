@@ -60,7 +60,7 @@ class Prismatic(Space):
             return True
 
         white = [1, 1, 1]
-        for x in alg.vcross(coords, white):
+        for x in alg.vcross(coords[:-1], white):
             if not math.isclose(0.0, x, abs_tol=1e-5):
                 return False
         return True

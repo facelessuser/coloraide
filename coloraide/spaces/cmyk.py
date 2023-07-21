@@ -64,7 +64,7 @@ class CMYK(Space):
             return True
 
         black = [1, 1, 1]
-        for x in alg.vcross(coords, black):
+        for x in alg.vcross(coords[:-1], black):
             if not math.isclose(0.0, x, abs_tol=1e-5):
                 return False
         return True

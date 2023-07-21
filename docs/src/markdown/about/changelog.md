@@ -2,7 +2,7 @@
 
 ## 2.5
 
--   **NEW**: Add new algebraic functions to vectorize other functions.
+-   **NEW**: Add new algebraic functions to vectorize other functions and a `linspace` function.
 -   **NEW**: Deprecate `apply` function in favor of vectorize functions.
 -   **FIX**: Fix small typing issue.
 -   **FIX**: Ensure IPT uses the exact white point as documented in the paper.
@@ -10,6 +10,7 @@
 -   **FIX**: Ensure that `coloraide.algebra.inv` can reorder rows to properly handle invertible matrices that initially
     contain zeros at pivot points.
 -   **FIX**: Fix various other minor corner cases of algebraic functions and implement some performance improvements.
+-   **FIX**: Fix `prismatic` and `cmyk` achromatic check logic.
 
 ## 2.4
 

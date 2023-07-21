@@ -457,14 +457,20 @@ def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
     you don't need broadcasting of any kind.
     """
 
-    if len(v1) == len(v2) == 2:
+    l1 = len(v1)
+    if l1 != len(v2):
+        raise ValueError('Incompatible dimensions for cross product,')
+
+    if l1 == 2:
         return [v1[0] * v2[1] - v1[1] * v2[0]]
-    else:
+    elif l1 == 3:
         return [
             v1[1] * v2[2] - v1[2] * v2[1],
             v1[2] * v2[0] - v2[2] * v1[0],
             v1[0] * v2[1] - v1[1] * v2[0]
         ]
+    else:
+        raise ValueError('Expected vectors of shape (2,) or (3,) but got ({},) ({},)'.format(l1, len(v2)))
 
 
 @overload
