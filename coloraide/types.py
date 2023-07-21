@@ -17,7 +17,10 @@ VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
 ArrayLike = Union[VectorLike, MatrixLike]
 
+# General algebra types
 Shape = Tuple[int, ...]
+ShapeLike = Sequence[int]
+DimHints = Tuple[int, int]
 
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)

@@ -27,7 +27,10 @@ import operator
 import functools
 from itertools import zip_longest as zipl
 from .deprecate import deprecated
-from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, Shape, SupportsFloatOrInt
+from .types import (
+    ArrayLike, MatrixLike, VectorLike, Array, Matrix,
+    Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
+)
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload  # noqa: F401
 
 NaN = float('nan')
@@ -362,7 +365,7 @@ class Interpolate:
 
     def __init__(
         self,
-        points: list[Vector],
+        points: Sequence[VectorLike],
         callback: Callable[..., float],
         length: int,
         linear: bool = False
@@ -606,7 +609,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     return reshape(data, bcast.shape)  # type: ignore[return-value]
 
 
-def _extract_rows(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Matrix]:
+def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix]:
     """Extract rows from an array."""
 
     if len(s) > 1 and s[1]:
@@ -616,7 +619,7 @@ def _extract_rows(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Ma
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Matrix]:
+def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix]:
     """Extract columns from an array."""
 
     if len(s) > 2 and s[2]:
@@ -629,47 +632,47 @@ def _extract_cols(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Ma
 
 
 @overload
-def dot(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:
+def dot(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
 
 @overload
-def dot(a: float, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def dot(a: float, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: float, *, dims: tuple[int, int] | None = None) -> Vector:
+def dot(a: VectorLike, b: float, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def dot(a: float, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: float, *, dims: tuple[int, int] | None = None) -> Matrix:
+def dot(a: MatrixLike, b: float, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> float:
+def dot(a: VectorLike, b: VectorLike, *, dims: DimHints | None = None) -> float:
     ...
 
 
 @overload
-def dot(a: VectorLike, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def dot(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def dot(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def dot(a: MatrixLike, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def dot(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
@@ -677,7 +680,7 @@ def dot(
     a: float | ArrayLike,
     b: float | ArrayLike,
     *,
-    dims: tuple[int, int] | None = None
+    dims: DimHints | None = None
 ) -> float | Array:
     """
     Get dot product of simple numbers, vectors, and matrices.
@@ -741,7 +744,7 @@ def dot(
     return multiply(a, b, dims=(dims_a, dims_b))
 
 
-def _matrix_chain_order(shapes: list[Shape]) -> list[list[int]]:
+def _matrix_chain_order(shapes: Sequence[Shape]) -> list[list[int]]:
     """
     Calculate chain order.
 
@@ -775,16 +778,16 @@ def _matrix_chain_order(shapes: list[Shape]) -> list[list[int]]:
     return s
 
 
-def _multi_dot(a: list[ArrayLike], s: list[list[int]], i: int, j: int) -> ArrayLike:
+def _multi_dot(arrays: Sequence[ArrayLike], indexes: list[list[int]], i: int, j: int) -> ArrayLike:
     """Recursively dot the matrices in the array."""
 
     if i != j:
         return dot(  # type: ignore[return-value]
-            _multi_dot(a, s, i, int(s[i][j])),
-            _multi_dot(a, s, int(s[i][j]) + 1, j),
+            _multi_dot(arrays, indexes, i, int(indexes[i][j])),
+            _multi_dot(arrays, indexes, int(indexes[i][j]) + 1, j),
             dims=D2
         )
-    return a[i]
+    return arrays[i]
 
 
 def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
@@ -986,7 +989,7 @@ class _SimpleBroadcast:
         self,
         arrays: Sequence[ArrayLike | float],
         shapes: Sequence[Shape],
-        new: Sequence[int]
+        new: ShapeLike
     ) -> None:
         """Initialize."""
 
@@ -1178,7 +1181,7 @@ def broadcast(*arrays: ArrayLike | float) -> Broadcast:
     return Broadcast(*arrays)
 
 
-def broadcast_to(a: ArrayLike | float, s: int | Sequence[int]) -> Array:
+def broadcast_to(a: ArrayLike | float, s: int | ShapeLike) -> Array:
     """Broadcast array to a shape."""
 
     if not isinstance(s, Sequence):
@@ -1318,7 +1321,7 @@ class vectorize2:
     def __call__(
         self,
         *args: ArrayLike | float,
-        dims: tuple[int, int] | None = None,
+        dims: DimHints | None = None,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
@@ -1475,27 +1478,27 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
 
 
 @overload  # type: ignore[no-overload-impl]
-def multiply(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+def multiply(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
     ...
 
 
 @overload
-def multiply(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def multiply(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def multiply(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def multiply(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def multiply(a: MatrixLike, b: float | ArrayLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def multiply(a: ArrayLike | float, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
@@ -1503,27 +1506,27 @@ multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")  # typ
 
 
 @overload  # type: ignore[no-overload-impl]
-def divide(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+def divide(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
     ...
 
 
 @overload
-def divide(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def divide(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def divide(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def divide(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def divide(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def divide(a: MatrixLike, b: float | ArrayLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def divide(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def divide(a: ArrayLike | float, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
@@ -1531,27 +1534,27 @@ divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")  # typ
 
 
 @overload  # type: ignore[no-overload-impl]
-def add(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+def add(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
     ...
 
 
 @overload
-def add(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def add(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def add(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def add(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def add(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def add(a: MatrixLike, b: float | ArrayLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def add(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def add(a: ArrayLike | float, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
@@ -1559,27 +1562,27 @@ add = vectorize2(operator.add, doc="Add two arrays or floats.")  # type: ignore[
 
 
 @overload  # type: ignore[no-overload-impl]
-def subtract(a: float, b: float, *, dims: tuple[int, int] | None = None) -> float:  # noqa: D103
+def subtract(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
     ...
 
 
 @overload
-def subtract(a: float | VectorLike, b: VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def subtract(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def subtract(a: VectorLike, b: float | VectorLike, *, dims: tuple[int, int] | None = None) -> Vector:
+def subtract(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = None) -> Vector:
     ...
 
 
 @overload
-def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def subtract(a: MatrixLike, b: float | ArrayLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
 @overload
-def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: tuple[int, int] | None = None) -> Matrix:
+def subtract(a: ArrayLike | float, b: MatrixLike, *, dims: DimHints | None = None) -> Matrix:
     ...
 
 
@@ -1615,14 +1618,14 @@ def apply(fn: Callable[..., float], a: ArrayLike | float, b: MatrixLike) -> Matr
 def apply(
     fn: Callable[..., float],
     *args: ArrayLike | float,
-    dims: tuple[int, int] | None = None
+    dims: DimHints | None = None
 ) -> float | Array:
     """Apply a given function over each element of the matrix."""
 
     return vectorize2(fn)(*args, dims=dims)  # type: ignore[no-any-return]
 
 
-def full(array_shape: int | Sequence[int], fill_value: float | ArrayLike) -> Array:
+def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
     """Create and fill a shape with the given values."""
 
     # Ensure `shape` is a sequence of sizes
@@ -1639,13 +1642,13 @@ def full(array_shape: int | Sequence[int], fill_value: float | ArrayLike) -> Arr
     return reshape(fill_value, array_shape)  # type: ignore[return-value]
 
 
-def ones(array_shape: int | Sequence[int]) -> Array:
+def ones(array_shape: int | ShapeLike) -> Array:
     """Create and fill a shape with ones."""
 
     return full(array_shape, 1.0)
 
 
-def zeros(array_shape: int | Sequence[int]) -> Array:
+def zeros(array_shape: int | ShapeLike) -> Array:
     """Create and fill a shape with zeros."""
 
     return full(array_shape, 0.0)
@@ -1780,7 +1783,7 @@ def transpose(array: ArrayLike) -> Array:
     return m  # type: ignore[no-any-return]
 
 
-def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float | Array:
+def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Array:
     """Change the shape of an array."""
 
     # Ensure floats are arrays
@@ -2157,7 +2160,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
     return m
 
 
-def _hstack_extract(a: ArrayLike | float, s: Sequence[int]) -> Iterator[Array]:
+def _hstack_extract(a: ArrayLike | float, s: ShapeLike) -> Iterator[Array]:
     """Extract data from the second axis."""
 
     data = flatiter(a)
