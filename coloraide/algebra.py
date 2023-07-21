@@ -27,7 +27,7 @@ import operator
 import functools
 from itertools import zip_longest as zipl
 from .deprecate import deprecated
-from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, SupportsFloatOrInt
+from .types import ArrayLike, MatrixLike, VectorLike, Array, Matrix, Vector, Shape, SupportsFloatOrInt
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload  # noqa: F401
 
 NaN = float('nan')
@@ -490,16 +490,16 @@ def acopy(a: ArrayLike) -> Array:
 
 
 @overload
-def _cross_pad(a: VectorLike, s: tuple[int, ...]) -> Vector:
+def _cross_pad(a: VectorLike, s: Shape) -> Vector:
     ...
 
 
 @overload
-def _cross_pad(a: MatrixLike, s: tuple[int, ...]) -> Matrix:
+def _cross_pad(a: MatrixLike, s: Shape) -> Matrix:
     ...
 
 
-def _cross_pad(a: ArrayLike, s: tuple[int, ...]) -> Array:
+def _cross_pad(a: ArrayLike, s: Shape) -> Array:
     """Pad an array with 2-D vectors."""
 
     m = acopy(a)
@@ -606,7 +606,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     return reshape(data, bcast.shape)  # type: ignore[return-value]
 
 
-def _extract_rows(m: ArrayLike, s: Sequence[int] | None = None, depth: int = 0) -> Iterator[Matrix]:
+def _extract_rows(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Matrix]:
     """Extract rows from an array."""
 
     if len(s) > 1 and s[1]:
@@ -616,7 +616,7 @@ def _extract_rows(m: ArrayLike, s: Sequence[int] | None = None, depth: int = 0) 
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, s: Sequence[int] | None = None, depth: int = 0) -> Iterator[Matrix]:
+def _extract_cols(m: ArrayLike, s: Sequence[int], depth: int = 0) -> Iterator[Matrix]:
     """Extract columns from an array."""
 
     if len(s) > 2 and s[2]:
@@ -741,7 +741,7 @@ def dot(
     return multiply(a, b, dims=(dims_a, dims_b))
 
 
-def _matrix_chain_order(dims: list[tuple[int, int]]) -> list[list[int]]:
+def _matrix_chain_order(shapes: list[Shape]) -> list[list[int]]:
     """
     Calculate chain order.
 
@@ -758,10 +758,10 @@ def _matrix_chain_order(dims: list[tuple[int, int]]) -> list[list[int]]:
     I can't see why though, so we've adjusted it to work from 1 - n.
     """
 
-    n = len(dims)
+    n = len(shapes)
     m = full((n, n), 0)  # type: Any
     s = full((n, n), 0)  # type: list[list[int]] # type: ignore[assignment]
-    p = [a[0] for a in dims] + [dims[-1][1]]
+    p = [a[0] for a in shapes] + [shapes[-1][1]]
 
     for d in range(1, n):
         for i in range(n - d):
@@ -846,7 +846,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
             value = dot(arrays[0], dot(arrays[1], arrays[2], dims=D2), dims=D2)
 
     # Calculate the fastest ordering with dynamic programming using memoization
-    s = _matrix_chain_order([shape(a) for a in arrays])  # type: ignore[misc]
+    s = _matrix_chain_order([shape(a) for a in arrays])
     value = _multi_dot(arrays, s, 0, count - 1)
 
     # `numpy` returns the shape differently depending on if there is a row and/or column vector
@@ -871,7 +871,7 @@ class _BroadcastTo:
     - The new shape.
     """
 
-    def __init__(self, array: ArrayLike | float, old: tuple[int, ...], new: tuple[int, ...]) -> None:
+    def __init__(self, array: ArrayLike | float, old: Shape, new: Shape) -> None:
         """Initialize."""
 
         self._loop1 = 0
@@ -985,7 +985,7 @@ class _SimpleBroadcast:
     def __init__(
         self,
         arrays: Sequence[ArrayLike | float],
-        shapes: Sequence[tuple[int, ...]],
+        shapes: Sequence[Shape],
         new: Sequence[int]
     ) -> None:
         """Initialize."""
@@ -1657,13 +1657,13 @@ def identity(size: int) -> Matrix:
     return eye(size)
 
 
-def _flatiter(array: ArrayLike, array_shape: tuple[int, ...]) -> Iterator[float]:
+def _flatiter(array: ArrayLike, s: Shape) -> Iterator[float]:
     """Iterate and return values based on shape."""
 
-    nested = len(array_shape) > 1
+    nested = len(s) > 1
     for a in array:
         if nested:
-            yield from _flatiter(a, array_shape[1:])  # type: ignore[arg-type]
+            yield from _flatiter(a, s[1:])  # type: ignore[arg-type]
         else:
             yield a  # type: ignore[misc]
 
@@ -1861,7 +1861,7 @@ def reshape(array: ArrayLike | float, new_shape: int | Sequence[int]) -> float |
     return m  # type: ignore[no-any-return]
 
 
-def _shape(a, s: tuple[int, ...]):
+def _shape(a: Any, s: Shape) -> Shape:
     """
     Get the shape of the array.
 
@@ -1889,7 +1889,7 @@ def _shape(a, s: tuple[int, ...]):
     return (size,) + first
 
 
-def shape(a: ArrayLike | float):
+def shape(a: ArrayLike | float) -> Shape:
     """Get the shape of a list."""
 
     return _shape(a, ())
@@ -2115,12 +2115,12 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
 
     # Array tracking for verification
     axis = 0
-    last = tuple()  # type: tuple[int, ...]
+    last = tuple()  # type: Shape
     last_dims = 0
 
     for a in arrays:
-        cs = shape(a)
-        dims = len(cs)
+        s = shape(a)
+        dims = len(s)
 
         # We need to be working with at least a 2D array
         if dims == 0:
@@ -2129,7 +2129,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
             dims = 2
         elif dims == 1:
             a = [a]  # type: ignore[assignment]
-            cs = (1, cs[0])
+            s = (1, s[0])
             dims = 2
 
         # Verify that we can apply the stacking
@@ -2139,15 +2139,15 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
             start = 1
             start2 = min(end1 + 1, end2)
             # All axes must match except for the concatenation axis
-            if cs[start:end1] + cs[start2:end2] != last[start:end1] + last[start2:end2]:
+            if s[start:end1] + s[start2:end2] != last[start:end1] + last[start2:end2]:
                 raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
 
         # Stack the arrays
-        m.extend(reshape(a, (prod(cs[:1 - dims]),) + cs[1 - dims:-1] + cs[-1:]))  # type: ignore[arg-type]
+        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type]
 
         # Update the last array tracker
-        if not last or len(last) > len(cs):
-            last = cs
+        if not last or len(last) > len(s):
+            last = s
             last_dims = dims
 
     # Fail if we have nothing to stack
@@ -2176,29 +2176,29 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
 
     # Array tracking for verification
     axis = 1
-    last = tuple()  # type: tuple[int, ...]
+    last = tuple()  # type: Shape
     last_dims = 0
-    largest = tuple()  # type: tuple[int, ...]
+    largest = tuple()  # type: Shape
     largest_length = 0
 
     arrs = []
     for a in arrays:
-        cs = shape(a)
-        dims = len(cs)
+        s = shape(a)
+        dims = len(s)
 
         # Ensure we are at least 1-D
         if dims == 0:
             a = [a]  # type: ignore[assignment]
-            cs = (1,)
+            s = (1,)
             dims = 1
 
         # Store modified arrays to use later
         arrs.append(a)
 
         # Get the largest
-        l = len(cs)
+        l = len(s)
         if l > largest_length:
-            largest = cs
+            largest = s
             largest_length = l
 
         # Verify that we can apply the stacking
@@ -2209,18 +2209,18 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
             start2 = min(end1 + 1, end2)
             max_dims = max(last_dims, dims)
             # All axes must match except for the concatenation axis. 1-D arrays can have different lengths.
-            if (max_dims > 1 and cs[start:end1] + cs[start2:end2] != last[start:end1] + last[start2:end2]):
+            if (max_dims > 1 and s[start:end1] + s[start2:end2] != last[start:end1] + last[start2:end2]):
                 raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
 
         # Gather up shapes and tally the size of axis 1, 1-D arrays do not need this.
         if dims > 1:
-            columns += cs[axis]
+            columns += s[axis]
 
-        shapes.append(cs)
+        shapes.append(s)
 
         # Update the last array tracker
-        if not last or len(last) > len(cs):
-            last = cs
+        if not last or len(last) > len(s):
+            last = s
             last_dims = dims
 
     # Fail if we have nothing to stack

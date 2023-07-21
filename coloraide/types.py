@@ -1,6 +1,6 @@
 """Typing."""
 from __future__ import annotations
-from typing import Union, Any, Mapping, Sequence, List, TypeVar, TYPE_CHECKING
+from typing import Union, Any, Mapping, Sequence, List, Tuple, TypeVar, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
@@ -16,6 +16,8 @@ Array = Union[Matrix, Vector]
 VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
 ArrayLike = Union[VectorLike, MatrixLike]
+
+Shape = Tuple[int, ...]
 
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
