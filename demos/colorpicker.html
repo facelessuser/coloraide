@@ -389,11 +389,11 @@
         </div>
       </div>
       <footer>
-        <div>Created with <a href="/coloraide" target="_blank", rel="noopener">ColorAide</a></div>
+        <div>Created with <a href="/coloraide/demos" target="_blank", rel="noopener">ColorAide</a></div>
         <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
       </footer>
     </div>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.3/full/pyodide.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
   <script>
 
 (() => {
@@ -404,7 +404,7 @@
     let pyodide = null
     let webspace = ''
     let initial = 'oklab(0.69 0.13 -0.1 / 0.85)'
-    let package = 'coloraide-2.4-py3-none-any.whl'
+    let package = 'coloraide-2.5-py3-none-any.whl'
     const displayMapping = 'clip'
 
     const base = `${window.location.origin}/${window.location.pathname.split('/')[1]}/playground/`
@@ -649,7 +649,7 @@ for e, i in enumerate(Color.steps([cmin, c], steps=21, space='${space}', out_spa
         busyTarget = document.getElementById('color-display')
         showBusy(busyTarget, 'Loading ColorAide...')
         pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.3/full/",
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/",
           fullStdLib: false
         })
 
