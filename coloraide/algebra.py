@@ -1904,7 +1904,7 @@ def shape(a: ArrayLike | float) -> Shape:
     return _shape(a, ())
 
 
-def fill_diagonal(matrix: MatrixLike, val: float | ArrayLike = 0.0, wrap: bool = False) -> None:
+def fill_diagonal(matrix: MatrixLike, val: float | ArrayLike, wrap: bool = False) -> None:
     """Fill an N-D matrix diagonal."""
 
     s = shape(matrix)
