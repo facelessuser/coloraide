@@ -985,6 +985,37 @@ class Color(metaclass=ColorMeta):
         return i.steps(steps, max_steps, max_delta_e, delta_e)
 
     @classmethod
+    def discrete(
+        cls,
+        colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
+        *,
+        space: str | None = None,
+        out_space: str | None = None,
+        steps: int | None = None,
+        domain: list[float] | None = None,
+        **interpolate_steps_args: Any
+    ) -> Interpolator:
+        """Create a discrete interpolation."""
+
+        # If no steps were provided, use the number of colors provided
+        if steps is None:
+            steps = sum((not callable(c) or not isinstance(c, interpolate.stop)) for c in colors)
+
+        # Generate the discrete color steps
+        colors = cls.steps(colors, space=space, steps=steps, **interpolate_steps_args)
+
+        # Create an interpolation with discrete ranges
+        total = len(colors)
+        discrete = []
+        for r in range(1, total):
+            step1 = colors[r - 1]
+            step2 = colors[r]
+            stp = r / total
+            discrete.extend([interpolate.stop(step1, stp), interpolate.stop(step2, stp)])
+
+        return cls.interpolate(discrete, space=space, out_space=out_space, domain=domain)
+
+    @classmethod
     def interpolate(
         cls,
         colors: Sequence[ColorInput | interpolate.stop | Callable[..., float]],
