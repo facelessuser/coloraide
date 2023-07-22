@@ -14,7 +14,7 @@ ColorAide provides a number of useful utilities based on interpolation.
 One of the most common, and easiest ways to interpolate data between two points is to use linear interpolation. An easy
 way of thinking about this concept is to imagine drawing a straight line that connects two colors within a color space.
 We could then navigate along that line and return colors at different points to simulate mixing colors at various
-percentages or return the whole range and create a gradient.
+percentages or return the whole range and create a continuous, smooth gradient.
 
 To further illustrate this point, the example below shows a slice of the Oklab color space at a lightness of 70%. On
 this 2D plane, we select two colors: `#!color oklab(0.7 0.15 0.1)` and `#!color oklab(0.7 -0.03 -0.12)`. We then connect
@@ -50,7 +50,7 @@ i = Color.interpolate(["rebeccapurple", "lch(85% 100 85)"], space='lch')
 If we create enough steps, we can create a gradient.
 
 ```py play
-Color.interpolate(
+i = Color.interpolate(
     ["rebeccapurple", "lch(85% 100 85)"],
     space='lch'
 )
@@ -83,18 +83,32 @@ have pivot points and the transition may not be quite as smooth at these locatio
 /// success | Continuous interpolation is registered in `Color` by Default
 ///
 
-Piecewise interpolation only considers the two segments under interpolation. When channels are undefined, the undefined
-channel will adopt the value of the other defined channel, and if that other channel is also undefined, then the color
-will have no defined value.
+In this document, we use the term "continuous" in two ways when talking about interpolation: continuous vs
+[discrete ](#discrete-interpolation) and the interpolation method whose literal name is `continuous`.
 
-Continuous is a linear piecewise approach created for ColorAide that will actually interpolate through undefined
-channels. What this means is that if you have multiple colors, and one or more colors in the middle have an undefined
-channel, the interpolation will be carried on between the colors that have defined values on either side. This is
-probably better illustrated with an example.
+The `interpolate` method only creates continuous interpolations, meaning that for any point along the interpolation
+line, you will get a unique color. Continuous interpolation in this sense directly contrasts with with
+[discrete interpolation](#discrete-interpolation) which provides quantized color results where multiple inputs are
+associated with a limited set of colors along the interpolation line.
+
+The `continuous` interpolation method is simply a piecewise, linear interpolation method that interpolates defined
+channels continuously across one more undefined channels.
+
+Normal, piecewise interpolation only considers a single segments under interpolation at a time. When channels are
+undefined, the undefined channel on one end of a segment will adopt the value of the other defined channel on the other
+side of the segment, and if that other channel is also undefined, then any color interpolated between the two will also
+have no defined value for the channel. This approach to interpolation never considers any context beyond the segment it
+is looking at.
+
+The `continuous` interpolation method is a linear piecewise approach created for ColorAide that will actually
+interpolate through undefined channels, using context from all the colors to be interpolated. What this means is that if
+you have multiple colors, and one or more of the colors have the same channel undefined, the colors with that channel
+defined will have those values interpolated across the undefined gaps across all the segments. This is probably better
+illustrated with an example.
 
 In this example, we have 3 colors. The end colors both define lightness, but the middle color is undefined. We can see
 when we use normal, linear piecewise interpolation that we get a discontinuity. But with continuous linear
-interpolation, we get a smooth interpolation through the gap.
+interpolation, we get a smooth interpolation of the lightness through the undefined channel.
 
 ```py play
 colors = [
@@ -108,7 +122,7 @@ Color.interpolate(colors, space='oklab', method='continuous')
 
 Now, if have colors on the side that are not between two defined colors, all those colors will adopt the defined value
 of the one that is defined. This time we have a single color with all components defined, but all the colors to the
-left are missing the lightness.
+left are missing the lightness. All colors with the undefined lightness will assume the lightness of the defined color.
 
 ```py play
 colors = [
@@ -130,7 +144,7 @@ Inspired by some efforts seen on the [web](catmull-observe) and in the great Jav
 [Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods.
 
 Because splines require taking into account more than two colors at a time, all spline based interpolation methods are
-built off of the [Continuous interpolation](#continuous-interpolation) approach of handling undefined values.
+built off of the [`continuous` interpolation](#continuous-interpolation) approach of handling undefined values.
 
 ### B-Spline
 
@@ -217,29 +231,32 @@ Custom.interpolate(['red', 'green', 'blue', 'orange'], method='catrom')
 /// new | New 2.5
 ///
 
-So far, we've only shown examples of continuous interpolation methods. When we say "continuous", we simply mean that the
-colors in the interpolation smoothly transition from one color to the other. But when creating charts or graphs, some
-times you'd like to categorize colors such that a range of values correspond to a specific color. For this, we can use
-`discrete()`, which like `intrpolate`, returns an interpolation object, but the the ranges will be discrete.
+So far, we've only shown examples of continuous interpolation methods. To clarify, we are using "continuous" in a
+slightly different way than we discussed [earlier](#continuous-interpolation). When we say "continuous" here, we simply
+mean that the colors in the interpolation smoothly transition from one color to the other. But when creating charts or
+graphs, some times you'd like to categorize data such that a range of values correspond to a specific color. For this,
+we can use `discrete`, which like `intrpolate`, returns an interpolation object, but the the ranges will be discrete.
 
-By default, ranges are calculated by the number of input colors. So if you had three colors, the interpolation would be
-broken up into 3 ranges.
+By default, ranges are calculated directly form the input colors. So if you had three colors, the interpolation would be
+broken up into 3 ranges. Compare this with the the "continuous" interpolation we methods we showed earlier.
 
 ```py play
 Color.discrete(['red', 'green', 'blue'])
+Color.interpolate(['red', 'green', 'blue'])
 ```
 
 If we specify `step`, we can create a larger or smaller color scale using the input colors to interpolate the new color
-scale. And we can use any of the aforementioned interpolation methods as well.
+scale. And we can use any of the aforementioned interpolation methods to help generate this new discrete scale.
 
 ```py play
 Color.discrete(['red', 'green', 'blue'], steps=5, method='catrom')
 ```
 
 What makes this really useful is if you combine it with custom domains to process data. By default, the domain is
-`[0, 1]`, but we an change this to scale with our data. For instance, let's use a series of colors to represent
-temperature. Additionally, let's use [`domain`](#domains) to associate a temperature with a given color. Now when we
-input a temperature value, it will align with our discrete color scale.
+`[0, 1]`, but we can change this to directly correlate the data with our quantized color samples. For instance, let's
+use a series of discrete colors to represent temperature. Additionally, let's use [`domain`](#domains) to associate a
+temperature ranges with the given colors. Now when we input a temperature value, it will align with our discrete color
+scale.
 
 ```py play
 i = Color.discrete(['blue', 'green', 'yellow', 'orange', 'red'], domain=[-32, 32, 60, 85, 95])
