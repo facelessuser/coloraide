@@ -1737,8 +1737,12 @@ def transpose(array: ArrayLike) -> Array:
     we don't have a need for that, nor the desire to figure it out :).
     """
 
-    s = list(reversed(shape(array)))
-    total = prod(s)
+    s = tuple(reversed(shape(array)))
+    if s and s[0] == 0:
+        s = s[1:] + (0,)
+        total = prod(s[:-1])
+    else:
+        total = prod(s)
 
     # Create the array
     m = []  # type: Any
@@ -1749,9 +1753,10 @@ def transpose(array: ArrayLike) -> Array:
 
     # Initialize indexes so we can properly write our data
     idx = [0] * dims
+    data = flatiter(array)
 
     # Traverse the provided array filling our new array
-    for i, v in enumerate(flatiter(array)):
+    for i in range(total):
 
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
@@ -1768,7 +1773,8 @@ def transpose(array: ArrayLike) -> Array:
             t[:] = [0] * length
 
         # Write the data
-        t[idx[-1]] = v
+        if length:
+            t[idx[-1]] = next(data)
 
         # Update the current indexes if we aren't done copying data.
         if i < (total - 1):
