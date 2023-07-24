@@ -38,6 +38,7 @@ Chromaticities
 Chromaticity
 Colaboratory
 ColorAide
+ColorBrewer
 ColorHelper
 Colorimetry
 Colorio
@@ -215,6 +216,7 @@ deuteranomaly
 deuteranopia
 dichromacy
 diffuser
+discretized
 docstring
 dyad
 easings
@@ -252,8 +254,6 @@ performant
 piecewise
 pre
 precalculate
-precalculate
-precalculated
 precalculated
 precalculating
 preformatted

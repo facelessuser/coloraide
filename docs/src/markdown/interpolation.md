@@ -267,6 +267,13 @@ i(100)
 i
 ```
 
+Additionally, color scales can be limited using the [`padding`](#padding) parameter.
+
+```py play
+Color.discrete(['blue', 'green', 'yellow', 'orange', 'red'])
+Color.discrete(['blue', 'green', 'yellow', 'orange', 'red'], padding=[0.25, 0])
+```
+
 As `discrete()` is built on [`steps()`](#steps), it can take all the same arguments. Check out [`steps()`](#steps) to
 learn more.
 
@@ -741,6 +748,47 @@ of the other supported `interpolate` features as well.
 
 ```py play
 Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
+```
+
+## Padding
+
+/// new | New 2.6
+///
+
+Particularly when interpolating a color scale, it can be useful to "resize" the area of the color scale being evaluated.
+This can generally be done using the `padding` parameter. Consider the following example using the ColorBrewer scale
+`OrRd`.
+
+```py play
+scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+Color.interpolate(scale, space='srgb')
+Color.discrete(scale, space='srgb', steps=5)
+Color.interpolate(scale, space='srgb', padding=0.25)
+Color.discrete(scale, space='srgb', steps=5, padding=0.25)
+```
+
+Padding can be applied to both sides by specifying a single number, or it can be controlled per side by sending in a
+sequence of two values.
+
+```py play
+scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+Color.discrete(scale, space='srgb', steps=5, padding=[0.25, 0])
+```
+
+Negative padding is allowed as well.
+
+```py play
+scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+Color.discrete(scale, space='srgb', steps=5, padding=[-0.25, 0])
+```
+
+If the result extends past the limits, [`extrapolate`](#extrapolation) needs to be enabled or the values will be clamped
+to the ends.
+
+```py play
+scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+Color.discrete(scale, space='srgb', steps=5, padding=[1, 1])
+Color.discrete(scale, space='srgb', steps=5, padding=[1, 1], extrapolate=True)
 ```
 
 ## Domains

@@ -190,12 +190,12 @@ def get_colors(result):
         yield [ColorTuple(result.to_string(fit=False), result.clone())]
     elif isinstance(result, Interpolator):
         # Since we are auto showing the gradient, we need to scale the domain to something we expect.
-        if result.domain:
-            domain = result.domain
-            result.domain = normalize_domain(result.domain)
+        if result._domain:
+            domain = result._domain
+            result.domain(normalize_domain(result._domain))
         grad = Ramp(result.steps(steps=5, max_delta_e=2.3))
         if domain:
-            result.domain = domain
+            result._domain = domain
             domain = []
         yield grad
     elif isinstance(result, str):

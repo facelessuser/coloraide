@@ -931,8 +931,11 @@ def discrete(
     space: str | None = None,
     out_space: str | None = None,
     steps: int | None = None,
+    max_steps: int = 1000,
+    max_delta_e: float = 0,
+    delta_e: str | None = None,
     domain: list[float] | None = None,
-    **interpolate_steps_args: Any
+    **interpolate_args: Any
 ) -> Interpolator:
     ...
 ```
@@ -949,13 +952,16 @@ Description
 Parameters
 
 - 
-    Parameters                       | Defaults               | Description
-    -------------------------------- | ---------------------- | -----------
-    `color`                          |                        | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
-    `space`                          | `#!py "lab"`           | Color space to interpolate in.
-    `out_space`                      | `#!py None`            | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
-    `steps`                          | `#!py None`            | Minimum number of steps. If `None` the `steps` is assumed as the number of input colors.
-    `#!py **interpolate_steps_args`  | See\ [`steps`](#steps) | Keyword arguments defined in [`interpolate`](#interpolate).
+    Parameters                       | Defaults                           | Description
+    -------------------------------- | ---------------------------------- | -----------
+    `color`                          |                                    | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
+    `space`                          | `#!py "lab"`                       | Color space to interpolate in.
+    `out_space`                      | `#!py None`                        | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
+    `steps`                          | `#!py None`                        | Minimum number of steps. If `#!py None`, steps will be set to the number of input colors.
+    `max_steps`                      | `#!py 1000`                        | Maximum number of steps.
+    `max_delta_e`                    | `#!py 0`                           | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
+    `delta_e`                        | `#!py None`                        | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `#!py **interpolate_args`        | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return
 

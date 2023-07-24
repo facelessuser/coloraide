@@ -44,7 +44,7 @@ color.interpolate(colors, method=NAME)
 
 In general, the `Interpolate` plugin is mainly a wrapper to ensure the interpolation setup uses an appropriate
 `Interpolator` object which does the actual work. An interpolation plugin should derive their `Interpolator` class from
-`coloraide.interpolate.Interpolator`. While we won't show all the methods of the class, we will show the one function
+`coloraide.interpolate.Interpolator`. While we won't show all the methods of the class, we will show the two functions
 that must be defined.
 
 ```py
@@ -63,22 +63,24 @@ class Interpolator(metaclass=ABCMeta):
         """Interpolate."""
 ```
 
-`Interpolator.interpolate` expects an `index` (1 - n) indicating which pair of color stops a given `point` refers to. It
-is possible that `point` could exceed the normal range, in which case `index` will still refer to to either the minimum
-or maximum color stop pair, whichever the point exceeds.
+`__init__` usually shouldn't be changed as it handles the general initialization for all interpolations. It could be
+extended with `super()` to set some class specific initialization flags for specific features, but generally,
+interpolation specific setup logic should be done in `Interpolator.setup()`. This is often used to restructure data
+points to a more agreeable format for a given interpolation method, precalculate premultiplication, or normalize
+undefined values when required. There are cases where ColorAide may update data points and re-call `setup()` directly.
+As an example. `setup()` can be recalled when a continuous interpolation is converted to a discretized one.
 
-`point` is usually a value between 0 - 1, where 0 would be the color stop to the left, and 1 would be the color stop to
-the right. If `point` exceeds the range of 0 and 1, it can be assumed that the request is on the far left or far right
-of all color stops, and could be beyond the absolute range of the entire color interpolation chain.
+`Interpolator.interpolate` is where the actual interpolation takes place. It expects an `index` from [1, n], the index
+referencing the second color out of the two colors to be interpolated. `point`, usually between [0, 1], represents the
+point on the interpolation line between the two colors under evaluation.
+
+While `point` is usually a value between [0, 1], where 0 would be the color stop to the left, and 1 would be the color
+stop to the right, if `point` exceeds the range of [0, 1], it can be assumed that the request is on the far left or far
+right of all color stops and could be beyond the absolute range of the entire color interpolation chain.
 
 By default, extrapolation is disabled between all colors in an interpolation chain, and any `point` that exceeds the
-range of 0 - 1, after easing functions are applied, will be clamped. If `extrapolate` is set to `$!py True`, the points
-will not be clamped between any colors, in which case, it is an easing functions responsibility to ensure a value
+range of [0, 1], before easing functions are applied, will be clamped. If `extrapolate` is set to `$!py True`, the
+points will not be clamped between any colors, in which case, it is an easing functions responsibility to ensure a value
 between 0 or 1 if extreme values are not desired.
-
-Additionally, an optional `Interpolator.setup` method is provided to allow for any additional setup required.
-Premultiplication is usually done in `setup` ahead of time. Resolution of undefined values can be recalculated here
-as well as it is usually needed so that premultiplication can be done on coordinates that contain undefined values.
-With that said, such calculations can also be deferred and handled on the fly if desired.
 
 Check out the source code to see some example plugins.
