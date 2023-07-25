@@ -43,9 +43,7 @@ def main():
 def run(spline, tuning, res, dump):
     """Run."""
 
-    tune = []
-    for x in tuning:
-        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
+    tune = [[int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))] for x in tuning]
     env = HCT.ENV
     test = Achromatic(spline=spline, env=env)
     test.calc_achromatic_response(tune, env=env)

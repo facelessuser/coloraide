@@ -37,6 +37,49 @@ dynamic = [
 [project.urls]
 Homepage = "https://github.com/facelessuser/coloraide"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "python-minifier",
+    "tox"
+]
+
+docs = [
+    "mkdocs_pymdownx_material_extras>=2.1",
+    "pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git",
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocs-minify-plugin",
+    "pyspelling",
+    "build"
+]
+
+lint = [
+    "ruff"
+]
+
+test = [
+    "pytest",
+    "pytest-cov",
+    "coverage"
+]
+
+typing = [
+    "mypy"
+]
+
+tools = [
+    "scipy",
+    "numpy",
+    "shapely",
+    "pillow",
+    "matplotlib",
+    "plotly",
+    "kaleido"
+]
+
 [tool.hatch.version]
 source = "code"
 path = "coloraide/__meta__.py"
@@ -57,15 +100,13 @@ include = [
     "/docs/theme/**/*.html",
     "/docs/theme/**/*.css.map",
     "/docs/theme/**/*.js.map",
-    "/requirements/*.txt",
     "/coloraide/**/*.py",
     "/coloraide/py.typed",
     "/tests/**/*.py",
     "/tools/**/*.py",
     "/.pyspelling.yml",
     "/.coveragerc",
-    "/mkdocs.yml",
-    "/tox.ini",
+    "/mkdocs.yml"
 ]
 
 [tool.mypy]
@@ -76,3 +117,76 @@ strict = true
 show_error_codes = true
 
 [tool.hatch.metadata.hooks.custom]
+
+[tool.ruff]
+line-length = 120
+
+extend-exclude = [
+    "tools/oklab_srgb_gamut_approximation.py"
+]
+
+select = [
+    "A",    # flake8-builtins
+    "B",    # flake8-bugbear
+    "D",    # pydocstyle
+    "C4",   # flake8-comprehensions
+    "N",    # pep8-naming
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "PGH",  # pygrep-hooks
+    "RUF",  # ruff
+    # "UP",   # pyupgrade
+    "W",    # pycodestyle
+    "YTT",  # flake8-2020,
+    "PERF"  # Perflint
+]
+
+ignore = [
+    "E741",
+    "D202",
+    "D401",
+    "D212",
+    "D203",
+    "N802",
+    "N801",
+    "N803",
+    "N806",
+    "N818",
+    "RUF012",
+    "RUF005"
+]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    isolated_build = true
+    envlist=
+        py37,py38,py39,py310,py311,
+        lint
+
+    [testenv]
+    passenv=LANG
+    deps=
+        .[typing]
+        .[test]
+    commands=
+        "{envpython}" -m mypy
+        "{envpython}" -m pytest --cov coloraide --cov-append tests
+        "{envpython}" -m coverage html -d {envtmpdir}/coverage
+        "{envpython}" -m coverage xml
+        "{envpython}" -m coverage report --show-missing
+
+    [testenv:lint]
+    deps=
+        .[lint]
+    commands=
+        "{envbindir}"/ruff check .
+
+    [testenv:documents]
+    deps=
+        .[docs]
+    commands=
+        "{envpython}" tools/buildwheel.py
+        "{envpython}" -m mkdocs build --clean --verbose --strict
+        "{envbindir}"/pyspelling
+"""

@@ -110,9 +110,9 @@ class InterpolatorContinuous(Interpolator):
 
         # Interpolate between the values of the two colors for each channel.
         channels = []
-        i = index - 2 if index == self.length else index - 1
+        idx = index - 2 if index == self.length else index - 1
 
-        for i, values in enumerate(zip(*self.coordinates[i:i + 2])):
+        for i, values in enumerate(zip(*self.coordinates[idx:idx + 2])):
             a, b = values
 
             # Interpolate

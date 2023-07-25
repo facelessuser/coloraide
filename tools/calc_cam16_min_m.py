@@ -71,9 +71,7 @@ def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
     """Run."""
 
     deg, wp = white_point.split(':')
-    tune = []
-    for x in tuning:
-        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
+    tune = [[int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))] for x in tuning]
 
     env = Environment(WHITES[deg][wp], la, ba, surround, discounting)
     convert = xyz_d65_to_cam16

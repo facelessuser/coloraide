@@ -80,8 +80,7 @@ class TestCarryFoward(util.ColorAssertsPyTest):
         """Test round trip."""
 
         results = Color.steps(colors, steps=steps, space=space, method='monotone', _carryforward=True)
-        if not all([abs(r[cmp[0]] - cmp[1]) < 1e-6 for r in results]):
-            assert False, "{} != {} : {}".format(cmp[0], cmp[1], results)
+        assert not all(abs(r[cmp[0]] - cmp[1]) < 1e-6 for r in results), "{} != {} : {}".format(cmp[0], cmp[1], results)
 
 
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):

@@ -221,8 +221,9 @@ class Interpolator(metaclass=ABCMeta):
 
         self._domain = d
 
+    @abstractmethod
     def setup(self) -> None:
-        """Optional setup."""
+        """Setup."""
 
     @abstractmethod
     def interpolate(

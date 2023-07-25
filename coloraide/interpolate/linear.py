@@ -64,7 +64,7 @@ class InterpolatorLinear(Interpolator):
         channels = []
         i = (index - 1) * 2
 
-        for i, values in enumerate(zip(*self.coordinates[i:i + 2])):
+        for i, values in enumerate(zip(*self.coordinates[i:i + 2])):  # noqa: B020
             a, b = values
 
             # Both values are undefined, so return undefined

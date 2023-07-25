@@ -30,7 +30,7 @@ def rotate(v: Vector, d: float) -> Vector:
 
 
 def srgb_to_orgb(rgb: Vector) -> Vector:
-    """sRGB to oRGB."""
+    """Convert sRGB to oRGB."""
 
     lcc = alg.dot(RGB_TO_LC1C2, rgb, dims=alg.D2_D1)
     theta = math.atan2(lcc[2], lcc[1])
@@ -45,7 +45,7 @@ def srgb_to_orgb(rgb: Vector) -> Vector:
 
 
 def orgb_to_srgb(lcc: Vector) -> Vector:
-    """oRGB to sRGB."""
+    """Convert oRGB to sRGB."""
 
     theta0 = math.atan2(lcc[2], lcc[1])
     theta = theta0

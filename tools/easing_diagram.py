@@ -33,7 +33,7 @@ def main():
     m = RE_BEZIER.match(args.easing.strip())
     if m is not None:
         function = m.group(0).strip()
-        ease = getattr(easing, 'cubic_bezier')(*[float(v.strip()) for v in m.group(2).split(',')])
+        ease = easing.cubic_bezier(*[float(v.strip()) for v in m.group(2).split(',')])
     else:
         function = args.easing.strip()
         ease = getattr(easing, function)

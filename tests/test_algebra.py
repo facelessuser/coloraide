@@ -523,7 +523,7 @@ class TestAlgebra(unittest.TestCase):
             list(b),
             [(5, 8)]
         )
-        self.assertEqual(b.shape, tuple())
+        self.assertEqual(b.shape, ())
 
         b = alg.broadcast([3], [1, 2, 3])
         self.assertEqual(
@@ -565,7 +565,7 @@ class TestAlgebra(unittest.TestCase):
             list(b),
             []
         )
-        self.assertEqual(b.shape, tuple())
+        self.assertEqual(b.shape, ())
 
         b = alg.broadcast([[1, 2, 3], [4, 5, 6]], [[7], [8]])
         self.assertEqual(
@@ -632,7 +632,7 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(
             alg.shape(3),
-            tuple()
+            ()
         )
 
         self.assertEqual(
@@ -811,7 +811,7 @@ class TestAlgebra(unittest.TestCase):
         )
 
         self.assertEqual(
-            alg.reshape([1], tuple()),
+            alg.reshape([1], ()),
             1
         )
 
@@ -821,10 +821,10 @@ class TestAlgebra(unittest.TestCase):
         )
 
         with self.assertRaises(ValueError):
-            alg.reshape([1, 2], tuple())
+            alg.reshape([1, 2], ())
 
         # Reshaping empty data sets
-        self.assertEqual(alg.reshape([], tuple()), [])
+        self.assertEqual(alg.reshape([], ()), [])
         self.assertEqual(alg.reshape([], (0,)), [])
         self.assertEqual(alg.reshape([], (2, 0)), [[], []])
         self.assertEqual(alg.reshape([], (2, 3, 0)), [[[], [], []], [[], [], []]])

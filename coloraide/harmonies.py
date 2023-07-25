@@ -141,9 +141,8 @@ class Geometric(Harmony):
         degree = current = 360.0 / self.COUNT
         colors = []
         for _ in range(self.COUNT - 1):
-            obj = color1.clone()
             colors.append(
-                obj.set(name, lambda x: adjust_hue(x, current))
+                color1.clone().set(name, lambda x, value=current: adjust_hue(x, value))
             )
             current += degree
         colors.insert(0, color1)

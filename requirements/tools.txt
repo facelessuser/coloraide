@@ -1,7 +1,0 @@
-scipy
-numpy
-shapely
-pillow
-matplotlib
-plotly
-kaleido
