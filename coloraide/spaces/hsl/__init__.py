@@ -8,7 +8,7 @@ from ...types import Vector
 
 
 def srgb_to_hsl(rgb: Vector) -> Vector:
-    """sRGB to HSL."""
+    """Convert sRGB to HSL."""
 
     r, g, b = rgb
     mx = max(rgb)

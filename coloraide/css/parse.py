@@ -200,7 +200,7 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
 def validate_color(tokens: dict[str, Any]) -> bool:
     """Validate the color function syntax."""
 
-    return not any([v['type'] == 'degree' for v in tokens['func']['values']])
+    return not any(v['type'] == 'degree' for v in tokens['func']['values'])
 
 
 def validate_srgb(tokens: dict[str, Any]) -> bool:
@@ -213,12 +213,12 @@ def validate_srgb(tokens: dict[str, Any]) -> bool:
         return False
     vtype = tokens['func']['values'][0]['type']
     if delimiter == 'comma':
-        if vtype in ('none', 'degree') or not all([v['type'] == vtype for v in tokens['func']['values'][:3]]):
+        if vtype in ('none', 'degree') or not all(v['type'] == vtype for v in tokens['func']['values'][:3]):
             return False
         if length == 4 and tokens['func']['values'][3]['type'] in ('none', 'degree'):
             return False
     else:
-        if any([v['type'] == 'degree' for v in tokens['func']['values']]):
+        if any(v['type'] == 'degree' for v in tokens['func']['values']):
             return False
         if length == 4 and not tokens['func']['slash']:
             return False
@@ -241,14 +241,14 @@ def validate_cylindrical_srgb(tokens: dict[str, Any]) -> bool:
     if delimiter == 'comma':
         if tokens['func']['values'][0]['type'] not in ('degree', 'number'):
             return False
-        if not all([v['type'] == 'percent' for v in tokens['func']['values'][1:3]]):
+        if not all(v['type'] == 'percent' for v in tokens['func']['values'][1:3]):
             return False
         if length == 4 and tokens['func']['values'][3]['type'] in ('none', 'degree'):
             return False
     else:
         if tokens['func']['values'][0]['type'] == 'percent':
             return False
-        if any([v['type'] == 'degree' for v in tokens['func']['values'][1:]]):
+        if any(v['type'] == 'degree' for v in tokens['func']['values'][1:]):
             return False
 
         if length == 4 and not tokens['func']['slash']:
@@ -268,7 +268,7 @@ def validate_lab(tokens: dict[str, Any]) -> bool:
     if length < 3 or length > 4:
         return False
 
-    if any([v['type'] == 'degree' for v in tokens['func']['values'][:]]):
+    if any(v['type'] == 'degree' for v in tokens['func']['values'][:]):
         return False
 
     if length == 4 and not tokens['func']['slash']:
@@ -292,7 +292,7 @@ def validate_lch(tokens: dict[str, Any]) -> bool:
     if tokens['func']['values'][2]['type'] == 'percent':
         return False
 
-    if any([v['type'] == 'degree' for v in tokens['func']['values'][0:2]]):
+    if any(v['type'] == 'degree' for v in tokens['func']['values'][0:2]):
         return False
 
     if length == 4 and (not tokens['func']['slash'] or tokens['func']['values'][3]['type'] == 'degree'):

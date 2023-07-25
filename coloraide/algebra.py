@@ -31,7 +31,7 @@ from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
     Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, overload  # noqa: F401
+from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
 NaN = float('nan')
 INF = float('inf')
@@ -832,7 +832,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
             is_vector = True
 
     # Make sure everything is a 2-D matrix as the next calculations only work for 2-D.
-    if not all([len(s) == 2 for s in shapes]):
+    if not all(len(s) == 2 for s in shapes):
         raise ValueError('All arrays must be 2-D matrices')
 
     # No need to do the expensive and complicated chain order algorithm for only 3.
@@ -1478,7 +1478,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
 
 
 @overload  # type: ignore[no-overload-impl]
-def multiply(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
+def multiply(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
 
@@ -1506,7 +1506,7 @@ multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")  # typ
 
 
 @overload  # type: ignore[no-overload-impl]
-def divide(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
+def divide(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
 
@@ -1534,7 +1534,7 @@ divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")  # typ
 
 
 @overload  # type: ignore[no-overload-impl]
-def add(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
+def add(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
 
@@ -1562,7 +1562,7 @@ add = vectorize2(operator.add, doc="Add two arrays or floats.")  # type: ignore[
 
 
 @overload  # type: ignore[no-overload-impl]
-def subtract(a: float, b: float, *, dims: DimHints | None = None) -> float:  # noqa: D103
+def subtract(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
 
@@ -1629,7 +1629,7 @@ def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
     """Create and fill a shape with the given values."""
 
     # Ensure `shape` is a sequence of sizes
-    array_shape = tuple([array_shape]) if not isinstance(array_shape, Sequence) else tuple(array_shape)
+    array_shape = (array_shape,) if not isinstance(array_shape, Sequence) else tuple(array_shape)
 
     # Normalize `fill_value` to be an array.
     if not isinstance(fill_value, Sequence):
@@ -1764,7 +1764,7 @@ def transpose(array: ArrayLike) -> Array:
         for d in range(dims - 1):
             if not t:
                 for _ in range(s[d]):
-                    t.append([])
+                    t.append([])  # noqa: PERF401
             t = t[idx[d]]
 
         # Initialize the last dimension
@@ -1851,7 +1851,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
         for d in range(dims - 1):
             if not t:
                 for _ in range(new_shape[d]):
-                    t.append([])
+                    t.append([])  # noqa: PERF401
             t = t[idx[d]]
 
         # Create the final dimension, writing all the data
@@ -2062,8 +2062,7 @@ def inv(matrix: MatrixLike) -> Matrix:
         invert = []
         cols = list(_extract_cols(matrix, s))
         step = last[-1]
-        for r in range(0, len(cols), step):
-            invert.append(transpose(inv(cols[r:r + step])))  # type: ignore[arg-type]
+        invert = [transpose(inv(cols[r:r + step])) for r in range(0, len(cols), step)]  # type: ignore[arg-type]
         return reshape(invert, s)  # type: ignore[return-value]
 
     # Get size and calculate augmented size
@@ -2124,7 +2123,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
 
     # Array tracking for verification
     axis = 0
-    last = tuple()  # type: Shape
+    last = ()  # type: Shape
     last_dims = 0
 
     for a in arrays:
@@ -2185,9 +2184,9 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
 
     # Array tracking for verification
     axis = 1
-    last = tuple()  # type: Shape
+    last = ()  # type: Shape
     last_dims = 0
-    largest = tuple()  # type: Shape
+    largest = ()  # type: Shape
     largest_length = 0
 
     arrs = []
@@ -2250,7 +2249,7 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
             m.extend(d)
 
     # Shape the data to the new shape
-    new_shape = largest[:axis] + tuple([columns]) + largest[axis + 1:] if len(largest) > 1 else tuple([columns])
+    new_shape = largest[:axis] + (columns,) + largest[axis + 1:] if len(largest) > 1 else (columns,)
     return reshape(m, new_shape)  # type: ignore[return-value]
 
 

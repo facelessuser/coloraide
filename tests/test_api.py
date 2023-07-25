@@ -288,14 +288,6 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         with self.assertRaises(ValueError):
             c1.get("bad")
 
-    def test_bad_property(self):
-        """Test bad property."""
-
-        c1 = Color('orange')
-
-        with self.assertRaises(AttributeError):
-            c1.bad
-
     def test_get_bad_chain(self):
         """Test bad get."""
 

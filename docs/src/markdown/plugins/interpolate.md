@@ -51,6 +51,7 @@ that must be defined.
 class Interpolator(metaclass=ABCMeta):
     """Interpolator."""
 
+    @abstractmethod
     def setup(self) --> None:
         """Setup."""
 

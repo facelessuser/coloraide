@@ -610,12 +610,12 @@ def plot_gamut_in_space(
     backgroundcolor = "rgb(230, 230, 230)" if not dark else '#282830'
     gridcolor = "rgb(255, 255, 255)" if not dark else '#111'
     zerolinecolor = "rgb(255, 255, 255)" if not dark else '#111'
-    axis = dict(
-        showbackground=showbackground,
-        backgroundcolor=backgroundcolor,
-        gridcolor=gridcolor,
-        zerolinecolor=zerolinecolor,
-    )
+    axis = {
+        "showbackground": showbackground,
+        "backgroundcolor": backgroundcolor,
+        "gridcolor": gridcolor,
+        "zerolinecolor": zerolinecolor,
+    }
     xaxis = str(names[axm[0]]) if not is_cyl else "{} (0˚ - 360˚)".format(names[axm[0]])
     yaxis = str(names[axm[1]])
     zaxis = str(names[axm[2]])
@@ -636,12 +636,12 @@ def plot_gamut_in_space(
         ),
 
         # Control camera position
-        scene_camera=dict(
-            projection=go.layout.scene.camera.Projection(type=projection),
-            center=dict(x=0, y=0, z=0),
-            up=dict(x=0, y=0, z=1),
-            eye=dict(x=x, y=y, z=z)
-        )
+        scene_camera={
+            "projection": go.layout.scene.camera.Projection(type=projection),
+            "center": {"x": 0, "y": 0, "z": 0},
+            "up": {"x": 0, "y": 0, "z": 1},
+            "eye": {"x": x, "y": y, "z": z}
+        }
     )
 
     # Create figure to store the plot

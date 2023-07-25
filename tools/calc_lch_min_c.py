@@ -57,9 +57,7 @@ def main():
 def run(space, spline, tuning, mirror, res, dump):
     """Run."""
 
-    tune = []
-    for x in tuning:
-        tune.append([int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))])
+    tune = [[int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))] for x in tuning]
 
     class Achroma(Achromatic):
         """Setup special dynamic achromatic class."""

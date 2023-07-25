@@ -93,13 +93,11 @@ def main():
         method=args.method,
         extrapolate=args.extrapolate
     )
-    points = []
     if not args.extrapolate:
         offset, factor = 0, 1
     else:
         offset, factor = 1, 3
-    for r in range(1001):
-        points.append(i((r * factor / 1000) - offset)[:-1])
+    points = [i((r * factor / 1000) - offset)[:-1] for r in range(1001)]
 
     # Plot the interpolation line and plot the colors.
     xs, ys, zs = list(zip(*points))

@@ -12,6 +12,7 @@ code snippets using `coloraide`.
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
+# ruff: noqa: PGH001
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence, Mapping
 from collections import namedtuple
@@ -292,7 +293,7 @@ def compare_match(s, g, node):
                 raise NameError("name '{}' is not defined".format(node.cls.id))
             if not isinstance(s, name):
                 return False
-            ma = getattr(s, '__match_args__', tuple())
+            ma = getattr(s, '__match_args__', ())
             l1 = len(ma)
             l2 = len(node.patterns)
             if l1 < l2:
@@ -361,7 +362,7 @@ def evaluate(node, g, loop=False):
             try:
                 for n in node.body:
                     yield from evaluate(n, g, True)
-            except Break:
+            except Break:  # noqa:  PERF203
                 break
             except Continue:
                 continue
@@ -378,7 +379,7 @@ def evaluate(node, g, loop=False):
             try:
                 for n in node.body:
                     yield from evaluate(n, g, True)
-            except Break:
+            except Break:  # noqa:  PERF203
                 break
             except Continue:
                 continue
@@ -510,7 +511,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
                 # Execution went well, so append command
                 console += command
 
-        except Exception as e:
+        except Exception as e:  # noqa:  PERF203
             if no_except:
                 if not inline:
                     from pymdownx.superfences import SuperFencesException
@@ -530,7 +531,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
                 continue
             for clist in get_colors(r):
                 if clist:
-                    colors.append(clist)
+                    colors.append(clist)  # noqa: PERF401
             result_text += '{}{}'.format(
                 repr(r) if isinstance(r, str) and not isinstance(r, AtomicString) else str(r),
                 '\n' if not isinstance(r, AtomicString) else ''
@@ -552,7 +553,7 @@ def colorize(src, lang, **options):
 def color_command_validator(language, inputs, options, attrs, md):
     """Color validator."""
 
-    valid_inputs = set(['exceptions', 'play'])
+    valid_inputs = {'exceptions', 'play'}
 
     for k, v in inputs.items():
         if k in valid_inputs:
@@ -718,13 +719,13 @@ def _color_formatter(src="", language="", class_name=None, md="", exceptions=Tru
 
         try:
             color = ColorAll(result.strip())
-        except Exception:
+        except Exception as e:
             _, colors = execute(result, exceptions, inline=True, init=init)
             if len(colors) != 1 or len(colors[0]) != 1:
                 if exceptions:
-                    raise InlineHiliteException('Only one color allowed')
+                    raise InlineHiliteException('Only one color allowed') from e
                 else:
-                    raise ValueError('Only one color allowed')
+                    raise ValueError('Only one color allowed') from e
             color = colors[0][0].color
             result = colors[0][0].string
 

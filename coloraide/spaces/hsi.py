@@ -13,7 +13,7 @@ from ..types import Vector
 
 
 def srgb_to_hsi(rgb: Vector) -> Vector:
-    """sRGB to HSI."""
+    """Convert sRGB to HSI."""
 
     r, g, b = rgb
     h = 0.0

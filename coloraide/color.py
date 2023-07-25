@@ -70,7 +70,7 @@ from .temperature.robertson_1968 import Robertson1968
 from .types import Plugin
 from typing import overload, Sequence, Iterable, Any, Callable, Mapping
 
-SUPPORTED_CHROMATICITY_SPACES = set(('xyz', 'uv-1960', 'uv-1976', 'xy-1931'))
+SUPPORTED_CHROMATICITY_SPACES = {'xyz', 'uv-1960', 'uv-1976', 'xy-1931'}
 
 
 class ColorMatch:
@@ -174,11 +174,11 @@ class Color(metaclass=ColorMeta):
         return len(self._space.CHANNELS) + 1
 
     @overload
-    def __getitem__(self, i: str | int) -> float:  # noqa: D105
+    def __getitem__(self, i: str | int) -> float:
         ...
 
     @overload
-    def __getitem__(self, i: slice) -> Vector:  # noqa: D105
+    def __getitem__(self, i: slice) -> Vector:
         ...
 
     def __getitem__(self, i: str | int | slice) -> float | Vector:
@@ -187,11 +187,11 @@ class Color(metaclass=ColorMeta):
         return self._coords[self._space.get_channel_index(i)] if isinstance(i, str) else self._coords[i]
 
     @overload
-    def __setitem__(self, i: str | int, v: float) -> None:  # noqa: D105
+    def __setitem__(self, i: str | int, v: float) -> None:
         ...
 
     @overload
-    def __setitem__(self, i: slice, v: Vector) -> None:  # noqa: D105
+    def __setitem__(self, i: slice, v: Vector) -> None:
         ...
 
     def __setitem__(self, i: str | int | slice, v: float | Vector) -> None:
@@ -289,7 +289,7 @@ class Color(metaclass=ColorMeta):
                     return space_class, m[0][0], m[0][1], start, m[1]
 
         # Attempt color space specific match
-        for _, space_class in cls.CS_MAP.items():
+        for space_class in cls.CS_MAP.values():
             m2 = space_class.match(string, start, fullmatch)
             if m2 is not None:
                 return space_class, m2[0][0], m2[0][1], start, m2[1]
@@ -1185,11 +1185,11 @@ class Color(metaclass=ColorMeta):
         return contrast.contrast(method, self, color)
 
     @overload
-    def get(self, name: str, *, nans: bool = True) -> float:  # noqa: D105
+    def get(self, name: str, *, nans: bool = True) -> float:
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str, ...], *, nans: bool = True) -> list[float]:  # noqa: D105
+    def get(self, name: list[str] | tuple[str, ...], *, nans: bool = True) -> list[float]:
         ...
 
     def get(self, name: str | list[str] | tuple[str, ...], *, nans: bool = True) -> float | list[float]:

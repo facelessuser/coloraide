@@ -163,7 +163,7 @@ name2val_map = {
     'transparent': (0.0, 0.0, 0.0, 0.0)
 }  # type: dict[str, tuple[float, ...]]
 
-val2name_map = dict([(v, k) for k, v in name2val_map.items()])  # type: dict[tuple[float, ...], str]
+val2name_map = {v: k for k, v in name2val_map.items()}  # type: dict[tuple[float, ...], str]
 
 
 def to_name(value: Vector) -> str | None:

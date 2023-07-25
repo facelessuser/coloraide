@@ -71,13 +71,13 @@ OKLAB_TO_LMS3 = np.asfarray(OKLAB_TO_LMS3)
 
 
 def linear_srgb_to_oklab(c):
-    l = RGBL_TO_LMS[0][0] * c[0,...] + RGBL_TO_LMS[0][1] * c[1,...] + RGBL_TO_LMS[0][2] * c[2,...];
-    m = RGBL_TO_LMS[1][0] * c[0,...] + RGBL_TO_LMS[1][1] * c[1,...] + RGBL_TO_LMS[1][2] * c[2,...];
-    s = RGBL_TO_LMS[2][0] * c[0,...] + RGBL_TO_LMS[2][1] * c[1,...] + RGBL_TO_LMS[2][2] * c[2,...];
+    l = RGBL_TO_LMS[0][0] * c[0,...] + RGBL_TO_LMS[0][1] * c[1,...] + RGBL_TO_LMS[0][2] * c[2,...]
+    m = RGBL_TO_LMS[1][0] * c[0,...] + RGBL_TO_LMS[1][1] * c[1,...] + RGBL_TO_LMS[1][2] * c[2,...]
+    s = RGBL_TO_LMS[2][0] * c[0,...] + RGBL_TO_LMS[2][1] * c[1,...] + RGBL_TO_LMS[2][2] * c[2,...]
 
-    l_ = np.cbrt(l);
-    m_ = np.cbrt(m);
-    s_ = np.cbrt(s);
+    l_ = np.cbrt(l)
+    m_ = np.cbrt(m)
+    s_ = np.cbrt(s)
 
     return np.array([
         LMS3_TO_OKLAB[0][0] * l_ + LMS3_TO_OKLAB[0][1] * m_ + LMS3_TO_OKLAB[0][2] * s_,
@@ -91,13 +91,13 @@ def to_lms(S,h):
   a = S*np.cos(h)
   b = S*np.sin(h)
 
-  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b;
-  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b;
-  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b;
+  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b
+  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b
+  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b
 
-  l = l_*l_*l_;
-  m = m_*m_*m_;
-  s = s_*s_*s_;
+  l = l_*l_*l_
+  m = m_*m_*m_
+  s = s_*s_*s_
 
   return (l,m,s)
 
@@ -105,13 +105,13 @@ def to_lms_dS(S,h):
   a = S*np.cos(h)
   b = S*np.sin(h)
 
-  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b;
-  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b;
-  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b;
+  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b
+  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b
+  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b
 
-  l = (LMS3_TO_OKLAB[0][1]*np.cos(h) + LMS3_TO_OKLAB[0][1]*np.sin(h))*3*l_*l_;
-  m = (LMS3_TO_OKLAB[1][1]*np.cos(h) + LMS3_TO_OKLAB[1][1]*np.sin(h))*3*m_*m_;
-  s = (LMS3_TO_OKLAB[2][1]*np.cos(h) + LMS3_TO_OKLAB[2][1]*np.sin(h))*3*s_*s_;
+  l = (LMS3_TO_OKLAB[0][1]*np.cos(h) + LMS3_TO_OKLAB[0][1]*np.sin(h))*3*l_*l_
+  m = (LMS3_TO_OKLAB[1][1]*np.cos(h) + LMS3_TO_OKLAB[1][1]*np.sin(h))*3*m_*m_
+  s = (LMS3_TO_OKLAB[2][1]*np.cos(h) + LMS3_TO_OKLAB[2][1]*np.sin(h))*3*s_*s_
 
   return (l,m,s)
 
@@ -119,13 +119,13 @@ def to_lms_dS2(S,h):
   a = S*np.cos(h)
   b = S*np.sin(h)
 
-  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b;
-  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b;
-  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b;
+  l_ = OKLAB_TO_LMS3[0][0] + OKLAB_TO_LMS3[0][1] * a + OKLAB_TO_LMS3[0][2] * b
+  m_ = OKLAB_TO_LMS3[1][0] + OKLAB_TO_LMS3[1][1] * a + OKLAB_TO_LMS3[1][2] * b
+  s_ = OKLAB_TO_LMS3[2][0] + OKLAB_TO_LMS3[2][1] * a + OKLAB_TO_LMS3[2][2] * b
 
-  l = (LMS3_TO_OKLAB[0][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*l_;
-  m = (LMS3_TO_OKLAB[1][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*m_;
-  s = (LMS3_TO_OKLAB[2][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*s_;
+  l = (LMS3_TO_OKLAB[0][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*l_
+  m = (LMS3_TO_OKLAB[1][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*m_
+  s = (LMS3_TO_OKLAB[2][1]*np.cos(h) + LMS3_TO_OKLAB[0][2]*np.sin(h))**2*6*s_
 
   return (l,m,s)
 
