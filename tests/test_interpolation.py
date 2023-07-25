@@ -1372,3 +1372,113 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(60), Color('yellow'))
         self.assertColorEqual(i(87), Color('red'))
         self.assertColorEqual(i(100), Color('red'))
+
+    def test_padding(self):
+        """Test padding."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=0.25)
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['rgb(253 212 158)',
+             'rgb(253 187 132)',
+             'rgb(252 141 89)',
+             'rgb(239 101 72)',
+             'rgb(215 48 31)']
+        )
+
+    def test_padding_output_space(self):
+        """Test padding output space."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=0.25, out_space='oklab')
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['oklab(0.89246 0.02285 0.08001)',
+             'oklab(0.84091 0.05126 0.09064)',
+             'oklab(0.7538 0.10664 0.10608)',
+             'oklab(0.67477 0.14723 0.09751)',
+             'oklab(0.57443 0.17728 0.10314)']
+        )
+
+    def test_padding_sequence_one(self):
+        """Test padding sequence of one."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=[0.25])
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['rgb(253 212 158)',
+             'rgb(253 187 132)',
+             'rgb(252 141 89)',
+             'rgb(239 101 72)',
+             'rgb(215 48 31)']
+        )
+
+    def test_padding_sequence_two(self):
+        """Test padding sequence of two."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=[0.25, 0.15])
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['rgb(253 212 158)',
+             'rgb(252.8 177.8 123.4)',
+             'rgb(246.8 125 82.2)',
+             'rgb(224.6 69.2 47.4)',
+             'rgb(186.2 9.6 6.2)']
+        )
+
+    def test_no_padding(self):
+        """Test that 0 applies no padding."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=0)
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['rgb(255 247 236)',
+             'rgb(253 212 158)',
+             'rgb(252 141 89)',
+             'rgb(215 48 31)',
+             'rgb(127 0 0)']
+        )
+
+    def test_padding_sequence_empty(self):
+        """An empty list will be treated as no padding set at all."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        i = Color.discrete(scale, space='srgb', padding=[])
+        steps = 5
+        colors = [i(r / (steps - 1)).to_string() for r in range(steps)]
+        self.assertEqual(
+            colors,
+            ['rgb(255 247 236)',
+             'rgb(253 212 158)',
+             'rgb(252 141 89)',
+             'rgb(215 48 31)',
+             'rgb(127 0 0)']
+        )
+
+    def test_padding_sequence_too_many(self):
+        """Test padding with too many inputs."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        with self.assertRaises(ValueError):
+            Color.discrete(scale, space='srgb', padding=[0.25, 0.15, 0.3])
+
+    def test_padding_bad_output(self):
+        """Test that a bad output for padding fails."""
+
+        scale = ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
+        with self.assertRaises(ValueError):
+            Color.discrete(scale, space='srgb', padding=[0.25, 0.15], out_space='bad')
