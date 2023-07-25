@@ -42,6 +42,7 @@ class CatmullRom(Interpolate):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        padding: float | tuple[float, float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the Catmull-Rom interpolator."""
@@ -58,5 +59,6 @@ class CatmullRom(Interpolate):
             premultiplied,
             extrapolate,
             domain,
+            padding,
             **kwargs
         )

@@ -956,13 +956,14 @@ class Color(metaclass=ColorMeta):
         The basic mixing logic is outlined in the CSS level 5 draft.
         """
 
+        # Mix really needs to be between 0 and 1 or steps will break
+        domain = interpolate_args.get('domain')
+        if domain is not None:
+            interpolate_args['domain'] = interpolate.normalize_domain(domain)
+
         if not self._is_color(color) and not isinstance(color, (str, Mapping)):
             raise TypeError("Unexpected type '{}'".format(type(color)))
-        i = self.interpolate([self, color], **interpolate_args)
-        # Scale really needs to be between 0 and 1 as mix deals in percentages.
-        if i.domain:
-            i.domain = interpolate.normalize_domain(i.domain)
-        mixed = i(percent)
+        mixed = self.interpolate([self, color], **interpolate_args)(percent)
         return self._hotswap(mixed) if in_place else mixed
 
     @classmethod
@@ -978,11 +979,12 @@ class Color(metaclass=ColorMeta):
     ) -> list[Color]:
         """Discrete steps."""
 
-        i = cls.interpolate(colors, **interpolate_args)
         # Scale really needs to be between 0 and 1 or steps will break
-        if i.domain:
-            i.domain = interpolate.normalize_domain(i.domain)
-        return i.steps(steps, max_steps, max_delta_e, delta_e)
+        domain = interpolate_args.get('domain')
+        if domain is not None:
+            interpolate_args['domain'] = interpolate.normalize_domain(domain)
+
+        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
 
     @classmethod
     def discrete(
@@ -992,28 +994,24 @@ class Color(metaclass=ColorMeta):
         space: str | None = None,
         out_space: str | None = None,
         steps: int | None = None,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: str | None = None,
         domain: list[float] | None = None,
-        **interpolate_steps_args: Any
+        **interpolate_args: Any
     ) -> Interpolator:
         """Create a discrete interpolation."""
 
         # If no steps were provided, use the number of colors provided
-        if steps is None:
-            steps = sum((not callable(c) or not isinstance(c, interpolate.stop)) for c in colors)
-
-        # Generate the discrete color steps
-        colors = cls.steps(colors, space=space, steps=steps, **interpolate_steps_args)
-
-        # Create an interpolation with discrete ranges
-        total = len(colors)
-        discrete = []
-        for r in range(1, total):
-            step1 = colors[r - 1]
-            step2 = colors[r]
-            stp = r / total
-            discrete.extend([interpolate.stop(step1, stp), interpolate.stop(step2, stp)])
-
-        return cls.interpolate(discrete, space=space, out_space=out_space, domain=domain)
+        num = sum((not callable(c) or not isinstance(c, interpolate.stop)) for c in colors) if steps is None else steps
+        i = cls.interpolate(colors, **interpolate_args, space=space)
+        # Convert the interpolation into a discretized interpolation with the requested number of steps
+        i.discretize(num, max_steps, max_delta_e, delta_e)
+        if domain is not None:
+            i.domain(domain)
+        if out_space is not None:
+            i.out_space(out_space)
+        return i
 
     @classmethod
     def interpolate(
@@ -1028,6 +1026,7 @@ class Color(metaclass=ColorMeta):
         extrapolate: bool = False,
         domain: list[float] | None = None,
         method: str = "linear",
+        padding: float | tuple[float, float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """
@@ -1053,6 +1052,7 @@ class Color(metaclass=ColorMeta):
             premultiplied=premultiplied,
             extrapolate=extrapolate,
             domain=domain,
+            padding=padding,
             **kwargs
         )
 

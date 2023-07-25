@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6
+
+-   **NEW**: Add `padding` parameter to limit color scales when interpolating.
+
 ## 2.5
 
 -   **NEW**: Add new `discrete()` function that creates a discrete interpolation object.

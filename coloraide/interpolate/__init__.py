@@ -81,7 +81,8 @@ class Interpolator(metaclass=ABCMeta):
         progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: list[float] | None = None,
+        domain: Sequence[float] | None = None,
+        padding: float | tuple[float, float] | None = None,
         **kwargs: Any
     ):
         """Initialize."""
@@ -96,7 +97,7 @@ class Interpolator(metaclass=ABCMeta):
         self.create = create
         self.progress = progress
         self.space = space
-        self.out_space = out_space
+        self._out_space = out_space
         self.extrapolate = extrapolate
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         cs = self.create.CS_MAP[space]
@@ -106,13 +107,109 @@ class Interpolator(metaclass=ABCMeta):
             self.hue_index = -1
         self.premultiplied = premultiplied
 
+        # Calculate padded start and end
+        self._padding = None  # type: tuple[float, float] | None
+        if padding is not None:
+            self.padding(padding)
+
+        # Set the domain
+        self._domain = []  # type: list[float]
+        if domain is not None:
+            self.domain(domain)
+
+        self.setup()
+
+    def discretize(
+        self,
+        steps: int = 2,
+        max_steps: int = 1000,
+        max_delta_e: float = 0,
+        delta_e: str | None = None
+    ) -> None:
+        """Make the interpolation a discretized interpolation."""
+
+        # Get the discrete steps for the new discrete interpolation
+        colors = self.steps(steps, max_steps, max_delta_e, delta_e)
+
+        # Calculate new coordinate list and discrete stops
+        total = len(colors)
+        coords = []
+        stops = {}
+        count = 0
+        for r in range(1, total):
+            pre = r - 1
+            nxt = r
+            step1 = colors[pre][:]
+            step2 = colors[nxt][:]
+            stp = r / total
+            stops[count] = stp
+            stops[count + 1] = stp
+            coords.extend([step1, step2])
+            count += 2
+
+        # Update colors and stops
+        self.coordinates = coords
+        self.length = len(self.coordinates)
+        self.stops = stops
+        self.start = self.stops[0]
+        self.end = self.stops[len(self.stops) - 1]
+
+        # Reset features that were used to generate the discrete steps
+        self.easings = [None] * (self.length - 1)
+        self.progress = None
+        self.current_easing = None
+        self._padding = None
+        self._domain = []
+
+        self.setup()
+
+    def out_space(self, space: str) -> None:
+        """Set output space."""
+
+        if space not in self.create.CS_MAP:
+            raise ValueError("'{}' is not a valid color space".format(space))
+        self._out_space = space
+
+    def padding(self, padding: float | Sequence[float]) -> None:
+        """Add/adjust padding."""
+
+        # Make sure it is a sequence
+        padding = [padding] if not isinstance(padding, Sequence) else list(padding)
+
+        # If it is empty
+        if not padding:
+            self._padding = None
+            return
+
+        l = len(padding)
+
+        # Too many values
+        if l > 2:
+            raise ValueError("Padding must be either a single numerical value or a sequence of 2 values")
+
+        # Apply padding to both
+        if l == 1:
+            padding.append(padding[0])
+
+        # No padding is required
+        if padding[0] == padding[1] == 0.0:
+            self._padding = None
+
+        # Calculate padded start and end
+        else:
+            self._padding = (0.0 + padding[0], 1.0 - padding[1])
+
+    def domain(self, domain: Sequence[float]) -> None:
+        """Set the domain."""
+
         # Ensure domain ascends.
         # If we have a domain of length 1, we will duplicate it.
-        if domain is not None and domain:
+        d = []  # type: list[float]
+        if domain:
             length = len(domain)
 
             # Ensure values are not descending
-            d = [domain[0]]
+            d.append(domain[0])
             for index in range(length - 1):
                 b = domain[index + 1]
                 d.append(d[-1] if b <= d[-1] else b)
@@ -122,9 +219,7 @@ class Interpolator(metaclass=ABCMeta):
                 d.append(d[0])
             domain = d
 
-        self.domain = [] if domain is None else domain  # type: list[float]
-
-        self.setup()
+        self._domain = d
 
     def setup(self) -> None:
         """Optional setup."""
@@ -269,7 +364,7 @@ class Interpolator(metaclass=ABCMeta):
 
         # Create the color and ensure it is in the correct color space.
         color = self.create(self.space, coords[:-1], coords[-1])
-        return color.convert(self.out_space, in_place=True)
+        return color.convert(self._out_space, in_place=True)
 
     def ease(self, t: float, channel_index: int) -> float:
         """Provide a progression time and channel index."""
@@ -295,17 +390,17 @@ class Interpolator(metaclass=ABCMeta):
         so that our logic can remain consistent.
         """
 
-        if point < self.domain[0]:
-            point = (point - self.domain[0]) / (self.domain[-1] - self.domain[0]) if self.extrapolate else 0.0
-        elif point > self.domain[-1]:
-            point = 1.0 + (point - self.domain[-1]) / (self.domain[-1] - self.domain[0]) if self.extrapolate else 1.0
+        if point < self._domain[0]:
+            point = (point - self._domain[0]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 0.0
+        elif point > self._domain[-1]:
+            point = 1.0 + (point - self._domain[-1]) / (self._domain[-1] - self._domain[0]) if self.extrapolate else 1.0
         else:
-            regions = len(self.domain) - 1
+            regions = len(self._domain) - 1
             size = (1 / regions)
             index = 0
             adjusted = 0.0
             for index in range(regions):
-                a, b = self.domain[index:index + 2]
+                a, b = self._domain[index:index + 2]
                 if point >= a and point <= b:
                     l = b - a
                     adjusted = ((point - a) / l) if l else 0.0
@@ -317,8 +412,14 @@ class Interpolator(metaclass=ABCMeta):
     def __call__(self, point: float) -> Color:
         """Find which leg of the interpolation the request is between."""
 
-        if self.domain:
+        if self._domain:
             point = self.scale(point)
+
+        if self._padding:
+            slope = (self._padding[1] - self._padding[0])
+            point = self._padding[0] + slope * point
+            if not self.extrapolate:
+                point = min(max(point, self._padding[0]), self._padding[1])
 
         # See if point extends past either the first or last stop
         if point < self.start:
@@ -360,6 +461,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        padding: float | tuple[float, float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -610,6 +712,7 @@ def interpolator(
     premultiplied: bool,
     extrapolate: bool,
     domain: list[float] | None = None,
+    padding: float | tuple[float, float] | None = None,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -718,5 +821,6 @@ def interpolator(
         premultiplied,
         extrapolate,
         domain,
+        padding,
         **kwargs
     )

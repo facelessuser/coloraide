@@ -52,6 +52,7 @@ class NaturalBSpline(Interpolate):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: list[float] | None = None,
+        padding: float | tuple[float, float] | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """Return the natural B-spline interpolator."""
@@ -68,5 +69,6 @@ class NaturalBSpline(Interpolate):
             premultiplied,
             extrapolate,
             domain,
+            padding,
             **kwargs
         )
