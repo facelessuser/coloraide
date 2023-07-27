@@ -30,8 +30,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools
-        python -m pip install .[dev]
-        python -m pip install .[docs]
+        python -m pip install -r requirements/dev.txt
+        python -m pip install -r requirements/docs.txt
         npm install --legacy-peer-deps
     - name: Deploy documents
       run: |

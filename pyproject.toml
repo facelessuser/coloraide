@@ -40,46 +40,6 @@ Homepage = "https://github.com/facelessuser/coloraide"
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[project.optional-dependencies]
-dev = [
-    "build",
-    "python-minifier",
-    "tox"
-]
-
-docs = [
-    "mkdocs_pymdownx_material_extras>=2.1",
-    "pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git",
-    "mkdocs-git-revision-date-localized-plugin",
-    "mkdocs-minify-plugin",
-    "pyspelling",
-    "build"
-]
-
-lint = [
-    "ruff"
-]
-
-test = [
-    "pytest",
-    "pytest-cov",
-    "coverage"
-]
-
-typing = [
-    "mypy"
-]
-
-tools = [
-    "scipy",
-    "numpy",
-    "shapely",
-    "pillow",
-    "matplotlib",
-    "plotly",
-    "kaleido"
-]
-
 [tool.hatch.version]
 source = "code"
 path = "coloraide/__meta__.py"
@@ -102,6 +62,7 @@ include = [
     "/docs/theme/**/*.js.map",
     "/coloraide/**/*.py",
     "/coloraide/py.typed",
+    "/requirements/*.txt",
     "/tests/**/*.py",
     "/tools/**/*.py",
     "/.pyspelling.yml",
@@ -167,8 +128,7 @@ legacy_tox_ini = """
     [testenv]
     passenv=LANG
     deps=
-        .[typing]
-        .[test]
+        -r requirements/test.txt
     commands=
         "{envpython}" -m mypy
         "{envpython}" -m pytest --cov coloraide --cov-append tests
@@ -178,13 +138,13 @@ legacy_tox_ini = """
 
     [testenv:lint]
     deps=
-        .[lint]
+        -r requirements/lint.txt
     commands=
         "{envbindir}"/ruff check .
 
     [testenv:documents]
     deps=
-        .[docs]
+        -r requirements/docs.txt
     commands=
         "{envpython}" tools/buildwheel.py
         "{envpython}" -m mkdocs build --clean --verbose --strict
