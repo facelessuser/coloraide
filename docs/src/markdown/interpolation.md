@@ -140,7 +140,7 @@ Linear interpolation is nice because it is easy to implement, and due to its str
 that said, it doesn't always have the smoothest transitions. It turns out that there are other piecewise ways to
 interpolate that can yield smoother results.
 
-Inspired by some efforts seen on the [web](catmull-observe) and in the great JavaScript library
+Inspired by some efforts seen on the [web][catmull-observe] and in the great JavaScript library
 [Culori](https://culorjs.org), ColorAide implements a number of spline based interpolation methods.
 
 Because splines require taking into account more than two colors at a time, all spline based interpolation methods are
