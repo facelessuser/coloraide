@@ -2068,33 +2068,41 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Get size and calculate augmented size
     size = s[0]
 
-    # Create the traditional augmented matrix, but keep the identity matrix and original matrix separate.
-    m = [list(row) for row in matrix]
-    mi = identity(size)
+    # Create the traditional augmented matrix, we will develop the inverse matrix on the right side.
+    m = [list(row1) + row2 for row1, row2 in zip(matrix, identity(size))]
 
-    # Ensure we do not zero values at each pivot point
+    # Test if in invertible form
+    shuffle = False
     for i in range(size):
         # Is pivot point zero?
         if m[i][i] == 0.0:
+            shuffle = True
+            break
 
-            # Try to swap with a row where the pivot points in each row are not zero.
-            for j in list(range(i + 1, size)) + list(range(i - 1)):
-                if m[j][i] != 0.0 and m[i][j] != 0.0:
-                    m[i], m[j] = m[j], m[i]
-                    mi[i], mi[j] = mi[j], mi[i]
-                    break
+    # Ensure we do not have zero values at each pivot point by shuffling the rows into better positions
+    if shuffle:
+        # Improve our chances by bubbling up rows with most zeros to the top
+        m.sort(key=lambda x: len([j for j in x[:size] if j]))
 
-            # We cannot invert this matrix
-            else:
-                raise ValueError("Matrix is not invertible")
+        # Swap rows to try and get the matrix into an invertible shape
+        for i in range(size):
+            # Is pivot point zero?
+            if m[i][i] == 0.0:
+                # Try to swap with a row where the pivot points in each row are not zero.
+                for j in list(range(i + 1, size)) + list(range(0, i)):
+                    if m[j][i] != 0.0 and (m[i][j] != 0.0 or j > i):
+                        m[i], m[j] = m[j], m[i]
+                        break
+                # If we haven't tried, shuffle backwards
+                else:
+                    raise ValueError("Matrix is not invertible: {}".format(m))
 
     for i in range(size):
 
         # Scale the diagonal such that it will now equal 1
         scalar = 1 / m[i][i]
-        for j in range(size):
+        for j in range(size * 2):
             m[i][j] *= scalar
-            mi[i][j] *= scalar
 
         # Now, using the value found at the index `i` in the remaining rows (excluding the pivot point `m[i]`),
         # Where `r` is the current row under evaluation, subtract `m[r][i] * m[i] from m[r]`.
@@ -2107,12 +2115,11 @@ def inv(matrix: MatrixLike) -> Matrix:
             scalar = m[r][i]
 
             # Scale each item in the row (i) and subtract it from the current row (r)
-            for j in range(size):
+            for j in range(size * 2):
                 m[r][j] -= scalar * m[i][j]
-                mi[r][j] -= scalar * mi[i][j]
 
     # Return the inverse from the right side of the augmented matrix
-    return mi
+    return [r[size:] for r in m]
 
 
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
