@@ -2010,7 +2010,39 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def inv(matrix: MatrixLike) -> Matrix:
+def _sort_diag_row(m: Matrix, i: int, size: int, sort_index: int = 0, depth: int = 0) -> int:
+    """
+    Swap row to ensure no zero at pivot point.
+
+    Find a row that has a non-zero the row's pivot point and return the new index for the row.
+    Swapping is recursive to allow for negotiation when targeting a row that would be critical.
+    """
+
+    replace = -1
+    for j in list(range(i + 1, size)) + list(range(0, i)):
+
+        candidate = m[j][i] != 0.0
+        # If our candidate is not critical where it is located, the swap would be
+        # mutually beneficial, or we haven't yet sorted the row, allow the swap.
+        if candidate and (m[j][j] == 0.0 or m[i][j] != 0.0 or j > sort_index):
+            m[i], m[j] = m[j], m[i]
+            replace = j
+            break
+
+        # We want this row, but it needs a replacement. Can find one?
+        # Only try if we haven't hit our limit.
+        elif candidate and depth != 10:
+            l = _sort_diag_row(m, j, size, sort_index, depth + 1)
+            if l > -1:
+                m[i], m[l] = m[l], m[i]
+                replace = l
+                break
+
+    # Return the swapped index, or return -1
+    return replace
+
+
+def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
     """
     Invert the matrix.
 
@@ -2048,6 +2080,8 @@ def inv(matrix: MatrixLike) -> Matrix:
     - Modified to handle greater than 2 x 2 dimensions.
     - Modified to shuffle rows to help handle a valid matrix which has a zero
       at a pivot point.
+    - If a potentially invertible matrix fails due to the pivot point becoming
+      zero during row operations, try to evaluate in the reverse.
     """
 
     # Ensure we have a square matrix
@@ -2071,52 +2105,41 @@ def inv(matrix: MatrixLike) -> Matrix:
     # Create the traditional augmented matrix, we will develop the inverse matrix on the right side.
     m = [list(row1) + row2 for row1, row2 in zip(matrix, identity(size))]
 
-    # Test if in invertible form
-    shuffle = False
+    # Sort the rows such that there are no zeros at the pivot points
     for i in range(size):
-        # Is pivot point zero?
         if m[i][i] == 0.0:
-            shuffle = True
-            break
+            if _sort_diag_row(m, i, size, i) == -1:
+                raise ValueError("Matrix is not invertible")
 
-    # Ensure we do not have zero values at each pivot point by shuffling the rows into better positions
-    if shuffle:
-        # Improve our chances by bubbling up rows with most zeros to the top
-        m.sort(key=lambda x: len([j for j in x[:size] if j]))
-
-        # Swap rows to try and get the matrix into an invertible shape
-        for i in range(size):
-            # Is pivot point zero?
-            if m[i][i] == 0.0:
-                # Try to swap with a row where the pivot points in each row are not zero.
-                for j in list(range(i + 1, size)) + list(range(0, i)):
-                    if m[j][i] != 0.0 and (m[i][j] != 0.0 or j > i):
-                        m[i], m[j] = m[j], m[i]
-                        break
-                # If we haven't tried, shuffle backwards
-                else:
-                    raise ValueError("Matrix is not invertible: {}".format(m))
-
-    for i in range(size):
-
-        # Scale the diagonal such that it will now equal 1
-        scalar = 1 / m[i][i]
-        for j in range(size * 2):
-            m[i][j] *= scalar
-
-        # Now, using the value found at the index `i` in the remaining rows (excluding the pivot point `m[i]`),
-        # Where `r` is the current row under evaluation, subtract `m[r][i] * m[i] from m[r]`.
-        for r in range(size):
-            # Skip the pivot point
-            if r == i:
-                continue
-
-            # The scalar for the current row
-            scalar = m[r][i]
-
-            # Scale each item in the row (i) and subtract it from the current row (r)
+    try:
+        rng = (size,) if not _reverse else (size - 1, -1, -1)
+        for i in range(*rng):
+            # Divide all values in row by the pivot point to make the diagonal all ones.
+            scalar = 1 / m[i][i]
             for j in range(size * 2):
-                m[r][j] -= scalar * m[i][j]
+                m[i][j] *= scalar
+
+            # Iterate the remaining rows and zero out the values in the column where the current pivot
+            # point resides. We must apply this same logic to all columns though. The column is zeroed out
+            # by subtracting the current value from each column in the row. This value must be multiplied
+            # by column value of the row with the pivot point.
+            for r in range(*rng):
+                # Skip current row
+                if r != i:
+                    # Scale each item in the row (i) and subtract it from the current row (r)
+                    scalar = m[r][i]
+                    for j in range(size * 2):
+                        m[r][j] -= scalar * m[i][j]
+    except ZeroDivisionError as e:
+        # Unfortunately, a non-zero pivot point became zero during the inversion.
+        # Try evaluating in the reverse direction to avoid negation of the pivot point.
+        # It would be as much or more work to calculate if the determinant was zero
+        # (in a generic manner), so running again is probably easiest.
+        if not _reverse:
+            return inv(matrix, _reverse=True)
+        # Matrix is not invertible or "we" are simply unable to invert it, to us it is the same.
+        # Another approach would be required if there is an inverse.
+        raise ValueError("Matrix is not invertible") from e
 
     # Return the inverse from the right side of the augmented matrix
     return [r[size:] for r in m]
