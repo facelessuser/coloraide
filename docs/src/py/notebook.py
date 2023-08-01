@@ -362,7 +362,7 @@ def evaluate(node, g, loop=False):
             try:
                 for n in node.body:
                     yield from evaluate(n, g, True)
-            except Break:  # noqa:  PERF203
+            except Break:  # noqa
                 break
             except Continue:
                 continue
@@ -379,7 +379,7 @@ def evaluate(node, g, loop=False):
             try:
                 for n in node.body:
                     yield from evaluate(n, g, True)
-            except Break:  # noqa:  PERF203
+            except Break:  # noqa
                 break
             except Continue:
                 continue
