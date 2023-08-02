@@ -17,7 +17,7 @@ except ImportError:
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
-FORCE_RECT = ('cmy',)
+FORCE_RECT = ('cmy', 'ryb')
 
 
 def create_custom_hsl(gamut):
@@ -26,7 +26,7 @@ def create_custom_hsl(gamut):
     cs = Color.CS_MAP[gamut]
 
     class HSL(type(Color.CS_MAP['hsl'])):
-        NAME = 'hsl-{}'.format(gamut)
+        NAME = '-hsl-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
         WHITE = cs.WHITE
@@ -161,7 +161,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
         gamut_space = space
     else:
         ColorCyl = create_custom_hsl(gamut)
-        gamut_space = 'hsl-{}'.format(gamut)
+        gamut_space = '-hsl-{}'.format(gamut)
     gspace = ColorCyl.CS_MAP[gamut_space]
 
     # Adjust scaling factor if the mapping space requires it

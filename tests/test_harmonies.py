@@ -1,5 +1,5 @@
 """Test harmonies."""
-from coloraide import Color
+from coloraide.everything import ColorAll as Color
 from . import util
 import pytest
 from itertools import zip_longest as zipl
@@ -135,25 +135,25 @@ class TestHarmonyError(util.ColorAsserts, unittest.TestCase):
         """Test using a harmony with sRGB."""
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('complement', space='srgb')
+            Color('red').harmony('complement', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('split', space='srgb')
+            Color('red').harmony('split', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('analogous', space='srgb')
+            Color('red').harmony('analogous', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('triad', space='srgb')
+            Color('red').harmony('triad', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('square', space='srgb')
+            Color('red').harmony('square', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('rectangle', space='srgb')
+            Color('red').harmony('rectangle', space='cmyk')
 
         with self.assertRaises(ValueError):
-            Color('red').harmony('mono', space='srgb')
+            Color('red').harmony('mono', space='cmyk')
 
     def test_bad_harmony(self):
         """Test bad harmony."""

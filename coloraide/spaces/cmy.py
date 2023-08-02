@@ -1,6 +1,6 @@
 """Uncalibrated, naive CMY color space."""
 from __future__ import annotations
-from ..spaces import Space
+from ..spaces import Regular, Space
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector
@@ -20,7 +20,7 @@ def cmy_to_srgb(cmy: Vector) -> Vector:
     return [1 - c for c in cmy]
 
 
-class CMY(Space):
+class CMY(Regular, Space):
     """The CMY color class."""
 
     BASE = "srgb"

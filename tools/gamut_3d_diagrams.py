@@ -36,7 +36,7 @@ def create_custom_hsl(gamut):
     cs = Color.CS_MAP[gamut]
 
     class HSL(type(Color.CS_MAP['hsl'])):
-        NAME = 'hsl-{}'.format(gamut)
+        NAME = '-hsl-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
         WHITE = cs.WHITE
@@ -162,7 +162,7 @@ def render_space(space, gamut, ax, mode, resolution, opacity):
         gamut_space = space
     elif gamut != 'srgb':
         ColorCyl = create_custom_hsl(gamut)
-        gamut_space = 'hsl-{}'.format(gamut)
+        gamut_space = '-hsl-{}'.format(gamut)
     else:
         ColorCyl = Color
         gamut_space = 'hsl'
