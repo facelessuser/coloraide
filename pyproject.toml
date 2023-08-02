@@ -115,7 +115,8 @@ ignore = [
     "N818",
     "RUF012",
     "RUF005",
-    "PGH004"
+    "PGH004",
+    "RUF100"
 ]
 
 [tool.tox]
