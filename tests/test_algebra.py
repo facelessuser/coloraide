@@ -2,7 +2,21 @@
 import unittest
 import math
 import pytest
+import random
 from coloraide import algebra as alg
+
+
+def pprint(value):
+    """Print the matrix."""
+    print('[', end='')
+    first = True
+    for v in value:
+        if first:
+            first = False
+        else:
+            print(',\n ', end='')
+        print(v, end='')
+    print(']')
 
 
 class TestAlgebra(unittest.TestCase):
@@ -296,11 +310,44 @@ class TestAlgebra(unittest.TestCase):
                [-0.4999999999999999, 1.4999999999999998]]]]
         )
 
+        # Prior to a recent change, this would fail as mathematically, this matrix
+        # would have the center row zeroed out when we reduce the rows. Now, if this
+        # happens, we will re run the `inv`, but evaluate the matrix in the reverse.
+        self.assertEqual(
+            alg.inv(
+                [[0.22156862745098038, -0.22156862745098038, -0.8892156862745098],
+                 [-0.3823529411764706, 0.3823529411764706, -0.45784313725490194],
+                 [-0.16666666666666669, -0.8333333333333333, 0.16666666666666666]]
+            ),
+            [[0.7199437370447141, -1.7622890139176781, -1.0000000000000004],
+             [-0.31721942552561444, 0.25207284572105415, -1.0],
+             [-0.8661533905833582, -0.5019247853124078, -8.881784197001252e-16]]
+        )
+
+        # Test sorting of rows for large sparse matrix
+        # No zeros on the diagonal does not mean the matrix has an inverse,
+        # but it is important to ensure we can sort the rows properly.
+        size = 30
+        m = alg.identity(size)
+        for r in m:
+            r[random.randint(0, 30 - 1)] = 1.0
+        random.shuffle(m)
+        for i in range(size):
+            if m[i][i] == 0.0:
+                if alg._sort_diag_row(m, i, size, i) == -1:
+                    pprint(m)
+                    pytest.fail("Could not sort the rows for matrix inverse")
+        if 0 in alg.diag(m):
+            pytest.fail("Could not sort the rows for matrix inverse")
+
         with self.assertRaises(ValueError):
             alg.inv([[8, 9, 1], [4, 2, 1]])
 
         with self.assertRaises(ValueError):
             alg.inv([[0, 0], [0, 0]])
+
+        with self.assertRaises(ValueError):
+            alg.inv([[1, 1], [1, 1]])
 
     def test_vstack(self):
         """Test `vstack`."""
