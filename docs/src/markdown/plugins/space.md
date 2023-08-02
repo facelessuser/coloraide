@@ -233,7 +233,8 @@ If the channel requires more advanced handling, you can override `resolve_channe
 ## Mix-ins
 
 ColorAide provides some various mixins for some common color space types. It should be noted that all cylindrical type
-color mixins are derived from `Cylindrical`.
+color mixins are derived from `Cylindrical`. `Regular` is used for normal, 3 channel color spaces _usually_ with ranges
+of [0, 1], CMY and sRGB as examples.
 
 /// tab | Cylindrical
 ```py
@@ -252,9 +253,16 @@ class Cylindrical:
 ```
 ///
 
+/// tab | Regular
+```py
+class Regular:
+    """Regular, 3 channel color space usually with range of [0, 1].
+```
+///
+
 /// tab | RGBish
 ```py
-class RGBish:
+class RGBish(Regular):
     """RGB-ish space."""
 
     def names(self) -> tuple[str, ...]:
@@ -268,7 +276,6 @@ class RGBish:
         return [self.get_channel_index(name) for name in self.names()]
 ```
 ///
-
 
 /// tab | HSLish
 ```py

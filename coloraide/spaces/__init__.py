@@ -12,6 +12,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
+class Regular:
+    """Regular 3D color space usually with a range between 0 - 1."""
+
+
 class Cylindrical:
     """Cylindrical space."""
 
@@ -26,7 +30,7 @@ class Cylindrical:
         return self.get_channel_index(self.hue_name())  # type: ignore[no-any-return, attr-defined]
 
 
-class RGBish:
+class RGBish(Regular):
     """RGB-ish space."""
 
     def names(self) -> tuple[str, ...]:

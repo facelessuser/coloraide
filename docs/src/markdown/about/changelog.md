@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7
+
+-   **NEW**: Add `Regular` mixin class for normal, 3 channel color spaces (sRGB, CMY, etc.).
+-   **NEW**: `harmony()` can now accept and transform `Labish` and `Regular` color spaces to cylindrical spaces.
+
 ## 2.6
 
 -   **NEW**: Add `padding` parameter to limit color scales when interpolating.
