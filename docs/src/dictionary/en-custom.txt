@@ -10,6 +10,7 @@ Az
 BT
 Berns
 Bezier
+Bilinear
 Björn
 Boronine
 Brettel
@@ -63,6 +64,7 @@ FNL
 Fairchild
 Florian
 Formatter
+Gosset
 HCT
 HDR
 HLG
@@ -92,6 +94,7 @@ JCh
 JMh
 JND
 JSON
+Jacobian
 Jsh
 Judd
 Jz
@@ -163,6 +166,7 @@ Tetradic
 Tokenize
 Triadic
 Trichromacy
+Trilinear
 Tritan
 Tritanopia
 Twemoji
@@ -194,6 +198,7 @@ backfill
 backfilled
 barycentric
 bezier
+bilinear
 boolean
 broadcasted
 bz
@@ -289,6 +294,7 @@ th
 transmissive
 triadic
 trichromacy
+trilinear
 tristimulus
 tritan
 tritanomaly

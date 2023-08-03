@@ -194,6 +194,231 @@ def lerp(p0: float, p1: float, t: float) -> float:
     return p0 + (p1 - p0) * t
 
 
+def ilerp(p0: float, p1: float, t: float) -> float:
+    """Inverse interpolation."""
+
+    d = (p1 - p0)
+    return (t - p0) / d if d else 0
+
+
+def bilerp(p0: float, p1: float, p2: float, p3: float, tx: float, ty: float) -> float:
+    """Bilinear interpolation."""
+
+    return lerp(lerp(p0, p1, tx), lerp(p2, p3, tx), ty)
+
+
+def lerp2d(vertices: Matrix, t: Vector) -> Vector:
+    """
+    Interpolate in 2D.
+
+    Vertices should be in column form [[x...], [y...]].
+    """
+
+    return [bilerp(*vertices[i], *t) for i in range(2)]
+
+
+def ilerp2d(
+    vertices: Matrix,
+    point: Vector,
+    *,
+    vertices_t: Matrix | None = None,
+    max_iter: int = 20,
+    tol: float = 1e-14
+) -> Vector:
+    """
+    Inverse interpolation of a 2D point.
+
+    Same algorithm as `ilerp3d` just for a 2D point. Based off the forward transform below.
+
+    ```
+    vxy = v00 (1 - x) (1 - y) +
+        v10 x (1 - y) +
+        v01 (1 - x) y +
+        v11 x y
+    ```
+    """
+
+    if vertices_t is None:
+        vertices_t = transpose(vertices)
+
+    # Initial guess
+    xy = [0.5, 0.5]
+
+    try:
+        for _ in range(max_iter):
+
+            # Calculate the residual by using our guess to calculate the what should be the input and compare
+            residual = subtract(lerp2d(vertices, xy), point, dims=D1)
+
+            # If we are close enough to our input, we can quit
+            if math.sqrt(residual[0] ** 2 + residual[1] ** 2) < tol:
+                break
+
+            # Build up the Jacobian matrix so we can solve for the next, closer guess.
+            x, y = xy
+            _x = [-(1 - y), 1 - y, -y, y]
+            jx = [sum(i) for i in zip(*[[xi * c for c in ci] for ci, xi in zip(vertices_t, _x)])]
+
+            _y = [-(1 - x), -x, x, 1 - x]
+            jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
+
+            # Create the Jacobian matrix, but we need it in column form
+            j = transpose([jx, jy])
+
+            # Solve for new guess
+            xy = subtract(xy, dot(inv(j), residual, dims=D2_D1), dims=D1)
+    except ValueError:
+        # The Jacobian matrix shouldn't fail inversion if we are in gamut.
+        # Out of gamut may give us one we cannot invert. There are potential
+        # ways to handle this to try and get moving again, but currently, we
+        # just give up. We do not guarantee out of gamut conversions.
+        pass
+
+    return [0.0 if i < tol else i for i in xy]
+
+
+def trilerp(
+    p0: float,
+    p1: float,
+    p2: float,
+    p3: float,
+    p4: float,
+    p5: float,
+    p6: float,
+    p7: float,
+    tx: float,
+    ty: float,
+    tz: float
+) -> float:
+    """Trilinear interpolation."""
+
+    return lerp(bilerp(p0, p1, p2, p3, tx, ty), bilerp(p4, p5, p6, p7, tx, ty), tz)
+
+
+def lerp3d(
+    vertices: Matrix,
+    t: Vector
+) -> Vector:
+    """
+    Interpolation in 3D.
+
+    Vertices should be in column form [[x...], [y...], [z...]].
+    """
+
+    return [trilerp(*vertices[i], *t) for i in range(3)]
+
+
+def ilerp3d(
+    vertices: Matrix,
+    point: Vector,
+    *,
+    vertices_t: Matrix | None = None,
+    max_iter: int = 20,
+    tol: float = 1e-14
+) -> Vector:
+    """
+    Inverse trilinear interpolation.
+
+    Uses Gauss-Newton method to compute the inverse of the trilinear interpolation.
+
+    Original code by Nick Alger https://stackoverflow.com/a/18332009/3609487
+    and adapted for our purposes. As stated in the link:
+
+    > I release the 3D code to the public domain as well if anyone wants to use it.
+    > - Nick Alger Jun 27, 2014 at 7:30
+
+    Utilizes the trilinear interpolation method found here to get the inverse:
+    http://paulbourke.net/miscellaneous/interpolation/. Results are the same as
+    what we do in the forward, but easier to use for the inverse calculations.
+    Forward transform found below with vertices ordered to match the order we store our
+    vertices in.
+
+    ```
+    Vxyz =  V000 (1 - x) (1 - y) (1 - z) +
+        V100 x (1 - y) (1 - z) +
+        V010 (1 - x) y (1 - z) +
+        V110 x y (1 - z) +
+        V001 (1 - x) (1 - y) z +
+        V101 x (1 - y) z +
+        V011 (1 - x) y z +
+        V111 x y z
+    ```
+
+    NOTE: It does seem that selected vertices can have an impact on how well the
+    reverse translation is. Certain combinations can cause us to fall short of
+    resolving the interpolation all the way to 1 when it should. In some cases, it
+    will just stop at `0.9xxxx`, etc. Some sets of vertices have no issues at all.
+    """
+
+    if vertices_t is None:
+        vertices_t = transpose(vertices)
+
+    # Initial guess.
+    xyz = [0.5, 0.5, 0.5]
+
+    try:
+        for _ in range(max_iter):
+
+            # Calculate the residual by using our guess to calculate the what should be the input and compare
+            residual = subtract(lerp3d(vertices, xyz), point, dims=D1)
+
+            # If we are close enough to our input, we can quit
+            if math.sqrt(residual[0] ** 2 + residual[1] ** 2 + residual[2] ** 2) < tol:
+                break
+
+            # Build up the Jacobian matrix so we can solve for the next, closer guess
+            x, y, z = xyz
+            _x = [
+                 -(1 - y) * (1 - z),
+                (1 - y) * (1 - z),
+                -y * (1 - z),
+                y * (1 - z),
+                -(1 - y) * z,
+                (1 - y) * z,
+                -y * z,
+                y * z
+            ]
+            jx = [sum(i) for i in zip(*[[xi * c for c in ci] for ci, xi in zip(vertices_t, _x)])]
+
+            _y = [
+                -(1 - x) * (1 - z),
+                -x * (1 - z),
+                (1 - x) * (1 - z),
+                x * (1 - z),
+                -(1 - x) * z,
+                -x * z,
+                (1 - x) * z,
+                x * z,
+            ]
+            jy = [sum(i) for i in zip(*[[yi * c for c in ci] for ci, yi in zip(vertices_t, _y)])]
+
+            _z = [
+                -(1 - x) * (1 - y),
+                -x * (1 - y),
+                -(1 - x) * y,
+                -x * y,
+                (1 - x) * (1 - y),
+                x * (1 - y),
+                (1 - x) * y,
+                x * y
+            ]
+            jz = [sum(i) for i in zip(*[[zi * c for c in ci] for ci, zi in zip(vertices_t, _z)])]
+
+            # Create the Jacobian matrix, but we need it in column form
+            j = transpose([jx, jy, jz])
+
+            # Solve for new guess
+            xyz = subtract(xyz, dot(inv(j), residual, dims=D2_D1), dims=D1)
+    except ValueError:
+        # The Jacobian matrix shouldn't fail inversion if we are in gamut.
+        # Out of gamut may give us one we cannot invert. There are potential
+        # ways to handle this to try and get moving again, but currently, we
+        # just give up. We do not guarantee out of gamut conversions.
+        pass
+
+    return [0.0 if i < tol else i for i in xyz]
+
+
 @functools.lru_cache(maxsize=10)
 def _matrix_141(n: int) -> Matrix:
     """Get matrix '1 4 1'."""
