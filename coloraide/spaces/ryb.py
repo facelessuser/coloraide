@@ -4,6 +4,8 @@ RYB color space.
 Gosset and Chen
 http://bahamas10.github.io/ryb/assets/ryb.pdf
 """
+from __future__ import annotations
+import math
 from ..spaces import Regular, Space
 from .. import algebra as alg
 from ..channels import Channel
@@ -37,19 +39,16 @@ def remove_bias(ryb: Vector) -> Vector:
         target = c
 
         # Guessing properly is critical for good round tripping with fewest iterations.
-        # Handle scenarios really close to our limits. Make larger guesses until we
-        # get very closer to the upper bound.
+        # Handle scenarios really close to our limits.
         if abs(c) <= 1e-6:
             guess = 0.0
         elif abs(1 - c) < 1e-6:
             guess = 1.0
-        elif 0 < c < 0.7:
-            guess = c * 1.1
         else:
-            guess = c
+            guess = 0.5
 
         last = float('nan')
-        for _ in range(8):
+        for _ in range(10):
             t1 = -2 * guess ** 3 + 3 * guess ** 2 - target
             t2 = -6 * guess ** 2 + 6 * guess
 
@@ -58,7 +57,7 @@ def remove_bias(ryb: Vector) -> Vector:
 
             guess -= (t1 / t2)
 
-            if guess == last:
+            if guess == last:  # pragma: no cover
                 break
 
             last = guess
@@ -108,6 +107,20 @@ class RYB(Regular, Space):
     RYB_CUBE = GOSSET_CHEN_CUBE
     RYB_CUBE_T = alg.transpose(RYB_CUBE)
     BIASED = False
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """
+        Test if color is achromatic.
+
+        Achromatic colors in the traditional sense is just brown in RYB,
+        so convert to RGB where it is easier to determine an actual achromatic color.
+        """
+
+        coords = self.to_base(coords)
+        for x in alg.vcross(coords, [1, 1, 1]):
+            if not math.isclose(0.0, x, abs_tol=1e-5):
+                return False
+        return True
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB."""

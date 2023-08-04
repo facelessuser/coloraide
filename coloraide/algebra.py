@@ -238,7 +238,7 @@ def ilerp2d(
     ```
     """
 
-    if vertices_t is None:
+    if vertices_t is None:  # pragma: no cover
         vertices_t = transpose(vertices)
 
     # Initial guess
@@ -267,7 +267,7 @@ def ilerp2d(
 
             # Solve for new guess
             xy = subtract(xy, dot(inv(j), residual, dims=D2_D1), dims=D1)
-    except ValueError:
+    except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
         # ways to handle this to try and get moving again, but currently, we
@@ -350,7 +350,7 @@ def ilerp3d(
     will just stop at `0.9xxxx`, etc. Some sets of vertices have no issues at all.
     """
 
-    if vertices_t is None:
+    if vertices_t is None:  # pragma: no cover
         vertices_t = transpose(vertices)
 
     # Initial guess.
@@ -409,7 +409,7 @@ def ilerp3d(
 
             # Solve for new guess
             xyz = subtract(xyz, dot(inv(j), residual, dims=D2_D1), dims=D1)
-    except ValueError:
+    except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
         # ways to handle this to try and get moving again, but currently, we
