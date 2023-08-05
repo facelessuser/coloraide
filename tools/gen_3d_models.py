@@ -70,6 +70,8 @@ models = {
     'orgb': {'title': TEMPLATE.format('oRGB'), 'filename': 'orgb-3d.png', 'elev': 72},
     'xyb': {'title': TEMPLATE.format('XYB'), 'filename': 'xyb-3d.png', 'azim': 45},
     'ucs': {'title': TEMPLATE.format('UCS'), 'filename': 'ucs-3d.png', 'azim': 60, 'elev': 10},
+    'ryb': {'title': 'RYB Color Space', 'filename': 'ryb-3d.png', 'gamut': 'ryb'},
+    'ryb-biased': {'title': 'RYB Color Space (Biased)', 'filename': 'ryb-biased-3d.png', 'gamut': 'ryb-biased'}
 }
 
 

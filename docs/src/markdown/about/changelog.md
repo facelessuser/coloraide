@@ -2,7 +2,8 @@
 
 ## 2.7
 
--   **NEW**: Add `Regular` mixin class for normal, 3 channel color spaces (sRGB, CMY, etc.).
+-   **NEW**: Add new RYB color space.
+-   **NEW**: Add `Regular` mixin class for normal, 3 channel color spaces (sRGB, CMY, RYB, etc.).
 -   **NEW**: `harmony()` can now accept and transform `Labish` and `Regular` color spaces to cylindrical spaces.
 
 ## 2.6

@@ -1644,3 +1644,40 @@ class TestAlgebra(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             alg.linspace([0, 0], [1, 1, 1], 3)
+
+    def test_ilerp(self):
+        """Test inverse interpolation."""
+
+        t = 0.5
+        v = alg.lerp(0.2, 1.8, t)
+        self.assertEqual(round(alg.ilerp(0.2, 1.8, v), 5), t)
+
+    def test_lerp2d(self):
+        """Test 2D interpolation."""
+
+        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1, 1]]
+        v = alg.lerp2d(alg.transpose(m), [0.5, 0.5])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.525, 0.4875])]
+        v = alg.lerp2d(alg.transpose(m), [0.0, 0.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.1, 0.0])]
+        v = alg.lerp2d(alg.transpose(m), [1.0, 0.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 0.0])]
+        v = alg.lerp2d(alg.transpose(m), [0.0, 1.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.0, .95])]
+        v = alg.lerp2d(alg.transpose(m), [1.0, 1.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [1, 1])]
+
+    def test_ilerp2d(self):
+        """Test inverse 2D interpolation."""
+
+        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1, 1]]
+        v = alg.ilerp2d(alg.transpose(m), [0.525, 0.4875])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.5, 0.5])]
+        v = alg.ilerp2d(alg.transpose(m), [0.1, 0.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.0, 0.0])]
+        v = alg.ilerp2d(alg.transpose(m), [1.0, 0.0])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 0.0])]
+        v = alg.ilerp2d(alg.transpose(m), [0.0, .95])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.0, 1.0])]
+        v = alg.ilerp2d(alg.transpose(m), [1, 1])
+        [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 1.0])]
