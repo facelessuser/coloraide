@@ -57,7 +57,7 @@
       .primary-inner {
         width: 12em;
         height: 14em;
-        background: conic-gradient(in xyz-d65,var(--color-wheel-stops1));
+        background: conic-gradient(var(--color-wheel-stops1));
         transform: rotate(180deg);
       }
     }
@@ -73,7 +73,7 @@
         width: 14em;
         height: 14em;
         margin: auto;
-        background: conic-gradient(in xyz-d65,var(--color-wheel-stops2));
+        background: conic-gradient(var(--color-wheel-stops2));
         transform: rotate(-135deg);
         clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
       }
@@ -83,7 +83,7 @@
       width: 22em;
       height: 22em;
       padding: 4em 0;
-      background: conic-gradient(in xyz-d65,var(--color-wheel-stops3));
+      background: conic-gradient(var(--color-wheel-stops3));
       border-radius: 1000px;
       outline: 5px solid var(--color-wheel-bg);
       transform: rotate(135deg);
@@ -93,7 +93,7 @@
       width: 30em;
       height: 30em;
       padding: 4em 0;
-      background: conic-gradient(in xyz-d65,var(--color-wheel-stops4));
+      background: conic-gradient(var(--color-wheel-stops4));
       border-radius: 1000px;
       outline: 5px solid var(--color-wheel-bg);
       transform: rotate(128deg);
@@ -108,7 +108,7 @@
       width: 38em;
       height: 38em;
       padding: 4em 0;
-      background: conic-gradient(in xyz-d65,var(--color-wheel-stops5));
+      background: conic-gradient(var(--color-wheel-stops5));
       border-radius: 1000px;
       outline: 5px solid var(--color-wheel-bg);
       transform: rotate(123deg);

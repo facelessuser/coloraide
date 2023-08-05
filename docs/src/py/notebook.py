@@ -675,6 +675,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
 
     try:
         if wheel:
+            gamut = 'srgb'
             exceptions = options.get('exceptions', False) if options is not None else False
 
             _, colors = execute(src.strip(), not exceptions, init=init)
