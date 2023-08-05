@@ -8,6 +8,7 @@ Achromatopsia
 Alvy
 Az
 BT
+Baoquan
 Berns
 Bezier
 Bilinear
@@ -65,6 +66,7 @@ Fairchild
 Florian
 Formatter
 Gosset
+Gossett
 HCT
 HDR
 HLG
@@ -88,6 +90,7 @@ ITP
 ITU
 IgPgTg
 Interpolator
+Itten
 Iz
 Izazbz
 JCh

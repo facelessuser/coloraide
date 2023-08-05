@@ -55,6 +55,7 @@ flowchart TB
     srgb-linear --- xyz-d65
         rec709 --- srgb-linear
         srgb --- srgb-linear
+            ryb --- srgb
             orgb --- srgb
             prismatic --- srgb
             hsi --- srgb
@@ -161,6 +162,7 @@ flowchart TB
     cam16-lcd(CAM16 LCD)
     hct(HCT)
     xyb(XYB)
+    ryb(RYB)
 
     click xyz-d65 "./xyz_d65/" _self
     click xyz-d50 "./xyz_d50/" _self
@@ -219,5 +221,6 @@ flowchart TB
     click cam16-lcd "./cam16_lcd/" _self
     click hct "./hct/" _self
     click xyb "./xyb/" _self
+    click ryb "./ryb/" _self
 ```
 ///
