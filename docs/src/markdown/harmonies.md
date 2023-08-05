@@ -220,6 +220,22 @@ four colors instead of a square.
 Steps(Color('red').harmony('rectangle'))
 ```
 
+### Others
+
+If you have a particular configuration that you are after that is not covered under the defaults, you can use `harmony`
+to calculate your own. Simply use the `wheel` harmony that can generate a color wheel of any size. Simply use a color to
+seed the wheel, specify the space in which to generate the wheel. Optionally, provide the desired number of colors in
+the color wheel via the `count` argument. We can generate a wheel for any color (assuming the color space can properly
+handle the color). We can even generate an extended color wheel if so desired.
+
+```py play wheel
+Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48)
+```
+
+```py play
+Steps(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48))
+```
+
 ## Changing the Default Harmony Color Space
 
 /// new | New 2.7

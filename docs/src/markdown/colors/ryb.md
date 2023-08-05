@@ -66,12 +66,20 @@ Notice how the colors in the "biased" RYB  are more concentrated at the corners 
 
 
 While precisely emulating paint mixing was not entirely the focus, the RYB space does do a better job than other color
-spaces. It should also be noted that when mixing all the colors, you not get black, but a muddy brown, much like with
+spaces.
+
+```py play
+Color.interpolate(['color(--ryb 0 0 1)', 'color(--ryb 0 1 0)'], space='ryb')
+Color.interpolate(['color(--ryb 1 0 0)', 'color(--ryb 0 1 0)'], space='ryb')
+Color.interpolate(['color(--ryb 1 0 1)', 'color(--ryb 0 1 0)'], space='ryb')
+```
+
+It should also be noted that when mixing all the colors, you not get black, but a muddy brown, much like with
 paint. To be precise, the color black is not defined within this color space.
 
 ```py play
 Color.interpolate(['color(--ryb 0 0 0)', 'color(--ryb 1 1 1)'], space='ryb')
-Color.interpolate(['color(--ryb 1 0 0)', 'color(--ryb 1 1 1)'], space='ryb')
+Color.interpolate(['color(--ryb 0 0 1)', 'color(--ryb 1 1 1)'], space='ryb')
 ```
 
 It should be noted that the RYB model does a great job at translating colors within the RYB color gamut, but translation
@@ -109,10 +117,31 @@ Color("ryb", [1, 1, 0]).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide.spaces.ryb import RYB, RYBBiased
+from coloraide.spaces.ryb import RYB
 
 class Color(Base): ...
 
 Color.register(RYB())
+```
+
+## RYB Biased
+
+The biased RYB from Gosset and Chen's paper can be used via the `ryb-biased` color space, CSS custom name
+`#!css-color --ryb-biased`. It has the same channel ranges as `ryb`, but conversions will be biased to the corners of
+the RYB cube.
+
+```py play
+Color.interpolate(Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb'), space='ryb')
+Color.interpolate(Color('ryb-biased', [1, 0, 0]).harmony('wheel', space='ryb-biased'), space='ryb-biased')
+```
+
+Space can be registered via:
+
+```py
+from coloraide import Color as Base
+from coloraide.spaces.ryb import RYBBiased
+
+class Color(Base): ...
+
 Color.register(RYBBiased())
 ```

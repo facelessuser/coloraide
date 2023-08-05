@@ -1121,7 +1121,8 @@ def harmony(
     name: str,
     *,
     space: str | None = None,
-    out_space: str | None = None
+    out_space: str | None = None,
+    **kwargs: Any
 ) -> list[Color]:
     ...
 ```
@@ -1142,6 +1143,7 @@ Description
     Triadic             | `triad`
     Tetradic\ Square    | `square`
     Tetradic\ Rectangle | `rectangle`
+    Wheel               | `wheel`
 
 Parameters
 
@@ -1151,6 +1153,7 @@ Parameters
     `name`      |                | Name of the color harmony to use.
     `space`     | `#!py 'oklch'` | Color space under which the harmonies will be calculated. Must be a cylindrical space.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
+    `**kwargs`  |                | Any harmony specific parameters to pass to the called harmony.
 
 Return
 
