@@ -1095,7 +1095,8 @@ class Color(metaclass=ColorMeta):
         name: str,
         *,
         space: str | None = None,
-        out_space: str | None = None
+        out_space: str | None = None,
+        **kwargs: Any
     ) -> list[Color]:
         """Acquire the specified color harmonies."""
 
@@ -1105,7 +1106,7 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = space
 
-        return [c.convert(out_space, in_place=True) for c in harmonies.harmonize(self, name, space)]
+        return [c.convert(out_space, in_place=True) for c in harmonies.harmonize(self, name, space, **kwargs)]
 
     def compose(
         self,
