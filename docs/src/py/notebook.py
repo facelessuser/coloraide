@@ -697,12 +697,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
 
             primary = list(reversed(colors[::freq]))
             secondary = list(reversed(colors[offset::freq] + [colors[offset // 3]]))
-            if l == 12:
-                tertiary = list(reversed(colors))
-            elif l == 24:
-                tertiary = list(reversed(colors[::2]))
-            else:
-                tertiary = list(reversed(colors[::4]))
+            tertiary = list(reversed(colors[::offset // 6]))
             color_rings = [primary, secondary, tertiary]
 
             extra_rings_start = ''
@@ -710,7 +705,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
             if l > 12:
                 extra_rings_start = '<div class="tertiary2">'
                 extra_rings_end += '</div>'
-                color_rings.append(list(reversed(colors[::2] if l > 24 else colors)))
+                color_rings.append(list(reversed(colors[::offset // 12])))
             if l > 24:
                 extra_rings_start = '<div class="tertiary3">' + extra_rings_start
                 extra_rings_end += '</div>'
