@@ -74,7 +74,7 @@ Color.interpolate(['color(--ryb 1 0 0)', 'color(--ryb 0 1 0)'], space='ryb')
 Color.interpolate(['color(--ryb 1 0 1)', 'color(--ryb 0 1 0)'], space='ryb')
 ```
 
-It should also be noted that when mixing all the colors, you not get black, but a muddy brown, much like with
+It should also be noted that when mixing all the colors, you do not get black, but a muddy brown, much like with
 paint. To be precise, the color black is not defined within this color space.
 
 ```py play
