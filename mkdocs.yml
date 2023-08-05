@@ -271,12 +271,12 @@ markdown_extensions:
       alternate_style: True
 
 extra_css:
-  - assets/coloraide-extras/extra-391b1ef8ad.css
+  - assets/coloraide-extras/extra-8411e71fd9.css
 extra_javascript:
   - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
   - playground-config-65c43228.js
   - https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-f321e406.js
+  - assets/coloraide-extras/extra-notebook-62bd9d7b.js
 
 extra:
   social:

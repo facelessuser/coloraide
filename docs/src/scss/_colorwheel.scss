@@ -1,0 +1,122 @@
+.color-wheel {
+  --color-wheel-stops1: transparent;
+  --color-wheel-stops2: transparent;
+  --color-wheel-stops3: transparent;
+  --color-wheel-stops4: transparent;
+  --color-wheel-stops5: transparent;
+  --color-wheel-bg: var(--md-default-bg-color);
+
+  margin: px2em(16px) 0;
+  overflow-x: scroll;
+  overflow-y: hidden;
+
+  // Override native scrollbar styles
+  &::-webkit-scrollbar {
+    width: px2rem(4px);
+    height: px2rem(4px);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  // Scrollbar thumb
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--md-default-fg-color--lighter);
+
+    // Hovered scrollbar thumb
+    &:hover {
+      background-color: var(--md-accent-fg-color);
+    }
+  }
+
+  // Firefox scrollbar and thumb
+  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
+  scrollbar-width: thin;
+
+  // Firefox hovered scrollbar and thumb
+  &:hover {
+    scrollbar-color: var(--md-accent-fg-color) transparent;
+  }
+
+  div {
+    overflow: clip;
+  }
+
+  .wheel {
+    min-width: max-content;
+    padding: px2em(5px);
+    border-radius: 1000px;
+
+    .primary {
+      width: 12em;
+      height: 10.39em;
+      margin: auto;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+
+      .primary-inner {
+        width: 12em;
+        height: 14em;
+        background: conic-gradient(in xyz-d65,var(--color-wheel-stops1));
+        transform: rotate(180deg);
+      }
+    }
+
+    .secondary {
+      width: 14em;
+      height: 14em;
+      margin: auto;
+      background: var(--color-wheel-bg);
+      border-radius: 1000px;
+
+      .secondary-inner {
+        width: 14em;
+        height: 14em;
+        margin: auto;
+        background: conic-gradient(in xyz-d65,var(--color-wheel-stops2));
+        transform: rotate(-135deg);
+        clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+      }
+    }
+
+    .tertiary {
+      width: 22em;
+      height: 22em;
+      padding: 4em 0;
+      background: conic-gradient(in xyz-d65,var(--color-wheel-stops3));
+      border-radius: 1000px;
+      outline: 5px solid var(--color-wheel-bg);
+      transform: rotate(135deg);
+    }
+
+    .tertiary2 {
+      width: 30em;
+      height: 30em;
+      padding: 4em 0;
+      background: conic-gradient(in xyz-d65,var(--color-wheel-stops4));
+      border-radius: 1000px;
+      outline: 5px solid var(--color-wheel-bg);
+      transform: rotate(128deg);
+
+      .tertiary{
+        margin: auto;
+        transform: rotate(8deg);
+      }
+    }
+
+    .tertiary3 {
+      width: 38em;
+      height: 38em;
+      padding: 4em 0;
+      background: conic-gradient(in xyz-d65,var(--color-wheel-stops5));
+      border-radius: 1000px;
+      outline: 5px solid var(--color-wheel-bg);
+      transform: rotate(123deg);
+
+      .tertiary2 {
+        margin: auto;
+        transform: rotate(4deg);
+      }
+    }
+  }
+}

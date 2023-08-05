@@ -62,8 +62,7 @@ Steps(Color('magenta').harmony('wheel', space='cmy'))
 If we were to select the perceptually uniform OkLCh color space, and seed it with red's lightness and chroma, we'd get:
 
 ```py play
-c = Color('red').convert('oklch', in_place=True)
-Steps([Color('oklch', [*c[0:2], x]) for x in range(0, 360, 30)])
+Steps(Color('red').harmony('wheel', space='oklch'))
 ```
 
 This produces colors with visually more uniform lightness, does that mean these are better?
