@@ -274,7 +274,7 @@ def ilerp2d(
         # just give up. We do not guarantee out of gamut conversions.
         pass
 
-    return [0.0 if i < tol else i for i in xy]
+    return xy
 
 
 def trilerp(
@@ -416,7 +416,7 @@ def ilerp3d(
         # just give up. We do not guarantee out of gamut conversions.
         pass
 
-    return [0.0 if i < tol else i for i in xyz]
+    return xyz
 
 
 @functools.lru_cache(maxsize=10)
