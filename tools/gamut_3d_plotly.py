@@ -17,7 +17,7 @@ except ImportError:
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
-FORCE_RECT = ('cmy', 'ryb')
+FORCE_RECT = ('cmy', 'ryb', 'ryb-biased')
 
 
 def create_custom_hsl(gamut):

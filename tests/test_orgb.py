@@ -100,4 +100,4 @@ class TestoRGBPoperties(util.ColorAsserts, unittest.TestCase):
         """Test `labish_names`."""
 
         c = Color('color(--orgb 1 0.5 0.5)')
-        self.assertEqual(c._space.names(), ('l', 'crg', 'cyb'))
+        self.assertEqual(c._space.names(), ('l', 'cyb', 'crg'))

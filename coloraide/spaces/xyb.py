@@ -77,7 +77,7 @@ class XYB(Labish, Space):
     SERIALIZE = ("--xyb",)
     WHITE = WHITES['2deg']['D65']
     CHANNELS = (
-        Channel("x", -0.45, 0.45, flags=FLG_MIRROR_PERCENT),
+        Channel("x", -0.05, 0.05, flags=FLG_MIRROR_PERCENT),
         Channel("y", 0.0, 0.845),
         Channel("b", -0.45, 0.45, flags=FLG_MIRROR_PERCENT)
     )

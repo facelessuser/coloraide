@@ -75,16 +75,6 @@ class oRGB(Labish, Space):
         "luma": "l"
     }
 
-    def names(self) -> tuple[str, ...]:
-        """
-        Return Lab-ish names in the order L a b.
-
-        oRGB flips the `crg` and `cyb` equivalent (which corresponds to `a` and `b`).
-        """
-
-        channels = self.channels
-        return channels[0], channels[2], channels[1]
-
     def to_base(self, coords: Vector) -> Vector:
         """To base from oRGB."""
 

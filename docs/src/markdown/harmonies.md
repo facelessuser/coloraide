@@ -245,8 +245,8 @@ Non-cylindrical space support was added in 2.7.
 If you'd like to change the `#!py3 Color()` class's default harmony color space, it can be done with
 [class override](./color.md#override-default-settings). Simply derive a new `#!py3 Color()` class from the original and
 override the `HARMONY` property with the name of a suitable color space. Color spaces must be either a cylindrical
-space, a Lab-like color space, or what we will call a regular, rectangular space. By this we mean a normal 3 channel
-color space _usually_ with a range of [0, 1]. Afterwards, all color color harmony calculations will use the specified
+space, a Lab-like color space, or what we will call a regular, rectangular space. By "regular" we mean a normal 3
+channel color space _usually_ with a range of [0, 1]. Afterwards, all color harmony calculations will use the specified
 color space unless overridden via the method's `space` parameter.
 
 ```py play
@@ -255,3 +255,11 @@ class Custom(Color):
 
 Steps(Custom('red').harmony('split'))
 ```
+
+/// warning
+Remember that every color space is different. Some may rotate hues in a different direction and some may just not be
+very compatible for extracting harmonies from.
+
+Additionally, a color space may not handle colors beyond its gamut well, for such color spaces, it is important to work
+within that spaces gamut opposed to picking colors outside of the gamut and relying on gamut mapping.
+///
