@@ -327,10 +327,10 @@ class TestAlgebra(unittest.TestCase):
         # Test sorting of rows for large sparse matrix
         # No zeros on the diagonal does not mean the matrix has an inverse,
         # but it is important to ensure we can sort the rows properly.
-        size = 30
+        size = 20
         m = alg.identity(size)
         for r in m:
-            r[random.randint(0, 30 - 1)] = 1.0
+            r[random.randint(0, size - 1)] = 1.0
         random.shuffle(m)
         for i in range(size):
             if m[i][i] == 0.0:

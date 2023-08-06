@@ -2256,7 +2256,7 @@ def _sort_diag_row(m: Matrix, i: int, size: int, sort_index: int = 0, depth: int
 
         # We want this row, but it needs a replacement. Can find one?
         # Only try if we haven't hit our limit.
-        elif candidate and depth != 10:
+        elif candidate and depth != 20:
             l = _sort_diag_row(m, j, size, sort_index, depth + 1)
             if l > -1:
                 m[i], m[l] = m[l], m[i]
