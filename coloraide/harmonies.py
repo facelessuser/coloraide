@@ -7,6 +7,7 @@ from .spaces.hsl import HSL
 from .spaces.lch import LCh
 from .cat import WHITES
 from . import util
+from .types import Vector
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -14,6 +15,44 @@ if TYPE_CHECKING:  # pragma: no cover
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 BLACK = [0, 0, 0]
+
+
+class _HarmonyLCh(LCh):
+    """Special LCh mapping class for harmonies."""
+
+    INDEXES = [0, 1, 2]
+
+    def to_base(self, coords: Vector) -> Vector:
+        """Convert to the base."""
+
+        ordered = [0.0, 0.0, 0.0]
+        for e, c in enumerate(super().to_base(coords)):
+            ordered[self.INDEXES[e]] = c
+        return ordered
+
+    def from_base(self, coords: Vector) -> Vector:
+        """Convert from the base."""
+
+        return super().from_base([coords[i] for i in self.INDEXES])
+
+
+class _HarmonyHSL(HSL):
+    """Special HSL mapping class for harmonies."""
+
+    INDEXES = [0, 1, 2]
+
+    def to_base(self, coords: Vector) -> Vector:
+        """Convert to the base."""
+
+        ordered = [0.0, 0.0, 0.0]
+        for e, c in enumerate(super().to_base(coords)):
+            ordered[self.INDEXES[e]] = c
+        return ordered
+
+    def from_base(self, coords: Vector) -> Vector:
+        """Convert from the base."""
+
+        return super().from_base([coords[i] for i in self.INDEXES])
 
 
 def adjust_hue(hue: float, deg: float) -> float:
@@ -41,12 +80,13 @@ class Harmony(metaclass=ABCMeta):
             cs = color._space  # type: Space
             name = color.space()
 
-            class HarmonyLCh(LCh):
+            class HarmonyLCh(_HarmonyLCh):
                 NAME = '-harmony-cylinder'
                 SERIALIZE = ('---harmoncy-cylinder',)
                 BASE = name
                 WHITE = cs.WHITE
                 DYAMIC_RANGE = cs.DYNAMIC_RANGE
+                INDEXES = cs.indexes()  # type: ignore[attr-defined]
 
             class ColorCyl(type(color)):  # type: ignore[misc]
                 """Custom color."""
@@ -60,13 +100,14 @@ class Harmony(metaclass=ABCMeta):
             cs = color._space
             name = color.space()
 
-            class HarmonyHSL(HSL):
+            class HarmonyHSL(_HarmonyHSL, HSL):
                 NAME = '-harmony-cylinder'
                 SERIALIZE = ('---harmoncy-cylinder',)
                 BASE = name
                 GAMUT_CHECK = name
                 WHITE = cs.WHITE
                 DYAMIC_RANGE = cs.DYNAMIC_RANGE
+                INDEXES = cs.indexes() if hasattr(cs, 'indexes') else [0, 1, 2]
 
             class ColorCyl(type(color)):  # type: ignore[no-redef, misc]
                 """Custom color."""

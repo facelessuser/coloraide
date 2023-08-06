@@ -22,12 +22,12 @@ class TestXYB(util.ColorAssertsPyTest):
         # Test color
         ('color(--xyb 0.5 0.1 -0.1)', 'color(--xyb 0.5 0.1 -0.1)'),
         ('color(--xyb 0.5 0.1 -0.1 / 0.5)', 'color(--xyb 0.5 0.1 -0.1 / 0.5)'),
-        ('color(--xyb 50% 50% -50% / 50%)', 'color(--xyb 0.225 0.4225 -0.225 / 0.5)'),
+        ('color(--xyb 50% 50% -50% / 50%)', 'color(--xyb 0.025 0.4225 -0.225 / 0.5)'),
         ('color(--xyb none none none / none)', 'color(--xyb none none none / none)'),
         # Test percent ranges
         ('color(--xyb 0% 0% 0%)', 'color(--xyb 0 0 0)'),
-        ('color(--xyb 100% 100% 100%)', 'color(--xyb 0.45 0.845 0.45)'),
-        ('color(--xyb -100% -100% -100%)', 'color(--xyb -0.45 -0.845 -0.45)')
+        ('color(--xyb 100% 100% 100%)', 'color(--xyb 0.05 0.845 0.45)'),
+        ('color(--xyb -100% -100% -100%)', 'color(--xyb -0.05 -0.845 -0.45)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

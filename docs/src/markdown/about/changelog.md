@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.7.1
+
+-   **FIX**: Fix issue where `harmony` would convert some colors to cylindrical spaces and not properly consider order
+    of channels.
+-   **FIX**: XYB, while Lab like in its default configuration, has such a large disparity in the non-lightness
+    components that the ranges for them should not be the same when using percentages.
+-   **FIX**: Lab like space mixins should not try and order `a` and `b` like coordinates when calling `indexes()`, but
+    should return them in there current order with lightness first. The meaning of these components can be different
+    enough for a given color space to make normalizing their ordered configuration meaningless and alter inherit hue
+    direction when processing for `harmony`.
+
 ## 2.7
 
 -   **NEW**: Add new RYB color space.

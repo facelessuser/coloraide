@@ -102,17 +102,6 @@ class ICtCp(Lab):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 
-    def names(self) -> tuple[str, ...]:
-        """
-        Return Lab-ish names in the order L a b.
-
-        ICtCp flips protan and tritan (which corresponds to `a` and `b`).
-        Interestingly, the polarity of tritan (yellow/blue) is also flipped.
-        """
-
-        channels = self.channels
-        return channels[0], channels[2], channels[1]
-
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from ICtCp."""
 
