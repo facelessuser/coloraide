@@ -14,10 +14,10 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, RGBish  # noqa: E402
+from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, Regular  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
-FORCE_RECT = ('cmy', 'ryb', 'ryb-biased')
+FORCE_OWN_GAMUT = {'hwb', 'hpluv', 'ryb', 'ryb-biased'}
 
 
 def create_custom_hsl(gamut):
@@ -156,7 +156,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
 
     # Determine the gamut mapping space to use.
     # Some spaces cannot be generalized (HWB and HPLuv for instance).
-    if space in ('hwb', 'hpluv'):
+    if space in FORCE_OWN_GAMUT:
         ColorCyl = Color
         gamut_space = space
     else:
@@ -314,6 +314,9 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
 def render_space_rect(fig, space, gamut, resolution, opacity, edges):
     """Render rectangular space."""
 
+    if space in FORCE_OWN_GAMUT:
+        gamut = space
+
     # Six corners of the RGB cube
     ck = Color(gamut, [0, 0, 0])
     cw = Color(gamut, [1, 1, 1])
@@ -384,7 +387,7 @@ def plot_gamut_in_space(
         return None
 
     names = target.CHANNELS
-    is_rgbish = isinstance(target, RGBish)
+    is_regular = isinstance(target, Regular)
     is_cyl = isinstance(target, Cylindrical)
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
@@ -444,7 +447,7 @@ def plot_gamut_in_space(
     fig = go.Figure(layout=layout)
 
     target = Color.CS_MAP[space]
-    if is_rgbish or space in FORCE_RECT:
+    if is_regular:
         # Use a rectangular space for RGB-ish spaces to give a sharper cube
         return render_space_rect(fig, space, gamut, resolution, opacity, edges)
     else:
