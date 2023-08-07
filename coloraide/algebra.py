@@ -334,7 +334,7 @@ def ilerp3d(
     vertices in.
 
     ```
-    Vxyz =  V000 (1 - x) (1 - y) (1 - z) +
+    Vxyz = V000 (1 - x) (1 - y) (1 - z) +
         V100 x (1 - y) (1 - z) +
         V010 (1 - x) y (1 - z) +
         V110 x y (1 - z) +

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.2
+
+-   **FIX**: More accurate easing logic.
+
 ## 2.7.1
 
 -   **FIX**: Fix issue where `harmony` would convert some colors to cylindrical spaces and not properly consider order

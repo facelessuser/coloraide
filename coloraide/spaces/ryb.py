@@ -11,6 +11,7 @@ from .. import algebra as alg
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector, Matrix
+from ..easing import _bezier, _solve_bezier
 
 # In terms of RGB
 GOSSET_CHEN_CUBE = [
@@ -25,62 +26,20 @@ GOSSET_CHEN_CUBE = [
 ]  # type: Matrix
 
 
-def apply_bias(ryb: Vector) -> Vector:
-    """Apply bias towards corners."""
-
-    return [-2 * t ** 3 + 3 * t ** 2 for t in ryb]
-
-
-def remove_bias(ryb: Vector) -> Vector:
-    """Remove the cubic bias using Newton's method."""
-
-    new = []
-    for c in ryb:
-        target = c
-
-        # Guessing properly is critical for good round tripping with fewest iterations.
-        # Handle scenarios really close to our limits.
-        if abs(c) <= 1e-6:
-            guess = 0.0
-        elif abs(1 - c) < 1e-6:
-            guess = 1.0
-        else:
-            guess = 0.5
-
-        last = float('nan')
-        for _ in range(10):
-            t1 = -2 * guess ** 3 + 3 * guess ** 2 - target
-            t2 = -6 * guess ** 2 + 6 * guess
-
-            if t2 == 0:
-                break
-
-            guess -= (t1 / t2)
-
-            if guess == last:  # pragma: no cover
-                break
-
-            last = guess
-        new.append(guess)
-
-    return new
-
-
 def srgb_to_ryb(rgb: Vector, cube_t: Matrix, cube: Matrix, biased: bool) -> Vector:
     """Convert RYB to sRGB."""
 
     # Calculate the RYB value
     ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube)
-    return remove_bias(ryb) if biased else ryb
+    # Remove smoothstep easing if "biased" is enabled.
+    return [_solve_bezier(t, -2, 3, 0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 
 
 def ryb_to_srgb(ryb: Vector, cube_t: Matrix, biased: bool) -> Vector:
     """Convert RYB to sRGB."""
 
-    # Bias interpolation towards corners
-    if biased:
-        ryb = apply_bias(ryb)
-    return alg.lerp3d(cube_t, ryb)
+    # Bias interpolation towards corners if "biased" enable. Bias is a smoothstep easing function.
+    return alg.lerp3d(cube_t, [_bezier(t, -2, 3, 0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb)
 
 
 class RYB(Regular, Space):
