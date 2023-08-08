@@ -329,12 +329,13 @@ class TestAlgebra(unittest.TestCase):
         # but it is important to ensure we can sort the rows properly.
         size = 20
         m = alg.identity(size)
+        p = alg.identity(size)
         for r in m:
             r[random.randint(0, size - 1)] = 1.0
         random.shuffle(m)
         for i in range(size):
             if m[i][i] == 0.0:
-                if alg._sort_diag_row(m, i, size, i) == -1:
+                if alg._sort_diag_row(m, p, i, size, i) == -1:
                     pprint(m)
                     pytest.fail("Could not sort the rows for matrix inverse")
         if 0 in alg.diag(m):

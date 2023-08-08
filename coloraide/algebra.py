@@ -266,7 +266,7 @@ def ilerp2d(
             j = transpose([jx, jy])
 
             # Solve for new guess
-            xy = subtract(xy, dot(inv(j), residual, dims=D2_D1), dims=D1)
+            xy = subtract(xy, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
@@ -408,7 +408,7 @@ def ilerp3d(
             j = transpose([jx, jy, jz])
 
             # Solve for new guess
-            xyz = subtract(xyz, dot(inv(j), residual, dims=D2_D1), dims=D1)
+            xyz = subtract(xyz, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
@@ -844,7 +844,7 @@ def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix]:
+def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:
     """Extract columns from an array."""
 
     if len(s) > 2 and s[2]:
@@ -853,7 +853,7 @@ def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix
     elif not depth:
         yield m  # type: ignore[misc]
     else:
-        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
+        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index]
 
 
 @overload
@@ -1879,12 +1879,6 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
-def identity(size: int) -> Matrix:
-    """Create an identity matrix."""
-
-    return eye(size)
-
-
 def _flatiter(array: ArrayLike, s: Shape) -> Iterator[float]:
     """Iterate and return values based on shape."""
 
@@ -2189,6 +2183,12 @@ def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
     return a
 
 
+def identity(size: int) -> Matrix:
+    """Create an identity matrix."""
+
+    return eye(size)
+
+
 @overload
 def diag(array: VectorLike, k: int = 0) -> Matrix:
     ...
@@ -2235,7 +2235,7 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def _sort_diag_row(m: Matrix, i: int, size: int, sort_index: int = 0, depth: int = 0) -> int:
+def _sort_diag_row(m: Matrix, p: Matrix, i: int, size: int, sort_index: int = 0, depth: int = 0) -> int:
     """
     Swap row to ensure no zero at pivot point.
 
@@ -2251,20 +2251,155 @@ def _sort_diag_row(m: Matrix, i: int, size: int, sort_index: int = 0, depth: int
         # mutually beneficial, or we haven't yet sorted the row, allow the swap.
         if candidate and (m[j][j] == 0.0 or m[i][j] != 0.0 or j > sort_index):
             m[i], m[j] = m[j], m[i]
+            p[i], p[j] = p[j], p[i]
             replace = j
             break
 
         # We want this row, but it needs a replacement. Can find one?
         # Only try if we haven't hit our limit.
         elif candidate and depth != 20:
-            l = _sort_diag_row(m, j, size, sort_index, depth + 1)
+            l = _sort_diag_row(m, p, j, size, sort_index, depth + 1)
             if l > -1:
                 m[i], m[l] = m[l], m[i]
+                p[i], p[l] = p[l], m[i]
                 replace = l
                 break
 
     # Return the swapped index, or return -1
     return replace
+
+
+def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
+    """
+    Calculate `LU` decomposition.
+
+    Reference: https://www.statlect.com/matrix-algebra/Gaussian-elimination
+    """
+
+    size = len(matrix)
+    p = eye(size)
+    u = [list(row) for row in matrix]
+    l = [list(row) for row in p]
+
+    for i in range(size):
+        # Matrix must be a square matrix
+        if len(u[i]) != size:
+            raise ValueError('Matrix must be a N x N matrix')
+
+        # If pivot point is zero, find the next row that has what we need and swap
+        if u[i][i] == 0:
+            for k in range(i + 1, size):
+                if u[k][i] != 0:
+                    u[i], u[k] = u[k], u[i]
+                    p[i], p[k] = p[k], p[i]
+
+        # If all values are zero, there is nothing to do
+        if not any(u[i]):
+            continue
+
+        for j in range(i + 1, size):
+            # We have a pivot point, let's zero out the leading values
+            v = u[j][i]
+            if v != 0:
+                d = u[i][i] / v
+                for k in range(i, size):
+                    u[j][k] -= (u[i][k] / d) if d else 0.0
+                    l[j][k] -= (-l[i][k] / d) if d else 0.0
+
+    return p, l, u
+
+
+@overload
+def _forward_sub(a: Matrix, b: Vector, size: int) -> Vector:
+    ...
+
+
+@overload
+def _forward_sub(a: Matrix, b: Matrix, size: int) -> Matrix:
+    ...
+
+
+def _forward_sub(a: Matrix, b: Array, size: int) -> Array:
+    """Forward substitution for solution of `L x = b`."""
+
+    x = []  # type: Any
+    d2 = isinstance(b[0], Sequence)
+    for i in range(size):
+        v = b[i]  # type: Any
+        for j in range(i):
+            if d2:
+                v = [vx - a[i][j] * x[j][e] for e, vx in enumerate(v)]
+            else:
+                v -= (a[i][j] * x[j])
+        x.append(v / a[i][i] if not d2 else [vx / a[i][i] for vx in v])
+    return x  # type: ignore[no-any-return]
+
+
+@overload
+def _back_sub(a: Matrix, b: Vector, size: int) -> Vector:
+    ...
+
+
+@overload
+def _back_sub(a: Matrix, b: Matrix, size: int) -> Matrix:
+    ...
+
+
+def _back_sub(a: Matrix, b: Array, size: int) -> Array:
+    """Back substitution for solution of `U x = b`."""
+
+    d2 = isinstance(b[0], Sequence)
+    if d2:
+        x = zeros((size, size))  # type: Any
+    else:
+        x = [0.0] * size
+    for i in range(size - 1, -1, -1):
+        v = b[i]  # type: Any
+        for j in range(i + 1, size):
+            if d2:
+                v = [vx - a[i][j] * x[j][e] for e, vx in enumerate(v)]
+            else:
+                v -= a[i][j] * x[j]
+        x[i] = v / a[i][i] if not d2 else [vx / a[i][i] for vx in v]
+    return x  # type: ignore[no-any-return]
+
+
+@overload
+def solve(a: MatrixLike, b: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def solve(a: MatrixLike, b: MatrixLike) -> Matrix:
+    ...
+
+
+def solve(a: MatrixLike, b: ArrayLike) -> Array:
+    """Solve the system of equations."""
+
+    p, l, u = lu(a)
+    b = dot(p, b, dims=D2_D1)
+    size = len(b)
+    return _back_sub(u, _forward_sub(l, b, size), size)
+
+
+def det(matrix: MatrixLike) -> Any:
+    """Get the determinant."""
+
+    s = shape(matrix)
+    if len(s) == 2:
+        p, l, u = lu(matrix)
+        d = diag(p)
+        swaps = len(d) - sum(d)
+        sign = (-1) ** (swaps - 1) if swaps else 1
+        dl = prod(diag(l))
+        du = prod(diag(u))
+        return sign * dl * du
+    else:
+        last = s[-2:]
+        cols = list(_extract_cols(matrix, s))
+        step = last[-1]
+        return [det(cols[r:r + step]) for r in range(0, len(cols), step)]
 
 
 def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
@@ -2321,19 +2456,20 @@ def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
         invert = []
         cols = list(_extract_cols(matrix, s))
         step = last[-1]
-        invert = [transpose(inv(cols[r:r + step])) for r in range(0, len(cols), step)]  # type: ignore[arg-type]
-        return reshape(invert, s)  # type: ignore[return-value]
+        invert = [transpose(inv(cols[r:r + step])) for r in range(0, len(cols), step)]
+        return reshape(invert, s)  # type: ignore [arg-type, return-value]
 
     # Get size and calculate augmented size
     size = s[0]
 
     # Create the traditional augmented matrix, we will develop the inverse matrix on the right side.
-    m = [list(row1) + row2 for row1, row2 in zip(matrix, identity(size))]
+    m = [list(row) for row in matrix]
+    p = eye(size)
 
     # Sort the rows such that there are no zeros at the pivot points
     for i in range(size):
         if m[i][i] == 0.0:
-            if _sort_diag_row(m, i, size, i) == -1:
+            if _sort_diag_row(m, p, i, size, i) == -1:
                 raise ValueError("Matrix is not invertible")
 
     try:
@@ -2341,8 +2477,9 @@ def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
         for i in range(*rng):
             # Divide all values in row by the pivot point to make the diagonal all ones.
             scalar = 1 / m[i][i]
-            for j in range(size * 2):
+            for j in range(size):
                 m[i][j] *= scalar
+                p[i][j] *= scalar
 
             # Iterate the remaining rows and zero out the values in the column where the current pivot
             # point resides. We must apply this same logic to all columns though. The column is zeroed out
@@ -2353,13 +2490,11 @@ def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
                 if r != i:
                     # Scale each item in the row (i) and subtract it from the current row (r)
                     scalar = m[r][i]
-                    for j in range(size * 2):
+                    for j in range(size):
                         m[r][j] -= scalar * m[i][j]
+                        p[r][j] -= scalar * p[i][j]
     except ZeroDivisionError as e:
-        # Unfortunately, a non-zero pivot point became zero during the inversion.
-        # Try evaluating in the reverse direction to avoid negation of the pivot point.
-        # It would be as much or more work to calculate if the determinant was zero
-        # (in a generic manner), so running again is probably easiest.
+        # Zeroed out a pivot point, try evaluating in the reverse direction as a last resort.
         if not _reverse:
             return inv(matrix, _reverse=True)
         # Matrix is not invertible or "we" are simply unable to invert it, to us it is the same.
@@ -2367,7 +2502,7 @@ def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
         raise ValueError("Matrix is not invertible") from e
 
     # Return the inverse from the right side of the augmented matrix
-    return [r[size:] for r in m]
+    return p
 
 
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
