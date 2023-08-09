@@ -666,6 +666,23 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Matrix/linear algebra math
 ################################
+def pprint(value: Array | float) -> None:
+    """Print the matrix or value."""
+
+    if isinstance(value, Sequence):
+        print('[', end='')
+        first = True
+        for v in value:
+            if first:
+                first = False
+            else:
+                print(',\n ', end='')
+            print(v, end='')
+        print(']')
+    else:
+        print(value)
+
+
 def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
@@ -2261,7 +2278,7 @@ def _sort_diag_row(m: Matrix, p: Matrix, i: int, size: int, sort_index: int = 0,
             l = _sort_diag_row(m, p, j, size, sort_index, depth + 1)
             if l > -1:
                 m[i], m[l] = m[l], m[i]
-                p[i], p[l] = p[l], m[i]
+                p[i], p[l] = p[l], p[i]
                 replace = l
                 break
 
@@ -2278,8 +2295,12 @@ def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
 
     size = len(matrix)
     p = eye(size)
-    u = [list(row) for row in matrix]
     l = [list(row) for row in p]
+    u = [list(row) for row in matrix]
+
+    # Sort rows by pushing rows with more zeros to the bottom
+    for e, items in enumerate(sorted(zip(u, p), key=lambda x: sum(1 for v in x[0] if v), reverse=True)):
+        u[e], p[e] = items
 
     for i in range(size):
         # Matrix must be a square matrix
@@ -2292,19 +2313,16 @@ def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
                 if u[k][i] != 0:
                     u[i], u[k] = u[k], u[i]
                     p[i], p[k] = p[k], p[i]
+                    break
+            else:
+                continue
 
-        # If all values are zero, there is nothing to do
-        if not any(u[i]):
-            continue
-
+        # We have a pivot point, let's zero out the leading values
         for j in range(i + 1, size):
-            # We have a pivot point, let's zero out the leading values
-            v = u[j][i]
-            if v != 0:
-                d = u[i][i] / v
-                for k in range(i, size):
-                    u[j][k] -= (u[i][k] / d) if d else 0.0
-                    l[j][k] -= (-l[i][k] / d) if d else 0.0
+            scalar = u[j][i] / u[i][i]
+            for k in range(i, size):
+                u[j][k] -= u[i][k] * scalar
+                l[j][k] -= -l[i][k] * scalar
 
     return p, l, u
 
@@ -2378,7 +2396,7 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     """Solve the system of equations."""
 
     p, l, u = lu(a)
-    b = dot(p, b, dims=D2_D1)
+    b = dot(p, b, dims=D2_D1 if not isinstance(b[0], Sequence) else D2)
     size = len(b)
     return _back_sub(u, _forward_sub(l, b, size), size)
 

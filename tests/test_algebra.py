@@ -6,19 +6,6 @@ import random
 from coloraide import algebra as alg
 
 
-def pprint(value):
-    """Print the matrix."""
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
-
-
 class TestAlgebra(unittest.TestCase):
     """Test Algebra."""
 
@@ -336,7 +323,7 @@ class TestAlgebra(unittest.TestCase):
         for i in range(size):
             if m[i][i] == 0.0:
                 if alg._sort_diag_row(m, p, i, size, i) == -1:
-                    pprint(m)
+                    alg.pprint(m)
                     pytest.fail("Could not sort the rows for matrix inverse")
         if 0 in alg.diag(m):
             pytest.fail("Could not sort the rows for matrix inverse")
@@ -1682,3 +1669,49 @@ class TestAlgebra(unittest.TestCase):
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.0, 1.0])]
         v = alg.ilerp2d(alg.transpose(m), [1, 1])
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 1.0])]
+
+    def test_solve(self):
+        """Test solving of linear equations."""
+
+        m = [[1, 3, 4, 7],
+             [-8, 27, -36, 0],
+             [28, -5, 0, 2],
+             [4, 2, 8, -1]]
+
+        s = [-12, 2, 5, -2]
+
+        self.assertEqual(
+            alg.solve(m, s),
+            [0.19923880867516353, -0.4159366882136162, -0.41178336253247155, -1.3291850419863471]
+        )
+
+        sm = [[-12, 2, 5, -2],
+              [2, 5, -2, 3],
+              [20, -19, 1, 5],
+              [0, 0, 3, 0]]
+
+        self.assertEqual(
+            alg.solve(m, sm),
+            [[0.755995891983325, -0.6273787228901109, 0.07044040355222592, 0.19555367607080343],
+             [-0.33081616625385024, 0.32519784933244733, 0.34779194103787836, -0.0010270041684287356],
+             [-0.4716667673533502, 0.24442699208602672, 0.3007460883223585, -0.1275599589198334],
+             [-1.4109829034011963, 0.09629674379266598, 0.38331420286352924, -0.24031897541231192]]
+        )
+
+    def test_lu(self):
+        """Test `LU` decomposition."""
+
+        m = [[1, 0, 1], [4, 0, 3], [1, 2, -1]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        m = [[1, 0, 0], [3, 2, 0], [1, 0, 1]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        m =  [[2, 4, 5, 6],
+              [0, 0, 0, 0],
+              [1, -4, 0, 3],
+              [2, 9, 9, 2]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
