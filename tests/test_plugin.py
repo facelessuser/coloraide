@@ -189,7 +189,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         from coloraide.cat import VonKries, WHITES
 
-        expected = [0.42980066937825656, 0.21417803538899305, 0.014645639757305108]
+        expected = [0.429800669378257, 0.21417803538899316, 0.014645639757305118]
 
         # Deregistration should have taken place
         class Custom(Color):
