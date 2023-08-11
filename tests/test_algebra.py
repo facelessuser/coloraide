@@ -1697,6 +1697,14 @@ class TestAlgebra(unittest.TestCase):
         p, l, u = alg.lu(m)
         self.assertEqual(alg.dot(p, m), alg.dot(l, u))
 
+        m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        p, l, u = alg.lu(m, p_indices=True)
+        self.assertEqual([m[idx] for idx in p], alg.dot(l, u))
+
+        m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        l, u = alg.lu(m, permute_l=True)
+        self.assertEqual(m, alg.dot(l, u))
+
         with self.assertRaises(ValueError):
             alg.lu([1, 2, 3])
 

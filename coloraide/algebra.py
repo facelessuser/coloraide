@@ -31,7 +31,7 @@ from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
     Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, overload
+from typing import Callable, Sequence, Iterator, Any, Iterable, Literal, overload
 
 NaN = float('nan')
 INF = float('inf')
@@ -2252,9 +2252,37 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
+@overload
+def lu(matrix: MatrixLike, permute_l: Literal[True]) -> tuple[Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(matrix: MatrixLike, *, p_indices: Literal[True]) -> tuple[list[int], Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(matrix: MatrixLike, *, p_indices: Literal[False] = False) -> tuple[Matrix, Matrix, Matrix]:
+    ...
+
+
+def lu(
+    matrix: MatrixLike,
+    permute_l: bool = False,
+    p_indices: bool = False
+) ->  tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[list[int], Matrix, Matrix]:
     """
     Calculate `LU` decomposition.
+
+    P is returned as `PA = UL` or `A = P'UL` which follows `Matlab` and `Octave` opposed to `Scipy` which returns P as
+    `A = PUL` or `P'A = UL`. For matrix inverse, we need P such that `PA = UL` and it is faster not having to invert
+    P, even if we can invert it fairly fast as it is just a shuffled identity matrix.
+
+    P is returned as a permutation matrix unless `p_indices` is true, in which case `P` would be returned as
+    a vector containing the indexes such that `A[P,:] = L*U`.
+
+    If `permute_l` is true, only L and U will be returned such that `P = LU`.
 
     Reference: https://www.statlect.com/matrix-algebra/Gaussian-elimination
                https://www.sciencedirect.com/topics/mathematics/partial-pivoting
@@ -2268,12 +2296,16 @@ def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
         raise ValueError('Matrix must be a square matrix')
 
     # Initialize the triangle matrices along with the permutation matrix.
-    p = identity(size)
-    l = [list(row) for row in p]
+    if p_indices or permute_l:
+        p = list(range(size))  # type: Any
+        l = identity(size)
+    else:
+        p = identity(size)
+        l = [list(row) for row in p]
     u = [list(row) for row in matrix]
 
     # Create upper and lower triangle in 'u' and 'l'. 'p' tracks the permutation (relative position of rows)
-    for i in range(size):
+    for i in range(size - 1):
 
         # Partial pivoting: identify the row with the maximal value in the column
         j = i
@@ -2307,6 +2339,15 @@ def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
             for k in range(i, size):
                 u[j][k] += -u[i][k] * scalar
                 l[j][k] += l[i][k] * scalar
+
+    # Transpose the indexes and return LU after permuting L
+    if permute_l:
+        pt = [0] * size
+        for e, i in enumerate(p):
+            pt[i] = e
+        p = pt
+
+        return [l[i] for i in pt], u
 
     return p, l, u
 
@@ -2378,7 +2419,7 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     """
 
     # Get the LU decomposition
-    p, l, u = lu(a)
+    p, l, u = lu(a, p_indices=True)
     size = len(b)
 
     # If determinant is zero, we can't solve. Really small determinant may give bad results.
@@ -2387,8 +2428,10 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
 
     # Solve for x using forward substitution on U and back substitution on L
     if isinstance(b[0], Sequence):
-        return _back_sub_matrix(u, _forward_sub_matrix(l, dot(p, b, dims=D2), size), size)  # type: ignore[arg-type]
-    return _back_sub_vector(u, _forward_sub_vector(l, dot(p, b, dims=D2_D1), size), size)  # type: ignore[arg-type]
+        b = [list(b[i]) for i in p]  # type: ignore[arg-type]
+        return _back_sub_matrix(u, _forward_sub_matrix(l, b, size), size)
+    b = [b[i] for i in p]  # type: ignore[assignment]
+    return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
 
 
 def det(matrix: MatrixLike) -> Any:
