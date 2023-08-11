@@ -2252,40 +2252,6 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def _sort_diag_row(m: Matrix, p: Matrix, i: int, size: int, sort_index: int = 0, depth: int = 0) -> int:
-    """
-    Swap row to ensure no zero at pivot point.
-
-    Find a row that has a non-zero the row's pivot point and return the new index for the row.
-    Swapping is recursive to allow for negotiation when targeting a row that would be critical.
-    """
-
-    replace = -1
-    for j in list(range(i + 1, size)) + list(range(0, i)):
-
-        candidate = m[j][i] != 0.0
-        # If our candidate is not critical where it is located, the swap would be
-        # mutually beneficial, or we haven't yet sorted the row, allow the swap.
-        if candidate and (m[j][j] == 0.0 or m[i][j] != 0.0 or j > sort_index):
-            m[i], m[j] = m[j], m[i]
-            p[i], p[j] = p[j], p[i]
-            replace = j
-            break
-
-        # We want this row, but it needs a replacement. Can find one?
-        # Only try if we haven't hit our limit.
-        elif candidate and depth != 20:
-            l = _sort_diag_row(m, p, j, size, sort_index, depth + 1)
-            if l > -1:
-                m[i], m[l] = m[l], m[i]
-                p[i], p[l] = p[l], p[i]
-                replace = l
-                break
-
-    # Return the swapped index, or return -1
-    return replace
-
-
 def lu(matrix: MatrixLike) -> tuple[Matrix, Matrix, Matrix]:
     """
     Calculate `LU` decomposition.

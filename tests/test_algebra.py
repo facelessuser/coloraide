@@ -2,7 +2,6 @@
 import unittest
 import math
 import pytest
-import random
 from coloraide import algebra as alg
 
 
@@ -309,23 +308,6 @@ class TestAlgebra(unittest.TestCase):
              [-0.3172194255256145, 0.2520728457210542, -1.0],
              [-0.8661533905833582, -0.5019247853124075, 0.0]]
         )
-
-        # Test sorting of rows for large sparse matrix
-        # No zeros on the diagonal does not mean the matrix has an inverse,
-        # but it is important to ensure we can sort the rows properly.
-        size = 20
-        m = alg.identity(size)
-        p = alg.identity(size)
-        for r in m:
-            r[random.randint(0, size - 1)] = 1.0
-        random.shuffle(m)
-        for i in range(size):
-            if m[i][i] == 0.0:
-                if alg._sort_diag_row(m, p, i, size, i) == -1:
-                    alg.pprint(m)
-                    pytest.fail("Could not sort the rows for matrix inverse")
-        if 0 in alg.diag(m):
-            pytest.fail("Could not sort the rows for matrix inverse")
 
         with self.assertRaises(ValueError):
             alg.inv([[8, 9, 1], [4, 2, 1]])
