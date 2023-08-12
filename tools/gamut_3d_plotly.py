@@ -16,8 +16,10 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, Regular  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
+from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl  # noqa: E402
 
-FORCE_OWN_GAMUT = {'hwb', 'hpluv', 'ryb', 'ryb-biased'}
+FORCE_OWN_GAMUT = {'hwb', 'ryb', 'ryb-biased'}
+CYL_GAMUT = {'hpluv',}
 
 
 def create_custom_hsl(gamut):
@@ -38,6 +40,61 @@ def create_custom_hsl(gamut):
     ColorCyl.register(HSL())
 
     return ColorCyl
+
+
+def create_custom_rgb(gamut):
+    """
+    Create a custom color RGB space from an HSL like color space.
+
+    This allows us to handle something like HPLuv as a gamut when rendering rectangular color spaces.
+
+    Will likely only work for some color spaces.
+    """
+
+    cs = Color.CS_MAP[gamut]
+
+    class RGB(type(Color.CS_MAP['srgb-linear'])):
+        """Custom RGB class."""
+
+        NAME = '-rgb-{}'.format(gamut)
+        BASE = gamut
+        GAMUT_CHECK = gamut
+        WHITE = cs.WHITE
+        DYAMIC_RANGE = cs.DYNAMIC_RANGE
+        INDEXES = cs.indexes()
+        SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
+        SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
+
+        def to_base(self, coords):  # noqa: N804 # Faulty lint error
+            """Convert from RGB to HSL."""
+
+            coords = srgb_to_hsl(coords)
+            if self.SCALE_SAT != 1:
+                coords[1] *= self.SCALE_SAT
+            if self.SCALE_LIGHT != 1:
+                coords[2] *= self.SCALE_LIGHT
+            ordered = [0.0, 0.0, 0.0]
+            for e, c in enumerate(coords):
+                ordered[self.INDEXES[e]] = c
+            return ordered
+
+        def from_base(self, coords):  # noqa: N804 # Faulty lint error
+            """Convert from HSL to RGB."""
+
+            coords = [coords[i] for i in self.INDEXES]
+            if self.SCALE_SAT != 1:
+                coords[1] /= self.SCALE_SAT
+            if self.SCALE_LIGHT != 1:
+                coords[2] /= self.SCALE_LIGHT
+            coords = hsl_to_srgb(coords)
+            return coords
+
+    class ColorRGB(Color):
+        """Custom color."""
+
+    ColorRGB.register(RGB())
+
+    return ColorRGB
 
 
 def get_face_color(cmap, simplex):
@@ -112,6 +169,10 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
                 y.append(b)
                 z.append(c[2])
 
+            # Fit gamut
+            if not c.in_gamut():
+                c.fit()
+
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
@@ -159,6 +220,9 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     if space in FORCE_OWN_GAMUT:
         ColorCyl = Color
         gamut_space = space
+    elif gamut in CYL_GAMUT:
+        ColorCyl = Color
+        gamut_space = gamut
     else:
         ColorCyl = create_custom_hsl(gamut)
         gamut_space = '-hsl-{}'.format(gamut)
@@ -227,6 +291,10 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
                 y.append(c[1])
                 z.append(c[2])
 
+            # Fit gamut
+            if not c.in_gamut():
+                c.fit()
+
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
@@ -263,7 +331,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     return fig
 
 
-def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
+def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges):
     """Render the RGB rectangular face."""
 
     x = []
@@ -276,7 +344,7 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
 
     # Render an RGB face by taking two interpolated sides and interpolating the points across the face
     for c1, c2 in zip(s1, s2):
-        for t in Color.steps([c1, c2], steps=int(resolution / 4), space=gamut):
+        for t in colorrgb.steps([c1, c2], steps=int(resolution / 4), space=gamut):
             x.append(t[0])
             y.append(t[1])
             z.append(t[2])
@@ -284,6 +352,10 @@ def render_rect_face(s1, s2, dim, space, gamut, resolution, opacity, edges):
             X.append(t[0])
             Y.append(t[1])
             Z.append(t[2])
+
+            # Fit gamut
+            if not t.in_gamut():
+                t.fit()
 
             # Fit colors to output gamut
             s = t.convert('srgb')
@@ -317,31 +389,38 @@ def render_space_rect(fig, space, gamut, resolution, opacity, edges):
     if space in FORCE_OWN_GAMUT:
         gamut = space
 
+    cs = Color.CS_MAP[gamut]
+    if isinstance(cs, HSLish):
+        colorrgb = create_custom_rgb(gamut)
+        gamut = '-rgb-{}'.format(gamut)
+    else:
+        colorrgb = Color
+
     # Six corners of the RGB cube
-    ck = Color(gamut, [0, 0, 0])
-    cw = Color(gamut, [1, 1, 1])
-    cr = Color(gamut, [1, 0, 0])
-    cg = Color(gamut, [0, 1, 0])
-    cb = Color(gamut, [0, 0, 1])
-    cy = Color(gamut, [1, 1, 0])
-    cc = Color(gamut, [0, 1, 1])
-    cm = Color(gamut, [1, 0, 1])
+    ck = colorrgb(gamut, [0, 0, 0])
+    cw = colorrgb(gamut, [1, 1, 1])
+    cr = colorrgb(gamut, [1, 0, 0])
+    cg = colorrgb(gamut, [0, 1, 0])
+    cb = colorrgb(gamut, [0, 0, 1])
+    cy = colorrgb(gamut, [1, 1, 0])
+    cc = colorrgb(gamut, [0, 1, 1])
+    cm = colorrgb(gamut, [1, 0, 1])
 
     # Interpolate two sides of a given face and interpolate the rest
-    s1 = Color.steps([cy, cw], steps=resolution, space=gamut)
-    s2 = Color.steps([cg, cc], steps=resolution, space=gamut)
-    s3 = Color.steps([cr, cm], steps=resolution, space=gamut)
-    s4 = Color.steps([ck, cb], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(s1, s2, ('x', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(s1, s3, ('y', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(s3, s4, ('x', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(s4, s2, ('y', 'z'), space, gamut, resolution, opacity, edges))
-    s1 = Color.steps([cb, cc], steps=resolution, space=gamut)
-    s2 = Color.steps([cm, cw], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
-    s1 = Color.steps([ck, cg], steps=resolution, space=gamut)
-    s2 = Color.steps([cr, cy], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
+    s1 = colorrgb.steps([cy, cw], steps=resolution, space=gamut)
+    s2 = colorrgb.steps([cg, cc], steps=resolution, space=gamut)
+    s3 = colorrgb.steps([cr, cm], steps=resolution, space=gamut)
+    s4 = colorrgb.steps([ck, cb], steps=resolution, space=gamut)
+    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'z'), space, gamut, resolution, opacity, edges))
+    fig.add_traces(render_rect_face(colorrgb, s1, s3, ('y', 'z'), space, gamut, resolution, opacity, edges))
+    fig.add_traces(render_rect_face(colorrgb, s3, s4, ('x', 'z'), space, gamut, resolution, opacity, edges))
+    fig.add_traces(render_rect_face(colorrgb, s4, s2, ('y', 'z'), space, gamut, resolution, opacity, edges))
+    s1 = colorrgb.steps([cb, cc], steps=resolution, space=gamut)
+    s2 = colorrgb.steps([cm, cw], steps=resolution, space=gamut)
+    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
+    s1 = colorrgb.steps([ck, cg], steps=resolution, space=gamut)
+    s2 = colorrgb.steps([cr, cy], steps=resolution, space=gamut)
+    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
 
     return fig
 
