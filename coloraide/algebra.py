@@ -2244,24 +2244,41 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
 
 
 @overload
-def lu(matrix: MatrixLike, permute_l: Literal[True]) -> tuple[Matrix, Matrix]:
+def lu(
+    matrix: MatrixLike,
+    *,
+    permute_l: Literal[True],
+    _shape: Shape | None = None
+) -> tuple[Matrix, Matrix]:
     ...
 
 
 @overload
-def lu(matrix: MatrixLike, *, p_indices: Literal[True]) -> tuple[list[int], Matrix, Matrix]:
+def lu(
+    matrix: MatrixLike,
+    *,
+    p_indices: Literal[True],
+    _shape: Shape | None = None
+) -> tuple[list[int], Matrix, Matrix]:
     ...
 
 
 @overload
-def lu(matrix: MatrixLike, *, p_indices: Literal[False] = False) -> tuple[Matrix, Matrix, Matrix]:
+def lu(
+    matrix: MatrixLike,
+    *,
+    p_indices: Literal[False] = False,
+    _shape: Shape | None = None
+) -> tuple[Matrix, Matrix, Matrix]:
     ...
 
 
 def lu(
     matrix: MatrixLike,
+    *,
     permute_l: bool = False,
-    p_indices: bool = False
+    p_indices: bool = False,
+    _shape: Shape | None = None
 ) ->  tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[list[int], Matrix, Matrix]:
     """
     Calculate `LU` decomposition.
@@ -2279,12 +2296,31 @@ def lu(
                https://www.sciencedirect.com/topics/mathematics/partial-pivoting
     """
 
-    s = shape(matrix)
+    s = shape(matrix) if _shape is None else _shape
     size = s[0]
 
-    # We need a square N x N matrix
+    # We need a rectangular N x M matrix
     if len(s) != 2:
-        raise ValueError('Matrix must be a square matrix')
+        raise ValueError('Matrix must be a rectangular matrix')
+
+    # Wide or tall matrices
+    wide = tall = False
+    diff = s[0] - s[1]
+    if diff:
+        matrix = acopy(matrix)
+
+        # Wide
+        if diff < 0:
+            diff = abs(diff)
+            size = s[1]
+            wide = True
+            for _ in range(diff):
+                matrix.append([0.0] * size)  # noqa: PERF401
+        # Tall
+        else:
+            tall = True
+            for row in matrix:
+                row.extend([0.0] * diff)
 
     # Initialize the triangle matrices along with the permutation matrix.
     if p_indices or permute_l:
@@ -2330,6 +2366,15 @@ def lu(
             for k in range(i, size):
                 u[j][k] += -u[i][k] * scalar
                 l[j][k] += l[i][k] * scalar
+
+    # Clean up the wide and tall matrices
+    if tall:
+        l = [r[:-diff] for r in l]
+        u = [r[:-diff] for r in u][:-diff]
+    elif wide:
+        l = [r[:-diff] for r in l][:-diff]
+        u = u[:-diff]
+        p = p[:-diff] if p_indices else [r[:-diff] for r in p][:-diff]
 
     # Transpose the indexes and return LU after permuting L
     if permute_l:
@@ -2409,9 +2454,13 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     a vector of length N or a matrix of size N x N.
     """
 
+    s = shape(a)
+    size = s[0]
+    if len(s) != 2 or s[-1] != s[-2]:
+        raise ValueError('Matrix must be a square matrix')
+
     # Get the LU decomposition
-    p, l, u = lu(a, p_indices=True)
-    size = len(b)
+    p, l, u = lu(a, p_indices=True, _shape=s)
 
     # If determinant is zero, we can't solve. Really small determinant may give bad results.
     if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
@@ -2425,16 +2474,24 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
 
 
+def trace(matrix: Matrix) -> float:
+    """Sum the diagonal."""
+
+    return sum(diag(matrix))
+
+
 def det(matrix: MatrixLike) -> Any:
     """Get the determinant."""
 
     s = shape(matrix)
+    if len(s) < 2 or s[-1] != s[-2]:
+        raise ValueError('Last two dimensions must be square')
     if len(s) == 2:
+        size = s[0]
         p, l, u = lu(matrix)
-        d = diag(p)
-        swaps = len(d) - sum(d)
+        swaps = size - trace(p)
         sign = (-1) ** (swaps - 1) if swaps else 1
-        dt = sign * prod(l[i][i] * u[i][i] for i in range(s[0]))
+        dt = sign * prod(l[i][i] * u[i][i] for i in range(size))
         return 0.0 if not dt else dt
     else:
         last = s[-2:]
@@ -2463,7 +2520,7 @@ def inv(matrix: MatrixLike) -> Matrix:
 
     # Calculate the LU decomposition.
     size = s[0]
-    p, l, u = lu(matrix)
+    p, l, u = lu(matrix, _shape=s)
 
     # Floating point math will produce very small, non-zero determinants for singular matrices.
     # This occurs with Numpy as well.

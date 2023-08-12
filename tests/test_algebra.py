@@ -1682,6 +1682,9 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.solve([[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]], [3, 5, 6, 1])
 
+        with self.assertRaises(ValueError):
+            alg.solve([[1, 2, 3], [4, 5, 6]], [0, 1])
+
     def test_lu(self):
         """Test `LU` decomposition."""
 
@@ -1694,6 +1697,16 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.dot(p, m), alg.dot(l, u))
 
         m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        # tall
+        m = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        # wide
+        m = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
         p, l, u = alg.lu(m)
         self.assertEqual(alg.dot(p, m), alg.dot(l, u))
 
@@ -1719,6 +1732,9 @@ class TestAlgebra(unittest.TestCase):
               [[6, 4], [2, 2]]]]
 
         self.assertEqual(alg.det(m), [-20.0, -8.0, -10.999999999999998, 4.0])
+
+        with self.assertRaises(ValueError):
+            alg.det([[1, 2, 3], [4, 5, 6]])
 
 
 def test_pprint(capsys):
