@@ -201,5 +201,5 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
 
     value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
     if p == -1:
-        p = 53
+        p = 17  # double precision
     return ('{{:{}{}g}}{}'.format('' if abs(value) >= 10 ** p else '.', p, '%' if percent else '')).format(value)

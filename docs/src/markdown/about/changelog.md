@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.8
+
+-   **NEW**: When precision is set to `-1` for string output, double precision (`17`) will be assumed.
+-   **ENHANCE**: More robust and generally better matrix inverse. Related inverse matrices have been regenerated for
+    consistency.
+
 ## 2.7.2
 
 -   **FIX**: More accurate easing logic.

@@ -47,8 +47,8 @@ Providing a precision of `0` will simply enable simple rounding to the nearest w
 Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)
 ```
 
-Providing a precision of `-1` is a special input that will give the highest precision that can be given. Not
-particularly helpful except to look at the raw decimal number.
+Providing a precision of `-1` is a special input that will give the highest, useful precision that can be given.
+Precision will be given out to double precision. Higher can be used, but will most likely be unhelpful.
 
 ```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=-1, percent=True)

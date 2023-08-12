@@ -14,7 +14,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('purple').convert('lab').to_string(precision=-1),
-            'lab(29.6915242415228846084573888219892978668212890625 56.11166698871131330861317110247910022735595703125 -36.2926654103256396410870365798473358154296875)'  # noqa:  E501
+            'lab(29.691524241522885 56.111666988711313 -36.29266541032564)'  # noqa:  E501
         )
 
     def test_repr(self):
