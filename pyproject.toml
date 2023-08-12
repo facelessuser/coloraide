@@ -9,7 +9,7 @@ name = "coloraide"
 description = "A color library for Python."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]

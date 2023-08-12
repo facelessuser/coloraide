@@ -29,7 +29,7 @@ class TestRYB(util.ColorAssertsPyTest):
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_cmy_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('ryb'), Color(color2))
@@ -50,7 +50,7 @@ class TestRYBBiased(util.ColorAssertsPyTest):
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_cmy_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('ryb-biased'), Color(color2))

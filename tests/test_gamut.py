@@ -92,7 +92,7 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         """Test SDR extreme high case."""
 
         color = Color('hsl(none 0% 110%)')
-        self.assertColorEqual(color.fit(), Color('hsl(0 0% 100%)'))
+        self.assertColorEqual(color.fit(), Color('hsl(0 50% 100%)'))
 
     def test_hdr_extreme_high(self):
         """Test HDR extreme high case."""

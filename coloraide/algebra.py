@@ -31,24 +31,15 @@ from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
     Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, overload
+from typing import Callable, Sequence, Iterator, Any, Iterable, Literal, overload
 
 NaN = float('nan')
 INF = float('inf')
 EPSILON = sys.float_info.epsilon
-PY38 = (3, 8) <= sys.version_info
 TAU = math.pi * 2
 
-if sys.version_info >= (3, 8):
-    prod = math.prod
-else:
-    def prod(values: Iterable[SupportsFloatOrInt]) -> SupportsFloatOrInt:
-        """Get the product of a list of numbers."""
-
-        if not values:
-            return 1
-
-        return functools.reduce(operator.mul, values)
+# Keeping for backwards compatibility
+prod = math.prod
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
@@ -266,7 +257,7 @@ def ilerp2d(
             j = transpose([jx, jy])
 
             # Solve for new guess
-            xy = subtract(xy, dot(inv(j), residual, dims=D2_D1), dims=D1)
+            xy = subtract(xy, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
@@ -334,7 +325,7 @@ def ilerp3d(
     vertices in.
 
     ```
-    Vxyz =  V000 (1 - x) (1 - y) (1 - z) +
+    Vxyz = V000 (1 - x) (1 - y) (1 - z) +
         V100 x (1 - y) (1 - z) +
         V010 (1 - x) y (1 - z) +
         V110 x y (1 - z) +
@@ -408,7 +399,7 @@ def ilerp3d(
             j = transpose([jx, jy, jz])
 
             # Solve for new guess
-            xyz = subtract(xyz, dot(inv(j), residual, dims=D2_D1), dims=D1)
+            xyz = subtract(xyz, solve(j, residual), dims=D1)
     except ValueError:  # pragma: no cover
         # The Jacobian matrix shouldn't fail inversion if we are in gamut.
         # Out of gamut may give us one we cannot invert. There are potential
@@ -666,6 +657,23 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Matrix/linear algebra math
 ################################
+def pprint(value: Array | float) -> None:
+    """Print the matrix or value."""
+
+    if isinstance(value, Sequence):
+        print('[', end='')
+        first = True
+        for v in value:
+            if first:
+                first = False
+            else:
+                print(',\n ', end='')
+            print(v, end='')
+        print(']')
+    else:
+        print(value)
+
+
 def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
@@ -834,7 +842,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
     return reshape(data, bcast.shape)  # type: ignore[return-value]
 
 
-def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix]:
+def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:
     """Extract rows from an array."""
 
     if len(s) > 1 and s[1]:
@@ -844,7 +852,7 @@ def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix]:
+def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:
     """Extract columns from an array."""
 
     if len(s) > 2 and s[2]:
@@ -853,7 +861,7 @@ def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Matrix
     elif not depth:
         yield m  # type: ignore[misc]
     else:
-        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index, misc]
+        yield from [[x[r] for x in m] for r in range(len(m[0]))]  # type: ignore[arg-type, index]
 
 
 @overload
@@ -1879,12 +1887,6 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
-def identity(size: int) -> Matrix:
-    """Create an identity matrix."""
-
-    return eye(size)
-
-
 def _flatiter(array: ArrayLike, s: Shape) -> Iterator[float]:
     """Iterate and return values based on shape."""
 
@@ -2189,6 +2191,12 @@ def eye(n: int, m: int | None = None, k: int = 0) -> Matrix:
     return a
 
 
+def identity(size: int) -> Matrix:
+    """Create an identity matrix."""
+
+    return [[1.0 if i == j else 0.0 for j in range(size)] for i in range(size)]
+
+
 @overload
 def diag(array: VectorLike, k: int = 0) -> Matrix:
     ...
@@ -2235,79 +2243,208 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-def _sort_diag_row(m: Matrix, i: int, size: int, sort_index: int = 0, depth: int = 0) -> int:
+@overload
+def lu(matrix: MatrixLike, permute_l: Literal[True]) -> tuple[Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(matrix: MatrixLike, *, p_indices: Literal[True]) -> tuple[list[int], Matrix, Matrix]:
+    ...
+
+
+@overload
+def lu(matrix: MatrixLike, *, p_indices: Literal[False] = False) -> tuple[Matrix, Matrix, Matrix]:
+    ...
+
+
+def lu(
+    matrix: MatrixLike,
+    permute_l: bool = False,
+    p_indices: bool = False
+) ->  tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[list[int], Matrix, Matrix]:
     """
-    Swap row to ensure no zero at pivot point.
+    Calculate `LU` decomposition.
 
-    Find a row that has a non-zero the row's pivot point and return the new index for the row.
-    Swapping is recursive to allow for negotiation when targeting a row that would be critical.
+    P is returned as `PA = UL` or `A = P'UL` which follows `Matlab` and `Octave` opposed to `Scipy` which returns P as
+    `A = PUL` or `P'A = UL`. For matrix inverse, we need P such that `PA = UL` and it is faster not having to invert
+    P, even if we can invert it fairly fast as it is just a shuffled identity matrix.
+
+    P is returned as a permutation matrix unless `p_indices` is true, in which case `P` would be returned as
+    a vector containing the indexes such that `A[P,:] = L*U`.
+
+    If `permute_l` is true, only L and U will be returned such that `P = LU`.
+
+    Reference: https://www.statlect.com/matrix-algebra/Gaussian-elimination
+               https://www.sciencedirect.com/topics/mathematics/partial-pivoting
     """
 
-    replace = -1
-    for j in list(range(i + 1, size)) + list(range(0, i)):
+    s = shape(matrix)
+    size = s[0]
 
-        candidate = m[j][i] != 0.0
-        # If our candidate is not critical where it is located, the swap would be
-        # mutually beneficial, or we haven't yet sorted the row, allow the swap.
-        if candidate and (m[j][j] == 0.0 or m[i][j] != 0.0 or j > sort_index):
-            m[i], m[j] = m[j], m[i]
-            replace = j
-            break
+    # We need a square N x N matrix
+    if len(s) != 2:
+        raise ValueError('Matrix must be a square matrix')
 
-        # We want this row, but it needs a replacement. Can find one?
-        # Only try if we haven't hit our limit.
-        elif candidate and depth != 20:
-            l = _sort_diag_row(m, j, size, sort_index, depth + 1)
-            if l > -1:
-                m[i], m[l] = m[l], m[i]
-                replace = l
-                break
+    # Initialize the triangle matrices along with the permutation matrix.
+    if p_indices or permute_l:
+        p = list(range(size))  # type: Any
+        l = identity(size)
+    else:
+        p = identity(size)
+        l = [list(row) for row in p]
+    u = [list(row) for row in matrix]
 
-    # Return the swapped index, or return -1
-    return replace
+    # Create upper and lower triangle in 'u' and 'l'. 'p' tracks the permutation (relative position of rows)
+    for i in range(size - 1):
+
+        # Partial pivoting: identify the row with the maximal value in the column
+        j = i
+        maximum = abs(u[i][i])
+        for k in range(i + 1, size):
+            a = abs(u[k][i])
+            if a > maximum:
+                j = k
+                maximum = a
+
+        # Partial pivoting: Swap rows
+        if j != i:
+            # Exchange current upper triangle row with row with maximal value at pivot
+            # Update permutation matrix as well
+            u[i], u[j] = u[j], u[i]
+            p[i], p[j] = p[j], p[i]
+
+            # Only swap columns up to the pivot for the lower triangle,
+            # if on first row, there is nothing to swap
+            if i:
+                l[i][:i], l[j][:i] = l[j][:i], l[i][:i]
+
+        # Zero at pivot point, nothing to do
+        elif not maximum:
+            continue
+
+        # We have a pivot point, let's zero out everything above and below
+        # the 'l' and 'u' diagonal respectively
+        for j in range(i + 1, size):
+            scalar = u[j][i] / u[i][i]
+            for k in range(i, size):
+                u[j][k] += -u[i][k] * scalar
+                l[j][k] += l[i][k] * scalar
+
+    # Transpose the indexes and return LU after permuting L
+    if permute_l:
+        pt = [0] * size
+        for e, i in enumerate(p):
+            pt[i] = e
+        p = pt
+
+        return [l[i] for i in pt], u
+
+    return p, l, u
 
 
-def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
+def _forward_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
+    """Forward substitution for solution of `L x = b`."""
+
+    for i in range(size):
+        v = b[i]
+        for j in range(i):
+            v -= a[i][j] * b[j]
+        b[i] = v / a[i][i]
+    return b
+
+
+def _forward_sub_matrix(a: Matrix, b: Matrix, size: int) -> Matrix:
+    """Forward substitution for solution of `L x = b` where `b` is a matrix."""
+
+    for i in range(size):
+        v = b[i]
+        for j in range(i):
+            for k in range(size):
+                v[k] -= a[i][j] * b[j][k]
+        for j in range(size):
+            v[j] /= a[i][i]
+    return b
+
+
+def _back_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
+    """Back substitution for solution of `U x = b`."""
+
+    for i in range(size - 1, -1, -1):
+        v = b[i]
+        for j in range(i + 1, size):
+            v -= a[i][j] * b[j]
+        b[i] = v / a[i][i]
+    return b
+
+
+def _back_sub_matrix(a: Matrix, b: Matrix, size: int) -> Matrix:
+    """Back substitution for solution of `U x = b`."""
+
+    for i in range(size - 1, -1, -1):
+        v = b[i]  # type: Any
+        for j in range(i + 1, size):
+            for k in range(size):
+                v[k] -= a[i][j] * b[j][k]
+        for j in range(size):
+            b[i][j] /= a[i][i]
+    return b
+
+
+@overload
+def solve(a: MatrixLike, b: VectorLike) -> Vector:
+    ...
+
+
+@overload
+def solve(a: MatrixLike, b: MatrixLike) -> Matrix:
+    ...
+
+
+def solve(a: MatrixLike, b: ArrayLike) -> Array:
     """
-    Invert the matrix.
+    Solve the system of equations.
 
-    Derived from https://github.com/ThomIves/MatrixInverse.
-
-    This is free and unencumbered software released into the public domain.
-
-    Anyone is free to copy, modify, publish, use, compile, sell, or
-    distribute this software, either in source code form or as a compiled
-    binary, for any purpose, commercial or non-commercial, and by any
-    means.
-
-    In jurisdictions that recognize copyright laws, the author or authors
-    of this software dedicate any and all copyright interest in the
-    software to the public domain. We make this dedication for the benefit
-    of the public at large and to the detriment of our heirs and
-    successors. We intend this dedication to be an overt act of
-    relinquishment in perpetuity of all present and future rights to this
-    software under copyright law.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-    OTHER DEALINGS IN THE SOFTWARE.
-
-    For more information, please refer to <http://unlicense.org/>
-
-    ---
-
-    Heavily modified by Isaac Muse.
-
-    - Modified to handle greater than 2 x 2 dimensions.
-    - Modified to shuffle rows to help handle a valid matrix which has a zero
-      at a pivot point.
-    - If a potentially invertible matrix fails due to the pivot point becoming
-      zero during row operations, try to evaluate in the reverse.
+    We only handle  N x N matrices, but what we are solving for can either
+    a vector of length N or a matrix of size N x N.
     """
+
+    # Get the LU decomposition
+    p, l, u = lu(a, p_indices=True)
+    size = len(b)
+
+    # If determinant is zero, we can't solve. Really small determinant may give bad results.
+    if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+        raise ValueError('Matrix is singular')
+
+    # Solve for x using forward substitution on U and back substitution on L
+    if isinstance(b[0], Sequence):
+        b = [list(b[i]) for i in p]  # type: ignore[arg-type]
+        return _back_sub_matrix(u, _forward_sub_matrix(l, b, size), size)
+    b = [b[i] for i in p]  # type: ignore[assignment]
+    return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
+
+
+def det(matrix: MatrixLike) -> Any:
+    """Get the determinant."""
+
+    s = shape(matrix)
+    if len(s) == 2:
+        p, l, u = lu(matrix)
+        d = diag(p)
+        swaps = len(d) - sum(d)
+        sign = (-1) ** (swaps - 1) if swaps else 1
+        dt = sign * prod(l[i][i] * u[i][i] for i in range(s[0]))
+        return 0.0 if not dt else dt
+    else:
+        last = s[-2:]
+        rows = list(_extract_rows(matrix, s))
+        step = last[-1]
+        return [det(rows[r:r + step]) for r in range(0, len(rows), step)]
+
+
+def inv(matrix: MatrixLike) -> Matrix:
+    """Invert the matrix using `LU` decomposition."""
 
     # Ensure we have a square matrix
     s = shape(matrix)
@@ -2319,55 +2456,24 @@ def inv(matrix: MatrixLike, *, _reverse: bool = False) -> Matrix:
     # Handle dimensions greater than 2 x 2
     elif dims > 2:
         invert = []
-        cols = list(_extract_cols(matrix, s))
+        rows = list(_extract_rows(matrix, s))
         step = last[-1]
-        invert = [transpose(inv(cols[r:r + step])) for r in range(0, len(cols), step)]  # type: ignore[arg-type]
-        return reshape(invert, s)  # type: ignore[return-value]
+        invert = [inv(rows[r:r + step]) for r in range(0, len(rows), step)]
+        return reshape(invert, s)  # type: ignore [arg-type, return-value]
 
-    # Get size and calculate augmented size
+    # Calculate the LU decomposition.
     size = s[0]
+    p, l, u = lu(matrix)
 
-    # Create the traditional augmented matrix, we will develop the inverse matrix on the right side.
-    m = [list(row1) + row2 for row1, row2 in zip(matrix, identity(size))]
+    # Floating point math will produce very small, non-zero determinants for singular matrices.
+    # This occurs with Numpy as well.
+    # Don't bother calculating sign as we only care about how close to zero we are.
+    if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+        raise ValueError('Matrix is singular')
 
-    # Sort the rows such that there are no zeros at the pivot points
-    for i in range(size):
-        if m[i][i] == 0.0:
-            if _sort_diag_row(m, i, size, i) == -1:
-                raise ValueError("Matrix is not invertible")
-
-    try:
-        rng = (size,) if not _reverse else (size - 1, -1, -1)
-        for i in range(*rng):
-            # Divide all values in row by the pivot point to make the diagonal all ones.
-            scalar = 1 / m[i][i]
-            for j in range(size * 2):
-                m[i][j] *= scalar
-
-            # Iterate the remaining rows and zero out the values in the column where the current pivot
-            # point resides. We must apply this same logic to all columns though. The column is zeroed out
-            # by subtracting the current value from each column in the row. This value must be multiplied
-            # by column value of the row with the pivot point.
-            for r in range(*rng):
-                # Skip current row
-                if r != i:
-                    # Scale each item in the row (i) and subtract it from the current row (r)
-                    scalar = m[r][i]
-                    for j in range(size * 2):
-                        m[r][j] -= scalar * m[i][j]
-    except ZeroDivisionError as e:
-        # Unfortunately, a non-zero pivot point became zero during the inversion.
-        # Try evaluating in the reverse direction to avoid negation of the pivot point.
-        # It would be as much or more work to calculate if the determinant was zero
-        # (in a generic manner), so running again is probably easiest.
-        if not _reverse:
-            return inv(matrix, _reverse=True)
-        # Matrix is not invertible or "we" are simply unable to invert it, to us it is the same.
-        # Another approach would be required if there is an inverse.
-        raise ValueError("Matrix is not invertible") from e
-
-    # Return the inverse from the right side of the augmented matrix
-    return [r[size:] for r in m]
+    # Solve for the identity matrix (will give us inverse)
+    # Permutation matrix is the identity matrix, even if shuffled.
+    return _back_sub_matrix(u, _forward_sub_matrix(l, p, size), size)
 
 
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:

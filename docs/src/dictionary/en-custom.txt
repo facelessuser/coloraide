@@ -286,6 +286,7 @@ rgb
 sRGB
 seperable
 severities
+smoothstep
 subclassed
 subclasses
 subclassing

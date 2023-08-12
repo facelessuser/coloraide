@@ -43,8 +43,6 @@ import functools
 from typing import Callable
 
 EPSILON = 1e-6
-# This value is honestly pretty arbitrary (was 10, now 8),
-# probably would be good to test and find the optimal value.
 MAX_ITER = 8
 
 
@@ -59,13 +57,13 @@ def _bezier(t: float, a: float, b: float, c: float) -> float:
     return a * t ** 3 + b * t ** 2 + c * t
 
 
-def _derivative_x(t: float, a: float, b: float, c: float) -> float:
+def _bezier_derivative(t: float, a: float, b: float, c: float) -> float:
     """Derivative of curve."""
 
     return 3 * a * t ** 2 + 2 * b * t + c
 
 
-def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
+def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
     """
     Solve curve to find a `t` that satisfies our desired `x`.
 
@@ -74,32 +72,41 @@ def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
     """
 
     # Try Newtons method to see if we can find a suitable value
-    i = 0
-    t = target
-    while i < MAX_ITER:
+    x = 0.0
+    t = 0.5
+    last = float('nan')
+    for _ in range(MAX_ITER):
         # See how close we are to the desired `x`
         x = _bezier(t, a, b, c) - target
-        if abs(x) < EPSILON:
-            return t
 
         # Get the derivative, but bail if it is too small,
         # we will just keep looping otherwise.
-        d = _derivative_x(t, a, b, c)
+        dx = _bezier_derivative(t, a, b, c)
 
-        # Getting too close zero or is zero
-        if abs(d) < EPSILON:  # pragma: no cover
+        # Derivative is zero, we can't continue
+        if dx == 0:  # pragma: no cover
             break
 
         # Calculate new time and try again
-        t = t - x / d
-        i += 1
+        t -= (x / dx)
 
-    # Bisect until we arrive at a suitable value
+        # We converged on an solution
+        if t == last:  # pragma: no cover
+            return t
+
+        last = t
+
+    # We didn't fully converge but we are close, closer than our bisect epsilon
+    if abs(_bezier(t, a, b, c) - target) < EPSILON:
+        return t
+
+    # We couldn't achieve our desired accuracy with Newton,
+    # so bisect at lower accuracy until we arrive at a suitable value
     low, high = 0.0, 1.0
     t = target
     while abs(high - low) > EPSILON:
         x = _bezier(t, a, b, c)
-        if (abs(x - target) < EPSILON):
+        if abs(x - target) < EPSILON:
             return t
         if x > target:
             high = t
@@ -108,7 +115,6 @@ def _solve_bezier_x(target: float, a: float, b: float, c: float) -> float:
         t = (high + low) * 0.5
 
     # Just return whatever we got closest to
-    # TODO: Is this needed? Can we actually ever hit this?
     return t  # pragma: no cover
 
 
@@ -177,7 +183,7 @@ def _calc_bezier(
         return _extrapolate(target, p1, p2)
 
     # Solve for `t` in relation to `x`
-    t = _solve_bezier_x(target, a[0], b[0], c[0])
+    t = _solve_bezier(target, a[0], b[0], c[0])
 
     # Use the found `t` to locate the `y`
     y = _bezier(t, a[1], b[1], c[1])

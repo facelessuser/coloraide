@@ -14,7 +14,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('purple').convert('lab').to_string(precision=-1),
-            'lab(29.6915242415228703976026736199855804443359375 56.11166698871137015203203191049396991729736328125 -36.29266541032566095736910938285291194915771484375)'  # noqa:  E501
+            'lab(29.6915242415228846084573888219892978668212890625 56.11166698871131330861317110247910022735595703125 -36.2926654103256396410870365798473358154296875)'  # noqa:  E501
         )
 
     def test_repr(self):
@@ -272,7 +272,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         """Test get with no NaN."""
 
         self.assertEqual(Color('white').convert('lch').get('h', nans=False), 0.0)
-        self.assertEqual(Color('white').convert('lch').get(['c', 'h'], nans=False), [0.0, 0.0])
+        self.assertEqual(Color('white').convert('lch').get(['c', 'h'], nans=False), [1.1957467920563633e-13, 0.0])
 
     def test_space_get(self):
         """Test get with another space."""

@@ -2,21 +2,7 @@
 import unittest
 import math
 import pytest
-import random
 from coloraide import algebra as alg
-
-
-def pprint(value):
-    """Print the matrix."""
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
 
 
 class TestAlgebra(unittest.TestCase):
@@ -302,12 +288,11 @@ class TestAlgebra(unittest.TestCase):
                   [[6, 4], [2, 2]]]]
             ),
             [[[[-0.1, 0.45], [0.2, -0.4]],
-              [[-0.12500000000000003, 0.25000000000000006],
-               [0.8750000000000001, -0.7500000000000002]]],
-             [[[-0.09090909090909094, 0.27272727272727276],
+              [[-0.125, 0.25], [0.875, -0.75]]],
+             [[[-0.09090909090909095, 0.27272727272727276],
                [0.5454545454545455, -0.6363636363636365]],
-              [[0.4999999999999999, -0.9999999999999998],
-               [-0.4999999999999999, 1.4999999999999998]]]]
+              [[0.5, -0.9999999999999999],
+               [-0.49999999999999994, 1.4999999999999998]]]]
         )
 
         # Prior to a recent change, this would fail as mathematically, this matrix
@@ -319,26 +304,10 @@ class TestAlgebra(unittest.TestCase):
                  [-0.3823529411764706, 0.3823529411764706, -0.45784313725490194],
                  [-0.16666666666666669, -0.8333333333333333, 0.16666666666666666]]
             ),
-            [[0.7199437370447141, -1.7622890139176781, -1.0000000000000004],
-             [-0.31721942552561444, 0.25207284572105415, -1.0],
-             [-0.8661533905833582, -0.5019247853124078, -8.881784197001252e-16]]
+            [[0.7199437370447144, -1.7622890139176783, -1.0],
+             [-0.3172194255256145, 0.2520728457210542, -1.0],
+             [-0.8661533905833582, -0.5019247853124075, 0.0]]
         )
-
-        # Test sorting of rows for large sparse matrix
-        # No zeros on the diagonal does not mean the matrix has an inverse,
-        # but it is important to ensure we can sort the rows properly.
-        size = 20
-        m = alg.identity(size)
-        for r in m:
-            r[random.randint(0, size - 1)] = 1.0
-        random.shuffle(m)
-        for i in range(size):
-            if m[i][i] == 0.0:
-                if alg._sort_diag_row(m, i, size, i) == -1:
-                    pprint(m)
-                    pytest.fail("Could not sort the rows for matrix inverse")
-        if 0 in alg.diag(m):
-            pytest.fail("Could not sort the rows for matrix inverse")
 
         with self.assertRaises(ValueError):
             alg.inv([[8, 9, 1], [4, 2, 1]])
@@ -1681,3 +1650,88 @@ class TestAlgebra(unittest.TestCase):
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.0, 1.0])]
         v = alg.ilerp2d(alg.transpose(m), [1, 1])
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [1.0, 1.0])]
+
+    def test_solve(self):
+        """Test solving of linear equations."""
+
+        m = [[1, 3, 4, 7],
+             [-8, 27, -36, 0],
+             [28, -5, 0, 2],
+             [4, 2, 8, -1]]
+
+        s = [-12, 2, 5, -2]
+
+        self.assertEqual(
+            alg.solve(m, s),
+            [0.19923880867516464, -0.4159366882136168, -0.41178336253247144, -1.329185041986347]
+        )
+
+        sm = [[-12, 2, 5, -2],
+              [2, 5, -2, 3],
+              [20, -19, 1, 5],
+              [0, 0, 3, 0]]
+
+        self.assertEqual(
+            alg.solve(m, sm),
+            [[0.7559958919833264, -0.6273787228901105, 0.07044040355222618, 0.1955536760708029],
+             [-0.3308161662538513, 0.3251978493324473, 0.3477919410378783, -0.0010270041684286482],
+             [-0.47166676735334984, 0.24442699208602667, 0.3007460883223585, -0.12755995891983324],
+             [-1.4109829034011963, 0.09629674379266602, 0.3833142028635293, -0.24031897541231195]]
+        )
+
+        with self.assertRaises(ValueError):
+            alg.solve([[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]], [3, 5, 6, 1])
+
+    def test_lu(self):
+        """Test `LU` decomposition."""
+
+        m = [[1, 0, 1], [4, 0, 3], [1, 2, -1]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        m = [[1, 0, 0], [3, 2, 0], [1, 0, 1]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        p, l, u = alg.lu(m)
+        self.assertEqual(alg.dot(p, m), alg.dot(l, u))
+
+        m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        p, l, u = alg.lu(m, p_indices=True)
+        self.assertEqual([m[idx] for idx in p], alg.dot(l, u))
+
+        m =  [[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]]
+        l, u = alg.lu(m, permute_l=True)
+        self.assertEqual(m, alg.dot(l, u))
+
+        with self.assertRaises(ValueError):
+            alg.lu([1, 2, 3])
+
+    def test_det(self):
+        """Test determinant."""
+
+        self.assertEqual(alg.det([[1, 0, 1], [4, 0, 3], [1, 2, -1]]), 2.0)
+
+        m = [[[[8, 9], [4, 2]],
+              [[6, 2], [7, 1]]],
+             [[[7, 3], [6, 1]],
+              [[6, 4], [2, 2]]]]
+
+        self.assertEqual(alg.det(m), [-20.0, -8.0, -10.999999999999998, 4.0])
+
+
+def test_pprint(capsys):
+    """Test matrix print."""
+
+    alg.pprint([[2, 4, 5, 6], [0, 0, 0, 0], [1, -4, 0, 3], [2, 9, 9, 2]])
+    assert (
+        capsys.readouterr().out == """[[2, 4, 5, 6],
+ [0, 0, 0, 0],
+ [1, -4, 0, 3],
+ [2, 9, 9, 2]]
+"""
+    )
+
+    alg.pprint(3)
+    assert capsys.readouterr().out == '3\n'

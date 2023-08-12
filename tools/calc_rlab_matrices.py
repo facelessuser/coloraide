@@ -10,7 +10,6 @@ the "Refinement of the RLAB Color Space" algorithm and just replaced M with the 
 
 We did recalculate R for our white point to get a nice, clean transform.
 """
-
 import sys
 import os
 
