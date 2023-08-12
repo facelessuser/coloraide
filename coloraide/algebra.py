@@ -36,19 +36,10 @@ from typing import Callable, Sequence, Iterator, Any, Iterable, Literal, overloa
 NaN = float('nan')
 INF = float('inf')
 EPSILON = sys.float_info.epsilon
-PY38 = (3, 8) <= sys.version_info
 TAU = math.pi * 2
 
-if sys.version_info >= (3, 8):
-    prod = math.prod
-else:
-    def prod(values: Iterable[SupportsFloatOrInt]) -> SupportsFloatOrInt:
-        """Get the product of a list of numbers."""
-
-        if not values:
-            return 1
-
-        return functools.reduce(operator.mul, values)
+# Keeping for backwards compatibility
+prod = math.prod
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
