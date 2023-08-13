@@ -1,6 +1,6 @@
 # Cubehelix
 
-/// failure | The cubehelix color space is not registered in `Color` by default
+/// failure | The Cubehelix color space is not registered in `Color` by default
 ///
 
 /// html | div.info-container
@@ -24,7 +24,7 @@ Name | Range
 ![Cubehelix](../images/cubehelix-3d.png)
 
 ///// html | figcaption
-The sRGB gamut represented within the cubehelix color space.
+The sRGB gamut represented within the Cubehelix color space.
 /////
 ////
 
@@ -64,7 +64,7 @@ Color.discrete([c1, c2], steps=16, space='cubehelix', hue='specified')
 Color.interpolate([c1, c2], space='cubehelix', hue='specified')
 ```
 
-Viewing the interpolation in 3D, we can see the spiraling of colors that gave the color scheme the name cubehelix.
+Viewing the interpolation in 3D, we can see the spiraling of colors that gave the color scheme the name Cubehelix.
 
 ![Cubehelix Interpolation](../images/cubehelix-interpolation.png)
 
@@ -81,7 +81,7 @@ Channels | Aliases
 
 ## Input/Output
 
-The cubehelix space is not currently supported in the CSS spec, the parsed input and string output formats use the
+The Cubehelix space is not currently supported in the CSS spec, the parsed input and string output formats use the
 `#!css-color color()` function format using the custom name `#!css-color --cubehelix`:
 
 ```css-color
