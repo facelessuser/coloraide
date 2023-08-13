@@ -36,6 +36,7 @@ from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
 from .spaces.ryb import RYB, RYBBiased
+from .spaces.cubehelix import Cubehelix
 from .distance.delta_e_itp import DEITP
 from .distance.delta_e_99o import DE99o
 from .distance.delta_e_z import DEZ
@@ -97,6 +98,7 @@ ColorAll.register(
         UCS(),
         RYB(),
         RYBBiased(),
+        Cubehelix(),
 
         # Delta E
         DEITP(),

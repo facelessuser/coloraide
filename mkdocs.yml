@@ -80,6 +80,7 @@ nav:
         - Okhsl: colors/okhsl.md
         - HSLuv: colors/hsluv.md
         - HPLuv: colors/hpluv.md
+        - Cubehelix: colors/cubehelix.md
 
       - XYZ Spaces:
         - XYZ D65: colors/xyz_d65.md

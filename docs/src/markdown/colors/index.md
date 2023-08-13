@@ -55,6 +55,7 @@ flowchart TB
     srgb-linear --- xyz-d65
         rec709 --- srgb-linear
         srgb --- srgb-linear
+            cubehelix --- srgb
             ryb --- srgb
             orgb --- srgb
             prismatic --- srgb
@@ -163,6 +164,7 @@ flowchart TB
     hct(HCT)
     xyb(XYB)
     ryb(RYB)
+    cubehelix(Cubehelix)
 
     click xyz-d65 "./xyz_d65/" _self
     click xyz-d50 "./xyz_d50/" _self
@@ -222,5 +224,6 @@ flowchart TB
     click hct "./hct/" _self
     click xyb "./xyb/" _self
     click ryb "./ryb/" _self
+    click cubehelix "./Cubehelix/" _self
 ```
 ///

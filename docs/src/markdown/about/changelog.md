@@ -2,6 +2,7 @@
 
 ## 2.8
 
+-   **NEW**: Add cubehelix color space.
 -   **NEW**: When precision is set to `-1` for string output, double precision (`17`) will be assumed.
 -   **ENHANCE**: More robust and generally better matrix inverse. Related inverse matrices have been regenerated for
     consistency.

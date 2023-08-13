@@ -14,6 +14,7 @@ Bezier
 Bilinear
 Björn
 Boronine
+Bostock
 Brettel
 Bz
 CATs
@@ -45,6 +46,7 @@ ColorHelper
 Colorimetry
 Colorio
 Ctrl
+Cubehelix
 Culori
 Cz
 DCI
@@ -165,6 +167,7 @@ SVG
 Scalable
 Sharma
 TODO
+TORTIOUS
 Tetradic
 Tokenize
 Triadic
@@ -214,6 +217,7 @@ colorimetry
 config
 coroutine
 cp
+cubehelix
 cz
 daltonlens
 deregister
@@ -231,6 +235,7 @@ easings
 fixup
 formatter
 grayscale
+helixes
 hz
 illuminance
 illuminant
