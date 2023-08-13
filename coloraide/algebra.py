@@ -2488,7 +2488,7 @@ def det(matrix: MatrixLike) -> Any:
         raise ValueError('Last two dimensions must be square')
     if len(s) == 2:
         size = s[0]
-        p, l, u = lu(matrix)
+        p, l, u = lu(matrix, _shape=s)
         swaps = size - trace(p)
         sign = (-1) ** (swaps - 1) if swaps else 1
         dt = sign * prod(l[i][i] * u[i][i] for i in range(size))
