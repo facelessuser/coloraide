@@ -13,11 +13,14 @@
 
 **Coordinates:**
 
-Name | Range
+Name | Range^\*^
 ---- | -----
 `h`  | [0, 360)
 `s`  | [0, 4.614]
 `l`  | [0, 1]
+
+^\*^ The maximum saturation represents how high saturation can go, not that _all_ colors with that saturation will be
+valid. As seen in the 3D rendering, while the coordinates are cylindrical, the shape of the space is not a cylinder.
 ////
 
 //// html | figure
