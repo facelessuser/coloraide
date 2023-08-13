@@ -71,7 +71,8 @@ models = {
     'xyb': {'title': TEMPLATE.format('XYB'), 'filename': 'xyb-3d.png', 'azim': 45},
     'ucs': {'title': TEMPLATE.format('UCS'), 'filename': 'ucs-3d.png', 'azim': 60, 'elev': 10},
     'ryb': {'title': 'RYB Color Space', 'filename': 'ryb-3d.png', 'gamut': 'ryb'},
-    'ryb-biased': {'title': 'RYB Color Space (Biased)', 'filename': 'ryb-biased-3d.png', 'gamut': 'ryb-biased'}
+    'ryb-biased': {'title': 'RYB Color Space (Biased)', 'filename': 'ryb-biased-3d.png', 'gamut': 'ryb-biased'},
+    'cubehelix': {'title': TEMPLATE.format('Cubehelix'), 'filename': 'cubehelix-3d.png'}
 }
 
 

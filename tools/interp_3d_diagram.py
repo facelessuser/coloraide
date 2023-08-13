@@ -25,7 +25,9 @@ def main():
     parser.add_argument('--color', '-c', action='append', help="Color.")
     parser.add_argument('--display', '-d', help="Display space.")
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
+    parser.add_argument('--hue', '-H', default='shorter', help="Hue interpolation handling.")
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
+    parser.add_argument('--steps', '-S', default=0, type=int, help='Specify number of steps to display.')
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
@@ -50,8 +52,21 @@ def main():
     colors = []
     display = None
     d = args.space if args.display is None else args.display
-    for color in args.color:
-        current = Color(color).convert(args.space)
+
+    i = Color.interpolate(
+        args.color,
+        space=args.space,
+        out_space=args.display,
+        method=args.method,
+        extrapolate=args.extrapolate,
+        hue=args.hue
+    )
+
+    steps = args.steps
+    if steps == 0:
+        steps = len(args.color)
+    for color in i.steps(steps=steps):
+        current = color.convert(args.space)
         display = current.convert(d)
         x.append(display[0])
         y.append(display[1])
@@ -86,13 +101,6 @@ def main():
     figure.add_axes(ax)
 
     # Interpolate between the entire range and optionally extrapolate
-    i = Color.interpolate(
-        colors,
-        space=args.space,
-        out_space=args.display,
-        method=args.method,
-        extrapolate=args.extrapolate
-    )
     if not args.extrapolate:
         offset, factor = 0, 1
     else:
