@@ -67,6 +67,42 @@ Color.discrete([c1, c2], steps=16, space='cubehelix', hue='specified')
 Color.interpolate([c1, c2], space='cubehelix', hue='specified')
 ```
 
+You can even reverse the rotation by utilizing a negative difference in hue.
+
+```py play
+c1 = Color('cubehelix', [0, 1, 0])
+c2 = Color('cubehelix', [-360, 1, 1])
+Color.discrete([c1, c2], steps=16, space='cubehelix', hue='specified')
+Color.interpolate([c1, c2], steps=16, space='cubehelix', hue='specified')
+```
+
+To adjust gamma, simply apply a gamma easing to lightness.
+
+```py play
+def ease_gamma(y=1.0):
+    """Ease gamma."""
+
+    return lambda t: t ** y
+
+gamma = ease_gamma(0.2)
+
+c1 = Color('cubehelix', [0, 1, 0])
+c2 = Color('cubehelix', [-360, 1, 1])
+Color.discrete(
+    [c1, c2],
+    steps=16,
+    space='cubehelix',
+    hue='specified',
+    progress={'l': gamma}
+)
+Color.interpolate(
+    [c1, c2],
+    space='cubehelix',
+    hue='specified',
+    progress={'l': gamma}
+)
+```
+
 Viewing the interpolation in 3D, we can see the spiraling of colors that gave the color scheme the name Cubehelix.
 
 ![Cubehelix Interpolation](../images/cubehelix-interpolation.png)
