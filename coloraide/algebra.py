@@ -31,7 +31,7 @@ from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
     Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
 )
-from typing import Callable, Sequence, Iterator, Any, Iterable, Literal, overload
+from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
 NaN = float('nan')
 INF = float('inf')
@@ -2245,43 +2245,13 @@ def diag(array: ArrayLike, k: int = 0) -> Array:
         return d
 
 
-@overload
-def lu(
-    matrix: MatrixLike,
-    *,
-    permute_l: Literal[True],
-    _shape: Shape | None = None
-) -> tuple[Matrix, Matrix]:
-    ...
-
-
-@overload
-def lu(
-    matrix: MatrixLike,
-    *,
-    p_indices: Literal[True],
-    _shape: Shape | None = None
-) -> tuple[list[int], Matrix, Matrix]:
-    ...
-
-
-@overload
-def lu(
-    matrix: MatrixLike,
-    *,
-    p_indices: Literal[False] = False,
-    _shape: Shape | None = None
-) -> tuple[Matrix, Matrix, Matrix]:
-    ...
-
-
 def lu(
     matrix: MatrixLike,
     *,
     permute_l: bool = False,
     p_indices: bool = False,
     _shape: Shape | None = None
-) ->  tuple[Matrix, Matrix] | tuple[Matrix, Matrix, Matrix] | tuple[list[int], Matrix, Matrix]:
+) ->  Any:
     """
     Calculate `LU` decomposition.
 
@@ -2311,9 +2281,15 @@ def lu(
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
         results = []
-        for parts in zip(*(lu(rows[r:r + step], _shape=last) for r in range(0, len(rows), step))):
+        zipped = zip(
+            *(
+                lu(rows[r:r + step], permute_l=permute_l, p_indices=p_indices, _shape=last)
+                for r in range(0, len(rows), step)
+            )
+        )
+        for parts in zipped:
             results.append(reshape(parts, first + shape(parts[0])))
-        return tuple(results)  # type: ignore[return-value]
+        return tuple(results)
 
     # Wide or tall matrices
     wide = tall = False
@@ -2482,13 +2458,13 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
 
     # Solve for x using forward substitution on U and back substitution on L
     if isinstance(b[0], Sequence):
-        b = [list(b[i]) for i in p]  # type: ignore[arg-type]
+        b = [list(b[i]) for i in p]
         size2 = len(b[0])
         s2 = (size, size2)
         if size != s[-2]:
             raise ValueError('Mismatched dimensions')
         return _back_sub_matrix(u, _forward_sub_matrix(l, b, s2), s2)
-    b = [b[i] for i in p]  # type: ignore[assignment]
+    b = [b[i] for i in p]
     if len(b) != s[-2]:
         raise ValueError('Mismatched dimensions')
     return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
