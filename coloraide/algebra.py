@@ -2411,15 +2411,16 @@ def _forward_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _forward_sub_matrix(a: Matrix, b: Matrix, size: int) -> Matrix:
+def _forward_sub_matrix(a: Matrix, b: Matrix, s: Shape) -> Matrix:
     """Forward substitution for solution of `L x = b` where `b` is a matrix."""
 
-    for i in range(size):
+    size1, size2 = s
+    for i in range(size1):
         v = b[i]
         for j in range(i):
-            for k in range(size):
+            for k in range(size2):
                 v[k] -= a[i][j] * b[j][k]
-        for j in range(size):
+        for j in range(size2):
             v[j] /= a[i][i]
     return b
 
@@ -2435,15 +2436,16 @@ def _back_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _back_sub_matrix(a: Matrix, b: Matrix, size: int) -> Matrix:
+def _back_sub_matrix(a: Matrix, b: Matrix, s: Shape) -> Matrix:
     """Back substitution for solution of `U x = b`."""
 
-    for i in range(size - 1, -1, -1):
+    size1, size2 = s
+    for i in range(size1 - 1, -1, -1):
         v = b[i]  # type: Any
-        for j in range(i + 1, size):
-            for k in range(size):
+        for j in range(i + 1, size1):
+            for k in range(size2):
                 v[k] -= a[i][j] * b[j][k]
-        for j in range(size):
+        for j in range(size2):
             b[i][j] /= a[i][i]
     return b
 
@@ -2481,8 +2483,14 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     # Solve for x using forward substitution on U and back substitution on L
     if isinstance(b[0], Sequence):
         b = [list(b[i]) for i in p]  # type: ignore[arg-type]
-        return _back_sub_matrix(u, _forward_sub_matrix(l, b, size), size)
+        size2 = len(b[0])
+        s2 = (size, size2)
+        if size != s[-2]:
+            raise ValueError('Mismatched dimensions')
+        return _back_sub_matrix(u, _forward_sub_matrix(l, b, s2), s2)
     b = [b[i] for i in p]  # type: ignore[assignment]
+    if len(b) != s[-2]:
+        raise ValueError('Mismatched dimensions')
     return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
 
 
@@ -2542,7 +2550,8 @@ def inv(matrix: MatrixLike) -> Matrix:
 
     # Solve for the identity matrix (will give us inverse)
     # Permutation matrix is the identity matrix, even if shuffled.
-    return _back_sub_matrix(u, _forward_sub_matrix(l, p, size), size)
+    s2 = (size, size)
+    return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
 
 
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix:
