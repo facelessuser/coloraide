@@ -657,21 +657,23 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Matrix/linear algebra math
 ################################
+def _pprint(value: Array | float, depth: int, s: Shape) -> str:
+    """Format the print output."""
+
+    nl = len(s) - depth - 1
+    if isinstance(value, Sequence):
+        seq = len(value) and isinstance(value[0], Sequence)
+        values = [_pprint(v, depth + 1, s) for v in value]
+        spacing = depth + 1
+        return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * spacing) if seq else ', ').join(values))
+
+    return str(value)
+
+
 def pprint(value: Array | float) -> None:
     """Print the matrix or value."""
 
-    if isinstance(value, Sequence):
-        print('[', end='')
-        first = True
-        for v in value:
-            if first:
-                first = False
-            else:
-                print(',\n ', end='')
-            print(v, end='')
-        print(']')
-    else:
-        print(value)
+    print(_pprint(value, 0, shape(value)))
 
 
 def vdot(a: VectorLike, b: VectorLike) -> float:
@@ -2298,10 +2300,20 @@ def lu(
 
     s = shape(matrix) if _shape is None else _shape
     size = s[0]
+    dims = len(s)
 
     # We need a rectangular N x M matrix
-    if len(s) != 2:
-        raise ValueError('Matrix must be a rectangular matrix')
+    if dims < 2:
+        raise ValueError('LU decomposition requires an array larger than a vector')
+    elif dims > 2:
+        last = s[-2:]
+        first = s[:-2]
+        rows = list(_extract_rows(matrix, s))
+        step = last[-2]
+        results = []
+        for parts in zip(*(lu(rows[r:r + step], _shape=last) for r in range(0, len(rows), step))):
+            results.append(reshape(parts, first + shape(parts[0])))
+        return tuple(results)  # type: ignore[return-value]
 
     # Wide or tall matrices
     wide = tall = False
@@ -2496,7 +2508,7 @@ def det(matrix: MatrixLike) -> Any:
     else:
         last = s[-2:]
         rows = list(_extract_rows(matrix, s))
-        step = last[-1]
+        step = last[-2]
         return [det(rows[r:r + step]) for r in range(0, len(rows), step)]
 
 
@@ -2514,7 +2526,7 @@ def inv(matrix: MatrixLike) -> Matrix:
     elif dims > 2:
         invert = []
         rows = list(_extract_rows(matrix, s))
-        step = last[-1]
+        step = last[-2]
         invert = [inv(rows[r:r + step]) for r in range(0, len(rows), step)]
         return reshape(invert, s)  # type: ignore [arg-type, return-value]
 
