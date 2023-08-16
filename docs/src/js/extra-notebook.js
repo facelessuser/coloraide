@@ -186,9 +186,6 @@ ${content}
 
     const base = window.location.pathname.split('/')[1]
     const target = e.target || e.srcElement
-    if (target.matches('#__notebook-edit, #__notebook-md-gist, #__notebook-py-gist ')) {
-      return
-    }
 
     if (target.tagName === "A" && main) { // eslint-disable-line no-use-before-define
       if (
@@ -257,6 +254,71 @@ ${content}
 
     const notebook = document.getElementById("__notebook-source")
     const playgrounds = document.querySelectorAll(".playground")
+
+    if (notebook && first) {
+      const notebookInput = document.getElementById("__notebook-input")
+
+      notebookInput.addEventListener("input", e => {
+        // Adjust textarea height on text input.
+
+        textResize(e.target)
+      })
+
+      notebookInput.addEventListener('keydown', handleTab)
+
+      const editPage = document.getElementById("__notebook-edit")
+      editPage.addEventListener("click", () => {
+        editTemp[notebookInput.id] = notebookInput.value
+        document.getElementById("__notebook-render").classList.toggle("hidden")
+        document.getElementById("__notebook-source").classList.toggle("hidden")
+        textResize(document.getElementById("__notebook-input"))
+      })
+
+      document.getElementById("__notebook-md-gist").addEventListener("click", async e => {
+        let uri = prompt("Please enter link to the Markdown page source:", gist) // eslint-disable-line no-alert
+        if (uri !== null) {
+          uri = encodeuri(uri)
+          e.preventDefault()
+          history.pushState({notebook: uri}, "", `?${new URLSearchParams(`notebook=${uri}`).toString()}`)
+          main(false) // eslint-disable-line no-use-before-define
+        }
+      })
+
+      document.getElementById("__notebook-py-gist").addEventListener("click", async e => {
+        let uri = prompt("Please enter the link to the Python code source:", gist) // eslint-disable-line no-alert
+        if (uri !== null) {
+          uri = encodeuri(uri)
+          e.preventDefault()
+          history.pushState({source: uri}, "", `?${new URLSearchParams(`source=${uri}`).toString()}`)
+          main(false) // eslint-disable-line no-use-before-define
+        }
+      })
+
+      document.getElementById("__notebook-input").value = raw
+      document.getElementById("__notebook-cancel").addEventListener("click", () => {
+        notebookInput.value = editTemp[notebookInput.id]
+        delete editTemp[notebookInput.id]
+        document.getElementById("__notebook-render").classList.toggle("hidden")
+        document.getElementById("__notebook-source").classList.toggle("hidden")
+      })
+
+      document.getElementById("__notebook-submit").addEventListener("click", async() => {
+        const render = document.getElementById("__notebook-render")
+        raw = document.getElementById("__notebook-input").value
+        render.classList.toggle("hidden")
+        document.getElementById("__notebook-source").classList.toggle("hidden")
+        const article = document.querySelector("article")
+        showBusy(article, "Loading Notebook...")
+        render.innerHTML = ""
+        editTemp = {}
+        await setupPyodide(true)
+        await pyrender(raw)
+        await init()
+        hideBusy(article)
+        fakeDOMContentLoaded()
+      })
+    }
+
     playgrounds.forEach(pg => {
 
       const currentID = pg.id.replace(reIdNum, "$1")
@@ -275,70 +337,6 @@ ${content}
       })
 
       inputs.addEventListener('keydown', handleTab)
-
-      if (notebook && first) {
-        const notebookInput = document.getElementById("__notebook-input")
-
-        notebookInput.addEventListener("input", e => {
-          // Adjust textarea height on text input.
-
-          textResize(e.target)
-        })
-
-        notebookInput.addEventListener('keydown', handleTab)
-
-        const editPage = document.getElementById("__notebook-edit")
-        editPage.addEventListener("click", () => {
-          editTemp[notebookInput.id] = notebookInput.value
-          document.getElementById("__notebook-render").classList.toggle("hidden")
-          document.getElementById("__notebook-source").classList.toggle("hidden")
-          textResize(document.getElementById("__notebook-input"))
-        })
-
-        document.getElementById("__notebook-md-gist").addEventListener("click", async e => {
-          let uri = prompt("Please enter link to the Markdown page source:", gist) // eslint-disable-line no-alert
-          if (uri !== null) {
-            uri = encodeuri(uri)
-            e.preventDefault()
-            history.pushState({notebook: uri}, "", `?${new URLSearchParams(`notebook=${uri}`).toString()}`)
-            main(false) // eslint-disable-line no-use-before-define
-          }
-        })
-
-        document.getElementById("__notebook-py-gist").addEventListener("click", async e => {
-          let uri = prompt("Please enter the link to the Python code source:", gist) // eslint-disable-line no-alert
-          if (uri !== null) {
-            uri = encodeuri(uri)
-            e.preventDefault()
-            history.pushState({source: uri}, "", `?${new URLSearchParams(`source=${uri}`).toString()}`)
-            main(false) // eslint-disable-line no-use-before-define
-          }
-        })
-
-        document.getElementById("__notebook-input").value = raw
-        document.getElementById("__notebook-cancel").addEventListener("click", () => {
-          notebookInput.value = editTemp[notebookInput.id]
-          delete editTemp[notebookInput.id]
-          document.getElementById("__notebook-render").classList.toggle("hidden")
-          document.getElementById("__notebook-source").classList.toggle("hidden")
-        })
-
-        document.getElementById("__notebook-submit").addEventListener("click", async() => {
-          const render = document.getElementById("__notebook-render")
-          raw = document.getElementById("__notebook-input").value
-          render.classList.toggle("hidden")
-          document.getElementById("__notebook-source").classList.toggle("hidden")
-          const article = document.querySelector("article")
-          showBusy(article, "Loading Notebook...")
-          render.innerHTML = ""
-          editTemp = {}
-          await setupPyodide(true)
-          await pyrender(raw)
-          await init()
-          hideBusy(article)
-          fakeDOMContentLoaded()
-        })
-      }
 
       inputs.addEventListener("touchmove", e => {
         // Stop propagation on "touchmove".

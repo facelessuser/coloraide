@@ -72,5 +72,24 @@
 
 // Special buttons in our toolbar
 .md-typeset .source-link {
+  position: relative;
+  top: px2rem(-12px);
+  float: right;
   margin-left: px2rem(8px);
+  color: var(--md-default-fg-color--lighter);
+  cursor: pointer;
+  transition: color 125ms;
+
+  &:hover {
+    color: var(--md-accent-fg-color);
+  }
+
+  .twemoji {
+      height: px2rem(24px);
+
+      svg {
+          width: px2rem(24px);
+          height: px2rem(24px);
+      }
+  }
 }
