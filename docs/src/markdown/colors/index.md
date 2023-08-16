@@ -224,6 +224,6 @@ flowchart TB
     click hct "./hct/" _self
     click xyb "./xyb/" _self
     click ryb "./ryb/" _self
-    click cubehelix "./Cubehelix/" _self
+    click cubehelix "./cubehelix/" _self
 ```
 ///
