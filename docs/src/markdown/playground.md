@@ -4,9 +4,9 @@ hide:
   - toc
 ---
 
-[:material-notebook-edit:](#){: #__notebook-edit .source-link title="Edit notebook page"}
-[:material-language-python:](#){: #__notebook-py-gist .source-link title="Load Python code from source"}
-[:material-language-markdown:](#){: #__notebook-md-gist .source-link title="Load page from Markdown source"}
+[:material-notebook-edit:](){: #__notebook-edit .source-link title="Edit notebook page"}
+[:material-language-python:](){: #__notebook-py-gist .source-link title="Load Python code from source"}
+[:material-language-markdown:](){: #__notebook-md-gist .source-link title="Load page from Markdown source"}
 <h1>Notebook</h1>
 
 ---

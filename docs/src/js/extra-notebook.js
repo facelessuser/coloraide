@@ -186,6 +186,10 @@ ${content}
 
     const base = window.location.pathname.split('/')[1]
     const target = e.target || e.srcElement
+    if (target.matches('#__notebook-edit, #__notebook-md-gist, #__notebook-py-gist ')) {
+      return
+    }
+
     if (target.tagName === "A" && main) { // eslint-disable-line no-use-before-define
       if (
         target.getAttribute("href") &&
