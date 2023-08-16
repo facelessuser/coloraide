@@ -2467,8 +2467,8 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     """
     Solve the system of equations.
 
-    The return value always matches the sahpe of 'b' and `a' must be square
-    in the last two dimentions.
+    The return value always matches the shape of 'b' and `a' must be square
+    in the last two dimensions.
 
     Broadcasting is not quite done in the traditional way.
 
@@ -2510,11 +2510,18 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
         # Solve for x using forward substitution on U and back substitution on L
         if dim2:
             # Two matrices
+            size2 = len(b[0])  # type: ignore[arg-type]
             if size != len(b):
                 raise ValueError('Mismatched dimensions')
-            b = [list(b[i]) for i in p]
-            s2 = (size, len(b[0]))  # type: Shape
-            return _back_sub_matrix(u, _forward_sub_matrix(l, b, s2), s2)
+
+            ordered = []
+            for i in p:
+                r = b[i]
+                if len(r) != size2:
+                    raise ValueError('Mismatched dimensions')
+                ordered.append(list(r))
+            s2 = (size, size2)  # type: Shape
+            return _back_sub_matrix(u, _forward_sub_matrix(l, ordered, s2), s2)
 
         # Matrix and one vector
         if len(b) != s[-2]:

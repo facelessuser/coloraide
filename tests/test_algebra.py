@@ -1848,6 +1848,15 @@ class TestAlgebra(unittest.TestCase):
             alg.solve(m, b)
 
         with self.assertRaises(ValueError):
+            m = [[7, 5, 8],
+                 [1, 2, 0],
+                 [6, 3, 4]]
+            b = [[8, 6, 2],
+                 [4, 7, 0, 3],
+                 [1, 5, 3]]
+            alg.solve(m, b)
+
+        with self.assertRaises(ValueError):
             m = alg.reshape([1] * 9, (3, 3))
             b = alg.reshape([1] * 36, (4, 3, 3))
             alg.solve(m, b)
