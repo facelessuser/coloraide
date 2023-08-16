@@ -29,7 +29,7 @@ from itertools import zip_longest as zipl
 from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
-    Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt
+    Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt, MathType
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
@@ -657,14 +657,17 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Matrix/linear algebra math
 ################################
-def _pprint(value: Array | float, depth: int, s: Shape) -> str:
+def pretty(value: Array | float, *, _depth: int = 0, _shape: Shape | None = None) -> str:
     """Format the print output."""
 
-    nl = len(s) - depth - 1
+    if _shape is None:
+        _shape = shape(value)
+
+    nl = len(_shape) - _depth - 1
     if isinstance(value, Sequence):
         seq = len(value) and isinstance(value[0], Sequence)
-        values = [_pprint(v, depth + 1, s) for v in value]
-        spacing = depth + 1
+        values = [pretty(v, _depth=_depth + 1, _shape=_shape) for v in value]
+        spacing = _depth + 1
         return '[{}]'.format((',{}{}'.format('\n' * nl, ' ' * spacing) if seq else ', ').join(values))
 
     return str(value)
@@ -673,7 +676,7 @@ def _pprint(value: Array | float, depth: int, s: Shape) -> str:
 def pprint(value: Array | float) -> None:
     """Print the matrix or value."""
 
-    print(_pprint(value, 0, shape(value)))
+    print(pretty(value))
 
 
 def vdot(a: VectorLike, b: VectorLike) -> float:
@@ -1713,6 +1716,30 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
 
 
 @overload  # type: ignore[no-overload-impl]
+def isclose(a: float, b: float, *, dims: DimHints | None = None, **kwargs: Any) -> bool:
+    ...
+
+
+@overload
+def isclose(a: VectorLike, b: VectorLike, *, dims: DimHints | None = None, **kwargs: Any) -> list[bool]:
+    ...
+
+
+@overload
+def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = None, **kwargs: Any) -> list[list[bool]]:
+    ...
+
+
+isclose = vectorize2(math.isclose, doc="Test if elements are close.")  # type: ignore[assignment]
+
+
+def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
+    """Test if all are close."""
+
+    return all(ravel(isclose(a, b, **kwargs)))
+
+
+@overload  # type: ignore[no-overload-impl]
 def multiply(a: float, b: float, *, dims: DimHints | None = None) -> float:
     ...
 
@@ -2288,7 +2315,7 @@ def lu(
             )
         )
         for parts in zipped:
-            results.append(reshape(parts, first + shape(parts[0])))
+            results.append(reshape(parts, first + shape(parts[0])))  # noqa: PERF401
         return tuple(results)
 
     # Wide or tall matrices
@@ -2440,34 +2467,122 @@ def solve(a: MatrixLike, b: ArrayLike) -> Array:
     """
     Solve the system of equations.
 
-    We only handle  N x N matrices, but what we are solving for can either
-    a vector of length N or a matrix of size N x N.
+    The return value always matches the sahpe of 'b' and `a' must be square
+    in the last two dimentions.
+
+    Broadcasting is not quite done in the traditional way.
+
+    1. [M, M] and [M] will solve a set of linear equations against a vector
+       of dependent variables.
+
+    2. If we have [..., M, M] and [..., M, M] and it we have multiple sets of linear
+       equations it will be treated as as multiple [M, M] and [M] cases as described in 1).
+
+       If we have only one set of linear equations, it will be treated as a [..., M, M] and
+       [..., M, K] case as described in 3).
+
+    3. If we have [..., M, M] and [..., M, K], we will either solve a single set of linear
+       equations against multiple matrices of containing K dependent variable sets.
+
+    4. Lastly, if we have [..., M, M] and [..., M], where we have N vectors that matches N [M, M]
+       equation sets, then we will solve one matrix with one vector.
+
+    Anything else "should" fail, one way or another.
     """
 
     s = shape(a)
-    size = s[0]
-    if len(s) != 2 or s[-1] != s[-2]:
-        raise ValueError('Matrix must be a square matrix')
+    size = s[-1]
+    dims = len(s)
+    if len(s) < 2 or s[-1] != s[-2]:
+        raise ValueError('Last two dimension must be square')
 
-    # Get the LU decomposition
-    p, l, u = lu(a, p_indices=True, _shape=s)
+    # Fast simple cases: two 2 dimensional matrices or one 2 dimensional matrix and a vector
+    dim1 = not isinstance(b[0], Sequence)
+    dim2 = not dim1 and not isinstance(b[0][0], Sequence)  # type: ignore[index]
+    if dims == 2 and (dim1 or dim2):
+        # Get the LU decomposition
+        p, l, u = lu(a, p_indices=True, _shape=s)
 
-    # If determinant is zero, we can't solve. Really small determinant may give bad results.
-    if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
-        raise ValueError('Matrix is singular')
+        # If determinant is zero, we can't solve. Really small determinant may give bad results.
+        if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+            raise ValueError('Matrix is singular')
 
-    # Solve for x using forward substitution on U and back substitution on L
-    if isinstance(b[0], Sequence):
-        b = [list(b[i]) for i in p]
-        size2 = len(b[0])
-        s2 = (size, size2)
-        if size != s[-2]:
+        # Solve for x using forward substitution on U and back substitution on L
+        if dim2:
+            # Two matrices
+            if size != len(b):
+                raise ValueError('Mismatched dimensions')
+            b = [list(b[i]) for i in p]
+            s2 = (size, len(b[0]))  # type: Shape
+            return _back_sub_matrix(u, _forward_sub_matrix(l, b, s2), s2)
+
+        # Matrix and one vector
+        if len(b) != s[-2]:
             raise ValueError('Mismatched dimensions')
-        return _back_sub_matrix(u, _forward_sub_matrix(l, b, s2), s2)
-    b = [b[i] for i in p]
-    if len(b) != s[-2]:
-        raise ValueError('Mismatched dimensions')
-    return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
+        b = [b[i] for i in p]
+        return _back_sub_vector(u, _forward_sub_vector(l, b, size), size)  # type: ignore[arg-type]
+
+    # More complex, deeply nested cases that require more analyzing
+    s2 = shape(b)
+    sol_m = sol_v = False
+    x = []  # type: Any
+
+    # Broadcast the solving
+    if s2[-2] == size:
+        if s2[-1] == size:
+            p1 = prod(s)
+            p2 = prod(s2)
+            # One matrix of equations with multiple series of M dependent variable sets (matrix)
+            sol_m = not p2 % p1
+            # Multiple equations sets with a single series of dependent variables per equation set (vectors)
+            sol_v = not sol_m and not p1 % p2
+        elif s2[-2] == size:
+            # One matrix of equations with multiple series of K dependent variable sets (matrix)
+            p1 = prod(s[:-1])
+            p2 = prod(s2[:-1])
+            sol_m = not p2 % p1
+    elif s2[-1] == size:
+        # Multiple equations sets with a single series of dependent variables per equation set (vectors)
+        p1 = prod(s[:-2])
+        p2 = prod(s2[:-1])
+        sol_v = p1 == p2
+
+    # Matrix and matrices
+    if sol_m:
+        rows_equ = list(_extract_rows(a, s))
+        ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
+        rows_sol = list(_extract_rows(b, s2))
+        mb = [rows_sol[r:r + size] for r in range(0, len(rows_sol), size)]
+        ai_shape = s[-2:]
+
+        p, l, u = lu(ma[0], p_indices=True, _shape=ai_shape)
+
+        if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+            raise ValueError('Matrix is singular')
+
+        for bi in mb:
+            bi = [list(bi[i]) for i in p]
+            s3 = (size, len(bi[0]))
+            x.append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
+        return reshape(x, s2)  # type: ignore[return-value]
+
+    # Matrices and vectors
+    elif sol_v:
+        rows_equ = list(_extract_rows(a, s))
+        ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
+        mv = list(_extract_rows(b, s2))
+        ai_shape = s[-2:]
+
+        for ai, vi in zip(ma, mv):
+            p, l, u = lu(ai, p_indices=True, _shape=ai_shape)
+
+            if prod(l[i][i] * u[i][i] for i in range(size)) == 0.0:
+                raise ValueError('Matrix is singular')
+
+            x.append(_back_sub_vector(u, _forward_sub_vector(l, [vi[i] for i in p], size), size))
+        return reshape(x, s2)  # type: ignore[return-value]
+
+    raise ValueError("Could not broadcast {} and {}".format(s, s2))
 
 
 def trace(matrix: Matrix) -> float:
