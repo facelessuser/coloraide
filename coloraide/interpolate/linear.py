@@ -1,5 +1,6 @@
 """Piecewise linear interpolation."""
 from __future__ import annotations
+import math
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
@@ -33,7 +34,7 @@ class InterpolatorLinear(Interpolator):
             # to now premultiply that coordinate set.
             if self.premultiplied:
                 a, b = c1[-1], c2[-1]
-                a_nan, b_nan = alg.is_nan(a), alg.is_nan(b)
+                a_nan, b_nan = math.isnan(a), math.isnan(b)
 
                 # Premultiply the alpha
                 if not a_nan:
@@ -68,13 +69,13 @@ class InterpolatorLinear(Interpolator):
             a, b = values
 
             # Both values are undefined, so return undefined
-            if alg.is_nan(a) and alg.is_nan(b):
+            if math.isnan(a) and math.isnan(b):
                 value = alg.NaN
 
             # One channel is undefined, take the one that is not
-            elif alg.is_nan(a):
+            elif math.isnan(a):
                 value = b
-            elif alg.is_nan(b):
+            elif math.isnan(b):
                 value = a
 
             # Using linear interpolation between the two points

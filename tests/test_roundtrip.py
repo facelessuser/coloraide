@@ -2,6 +2,7 @@
 from coloraide.everything import ColorAll as Base
 from coloraide.spaces import Cylindrical, HSLish, HSVish
 from coloraide import algebra as alg
+import math
 import pytest
 
 
@@ -54,9 +55,9 @@ class TestRoundTrip:
                     c2.set('hue', 0)
             # In HSL and HSV spaces particularly, we can get nonsense saturation if lightness
             # is not exactly within 0 - 1 range. Ignore saturation in achromatic cases.
-            if isinstance(c2._space, (HSLish, HSVish)) and alg.is_nan(c2['hue']):
+            if isinstance(c2._space, (HSLish, HSVish)) and math.isnan(c2['hue']):
                 c2[c2._space.indexes()[1]] = 0.0
-            if isinstance(c1._space, (HSLish, HSVish)) and alg.is_nan(c1['hue']):
+            if isinstance(c1._space, (HSLish, HSVish)) and math.isnan(c1['hue']):
                 c1[c1._space.indexes()[1]] = 0.0
             # Run rounded string back through parsing in case we hit something like a hue that needs normalization.
             str1 = self.Color(c1.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)

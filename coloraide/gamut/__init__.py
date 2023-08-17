@@ -1,5 +1,6 @@
 """Gamut handling."""
 from __future__ import annotations
+import math
 from .. import algebra as alg
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
@@ -26,7 +27,7 @@ def clip_channels(color: Color, nans: bool = True) -> None:
             color[i] = util.constrain_hue(value)
 
         # Ignore undefined or unbounded channels
-        if not chan.bound or alg.is_nan(value):
+        if not chan.bound or math.isnan(value):
             continue
 
         # Fit value in bounds.
@@ -40,7 +41,7 @@ def verify(color: Color, tolerance: float) -> bool:
         chan = color._space.CHANNELS[i]
 
         # Ignore undefined channels, angles which wrap, and unbounded channels
-        if chan.flags & FLG_ANGLE or not chan.bound or alg.is_nan(value):
+        if chan.flags & FLG_ANGLE or not chan.bound or math.isnan(value):
             continue
 
         a = chan.low

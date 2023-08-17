@@ -524,7 +524,8 @@ class Color(metaclass=ColorMeta):
         if nans and hasattr(self._space, 'hue_index') and self.is_achromatic():
             i = self._space.hue_index()
             self[i] = alg.NaN
-        self[-1] = alg.no_nan(self[-1])
+        alpha = self[-1]
+        self[-1] = 0.0 if math.isnan(alpha) else alpha
         return self
 
     def is_nan(self, name: str) -> bool:  # pragma: no cover

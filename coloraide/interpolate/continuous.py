@@ -1,5 +1,6 @@
 """Continuous interpolation."""
 from __future__ import annotations
+import math
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
@@ -38,7 +39,7 @@ class InterpolatorContinuous(Interpolator):
             for x in range(1, len(coords)):
                 c1, c2 = coords[x - 1:x + 1]
                 a, b = c1[i], c2[i]
-                a_nan, b_nan = alg.is_nan(a), alg.is_nan(b)
+                a_nan, b_nan = math.isnan(a), math.isnan(b)
 
                 # Two good values, store the last good value and continue
                 if not a_nan and not b_nan:

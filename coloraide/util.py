@@ -175,7 +175,7 @@ def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = YW) -> Vector:
 def constrain_hue(hue: float) -> float:
     """Constrain hue to [0, 360)."""
 
-    return hue % 360 if not alg.is_nan(hue) else hue
+    return hue % 360 if not math.isnan(hue) else hue
 
 
 def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:
@@ -196,7 +196,7 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
     <positive number>: precision level
     """
 
-    if alg.is_nan(f):
+    if math.isnan(f):
         return "none"
 
     value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)

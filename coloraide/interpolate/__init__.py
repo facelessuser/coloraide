@@ -307,7 +307,7 @@ class Interpolator(metaclass=ABCMeta):
         else:
             alpha = coords[-1]
 
-        if alg.is_nan(alpha) or alpha == 1.0:
+        if math.isnan(alpha) or alpha == 1.0:
             return
 
         for i, value in enumerate(coords[:-1]):
@@ -323,7 +323,7 @@ class Interpolator(metaclass=ABCMeta):
 
         alpha = coords[-1]
 
-        if alg.is_nan(alpha) or alpha in (0.0, 1.0):
+        if math.isnan(alpha) or alpha in (0.0, 1.0):
             return
 
         for i, value in enumerate(coords[:-1]):
@@ -621,8 +621,8 @@ def normalize_hue(
     c2 = util.constrain_hue(color2[index]) + offset
 
     # Adjust hue, handle gaps across `NaN`s
-    if not alg.is_nan(c2):
-        if not alg.is_nan(c1):
+    if not math.isnan(c2):
+        if not math.isnan(c1):
             c2, offset = adjuster(c1, c2, offset)
         elif fallback is not None:
             c2, offset = adjuster(fallback, c2, offset)
@@ -642,29 +642,29 @@ def carryforward_convert(color: Color, space: str) -> None:  # pragma: no cover
     # Gather undefined channels
     if isinstance(cs1, RGBish):
         for i, name in zip(cs1.indexes(), ('r', 'g', 'b')):
-            if alg.is_nan(color[i]):
+            if math.isnan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, LChish):
         for i, name in zip(cs1.indexes(), ('l', 'c', 'h')):
-            if alg.is_nan(color[i]):
+            if math.isnan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, Labish):
-        if alg.is_nan(color[cs1.indexes()[0]]):
+        if math.isnan(color[cs1.indexes()[0]]):
             channels['l'] = True
     elif isinstance(cs1, HSLish):
         for i, name in zip(cs1.indexes(), ('h', 'c', 'l')):
-            if alg.is_nan(color[i]):
+            if math.isnan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, HSVish):
         for i, name in zip(cs1.indexes(), ('h', 'c', 'v')):
-            if alg.is_nan(color[i]):
+            if math.isnan(color[i]):
                 channels[name] = True
     elif isinstance(cs1, Cylindrical):
-        if alg.is_nan(color[cs1.hue_index()]):
+        if math.isnan(color[cs1.hue_index()]):
             channels['h'] = True
 
     # Carry alpha forward if undefined
-    if alg.is_nan(color[-1]):
+    if math.isnan(color[-1]):
         carry.append(-1)
 
     # Channels that need to be carried forward
@@ -756,7 +756,7 @@ def interpolator(
     if hue_index >= 0:
         h = norm_coords[hue_index]
         norm_coords, offset = normalize_hue(norm_coords, None, hue_index, offset, hue, fallback)
-        if not alg.is_nan(h):
+        if not math.isnan(h):
             fallback = h
 
     easing = None  # type: Any
@@ -791,7 +791,7 @@ def interpolator(
         if hue_index >= 0:
             h = norm_coords[hue_index]
             norm_coords, offset = normalize_hue(current[:], norm_coords, hue_index, offset, hue, fallback)
-            if not alg.is_nan(h):
+            if not math.isnan(h):
                 fallback = h
 
         # Create an entry interpolating the current color and the next color
