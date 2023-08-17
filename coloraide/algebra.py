@@ -1715,6 +1715,13 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
     return reshape(m, (num,) + bcast.shape)  # type: ignore[return-value]
 
 
+def _isclose(a: float, b: float, *, equal_nan: bool = False, **kwargs: Any) -> bool:
+    """Check if values are close."""
+
+    close = math.isclose(a, b, **kwargs)
+    return (math.isnan(a) and math.isnan(b)) if not close and equal_nan else close
+
+
 @overload  # type: ignore[no-overload-impl]
 def isclose(a: float, b: float, *, dims: DimHints | None = None, **kwargs: Any) -> bool:
     ...
@@ -1730,7 +1737,7 @@ def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = None, **kwa
     ...
 
 
-isclose = vectorize2(math.isclose, doc="Test if elements are close.")  # type: ignore[assignment]
+isclose = vectorize2(_isclose, doc="Test if elements are close.")  # type: ignore[assignment]
 
 
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
