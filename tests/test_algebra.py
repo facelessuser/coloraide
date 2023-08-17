@@ -1965,6 +1965,18 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.det([[1, 2, 3], [4, 5, 6]])
 
+    def test_any(self):
+        """Test any."""
+
+        self.assertTrue(alg.any([False, True, False]))
+        self.assertFalse(alg.any([False, False, False]))
+
+    def test_all(self):
+        """Test all."""
+
+        self.assertTrue(alg.all([True, True, True]))
+        self.assertFalse(alg.all([False, True, False]))
+
 
 def test_pprint(capsys):
     """Test matrix print."""
