@@ -40,6 +40,8 @@ TAU = math.pi * 2
 
 # Keeping for backwards compatibility
 prod = math.prod
+_all = all
+_any = any
 
 # Shortcut for math operations
 # Specify one of these in divide, multiply, dot, etc.
@@ -682,6 +684,18 @@ def pprint(value: Array | float) -> None:
     print(pretty(value))
 
 
+def all(a: float | ArrayLike) -> bool:  # noqa: A001
+    """Return true if all elements are "true"."""
+
+    return _all(flatiter(a))
+
+
+def any(a: float | ArrayLike) -> bool:  # noqa: A001
+    """Return true if all elements are "true"."""
+
+    return _any(flatiter(a))
+
+
 def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
@@ -1073,7 +1087,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
             is_vector = True
 
     # Make sure everything is a 2-D matrix as the next calculations only work for 2-D.
-    if not all(len(s) == 2 for s in shapes):
+    if not _all(len(s) == 2 for s in shapes):
         raise ValueError('All arrays must be 2-D matrices')
 
     # No need to do the expensive and complicated chain order algorithm for only 3.
@@ -1785,7 +1799,7 @@ isnan = vectorize2(math.isnan)  # type: ignore[assignment]
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
     """Test if all are close."""
 
-    return all(ravel(isclose(a, b, **kwargs)))
+    return all(isclose(a, b, **kwargs))
 
 
 @overload  # type: ignore[no-overload-impl]
