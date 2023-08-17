@@ -1566,7 +1566,28 @@ class vectorize2:
 
         if len(args) == 1:
             a, = args
-            return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
+            if dims and 0 <= dims[0] <= 2:
+                dims_a = dims[0]
+                # Shape doesn't matter as we will utilize a fast path
+                shape_a = (0,)  # type: Shape
+            else:
+                shape_a = shape(a)
+                dims_a = len(shape(a))
+
+            # Fast paths for scalar, vectors, and 2D matrices
+            # Scalar
+            if dims_a == 0:
+                return self.func(a, **kwargs)
+            # Vector
+            elif dims_a == 1:
+                return [self.func(i, **kwargs) for i in a]  # type: ignore[union-attr]
+            # 2D matrix
+            elif dims_a == 2:
+                return [[self.func(c, **kwargs) for c in r] for r in a]  # type: ignore[union-attr]
+
+            # Unknown size or larger than 2D (slow)
+            return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape_a)
+
         a, b = args
 
         if not dims or dims[0] > 2 or dims[1] > 2:
