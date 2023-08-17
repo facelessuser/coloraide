@@ -8,7 +8,6 @@ import math
 from .hsv import HSV
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
-from .. import algebra as alg
 from .. import util
 from ..types import Vector
 

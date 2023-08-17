@@ -1025,16 +1025,18 @@ class TestAlgebra(unittest.TestCase):
     def test_no_nan(self):
         """Test no `NaN`."""
 
-        self.assertEqual(alg.no_nan(alg.NaN), 0)
-        self.assertEqual(alg.no_nans([0, 1, 2, alg.NaN]), [0, 1, 2, 0])
+        with pytest.warns(DeprecationWarning):
+            self.assertEqual(alg.no_nan(alg.NaN), 0)
+            self.assertEqual(alg.no_nans([0, 1, 2, alg.NaN]), [0, 1, 2, 0])
 
     def test_is_nan(self):
         """Test if is `NaN`."""
 
-        self.assertTrue(alg.is_nan(float('nan')))
-        self.assertTrue(alg.NaN)
-        self.assertFalse(alg.is_nan(3))
-        self.assertFalse(alg.is_nan(0))
+        with pytest.warns(DeprecationWarning):
+            self.assertTrue(alg.is_nan(float('nan')))
+            self.assertTrue(alg.NaN)
+            self.assertFalse(alg.is_nan(3))
+            self.assertFalse(alg.is_nan(0))
 
     def test_isnan(self):
         """Test if object has `NaN`."""

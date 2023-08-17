@@ -71,18 +71,21 @@ M141 = [1, 4, 1]
 ################################
 # General math
 ################################
+@deprecated("Please use math.isnan or alg.isnan for a generic approach for vectors and matrices")
 def is_nan(obj: float) -> bool:
     """Check if "not a number"."""
 
     return math.isnan(obj)
 
 
+@deprecated("This will be removed at a future time")
 def no_nans(value: VectorLike | Iterable[float], default: float = 0.0) -> Vector:
     """Ensure there are no `NaN` values in a sequence."""
 
     return [(default if is_nan(x) else x) for x in value]
 
 
+@deprecated("This will be removed at a future time")
 def no_nan(value: float, default: float = 0.0) -> float:
     """Convert list of numbers or single number to valid numbers."""
 
