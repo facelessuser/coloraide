@@ -1945,7 +1945,7 @@ class TestAlgebra(unittest.TestCase):
         ml = [rl[r:r + sl[-2]] for r in range(0, len(rl), sl[-2])]
         mu = [ru[r:r + su[-2]] for r in range(0, len(ru), su[-2])]
         for _m, _p, _l, _u in zip(mm, mp, ml, mu):
-            alg.allclose(alg.dot(_p, _m), alg.dot(_l, _u))
+            self.assertTrue(alg.allclose(alg.dot(_p, _m), alg.dot(_l, _u), rel_tol=1e-12, abs_tol=1e-12))
 
         with self.assertRaises(ValueError):
             alg.lu([1, 2, 3])
