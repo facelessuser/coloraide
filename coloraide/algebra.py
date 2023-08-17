@@ -1758,7 +1758,25 @@ def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = None, **kwa
     ...
 
 
-isclose = vectorize2(_isclose, doc="Test if elements are close.")  # type: ignore[assignment]
+isclose = vectorize2(_isclose)  # type: ignore[assignment]
+
+
+@overload  # type: ignore[no-overload-impl]
+def isnan(a: float, *, dims: DimHints | None = None, **kwargs: Any) -> bool:
+    ...
+
+
+@overload
+def isnan(a: VectorLike, *, dims: DimHints | None = None, **kwargs: Any) -> list[bool]:
+    ...
+
+
+@overload
+def isnan(a: MatrixLike, *, dims: DimHints | None = None, **kwargs: Any) -> list[list[bool]]:
+    ...
+
+
+isnan = vectorize2(math.isnan)  # type: ignore[assignment]
 
 
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:

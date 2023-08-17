@@ -1036,6 +1036,20 @@ class TestAlgebra(unittest.TestCase):
         self.assertFalse(alg.is_nan(3))
         self.assertFalse(alg.is_nan(0))
 
+    def test_isnan(self):
+        """Test if object has `NaN`."""
+
+        self.assertTrue(alg.isnan(alg.NaN))
+        self.assertEqual(alg.isnan([2, alg.NaN, 1]), [False, True, False])
+        self.assertEqual(alg.isnan([[2, alg.NaN], [alg.NaN, 1]]), [[False, True], [True, False]])
+        self.assertTrue(alg.isnan(alg.NaN, dims=alg.SC))
+        self.assertEqual(alg.isnan([2, alg.NaN, 1], dims=alg.D1), [False, True, False])
+        self.assertEqual(alg.isnan([[2, alg.NaN], [alg.NaN, 1]], dims=alg.D2), [[False, True], [True, False]])
+        self.assertEqual(alg.isnan(
+            [[[2, alg.NaN], [alg.NaN, 1]], [[2, alg.NaN], [alg.NaN, 1]]]),
+            [[[False, True], [True, False]], [[False, True], [True, False]]]
+        )
+
     def test_round_inf(self):
         """Test rounding of infinity."""
 
