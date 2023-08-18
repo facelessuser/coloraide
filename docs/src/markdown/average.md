@@ -44,8 +44,8 @@ Color.average(['purple', 'green', 'blue'], space='hsl')
 
 ## Averaging with Transparency
 
-ColorAide, by default, will account for transparency when averaging colors. Colors which which are more transparent
-will have less of an impact on the average. This is done by premultiplying the colors before averaging.
+ColorAide, by default, will account for transparency when averaging colors. Colors which are more transparent will have
+less of an impact on the average. This is done by premultiplying the colors before averaging.
 
 ```py play
 Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
