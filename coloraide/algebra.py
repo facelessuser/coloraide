@@ -3,22 +3,24 @@ Math related methods.
 
 Includes various math related functions to aid in color translation and manipulation.
 
-Matrix methods are implemented to mimic `numpy`. We've cherry picked what we think is the
-most useful for what we do with colors. We basically implement each function according to
-the API description and then verify our tested inputs and outputs match `numpy`.
+Matrix method APIs are implemented often to mimic the familiar `numpy` library or `scipy`.
+The API for a given function may look very similar to those found in either of the two
+scientific libraries. Our intent is not implement a full matrix library, but mainly the
+parts that are most useful for what we do with colors. Functions may not have all the
+features as found in the aforementioned libraries, but the API should be similar.
 
 We actually really like `numpy`, and have only done this to keep dependencies lightweight
-and available on non C Python based implementations. If we ever decide to swap out `numpy`,
-we should be able to relatively easily.
+and available on non C Python based implementations. If we ever decide to switch to `numpy`,
+we should be able to relatively easily as most of our API is modeled after `numpy` or `scipy`.
 
 Some liberties are taken here and there. For instance, we are not as fast as `numpy`, so
 we add some shortcuts to things that are used a lot (`dot`, `multiply`, `divide`, etc.).
 In these cases, we provide new input to instruct the operation as to the dimensions of the
 matrix so we don't waste time analyzing the matrix.
 
-There is no requirement that color space plugins (or really any plugin) need to use
-anything here, `numpy` could be used as long as the final results are converted to normal
-types.
+There is no requirement that external plugins need to use `algebra`, `numpy` could be
+used as long as the final results are converted to normal types. It is certainly possible
+that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
 import sys
