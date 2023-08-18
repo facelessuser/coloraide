@@ -5,12 +5,6 @@ This implements the HCT color space as described. This is not a port of the Mate
 We simply, as described, create a color space with CIELAB L* and CAM16's C and h components.
 Environment settings are calculated with the assumption of L* 50.
 
-Our approach getting back to sRGB is likely different as we are using a simple binary search
-to help calculate the missing piece (J) needed to convert CAM16 C and h back to XYZ such that
-Y matches the L* conversion back to Y. I am certain the Material library is most likely
-employing further tricks to resolve faster. We also try to get as good round trip as possible,
-which forces us to probably make more iterations than Material does (none of this has been confirmed).
-
 As ColorAide usually cares about setting powerless hues as NaN, especially for good interpolation,
 we've also calculated the cut off for chromatic colors and will properly enforce achromatic,powerless
 hues. This is because CAM16 actually resolves colors as achromatic before chroma reaches zero as
