@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.8.1
+
+-   **FIX**: Fix RLAB conversion.
+-   **ENHANCE**: Tweaks to some matrix calculations.
+
 ## 2.8
 
 -   **NEW**: Add Cubehelix color space.

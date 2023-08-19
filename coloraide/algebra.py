@@ -1047,7 +1047,7 @@ def _multi_dot(arrays: Sequence[ArrayLike], indexes: list[list[int]], i: int, j:
     return arrays[i]
 
 
-def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
+def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
     """
     Multi-dot.
 
@@ -1111,11 +1111,11 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> float | Array:
 
     # `numpy` returns the shape differently depending on if there is a row and/or column vector
     if is_scalar:
-        return value[0][0]  # type: ignore[no-any-return]
+        return value[0][0]
     elif is_vector:
         return ravel(value)
     else:
-        return value  # type: ignore[no-any-return]
+        return value
 
 
 class _BroadcastTo:

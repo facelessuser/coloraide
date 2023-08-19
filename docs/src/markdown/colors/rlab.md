@@ -34,6 +34,9 @@ The sRGB gamut represented within the RLAB color space.
 The RLAB color-appearance space was developed by Fairchild and Berns for cross-media color reproduction applications in
 which images are reproduced with differing white points, luminance levels, and/or surrounds.
 
+ColorAide provides RLAB by default with average surround, and discounting set to "hard copy" (or full discounting of the
+illuminant). It is also configured to use an absolute adapting luminance of 318 cd/m2.
+
 [Learn more](https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1153&context=article).
 ///
 

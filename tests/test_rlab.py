@@ -9,13 +9,13 @@ class TestRLAB(util.ColorAssertsPyTest):
     """Test RLAB."""
 
     COLORS = [
-        ('red', 'color(--rlab 51.012 79.742 57.26)'),
-        ('orange', 'color(--rlab 72.793 25.151 74.11)'),
-        ('yellow', 'color(--rlab 96.795 -23.838 95.194)'),
-        ('green', 'color(--rlab 44.382 -46.503 42.09)'),
-        ('blue', 'color(--rlab 31.893 71.681 -106.02)'),
-        ('indigo', 'color(--rlab 22.107 42.674 -46.135)'),
-        ('violet', 'color(--rlab 67.371 58.947 -38.558)'),
+        ('red', 'color(--rlab 51.012 79.744 57.26)'),
+        ('orange', 'color(--rlab 72.793 25.157 74.109)'),
+        ('yellow', 'color(--rlab 96.794 -23.829 95.193)'),
+        ('green', 'color(--rlab 44.382 -46.496 42.09)'),
+        ('blue', 'color(--rlab 31.894 71.657 -106.02)'),
+        ('indigo', 'color(--rlab 22.108 42.665 -46.134)'),
+        ('violet', 'color(--rlab 67.372 58.941 -38.557)'),
         ('white', 'color(--rlab 100 0 0)'),
         ('gray', 'color(--rlab 51.346 0 0)'),
         ('black', 'color(--rlab 0 0 0)'),
