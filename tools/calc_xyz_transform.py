@@ -53,8 +53,7 @@ def get_matrix(wp, space):
         raise ValueError
 
     m = alg.transpose([util.xy_to_xyz(xy) for xy in zip(x, y)])
-    mi = alg.inv(m)
-    rgb = alg.dot(mi, wp)
+    rgb = alg.solve(m, wp)
     rgb2xyz = alg.multiply(m, rgb)
     xyz2rgb = alg.inv(rgb2xyz)
 

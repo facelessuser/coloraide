@@ -60,7 +60,7 @@ def calc_adaptation_matrices(
     first = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
     second = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
     m2 = alg.diag(alg.divide(first, second, dims=alg.D1))
-    adapt = alg.multi_dot([alg.inv(m), m2, m])  # type: Any
+    adapt = alg.dot(alg.solve(m, m2), m)
 
     return adapt, alg.inv(adapt)
 

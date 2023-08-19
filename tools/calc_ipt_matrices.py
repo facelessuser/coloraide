@@ -23,25 +23,12 @@ m2 = [
 ]
 
 
-def pprint(value):
-    """Print the matrix."""
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
-
-
 if __name__ == "__main__":
     print('===== XYZ to LMS =====')
-    pprint(m1)
+    alg.pprint(m1)
     print('===== LMS to XYZ =====')
-    pprint(alg.inv(m1))
+    alg.pprint(alg.inv(m1))
     print('===== LMS P to IPT =====')
-    pprint(m2)
+    alg.pprint(m2)
     print('===== IPT to LMS P =====')
-    pprint(alg.inv(m2))
+    alg.pprint(alg.inv(m2))

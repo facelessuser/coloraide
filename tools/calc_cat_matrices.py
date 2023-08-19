@@ -60,27 +60,13 @@ cmccat2000_m = [
 ]
 
 
-def pprint(value):
-    """Print the matrix."""
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
-
-
 def pre_calculate_cat(src_white, dest_white, m):
     """Calculate CAT."""
 
-    mi = alg.inv(m)
     src = alg.dot(m, src_white)
     dest = alg.dot(m, dest_white)
     m2 = alg.diag(alg.divide(dest, src))
-    to_d50 = alg.dot(mi, alg.dot(m2, m))
+    to_d50 = alg.solve(m, alg.dot(m2, m))
     to_d65 = alg.inv(to_d50)
     return to_d65, to_d50
 
@@ -94,6 +80,6 @@ if __name__ == '__main__':
 
     to_d65, to_d50 = pre_calculate_cat(white_d65, white_d50, bradford_m)
     print('===== Bradford To D65 =====')
-    pprint(to_d65)
+    alg.pprint(to_d65)
     print('===== Bradford To D50 =====')
-    pprint(to_d50)
+    alg.pprint(to_d50)
