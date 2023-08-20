@@ -51,8 +51,8 @@ def okhsv_to_oklab(
 
     # Avoid processing gray or colors with undefined hues
     if l != 0.0 and s != 0.0:
-        a_ = math.cos(2.0 * math.pi * h)
-        b_ = math.sin(2.0 * math.pi * h)
+        a_ = math.cos(alg.tau * h)
+        b_ = math.sin(alg.tau * h)
 
         cusp = find_cusp(a_, b_, lms_to_rgb, ok_coeff)
         s_max, t_max = to_st(cusp)
@@ -101,7 +101,7 @@ def oklab_to_okhsv(
     v = toe(l)
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
-    h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
+    h = 0.5 + math.atan2(-lab[2], -lab[1]) / alg.tau
 
     if l != 0.0 and l != 1 and c != 0.0:
         a_ = lab[1] / c

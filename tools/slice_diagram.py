@@ -108,10 +108,10 @@ def plot_slice(
     yaxis = []
 
     # Track minimum and maximum values
-    c1_mn = float('inf')
-    c1_mx = float('-inf')
-    c2_mn = float('inf')
-    c2_mx = float('-inf')
+    c1_mn = math.inf
+    c1_mx = -math.inf
+    c2_mn = math.inf
+    c2_mx = -math.inf
 
     # Track the edge of the graphed shape.
     # This is done from the perspective of the X and Y axis.

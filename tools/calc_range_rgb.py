@@ -39,12 +39,12 @@ def main():
 def run(target, rgb, res, p):
     """Run."""
 
-    max_x = float('-inf')
-    max_y = float('-inf')
-    max_z = float('-inf')
-    min_x = float('inf')
-    min_y = float('inf')
-    min_z = float('inf')
+    max_x = -alg.inf
+    max_y = -alg.inf
+    max_z = -alg.inf
+    min_x = alg.inf
+    min_y = alg.inf
+    min_z = alg.inf
 
     print(' Current:', end="")
     template = '\r Current: {}'.ljust(30)

@@ -387,8 +387,8 @@ def okhsl_to_oklab(
     a = b = 0.0
 
     if L != 0.0 and L != 1.0 and s != 0:
-        a_ = math.cos(2.0 * math.pi * h)
-        b_ = math.sin(2.0 * math.pi * h)
+        a_ = math.cos(alg.tau * h)
+        b_ = math.sin(alg.tau * h)
 
         c_0, c_mid, c_max = get_cs([L, a_, b_], lms_to_rgb, ok_coeff)
 
@@ -434,7 +434,7 @@ def oklab_to_okhsl(
     l = toe(L)
 
     c = math.sqrt(lab[1] ** 2 + lab[2] ** 2)
-    h = 0.5 + 0.5 * math.atan2(-lab[2], -lab[1]) / math.pi
+    h = 0.5 + math.atan2(-lab[2], -lab[1]) / alg.tau
 
     if l != 0.0 and l != 1.0 and c != 0:
         a_ = lab[1] / c

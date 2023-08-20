@@ -1033,7 +1033,7 @@ class TestAlgebra(unittest.TestCase):
         """Test if is `NaN`."""
 
         with pytest.warns(DeprecationWarning):
-            self.assertTrue(alg.is_nan(float('nan')))
+            self.assertTrue(alg.is_nan(alg.NaN))
             self.assertTrue(alg.NaN)
             self.assertFalse(alg.is_nan(3))
             self.assertFalse(alg.is_nan(0))
@@ -1055,7 +1055,7 @@ class TestAlgebra(unittest.TestCase):
     def test_round_inf(self):
         """Test rounding of infinity."""
 
-        self.assertEqual(alg.round_to(alg.INF, 2), alg.INF)
+        self.assertEqual(alg.round_to(alg.inf, 2), alg.inf)
 
     def test_round(self):
         """Test rounding."""

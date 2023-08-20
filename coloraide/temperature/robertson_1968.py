@@ -133,7 +133,7 @@ class Robertson1968(CCT):
                 # Calculate the temperature, if the mired value is zero
                 # assume the maximum temperature of 100000K.
                 mired = alg.lerp(previous[0], current[0], factor)
-                temp = 1.0E6 / mired if mired > 0 else float('inf')
+                temp = 1.0E6 / mired if mired > 0 else alg.inf
 
                 # Interpolate the slope vectors
                 dup = 1 / previous_denom

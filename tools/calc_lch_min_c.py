@@ -82,8 +82,8 @@ def run(space, spline, tuning, mirror, res, dump):
     points2 = {}
     diff_over = 0
     diff_under = 0
-    min_h = float('inf')
-    max_h = float('-inf')
+    min_h = alg.inf
+    max_h = -alg.inf
     max_c = 0
     first = False
 

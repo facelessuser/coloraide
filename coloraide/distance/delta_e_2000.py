@@ -2,6 +2,7 @@
 from __future__ import annotations
 import math
 from ..distance import DeltaE
+from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -68,8 +69,8 @@ class DE2000(DeltaE):
         # Equation (7)
         hp1 = 0 if (ap1 == 0 and b1 == 0) else math.atan2(b1, ap1)
         hp2 = 0 if (ap2 == 0 and b2 == 0) else math.atan2(b2, ap2)
-        hp1 = math.degrees(hp1 + 2 * math.pi if hp1 < 0.0 else hp1)
-        hp2 = math.degrees(hp2 + 2 * math.pi if hp2 < 0.0 else hp2)
+        hp1 = math.degrees(hp1 + alg.tau if hp1 < 0.0 else hp1)
+        hp2 = math.degrees(hp2 + alg.tau if hp2 < 0.0 else hp2)
 
         # Equation (8)
         dl = l1 - l2

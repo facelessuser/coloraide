@@ -49,14 +49,14 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
     # Get the mean
     alpha = sums[-1]
     alpha_t = totals[-1]
-    sums[-1] = float('nan') if not alpha_t else alpha / alpha_t
+    sums[-1] = math.nan if not alpha_t else alpha / alpha_t
     alpha = sums[-1]
     if math.isnan(alpha) or alpha in (0.0, 1.0):
         alpha = 1.0
     for i in range(chan_count - 1):
         total = totals[i]
         if not total:
-            sums[i] = float('nan')
+            sums[i] = math.nan
         elif i == hue_index:
             sums[i] = math.degrees(math.atan2(sin / total, cos / total))
         else:

@@ -35,10 +35,13 @@ from .types import (
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
-NaN = float('nan')
-INF = float('inf')
+NaN = math.nan
+nan = NaN
+INF = math.inf
+inf = INF
 EPSILON = sys.float_info.epsilon
 TAU = math.pi * 2
+tau = TAU
 
 # Keeping for backwards compatibility
 prod = math.prod
@@ -152,7 +155,7 @@ def nth_root(n: float, p: float) -> float:
     """Calculate nth root while handling negative numbers."""
 
     if p == 0:  # pragma: no cover
-        return float('inf')
+        return inf
 
     if n == 0:
         # Can't do anything with zero
