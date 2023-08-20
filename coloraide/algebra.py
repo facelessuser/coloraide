@@ -23,7 +23,6 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
-import sys
 import math
 import operator
 import functools
@@ -36,12 +35,7 @@ from .types import (
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
 NaN = math.nan
-nan = NaN
 INF = math.inf
-inf = INF
-EPSILON = sys.float_info.epsilon
-TAU = math.pi * 2
-tau = TAU
 
 # Keeping for backwards compatibility
 prod = math.prod
@@ -155,7 +149,7 @@ def nth_root(n: float, p: float) -> float:
     """Calculate nth root while handling negative numbers."""
 
     if p == 0:  # pragma: no cover
-        return inf
+        return math.inf
 
     if n == 0:
         # Can't do anything with zero
@@ -1029,7 +1023,7 @@ def _matrix_chain_order(shapes: Sequence[Shape]) -> list[list[int]]:
     for d in range(1, n):
         for i in range(n - d):
             j = i + d
-            m[i][j] = INF
+            m[i][j] = math.inf
             for k in range(i, j):
                 cost = m[i][k] + m[k + 1][j] + p[i] * p[k + 1] * p[j + 1]
                 if cost < m[i][j]:

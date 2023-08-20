@@ -2,6 +2,7 @@
 import sys
 import argparse
 import os
+import math
 
 sys.path.insert(0, os.getcwd())
 
@@ -39,12 +40,12 @@ def main():
 def run(target, rgb, res, p):
     """Run."""
 
-    max_x = -alg.inf
-    max_y = -alg.inf
-    max_z = -alg.inf
-    min_x = alg.inf
-    min_y = alg.inf
-    min_z = alg.inf
+    max_x = -math.inf
+    max_y = -math.inf
+    max_z = -math.inf
+    min_x = math.inf
+    min_y = math.inf
+    min_z = math.inf
 
     print(' Current:', end="")
     template = '\r Current: {}'.ljust(30)

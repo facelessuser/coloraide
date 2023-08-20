@@ -40,7 +40,7 @@ This greatly simplifies things and makes it faster.
 """
 from __future__ import annotations
 import functools
-from . import algebra as alg
+import math
 from typing import Callable
 
 EPSILON = 1e-6
@@ -75,7 +75,7 @@ def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
     # Try Newtons method to see if we can find a suitable value
     x = 0.0
     t = 0.5
-    last = alg.NaN
+    last = math.nan
     for _ in range(MAX_ITER):
         # See how close we are to the desired `x`
         x = _bezier(t, a, b, c) - target

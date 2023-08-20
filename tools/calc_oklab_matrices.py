@@ -138,19 +138,6 @@ import tools.calc_xyz_transform as xyzt  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
 
-def pprint(value):
-    """Print the matrix."""
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
-
-
 float32 = alg.vectorize(lambda value: struct.unpack('f', struct.pack('f', value))[0])
 
 
@@ -209,14 +196,14 @@ LMS3_TO_OKLAB = alg.inv(OKLAB_TO_LMS3)
 
 if __name__ == "__main__":
     print('===== sRGB Linear -> lms =====')
-    pprint(SRGBL_TO_LMS)
+    alg.pprint(SRGBL_TO_LMS)
     print('===== lms -> sRGB Linear =====')
-    pprint(LMS_TO_SRGBL)
+    alg.pprint(LMS_TO_SRGBL)
     print('===== XYZ D65 Linear -> lms =====')
-    pprint(XYZ_TO_LMS)
+    alg.pprint(XYZ_TO_LMS)
     print('===== lms -> XYZ D65 =====')
-    pprint(LMS_TO_XYZ)
+    alg.pprint(LMS_TO_XYZ)
     print('===== lms ** 1/3 -> Oklab =====')
-    pprint(LMS3_TO_OKLAB)
+    alg.pprint(LMS3_TO_OKLAB)
     print('===== Oklab -> lms ** 1/3 =====')
-    pprint(OKLAB_TO_LMS3)
+    alg.pprint(OKLAB_TO_LMS3)

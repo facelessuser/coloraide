@@ -18,9 +18,9 @@ class Achromatic(metaclass=ABCMeta):
     def __init__(
         self,
         data: list[Vector] | None = None,
-        threshold_upper: float = alg.inf,
-        threshold_lower: float = alg.inf,
-        threshold_cutoff: float = alg.inf,
+        threshold_upper: float = math.inf,
+        threshold_lower: float = math.inf,
+        threshold_cutoff: float = math.inf,
         spline: str = 'linear',
         mirror: bool = False,
         **kwargs: Any

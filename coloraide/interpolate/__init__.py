@@ -699,7 +699,7 @@ def carryforward_convert(color: Color, space: str) -> None:  # pragma: no cover
     # Convert the color space
     color.convert(space, in_place=True)
     for i in carry:
-        color[i] = alg.NaN
+        color[i] = math.nan
 
 
 def interpolator(

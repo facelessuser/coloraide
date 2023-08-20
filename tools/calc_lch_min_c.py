@@ -6,6 +6,7 @@ Report the delta between our spline and the real world. Also note the highest ch
 import sys
 import argparse
 import os
+import math
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.getcwd())
@@ -82,8 +83,8 @@ def run(space, spline, tuning, mirror, res, dump):
     points2 = {}
     diff_over = 0
     diff_under = 0
-    min_h = alg.inf
-    max_h = -alg.inf
+    min_h = math.inf
+    max_h = -math.inf
     max_c = 0
     first = False
 

@@ -37,7 +37,7 @@ def norm_float(string: str) -> float:
     """Normalize a float value."""
 
     if string == "none":
-        return alg.NaN
+        return math.nan
     return float(string)
 
 

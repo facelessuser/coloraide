@@ -169,7 +169,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
     # Try to find a J such that the returned y matches the returned y of the L*
     attempt = 0
-    last = alg.inf
+    last = math.inf
     best = j
     while attempt < 16:
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)

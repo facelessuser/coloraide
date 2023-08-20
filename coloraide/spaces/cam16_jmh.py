@@ -190,7 +190,7 @@ class Achromatic(_Achromatic):
         data: list[Vector] | None = None,
         threshold_upper: float = 0.0,
         threshold_lower: float = 0.0,
-        threshold_cutoff: float = alg.inf,
+        threshold_cutoff: float = math.inf,
         spline: str = 'linear',
         mirror: bool = False,
         *,
@@ -463,7 +463,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
     # Calculate hue from red-green and yellow-blue components
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
-    h_rad = math.atan2(b, a) % alg.tau
+    h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)

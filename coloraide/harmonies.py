@@ -1,5 +1,6 @@
 """Color harmonies."""
 from __future__ import annotations
+import math
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 from .spaces import Cylindrical, Labish, Regular, Space  # noqa: F401
@@ -167,9 +168,9 @@ class Monochromatic(Harmony):
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
         mask = ['hue', 'alpha'] if is_cyl else ['alpha']
-        w = color1.new('xyz-d65', WHITE, alg.NaN)
+        w = color1.new('xyz-d65', WHITE, math.nan)
         w.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
-        b = color1.new('xyz-d65', BLACK, alg.NaN)
+        b = color1.new('xyz-d65', BLACK, math.nan)
         b.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
 
         # Calculate how many tints and shades we need to generate

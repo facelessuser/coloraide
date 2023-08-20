@@ -178,7 +178,7 @@ class Ohno2013(CCT):
         # Each iteration we narrow the range until we are close enough
         for _ in range(iterations):
             table.clear()
-            lowest = alg.inf
+            lowest = math.inf
             index = 0
 
             # Generate the Planckian table while tracking lowest distance

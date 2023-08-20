@@ -70,7 +70,7 @@ class InterpolatorLinear(Interpolator):
 
             # Both values are undefined, so return undefined
             if math.isnan(a) and math.isnan(b):
-                value = alg.NaN
+                value = math.nan
 
             # One channel is undefined, take the one that is not
             elif math.isnan(a):

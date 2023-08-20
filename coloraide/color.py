@@ -236,7 +236,7 @@ class Color(metaclass=ColorMeta):
                 num_channels = len(space_class.CHANNELS)
                 num_data = len(data)
                 if num_data < num_channels:
-                    data = list(data) + [alg.NaN] * (num_channels - num_data)
+                    data = list(data) + [math.nan] * (num_channels - num_data)
                 coords = [alg.clamp(float(v), *c.limit) for c, v in zipl(space_class.CHANNELS, data)]
                 coords.append(alg.clamp(float(alpha), *space_class.channels[-1].limit))
                 obj = space_class, coords
@@ -523,7 +523,7 @@ class Color(metaclass=ColorMeta):
         self[:-1] = self.coords(nans=False)
         if nans and hasattr(self._space, 'hue_index') and self.is_achromatic():
             i = self._space.hue_index()
-            self[i] = alg.NaN
+            self[i] = math.nan
         alpha = self[-1]
         self[-1] = 0.0 if math.isnan(alpha) else alpha
         return self
@@ -593,7 +593,7 @@ class Color(metaclass=ColorMeta):
 
         # Normalize achromatic colors, but skip if we internally don't need this.
         if norm and hasattr(this._space, 'hue_index') and this.is_achromatic():
-            this[this._space.hue_index()] = alg.NaN
+            this[this._space.hue_index()] = math.nan
 
         return this
 
@@ -939,7 +939,7 @@ class Color(metaclass=ColorMeta):
         )
         for name in self._space.channels:
             if (not invert and name in masks) or (invert and name not in masks):
-                this[name] = alg.NaN
+                this[name] = math.nan
         return this
 
     def mix(

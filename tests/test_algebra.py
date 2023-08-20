@@ -1026,36 +1026,36 @@ class TestAlgebra(unittest.TestCase):
         """Test no `NaN`."""
 
         with pytest.warns(DeprecationWarning):
-            self.assertEqual(alg.no_nan(alg.NaN), 0)
-            self.assertEqual(alg.no_nans([0, 1, 2, alg.NaN]), [0, 1, 2, 0])
+            self.assertEqual(alg.no_nan(math.nan), 0)
+            self.assertEqual(alg.no_nans([0, 1, 2, math.nan]), [0, 1, 2, 0])
 
     def test_is_nan(self):
         """Test if is `NaN`."""
 
         with pytest.warns(DeprecationWarning):
-            self.assertTrue(alg.is_nan(alg.NaN))
-            self.assertTrue(alg.NaN)
+            self.assertTrue(alg.is_nan(math.nan))
+            self.assertTrue(math.nan)
             self.assertFalse(alg.is_nan(3))
             self.assertFalse(alg.is_nan(0))
 
     def test_isnan(self):
         """Test if object has `NaN`."""
 
-        self.assertTrue(alg.isnan(alg.NaN))
-        self.assertEqual(alg.isnan([2, alg.NaN, 1]), [False, True, False])
-        self.assertEqual(alg.isnan([[2, alg.NaN], [alg.NaN, 1]]), [[False, True], [True, False]])
-        self.assertTrue(alg.isnan(alg.NaN, dims=alg.SC))
-        self.assertEqual(alg.isnan([2, alg.NaN, 1], dims=alg.D1), [False, True, False])
-        self.assertEqual(alg.isnan([[2, alg.NaN], [alg.NaN, 1]], dims=alg.D2), [[False, True], [True, False]])
+        self.assertTrue(alg.isnan(math.nan))
+        self.assertEqual(alg.isnan([2, math.nan, 1]), [False, True, False])
+        self.assertEqual(alg.isnan([[2, math.nan], [math.nan, 1]]), [[False, True], [True, False]])
+        self.assertTrue(alg.isnan(math.nan, dims=alg.SC))
+        self.assertEqual(alg.isnan([2, math.nan, 1], dims=alg.D1), [False, True, False])
+        self.assertEqual(alg.isnan([[2, math.nan], [math.nan, 1]], dims=alg.D2), [[False, True], [True, False]])
         self.assertEqual(alg.isnan(
-            [[[2, alg.NaN], [alg.NaN, 1]], [[2, alg.NaN], [alg.NaN, 1]]]),
+            [[[2, math.nan], [math.nan, 1]], [[2, math.nan], [math.nan, 1]]]),
             [[[False, True], [True, False]], [[False, True], [True, False]]]
         )
 
     def test_round_inf(self):
         """Test rounding of infinity."""
 
-        self.assertEqual(alg.round_to(alg.inf, 2), alg.inf)
+        self.assertEqual(alg.round_to(math.inf, 2), math.inf)
 
     def test_round(self):
         """Test rounding."""
