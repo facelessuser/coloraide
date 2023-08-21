@@ -26,7 +26,7 @@ from __future__ import annotations
 import math
 import operator
 import functools
-from itertools import zip_longest as zipl
+import itertools as it
 from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, VectorLike, Array, Matrix,
@@ -699,7 +699,7 @@ def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
     s = 0.0
-    for x, y in zipl(a, b):
+    for x, y in it.zip_longest(a, b):
         s += x * y
     return s
 
@@ -984,7 +984,7 @@ def dot(
             return vdot(a, b)  # type: ignore[arg-type]
         elif dims_b == 2:
             # Dot product of vector and a matrix
-            return [vdot(a, col) for col in zipl(*b)]  # type: ignore[arg-type, misc]
+            return [vdot(a, col) for col in it.zip_longest(*b)]  # type: ignore[arg-type, misc]
 
     elif dims_a == 2:
         if dims_b == 1:
@@ -992,7 +992,9 @@ def dot(
             return [vdot(row, b) for row in a]  # type: ignore[arg-type, union-attr]
         elif dims_b == 2:
             # Dot product of two matrices
-            return [[vdot(row, col) for col in zipl(*b)] for row in a]  # type: ignore[arg-type, misc, union-attr]
+            return [
+                [vdot(row, col) for col in it.zip_longest(*b)] for row in a
+            ]  # type: ignore[arg-type, misc, union-attr]
 
     # Trying to dot a number with a vector or a matrix, so just multiply
     return multiply(a, b, dims=(dims_a, dims_b))
@@ -1274,7 +1276,7 @@ class _SimpleBroadcast:
         elif len(b) == 1:
             b = [b[0]] * len(a)
 
-        yield from zipl(a, b)
+        yield from it.zip_longest(a, b)
 
     def broadcast(
         self,
@@ -1301,7 +1303,7 @@ class _SimpleBroadcast:
                 yield from self.vector_broadcast(a, b)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Broadcast two 2-D matrices
-                for ra, rb in zipl(a, b):  # type: ignore[arg-type]
+                for ra, rb in it.zip_longest(a, b):  # type: ignore[arg-type]
                     yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
             else:
                 yield a, b  # type: ignore[misc]
@@ -1406,7 +1408,7 @@ class Broadcast:
     def _init(self) -> None:
         """Setup main iterator."""
 
-        self._iter = self.iters[0] if self.simple else zipl(*self.iters)
+        self._iter = self.iters[0] if self.simple else it.zip_longest(*self.iters)
 
     def reset(self) -> None:
         """Reset iterator."""
@@ -1570,7 +1572,7 @@ class vectorize2:
         elif len(b) == 1:
             b = [b[0]] * len(a)
 
-        return [self.func(x, y, **kwargs) for x, y in zipl(a, b)]
+        return [self.func(x, y, **kwargs) for x, y in it.zip_longest(a, b)]
 
     def __call__(
         self,
@@ -1640,7 +1642,9 @@ class vectorize2:
                 return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
-                return [self._vector_apply(ra, rb, **kwargs) for ra, rb in zipl(a, b)]  # type: ignore[arg-type]
+                return [
+                    self._vector_apply(ra, rb, **kwargs) for ra, rb in it.zip_longest(a, b)
+                ]  # type: ignore[arg-type]
             return self.func(a, b, **kwargs)
 
         # Inputs containing a scalar on either side
@@ -1978,24 +1982,15 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
-def _flatiter(array: ArrayLike, s: Shape) -> Iterator[float]:
-    """Iterate and return values based on shape."""
-
-    nested = len(s) > 1
-    for a in array:
-        if nested:
-            yield from _flatiter(a, s[1:])  # type: ignore[arg-type]
-        else:
-            yield a  # type: ignore[misc]
-
-
-def flatiter(array: float | ArrayLike) -> Iterator[float]:
+def flatiter(array: float | Array) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    if not isinstance(array, Sequence):
-        yield array
-    else:
-        yield from _flatiter(array, shape(array))
+    s = shape(array)
+    for indices in it.product(*(range(d) for d in s)):
+        m = array
+        for i in indices:
+            m = m[i]
+        yield m
 
 
 def ravel(array: float | ArrayLike) -> Vector:
@@ -2843,7 +2838,7 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
 
     # Iterate the arrays returning the content per second axis
     m = []  # type: list[Any]
-    for data in zipl(*[_hstack_extract(a, s) for a, s in zipl(arrs, shapes) if s != (0,)]):
+    for data in it.zip_longest(*[_hstack_extract(a, s) for a, s in it.zip_longest(arrs, shapes) if s != (0,)]):
         for d in data:
             m.extend(d)
 
@@ -2893,7 +2888,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
         second = b
 
     # Perform the actual inner product
-    m = [[sum([x * y for x, y in zipl(r1, r2)]) for r2 in second] for r1 in first]
+    m = [[sum([x * y for x, y in it.zip_longest(r1, r2)]) for r2 in second] for r1 in first]
     new_shape = shape_a[:-1] + shape_b[:-1]
 
     # Shape the data.
