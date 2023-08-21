@@ -858,6 +858,10 @@ class TestAlgebra(unittest.TestCase):
             [[[], [], []], [[], [], []]]
         )
 
+        self.assertEqual(alg.transpose([1, 2, 3, 4]), [1, 2, 3, 4])
+
+        self.assertEqual(alg.transpose(1), 1)
+
     def test_arange(self):
         """Test `arange`."""
 

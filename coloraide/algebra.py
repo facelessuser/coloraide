@@ -1982,10 +1982,12 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
-def ndindex(*s: Shape) -> Iterator[tuple[int, ...]]:
+def ndindex(*s: ShapeLike) -> Iterator[tuple[int, ...]]:
     """Iterate dimensions."""
 
-    yield from it.product(*(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s)))
+    yield from it.product(
+        *(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s))  # type: ignore[call-overload]
+    )
 
 
 def flatiter(array: float | ArrayLike) -> Iterator[float]:
@@ -2038,6 +2040,11 @@ def arange(
 
 
 @overload
+def transpose(array: float) -> float:
+    ...
+
+
+@overload
 def transpose(array: VectorLike) -> Vector:
     ...
 
@@ -2047,7 +2054,7 @@ def transpose(array: Matrix) -> Matrix:
     ...
 
 
-def transpose(array: ArrayLike) -> Array:
+def transpose(array: ArrayLike | float) -> Array | float:
     """
     A simple transpose of a matrix.
 
@@ -2056,6 +2063,9 @@ def transpose(array: ArrayLike) -> Array:
     """
 
     s = tuple(reversed(shape(array)))
+    if not s:
+        return array  # type: ignore[return-value]
+
     if s and s[0] == 0:
         s = s[1:] + (0,)
         total = prod(s[:-1])
