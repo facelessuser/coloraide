@@ -23,21 +23,6 @@ RGB_TO_XYZ = [
     [1.86297, 11.462, 91.2367]
 ]
 
-
-def pprint(value):
-    """Print the matrix."""
-
-    print('[', end='')
-    first = True
-    for v in value:
-        if first:
-            first = False
-        else:
-            print(',\n ', end='')
-        print(v, end='')
-    print(']')
-
-
 ####################
 # General matrices
 ####################
@@ -45,16 +30,16 @@ T = alg.dot(M, alg.divide(RGB_TO_XYZ, 100))
 INV_T = alg.inv(T)
 
 print('===== LRGB to LMS =====')
-pprint(T)
+alg.pprint(T)
 
 print('===== LMS to LRGB =====')
-pprint(INV_T)
+alg.pprint(INV_T)
 
 print('===== XYZ to LMS =====')
-pprint(M)
+alg.pprint(M)
 
 print('===== LMS to XYZ =====')
-pprint(alg.inv(M))
+alg.pprint(alg.inv(M))
 
 ####################
 # Viénot matrices
@@ -69,7 +54,7 @@ q1 = (lb * sw - lw * sb) / (mb * sw - mw * sb)
 q2 = (lb * mw - lw * mb) / (sb * mw - sw * mb)
 sp = [[0.0, q1, q2], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 m = alg.multi_dot([INV_T, sp, T])
-pprint(m)
+alg.pprint(m)
 
 print('===== VIENOT DEUTAN =====')
 white = Color('white').convert('srgb-linear')
@@ -80,7 +65,7 @@ q1 = (mb * sw - mw * sb) / (lb * sw - lw * sb)
 q2 = (mb * lw - mw * lb) / (sb * lw - sw * lb)
 sd = [[1.0, 0.0, 0.0], [q1, 0.0, q2], [0.0, 0.0, 1.0]]
 m = alg.multi_dot([INV_T, sd, T])
-pprint(m)
+alg.pprint(m)
 
 print('===== VIENOT TRITAN =====')
 white = Color('white').convert('srgb-linear')
@@ -91,7 +76,7 @@ q1 = (sb * mw - sw * mb) / (lb * mw - lw * mb)
 q2 = (sb * lw - sw * lb) / (mb * lw - mw * lb)
 st = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [q1, q2, 0.0]]
 m = alg.multi_dot([INV_T, st, T])
-pprint(m)
+alg.pprint(m)
 
 ####################
 # Brettel matrices
@@ -138,8 +123,8 @@ for axis, name, wings in zip(AXIS, NAMES, WINGS):
 
     print('===== BRETTEL {} ====='.format(name))
     print('--- Wing 1 (LMS to Linear sRGB included) ---')
-    pprint(alg.dot(INV_T, m1))
+    alg.pprint(alg.dot(INV_T, m1))
     print('--- Wing 2 (LMS to Linear sRGB included) ---')
-    pprint(alg.dot(INV_T, m2))
+    alg.pprint(alg.dot(INV_T, m2))
     print('--- Separating axis ---')
     print(va)
