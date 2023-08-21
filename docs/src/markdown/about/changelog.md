@@ -1,8 +1,9 @@
 # Changelog
 
-## 2.8.1
+## 2.9
 
 -   **NEW**: Add `HWBish` mixin class.
+-   **NEW**: Deprecate `algebra.no_nan()`, `algebra.no_nans()`, and `algebra.is_nan()`.
 -   **FIX**: Fix RLAB conversion.
 -   **ENHANCE**: Tweaks to some matrix calculations.
 -   **ENHANCE**: Various performance related tweaks.
