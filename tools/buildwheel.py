@@ -11,8 +11,8 @@ import hashlib
 
 # Notebook specific wheels
 NOTEBOOK_WHEELS = [
-    "https://files.pythonhosted.org/packages/6e/33/1ae0f71395e618d6140fbbc9587cc3156591f748226075e0f7d6f9176522/Markdown-3.3.4-py3-none-any.whl",  # noqa: E501
-    "https://files.pythonhosted.org/packages/34/30/a16f0671c64c996726c48811b0d2c6c97f8d12926c9ad1c34e21a3d7155b/pymdown_extensions-9.10-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/1a/b5/228c1cdcfe138f1a8e01ab1b54284c8b83735476cb22b6ba251656ed13ad/Markdown-3.4.4-py3-none-any.whl",  # noqa: E501
+    "https://files.pythonhosted.org/packages/f5/55/740e1c6f1d3a598b6d2d3afc9691d154596f1b7a50f7a7288526b8818529/pymdown_extensions-10.1-py3-none-any.whl",  # noqa: E501
 ]
 
 NOTEBOOK_PYODIDE_PKGS = [
@@ -21,7 +21,7 @@ NOTEBOOK_PYODIDE_PKGS = [
 
 # Wheels required in addition to the current project
 PLAYGROUND_WHEELS = [
-    "https://files.pythonhosted.org/packages/5c/8e/1d9017950034297fffa336c72e693a5b51bbf85141b24a763882cf1977b5/Pygments-2.12.0-py3-none-any.whl"  # noqa: E501
+    "https://files.pythonhosted.org/packages/43/88/29adf0b44ba6ac85045e63734ae0997d3c58d8b1a91c914d240828d0d73d/Pygments-2.16.1-py3-none-any.whl"  # noqa: E501
 ]
 
 PLAYGROUND_PYODIDE_PKGS = []
