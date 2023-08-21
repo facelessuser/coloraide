@@ -993,8 +993,8 @@ def dot(
         elif dims_b == 2:
             # Dot product of two matrices
             return [
-                [vdot(row, col) for col in it.zip_longest(*b)] for row in a
-            ]  # type: ignore[arg-type, misc, union-attr]
+                [vdot(row, col) for col in it.zip_longest(*b)] for row in a  # type: ignore[arg-type, misc, union-attr]
+            ]
 
     # Trying to dot a number with a vector or a matrix, so just multiply
     return multiply(a, b, dims=(dims_a, dims_b))
@@ -1643,8 +1643,8 @@ class vectorize2:
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
                 return [
-                    self._vector_apply(ra, rb, **kwargs) for ra, rb in it.zip_longest(a, b)
-                ]  # type: ignore[arg-type]
+                    self._vector_apply(ra, rb, **kwargs) for ra, rb in it.zip_longest(a, b)  # type: ignore[arg-type]
+                ]
             return self.func(a, b, **kwargs)
 
         # Inputs containing a scalar on either side
@@ -1982,12 +1982,11 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
-def flatiter(array: float | Array) -> Iterator[float]:
+def flatiter(array: float | ArrayLike) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    s = shape(array)
-    for indices in it.product(*(range(d) for d in s)):
-        m = array
+    for indices in it.product(*(range(d) for d in shape(array))):
+        m = array  # type: Any
         for i in indices:
             m = m[i]
         yield m
@@ -2140,24 +2139,12 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
 
     # Calculate data sizes
     dims = len(new_shape)
-    if not empty:
-        length = new_shape[-1]
-        count = int(total // length)
-    else:
-        length = 0
-        count = total
-
-    # Initialize indexes so we can properly write our data
-    idx = [0] * (dims - 1)
 
     # Create an iterator to traverse the data
-    if len(current_shape) > 1:
-        data = flatiter(array)
-    else:
-        data = iter(array)  # type: ignore[arg-type]
+    data = flatiter(array) if len(current_shape) > 1 else iter(array)  # type: ignore[arg-type]
 
     # Build the new array
-    for i in range(count):
+    for idx in it.product(*(range(n) for n in new_shape if n)):
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
         t = m  # type: Any
@@ -2168,17 +2155,8 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
             t = t[idx[d]]
 
         # Create the final dimension, writing all the data
-        t[:] = [next(data) for _ in range(length)]
-
-        # Update the current indexes if we aren't done copying data.
-        if i < (count - 1):
-            for x in range(-1, -(dims), -1):
-                if idx[x] + 1 == new_shape[x - 1]:
-                    idx[x] = 0
-                    x += -1
-                else:
-                    idx[x] += 1
-                    break
+        if not empty:
+            t.append(next(data))
 
     return m  # type: ignore[no-any-return]
 
