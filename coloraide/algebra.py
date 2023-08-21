@@ -1982,10 +1982,16 @@ def zeros(array_shape: int | ShapeLike) -> Array:
     return full(array_shape, 0.0)
 
 
+def ndindex(*s: Shape) -> Iterator[tuple[int, ...]]:
+    """Iterate dimensions."""
+
+    yield from it.product(*(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s)))
+
+
 def flatiter(array: float | ArrayLike) -> Iterator[float]:
     """Traverse an array returning values."""
 
-    for indices in it.product(*(range(d) for d in shape(array))):
+    for indices in ndindex(shape(array)):
         m = array  # type: Any
         for i in indices:
             m = m[i]
@@ -2144,7 +2150,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
     data = flatiter(array) if len(current_shape) > 1 else iter(array)  # type: ignore[arg-type]
 
     # Build the new array
-    for idx in it.product(*(range(n) for n in new_shape if n)):
+    for idx in ndindex(new_shape[:-1] if new_shape and not new_shape[-1] else new_shape):
         # Navigate to the proper index to start writing data.
         # If the dimension hasn't been created yet, create it.
         t = m  # type: Any
