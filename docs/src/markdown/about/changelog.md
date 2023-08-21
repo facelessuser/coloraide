@@ -4,6 +4,7 @@
 
 -   **FIX**: Fix RLAB conversion.
 -   **ENHANCE**: Tweaks to some matrix calculations.
+-   **ENHANCE**: Various performance related tweaks.
 
 ## 2.8
 
