@@ -219,11 +219,11 @@ import plotly.graph_objects as go
 import math
 import plotly.io as io
 from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, Cylindrical, Labish, LChish, Regular
+from coloraide.spaces import HSLish, HSVish, HWBish, Cylindrical, Labish, LChish, Regular
 from coloraide import algebra as alg
 from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl
 
-FORCE_OWN_GAMUT = {'hwb', 'ryb', 'ryb-biased'}
+FORCE_OWN_GAMUT = {ryb', 'ryb-biased'}
 CYL_GAMUT = {'hpluv',}
 
 
@@ -316,8 +316,9 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
     """
 
     cs = ColorCyl.CS_MAP[space]
-    if isinstance(cs, (HSVish, HSLish)):
-        space_type = 'hslish/hsvish'
+    is_hwbish = isinstance(cs, HWBish)
+    if is_hwbish or isinstance(cs, (HSVish, HSLish)):
+        space_type = 'rgb_cyl'
     else:
         space_type = space
     gspace = ColorCyl.CS_MAP[gamut]
@@ -329,7 +330,7 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
     # red-ish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
     # rings very close to zero radius, but not zero radius. The mesh will still connect all the points near the center,
     # but it will be too small to see.
-    start, end = 1.0 * factor, (1e-6 if space == 'hwb' and location == 'bottom' else 0.0)
+    start, end = 1.0 * factor, (1e-6 if is_hwbish and location == 'bottom' else 0.0)
 
     # Render the two halves of the disc
     hue_start, hue_end = 0, 360
@@ -358,15 +359,15 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
             v.append(b)
             c.convert(space, norm=False, in_place=True)
 
-            # HSL and HSV spaces
-            if space_type == 'hslish/hsvish':
+            # HSL, HSV. and HWB spaces
+            if space_type == 'rgb_cyl':
                 hue, saturation, lightness = c._space.indexes()
                 a, b = alg.polar_to_rect(c[saturation], c[hue])
                 x.append(a)
                 y.append(b)
                 z.append(c[lightness])
 
-            # HWB
+            # Any other generic cylindrical space
             else:
                 hue = c._space.hue_index()
                 a, b = alg.polar_to_rect(c[1], c[hue])
@@ -414,11 +415,12 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
     is_hslish = isinstance(target, HSLish)
-    is_hslish_hsvish = is_hslish or isinstance(target, HSVish)
+    is_hwbish = isinstance(target, HWBish)
+    is_hsvish = isinstance(target, HSVish)
 
     # Determine the gamut mapping space to use.
     # Some spaces cannot be generalized (HWB and HPLuv for instance).
-    if space in FORCE_OWN_GAMUT:
+    if is_hwbish or space in FORCE_OWN_GAMUT:
         ColorCyl = Color
         gamut_space = space
     elif gamut in CYL_GAMUT:
@@ -463,15 +465,15 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
                 y.append(b)
                 z.append(c[light])
 
-            # HSL and HSV spaces
-            elif is_hslish_hsvish:
+            # HSL, HSV, or HWB spaces
+            elif is_hslish or is_hsvish or is_hwbish:
                 hue, sat, light = c._space.names()
                 a, b = alg.polar_to_rect(c[sat], c[hue])
                 x.append(a)
                 y.append(b)
                 z.append(c[light])
 
-            # HWB or any other cylindrical space that doesn't fit in the categories above.
+            # Any other generic cylindrical space that doesn't fit in the categories above.
             elif is_cyl:
                 hue = c._space.hue_index()
                 a, b = alg.polar_to_rect(c[1], c[hue])
@@ -522,7 +524,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if space in ('hwb', 'hpluv'):
+    if is_hwbish or space in ('hpluv',):
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
 
     if is_cyl and not is_labish and not is_lchish:

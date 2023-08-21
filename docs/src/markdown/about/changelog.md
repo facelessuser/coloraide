@@ -2,6 +2,7 @@
 
 ## 2.8.1
 
+-   **NEW**: Add `HWBish` mixin class.
 -   **FIX**: Fix RLAB conversion.
 -   **ENHANCE**: Tweaks to some matrix calculations.
 -   **ENHANCE**: Various performance related tweaks.

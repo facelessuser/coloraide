@@ -1,6 +1,6 @@
 """HWB class."""
 from __future__ import annotations
-from ...spaces import Space, Cylindrical
+from ...spaces import Space, HWBish
 from ...cat import WHITES
 from ... import util
 from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
@@ -28,7 +28,7 @@ def hsv_to_hwb(hsv: Vector) -> Vector:
     return [util.constrain_hue(h), v * (1 - s), 1 - v]
 
 
-class HWB(Cylindrical, Space):
+class HWB(HWBish, Space):
     """HWB class."""
 
     BASE = "hsv"

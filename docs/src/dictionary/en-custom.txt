@@ -84,6 +84,7 @@ HSV
 HSVish
 HUSL
 HWB
+HWBish
 Horner
 HyAB
 Hz

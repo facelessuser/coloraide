@@ -72,6 +72,20 @@ class HSVish(Cylindrical):
         return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
 
 
+class HWBish(Cylindrical):
+    """HWB-ish space."""
+
+    def names(self) -> tuple[str, ...]:
+        """Return HWB-ish names in order H W B."""
+
+        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+
+    def indexes(self) -> list[int]:
+        """Return the index of HWB-ish channels."""
+
+        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+
+
 class Labish:
     """Lab-ish color spaces."""
 

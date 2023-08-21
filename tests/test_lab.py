@@ -93,7 +93,7 @@ class TestLabProperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('color(--lab 90% 50 -20 / 1)')._space.names(), ('l', 'a', 'b'))
 
     def test_indexes(self):
-        """Test LCh-ish names."""
+        """Test LCh-ish indexes."""
 
         self.assertEqual(Color('color(--lab 90% 50 -20 / 1)')._space.indexes(), [0, 1, 2])
 

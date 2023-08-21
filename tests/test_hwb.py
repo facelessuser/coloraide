@@ -85,6 +85,16 @@ class TestHWBSerialize(util.ColorAssertsPyTest):
 class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
     """Test HWB."""
 
+    def test_names(self):
+        """Test HWB-ish names."""
+
+        self.assertEqual(Color('color(--hwb 120 50% 90% / 1)')._space.names(), ('h', 'w', 'b'))
+
+    def test_indexes(self):
+        """Test HWB-ish indexes."""
+
+        self.assertEqual(Color('color(--hwb 120 50% 90% / 1)')._space.indexes(), [0, 1, 2])
+
     def test_hue(self):
         """Test `hue`."""
 
