@@ -322,6 +322,8 @@ Properties             | Defaults               | Description
 `CONTRAST`             | `#!py "wcag21"`        | Default contrast algorithm.
 `AVERAGE`              | `#!py "average"`       | Default color space for averaging.
 `CCT`                  | `#!py "robertson-1968` | Default CCT method.
+`POWERLESS`            | `#!py False`           | Experimental option that controls default powerless interpolation behavior. If `#!py True`, if a color is considered achromatic, but has an explicit hue, it will be treated as powerless during interpolation.
+`CARRYFORWARD`         | `#!py False`           | Experimental option that controls default carrying-forward behavior during interpolation. If `#!py True`, supported, undefined values will be carried over to the interpolating color space after conversion.
 
 ### Plugins
 

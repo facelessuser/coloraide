@@ -631,75 +631,92 @@ def normalize_hue(
     return color2, offset
 
 
-def carryforward_convert(color: Color, space: str) -> None:  # pragma: no cover
+def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bool) -> None:  # pragma: no cover
     """Carry forward undefined values during conversion."""
 
-    cs1 = color._space
-    cs2 = color.CS_MAP[space]
-    channels = {'r': False, 'g': False, 'b': False, 'h': False, 'c': False, 'l': False, 'v': False}
     carry = []
+    needs_conversion = space != color.space()
 
-    # Gather undefined channels
-    if isinstance(cs1, RGBish):
-        for i, name in zip(cs1.indexes(), ('r', 'g', 'b')):
-            if math.isnan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, LChish):
-        for i, name in zip(cs1.indexes(), ('l', 'c', 'h')):
-            if math.isnan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, Labish):
-        if math.isnan(color[cs1.indexes()[0]]):
-            channels['l'] = True
-    elif isinstance(cs1, HSLish):
-        for i, name in zip(cs1.indexes(), ('h', 'c', 'l')):
-            if math.isnan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, HSVish):
-        for i, name in zip(cs1.indexes(), ('h', 'c', 'v')):
-            if math.isnan(color[i]):
-                channels[name] = True
-    elif isinstance(cs1, Cylindrical):
-        if math.isnan(color[cs1.hue_index()]):
-            channels['h'] = True
+    # Only look to "carry forward" if we have undefined channels
+    if needs_conversion and any(math.isnan(c) for c in color):  # type: ignore[attr-defined]
+        cs1 = color._space
+        cs2 = color.CS_MAP[space]
+        channels = {
+            'R': False, 'G': False, 'B': False, 'H': False, 'C': False,
+            'L': False, 'V': False, 'a': False, 'b': False
+        }
 
-    # Carry alpha forward if undefined
-    if math.isnan(color[-1]):
-        carry.append(-1)
+        # Gather undefined channels
+        if isinstance(cs1, RGBish):
+            for i, name in zip(cs1.indexes(), ('R', 'G', 'B')):
+                if math.isnan(color[i]):
+                    channels[name] = True
+        elif isinstance(cs1, LChish):
+            for i, name in zip(cs1.indexes(), ('L', 'C', 'H')):
+                if math.isnan(color[i]):
+                    channels[name] = True
+        elif isinstance(cs1, Labish):
+            for i, name in zip(cs1.indexes(), ('L', 'a', 'b')):
+                if math.isnan(color[i]):
+                    channels[name] = True
+        elif isinstance(cs1, HSLish):
+            for i, name in zip(cs1.indexes(), ('H', 'C', 'L')):
+                if math.isnan(color[i]):
+                    channels[name] = True
+        elif isinstance(cs1, HSVish):
+            for i, name in zip(cs1.indexes(), ('H', 'C', 'V')):
+                if math.isnan(color[i]):
+                    channels[name] = True
+        elif isinstance(cs1, Cylindrical):
+            if math.isnan(color[cs1.hue_index()]):
+                channels['H'] = True
 
-    # Channels that need to be carried forward
-    if isinstance(cs2, RGBish):
-        indexes = cs2.indexes()
-        for e, name in enumerate(('r', 'g', 'b')):
-            if channels[name]:
-                carry.append(indexes[e])
-    elif isinstance(cs2, Labish):
-        indexes = cs2.indexes()
-        if channels['l']:
-            carry.append(indexes[0])
-    elif isinstance(cs2, LChish):
-        indexes = cs2.indexes()
-        for e, name in enumerate(('l', 'c', 'h')):
-            if channels[name]:
-                carry.append(indexes[e])
-    elif isinstance(cs2, HSLish):
-        indexes = cs2.indexes()
-        for e, name in enumerate(('h', 'c', 'l')):
-            if channels[name]:
-                carry.append(indexes[e])
-    elif isinstance(cs2, HSVish):
-        indexes = cs2.indexes()
-        for e, name in enumerate(('h', 'c', 'v')):
-            if channels[name]:
-                carry.append(indexes[e])
-    elif isinstance(cs2, Cylindrical):
-        if channels['h']:
-            carry.append(cs2.hue_index())
+        # Carry alpha forward if undefined
+        if math.isnan(color[-1]):
+            carry.append(-1)
+
+        # Channels that need to be carried forward
+        if isinstance(cs2, RGBish):
+            indexes = cs2.indexes()
+            for e, name in enumerate(('R', 'G', 'B')):
+                if channels[name]:
+                    carry.append(indexes[e])
+        elif isinstance(cs2, Labish):
+            indexes = cs2.indexes()
+            for e, name in enumerate(('L', 'a', 'b')):
+                if channels[name]:
+                    carry.append(indexes[e])
+        elif isinstance(cs2, LChish):
+            indexes = cs2.indexes()
+            for e, name in enumerate(('L', 'C', 'H')):
+                if channels[name]:
+                    carry.append(indexes[e])
+        elif isinstance(cs2, HSLish):
+            indexes = cs2.indexes()
+            for e, name in enumerate(('H', 'C', 'L')):
+                if channels[name]:
+                    carry.append(indexes[e])
+        elif isinstance(cs2, HSVish):
+            indexes = cs2.indexes()
+            for e, name in enumerate(('H', 'C', 'V')):
+                if channels[name]:
+                    carry.append(indexes[e])
+        elif hue_index >= 0:
+            if channels['H']:
+                carry.append(cs2.hue_index())  # type: ignore[attr-defined]
 
     # Convert the color space
-    color.convert(space, in_place=True)
-    for i in carry:
-        color[i] = math.nan
+    if needs_conversion:
+        color.convert(space, in_place=True)
+
+        # Carry the undefined values forward
+        for i in carry:
+            color[i] = math.nan
+
+    # Normalize hue if cylindrical and achromatic
+    # Carry forward is not needed as nothing was lost through conversion
+    elif powerless and hue_index >= 0 and color.is_achromatic():
+        color[hue_index] = math.nan
 
 
 def interpolator(
@@ -714,6 +731,8 @@ def interpolator(
     extrapolate: bool,
     domain: list[float] | None = None,
     padding: float | tuple[float, float] | None = None,
+    carryforward: bool = False,
+    powerless: bool = False,
     **kwargs: Any
 ) -> Interpolator:
     """Get desired blend mode."""
@@ -741,16 +760,18 @@ def interpolator(
         out_space = space
 
     # Adjust to space
-    if space != current.space():
-        if kwargs.get('_carryforward', False):  # pragma: no cover
-            carryforward_convert(current, space)
-        else:
-            current.convert(space, in_place=True)
-
-    offset = 0.0
-    hue_index = current._space.hue_index() if isinstance(current._space, Cylindrical) else -1
+    cs = current.CS_MAP[space]
+    is_cyl = isinstance(cs, Cylindrical)
+    hue_index = cs.hue_index() if is_cyl else -1  # type: ignore[attr-defined]
+    if carryforward:
+        carryforward_convert(current, space, hue_index, powerless)
+    elif space != current.space():
+        current.convert(space, in_place=True)
+    elif powerless and is_cyl and current.is_achromatic():
+        current[hue_index] = math.nan
 
     # Normalize hue
+    offset = 0.0
     norm_coords = current[:]
     fallback = None
     if hue_index >= 0:
@@ -780,11 +801,12 @@ def interpolator(
             stops[i] = None
 
         # Adjust color to space
-        if space != color.space():
-            if kwargs.get('_carryforward', False):  # pragma: no cover
-                carryforward_convert(color, space)
-            else:
-                color.convert(space, in_place=True)
+        if carryforward:
+            carryforward_convert(color, space, hue_index, powerless)
+        elif space != color.space():
+            color.convert(space, in_place=True)
+        elif powerless and is_cyl and color.is_achromatic():
+            color[hue_index] = math.nan
 
         # Normalize the hue
         norm_coords = color[:]

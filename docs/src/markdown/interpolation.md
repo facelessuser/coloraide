@@ -956,3 +956,105 @@ color.mix(color2, space="hsl")
 Technically, any channel can be set to `NaN`. And there are various ways to do this. The
 [Color Manipulation documentation](./manipulation.md#undefined-values) goes into the details of how these `Nan` values
 naturally occur and the various ways a user and manipulate them.
+
+## Carrying-Forward
+
+/// warning | Experimental
+This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
+or feature could be removed entirely. Use at your own risk.
+///
+
+CSS introduces the concept of carrying-forward undefined channels of like color spaces during conversion to the
+interpolating color space. The idea is to provide a sane handling to users who specified undefined channels for
+interpolation, but did not account for the conversion to the interpolating color space.
+
+If a color has undefined channels, and is converting to a like color space, after conversion the new color will have the
+same undefined channels, assuming the channels support carrying-forward. The example below demonstrates the concept.
+
+```py play
+rgb = Color('srgb', [0.5, NaN, 0.8])
+p3 = rgb.convert('display-p3').set('green', NaN)
+rgb, p3
+```
+
+ColorAide, by default, expects the user to be aware that undefined values are lost if conversion is required for
+interpolation. This is mainly because the intent of the color can be changed during this process, but some users may
+find the automatic carrying-forward more convenient. For this reason, ColorAide has implemented carrying-forward as an
+optional feature via the `carryforward` option.
+
+In this example, interpolating without carrying-forward results in an interpolation between a purplish color and white.
+Using carrying-forward, we get a purplish color with an undefined green channel. The green channel takes on the white's
+green channel giving us an interpolation between a more greenish color and white.
+
+```py play
+Color.interpolate(['color(srgb 0.5 none 0.8)', 'white'], space='display-p3')
+Color.interpolate(['color(srgb 0.5 none 0.8)', 'white'], space='display-p3', carryforward=True)
+```
+
+Depending on the color space, carrying-forward may have better or worse results.
+
+Channel components supported for `carryforward`. Spaces may use different names for their channels, but if they are
+derived from the related space classes, their channels are supported. For instance, `xyz` is derived from `RGBish`,
+so `x`, `y`, and `z` is treated like super saturated `r`, `g`, and `b`.
+
+Space\ Type  | Channel\ Equivalents
+------------ | --------
+`RGBish`     | `r`, `g`, `b`
+`LABish`     | `l`
+`LCHish`     | `l`, `c`, `h`
+`HSLish`     | `h`, `s`, `l`
+`HSVish`     | `h`, `s`, `v`
+`Clyindrical`| `h`
+
+Carrying-forward is applied within categories.
+
+Category     | Components
+------------ | ----------
+Reds         | `r`
+Greens       | `g`
+Blues        | `b`
+Lightness    | `l`
+Colorfulness | `c`, `s`
+Hue          | `h`
+Opponent a   | `a`
+Opponent b   | `b`
+
+## Powerless Hues
+
+/// warning | Experimental
+This feature is provided to give parity with CSS behavior. As the spec is still in flux, behavior is subject to change
+or feature could be removed entirely. Use at your own risk.
+///
+
+Normally, ColorAide respects the user's explicitly defined hues. This gives the user power to do things like masking
+off all channels but the hue to interpolate only the hue.
+
+```py play
+Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified')
+```
+
+But when doing this, a user must explicitly define the hue as achromatic if they want the hue to be ignored. Conversions
+of achromatic colors to a cylindrical space will, in most cases, have the hue automatically set to undefined.
+
+```py play
+Color.interpolate(['oklch(1 0 0)', 'oklch(0.75 0.2 180)'], space='oklch')
+Color.interpolate(['oklch(1 0 None)', 'oklch(0.75 0.2 180)'], space='oklch')
+```
+
+CSS has the concept of powerless hues which causes explicitly defined hues to be powerless (or act as
+[undefined](#null-handling)) when a color is considered achromatic. This means a user never has to think about
+achromatic hues, so even if the erroneously define a hue, they will automatically be treated as undefined when
+interpolating. ColorAide implements this behavior via the `powerless` option.
+
+```py play
+Color.interpolate(['oklch(1 0 0)', 'oklch(0.75 0.2 180)'], space='oklch', powerless=True)
+Color.interpolate(['oklch(1 0 None)', 'oklch(0.75 0.2 180)'], space='oklch', powerless=True)
+```
+
+The one downside is that control over the hue will be diminished to some degree as ColorAide will no longer respect
+a user's explicit hue if the color is determined to be achromatic.
+
+```py play
+Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified')
+Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified', powerless=True)
+```

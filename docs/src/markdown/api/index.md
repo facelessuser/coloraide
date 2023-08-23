@@ -813,6 +813,9 @@ def interpolate(
     extrapolate: bool = False,
     domain: list[float] | None = None,
     method: str = "linear",
+    padding: float | tuple[float, float] | None = None,
+    carryforward: bool = False,
+    powerless: bool = False,
     **kwargs: Any
 ) -> Interpolator:
     ...
@@ -865,6 +868,9 @@ Parameters
     `extrapolate`   | `#!py False`      | Interpolations should extrapolate when values exceed the domain range ([0, 1] by default).
     `domain`        | `#!py None`       | A list of numbers defining the domain range of the interpolation.
     `method`        | `#!py "linear"`   | The interpolation method to use.
+    `padding`       | `#!py None`       | Adjust the padding of the interpolation range.
+    `carryforward`  | `#!py False`      | Carry forward undefined channels when converting to the interpolation space.
+    `powerless`     | `#!py False`      | Treat explicitly defined hues as powerless when the color is considered achromatic.
 
 Return
 

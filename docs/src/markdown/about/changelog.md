@@ -5,6 +5,8 @@
 -   **NEW**: Add `HWBish` mixin class.
 -   **NEW**: Deprecate `algebra.no_nan()`, `algebra.no_nans()`, and `algebra.is_nan()`.
 -   **NEW**: When averaging in a cylindrical space, always treat achromatic hues as powerless for better results.
+-   **NEW**: Add experimental support for CSS "powerless" hue handling and carrying-forward in interpolation, both
+    disabled by default.
 -   **FIX**: Fix RLAB conversion.
 -   **FIX**: Fix clipping of hues.
 -   **ENHANCE**: Tweaks to some matrix calculations.
