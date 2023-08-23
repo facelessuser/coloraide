@@ -8,6 +8,14 @@ import math
 class TestAverage(util.ColorAsserts, unittest.TestCase):
     """Test averaging."""
 
+    def test_average_achromatic(self):
+        """Test that we force achromatic hues to undefined."""
+
+        self.assertEqual(
+            Color.average(['white', 'color(srgb 0 0 1)'], space='hsl').to_string(),
+            'hsl(240 50% 75%)'
+        )
+
     def test_no_colors(self):
         """Test averaging no colors."""
 

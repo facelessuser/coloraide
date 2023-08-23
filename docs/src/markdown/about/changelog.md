@@ -6,6 +6,7 @@
 -   **NEW**: Deprecate `algebra.no_nan()`, `algebra.no_nans()`, and `algebra.is_nan()`.
 -   **NEW**: When averaging in a cylindrical space, always treat achromatic hues as powerless for better results.
 -   **FIX**: Fix RLAB conversion.
+-   **FIX**: Fix clipping of hues.
 -   **ENHANCE**: Tweaks to some matrix calculations.
 -   **ENHANCE**: Various performance related tweaks.
 
