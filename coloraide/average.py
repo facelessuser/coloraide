@@ -27,7 +27,11 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
     # Sum channel values
     i = -1
     for c in colors:
-        coords = obj.update(c)[:]
+        obj.update(c)
+        # If cylindrical color is achromatic, ensure hue is undefined
+        if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
+            obj[hue_index] = math.nan
+        coords = obj[:]
         alpha = coords[-1]
         if math.isnan(alpha):
             alpha = 1.0
