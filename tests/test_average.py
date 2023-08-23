@@ -12,7 +12,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test that we force achromatic hues to undefined."""
 
         self.assertEqual(
-            Color.average(['white', 'color(srgb 0 0 1)'], space='hsl').to_string(),
+            Color.average(['hsl(0 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
             'hsl(240 50% 75%)'
         )
 

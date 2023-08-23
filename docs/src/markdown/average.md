@@ -33,8 +33,8 @@ Cylindrical averaging may not provide as good of results as using rectangular sp
 approach if a cylindrical space is used.
 
 /// note | Achromatic Colors
-When a color is achromatic, the hue will always be considered powerless, regardless of whether the color has an
-explicit hue or not.
+When a color is considered achromatic, the hue will always be considered powerless, regardless of whether the color has
+an explicit hue or not.
 ///
 
 ```py play
@@ -77,6 +77,13 @@ provided for averaging cylindrical colors, particularly achromatic colors.
 
 ```py play
 Color.average(['white', 'color(srgb 0 0 1)'], space='hsl')
+```
+
+Implied achromatic hues are also considered undefined.
+
+
+```py play
+Color.average(['hsl(0 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
 ```
 
 While undefined logic is intended to handle achromatic hues, this logic will be applied to any channel. It should be
