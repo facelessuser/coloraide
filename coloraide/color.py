@@ -146,6 +146,8 @@ class Color(metaclass=ColorMeta):
     CHROMATIC_ADAPTATION = util.DEF_CHROMATIC_ADAPTATION
     CONTRAST = util.DEF_CONTRAST
     CCT = util.DEF_CCT
+    POWERLESS = False
+    CARRYFORWARD = False
 
     # It is highly unlikely that a user would ever need to override this, but
     # just in case, it is exposed, but undocumented.
@@ -1028,6 +1030,8 @@ class Color(metaclass=ColorMeta):
         domain: list[float] | None = None,
         method: str = "linear",
         padding: float | tuple[float, float] | None = None,
+        carryforward: bool | None = None,
+        powerless: bool | None = None,
         **kwargs: Any
     ) -> Interpolator:
         """
@@ -1054,6 +1058,8 @@ class Color(metaclass=ColorMeta):
             extrapolate=extrapolate,
             domain=domain,
             padding=padding,
+            carryforward=carryforward if carryforward is not None else cls.CARRYFORWARD,
+            powerless=powerless if powerless is not None else cls.POWERLESS,
             **kwargs
         )
 

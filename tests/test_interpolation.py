@@ -6,7 +6,6 @@ from . import util
 import pytest
 
 
-@pytest.mark.skipif(True, reason='Experimental')
 class TestCarryFoward(util.ColorAssertsPyTest):
     """Test carry forward."""
 
@@ -16,6 +15,18 @@ class TestCarryFoward(util.ColorAssertsPyTest):
             4,
             ['lch(none 30 270)', 'lab(none -2 12)', 'hsl(30 80 none)', 'oklab(0.5 0.3 -0.1)'],
             ('l', 0.5)
+        ],
+        [
+            'oklab',
+            3,
+            ['lab(40 none 20)', 'oklab(0.2 none -0.2)', 'oklab(0.5 0.3 -0.1)'],
+            ('a', 0.3)
+        ],
+        [
+            'oklab',
+            3,
+            ['lab(40 20 none)', 'oklab(0.2 0.2 none)', 'oklab(0.5 0.3 -0.1)'],
+            ('b', -0.1)
         ],
         [
             'oklch',
@@ -79,8 +90,38 @@ class TestCarryFoward(util.ColorAssertsPyTest):
     def test_round_trip(self, space, steps, colors, cmp):
         """Test round trip."""
 
-        results = Color.steps(colors, steps=steps, space=space, method='monotone', _carryforward=True)
-        assert not all(abs(r[cmp[0]] - cmp[1]) < 1e-6 for r in results), "{} != {} : {}".format(cmp[0], cmp[1], results)
+        results = Color.steps(colors, steps=steps, space=space, method='monotone', carryforward=True)
+        assert all(abs(r[cmp[0]] - cmp[1]) < 1e-12 for r in results), "{} != {} : {}".format(cmp[0], cmp[1], results)
+
+
+class TestPowerless(util.ColorAsserts, unittest.TestCase):
+    """Test powerless."""
+
+    def test_powerless(self):
+        """Test powerless."""
+
+        self.assertEqual(
+            Color('oklch(0.5 0 30)').mix('oklch(0.75 0.2 120)', space='oklch', powerless=True).to_string(),
+            'oklch(0.625 0.1 120)'
+        )
+
+        self.assertEqual(
+            Color('oklch(0.75 0.2 120)').mix('oklch(0.5 0 30)', space='oklch', powerless=True).to_string(),
+            'oklch(0.625 0.1 120)'
+        )
+
+    def test_powerless_carryforward(self):
+        """Test powerless with carry forward."""
+
+        self.assertEqual(
+            Color('oklch(0.5 none 30)').mix(
+                'oklch(0.75 0.2 120)',
+                space='oklch',
+                powerless=True,
+                carryforward=True
+            ).to_string(),
+            'oklch(0.625 0.2 120)'
+        )
 
 
 class TestInterpolation(util.ColorAsserts, unittest.TestCase):
