@@ -29,8 +29,16 @@ Color.average(['red', 'yellow', 'orange', 'green'])
 ColorAide can average colors in rectangular spaces and cylindrical spaces. When applying averaging in a cylindrical
 space, hues will be averaged taking the circular mean.
 
+Cylindrical averaging may not provide as good of results as using rectangular spaces, but is provided to provide a sane
+approach if a cylindrical space is used.
+
+/// note | Achromatic Colors
+When a color is considered achromatic, the hue will always be considered powerless, regardless of whether the color has
+an explicit hue or not.
+///
+
 ```py play
-Color.average(['orange', 'yellow', 'red'], space='srgb')
+Color.average(['orange', 'yellow', 'red'])
 Color.average(['orange', 'yellow', 'red'], space='hsl')
 ```
 
@@ -38,7 +46,7 @@ Because calculations are done in a cylindrical space, the averaged colors can be
 rectangular space averaging.
 
 ```py play
-Color.average(['purple', 'green', 'blue'], space='srgb')
+Color.average(['purple', 'green', 'blue'])
 Color.average(['purple', 'green', 'blue'], space='hsl')
 ```
 
@@ -50,7 +58,7 @@ less of an impact on the average. This is done by premultiplying the colors befo
 ```py play
 Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
 for i in range(12):
-    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'], space='srgb')
+    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'])
 ```
 
 If you'd like to average the channels without taking transparency into consideration, simply set `premultiplied` to
@@ -59,15 +67,32 @@ If you'd like to average the channels without taking transparency into considera
 ```py play
 Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
 for i in range(12):
-    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'], space='srgb', premultiplied=False)
+    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'], premultiplied=False)
 ```
 
 ## Averaging with Undefined Values
 
-When averaging with undefined values, ColorAide will not consider the undefined values in the average.
+When averaging with undefined values, ColorAide will not consider the undefined values in the average. This is mainly
+provided for averaging cylindrical colors, particularly achromatic colors.
+
+```py play
+Color.average(['white', 'color(srgb 0 0 1)'], space='hsl')
+```
+
+Implied achromatic hues are also considered undefined.
+
+
+```py play
+Color.average(['hsl(0 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
+```
+
+While undefined logic is intended to handle achromatic hues, this logic will be applied to any channel. It should be
+noted that no attempt to carry forward the undefined values through conversion is made. Conversions will remove any
+undefined status unless the channel is an achromatic hues.
+
 ```py play
 for i in range(12):
-    Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'], space='srgb')
+    Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'])
 
 ```
 

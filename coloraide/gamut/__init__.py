@@ -25,6 +25,7 @@ def clip_channels(color: Color, nans: bool = True) -> None:
         # Wrap the angle. Not technically out of gamut, but we will clean it up.
         if chan.flags & FLG_ANGLE:
             color[i] = util.constrain_hue(value)
+            continue
 
         # Ignore undefined or unbounded channels
         if not chan.bound or math.isnan(value):
