@@ -55,15 +55,20 @@ def iter_image(img, space):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
-        pixels = im.load()
+        if im.size[0] > 500 or im.size[1] > 500:
+            factor = 500 / max(im.size)
+            new_im = im.resize((max(1, int(im.size[0] * factor)), max(1, int(im.size[1] * factor))))
+        else:
+            new_im = im
+        pixels = new_im.load()
         start = time.perf_counter_ns()
-        total = im.size[0] * im.size[1]
+        total = new_im.size[0] * new_im.size[1]
         factor = 100 / total
         i = j = 0
         print('Pixels: {}'.format(total))
         print('> 0%', end='\r')
-        for i in range(im.size[0]):
-            for j in range(im.size[1]):
+        for i in range(new_im.size[0]):
+            for j in range(new_im.size[1]):
                 yield get_color(space, pixels[i, j])
             print('> {}%'.format(int((i * j) * factor)), end="\r")
         print('> 100%')
