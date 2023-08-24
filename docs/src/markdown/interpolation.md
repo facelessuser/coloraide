@@ -993,9 +993,9 @@ Color.interpolate(['color(srgb 0.5 none 0.8)', 'white'], space='display-p3', car
 
 Depending on the color space, carrying-forward may have better or worse results.
 
-Channel components supported for `carryforward`. Spaces may use different names for their channels, but if they are
-derived from the related space classes, their channels are supported. For instance, `xyz` is derived from `RGBish`,
-so `x`, `y`, and `z` is treated like super saturated `r`, `g`, and `b`.
+The following table shows channel components supported for `carryforward`. Spaces may use different names for their
+channels, but if they are derived from the related space classes, their channels are supported. For instance, `xyz` is
+derived from `RGBish`, so `x`, `y`, and `z` is treated like super saturated `r`, `g`, and `b`.
 
 Space\ Type  | Channel\ Equivalents
 ------------ | --------
@@ -1004,7 +1004,7 @@ Space\ Type  | Channel\ Equivalents
 `LCHish`     | `l`, `c`, `h`
 `HSLish`     | `h`, `s`, `l`
 `HSVish`     | `h`, `s`, `v`
-`Clyindrical`| `h`
+`Cylindrical`| `h`
 
 Carrying-forward is applied within categories.
 
@@ -1018,6 +1018,7 @@ Colorfulness | `c`, `s`
 Hue          | `h`
 Opponent a   | `a`
 Opponent b   | `b`
+Value        | `v`
 
 ## Powerless Hues
 
