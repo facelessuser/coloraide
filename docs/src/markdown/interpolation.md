@@ -406,6 +406,150 @@ There may be some cases where it is desired to use no premultiplication in alpha
 need to mimic the same behavior of a system that does not use premultiplied interpolation. If so, simply set
 `premultiplied` to `#!py3 False` as shown above.
 
+## Mixing
+
+/// tip | Interpolation Options
+Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+like `hue`, `progress`, etc.
+///
+
+The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick, and
+intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
+the two.
+
+```py play
+Color("red").mix(Color("blue"))
+```
+
+By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
+the color `#!color red` at 20%. With `#!color blue` at 20% and `#!color red` at 80%, this gives us a more reddish color.
+
+```py play
+Color("red").mix(Color("blue"), 0.2)
+```
+
+As with all interpolation based functions, if needed, a different color space can be specified with the `space`
+parameter or even a different interpolation method via `method`. `mix` accepts all the same parameters used in
+`interpolate`, though concepts like [stops and hints](#color-stops-and-hints) are not allowed with mixing.
+
+```py play
+Color("red").mix(Color("blue"), space="hsl", method='bspline')
+```
+
+Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
+color afterwards.
+
+```py play
+Color("red").mix("blue", 0.2)
+```
+
+Mixing will always return a new color unless `in_place` is set `#!py3 True`.
+
+## Steps
+
+/// tip | Interpolation Options
+Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
+like `hue`, `progress`, etc.
+///
+
+The `steps` method provides an intuitive interface to create lists of discrete colors. Like mixing, it is also built on
+[`interpolate`](#linear-interpolation). Just provide two or more colors, and specify how many `steps` are wanted.
+
+```py play
+Color.steps(["red", "blue"], steps=10)
+```
+
+If desired, multiple colors can be provided, and steps will be returned for all the interpolated segments. When
+interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
+detail later).
+
+```py play
+Color.steps(["red", "orange", "yellow", "green"], steps=10)
+```
+
+Steps can also be configured to return colors based on a maximum Delta E distance. This means you can ensure the
+distance between all colors is no greater than a certain value.
+
+In this example, we specify the color `#!color color(display-p3 0 1 0)` and interpolate steps between `#!color red`.
+The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
+result of 10.
+
+```py play
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10
+)
+```
+
+`max_steps` can be used to limit the results of `max_delta_e` in case result balloons to an unexpected size. Obviously,
+this affects the Delta E between the colors inversely. It should be noted that steps are injected equally between every
+color when satisfying a max Delta E limit in order to avoid shifting the midpoint. In some cases, in order to satisfy
+both the `max_delta_e` and the `max_steps` requirement, the number of steps may even be clipped such that they are less
+than the `max_steps` limit. `max_steps` is set to `#!py3 1000` by default, but can be set to `#!py3 None` if no limit is
+desired.
+
+```py play
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    max_steps=10
+)
+```
+
+When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
+if the required steps is greater than the calculated steps via the maximum Delta E limit.
+
+```py play
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    steps=50
+)
+```
+
+`steps` uses the color class's default ∆E method to calculate max ∆E, the current default ∆E being ∆E^\*^~ab~. While
+using something like ∆E^\*^~00~ is far more accurate, it is a much more expensive operation. If desired, the class's
+default ∆E can be changed via subclassing the color object and and changing `DELTA_E` class variable or by manually
+specifying the method via the `delta_e` parameter.
+
+
+/// tab | ∆E^\*^~ab~.
+```py play
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    delta_e="76"
+)
+```
+///
+
+/// tab | ∆E^\*^~00~
+```py play
+Color.steps(
+    [Color("display-p3", [0, 1, 0]), "red"],
+    space="lch",
+    out_space="srgb",
+    max_delta_e=10,
+    delta_e="2000"
+)
+```
+///
+
+And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and any
+of the other supported `interpolate` features as well.
+
+```py play
+Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
+```
+
 ## Masking
 
 If desired, we can mask off specific channels that we do not wish to interpolate. Masking works by cloning the color
@@ -604,150 +748,6 @@ from coloraide import hint
 
 Color.interpolate(['orange', 'purple', 'green'])
 Color.interpolate(['orange', hint(0.75), 'purple', 'green'])
-```
-
-## Mixing
-
-/// tip | Interpolation Options
-Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-like `hue`, `progress`, etc.
-///
-
-The `mix` function is built on top of the [`interpolate`](#linear-interpolation) function and provides a simple, quick, and
-intuitive simple mixing of two colors. Just pass in a color to mix with the base color, and you'll get an equal mix of
-the two.
-
-```py play
-Color("red").mix(Color("blue"))
-```
-
-By default, colors are mixed at 50%, but the percentage can be controlled. Here we mix the color `#!color blue` into
-the color `#!color red` at 20%. With `#!color blue` at 20% and `#!color red` at 80%, this gives us a more reddish color.
-
-```py play
-Color("red").mix(Color("blue"), 0.2)
-```
-
-As with all interpolation based functions, if needed, a different color space can be specified with the `space`
-parameter or even a different interpolation method via `method`. `mix` accepts all the same parameters used in
-`interpolate`, though concepts like [stops and hints](#color-stops-and-hints) are not allowed with mixing.
-
-```py play
-Color("red").mix(Color("blue"), space="hsl", method='bspline')
-```
-
-Mix can also accept a string and will create the color for us which is great if we don't need to work with the second
-color afterwards.
-
-```py play
-Color("red").mix("blue", 0.2)
-```
-
-Mixing will always return a new color unless `in_place` is set `#!py3 True`.
-
-## Steps
-
-/// tip | Interpolation Options
-Any options not consumed by `mix` will be passed to the underlying `interpolation` function. This includes options
-like `hue`, `progress`, etc.
-///
-
-The `steps` method provides an intuitive interface to create lists of discrete colors. Like mixing, it is also built on
-[`interpolate`](#linear-interpolation). Just provide two colors, and specify how many `steps` are wanted.
-
-```py play
-Color.steps(["red", "blue"], steps=10)
-```
-
-If desired, multiple colors can be provided, and steps will be returned for all the interpolated segments. When
-interpolating multiple colors, [piecewise interpolation](#piecewise-interpolation) is used (which is covered in more
-detail later).
-
-```py play
-Color.steps(["red", "orange", "yellow", "green"], steps=10)
-```
-
-Steps can also be configured to return colors based on a maximum Delta E distance. This means you can ensure the
-distance between all colors is no greater than a certain value.
-
-In this example, we specify the color `#!color color(display-p3 0 1 0)` and interpolate steps between `#!color red`.
-The result gives us an array of colors, where the distance between any two colors should be no greater than the Delta E
-result of 10.
-
-```py play
-Color.steps(
-    [Color("display-p3", [0, 1, 0]), "red"],
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10
-)
-```
-
-`max_steps` can be used to limit the results of `max_delta_e` in case result balloons to an unexpected size. Obviously,
-this affects the Delta E between the colors inversely. It should be noted that steps are injected equally between every
-color when satisfying a max Delta E limit in order to avoid shifting the midpoint. In some cases, in order to satisfy
-both the `max_delta_e` and the `max_steps` requirement, the number of steps may even be clipped such that they are less
-than the `max_steps` limit. `max_steps` is set to `#!py3 1000` by default, but can be set to `#!py3 None` if no limit is
-desired.
-
-```py play
-Color.steps(
-    [Color("display-p3", [0, 1, 0]), "red"],
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10,
-    max_steps=10
-)
-```
-
-When specifying a `max_delta_e`, `steps` will function as a minimum required steps and will push the delta even smaller
-if the required steps is greater than the calculated steps via the maximum Delta E limit.
-
-```py play
-Color.steps(
-    [Color("display-p3", [0, 1, 0]), "red"],
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10,
-    steps=50
-)
-```
-
-`steps` uses the color class's default ∆E method to calculate max ∆E, the current default ∆E being ∆E^\*^~ab~. While
-using something like ∆E^\*^~00~ is far more accurate, it is a much more expensive operation. If desired, the class's
-default ∆E can be changed via subclassing the color object and and changing `DELTA_E` class variable or by manually
-specifying the method via the `delta_e` parameter.
-
-
-/// tab | ∆E^\*^~ab~.
-```py play
-Color.steps(
-    [Color("display-p3", [0, 1, 0]), "red"],
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10,
-    delta_e="76"
-)
-```
-///
-
-/// tab | ∆E^\*^~00~
-```py play
-Color.steps(
-    [Color("display-p3", [0, 1, 0]), "red"],
-    space="lch",
-    out_space="srgb",
-    max_delta_e=10,
-    delta_e="2000"
-)
-```
-///
-
-And much like [`interpolate`](#linear-interpolation), we can use [`stops` and `hints`](#color-stops-and-hints) and any
-of the other supported `interpolate` features as well.
-
-```py play
-Color.steps(['orange', stop('purple', 0.25), 'green'], method='bspline', steps=10)
 ```
 
 ## Padding
