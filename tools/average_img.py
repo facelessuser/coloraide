@@ -84,13 +84,15 @@ def main():
     parser.add_argument('--space', '-s', default='srgb', help='Color space to average in.')
     parser.add_argument('--out-space', '-o', default='srgb', help='Color space to average in.')
     parser.add_argument('--premultiplied', '-p', action='store_true', help="Premultiply values.")
+    parser.add_argument('--powerless', '-P', action='store_true', help="Treat achromatic hues as powerless.")
     args = parser.parse_args()
 
     print(
         Color.average(
             iter_image(args.input, args.space),
             space=args.space,
-            premultiplied=args.premultiplied
+            premultiplied=args.premultiplied,
+            powerless=args.powerless
         ).convert(args.out_space).to_string()
     )
 

@@ -814,8 +814,8 @@ def interpolate(
     domain: list[float] | None = None,
     method: str = "linear",
     padding: float | tuple[float, float] | None = None,
-    carryforward: bool = False,
-    powerless: bool = False,
+    carryforward: bool | None = False,
+    powerless: bool | None = False,
     **kwargs: Any
 ) -> Interpolator:
     ...
@@ -869,8 +869,8 @@ Parameters
     `domain`        | `#!py None`       | A list of numbers defining the domain range of the interpolation.
     `method`        | `#!py "linear"`   | The interpolation method to use.
     `padding`       | `#!py None`       | Adjust the padding of the interpolation range.
-    `carryforward`  | `#!py False`      | Carry forward undefined channels when converting to the interpolation space.
-    `powerless`     | `#!py False`      | Treat explicitly defined hues as powerless when the color is considered achromatic.
+    `carryforward`  | `#!py False`      | Carry forward undefined channels when converting to the interpolation space. If `#!py None`, will use the class default which is `#!py False` by default.
+    `powerless`     | `#!py None`       | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
 
 Return
 
@@ -1023,6 +1023,7 @@ def average(
     space: str | None = None,
     out_space: str | None = None,
     premultiplied: bool = True,
+    powerelss: bool | None = None
     **kwargs: Any
 ) -> Color:
 ```
@@ -1041,6 +1042,7 @@ Parameters
     `space`          | `#!py None` | An optional string to specify what color space the colors should be averaged in. If none is provided, Oklab is assumed.
     `out_space`      | `#!py None` | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `premultiplied`  | `#!py True` | Specify whether colors should be premultiplied during the averaging process.
+    `powerless`      | `#!py None` | Treat explicitly defined hues as powerless when the color is considered achromatic. If `#!py None`, will use the class default which is `#!py False` by default.
 
 Return
 

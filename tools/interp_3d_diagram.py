@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--hue', '-H', default='shorter', help="Hue interpolation handling.")
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
+    parser.add_argument('--powerless', '-p', action='store_true', help="Treat achromatic hues as powerless.")
+    parser.add_argument('--carryfoward', '-f', action='store_true', help="Carry forward undefined channels.")
     parser.add_argument('--steps', '-S', default=0, type=int, help='Specify number of steps to display.')
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
@@ -59,6 +61,8 @@ def main():
         out_space=args.display,
         method=args.method,
         extrapolate=args.extrapolate,
+        powerless=args.powerless,
+        carryforward=args.carryforward,
         hue=args.hue
     )
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.1
+
+-   **FIX**: Average should allow controlling `powerless` be disabled by default for backwards compatibility.
+
 ## 2.9
 
 -   **NEW**: Add `HWBish` mixin class.

@@ -36,6 +36,8 @@ def main():
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
+    parser.add_argument('--powerless', '-p', action='store_true', help="Treat achromatic hues as powerless.")
+    parser.add_argument('--carryfoward', '-f', action='store_true', help="Carry forward undefined channels.")
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
@@ -102,7 +104,14 @@ def main():
 
     xs = []
     ys = []
-    i = Color.interpolate(colors, space=args.space, method=args.method, extrapolate=args.extrapolate)
+    i = Color.interpolate(
+        colors,
+        space=args.space,
+        method=args.method,
+        extrapolate=args.extrapolate,
+        powerless=args.powerless,
+        carryforward=args.carryforward
+    )
     if not args.extrapolate:
         offset, factor = 0, 1
     else:
@@ -135,7 +144,14 @@ def main():
         )
 
     if args.position is not None:
-        cp = Color.interpolate(colors, space=args.space, method=args.method)(float(args.position))
+        cp = Color.interpolate(
+            colors,
+            space=args.space,
+            method=args.method,
+            extrapolate=args.extrapolate,
+            powerless=args.powerless,
+            carryforward=args.carryforward
+        )(float(args.position))
         plt.scatter(
             cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1)),
             cp.get(name2),

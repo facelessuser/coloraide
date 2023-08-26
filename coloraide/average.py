@@ -8,7 +8,13 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
-def average(create: type[Color], colors: Iterable[ColorInput], space: str, premultiplied: bool = True) -> Color:
+def average(
+    create: type[Color],
+    colors: Iterable[ColorInput],
+    space: str,
+    premultiplied: bool = True,
+    powerless: bool = False
+) -> Color:
     """Average a list of colors together."""
 
     obj = create(space, [])
@@ -29,7 +35,7 @@ def average(create: type[Color], colors: Iterable[ColorInput], space: str, premu
     for c in colors:
         obj.update(c)
         # If cylindrical color is achromatic, ensure hue is undefined
-        if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
+        if powerless and hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
             obj[hue_index] = math.nan
         coords = obj[:]
         alpha = coords[-1]
