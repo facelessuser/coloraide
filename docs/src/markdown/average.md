@@ -32,11 +32,6 @@ space, hues will be averaged taking the circular mean.
 Cylindrical averaging may not provide as good of results as using rectangular spaces, but is provided to provide a sane
 approach if a cylindrical space is used.
 
-/// note | Achromatic Colors
-When a color is considered achromatic, the hue will always be considered powerless, regardless of whether the color has
-an explicit hue or not.
-///
-
 ```py play
 Color.average(['orange', 'yellow', 'red'])
 Color.average(['orange', 'yellow', 'red'], space='hsl')
@@ -79,21 +74,21 @@ provided for averaging cylindrical colors, particularly achromatic colors.
 Color.average(['white', 'color(srgb 0 0 1)'], space='hsl')
 ```
 
-Implied achromatic hues are also considered undefined.
-
+Implied achromatic hues are only considered undefined if `powerless` is enabled. This is similar to how interpolation
+works. By default, explicitly defined hues are respected if working directly in the averaging color space.
 
 ```py play
-Color.average(['hsl(0 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
+Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
+Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl', powerless=True)
 ```
 
 While undefined logic is intended to handle achromatic hues, this logic will be applied to any channel. It should be
-noted that no attempt to carry forward the undefined values through conversion is made. Conversions will remove any
-undefined status unless the channel is an achromatic hues.
+noted that no attempt to carry forward the undefined values through conversion is made at this time. Conversions will
+remove any undefined status unless the channel is an achromatic hues.
 
 ```py play
 for i in range(12):
     Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'])
-
 ```
 
 When `premultiplied` is enabled, premultiplication will not be applied to a color if its `alpha` is undefined.
