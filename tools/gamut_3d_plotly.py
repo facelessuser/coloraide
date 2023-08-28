@@ -122,9 +122,9 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
     zpos = 0.0 if location == 'bottom' else 1.0 * factor
     # HWB bottom disc will have a single point in the center that is a different colors at different hues. The mesh will
     # resolve one of them as the center, usually red. This will cause color averaging in the center of the disc to be
-    # red-ish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
+    # reddish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
     # rings very close to zero radius, but not zero radius. The mesh will still connect all the points near the center,
-    # but it will be too small to see.
+    # but will leave a small hole at the center which will be too small to see.
     start, end = 1.0 * factor, (1e-6 if is_hwbish and location == 'bottom' else 0.0)
 
     # Render the two halves of the disc
