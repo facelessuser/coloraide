@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.1.post1
+
+- **FIX**: Fix incorrect changelog mention of recent fix being for HSL instead of HWB.
+
 ## 2.9.1
 
 -   **FIX**: Average should allow controlling `powerless` be disabled by default for backwards compatibility.
