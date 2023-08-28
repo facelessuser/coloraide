@@ -3,7 +3,7 @@
 ## 2.9.1
 
 -   **FIX**: Average should allow controlling `powerless` be disabled by default for backwards compatibility.
--   **FIX**: HSL should use the algorithm defined in CSS that allows for round tripping even in the negative lightness
+-   **FIX**: HWB should use the algorithm defined in CSS that allows for round tripping even in the negative lightness
     direction. Previously we were converting directly from HSV.
 
 ## 2.9
