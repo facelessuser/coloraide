@@ -211,6 +211,7 @@ boolean
 broadcasted
 bz
 cd
+changelog
 chroma
 chromaticities
 chromaticity
