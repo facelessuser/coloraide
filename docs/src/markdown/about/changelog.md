@@ -2,6 +2,7 @@
 
 ## 2.10
 
+-   **NEW**: Declare official support for Python 3.12.
 -   **NEW**: Make it easy to override CIE Lab variant used by ∆E^\*^~94~, ∆E^\*^~00~, and ∆E^\*^~cmc~.
 -   **FIX**: ∆E^\*^~cmc~ should use Lab D65 (not D50) as it was originally designed for and now matches the
     documentation.
