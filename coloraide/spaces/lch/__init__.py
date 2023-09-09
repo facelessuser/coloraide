@@ -36,12 +36,9 @@ def lch_to_lab(lch: Vector) -> Vector:
 class LCh(LChish, Space):
     """LCh class."""
 
-    BASE = "lab"
-    NAME = "lch"
-    SERIALIZE = ("--lch",)
     CHANNELS = (
-        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 150.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 1.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
@@ -49,7 +46,6 @@ class LCh(LChish, Space):
         "chroma": "c",
         "hue": "h"
     }
-    WHITE = WHITES['2deg']['D50']
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
@@ -65,3 +61,22 @@ class LCh(LChish, Space):
         """From Lab to LCh."""
 
         return lab_to_lch(coords)
+
+
+class CIELCh(LCh):
+    """CIE LCh D50."""
+
+    BASE = "lab"
+    NAME = "lch"
+    SERIALIZE = ("--lch",)
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 150.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
+    CHANNEL_ALIASES = {
+        "lightness": "l",
+        "chroma": "c",
+        "hue": "h"
+    }
+    WHITE = WHITES['2deg']['D50']

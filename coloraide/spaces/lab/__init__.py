@@ -34,7 +34,7 @@ def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
     # compute `xyz`
     xyz = [
         fx ** 3 if fx > EPSILON3 else (116 * fx - 16) / KAPPA,
-        fy ** 3 if l > KE else l / KAPPA,
+        fy ** 3 if fy > EPSILON3 else (116 * fy - 16) / KAPPA,
         fz ** 3 if fz > EPSILON3 else (116 * fz - 16) / KAPPA
     ]
 
@@ -67,18 +67,14 @@ def xyz_to_lab(xyz: Vector, white: VectorLike) -> Vector:
 class Lab(Labish, Space):
     """Lab class."""
 
-    BASE = "xyz-d50"
-    NAME = "lab"
-    SERIALIZE = ("--lab",)
     CHANNELS = (
-        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("a", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT),
-        Channel("b", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT)
+        Channel("l", 0.0, 1.0),
+        Channel("a", 1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("b", 1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "lightness": "l"
     }
-    WHITE = WHITES['2deg']['D50']
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
@@ -94,3 +90,17 @@ class Lab(Labish, Space):
         """From XYZ D50 to Lab."""
 
         return xyz_to_lab(coords, util.xy_to_xyz(self.white()))
+
+
+class CIELab(Lab):
+    """CIE Lab D50."""
+
+    BASE = "xyz-d50"
+    NAME = "lab"
+    SERIALIZE = ("--lab",)
+    CHANNELS = (
+        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
+        Channel("a", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT),
+        Channel("b", -125.0, 125.0, flags=FLG_MIRROR_PERCENT | FLG_OPT_PERCENT)
+    )
+    WHITE = WHITES['2deg']['D50']

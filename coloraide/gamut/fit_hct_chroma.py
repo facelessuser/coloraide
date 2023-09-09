@@ -11,6 +11,7 @@ class HCTChroma(LChChroma):
     EPSILON = 0.001
     LIMIT = 0.02
     DE = "hct"
+    DE_OPTIONS = {}
     SPACE = "hct"
     MIN_LIGHTNESS = 0
     MAX_LIGHTNESS = 100

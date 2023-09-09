@@ -11,5 +11,6 @@ class OkLChChroma(LChChroma):
     EPSILON = 0.0001
     LIMIT = 0.02
     DE = "ok"
+    DE_OPTIONS = {}
     SPACE = "oklch"
     MAX_LIGHTNESS = 1

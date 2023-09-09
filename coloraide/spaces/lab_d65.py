@@ -1,11 +1,11 @@
 """Lab D65 class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .lab import Lab
+from .lab import CIELab
 from ..channels import Channel, FLG_MIRROR_PERCENT
 
 
-class LabD65(Lab):
+class LabD65(CIELab):
     """Lab D65 class."""
 
     BASE = 'xyz-d65'

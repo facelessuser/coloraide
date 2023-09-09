@@ -10,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 
-class LCh(base.LCh):
+class LCh(base.CIELCh):
     """LCh class."""
 
     def to_string(
