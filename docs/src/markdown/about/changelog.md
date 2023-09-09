@@ -1,8 +1,16 @@
 # Changelog
 
+## 2.10
+
+-   **NEW**: Make it easy to override CIE Lab variant used by ∆E^\*^~94~, ∆E^\*^~00~, and ∆E^\*^~cmc~.
+-   **FIX**: ∆E^\*^~cmc~ should use Lab D65 (not D50) as it was originally designed for and now matches the
+    documentation.
+-   **FIX**: For consistency, ∆E^\*^~94~ should use Lab D65 by default just like ∆E^\*^~76~ and ∆E^\*^~00~. This also
+    makes the implementation match what we reference in the documentation.
+
 ## 2.9.1.post1
 
-- **FIX**: Fix incorrect changelog mention of recent fix being for HSL instead of HWB.
+-   **FIX**: Fix incorrect changelog mention of recent fix being for HSL instead of HWB.
 
 ## 2.9.1
 

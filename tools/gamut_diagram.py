@@ -37,7 +37,7 @@ def main():
         method = args.clip_space + '-chroma'
 
     if method == 'lch-chroma':
-        space = 'lch'
+        space = 'lch-d65'
         t_space = 'CIELCh'
         xaxis = 'c:0:264'
         yaxis = 'l:0:100'

@@ -12,6 +12,7 @@ class DECMC(DeltaE):
     """Delta E CMC class."""
 
     NAME = "cmc"
+    LAB = 'lab-d65'
 
     def __init__(
         self,
@@ -43,8 +44,8 @@ class DECMC(DeltaE):
         if c is None:
             c = self.c
 
-        l1, a1, b1 = color.convert("lab").coords(nans=False)
-        l2, a2, b2 = sample.convert("lab").coords(nans=False)
+        l1, a1, b1 = color.convert(self.LAB).coords(nans=False)
+        l2, a2, b2 = sample.convert(self.LAB).coords(nans=False)
 
         # Equation (3)
         c1 = math.sqrt(a1 ** 2 + b1 ** 2)
