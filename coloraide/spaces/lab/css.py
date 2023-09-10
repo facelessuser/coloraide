@@ -10,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
 
 
-class Lab(base.Lab):
+class Lab(base.CIELab):
     """Lab class."""
 
     def to_string(

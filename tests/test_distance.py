@@ -257,6 +257,34 @@ class TestDistance(util.ColorAssertsPyTest):
         'color1,color2,value',
         [
             ('red', 'red', 0),
+            ('red', 'orange', 58.1253),
+            ('red', 'yellow', 108.4044),
+            ('red', 'green', 130.3599),
+            ('red', 'blue', 184.019),
+            ('red', 'indigo', 133.2445),
+            ('red', 'violet', 110.9902),
+            ('red', 'black', 119.8401),
+            ('red', 'white', 116.2047),
+            ('red', 'gray', 106.8395),
+            # Pythagorean 3, 4, 5 triangle
+            ('color(--lab 50% 30 40)', 'color(--lab 50% 0 0)', 50),
+        ]
+    )
+    def test_delta_e_76_d50(self, color1, color2, value):
+        """Test delta e 76 D50."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="76", space='lab'),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
             ('red', 'orange', 30.1848),
             ('red', 'yellow', 59.9971),
             ('red', 'green', 50.9748),
@@ -294,6 +322,34 @@ class TestDistance(util.ColorAssertsPyTest):
     @pytest.mark.parametrize(
         'color1,color2,value',
         [
+            ('red', 'red', 0),
+            ('red', 'orange', 28.6827),
+            ('red', 'yellow', 57.5928),
+            ('red', 'green', 48.8419),
+            ('red', 'blue', 73.8268),
+            ('red', 'indigo', 59.1223),
+            ('red', 'violet', 42.5283),
+            ('red', 'black', 57.3225),
+            ('red', 'white', 49.2723),
+            ('red', 'gray', 18.4094),
+            # Pythagorean 3, 4, 5 triangle
+            ('color(--lab 50% 30 40)', 'color(--lab 50% 0 0)', 15.3846),
+        ]
+    )
+    def test_delta_e_94_d50(self, color1, color2, value):
+        """Test delta e 94 D50."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="94", space='lab'),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
             ('red', 'red', 0.0),
             ('red', 'orange', 35.0602),
             ('red', 'yellow', 68.462),
@@ -315,7 +371,7 @@ class TestDistance(util.ColorAssertsPyTest):
             ('white', 'red', 164.6293),
             ('gray', 'red', 163.8716),
             # Pythagorean 3, 4, 5 triangle
-            ('lab(50% 30 40)', 'lab(50% 0 0)', 19.1396),
+            ('color(--lab-d65 50% 30 40)', 'color(--lab-d65 50% 0 0)', 19.4894),
             # Brilliant red
             ('lab(38.64% 64.26 52.16)', 'lab(38.59% 62.06 51.11)', 0.882),
             ('lab(38.83% 33.35 26.67)', 'lab(38.69% 31.14 25.21)', 1.1444),
@@ -332,6 +388,34 @@ class TestDistance(util.ColorAssertsPyTest):
         print('color2: ', color2)
         self.assertCompare(
             Color(color1).delta_e(color2, method="cmc"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 32.7965),
+            ('red', 'yellow', 64.9048),
+            ('red', 'green', 78.8614),
+            ('red', 'blue', 114.2301),
+            ('red', 'indigo', 79.8767),
+            ('red', 'violet', 65.2371),
+            ('red', 'black', 38.9135),
+            ('red', 'white', 36.7155),
+            ('red', 'gray', 30.7143),
+            # Pythagorean 3, 4, 5 triangle
+            ('color(--lab 50% 30 40)', 'color(--lab 50% 0 0)', 19.4894),
+        ]
+    )
+    def test_delta_e_cmc_d50(self, color1, color2, value):
+        """Test delta e CMC D50."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="cmc", space='lab'),
             value,
             rounding=4
         )
@@ -441,6 +525,34 @@ class TestDistance(util.ColorAssertsPyTest):
         print('color2: ', color2)
         self.assertCompare(
             Color(color1).delta_e(color2, method="2000"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
+            ('red', 'orange', 31.4666),
+            ('red', 'yellow', 60.9841),
+            ('red', 'green', 70.2367),
+            ('red', 'blue', 55.7998),
+            ('red', 'indigo', 52.847),
+            ('red', 'violet', 41.6922),
+            ('red', 'black', 51.3402),
+            ('red', 'white', 45.2646),
+            ('red', 'gray', 31.4011),
+            # Pythagorean 3, 4, 5 triangle
+            ('color(--lab 50% 30 40)', 'color(--lab 50% 0 0)', 24.1219),
+        ]
+    )
+    def test_delta_e_2000_d50(self, color1, color2, value):
+        """Test delta e 2000 D50."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).delta_e(color2, method="2000", space='lab'),
             value,
             rounding=4
         )
@@ -650,6 +762,30 @@ class TestDistanceSpecificCases(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('orange', method="hyab", space="lch")
+
+    def test_76_bad_space(self):
+        """Test 76 bad space."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('orange', method="76", space="oklab")
+
+    def test_94_bad_space(self):
+        """Test 94 bad space."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('orange', method="94", space="oklab")
+
+    def test_2000_bad_space(self):
+        """Test 2000 bad space."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('orange', method="2000", space="oklab")
+
+    def test_cmc_bad_space(self):
+        """Test CMC bad space."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('orange', method="cmc", space="oklab")
 
 
 class TestClosest(util.ColorAsserts, unittest.TestCase):

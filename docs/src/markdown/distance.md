@@ -52,10 +52,20 @@ It should be noted that not all distancing algorithms are symmetrical. Some are 
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
-[∆E^\*^~ab~][de76]\ (CIE76)              | :octicons-check-16:   | `76`            |
+[∆E^\*^~ab~][de76]\ (CIE76)              | :octicons-check-16:   | `76`            | `space='lab-d65'`
 
 One of the first approaches to color distancing and is actually just Euclidean distancing in the [CIELab](./colors/lab_d65.md)
 color space.
+
+/// note
+By default, Lab D65 is used for color distancing. In the print industry, it is common for Lab D50 to be used. If Lab
+D50 is desired, simply specify it as the `space` color space. `space` must be a CIE Lab color space.
+
+```py play
+Color("red").delta_e("blue", method="76")
+Color("red").delta_e("blue", method="76", space='lab')
+```
+///
 
 ### Delta E CMC (1984)
 
@@ -64,7 +74,7 @@ color space.
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
-[∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | :octicons-check-16:   | `cmc`           | `l=2, c=1`
+[∆E^\*^~cmc~][decmc]\ (CMC\ l:c\ (1984)) | :octicons-check-16:   | `cmc`           | `l=2, c=1, space='lab-d65'`
 
 Delta E CMC is based on the [CIELCh](./colors/lch_d65.md) color space. The CMC calculation mathematically defines an
 ellipsoid around the standard color with semi-axis corresponding to hue, chroma and lightness.
@@ -74,6 +84,16 @@ Parameter | Acceptability | Perceptibility
 `l`       | 2             | 1
 `c`       | 1             | 1
 
+/// note
+By default, Lab D65 is used for color distancing. In the print industry, it is common for Lab D50 to be used. If Lab
+D50 is desired, simply specify it as the `space` color space. `space` must be a CIE Lab color space.
+
+```py play
+Color("red").delta_e("blue", method="cmc")
+Color("red").delta_e("blue", method="cmc", space='lab')
+```
+///
+
 ### Delta E CIE94
 
 /// success | The ∆E~94~ distancing algorithm is registered in `Color` by default
@@ -81,7 +101,7 @@ Parameter | Acceptability | Perceptibility
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
-[∆E^\*^~94~][de94]\ (CIE94)              | :octicons-x-16:       | `94`            | `kl=1, k1=0.045, k2=0.015`
+[∆E^\*^~94~][de94]\ (CIE94)              | :octicons-x-16:       | `94`            | `kl=1, k1=0.045, k2=0.015, space='lab-d65'`
 
 The [1976](#delta-e-cie76) definition was extended to address perceptual non-uniformities, while retaining the
 [CIELab](./colors/lab_d65.md) color space, by the introduction of application-specific weights derived from an
@@ -93,6 +113,16 @@ Parameter | Graphic\ Arts | Textiles
 `k1`      | 0.045         | 0.048
 `k2`      | 0.015         | 0.014
 
+/// note
+By default, Lab D65 is used for color distancing. In the print industry, it is common for Lab D50 to be used. If Lab
+D50 is desired, simply specify it as the `space` color space. `space` must be a CIE Lab color space.
+
+```py play
+Color("red").delta_e("blue", method="94")
+Color("red").delta_e("blue", method="94", space='lab')
+```
+///
+
 ### Delta E CIEDE2000
 
 /// success | The ∆E~00~ distancing algorithm is registered in `Color` by default
@@ -100,7 +130,7 @@ Parameter | Graphic\ Arts | Textiles
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | ----------
-[∆E^\*^~00~][de2000]\ (CIEDE2000)        | :octicons-check-16:   | `2000`          | `kl=1, kc=1, kh=1`
+[∆E^\*^~00~][de2000]\ (CIEDE2000)        | :octicons-check-16:   | `2000`          | `kl=1, kc=1, kh=1, space='lab-d65'`
 
 Since the 1994 definition did not adequately resolve the perceptual uniformity issue, the CIE refined their definition,
 adding five corrections:
@@ -110,6 +140,16 @@ adding five corrections:
 - Compensation for lightness (SL)
 - Compensation for chroma (SC)
 - Compensation for hue (SH)
+
+/// note
+By default, Lab D65 is used for color distancing. In the print industry, it is common for Lab D50 to be used. If Lab
+D50 is desired, simply specify it as the `space` color space. `space` must be a CIE Lab color space.
+
+```py play
+Color("red").delta_e("blue", method="2000")
+Color("red").delta_e("blue", method="2000", space='lab')
+```
+///
 
 ### Delta E HyAB
 
@@ -278,4 +318,24 @@ The default distancing method is used if one is not supplied, but others can be 
 
 ```py play
 Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], method='2000')
+```
+
+## Configuring Delta E Defaults
+
+A number of distancing algorithms have configurable features that can be set on demand. If you'd like to have these
+options set by default, you create a custom class and register the the plugins with the defaults of your choice.
+
+In this example, we will configure ∆E~00~ to use CIE Lab D50 instead of D65 by default.
+
+```py play
+from coloraide import Color as Base
+from coloraide.distance.delta_e_2000 import DE2000
+
+class Color(Base):
+    ...
+
+Color.register(DE2000(space='lab'), overwrite=True)
+
+Color('red').delta_e('blue', method='2000')
+Color('red').delta_e('blue', method='2000', space='lab-d65')
 ```
