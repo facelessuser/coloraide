@@ -890,6 +890,7 @@ def steps(
     max_steps: int = 1000,
     max_delta_e: float = 0,
     delta_e: str | None = None,
+    delta_e_args: dict[str, Any] | None = None,
     **interpolate_args: Any
 ) -> list[Color]:
     ...
@@ -919,6 +920,7 @@ Parameters
     `max_steps`                | `#!py 1000`                        | Maximum number of steps.
     `max_delta_e`              | `#!py 0`                           | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
     `delta_e`                  | `#!py None`                        | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `delta_e_args`             | `#!py None`                        | A dictionary containing keyword arguments to be passed to the `delta_e` method.
     `#!py **interpolate_args`  | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return
@@ -940,6 +942,7 @@ def discrete(
     max_steps: int = 1000,
     max_delta_e: float = 0,
     delta_e: str | None = None,
+    delta_e_args: dict[str, Any] | None = None,
     domain: list[float] | None = None,
     **interpolate_args: Any
 ) -> Interpolator:
@@ -967,6 +970,8 @@ Parameters
     `max_steps`                      | `#!py 1000`                        | Maximum number of steps.
     `max_delta_e`                    | `#!py 0`                           | Maximum delta E distance between the color stops. A value of `0` or less will be ignored.
     `delta_e`                        | `#!py None`                        | A string indicating which [∆E method](../distance.md#delta-e) to use. If nothing is supplied, the class object's current default ∆E method will be used.
+    `delta_e_args`                   | `#!py None`                        | A dictionary containing keyword arguments to be passed to the `delta_e` method.
+    `domain`                         | `#!py None`                        | A list of numbers defining the domain range of the interpolation.
     `#!py **interpolate_args`        | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return

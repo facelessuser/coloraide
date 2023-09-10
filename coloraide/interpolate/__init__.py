@@ -124,12 +124,13 @@ class Interpolator(metaclass=ABCMeta):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
-        delta_e: str | None = None
+        delta_e: str | None = None,
+        delta_e_args: dict[str, Any] | None = None,
     ) -> None:
         """Make the interpolation a discretized interpolation."""
 
         # Get the discrete steps for the new discrete interpolation
-        colors = self.steps(steps, max_steps, max_delta_e, delta_e)
+        colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)
 
         # Calculate new coordinate list and discrete stops
         total = len(colors)
@@ -238,11 +239,15 @@ class Interpolator(metaclass=ABCMeta):
         steps: int = 2,
         max_steps: int = 1000,
         max_delta_e: float = 0,
-        delta_e: str | None = None
+        delta_e: str | None = None,
+        delta_e_args: dict[str, Any] | None = None,
     ) -> list[Color]:
         """Steps."""
 
         actual_steps = steps
+
+        if delta_e_args is None:
+            delta_e_args = {}
 
         # Allocate at least two steps if we are doing a maximum delta E,
         if max_delta_e != 0 and actual_steps < 2:
@@ -272,7 +277,8 @@ class Interpolator(metaclass=ABCMeta):
                     m_delta,
                     ret[i - 1][1].delta_e(
                         ret[i][1],
-                        method=delta_e
+                        method=delta_e,
+                        **delta_e_args
                     )
                 )
 
@@ -291,8 +297,8 @@ class Interpolator(metaclass=ABCMeta):
                     color = self(p)
                     m_delta = max(
                         m_delta,
-                        color.delta_e(prev[1], method=delta_e),
-                        color.delta_e(cur[1], method=delta_e)
+                        color.delta_e(prev[1], method=delta_e, **delta_e_args),
+                        color.delta_e(cur[1], method=delta_e, **delta_e_args)
                     )
                     ret.insert(index, (p, color))
                     total += 1

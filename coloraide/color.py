@@ -978,6 +978,7 @@ class Color(metaclass=ColorMeta):
         max_steps: int = 1000,
         max_delta_e: float = 0,
         delta_e: str | None = None,
+        delta_e_args: dict[str, Any] | None = None,
         **interpolate_args: Any
     ) -> list[Color]:
         """Discrete steps."""
@@ -987,7 +988,7 @@ class Color(metaclass=ColorMeta):
         if domain is not None:
             interpolate_args['domain'] = interpolate.normalize_domain(domain)
 
-        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e)
+        return cls.interpolate(colors, **interpolate_args).steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)
 
     @classmethod
     def discrete(
@@ -1000,6 +1001,7 @@ class Color(metaclass=ColorMeta):
         max_steps: int = 1000,
         max_delta_e: float = 0,
         delta_e: str | None = None,
+        delta_e_args: dict[str, Any] | None = None,
         domain: list[float] | None = None,
         **interpolate_args: Any
     ) -> Interpolator:
@@ -1009,7 +1011,7 @@ class Color(metaclass=ColorMeta):
         num = sum((not callable(c) or not isinstance(c, interpolate.stop)) for c in colors) if steps is None else steps
         i = cls.interpolate(colors, space=space, **interpolate_args)
         # Convert the interpolation into a discretized interpolation with the requested number of steps
-        i.discretize(num, max_steps, max_delta_e, delta_e)
+        i.discretize(num, max_steps, max_delta_e, delta_e, delta_e_args)
         if domain is not None:
             i.domain(domain)
         if out_space is not None:
