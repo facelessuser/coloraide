@@ -3,6 +3,8 @@
 ## 2.10
 
 -   **NEW**: Declare official support for Python 3.12.
+-   **NEW**: `Color.steps` and `Color.discrete` now accept `delta_e_args` to allow configuring the underlying distance
+    algorithm when using the `delta_e` option.
 -   **NEW**: CIE Lab, both D50 and D65, are now derived from the `CIELab` class. CIE LCh, both D50 and D65, are also
     now derived from the `CIELCh` class. This makes it easy to determine a CIE Lab or CIE LCh space from other Lab-like
     spaces.
