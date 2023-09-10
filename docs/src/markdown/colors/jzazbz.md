@@ -7,20 +7,20 @@
 //// info | Properties
     attrs: {class: inline end}
 
-  **Name:** `jzazbz`
+**Name:** `jzazbz`
 
-  **White Point:** D65
+**White Point:** D65 / 2˚
 
-  **Coordinates:**
+**Coordinates:**
 
-  Name | Range^\*^
-  ---- | ---------
-  `jz` | [0, 1]
-  `az` | [-0.5, 0.5]
-  `bz` | [-0.5, 0.5]
+Name | Range^\*^
+---- | ---------
+`jz` | [0, 1]
+`az` | [-0.5, 0.5]
+`bz` | [-0.5, 0.5]
 
-  ^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-  to define percentage inputs/outputs.
+^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
+to define percentage inputs/outputs.
 ////
 
 //// html | figure

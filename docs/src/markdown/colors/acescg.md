@@ -9,7 +9,7 @@
 
 **Name:** `acescg`
 
-**White Point:** D60
+**White Point:** D60 / 2˚
 
 **Coordinates:**
 

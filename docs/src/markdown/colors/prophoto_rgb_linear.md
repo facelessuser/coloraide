@@ -9,7 +9,7 @@
 
 **Name:** `prophoto-rgb-linear`
 
-**White Point:** D50
+**White Point:** D50 / 2˚
 
 **Coordinates:**
 

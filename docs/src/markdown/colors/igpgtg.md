@@ -9,7 +9,7 @@
 
 **Name:** `ipt`
 
-**White Point:** D65
+**White Point:** D65 / 2˚
 
 **Coordinates:**
 
