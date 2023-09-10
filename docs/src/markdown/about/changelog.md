@@ -6,7 +6,7 @@
 -   **NEW**: CIE Lab, both D50 and D65, are now derived from the `CIELab` class. CIE LCh, both D50 and D65, are also
     now derived from the `CIELCh` class. This makes it easy to determine a CIE Lab or CIE LCh space from other Lab-like
     spaces.
--   **NEW**: ∆E^\*^~76~, ∆E^\*^~94~, ∆E^\*^~00~, and ∆E^\*^~cmc~ all accept a new parameter called `cielab` which allows
+-   **NEW**: ∆E^\*^~76~, ∆E^\*^~94~, ∆E^\*^~00~, and ∆E^\*^~cmc~ all accept a new parameter called `space` which allows
     the user to specify a registered Lab color space name (one that is derived from the `CIELab` class) to use as the
     distancing color space. This allows a user to use D50 Lab (or any other variant) for distancing.
 -   **FIX**: For consistency, ∆E^\*^~94~ and ∆E^\*^~cmc~ now use Lab D65 by default just like ∆E^\*^~76~ and
