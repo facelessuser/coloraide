@@ -14,7 +14,7 @@ jobs:
   tests:
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 5
       matrix:
         platform: [ubuntu-latest, windows-latest]
         python-version: [3.8, 3.9, '3.10', 3.11, 3.12]
@@ -36,7 +36,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       if: "!endsWith(matrix.python-version, '-dev')"
       uses: actions/setup-python@v4
@@ -65,7 +65,7 @@ jobs:
 
   lint:
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: ['3.11']
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -89,7 +89,7 @@ jobs:
 
   documents:
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: ['3.11']
 
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
