@@ -216,6 +216,10 @@ LCh Chroma uses a combination of chroma reduction and MINDE in the CIELCh color 
 reducing chroma in the CIELCh color space, LCh Chroma can hold hue and lightness in the LCh color space relatively
 constant. This is currently the default method used.
 
+/// note
+As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
+///
+
 The algorithm generally works by performing both clipping and chroma reduction. Using bisection, the chroma is reduced
 and then the chroma reduced color is clipped. Using ∆E~2000~, the distance between the chroma reduced color and the
 clipped chroma reduced color is measured. If the resultant distance falls within the specified threshold, the clipped
