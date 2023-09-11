@@ -33,7 +33,7 @@ not actually as perceptually uniform as it was thought when CIELab was originall
 Color("red").delta_e("blue")
 ```
 
-When `method` is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E~00~ which is a
+When `method` is set, the specified ∆E algorithm will be used instead. For instance, below we use ∆E^\*^~00~ which is a
 more complex algorithm that accounts for the CIELab's weakness in perceptually uniformity. It does come at the cost of
 being a little slower.
 
@@ -96,7 +96,7 @@ Color("red").delta_e("blue", method="cmc", space='lab')
 
 ### Delta E CIE94
 
-/// success | The ∆E~94~ distancing algorithm is registered in `Color` by default
+/// success | The ∆E^\*^~94~ distancing algorithm is registered in `Color` by default
 ///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
@@ -125,7 +125,7 @@ Color("red").delta_e("blue", method="94", space='lab')
 
 ### Delta E CIEDE2000
 
-/// success | The ∆E~00~ distancing algorithm is registered in `Color` by default
+/// success | The ∆E^\*^~00~ distancing algorithm is registered in `Color` by default
 ///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
@@ -187,8 +187,8 @@ Delta\ E                                 | Symmetrical           | Name         
 
 Various algorithms are designed for and perform decently in the SDR range, but ∆E~itp~ aims to provide good
 distancing in the HDR range using the [ICtCp](./colors/ictcp.md) color space (must be registered in order to use ∆E~itp~).
-It was determined that a `scalar` of 240 was more comparable to the average [∆E~00~](#delta-e-2000) result from the JND
-data set and 720 equates them to a JND.
+It was determined that a `scalar` of 240 was more comparable to the average [∆E^\*^~00~](#delta-e-2000) result from the
+JND data set and 720 equates them to a JND.
 
 Both the ICtCp color space and the ∆E algorithm must be registered to use.
 
@@ -325,7 +325,7 @@ Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], me
 A number of distancing algorithms have configurable features that can be set on demand. If you'd like to have these
 options set by default, you create a custom class and register the the plugins with the defaults of your choice.
 
-In this example, we will configure ∆E~00~ to use CIE Lab D50 instead of D65 by default.
+In this example, we will configure ∆E^\*^~00~ to use CIE Lab D50 instead of D65 by default.
 
 ```py play
 from coloraide import Color as Base
