@@ -1,4 +1,9 @@
-"""Lab class."""
+"""
+Lab class.
+
+https://ia802802.us.archive.org/23/items/gov.law.cie.15.2004/cie.15.2004.pdf
+http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
+"""
 from __future__ import annotations
 from ...spaces import Space, Labish
 from ...cat import WHITES
@@ -15,14 +20,7 @@ KE = 8  # KAPPA * EPSILON = 8
 
 
 def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
-    """
-    Convert Lab to D50-adapted XYZ.
-
-    http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
-
-    While the derivation is different than the specification, the results are the same as Appendix D:
-    https://www.cdvplus.cz/file/3-publikace-cie15-2004/
-    """
+    """Convert CIE Lab to XYZ using the reference white."""
 
     l, a, b = lab
 
@@ -34,7 +32,7 @@ def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
     # compute `xyz`
     xyz = [
         fx ** 3 if fx > EPSILON3 else (116 * fx - 16) / KAPPA,
-        fy ** 3 if fy > EPSILON3 else (116 * fy - 16) / KAPPA,
+        fy ** 3 if l > KE else l / KAPPA,
         fz ** 3 if fz > EPSILON3 else (116 * fz - 16) / KAPPA
     ]
 
@@ -43,14 +41,7 @@ def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
 
 
 def xyz_to_lab(xyz: Vector, white: VectorLike) -> Vector:
-    """
-    Assuming XYZ is relative to D50, convert to CIELab from CIE standard.
-
-    http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
-
-    While the derivation is different than the specification, the results are the same:
-    https://www.cdvplus.cz/file/3-publikace-cie15-2004/
-    """
+    """Convert XYZ to CIE Lab using the reference white."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
     xyz = alg.divide(xyz, white, dims=alg.D1)
