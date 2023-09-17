@@ -26,7 +26,7 @@ Name | Range
 ![HPLuv 3D](../images/hpluv-3d.png)
 
 ///// html | figcaption
-HSLuv color space in 3D
+HPLuv color space in 3D
 /////
 ////
 
@@ -34,7 +34,7 @@ HPLuv is similar to [HSLuv](./hsluv.md) but takes as many colors as it can from 
 distorting the chroma. This ends up reducing the gamut to a subset of the sRGB gamut. In the end, only more pastel
 colors remain.
 
-_[Learn about HSLuv](https://www.hsluv.org/)_
+_[Learn about HPLuv](https://www.hsluv.org/)_
 ///
 
 ## Channel Aliases
