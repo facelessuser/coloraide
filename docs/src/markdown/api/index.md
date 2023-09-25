@@ -1810,3 +1810,4 @@ Parameters
 Return
 
 -   Returns the converted 2D chromaticity coordinates.
+///
