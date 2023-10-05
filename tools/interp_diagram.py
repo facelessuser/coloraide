@@ -36,8 +36,8 @@ def main():
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--method', '-m', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
-    parser.add_argument('--powerless', '-p', action='store_true', help="Treat achromatic hues as powerless.")
-    parser.add_argument('--carryfoward', '-f', action='store_true', help="Carry forward undefined channels.")
+    parser.add_argument('--powerless', '-P', action='store_true', help="Treat achromatic hues as powerless.")
+    parser.add_argument('--carryforward', '-f', action='store_true', help="Carry forward undefined channels.")
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
