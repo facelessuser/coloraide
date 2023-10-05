@@ -141,6 +141,7 @@ class Color(metaclass=ColorMeta):
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
+    INTERPOLATOR = util.DEF_INTERPOLATOR
     DELTA_E = util.DEF_DELTA_E
     HARMONY = util.DEF_HARMONY
     AVERAGE = util.DEF_AVERAGE
@@ -1031,7 +1032,7 @@ class Color(metaclass=ColorMeta):
         premultiplied: bool = True,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        method: str = "linear",
+        method: str | None = None,
         padding: float | tuple[float, float] | None = None,
         carryforward: bool | None = None,
         powerless: bool | None = None,
@@ -1050,7 +1051,7 @@ class Color(metaclass=ColorMeta):
         """
 
         return interpolate.interpolator(
-            method,
+            method if method is not None else cls.INTERPOLATOR,
             cls,
             colors=colors,
             space=space,
