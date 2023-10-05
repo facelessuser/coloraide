@@ -17,7 +17,6 @@ from __future__ import annotations
 import math
 import functools
 from abc import ABCMeta, abstractmethod
-from .. import util
 from .. import algebra as alg
 from .. spaces import HSVish, HSLish, Cylindrical, RGBish, LChish, Labish
 from ..types import Vector, ColorInput, Plugin
