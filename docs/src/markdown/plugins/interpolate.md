@@ -29,6 +29,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         premultiplied: bool,
         extrapolate: bool = False,
         domain: List[float] | None = None,
+        hue: str = 'shorter',
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""

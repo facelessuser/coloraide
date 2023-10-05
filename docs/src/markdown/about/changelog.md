@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.11
+
+-   **NEW**: Add new `css-linear` interpolator that provides compatibility with the CSS specification. This deviates
+    from the default linear interpolator in how undefined hues are resolved for interpolation, particularly noticeable
+    with `longer` hue resolution.
+-   **NEW**: Add new `INTERPOLATOR` class option to change the default interpolator that is used.
+
 ## 2.10
 
 -   **NEW**: Declare official support for Python 3.12.

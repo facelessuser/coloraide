@@ -56,6 +56,86 @@ i = Color.interpolate(
 )
 ```
 
+### CSS Linear Interpolation
+
+/// new | New 2.11
+///
+
+/// success | CSS linear interpolation is registered in `Color` by Default
+///
+
+While ColorAide supports CSS color syntax, it's goal is not to necessarily mirror CSS in all aspects, though often we
+do provide ways ways to emulate the behavior.
+
+The default linear interpolation that ColorAide uses by default deviates from how CSS handles interpolation. More
+specifically, it deviates in how undefined hues are resolved during the interpolation steps. This difference impacts how
+achromatic interpolation is resolved. This difference becomes evident when using the `longer` hue fix-up.
+
+/// note | Hue Interpolation
+Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
+///
+
+Normally, two colors with defined hues will have a shorter and longer arc length between them.
+
+/// tab | Shorter
+![Shorter Hue](images/hue-shorter.png)
+
+```py play
+Color.interpolate(['red', 'blue'], space='hsl', hue='shorter')
+```
+///
+
+/// tab | Longer
+![Longer Hue](images/hue-longer.png)
+
+```py play
+Color.interpolate(['red', 'blue'], space='hsl', hue='longer')
+```
+///
+
+ColorAide applies hue fix-ups to ensure proper interpolation along a given arc length, but it does this before undefined
+hues are resolved. ColorAide takes the firm stance that when interpolating an achromatic color (or color with an
+undefined hue) with a color that has a defined hue, that there is no hue arc between the colors. So whether you choose
+to take the shorter or longer path, the result is the same, because there cannot exist an arc length between a defined
+hue and an undefined hue.
+
+CSS, on the other hand, resolves undefined hues _before_ hue fix-ups are applied. This means that as long as one hue is
+defined, you will always get a _pseudo_ arc between the hues. When presented with two hue values, if only one is
+undefined, the undefined hue assumes the value of the defined hue. And since this is done before hue fix-ups are
+applied, the interpolation is no longer applied to a known and unknown hue, but is applied to two equal hues. This
+difference is not noticeable until you use the `longer` interpolation path for hues, at which point the interpolation
+will spiral either away or towards the undefined hue depending on the direction of the interpolation.
+
+/// tab | CSS Longer
+![CSS Longer](images/css-hue-longer.png)
+
+```py play
+Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='css-linear', hue='longer')
+```
+///
+
+/// tab | ColorAide Longer
+![ColorAide Longer](images/coloraide-hue-longer.png)
+
+```py play
+Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='linear', hue='longer')
+```
+///
+
+There may be arguments as to why some feel CSS's approach is more or less appropriate, but our desire is only to clarify
+the differences and make know why our default is the way it is. If, for whatever reason, a CSS compatible linear
+interpolation is needed, then `css-linear` can be specified as the interpolation `method`. If `css-linear` is desired
+as the default, you can even use a class override.
+
+```py play
+from coloraide import Color as Base
+
+class Color(Base):
+    INTERPOLATOR = 'css-linear'
+
+Color.interpolate(['red', 'transparent', 'blue'], space='hsl', hue='longer')
+```
+
 ## Piecewise Interpolation
 
 Piecewise interpolation takes the idea of linear interpolation and then applies it to multiple colors. As drawing a
@@ -281,86 +361,110 @@ learn more.
 
 In interpolation, hues are handled special allowing us to control the way in which hues are evaluated. By default, the
 shortest angle between two hues is targeted for interpolation, but the `hue` option allows us to redefine this behavior
-in a number of interesting ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. Below, we can see how
-the interpolation varies using `shorter` vs `longer` (interpolate between the longest angle).
+in a number of interesting ways: `shorter`, `longer`, `increasing`, `decreasing`, and `specified`. These hue "fix-ups"
+identify all possible ways in which we can interpolate a hue and come from the
+[CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation).
 
-```py play
-i = Color.interpolate(
-    ["lch(52% 58.1 22.7)", Color("lch(56% 49.1 257.1)").mask("hue", invert=True)],
-    space="lch"
-)
-i(0.2477).to_string()
-i = Color.interpolate(
-    ["lch(52% 58.1 22.7)", Color("lch(56% 49.1 257.1)").mask("hue", invert=True)],
-    space="lch",
-    hue="longer"
-)
-i(0.2477).to_string()
-```
-
-To help visualize the different hue methods, consider the following evaluation between `#!color rebeccapurple` and
-`#!color lch(85% 85 805)`. Below we will demonstrate each of the different hue evaluations. To learn more, check out the
-[CSS level 4 specification](https://drafts.csswg.org/css-color-4/#hue-interpolation) which describes each one.
-
-/// note | Hue Specified
+/// note | Specified
 The `specified` fix-up was at one time specified in the CSS Color Level 4 specification, but is no longer mentioned
 there. While CSS no longer supports this hue fix-up, we still do. `specified` simply does not apply any hue fix-up and
 will use hues as _specified_, hence the name.
 ///
 
-/// tip | Interpolating Multiple Colors
-The algorithm has been tweaked in order to calculate fix-ups of multiple hues such that they are all relative to
-each other. This is a requirement for interpolation methods that use cubic splines that evaluate many hues at the
-same time as opposed to linear, piecewise interpolation that only evaluates two hues at any given time.
-///
+To help visualize the different hue methods, consider the following evaluation between `#!color hsl(270 50 40)` and
+`#!color hsl(780 100 40)`. Below we will demonstrate each of the different hue evaluations and explain what it is that
+they do.
 
 /// tab | shorter
+`shorter` interpolates along the shortest arc length after normalizing the hues.
+
+![Shorter](images/hue-fixup-shorter.png)
+
 ```py play
 Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 805)"],
-    space='lch',
+    ["hsl(270 50 40)", "hsl(780 100 40)"],
+    space='hsl',
     hue="shorter"
 )
 ```
 ///
 
 /// tab | longer
+`longer` interpolates along the longest arc length after normalizing the hues.
+
+![Longer](images/hue-fixup-longer.png)
+
 ```py play
 Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 805)"],
-    space='lch',
+    ["hsl(270 50 40)", "hsl(780 100 40)"],
+    space='hsl',
     hue="longer"
 )
 ```
 ///
 
 /// tab | increasing
+`increasing` interpolates counter clockwise (after normalizing the hues), such that the hues are increasing.
+
+![Increasing](images/hue-fixup-increasing.png)
+
 ```py play
 Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 805)"],
-    space='lch',
+    ["hsl(270 50 40)", "hsl(780 100 40)"],
+    space='hsl',
     hue="increasing"
 )
 ```
 ///
 
 /// tab | decreasing
+`decreasing` interpolates clockwise (after normalizing the hues), such that the hues are decreasing.
+
+![Decreasing](images/hue-fixup-decreasing.png)
+
 ```py play
 Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 805)"],
-    space='lch',
+    ["hsl(270 50 40)", "hsl(780 100 40)"],
+    space='hsl',
     hue="decreasing"
 )
 ```
 ///
 
 /// tab | specified
+`specified` interpolates from the first color the next color without applying any hue fix-ups.
+
+![Specified](images/hue-fixup-specified.png)
+
 ```py play
 Color.interpolate(
-    ["rebeccapurple", "lch(85% 100 805)"],
-    space='lch',
+    ["hsl(270 50 40)", "hsl(780 100 40)"],
+    space='hsl',
     hue="specified"
 )
+```
+///
+
+In general, achromatic colors cannot have an arc length between them and other color. When applying linear interpolation
+between an achromatic color (or a color which simply does not define the hue), the applied hue fix-up will have little
+effect. With that said, when using [CSS linear interpolation](#css-linear-interpolation), the algorithm is a little
+different and it essentially creates pseudo arcs between color pairs with undefined hues and defined hues. Only with the
+`longer` hue fix-up does this become apparent. Below we compare CSS linear interpolation to our our default linear
+interpolation.
+
+/// tab | CSS Longer Interpolation
+![CSS Longer](images/css-hue-longer.png)
+
+```py play
+Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='css-linear', hue='longer')
+```
+///
+
+/// tab | Default Longer Interpolation
+![ColorAide Longer](images/coloraide-hue-longer.png)
+
+```py play
+Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='linear', hue='longer')
 ```
 ///
 
