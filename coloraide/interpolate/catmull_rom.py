@@ -7,11 +7,7 @@ from __future__ import annotations
 from .bspline import InterpolatorBSpline
 from ..interpolate import Interpolator, Interpolate
 from .. import algebra as alg
-from ..types import Vector
-from typing import Callable, Mapping, Sequence, Any, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Any
 
 
 class InterpolatorCatmullRom(InterpolatorBSpline):
@@ -29,36 +25,7 @@ class CatmullRom(Interpolate):
 
     NAME = "catrom"
 
-    def interpolator(
-        self,
-        coordinates: list[Vector],
-        channel_names: Sequence[str],
-        create: type[Color],
-        easings: list[Callable[..., float] | None],
-        stops: dict[int, float],
-        space: str,
-        out_space: str,
-        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
-        premultiplied: bool,
-        extrapolate: bool = False,
-        domain: list[float] | None = None,
-        padding: float | tuple[float, float] | None = None,
-        **kwargs: Any
-    ) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
         """Return the Catmull-Rom interpolator."""
 
-        return InterpolatorCatmullRom(
-            coordinates,
-            channel_names,
-            create,
-            easings,
-            stops,
-            space,
-            out_space,
-            progress,
-            premultiplied,
-            extrapolate,
-            domain,
-            padding,
-            **kwargs
-        )
+        return InterpolatorCatmullRom(*args, **kwargs)

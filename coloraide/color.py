@@ -60,6 +60,7 @@ from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, O
 from .filters.cvd import Protan, Deutan, Tritan
 from .interpolate import Interpolator, Interpolate
 from .interpolate.linear import Linear
+from .interpolate.css_linear import CSSLinear
 from .interpolate.continuous import Continuous
 from .interpolate.bspline import BSpline
 from .interpolate.bspline_natural import NaturalBSpline
@@ -1382,6 +1383,7 @@ Color.register(
 
         # Interpolation
         Linear(),
+        CSSLinear(),
         Continuous(),
         BSpline(),
         NaturalBSpline(),

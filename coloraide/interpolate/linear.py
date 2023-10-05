@@ -4,14 +4,68 @@ import math
 from .. import algebra as alg
 from ..interpolate import Interpolator, Interpolate
 from ..types import Vector
-from typing import Callable, Mapping, Any, Sequence, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Any
 
 
 class InterpolatorLinear(Interpolator):
     """Interpolate multiple ranges of colors using linear, Piecewise interpolation."""
+
+    def normalize_hue(
+        self,
+        color1: Vector,
+        color2: Vector,
+        hue: str
+    ) -> None:
+        """
+        Adjust hues.
+
+        Undefined hues are not resolved at this point in time.
+        When interpolating between achromatic colors, hue specifications
+        such as shorter and longer will have no affect as undefined hues
+        will remain undefined meaning there is no arc length to choose
+        between. This gives more intuitive interpolation results.
+        """
+
+        index = self.hue_index
+
+        c1 = color1[index]
+        c2 = color2[index]
+
+        if hue == "specified":
+            return
+
+        c1 %= 360
+        c2 %= 360
+
+        if math.isnan(c1) or math.isnan(c2):
+            return
+
+        if hue == "shorter":
+            if c2 - c1 > 180:
+                c1 += 360
+            elif c2 - c1 < -180:
+                c2 += 360
+
+        elif hue == "longer":
+            if 0 < (c2 - c1) < 180:
+                c1 += 360
+            elif -180 < (c2 - c1) <= 0:
+                c2 += 360
+
+        elif hue == "increasing":
+            if c2 < c1:
+                c2 += 360
+
+        elif hue == "decreasing":
+            if c1 < c2:
+                c1 += 360
+
+        else:
+            raise ValueError("Unknown hue adjuster '{}'".format(hue))
+
+        color1[index] = c1
+        color2[index] = c2
+
 
     def setup(self) -> None:
         """Setup for linear interpolation."""
@@ -28,6 +82,10 @@ class InterpolatorLinear(Interpolator):
             if i < end:
                 self.coordinates.insert(i + 2, c2[:])
                 end += 1
+
+            if self.hue_index >= 0:
+                self.normalize_hue(c1, c2, self.hue)
+                self.coordinates[i:i + 2] = [c1, c2]
 
             # If we have a NaN for one alpha and the other alpha is not
             # Use the non-NaN alpha, but if we are premultiplied, we need
@@ -92,36 +150,7 @@ class Linear(Interpolate):
 
     NAME = "linear"
 
-    def interpolator(
-        self,
-        coordinates: list[Vector],
-        channel_names: Sequence[str],
-        create: type[Color],
-        easings: list[Callable[..., float] | None],
-        stops: dict[int, float],
-        space: str,
-        out_space: str,
-        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
-        premultiplied: bool,
-        extrapolate: bool = False,
-        domain: list[float] | None = None,
-        padding: float | tuple[float, float] | None = None,
-        **kwargs: Any
-    ) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
         """Return the linear interpolator."""
 
-        return InterpolatorLinear(
-            coordinates,
-            channel_names,
-            create,
-            easings,
-            stops,
-            space,
-            out_space,
-            progress,
-            premultiplied,
-            extrapolate,
-            domain,
-            padding,
-            **kwargs
-        )
+        return InterpolatorLinear(*args, **kwargs)

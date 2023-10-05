@@ -412,7 +412,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(30% 30 350)')
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch"),
-            Color("lch(75% 50 15)")
+            Color("lch(75% 50 375)")
         )
 
         # c2 - c1 < -180
@@ -431,7 +431,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(30% 30 60)')
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch"),
-            Color("lch(75% 50 -130)")
+            Color("lch(75% 50 230)")
         )
 
         # -180 < (c2 - c1) < 0
@@ -461,7 +461,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         c2 = Color('lch(30% 30 60)')
         self.assertColorEqual(
             c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing", space="lch"),
-            Color("lch(75% 50 -130)")
+            Color("lch(75% 50 230)")
         )
 
     def test_mix_hue_adjust_bad(self):
