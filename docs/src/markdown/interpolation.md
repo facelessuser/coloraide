@@ -68,8 +68,8 @@ While ColorAide supports CSS color syntax, it's goal is not to necessarily mirro
 do provide ways ways to emulate the behavior.
 
 The default linear interpolation that ColorAide uses by default deviates from how CSS handles interpolation. More
-specifically, it deviates in how undefined hues are resolved during the interpolation steps. This difference impacts how
-achromatic interpolation is resolved. This difference becomes evident when using the `longer` hue fix-up.
+specifically, it deviates in how undefined hues are resolved during the interpolation steps which directly affects
+achromatic interpolation results. The difference in handling only becomes observable when using the `longer` hue fix-up.
 
 /// note | Hue Interpolation
 Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
