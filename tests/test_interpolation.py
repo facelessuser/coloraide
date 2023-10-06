@@ -490,6 +490,118 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
             Color("hsl(120, 25%, 57.5%)")
         )
 
+    def test_css_hue_shorter_cases(self):
+        """Cover shorter hue cases."""
+
+        # c2 - c1 > 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 350)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch", method='css-linear'),
+            Color("lch(75% 50 375)")
+        )
+
+        # c2 - c1 < -180
+        c1 = Color('lch(30% 30 350)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch", method='css-linear'),
+            Color("lch(30% 30 375)")
+        )
+
+    def test_css_mix_hue_adjust(self):
+        """Test hue adjusting."""
+
+        c1 = Color('rebeccapurple')
+        c2 = Color('lch(85% 100 805)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch", method='css-linear'),
+            Color("lch(32.393 61.244 342.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch", method='css-linear'),
+            Color("lch(32.393 61.244 252.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch", method='css-linear'),
+            Color("lch(32.393 61.244 342.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch", method='css-linear'),
+            Color("lch(32.393 61.244 252.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch", method='css-linear'),
+            Color("lch(32.393 61.244 432.89)")
+        )
+
+    def test_css_hue_longer_cases(self):
+        """Cover longer hue cases."""
+
+        # 0 < (c2 - c1) < 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch", method='css-linear'),
+            Color("lch(75% 50 230)")
+        )
+
+        # -180 < (c2 - c1) < 0
+        c1 = Color('lch(30% 30 60)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch", method='css-linear'),
+            Color("lch(30% 30 230)")
+        )
+
+    def test_css_hue_increasing_cases(self):
+        """Cover increasing hue cases."""
+
+        # c2 < c1
+        c1 = Color('lch(75% 50 60)')
+        c2 = Color('lch(30% 30 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing", space="lch", method='css-linear'),
+            Color("lch(75% 50 230)")
+        )
+
+    def test_css_hue_decreasing_cases(self):
+        """Cover decreasing hue cases."""
+
+        # c1 < c2
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing", space="lch", method='css-linear'),
+            Color("lch(75% 50 230)")
+        )
+
+    def test_css_mix_hue_adjust_bad(self):
+        """Test hue adjusting."""
+
+        c1 = Color('rebeccapurple')
+        c2 = Color('lch(85% 100 805)')
+        with self.assertRaises(ValueError):
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="bad", space="lch", method='css-linear')
+
+    def test_css_mix_hue_nan(self):
+        """Test mix hue with `NaN`."""
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl", method='css-linear'),
+            Color("hsl(0, 0%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [120, 0.5, 0.9]), 0.50, space="hsl", method='css-linear'),
+            Color("hsl(120, 25%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [120, 0.5, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl", method='css-linear'),
+            Color("hsl(120, 25%, 57.5%)")
+        )
+
     def test_mix_progress(self):
         """Test custom progress."""
 
@@ -1163,6 +1275,118 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color.interpolate(['green', lambda t: t * 3])
+
+    def test_continuos_hue_shorter_cases(self):
+        """Cover shorter hue cases."""
+
+        # c2 - c1 > 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 350)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch", method='continuous'),
+            Color("lch(75% 50 15)")
+        )
+
+        # c2 - c1 < -180
+        c1 = Color('lch(30% 30 350)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="shorter", space="lch", method='continuous'),
+            Color("lch(30% 30 375)")
+        )
+
+    def test_continuos_mix_hue_adjust(self):
+        """Test hue adjusting."""
+
+        c1 = Color('rebeccapurple')
+        c2 = Color('lch(85% 100 805)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="shorter", space="lch", method='continuous'),
+            Color("lch(32.393 61.244 342.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="longer", space="lch", method='continuous'),
+            Color("lch(32.393 61.244 252.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="increasing", space="lch", method='continuous'),
+            Color("lch(32.393 61.244 342.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="decreasing", space="lch", method='continuous'),
+            Color("lch(32.393 61.244 252.89)")
+        )
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="specified", space="lch", method='continuous'),
+            Color("lch(32.393 61.244 432.89)")
+        )
+
+    def test_continuos_hue_longer_cases(self):
+        """Cover longer hue cases."""
+
+        # 0 < (c2 - c1) < 180
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch", method='continuous'),
+            Color("lch(75% 50 -130)")
+        )
+
+        # -180 < (c2 - c1) < 0
+        c1 = Color('lch(30% 30 60)')
+        c2 = Color('lch(75% 50 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="longer", space="lch", method='continuous'),
+            Color("lch(30% 30 230)")
+        )
+
+    def test_continuos_hue_increasing_cases(self):
+        """Cover increasing hue cases."""
+
+        # c2 < c1
+        c1 = Color('lch(75% 50 60)')
+        c2 = Color('lch(30% 30 40)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="increasing", space="lch", method='continuous'),
+            Color("lch(75% 50 230)")
+        )
+
+    def test_continuos_hue_decreasing_cases(self):
+        """Cover decreasing hue cases."""
+
+        # c1 < c2
+        c1 = Color('lch(75% 50 40)')
+        c2 = Color('lch(30% 30 60)')
+        self.assertColorEqual(
+            c1.mix(c2.mask("hue", invert=True), 0.50, hue="decreasing", space="lch", method='continuous'),
+            Color("lch(75% 50 -130)")
+        )
+
+    def test_continuos_mix_hue_adjust_bad(self):
+        """Test hue adjusting."""
+
+        c1 = Color('rebeccapurple')
+        c2 = Color('lch(85% 100 805)')
+        with self.assertRaises(ValueError):
+            c1.mix(c2.mask("hue", invert=True), 0.25, hue="bad", space="lch", method='continuous')
+
+    def test_continuos_mix_hue_nan(self):
+        """Test mix hue with `NaN`."""
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl", method='continuous'),
+            Color("hsl(0, 0%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [NaN, 0, 0.25]).mix(Color('hsl', [120, 0.5, 0.9]), 0.50, space="hsl", method='continuous'),
+            Color("hsl(120, 25%, 57.5%)")
+        )
+
+        self.assertColorEqual(
+            Color('hsl', [120, 0.5, 0.25]).mix(Color('hsl', [NaN, 0, 0.9]), 0.50, space="hsl", method='continuous'),
+            Color("hsl(120, 25%, 57.5%)")
+        )
 
     def test_continuous_undefined_middle(self):
         """Test continuous with undefined middle."""
