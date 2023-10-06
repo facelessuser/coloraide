@@ -60,6 +60,7 @@ from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, O
 from .filters.cvd import Protan, Deutan, Tritan
 from .interpolate import Interpolator, Interpolate
 from .interpolate.linear import Linear
+from .interpolate.css_linear import CSSLinear
 from .interpolate.continuous import Continuous
 from .interpolate.bspline import BSpline
 from .interpolate.bspline_natural import NaturalBSpline
@@ -140,6 +141,7 @@ class Color(metaclass=ColorMeta):
     PRECISION = util.DEF_PREC
     FIT = util.DEF_FIT
     INTERPOLATE = util.DEF_INTERPOLATE
+    INTERPOLATOR = util.DEF_INTERPOLATOR
     DELTA_E = util.DEF_DELTA_E
     HARMONY = util.DEF_HARMONY
     AVERAGE = util.DEF_AVERAGE
@@ -1030,7 +1032,7 @@ class Color(metaclass=ColorMeta):
         premultiplied: bool = True,
         extrapolate: bool = False,
         domain: list[float] | None = None,
-        method: str = "linear",
+        method: str | None = None,
         padding: float | tuple[float, float] | None = None,
         carryforward: bool | None = None,
         powerless: bool | None = None,
@@ -1049,7 +1051,7 @@ class Color(metaclass=ColorMeta):
         """
 
         return interpolate.interpolator(
-            method,
+            method if method is not None else cls.INTERPOLATOR,
             cls,
             colors=colors,
             space=space,
@@ -1382,6 +1384,7 @@ Color.register(
 
         # Interpolation
         Linear(),
+        CSSLinear(),
         Continuous(),
         BSpline(),
         NaturalBSpline(),

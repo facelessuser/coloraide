@@ -38,6 +38,7 @@ def main():
     parser.add_argument('--extrapolate', '-e', action='store_true', help='Extrapolate values.')
     parser.add_argument('--powerless', '-P', action='store_true', help="Treat achromatic hues as powerless.")
     parser.add_argument('--carryforward', '-f', action='store_true', help="Carry forward undefined channels.")
+    parser.add_argument('--hue', '-H', default='shorter', help="Hue interpolation method.")
     parser.add_argument('--title', '-T', default='', help="Provide a title for the diagram.")
     parser.add_argument('--subtitle', '-t', default='', help="Provide a subtitle for the diagram.")
     parser.add_argument(
@@ -110,7 +111,8 @@ def main():
         method=args.method,
         extrapolate=args.extrapolate,
         powerless=args.powerless,
-        carryforward=args.carryforward
+        carryforward=args.carryforward,
+        hue=args.hue
     )
     if not args.extrapolate:
         offset, factor = 0, 1
@@ -135,7 +137,7 @@ def main():
 
     for c in colors:
         plt.scatter(
-            c.get(name1) if hue_index == -1 else math.radians(c.get(name1)),
+            c.get(name1) if hue_index == -1 else math.radians(c.get(name1, nans=False)),
             c.get(name2),
             marker="o",
             color=c.convert('srgb').to_string(hex=True),
@@ -150,10 +152,11 @@ def main():
             method=args.method,
             extrapolate=args.extrapolate,
             powerless=args.powerless,
-            carryforward=args.carryforward
+            carryforward=args.carryforward,
+            hue=args.hue
         )(float(args.position))
         plt.scatter(
-            cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1)),
+            cp.get(name1) if hue_index == -1 else math.radians(cp.get(name1, nans=False)),
             cp.get(name2),
             marker="o",
             color=cp.convert('srgb').to_string(hex=True),

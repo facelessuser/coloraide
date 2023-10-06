@@ -7,11 +7,7 @@ from __future__ import annotations
 from .. interpolate import Interpolate, Interpolator
 from .bspline import InterpolatorBSpline
 from .. import algebra as alg
-from ..types import Vector
-from typing import List, Sequence, Any, Mapping, Callable, Dict, Type, TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..color import Color
+from typing import Any
 
 
 class InterpolatorNaturalBSpline(InterpolatorBSpline):
@@ -39,36 +35,7 @@ class NaturalBSpline(Interpolate):
 
     NAME = "natural"
 
-    def interpolator(
-        self,
-        coordinates: List[Vector],
-        channel_names: Sequence[str],
-        create: Type[Color],
-        easings: List[Callable[..., float] | None],
-        stops: Dict[int, float],
-        space: str,
-        out_space: str,
-        progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
-        premultiplied: bool,
-        extrapolate: bool = False,
-        domain: list[float] | None = None,
-        padding: float | tuple[float, float] | None = None,
-        **kwargs: Any
-    ) -> Interpolator:
+    def interpolator(self, *args: Any, **kwargs: Any) -> Interpolator:
         """Return the natural B-spline interpolator."""
 
-        return InterpolatorNaturalBSpline(
-            coordinates,
-            channel_names,
-            create,
-            easings,
-            stops,
-            space,
-            out_space,
-            progress,
-            premultiplied,
-            extrapolate,
-            domain,
-            padding,
-            **kwargs
-        )
+        return InterpolatorNaturalBSpline(*args, **kwargs)

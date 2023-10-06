@@ -17,7 +17,6 @@ from __future__ import annotations
 import math
 import functools
 from abc import ABCMeta, abstractmethod
-from .. import util
 from .. import algebra as alg
 from .. spaces import HSVish, HSLish, Cylindrical, RGBish, LChish, Labish
 from ..types import Vector, ColorInput, Plugin
@@ -83,6 +82,7 @@ class Interpolator(metaclass=ABCMeta):
         extrapolate: bool = False,
         domain: Sequence[float] | None = None,
         padding: float | tuple[float, float] | None = None,
+        hue: str = 'shorter',
         **kwargs: Any
     ):
         """Initialize."""
@@ -100,6 +100,7 @@ class Interpolator(metaclass=ABCMeta):
         self._out_space = out_space
         self.extrapolate = extrapolate
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
+        self.hue = hue
         cs = self.create.CS_MAP[space]
         if isinstance(cs, Cylindrical):
             self.hue_index = cs.hue_index()
@@ -469,6 +470,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         extrapolate: bool = False,
         domain: list[float] | None = None,
         padding: float | tuple[float, float] | None = None,
+        hue: str = 'shorter',
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
@@ -548,93 +550,6 @@ def process_mapping(
     if not isinstance(progress, Mapping):
         return progress
     return {aliases.get(k, k): v for k, v in progress.items()}
-
-
-def adjust_shorter(h1: float, h2: float, offset: float) -> tuple[float, float]:
-    """Adjust the given hues."""
-
-    d = h2 - h1
-    if d > 180:
-        h2 -= 360.0
-        offset -= 360.0
-    elif d < -180:
-        h2 += 360
-        offset += 360.0
-    return h2, offset
-
-
-def adjust_longer(h1: float, h2: float, offset: float) -> tuple[float, float]:
-    """Adjust the given hues."""
-
-    d = h2 - h1
-    if 0 < d < 180:
-        h2 -= 360.0
-        offset -= 360.0
-    elif -180 < d <= 0:
-        h2 += 360
-        offset += 360.0
-    return h2, offset
-
-
-def adjust_increase(h1: float, h2: float, offset: float) -> tuple[float, float]:
-    """Adjust the given hues."""
-
-    if h2 < h1:
-        h2 += 360.0
-        offset += 360.0
-    return h2, offset
-
-
-def adjust_decrease(h1: float, h2: float, offset: float) -> tuple[float, float]:
-    """Adjust the given hues."""
-
-    if h2 > h1:
-        h2 -= 360.0
-        offset -= 360.0
-    return h2, offset
-
-
-def normalize_hue(
-    color1: Vector,
-    color2: Vector | None,
-    index: int,
-    offset: float,
-    hue: str,
-    fallback: float | None
-) -> tuple[Vector, float]:
-    """Normalize hues according the hue specifier."""
-
-    if hue == 'specified':
-        return (color2 or color1), offset
-
-    # Probably the first hue
-    if color2 is None:
-        color1[index] = util.constrain_hue(color1[index])
-        return color1, offset
-
-    if hue == 'shorter':
-        adjuster = adjust_shorter
-    elif hue == 'longer':
-        adjuster = adjust_longer
-    elif hue == 'increasing':
-        adjuster = adjust_increase
-    elif hue == 'decreasing':
-        adjuster = adjust_decrease
-    else:
-        raise ValueError("Unknown hue adjuster '{}'".format(hue))
-
-    c1 = color1[index] + offset
-    c2 = util.constrain_hue(color2[index]) + offset
-
-    # Adjust hue, handle gaps across `NaN`s
-    if not math.isnan(c2):
-        if not math.isnan(c1):
-            c2, offset = adjuster(c1, c2, offset)
-        elif fallback is not None:
-            c2, offset = adjuster(fallback, c2, offset)
-
-    color2[index] = c2
-    return color2, offset
 
 
 def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bool) -> None:  # pragma: no cover
@@ -776,19 +691,9 @@ def interpolator(
     elif powerless and is_cyl and current.is_achromatic():
         current[hue_index] = math.nan
 
-    # Normalize hue
-    offset = 0.0
-    norm_coords = current[:]
-    fallback = None
-    if hue_index >= 0:
-        h = norm_coords[hue_index]
-        norm_coords, offset = normalize_hue(norm_coords, None, hue_index, offset, hue, fallback)
-        if not math.isnan(h):
-            fallback = h
-
     easing = None  # type: Any
     easings = []  # type: Any
-    coords = [norm_coords]
+    coords = [current[:]]
 
     i = 0
     for x in colors[1:]:
@@ -814,16 +719,8 @@ def interpolator(
         elif powerless and is_cyl and color.is_achromatic():
             color[hue_index] = math.nan
 
-        # Normalize the hue
-        norm_coords = color[:]
-        if hue_index >= 0:
-            h = norm_coords[hue_index]
-            norm_coords, offset = normalize_hue(current[:], norm_coords, hue_index, offset, hue, fallback)
-            if not math.isnan(h):
-                fallback = h
-
         # Create an entry interpolating the current color and the next color
-        coords.append(norm_coords)
+        coords.append(color[:])
         easings.append(easing if easing is not None else progress)
 
         # The "next" color is now the "current" color
@@ -836,6 +733,7 @@ def interpolator(
 
     # Calculate stops
     stops = calc_stops(stops, i)
+    kwargs['hue'] = hue
 
     # Send the interpolation list along with the stop map to the Piecewise interpolator
     return plugin.interpolator(
