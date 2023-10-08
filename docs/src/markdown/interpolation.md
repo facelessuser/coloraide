@@ -69,13 +69,14 @@ do provide ways ways to emulate the behavior.
 
 The default linear interpolation that ColorAide uses by default deviates from how CSS handles interpolation. More
 specifically, it deviates in how undefined hues are resolved during the interpolation steps which directly affects
-achromatic interpolation results. The difference in handling only becomes observable when using the `longer` hue fix-up.
+achromatic interpolation results. The difference in handling is subtle, but becomes quite observable when using the
+`longer` hue fix-up.
 
 /// note | Hue Interpolation
 Hue interpolation, along with fix-ups, is more generally covered in [Hue Interpolation](#hue-interpolation).
 ///
 
-Normally, two colors with defined hues will have a shorter and longer arc length between them.
+Normally, two colors with defined hues will have a shorter and longer arc length between the two hue angles.
 
 /// tab | Shorter
 ![Shorter Hue](images/hue-shorter.png)
@@ -93,18 +94,18 @@ Color.interpolate(['red', 'blue'], space='hsl', hue='longer')
 ```
 ///
 
-ColorAide applies hue fix-ups to ensure proper interpolation along a given arc length, but it does this before undefined
-hues are resolved. ColorAide takes the firm stance that when interpolating an achromatic color (or color with an
-undefined hue) with a color that has a defined hue, that there is no hue arc between the colors. So whether you choose
-to take the shorter or longer path, the result is the same, because there cannot exist an arc length between a defined
-hue and an undefined hue.
+ColorAide and CSS apply hue fix-ups to ensure proper interpolation occurs along a given hue arc in the desired way.
+ColorAide's default linear interpolation waits until right before the actual interpolation takes place to resolve any
+and all undefined channels. This means that hue fix-ups are applied while hues are still undefined making it impossible
+to define a shorter or longer arc. This means that when a hue is undefined, whether `longer` or `shorter` is chosen, the
+result will be the same. Ultimately, ColorAide takes the stance that undefined hues cannot have an arc between itself
+and another hue as their is no hue to compare against.
 
-CSS, on the other hand, resolves undefined hues _before_ hue fix-ups are applied. This means that as long as one hue is
-defined, you will always get a _pseudo_ arc between the hues. When presented with two hue values, if only one is
-undefined, the undefined hue assumes the value of the defined hue. And since this is done before hue fix-ups are
-applied, the interpolation is no longer applied to a known and unknown hue, but is applied to two equal hues. This
-difference is not noticeable until you use the `longer` interpolation path for hues, at which point the interpolation
-will spiral either away or towards the undefined hue depending on the direction of the interpolation.
+CSS, on the other hand, resolves undefined hues _before_ hue fix-ups are applied. This means that as long as the other
+hue is defined, the undefined hue will take on the value of the defined hue before the fix-up. With both hues defined
+this creates _pseudo_ arc lengths (both shorter and longer) between the two hues. This subtle difference makes a large
+impact when evaluating `longer` hue interpolations. Instead of interpolating an undefined hue and a defined hue, CSS
+actually interpolates between either a shorter angel difference of 0˚ or a longer angle difference of 360˚.
 
 /// tab | CSS Longer
 ![CSS Longer](images/css-hue-longer.png)
@@ -123,9 +124,9 @@ Color.interpolate(['hsl(0 75 50)', 'hsl(none 0 50)'], space='hsl', method='linea
 ///
 
 There may be arguments as to why some feel CSS's approach is more or less appropriate, but our desire is only to clarify
-the differences and make know why our default is the way it is. If, for whatever reason, a CSS compatible linear
-interpolation is needed, then `css-linear` can be specified as the interpolation `method`. If `css-linear` is desired
-as the default, you can even use a class override.
+the differences and make known why our default is the way it is. If a CSS compatible linear interpolation is needed,
+then `css-linear` can be specified as the interpolation `method`. If `css-linear` is desired as the default approach,
+the `Color` object can be subclassed and configured to do so.
 
 ```py play
 from coloraide import Color as Base
@@ -432,7 +433,7 @@ Color.interpolate(
 ///
 
 /// tab | specified
-`specified` interpolates from the first color the next color without applying any hue fix-ups.
+`specified` interpolates from the first color to the second color without applying any hue fix-ups.
 
 ![Specified](images/hue-fixup-specified.png)
 
