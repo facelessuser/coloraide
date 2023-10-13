@@ -50,7 +50,7 @@ same color wheel and no precise color codes.
 ColorAide implements Gossett and Chen's algorithm to convert from RYB to sRGB, but also uses an algorithm that employs
 Newton's method to approximates the reverse transform. Additionally, their paper implements an easing function that
 biases the color transforms to corners of the cube. While we've also implemented this behavior to be true to the paper,
-the color spaces does not utilize this biasing by default, but we provide an alternative version does. The biasing
+the color spaces does not utilize this biasing by default, but we provide an alternative version that does. The biasing
 does not improve the color space, but limits the intermediate colors, essentially clumping them near the corners of the
 RYB color cube which was a requirement for the types of data representations that they were performing.
 
