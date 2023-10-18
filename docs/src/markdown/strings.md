@@ -100,8 +100,56 @@ naturally undefined. An example would be a hue when the color has saturation or 
 Color('hsl(none 0% 30%)').to_string(none=True)
 ```
 
-The one exception is that legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` forms (comma separated) do not support `none`
-per the CSS spec.
+The one exception is that legacy `rgb()`, `rgba()`, `hsl()`, and `hsla()` forms ([comma separated](#comma)) do not
+support `none` per the CSS spec.
+
+### Percent
+
+Color formats can serialize channels with percents by using `percent`.
+
+```py play
+Color("rebeccapurple").to_string(percent=True)
+Color("rebeccapurple").convert('lab').to_string(percent=True)
+```
+
+By default, only HSL and HWB output channels with percents by default to match browser expectations which do not yet
+support colors non-percent output for their non-hue channels. This is specifically only true for the named color
+function formats: `hsl()` and `hwb()`.
+
+```py play
+Color("rebeccapurple").convert('hsl').to_string()
+Color("rebeccapurple").convert('hsl').to_string(percent=False)
+```
+
+If serializing with the CSS legacy format ([comma format](#comma)), percentage will be forced for saturation and
+lightness when serializing HSL.
+
+```py play
+Color("rebeccapurple").convert('hsl').to_string(comma=True)
+Color("rebeccapurple").convert('hsl').to_string(comma=True, percent=False)
+```
+
+Percent output is supported for the `color()` function output as well.
+
+```py play
+Color("rebeccapurple").convert('srgb').to_string(color=True, percent=True)
+```
+
+If it is desired, explicit control over each channel can be achieved by passing in a sequence containing booleans.
+
+```py play
+Color('rebeccapurple').convert('lab').to_string(alpha=True, percent=[True, False, False, True])
+```
+
+Any omitted list values will be assumed `#!py False`.
+
+```py play
+Color('rebeccapurple').convert('lab').to_string(alpha=True, percent=[True])
+```
+
+/// new | New 2.12
+Boolean sequence support for `percent` added in 2.12.
+///
 
 ## Format Specific Options
 
@@ -119,19 +167,6 @@ transparency.
 
 ```py play
 Color("rgb(30 75 100 / 20%)").to_string(comma=True)
-```
-
-### Percent
-
-RGB, HSL, HWB, CIELab, CIELCh, Oklab, and OkLCh can receive and output colors with optional percents for certain
-channels. By default, only HSL and HWB output channels with percents by default, and percentages for these color spaces
-can only be turned off when serializing to the modern syntax (space delimited). When percentage is enabled, ranges will
-be output in the range of [0%,100%] instead of their usual numeric value.
-
-```py play
-Color("rebeccapurple").to_string(percent=True)
-Color("rebeccapurple").convert('lab').to_string(percent=True)
-Color("rebeccapurple").convert('hsl').to_string(percent=False)
 ```
 
 ## sRGB Specific Options

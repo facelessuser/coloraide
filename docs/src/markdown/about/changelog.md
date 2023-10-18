@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.12
+
+-   **NEW**: When serializing, `percent` can now take a sequence of booleans to indicate which channels are desired to
+    be represented as a percentage, alpha included.
+-   **NEW**: `color()` serializing now supports string output with `percent`.
+-   **FIX**: When serializing, the alpha channel is no longer handled special with a minimum value of `5`. Precision is
+    equally applied to all channels.
+
 ## 2.11
 
 -   **NEW**: Add new `css-linear` interpolator that provides compatibility with the CSS specification. This deviates
