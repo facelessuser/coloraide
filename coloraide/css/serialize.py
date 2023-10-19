@@ -35,7 +35,7 @@ def named_color(
 
 def color_function(
     obj: 'Color',
-    func: str,
+    func: str | None,
     alpha: bool | None,
     precision: int,
     fit: str | bool,
@@ -53,7 +53,7 @@ def color_function(
         coords.append(a)
 
     # `color` should include the color space serialized name.
-    if func == 'color':
+    if func is None:
         string = ['color({} '.format(obj._space._serialize()[0])]
     # Create the function `name` or `namea` if old legacy form.
     else:
@@ -82,14 +82,14 @@ def color_function(
         elif idx != 0:
             string.append(COMMA if legacy else SPACE)
         channel = channels[idx]
-        use_percent = channel.flags & FLG_PERCENT or (plist and plist[idx] and channel.flags & FLG_OPT_PERCENT)
-        is_angle = channel.flags & FLG_ANGLE
-        if not use_percent and not is_angle and not is_last:
-            value *= scale
-        if use_percent:
+
+        if channel.flags & FLG_PERCENT or (plist and plist[idx] and channel.flags & FLG_OPT_PERCENT):
             span, offset = channel.span, channel.offset
         else:
             span = offset = 0.0
+            if not channel.flags & FLG_ANGLE and not is_last:
+                value *= scale
+
         string.append(
             util.fmt_float(
                 value,
@@ -187,7 +187,7 @@ def serialize_css(
 
     # Color format
     if color:
-        return color_function(obj, 'color', alpha, precision, fit, none, percent, False, 1.0)
+        return color_function(obj, None, alpha, precision, fit, none, percent, False, 1.0)
 
     # CSS color names
     if name:
