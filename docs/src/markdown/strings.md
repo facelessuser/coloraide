@@ -113,7 +113,7 @@ Color("rebeccapurple").convert('lab').to_string(percent=True)
 ```
 
 By default, only HSL and HWB output channels with percents by default to match browser expectations which do not yet
-support colors non-percent output for their non-hue channels. This is specifically only true for the named color
+support colors with non-percent output for their non-hue channels. This is specifically only true for the named color
 function formats: `hsl()` and `hwb()`.
 
 ```py play
