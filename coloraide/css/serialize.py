@@ -7,7 +7,7 @@ from .. import algebra as alg
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT, FLG_ANGLE
 from ..types import Vector
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -33,70 +33,74 @@ def named_color(
     return to_name(get_coords(obj, fit, False, False) + [a])
 
 
-def named_color_function(
+def color_function(
     obj: 'Color',
-    func: str,
+    func: str | None,
     alpha: bool | None,
     precision: int,
     fit: str | bool,
     none: bool,
-    percent: bool,
+    percent: bool | Sequence[bool],
     legacy: bool,
     scale: float
 ) -> str:
     """Translate to CSS function form `name(...)`."""
 
-    # Create the function `name` or `namea` if old legacy form.
+    # Prepare coordinates to be serialized
     a = get_alpha(obj, alpha, none, legacy)
-    string = ['{}{}('.format(func, 'a' if legacy and a is not None else EMPTY)]
-
-    # Iterate the coordinates formatting them for percent, not percent, and even scaling them (sRGB).
     coords = get_coords(obj, fit, none, legacy)
-    channels = obj._space.CHANNELS
+    if a is not None:
+        coords.append(a)
+
+    # `color` should include the color space serialized name.
+    if func is None:
+        string = ['color({} '.format(obj._space._serialize()[0])]
+    # Create the function `name` or `namea` if old legacy form.
+    else:
+        string = ['{}{}('.format(func, 'a' if legacy and a is not None else EMPTY)]
+
+    # Get channel object and calculate length and the alpha index (last)
+    channels = obj._space.channels
+    l = len(channels)
+    last = l - 1
+
+    # Ensure percent is configured
+    # - `True` assumes all but alpha are attempted to be formatted as percents.
+    # - A list of booleans will attempt formatting the associated channel as percent,
+    #   anything not specified is assumed `False`.
+    if isinstance(percent, bool):
+        plist = obj._space._percents if percent else []
+    else:
+        diff = l - len(percent)
+        plist = list(percent) + ([False] * diff) if diff > 0 else list(percent)
+
+    # Iterate the coordinates formatting them by scaling the values, formatting for percent, etc.
     for idx, value in enumerate(coords):
-        channel = channels[idx]
-        use_percent = channel.flags & FLG_PERCENT or (percent and channel.flags & FLG_OPT_PERCENT)
-        is_angle = channel.flags & FLG_ANGLE
-        if not use_percent and not is_angle:
-            value *= scale
-        if idx != 0:
+        is_last = idx == last
+        if is_last:
+            string.append(COMMA if legacy else SLASH)
+        elif idx != 0:
             string.append(COMMA if legacy else SPACE)
+        channel = channels[idx]
+
+        if channel.flags & FLG_PERCENT or (plist and plist[idx] and channel.flags & FLG_OPT_PERCENT):
+            span, offset = channel.span, channel.offset
+        else:
+            span = offset = 0.0
+            if not channel.flags & FLG_ANGLE and not is_last:
+                value *= scale
+
         string.append(
             util.fmt_float(
                 value,
                 precision,
-                channel.span if use_percent else 0.0,
-                channel.offset if use_percent else 0.0
+                span,
+                offset
             )
         )
 
-    # Add alpha if needed
-    if a is not None:
-        string.append('{}{})'.format(COMMA if legacy else SLASH, util.fmt_float(a, max(precision, util.DEF_PREC))))
-    else:
-        string.append(')')
+    string.append(')')
     return EMPTY.join(string)
-
-
-def color_function(
-    obj: 'Color',
-    alpha: bool | None,
-    precision: int,
-    fit: str | bool,
-    none: bool
-) -> str:
-    """Color format."""
-
-    # Export in the `color(space ...)` format
-    coords = get_coords(obj, fit, none, False)
-    a = get_alpha(obj, alpha, none, False)
-    return (
-        'color({} {}{})'.format(
-            obj._space._serialize()[0],
-            SPACE.join([util.fmt_float(coord, precision) for coord in coords]),
-            SLASH + util.fmt_float(a, max(precision, util.DEF_PREC)) if a is not None else EMPTY
-        )
-    )
 
 
 def get_coords(
@@ -168,7 +172,7 @@ def serialize_css(
     precision: int | None = None,
     fit: str | bool = True,
     none: bool = False,
-    percent: bool = False,
+    percent: bool | Sequence[bool] = False,
     hexa: bool = False,
     upper: bool = False,
     compress: bool = False,
@@ -183,7 +187,7 @@ def serialize_css(
 
     # Color format
     if color:
-        return color_function(obj, alpha, precision, fit, none)
+        return color_function(obj, None, alpha, precision, fit, none, percent, False, 1.0)
 
     # CSS color names
     if name:
@@ -197,6 +201,6 @@ def serialize_css(
 
     # Normal CSS named function format
     if func:
-        return named_color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
+        return color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
 
     raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover

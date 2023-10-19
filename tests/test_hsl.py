@@ -84,6 +84,7 @@ class TestHSLSerialize(util.ColorAssertsPyTest):
         ('hsl(270 30% 75% / 0.5)', {'alpha': False}, 'hsl(270 30% 75%)'),
         # Test percent
         ('hsl(270 30% 75% / 50%)', {'percent': False}, 'hsl(270 30 75 / 0.5)'),
+        ('hsl(270 30% 75% / 50%)', {'percent': [False, False, False, True]}, 'hsl(270 30 75 / 50%)'),
         # Test None
         ('hsl(none 30% 75%)', {}, 'hsl(0 30% 75%)'),
         ('hsl(none 30% 75%)', {'none': True}, 'hsl(none 30% 75%)'),
@@ -98,6 +99,7 @@ class TestHSLSerialize(util.ColorAssertsPyTest):
         ('hsl(270 30% 75% / 0.5)', {'comma': True, 'alpha': False}, 'hsl(270, 30%, 75%)'),
         # Test legacy percent
         ('hsl(270 30% 75% / 50%)', {'comma': True, 'percent': False}, 'hsla(270, 30%, 75%, 0.5)'),
+        ('hsl(270 30% 75% / 50%)', {'comma': True, 'percent': [False, False, False, True]}, 'hsla(270, 30%, 75%, 50%)'),
         # Test legacy None
         ('hsl(none 30% 75%)', {'comma': True}, 'hsl(0, 30%, 75%)'),
         ('hsl(none 30% 75%)', {'comma': True, 'none': True}, 'hsl(0, 30%, 75%)'),

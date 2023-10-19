@@ -4,7 +4,7 @@ from .. import hwb as base
 from ...css import parse
 from ...css import serialize
 from ...types import Vector
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from ...color import Color
@@ -22,10 +22,13 @@ class HWB(base.HWB):
         fit: str | bool = True,
         none: bool = False,
         color: bool = False,
-        percent: bool = True,
+        percent: bool | Sequence[bool] | None = None,
         **kwargs: Any
     ) -> str:
         """Convert to CSS."""
+
+        if percent is None:
+            percent = False if color else True
 
         return serialize.serialize_css(
             parent,

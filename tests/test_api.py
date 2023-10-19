@@ -14,7 +14,23 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('purple').convert('lab').to_string(precision=-1),
-            'lab(29.691524241522878 56.111666988711342 -36.292665410325654)'  # noqa:  E501
+            'lab(29.691524241522878 56.111666988711342 -36.292665410325654)'
+        )
+
+    def test_percent_bool_list(self):
+        """Test percent boolean list."""
+
+        self.assertEqual(
+            Color('purple').convert('lab').set('alpha', 0.5).to_string(percent=[True, False, False, True]),
+            'lab(29.692% 56.112 -36.293 / 50%)'
+        )
+
+    def test_percent_bool_list_implied_false(self):
+        """Test percent boolean list with implied `False` values."""
+
+        self.assertEqual(
+            Color('purple').convert('lab').set('alpha', 0.5).to_string(percent=[True]),
+            'lab(29.692% 56.112 -36.293 / 0.5)'
         )
 
     def test_repr(self):
