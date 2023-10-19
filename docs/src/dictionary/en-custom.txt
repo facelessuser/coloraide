@@ -208,6 +208,7 @@ barycentric
 bezier
 bilinear
 boolean
+booleans
 broadcasted
 bz
 cd
