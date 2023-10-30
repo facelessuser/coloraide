@@ -4,6 +4,64 @@ Colors are complicated, and sometimes it may not be understood why colors or col
 that they do. Here we'd like to cover more advanced or specific topics that don't fit well in existing topics or are too
 verbose to be included elsewhere.
 
+## CSS Compatibility
+
+CSS is a convenient color syntax that people are familiar with, so it makes a great text representation of colors.
+ColorAide supports the input and output of CSS syntax, but that doesn't mean it is attempting to be a CSS color library.
+CSS goals and ColorAide goals are at times different, and some of the decisions they make are at odds with how we feel
+colors should be treated in general. While we may not have all of CSS's behaviors enabled by default, we do provide a
+way to simulate CSS logic.
+
+There are four features that allow ColorAide to mimic CSS behavior. All four features can be used on demand via special
+parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a `Color`
+class. The for features are as follows:
+
+1.  Gamut mapping with `oklch-chroma` is the current CSS recommended approach. It provides a color space with better
+    hue preservation, but the space does become a bit more distorted at very wide gamuts and can cause sane gamut
+    mapping to break down. Gamut mapping colors that fall within the Rec. 2020 and Display P3 range should work
+    reasonably well.
+
+2.  The `css-linear` interpolator follows CSS interpolation logic which differs from ColorAide's default interpolation
+    logic. CSS specifically treats interpolation between achromatic hues and non-achromatic hues as if there is a hue
+    arc. This means that when using `longer` hue fix-ups when interpolating between a color with a undefined hue and a
+    color with a defined hue, you will interpolate a full 360 degrees. We do not agree with this approach and feel in
+    both `shorter` and `longer` hue fix-ups that there should be no arc to interpolate along.
+
+3.  Auto powerless handling in CSS will force hues to be interpolated as powerless if under certain circumstances. This
+    is usually happens when color space chroma/saturation components are zero. While this behavior does make general
+    sense, and ensures that a user is always treating achromatic colors as achromatic, it cripples the user's control of
+    how a color is interpolated.
+
+    ColorAide, by default, respects what the user has explicitly specified. If a user has a component set as undefined,
+    it is treated as defined, it is explicitly set to a numerical value, it is treated defined. This makes interpolation
+    very transparent. Only through natural conversions do hues become achromatic. If a user has explicitly defined a
+    hue, they need to use `normalize()` to force ColorAide to update powerless hues.
+
+    With all of this said, there are times when a user wants to force powerless hues, even when not explicitly defined.
+    In these cases ColorAide can enforce this behavior.
+
+4.  CSS also implements the idea of carrying forward undefined values during interpolation. Essentially, if a user
+    specifies an undefined components, but interpolation is performed in a different color space, after conversion, if
+    the two color spaces have compatible components, the undefined values will be carried forward to the like
+    components. This means that an undefined hue in HSL would be carried forward to LCh. A red component in sRGB would
+    be carried over to Display P3.
+
+    The concept is interesting, but it can sometimes be a bit surprising in some cases. Currently, ColorAide does not
+    enable this by default.
+
+If a CSS compatible color object is required, one can be derived from the base `Color` class. All four features can be
+forced as enabled by default as shown below.
+
+```py
+from coloraide import Color as Base
+
+class Color(base):
+    FIT = 'oklch-chroma'
+    INTERPOLATOR = 'css-linear'
+    POWERLESS = True
+    CARRYFORWARD = True
+```
+
 ## Round Trip Accuracy
 
 In general, ColorAide is careful to provide good round trip conversions where practical. What this means is that we
@@ -129,7 +187,7 @@ white.convert('cam16-jmh', norm=False).set('m', 0.0).convert('srgb').to_string(h
 ```
 
 For these types of color spaces, ColorAide will map the achromatic response with a spline and use it as a reference
-to give detect achromatic values for undefined chroma and hue.
+to detect achromatic values for undefined chroma and hue.
 
 ```py play
 Color('cam16-jmh', [100, NaN, NaN]).convert('srgb').to_string(hex=True)

@@ -225,13 +225,15 @@ and then the chroma reduced color is clipped. Using ∆E~2000~, the distance bet
 clipped chroma reduced color is measured. If the resultant distance falls within the specified threshold, the clipped
 color is returned.
 
-Computationally, LCh Chroma is slower to compute than clipping, but generally provides better results. LCh, is not
-necessarily the best perceptual color space available, but it is generally well understood color space that has been
+Computationally, LCh Chroma is slower to compute than clipping, but generally provides better results. CIELCh, is not
+necessarily the best perceptual color space available, but it is a generally well understood color space that has been
 available a long time. It does suffer from a purple shift when dealing with blue colors, but can generally handle colors
-far out of gamut in a reasonable manner.
+in very wide gamuts reasonably.
 
 While CSS has currently proposed LCh Chroma reduction to be done with OkLCh, and we do offer an [OkLCh variant](#oklch-chroma),
-we currently still use CIELCh as the default until OkLCh can be evaluated more fully.
+we currently still use CIELCh as the default until OkLCh can be evaluated more fully as it suffers from its own set of
+issues even if generally has better hue preservation. In the future, the default gamut mapping approach could change if
+a definitively better option is determined.
 
 LCh Chroma is the default gamut mapping algorithm by default, unless otherwise changed, and can be performed by simply
 calling `fit()` or by calling `fit(method='lch-chroma')`.
@@ -262,7 +264,8 @@ c.fit(method='oklch-chroma')
 OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness are
 known. OkLCh does seem to have certain quirks of its own, and may have more that have yet to be discovered. OkLCh gamut
 mapping can exhibit some issues with some colors with extremely large chroma, near the edge of the visible spectrum.
-While we have not made `oklch-chroma` our default yet, we have exposed the algorithm so users can begin exploring it.
+While we have not made `oklch-chroma` our default, we have exposed the algorithm so users can begin exploring it mimic
+the CSS approach.
 
 ### HCT Chroma
 
