@@ -5,7 +5,6 @@ from abc import ABCMeta, abstractmethod
 from . import algebra as alg
 import functools
 from .types import Matrix, VectorLike, Vector, Plugin
-from typing import Any  # noqa: F401
 
 # From CIE 2004 Colorimetry T.3 and T.8
 # B from https://en.wikipedia.org/wiki/Standard_illuminant#White_point
@@ -60,7 +59,7 @@ def calc_adaptation_matrices(
     first = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
     second = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
     m2 = alg.diag(alg.divide(first, second, dims=alg.D1))
-    adapt = alg.dot(alg.solve(m, m2), m)
+    adapt = alg.dot(alg.solve(m, m2), m, dims=alg.D2)
 
     return adapt, alg.inv(adapt)
 
