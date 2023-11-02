@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
+    <title>ColorAide Color Space Models</title>
     <style type="text/css">
         :root {
           --text: black;
@@ -191,7 +191,7 @@
   <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.2/plotly.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
@@ -742,7 +742,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-2.11-py3-none-any.whl'
+let package = 'coloraide-2.12-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
@@ -890,7 +890,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await pyodide.loadPackage([
     'numpy',
     'scipy',
-    'https://files.pythonhosted.org/packages/26/5d/1e13b597ed8e54803e9ac6ded18c04cd35d8cbc49016778ec50c4ca9e9d5/plotly-5.16.1-py2.py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/a8/07/72953cf70e3bd3a24cbc3e743e6f8539abe6e3e6d83c3c0c83426eaffd39/plotly-5.18.0-py3-none-any.whl',
     package])
 
   // Set background color
