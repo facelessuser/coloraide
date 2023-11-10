@@ -59,7 +59,7 @@ class Achromatic(metaclass=ABCMeta):
             return list(zip(*self.spline.points))
         else:
             # Strip off the data points used to coerce the spline through the end.
-            return list(zip(*self.spline.points))[1:-1]
+            return list(zip(*self.spline.points))[1:-1]  # type: ignore[return-value]
 
     @abstractmethod
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
