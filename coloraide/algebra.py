@@ -2062,7 +2062,7 @@ def transpose(array: ArrayLike | float) -> Array | float:
     we don't have a need for that, nor the desire to figure it out :).
     """
 
-    s = tuple(reversed(shape(array)))
+    s = shape(array)[::-1]
     if not s:
         return array  # type: ignore[return-value]
 

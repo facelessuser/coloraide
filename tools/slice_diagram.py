@@ -257,7 +257,7 @@ def plot_slice(
 
         if hue_index == -1:
             # Combine the min/max values in one shape
-            edge_x.extend(reversed(temp))
+            edge_x.extend(temp[::-1])
             # Close shape
             edge_x.append(edge_x[0])
 
@@ -271,7 +271,7 @@ def plot_slice(
                 edge_y.append((edges[0], p1))
                 temp.append((edges[1], p1))
 
-            edge_y.extend(reversed(temp))
+            edge_y.extend(temp[::-1])
             edge_y.append(edge_y[0])
 
             # Get the intersection of X and Y to get the most accurate border
