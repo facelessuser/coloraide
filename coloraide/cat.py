@@ -54,11 +54,13 @@ def calc_adaptation_matrices(
     Granted, we are currently, capped at 20 in the cache, but the average user
     isn't going to be swapping between over 20 methods and white points in a
     short period of time. We could always increase the cache if necessary.
+
+    http://www.brucelindbloom.com/index.html?Math.html
     """
 
-    first = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
-    second = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
-    m2 = alg.diag(alg.divide(first, second, dims=alg.D1))
+    src = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
+    dest = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
+    m2 = alg.diag(alg.divide(dest, src, dims=alg.D1))
     adapt = alg.dot(alg.solve(m, m2), m, dims=alg.D2)
 
     return adapt, alg.inv(adapt)
@@ -102,7 +104,14 @@ class VonKries(CAT):
         return calc_adaptation_matrices(w1, w2, cls.MATRIX)
 
     def adapt(self, w1: tuple[float, float], w2: tuple[float, float], xyz: VectorLike) -> Vector:
-        """Adapt a given XYZ color using the provided white points."""
+        """
+        Adapt a given XYZ color using the provided white points.
+
+        Since we calculate and cache both the forward and inverse matrices, ensure the
+        calculation between two white points, regardless of which is source, are evaluated
+        the same. Once the matrices are retrieved, Just make sure we use the correct one
+        based on which white point is the source.
+        """
 
         # We are already using the correct white point
         if w1 == w2:
@@ -110,7 +119,7 @@ class VonKries(CAT):
 
         a, b = sorted([w1, w2])
         m, mi = self.get_adaptation_matrices(a, b)
-        return alg.dot(mi if a != w2 else m, xyz, dims=alg.D2_D1)
+        return alg.dot(mi if a != w1 else m, xyz, dims=alg.D2_D1)
 
 
 class Bradford(VonKries):
