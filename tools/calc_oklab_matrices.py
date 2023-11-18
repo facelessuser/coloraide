@@ -2,33 +2,34 @@
 Calculate `oklab` matrices.
 
 Björn Ottosson, in his original calculations, used a different white point than
-what CSS and most other people use. At the CSS repository, he commented on
+what CSS and most other people use. In the CSS repository, he commented on
 how to calculate the M1 matrix using the exact same white point as CSS. He
-provided the initial matrix which we call M0.
+provided the initial matrix used in this calculation, which we will call M0.
 https://github.com/w3c/csswg-drafts/issues/6642#issuecomment-945714988.
-This M0 matrix is used to create a precise matrix to convert XYZ to using
-the D65 white point as specified by CSS and used by most people. We use
-the D65 chromaticity coordinates of `(0.31270, 0.32900)` which is documented
-and used for sRGB as the standard. There are likely implementations unaware
-that the should, or even how to adapt the Oklab M1 matrix to their white point
+This M0 matrix is used to create a precise matrix to convert XYZ to LMS using
+the D65 white point as specified by CSS. Both ColorAide and CSS use the D65
+chromaticity coordinates of `(0.31270, 0.32900)` which is documented and used
+for sRGB as the standard. There are likely implementations unaware that the
+they should, or even how to adapt the Oklab M1 matrix to their white point
 as this is not documented in the author's Oklab blog post, but is buried in a
-CSS repository issue.
+CSS repository discussion.
 
 Additionally, the documented M2 matrix is specified as 32 bit values, and the
 inverse is calculated directly from the this 32 bit matrix. The forward and
-reverse transform is calculated to perfect convert 32 bit values, but when
-translating to 64 bit, especially for achromatic colors, adds a lot of noise
-after about 7 - 8 digits, the precision of 32 bit floats.
+reverse transform is calculated to perfectly convert 32 bit values, but when
+translating 64 bit values, the transform adds a lot of noise after about 7 - 8
+digits (the precision of 32 bit floats). This is particularly problematic for
+achromatic colors in Oklab and OkLCh and can cause chroma not to resolve to zero.
 
 To provide an M2 matrix that works better for 64 bit, we take the inverse M2,
 which provides a perfect transforms to white from Oklab `[1, 0, 0]` in 32 bit
-floating point. We process matrix as a float 32 bit values and emit it as a 64
-double values, ~17 digit double accuracy. Then we apply a slight correction to
-account for the 64 bit noise to ensure it converts a perfect Oklab `[1, 0, 0]`
+floating point. We process the matrix as float 32 bit values and emit them as 64
+bit double values, ~17 digit double accuracy. Then we apply a slight correction
+to account for the 64 bit noise to ensure it converts a perfect Oklab `[1, 0, 0]`
 to LMS `[1, 1, 1]`. Once corrected, we then calculate the forward matrix. This
 gives us a transform in 64 bit that drives chroma extremely close to zero for
-64 bit doubles and maintains 32 bit precision of up to about 7 digits, the 32
-bit accuracy limit (~7.22).
+64 bit doubles and maintains the same 32 bit precision of up to about 7 digits,
+the 32 bit accuracy limit (~7.22).
 
 To demonstrate that our 64 bit converted matrices work as we claim and does not
 alter the intent of the values, we can observe by comparing the documented matrices
@@ -58,7 +59,7 @@ pretty good, but the b value is substantially worse. Also notice the first 7 dig
 When we use our 64 bit adjusted M2 matrix, we now get a precise 1 for lightness
 when converting white and get zero or nearly zero for a and b. When comparing the
 first 7 digits to the previous example we get the same values. Anything after
-7 digits is not guaranteed to be the same.
+~7 digits is not guaranteed to be the same.
 
 ```
 >>> from coloraide.everything import ColorAll as Color
