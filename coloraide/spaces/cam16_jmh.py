@@ -12,7 +12,7 @@ import bisect
 from .. import util
 from .. import algebra as alg
 from ..spaces import Space, LChish
-from ..cat import WHITES
+from ..cat import WHITES, CAT16
 from ..channels import Channel, FLG_ANGLE
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
@@ -21,12 +21,7 @@ from ..types import Vector, VectorLike
 from typing import Any
 
 # CAT16
-M16 = [
-    [0.401288, 0.650173, -0.051461],
-    [-0.250268, 1.204414, 0.045854],
-    [-0.002079, 0.048952, 0.953127]
-]
-
+M16 = CAT16.MATRIX
 MI6_INV = alg.inv(M16)
 
 M1 = [
