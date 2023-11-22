@@ -23,6 +23,7 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
+import sys
 import math
 import operator
 import functools
@@ -33,6 +34,8 @@ from .types import (
     Vector, Shape, ShapeLike, DimHints, SupportsFloatOrInt, MathType
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
+
+PY311 = (3, 11) <= sys.version_info
 
 NaN = math.nan
 INF = math.inf
@@ -154,6 +157,9 @@ def nth_root(n: float, p: float) -> float:
     if n == 0:
         # Can't do anything with zero
         return 0
+
+    if PY311 and p == 3:
+        return math.cbrt(n)
 
     return math.copysign(abs(n) ** (p ** -1), n)
 
