@@ -159,7 +159,7 @@ def nth_root(n: float, p: float) -> float:
         return 0
 
     if PY311 and p == 3:
-        return math.cbrt(n)
+        return math.cbrt(n)  # type: ignore[attr-defined, no-any-return, unused-ignore]
 
     return math.copysign(abs(n) ** (p ** -1), n)
 
