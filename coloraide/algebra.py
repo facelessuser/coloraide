@@ -23,7 +23,6 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
-import sys
 import math
 import operator
 import functools
