@@ -1,8 +1,10 @@
 """Utilities."""
 from __future__ import annotations
 import math
+from functools import wraps
 from . import algebra as alg
 from .types import Vector, VectorLike
+from typing import Any, Callable
 
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
@@ -204,3 +206,18 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
     if p == -1:
         p = 17  # double precision
     return ('{{:{}{}g}}{}'.format('' if abs(value) >= 10 ** p else '.', p, '%' if percent else '')).format(value)
+
+
+def debug(func:  Callable[..., Any]) -> Callable[..., Any]:  # pragma: no cover
+    """Intercept function call and print arguments and results."""
+
+    @wraps(func)
+    def _wrapper(*args: Any, **kwargs: Any) -> Any:
+        """Print debug information about the function."""
+
+        print(f"<debug> Calling '{func.__name__}' with args={args} and kwargs={kwargs}")
+        result = func(*args, **kwargs)
+        print(f"<debug> '{func.__name__}' returned {result}")
+        return result
+
+    return _wrapper
