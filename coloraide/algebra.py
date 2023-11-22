@@ -35,8 +35,6 @@ from .types import (
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
-PY311 = (3, 11) <= sys.version_info
-
 NaN = math.nan
 INF = math.inf
 
@@ -157,9 +155,6 @@ def nth_root(n: float, p: float) -> float:
     if n == 0:
         # Can't do anything with zero
         return 0
-
-    if PY311 and p == 3:
-        return math.cbrt(n)  # type: ignore[attr-defined, no-any-return, unused-ignore]
 
     return math.copysign(abs(n) ** (p ** -1), n)
 
