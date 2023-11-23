@@ -697,7 +697,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
                 offset = 24
 
             primary = colors[::freq][::-1]
-            secondary = colors[offset::freq] + [colors[offset // 3]][::-1]
+            secondary = (colors[offset::freq] + [colors[offset // 3]])[::-1]
             tertiary = colors[::offset // 6][::-1]
             color_rings = [primary, secondary, tertiary]
 
