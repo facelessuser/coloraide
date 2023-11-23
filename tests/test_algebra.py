@@ -1170,6 +1170,9 @@ class TestAlgebra(unittest.TestCase):
             [[[692, 1732, 2772, 3812], [972, 1784, 2196, 3408]], [[452, 692, 932, 1172], [876, 1676, 2076, 3276]]]
         )
 
+        with self.assertRaises(ValueError):
+            alg.dot([1, 2, 3], [4, 5, 6, 7], dims=alg.D1)
+
     def test_multi_dot(self):
         """Test multi-dot."""
 
