@@ -51,18 +51,21 @@ ColorAide, by default, will account for transparency when averaging colors. Colo
 less of an impact on the average. This is done by premultiplying the colors before averaging.
 
 ```py play
-Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
 for i in range(12):
-    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'])
+    Color.average(
+        [f'color(srgb 0 1 0 / {i / 11})', 'color(srgb 0 0 1)']
+    )
 ```
 
 If you'd like to average the channels without taking transparency into consideration, simply set `premultiplied` to
 `#!py False`.
 
 ```py play
-Steps([Color('darkgreen'), Color('color(srgb 0 0.50196 0 / 1)'), Color('color(srgb 0 0 1)')])
 for i in range(12):
-    Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / {i / 11})', 'color(srgb 0 0 1)'], premultiplied=False)
+    Color.average(
+        [f'color(srgb 0 1 0 / {i / 11})', 'color(srgb 0 0 1)'],
+        premultiplied=False,
+    )
 ```
 
 ## Averaging with Undefined Values
@@ -94,5 +97,5 @@ for i in range(12):
 When `premultiplied` is enabled, premultiplication will not be applied to a color if its `alpha` is undefined.
 
 ```py play
-Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / none)', 'color(srgb 0 0 1)'], space='srgb')
+Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / none)', 'color(srgb 0 0 1)'])
 ```
