@@ -698,9 +698,14 @@ def any(a: float | ArrayLike) -> bool:  # noqa: A001
 def vdot(a: VectorLike, b: VectorLike) -> float:
     """Dot two vectors."""
 
+    l = len(a)
+    if l != len(b):
+        raise ValueError('Vectors of size {} and {} are not aligned'.format(l, len(b)))
     s = 0.0
-    for x, y in it.zip_longest(a, b):
-        s += x * y
+    i = 0
+    while i < l:
+        s += a[i] * b[i]
+        i += 1
     return s
 
 
@@ -716,7 +721,7 @@ def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
 
     l1 = len(v1)
     if l1 != len(v2):
-        raise ValueError('Incompatible dimensions for cross product,')
+        raise ValueError('Incompatible dimensions of {} and {} for cross product'.format(l1, len(v2)))
 
     if l1 == 2:
         return [v1[0] * v2[1] - v1[1] * v2[0]]
@@ -964,10 +969,10 @@ def dot(
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
 
-                rows = list(_extract_rows(a, shape_a))  # type: ignore[arg-type]
+                cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
                 m2 = [
-                    [sum(multiply(row, col)) for col in _extract_cols(b, shape_b)]  # type: ignore[arg-type]
-                    for row in rows
+                    [sum(multiply(row, col)) for col in cols]
+                    for row in _extract_rows(a, shape_a)  # type: ignore[arg-type]
                 ]
                 shape_c = shape_a[:-1]
                 if dims_b != 1:
@@ -992,8 +997,9 @@ def dot(
             return [vdot(row, b) for row in a]  # type: ignore[arg-type, union-attr]
         elif dims_b == 2:
             # Dot product of two matrices
+            cols = list(it.zip_longest(*b))  # type: ignore[arg-type, misc]
             return [
-                [vdot(row, col) for col in it.zip_longest(*b)] for row in a  # type: ignore[arg-type, misc, union-attr]
+                [vdot(row, col) for col in cols] for row in a  # type: ignore[arg-type, union-attr]
             ]
 
     # Trying to dot a number with a vector or a matrix, so just multiply
@@ -2870,7 +2876,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
     if dims_a == 1:
         first = [a]  # type: Any
     elif dims_a > 2:
-        first = list(_extract_rows(a, shape_a))  # type: ignore[arg-type]
+        first = _extract_rows(a, shape_a)  # type: ignore[arg-type]
     else:
         first = a
 
