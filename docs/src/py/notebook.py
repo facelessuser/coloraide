@@ -1027,6 +1027,17 @@ def render_notebook(*args, **kwargs):
                 'new', 'settings', 'note', 'abstract', 'info', 'tip', 'success',
                 'question', 'warning', 'failure', 'danger', 'bug', 'example', 'quote'
             ]
+        },
+        'pymdownx.blocks.details': {
+            'types': [
+                {'name': 'details-new', 'class': 'new'}, {'name': 'details-settings', 'class': 'settings'},
+                {'name': 'details-note', 'class': 'note'}, {'name': 'details-abstract', 'class': 'abstract'},
+                {'name': 'details-info', 'class': 'info'}, {'name': 'details-tip', 'class': 'tip'},
+                {'name': 'details-success', 'class': 'success'}, {'name': 'details-question', 'class': 'question'},
+                {'name': 'details-warning', 'class': 'warning'}, {'name': 'details-failure', 'class': 'failure'},
+                {'name': 'details-danger', 'class': 'danger'}, {'name': 'details-bug', 'class': 'bug'},
+                {'name': 'details-example', 'class': 'example'}, {'name': 'details-quote', 'class': 'quote'}
+            ]
         }
     }
 

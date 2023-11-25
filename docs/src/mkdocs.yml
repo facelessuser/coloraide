@@ -268,6 +268,35 @@ markdown_extensions:
       - example
       - quote
   - pymdownx.blocks.details:
+      types:
+      - name: details-new
+        class: new
+      - name: details-settings
+        class: settings
+      - name: details-note
+        class: note
+      - name: details-abstract
+        class: abstract
+      - name: details-info
+        class: info
+      - name: details-tip
+        class: tip
+      - name: details-success
+        class: success
+      - name: details-question
+        class: question
+      - name: details-warning
+        class: warning
+      - name: details-failure
+        class: failure
+      - name: details-danger
+        class: danger
+      - name: details-bug
+        class: bug
+      - name: details-example
+        class: example
+      - name: details-quote
+        class: quote
   - pymdownx.blocks.html:
   - pymdownx.blocks.definition:
   - pymdownx.blocks.tab:
@@ -276,8 +305,8 @@ markdown_extensions:
 extra_css:
   - assets/coloraide-extras/extra.css
 extra_javascript:
-  - https://unpkg.com/mermaid@8.13.3/dist/mermaid.min.js
-  - playground-config-e8ab1e41.js
+  - https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js
+  - playground-config-c90ca430.js
   - https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js
   - assets/coloraide-extras/extra-notebook.js
 

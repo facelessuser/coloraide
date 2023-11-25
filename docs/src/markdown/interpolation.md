@@ -712,9 +712,7 @@ aforementioned easing function except `linear`, which simply returns what is giv
 /// tip | Create Your Own Cubic Bezier Easings Online: https://cubic-bezier.com
 ///
 
-/// details | More Common Cubic Bezier Easings
-    type: tip
-
+/// details-tip | More Common Cubic Bezier Easings
 The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
 
 ```py
