@@ -965,19 +965,22 @@ def dot(
                 # Dot product of vector and a M-D matrix
                 shape_c = shape_b[:-2] + shape_b[-1:]
                 return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
+            elif dims_b == 1:
+                # Dot product of vector and a M-D matrix
+                shape_c = shape_a[:-1]
+                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type]
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
 
                 cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
-                m2 = [
-                    [sum(multiply(row, col)) for col in cols]
-                    for row in _extract_rows(a, shape_a)  # type: ignore[arg-type]
-                ]
-                shape_c = shape_a[:-1]
-                if dims_b != 1:
-                    shape_c += shape_b[:-2] + shape_b[-1:]
-                return reshape(m2, shape_c)
+                return reshape(
+                    [
+                        [sum(multiply(row, col)) for col in cols]
+                        for row in _extract_rows(a, shape_a)  # type: ignore[arg-type]
+                    ],
+                    shape_a[:-1] + shape_b[:-2] + shape_b[-1:]
+                )
 
     else:
         dims_a, dims_b = dims
