@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.13.1
+
+- **FIX**: Minor typing regressions.
+
 ## 2.13
 
 -   **NEW**: Performance related enhancements in high traffic calculations.

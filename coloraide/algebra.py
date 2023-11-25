@@ -2297,7 +2297,7 @@ def transpose(array: MatrixLike) -> Matrix:
 
 
 @overload
-def transpose(array: TensorLike) -> Matrix:
+def transpose(array: TensorLike) -> Tensor:
     ...
 
 
@@ -2534,12 +2534,7 @@ def diag(array: MatrixLike, k: int = 0) -> Vector:
     ...
 
 
-@overload
-def diag(array: TensorLike, k: int = 0) -> Matrix:
-    ...
-
-
-def diag(array: ArrayLike, k: int = 0) -> Array:
+def diag(array: VectorLike | MatrixLike, k: int = 0) -> Array:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
 
     s = shape(array)
