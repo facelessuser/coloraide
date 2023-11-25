@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.13
+
+- **NEW**: Performance related enhancements in high traffic calculations.
+- **NEW**: Use `matmul` instead of `dot` in calculations to not confuse math savvy people.
+- **FIX**: Some typing fixes/improvements.
+- **FIX**: Minor fixes to `algebra` library.
+
 ## 2.12
 
 -   **NEW**: When serializing, `percent` can now take a sequence of booleans to indicate which channels are desired to
