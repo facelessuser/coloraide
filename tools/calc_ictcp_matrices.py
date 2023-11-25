@@ -24,7 +24,7 @@ b = [
 ]
 
 # XYZ to LMS
-m1 = alg.dot(a, b)
+m1 = alg.matmul(a, b)
 
 # LMS to ICtCp
 m2 = [

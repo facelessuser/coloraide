@@ -58,10 +58,10 @@ def calc_adaptation_matrices(
     http://www.brucelindbloom.com/index.html?Math.html
     """
 
-    src = alg.dot(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
-    dest = alg.dot(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
+    src = alg.matmul(m, util.xy_to_xyz(w1), dims=alg.D2_D1)
+    dest = alg.matmul(m, util.xy_to_xyz(w2), dims=alg.D2_D1)
     m2 = alg.diag(alg.divide(dest, src, dims=alg.D1))
-    adapt = alg.dot(alg.solve(m, m2), m, dims=alg.D2)
+    adapt = alg.matmul(alg.solve(m, m2), m, dims=alg.D2)
 
     return adapt, alg.inv(adapt)
 
@@ -119,7 +119,7 @@ class VonKries(CAT):
 
         a, b = sorted([w1, w2])
         m, mi = self.get_adaptation_matrices(a, b)
-        return alg.dot(mi if a != w1 else m, xyz, dims=alg.D2_D1)
+        return alg.matmul(mi if a != w1 else m, xyz, dims=alg.D2_D1)
 
 
 class Bradford(VonKries):

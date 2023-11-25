@@ -142,9 +142,9 @@ def oklab_to_linear_rgb(lab: Vector, lms_to_rgb: Matrix) -> Vector:
     that transform the LMS values to the linear RGB space.
     """
 
-    return alg.dot(
+    return alg.matmul(
         lms_to_rgb,
-        [c ** 3 for c in alg.dot(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
+        [c ** 3 for c in alg.matmul(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 

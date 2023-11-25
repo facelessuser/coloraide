@@ -26,13 +26,13 @@ def lin_p3_to_xyz(rgb: Vector) -> Vector:
     """
 
     # 0 was computed as -3.972075516933488e-17
-    return alg.dot(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
+    return alg.matmul(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
 
 
 def xyz_to_lin_p3(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light P3."""
 
-    return alg.dot(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
+    return alg.matmul(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
 class DisplayP3Linear(sRGB):

@@ -1096,6 +1096,165 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.clamp(4, 4, 6), 4)
         self.assertEqual(alg.clamp(6, 4, 6), 6)
 
+    def test_matmul(self):
+        """
+        Test matrix multiplication.
+
+        Results should generally match 'dot' except scalars are not allowed and
+        logic for dimensions greater than 2 will be different. All other code
+        is shared.
+        """
+
+        self.assertEqual(alg.matmul([1, 2, 3], [4, 5, 6]), 32)
+        self.assertEqual(alg.matmul([4, 5, 6], [1, 2, 3]), 32)
+        self.assertEqual(
+            alg.matmul(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                [1, 2, 3]
+            ),
+            [14, 32, 50]
+        )
+        self.assertEqual(
+            alg.matmul(
+                [1, 2, 3],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [30, 36, 42]
+        )
+        self.assertEqual(
+            alg.matmul(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
+        )
+
+        m1 = [[[[1, 2, 3, 4],
+                [5, 6, 7, 8]],
+               [[10, 20, 30, 40],
+                [50, 60, 70, 80]],
+               [[15, 25, 35, 45],
+                [55, 65, 75, 85]]]]
+
+        m2 = [[[[11, 21],
+                [31, 41],
+                [51, 61],
+                [71, 81]],
+               [[21, 11],
+                [41, 12],
+                [51, 13],
+                [81, 14]],
+               [[2, 17],
+                [2, 2],
+                [9, 8],
+                [3, 4]]],
+              [[[5, 1],
+                [5, 41],
+                [5, 61],
+                [5, 81]],
+               [[21, 3],
+                [41, 3],
+                [51, 3],
+                [81, 3]],
+               [[4, 9],
+                [6, 7],
+                [1, 2],
+                [1, 5]]]]
+
+        e = [[[[510.0, 610.0],
+               [1166.0, 1426.0]],
+
+              [[5800.0, 1300.0],
+               [13560.0, 3300.0]],
+
+              [[530.0, 765.0],
+               [1170.0, 2005.0]]],
+
+
+             [[[50.0, 590.0],
+               [130.0, 1326.0]],
+
+              [[5800.0, 300.0],
+               [13560.0, 780.0]],
+
+              [[290.0, 605.0],
+               [770.0, 1525.0]]]]
+
+        self.assertEqual(alg.matmul(m1, m2), e)
+
+        m1 = [[[[11, 21],
+                [31, 41],
+                [51, 61],
+                [71, 81]],
+               [[21, 11],
+                [41, 12],
+                [51, 13],
+                [81, 14]]],
+              [[[5, 21],
+                [5, 41],
+                [5, 61],
+                [5, 81]],
+               [[21, 3],
+                [41, 3],
+                [51, 3],
+                [81, 3]]]]
+
+        self.assertEqual(
+            alg.matmul([40, 0.3, 12, 9], m1),
+            [[[1700.3, 2313.3], [2193.3, 725.6]], [[306.5, 2313.3], [2193.3, 183.9]]]
+        )
+
+        self.assertEqual(
+            alg.matmul(m1, [40, 12]),
+            [[[692, 1732, 2772, 3812], [972, 1784, 2196, 3408]], [[452, 692, 932, 1172], [876, 1676, 2076, 3276]]]
+        )
+
+        # Mismatched dimensions
+        with self.assertRaises(ValueError):
+            alg.matmul([1, 2, 3], [4, 5, 6, 7], dims=alg.D1)
+
+        m1 = [[[[1, 2, 3, 4],
+                [5, 6, 7, 8]],
+               [[10, 20, 30, 40],
+                [50, 60, 70, 80]],
+               [[15, 25, 35, 45],
+                [55, 65, 75, 85]]]]
+
+        # Scalars are not allowed
+        with self.assertRaises(ValueError):
+            alg.matmul(m1, 3)
+
+        with self.assertRaises(ValueError):
+            alg.matmul(3, m1)
+
+        m1 = [[[[1, 2, 3, 4, 2],
+                [5, 6, 7, 8, 4]],
+               [[10, 20, 30, 40, 12],
+                [50, 60, 70, 80, 1]],
+               [[15, 25, 35, 45, 5],
+                [55, 65, 75, 85, 7]]]]
+
+        m2 = [[[[11, 21],
+                [31, 41],
+                [51, 61],
+                [71, 81]],
+               [[21, 11],
+                [41, 12],
+                [51, 13],
+                [81, 14]]],
+              [[[5, 21],
+                [5, 41],
+                [5, 61],
+                [5, 81]],
+               [[21, 3],
+                [41, 3],
+                [51, 3],
+                [81, 3]]]]
+
+        # Must have signature `(n,k),(k,m)->(n,m)` for dimensions greater than 2.
+        with self.assertRaises(ValueError):
+            alg.matmul(m1, m2)
+
     def test_dot(self):
         """Test dot."""
 
@@ -1159,6 +1318,30 @@ class TestAlgebra(unittest.TestCase):
               [[[[5920, 7120], [6770, 1550]], [[600, 7120], [6770, 360]]],
                [[[12480, 15280], [14530, 3550]], [[1400, 15280], [14530, 840]]]]]]
         )
+
+        self.assertEqual(
+            alg.dot(2, m1),
+            [[[[2, 4, 6, 8],
+               [10, 12, 14, 16]],
+
+              [[20, 40, 60, 80],
+               [100, 120, 140, 160]],
+
+              [[30, 50, 70, 90],
+               [110, 130, 150, 170]]]]
+        )
+
+        self.assertEqual(
+            alg.dot(m1, 2),
+            [[[[2, 4, 6, 8],
+               [10, 12, 14, 16]],
+
+              [[20, 40, 60, 80],
+               [100, 120, 140, 160]],
+
+              [[30, 50, 70, 90],
+               [110, 130, 150, 170]]]]
+        ),
 
         self.assertEqual(
             alg.dot([40, 0.3, 12, 9], m2),
@@ -1983,6 +2166,17 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertTrue(alg.all([True, True, True]))
         self.assertFalse(alg.all([False, True, False]))
+
+    def test_extract_columns(self):
+        """
+        Test extraction of columns for coverage.
+
+        This currently is exercised naturally, so explicitly test even though it is not public.
+        """
+
+        # If a vector is passed in, just return the vector back.
+        v = [1, 2, 3]
+        self.assertEqual(list(alg._extract_cols(v, alg.shape(v))), [[1, 2, 3]])
 
 
 def test_pprint(capsys):

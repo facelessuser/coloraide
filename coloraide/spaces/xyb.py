@@ -48,9 +48,9 @@ XYB_TO_XYB_LMS = [
 def rgb_to_xyb(rgb: Vector) -> Vector:
     """Linear sRGB to XYB."""
 
-    return alg.dot(
+    return alg.matmul(
         XYB_LMS_TO_XYB,
-        [alg.nth_root(c + BIAS, 3) - BIAS_CBRT for c in alg.dot(LRGB_TO_LMS, rgb, dims=alg.D2_D1)],
+        [alg.nth_root(c + BIAS, 3) - BIAS_CBRT for c in alg.matmul(LRGB_TO_LMS, rgb, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 
@@ -62,9 +62,9 @@ def xyb_to_rgb(xyb: Vector) -> Vector:
     if not any(xyb):
         return [0.0] * 3
 
-    return alg.dot(
+    return alg.matmul(
         LMS_TO_LRGB,
-        [(c + BIAS_CBRT) ** 3 - BIAS for c in alg.dot(XYB_TO_XYB_LMS, xyb, dims=alg.D2_D1)],
+        [(c + BIAS_CBRT) ** 3 - BIAS for c in alg.matmul(XYB_TO_XYB_LMS, xyb, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 

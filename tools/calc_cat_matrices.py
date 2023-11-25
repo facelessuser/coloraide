@@ -63,10 +63,10 @@ cmccat2000_m = [
 def pre_calculate_cat(src_white, dest_white, m):
     """Calculate CAT."""
 
-    src = alg.dot(m, src_white)
-    dest = alg.dot(m, dest_white)
+    src = alg.matmul(m, src_white)
+    dest = alg.matmul(m, dest_white)
     m2 = alg.diag(alg.divide(dest, src))
-    to_d65 = alg.dot(alg.solve(m, m2), m)
+    to_d65 = alg.matmul(alg.solve(m, m2), m)
     to_d50 = alg.inv(to_d65)
     return to_d65, to_d50
 
