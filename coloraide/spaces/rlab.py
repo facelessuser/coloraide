@@ -63,7 +63,7 @@ class Environment:
     def calc_ram(self) -> Matrix:
         """Calculate RAM."""
 
-        lms = alg.dot(M, self.xyz_w)
+        lms = alg.matmul(M, self.xyz_w)
         a = []  # type: Vector
         s = sum(lms)
         for c in lms:
@@ -81,13 +81,13 @@ def rlab_to_xyz(rlab: Vector, env: Environment) -> Vector:
     yr = LR / 100
     xr = alg.npow((aR / 430) + yr, env.surround)
     zr = alg.npow(yr - (bR / 170), env.surround)
-    return alg.dot(env.iram, [xr, alg.npow(yr, env.surround), zr], dims=alg.D2_D1)
+    return alg.matmul(env.iram, [xr, alg.npow(yr, env.surround), zr], dims=alg.D2_D1)
 
 
 def xyz_to_rlab(xyz: Vector, env: Environment) -> Vector:
     """XYZ to RLAB."""
 
-    xyz_ref = alg.dot(env.ram, xyz, dims=alg.D2_D1)
+    xyz_ref = alg.matmul(env.ram, xyz, dims=alg.D2_D1)
     xr, yr, zr = [alg.nth_root(c, env.surround) for c in xyz_ref]
     LR = 100 * yr
     aR = 430 * (xr - yr)

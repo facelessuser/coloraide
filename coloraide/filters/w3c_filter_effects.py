@@ -36,7 +36,7 @@ class Sepia(Filter):
             [0.272 - 0.272 * amount, 0.534 - 0.534 * amount, 0.131 + 0.869 * amount]
         ]
 
-        color[:-1] = alg.dot(m, color[:-1], dims=alg.D2_D1)
+        color[:-1] = alg.matmul(m, color[:-1], dims=alg.D2_D1)
 
 
 class Grayscale(Filter):
@@ -56,7 +56,7 @@ class Grayscale(Filter):
             [0.2126 - 0.2126 * amount, 0.7152 - 0.7152 * amount, 0.0722 + 0.9278 * amount]
         ]
 
-        color[:-1] = alg.dot(m, color[:-1], dims=alg.D2_D1)
+        color[:-1] = alg.matmul(m, color[:-1], dims=alg.D2_D1)
 
 
 class Saturate(Filter):
@@ -76,7 +76,7 @@ class Saturate(Filter):
             [0.213 - 0.213 * amount, 0.715 - 0.715 * amount, 0.072 + 0.928 * amount]
         ]
 
-        color[:-1] = alg.dot(m, color[:-1], dims=alg.D2_D1)
+        color[:-1] = alg.matmul(m, color[:-1], dims=alg.D2_D1)
 
 
 class Invert(Filter):
@@ -153,4 +153,4 @@ class HueRotate(Filter):
             [0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072]
         ]
 
-        color[:-1] = alg.dot(m, color[:-1], dims=alg.D2_D1)
+        color[:-1] = alg.matmul(m, color[:-1], dims=alg.D2_D1)

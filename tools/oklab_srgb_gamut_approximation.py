@@ -55,7 +55,7 @@ if GAMUT == 'p3':
     import coloraide.spaces.display_p3_linear as p3
     from coloraide import algebra as alg
 
-    RGBL_TO_LMS = alg.dot(XYZ_TO_LMS, p3.RGB_TO_XYZ)
+    RGBL_TO_LMS = alg.matmul(XYZ_TO_LMS, p3.RGB_TO_XYZ)
     LMS_TO_RGBL = alg.inv(RGBL_TO_LMS)
 else:
     RGBL_TO_LMS = SRGBL_TO_LMS

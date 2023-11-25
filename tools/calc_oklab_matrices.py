@@ -154,13 +154,13 @@ M0 = [
 ]
 
 # Calculate XYZ to LMS and LMS to XYZ using our white point.
-XYZ_TO_LMS = alg.divide(M0, alg.outer(alg.dot(M0, xyzt.white_d65), alg.ones(3)))
+XYZ_TO_LMS = alg.divide(M0, alg.outer(alg.matmul(M0, xyzt.white_d65), alg.ones(3)))
 
 # Calculate the inverse
 LMS_TO_XYZ = alg.inv(XYZ_TO_LMS)
 
 # Calculate linear sRGB to LMS (used for Okhsl and Okhsv)
-SRGBL_TO_LMS = alg.dot(XYZ_TO_LMS, RGB_TO_XYZ)
+SRGBL_TO_LMS = alg.matmul(XYZ_TO_LMS, RGB_TO_XYZ)
 LMS_TO_SRGBL = alg.inv(SRGBL_TO_LMS)
 
 # Oklab specifies the following matrix as M1 along with the inverse.
@@ -186,11 +186,11 @@ OKLAB_TO_LMS3 = float32(
 )
 
 # Calculate what we expect the ideal translation for D65 white to be.
-correct = alg.diag([alg.nth_root(c, 3) for c in alg.dot(XYZ_TO_LMS, xyzt.white_d65)])
+correct = alg.diag([alg.nth_root(c, 3) for c in alg.matmul(XYZ_TO_LMS, xyzt.white_d65)])
 
 # Adjust to target a precise translation for white
-lms3 = alg.diag(alg.dot(OKLAB_TO_LMS3, [1.0, 0.0, 0.0]))
-OKLAB_TO_LMS3 = alg.multi_dot([OKLAB_TO_LMS3, lms3, alg.inv(correct)])
+lms3 = alg.diag(alg.matmul(OKLAB_TO_LMS3, [1.0, 0.0, 0.0]))
+OKLAB_TO_LMS3 = alg.matmul(OKLAB_TO_LMS3, alg.matmul(lms3, alg.inv(correct)))
 
 # Calculate the inverse
 LMS3_TO_OKLAB = alg.inv(OKLAB_TO_LMS3)
