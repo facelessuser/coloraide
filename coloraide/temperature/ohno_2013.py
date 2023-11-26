@@ -84,7 +84,7 @@ class BlackBodyCurve:
             points.append([u, v])
         self.spline2 = alg.interpolate(points, method='catrom')
 
-    def scale(self, point: float, domain: list[float]) -> float:
+    def scale(self, point: float, domain: Vector) -> float:
         """Scale the temperature point to match the range 0 - 1."""
 
         # Extrapolation

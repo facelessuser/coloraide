@@ -52,7 +52,7 @@ def hint(mid: float) -> Callable[..., float]:
     return functools.partial(midpoint, h=mid)
 
 
-def normalize_domain(d: list[float]) -> list[float]:
+def normalize_domain(d: Vector) -> Vector:
     """Normalize domain between 0 and 1."""
 
     total = d[-1] - d[0]
@@ -114,7 +114,7 @@ class Interpolator(metaclass=ABCMeta):
             self.padding(padding)
 
         # Set the domain
-        self._domain = []  # type: list[float]
+        self._domain = []  # type: Vector
         if domain is not None:
             self.domain(domain)
 
@@ -206,7 +206,7 @@ class Interpolator(metaclass=ABCMeta):
 
         # Ensure domain ascends.
         # If we have a domain of length 1, we will duplicate it.
-        d = []  # type: list[float]
+        d = []  # type: Vector
         if domain:
             length = len(domain)
 
@@ -468,7 +468,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         progress: Mapping[str, Callable[..., float]] | Callable[..., float] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: list[float] | None = None,
+        domain: Vector | None = None,
         padding: float | tuple[float, float] | None = None,
         hue: str = 'shorter',
         **kwargs: Any
@@ -650,7 +650,7 @@ def interpolator(
     hue: str,
     premultiplied: bool,
     extrapolate: bool,
-    domain: list[float] | None = None,
+    domain: Vector | None = None,
     padding: float | tuple[float, float] | None = None,
     carryforward: bool = False,
     powerless: bool = False,

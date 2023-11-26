@@ -225,7 +225,7 @@ class Color(metaclass=ColorMeta):
         data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
         **kwargs: Any
-    ) -> tuple[Space, list[float]]:
+    ) -> tuple[Space, Vector]:
         """Parse the color."""
 
         # Parse a color string or color space name and coordinates
@@ -1004,7 +1004,7 @@ class Color(metaclass=ColorMeta):
         max_delta_e: float = 0,
         delta_e: str | None = None,
         delta_e_args: dict[str, Any] | None = None,
-        domain: list[float] | None = None,
+        domain: Vector | None = None,
         **interpolate_args: Any
     ) -> Interpolator:
         """Create a discrete interpolation."""
@@ -1031,7 +1031,7 @@ class Color(metaclass=ColorMeta):
         hue: str = util.DEF_HUE_ADJ,
         premultiplied: bool = True,
         extrapolate: bool = False,
-        domain: list[float] | None = None,
+        domain: Vector | None = None,
         method: str | None = None,
         padding: float | tuple[float, float] | None = None,
         carryforward: bool | None = None,
@@ -1208,10 +1208,10 @@ class Color(metaclass=ColorMeta):
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str, ...], *, nans: bool = True) -> list[float]:
+    def get(self, name: list[str] | tuple[str, ...], *, nans: bool = True) -> Vector:
         ...
 
-    def get(self, name: str | list[str] | tuple[str, ...], *, nans: bool = True) -> float | list[float]:
+    def get(self, name: str | list[str] | tuple[str, ...], *, nans: bool = True) -> float | Vector:
         """Get channel."""
 
         # Handle single channel

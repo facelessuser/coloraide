@@ -3,7 +3,7 @@ from __future__ import annotations
 from .. import algebra as alg
 import bisect
 from typing import Any
-from ..types import Vector, VectorLike
+from ..types import Vector, VectorLike, Matrix  # noqa: F401
 from abc import ABCMeta, abstractmethod
 import math
 
@@ -43,7 +43,7 @@ class Achromatic(metaclass=ABCMeta):
         self.threshold_lower = threshold_lower
         self.threshold_cutoff = threshold_cutoff
 
-        self.domain = []  # type: list[float]
+        self.domain = []  # type: Vector
         self.min_colorfulness = 1e10
         self.min_lightness = 1e10
         self.spline_type = spline
@@ -76,7 +76,7 @@ class Achromatic(metaclass=ABCMeta):
         Used to precalculate the best response.
         """
 
-        points = []  # type: list[list[float]]
+        points = []  # type: Matrix
         for segment in parameters:
             start, end, step, scale = segment
             for p in range(start, end, step):
@@ -99,7 +99,7 @@ class Achromatic(metaclass=ABCMeta):
     ) -> None:
         """Setup the achromatic response."""
 
-        points = []  # type: list[list[float]]
+        points = []  # type: Matrix
         for entry in tuning:
             l, c, h = entry
             if l < self.min_lightness:
