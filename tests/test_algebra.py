@@ -1018,6 +1018,23 @@ class TestAlgebra(unittest.TestCase):
              [0.0, 3.0, 0.0]]
         )
 
+        m1 = alg.zeros((3, 3, 3))
+        alg.fill_diagonal(m1, 1)
+        self.assertEqual(
+            m1,
+            [[[1, 0.0, 0.0],
+              [0.0, 0.0, 0.0],
+              [0.0, 0.0, 0.0]],
+
+             [[0.0, 0.0, 0.0],
+              [0.0, 1, 0.0],
+              [0.0, 0.0, 0.0]],
+
+             [[0.0, 0.0, 0.0],
+              [0.0, 0.0, 0.0],
+              [0.0, 0.0, 1]]]
+        )
+
         # Dimensions must be at least 2D
         with self.assertRaises(ValueError):
             alg.fill_diagonal([0, 0, 0], 3)

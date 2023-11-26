@@ -10,7 +10,7 @@ from ..spaces.lab import xyz_to_lab, lab_to_xyz
 from ..spaces.lch import lab_to_lch, lch_to_lab
 from .. import algebra as alg
 from .. import util
-from ..types import Vector
+from ..types import Vector, Matrix
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -181,7 +181,7 @@ def in_pointer_gamut(color: Color, tolerance: float) -> bool:
     return c <= (get_chroma_limit(l, h) + tolerance)
 
 
-def pointer_gamut_boundary(lightness: float | None = None) -> list[Vector]:
+def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
     """
     Calculate the Pointer gamut boundary points for the given lightness.
 
@@ -192,7 +192,7 @@ def pointer_gamut_boundary(lightness: float | None = None) -> list[Vector]:
     # Maximum Pointer gamut boundary
     # For each hue, find the lightness/chroma point that is furthest away from the white point.
     if lightness is None:
-        max_gamut = []  # type: list[Vector]
+        max_gamut = []  # type: Matrix
         for i, h in enumerate(LCH_H):
             max_dxy = 0.0
             max_xyy = [0.0, 0.0, 0.0]

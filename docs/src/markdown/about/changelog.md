@@ -2,7 +2,7 @@
 
 ## 2.13.1
 
-- **FIX**: Minor typing regressions.
+-   **FIX**: Minor typing regressions and fixes.
 
 ## 2.13
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from .. import algebra as alg
 import bisect
 from typing import Any
-from ..types import Vector, VectorLike
+from ..types import Vector, MatrixLike, Matrix  # noqa: F401
 from abc import ABCMeta, abstractmethod
 import math
 
@@ -17,7 +17,7 @@ class Achromatic(metaclass=ABCMeta):
 
     def __init__(
         self,
-        data: list[Vector] | None = None,
+        data: Matrix | None = None,
         threshold_upper: float = math.inf,
         threshold_lower: float = math.inf,
         threshold_cutoff: float = math.inf,
@@ -43,7 +43,7 @@ class Achromatic(metaclass=ABCMeta):
         self.threshold_lower = threshold_lower
         self.threshold_cutoff = threshold_cutoff
 
-        self.domain = []  # type: list[float]
+        self.domain = []  # type: Vector
         self.min_colorfulness = 1e10
         self.min_lightness = 1e10
         self.spline_type = spline
@@ -52,14 +52,14 @@ class Achromatic(metaclass=ABCMeta):
         if data is not None:
             self.setup_achromatic_response(data, **kwargs)
 
-    def dump(self) -> list[VectorLike] | None:  # pragma: no cover
+    def dump(self) -> MatrixLike | None:  # pragma: no cover
         """Dump data points."""
 
         if self.spline_type == 'linear':
             return list(zip(*self.spline.points))
         else:
             # Strip off the data points used to coerce the spline through the end.
-            return list(zip(*self.spline.points))[1:-1]  # type: ignore[return-value]
+            return list(zip(*self.spline.points))[1:-1]
 
     @abstractmethod
     def convert(self, coords: Vector, **kwargs: Any) -> Vector:
@@ -76,7 +76,7 @@ class Achromatic(metaclass=ABCMeta):
         Used to precalculate the best response.
         """
 
-        points = []  # type: list[list[float]]
+        points = []  # type: Matrix
         for segment in parameters:
             start, end, step, scale = segment
             for p in range(start, end, step):
@@ -94,12 +94,12 @@ class Achromatic(metaclass=ABCMeta):
 
     def setup_achromatic_response(
         self,
-        tuning: list[Vector],
+        tuning: Matrix,
         **kwargs: Any
     ) -> None:
         """Setup the achromatic response."""
 
-        points = []  # type: list[list[float]]
+        points = []  # type: Matrix
         for entry in tuning:
             l, c, h = entry
             if l < self.min_lightness:

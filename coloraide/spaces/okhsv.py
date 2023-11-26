@@ -38,7 +38,7 @@ from ..types import Vector, Matrix
 def okhsv_to_oklab(
     hsv: Vector,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """Convert from Okhsv to Oklab."""
 
@@ -92,7 +92,7 @@ def okhsv_to_oklab(
 def oklab_to_okhsv(
     lab: Vector,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """Oklab to Okhsv."""
 

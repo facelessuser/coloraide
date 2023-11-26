@@ -29,8 +29,8 @@ import functools
 import itertools as it
 from .deprecate import deprecated
 from .types import (
-    ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector,
-    Shape, ShapeLike, DimHints, SupportsFloatOrInt, MathType
+    ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool,
+    MatrixInt, MathType, Shape, ShapeLike, DimHints, SupportsFloatOrInt
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
@@ -661,7 +661,7 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Matrix/linear algebra math
 ################################
-def pretty(value: Array | float, *, _depth: int = 0, _shape: Shape | None = None) -> str:
+def pretty(value: float | ArrayLike, *, _depth: int = 0, _shape: Shape | None = None) -> str:
     """Format the print output."""
 
     if _shape is None:
@@ -677,7 +677,7 @@ def pretty(value: Array | float, *, _depth: int = 0, _shape: Shape | None = None
     return str(value)
 
 
-def pprint(value: Array | float) -> None:
+def pprint(value: float | ArrayLike) -> None:
     """Print the matrix or value."""
 
     print(pretty(value))
@@ -686,13 +686,13 @@ def pprint(value: Array | float) -> None:
 def all(a: float | ArrayLike) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _all(flatiter(a))
+    return _all(flatiter(a))  # type: ignore[arg-type]
 
 
 def any(a: float | ArrayLike) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _any(flatiter(a))
+    return _any(flatiter(a))  # type: ignore[arg-type]
 
 
 def vdot(a: VectorLike, b: VectorLike) -> float:
@@ -804,12 +804,22 @@ def cross(a: VectorLike, b: VectorLike) -> Vector:
 
 
 @overload
-def cross(a: MatrixLike, b: Any) -> Matrix:
+def cross(a: MatrixLike, b: VectorLike | MatrixLike) -> Matrix:
     ...
 
 
 @overload
-def cross(a: Any, b: MatrixLike) -> Matrix:
+def cross(a: VectorLike | MatrixLike, b: MatrixLike) -> Matrix:
+    ...
+
+
+@overload
+def cross(a: TensorLike, b: Any) -> Tensor:
+    ...
+
+
+@overload
+def cross(a: Any, b: TensorLike) -> Tensor:
     ...
 
 
@@ -1174,7 +1184,7 @@ def matmul(
     raise ValueError('Inputs require at least 1 dimension, scalars are not allowed')
 
 
-def _matrix_chain_order(shapes: Sequence[Shape]) -> list[list[int]]:
+def _matrix_chain_order(shapes: Sequence[Shape]) -> MatrixInt:
     """
     Calculate chain order.
 
@@ -1193,7 +1203,7 @@ def _matrix_chain_order(shapes: Sequence[Shape]) -> list[list[int]]:
 
     n = len(shapes)
     m = full((n, n), 0)  # type: Any
-    s = full((n, n), 0)  # type: list[list[int]] # type: ignore[assignment]
+    s = full((n, n), 0)  # type: MatrixInt # type: ignore[assignment]
     p = [a[0] for a in shapes] + [shapes[-1][1]]
 
     for d in range(1, n):
@@ -1208,7 +1218,7 @@ def _matrix_chain_order(shapes: Sequence[Shape]) -> list[list[int]]:
     return s
 
 
-def _multi_dot(arrays: Sequence[ArrayLike], indexes: list[list[int]], i: int, j: int) -> ArrayLike:
+def _multi_dot(arrays: Sequence[ArrayLike], indexes: MatrixInt, i: int, j: int) -> ArrayLike:
     """Recursively dot the matrices in the array."""
 
     if i != j:
@@ -1262,7 +1272,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
             is_vector = True
 
     # Make sure everything is a 2-D matrix as the next calculations only work for 2-D.
-    if not _all(len(s) == 2 for s in shapes):
+    if not _all(len(s) == 2 for s in shapes):  # type: ignore[arg-type]
         raise ValueError('All arrays must be 2-D matrices')
 
     # No need to do the expensive and complicated chain order algorithm for only 3.
@@ -1312,7 +1322,7 @@ class _BroadcastTo:
         self._chunk_subindex = 0
         self._chunk_max = 0
         self._chunk_index = 0
-        self._chunk = []  # type: list[float]
+        self._chunk = []  # type: Vector
 
         # Unravel the data as it will be quicker to slice the data in a flattened form
         # than iterating over the dimensions to replicate the data.
@@ -1952,17 +1962,17 @@ def isclose(a: float, b: float, *, dims: DimHints | None = ..., **kwargs: Any) -
 
 
 @overload
-def isclose(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[bool]:
+def isclose(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> VectorBool:
     ...
 
 
 @overload
-def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[list[bool]]:
+def isclose(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> MatrixBool:
     ...
 
 
 @overload
-def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[list[list[bool]]]:
+def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> TensorBool:
     ...
 
 
@@ -1975,17 +1985,17 @@ def isnan(a: float, *, dims: DimHints | None = ..., **kwargs: Any) -> bool:
 
 
 @overload
-def isnan(a: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[bool]:
+def isnan(a: VectorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> VectorBool:
     ...
 
 
 @overload
-def isnan(a: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[list[bool]]:
+def isnan(a: MatrixLike, *, dims: DimHints | None = ..., **kwargs: Any) -> MatrixBool:
     ...
 
 
 @overload
-def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> list[list[list[bool]]]:
+def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> TensorBool:
     ...
 
 
@@ -2424,7 +2434,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
     return m  # type: ignore[no-any-return]
 
 
-def _shape(a: Any, s: Shape) -> Shape:
+def _shape(a: ArrayLike | float, s: Shape) -> Shape:
     """
     Get the shape of the array.
 
@@ -2458,7 +2468,7 @@ def shape(a: ArrayLike | float) -> Shape:
     return _shape(a, ())
 
 
-def fill_diagonal(matrix: MatrixLike, val: float | ArrayLike, wrap: bool = False) -> None:
+def fill_diagonal(matrix: Matrix | Tensor, val: float | ArrayLike, wrap: bool = False) -> None:
     """Fill an N-D matrix diagonal."""
 
     s = shape(matrix)
@@ -2628,7 +2638,7 @@ def lu(
             size = s[1]
             wide = True
             for _ in range(diff):
-                matrix.append([0.0] * size)  # type: ignore[list-item]  # noqa: PERF401
+                matrix.append([0.0] * size)  # type: ignore[arg-type]  # noqa: PERF401
         # Tall
         else:
             tall = True
@@ -2968,6 +2978,16 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Permutation matrix is the identity matrix, even if shuffled.
     s2 = (size, size)
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
+
+
+@overload
+def vstack(arrays: Sequence[float | Vector | Matrix]) -> Matrix:
+    ...
+
+
+@overload
+def vstack(arrays: Sequence[Tensor]) -> Tensor:
+    ...
 
 
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:

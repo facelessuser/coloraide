@@ -69,7 +69,7 @@ SRGBL_COEFF = [
         # `Kn` coefficients
         [1.35691251, -0.00926975, -1.15076744, -0.50647251, 0.00645585]
     ]
-]  # type: list[list[Vector]]
+]  # type: list[Matrix]
 
 FLT_MAX = sys.float_info.max
 
@@ -153,7 +153,7 @@ def find_cusp(
     a: float,
     b: float,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """
     Finds L_cusp and C_cusp for a given hue.
@@ -179,7 +179,7 @@ def find_gamut_intersection(
     c1: float,
     l0: float,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]],
+    ok_coeff: list[Matrix],
     cusp: Vector | None = None,
 ) -> float:
     """
@@ -273,7 +273,7 @@ def find_gamut_intersection(
 def get_cs(
     lab: Vector,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """Get Cs."""
 
@@ -309,7 +309,7 @@ def compute_max_saturation(
     a: float,
     b: float,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> float:
     """
     Finds the maximum saturation possible for a given hue that fits in RGB.
@@ -376,7 +376,7 @@ def compute_max_saturation(
 def okhsl_to_oklab(
     hsl: Vector,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """Convert Okhsl to Oklab."""
 
@@ -425,7 +425,7 @@ def okhsl_to_oklab(
 def oklab_to_okhsl(
     lab: Vector,
     lms_to_rgb: Matrix,
-    ok_coeff: list[list[Vector]]
+    ok_coeff: list[Matrix]
 ) -> Vector:
     """Oklab to Okhsl."""
 

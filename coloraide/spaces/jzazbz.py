@@ -28,7 +28,7 @@ from .. import algebra as alg
 from .lch import lab_to_lch
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
-from ..types import Vector
+from ..types import Vector, Matrix  # noqa: F401
 from typing import Any
 import math
 
@@ -168,7 +168,7 @@ ACHROMATIC_RESPONSE = [
     [0.939371562360337, 0.00029097096413252364, 216.0751757112678],
     [0.9535857925200474, 0.0002913791373231644, 216.07515593963097],
     [0.9678315377267531, 0.000291770180656392, 216.0751365593372]
-]  # type: list[Vector]
+]  # type: Matrix
 
 
 class Achromatic(_Achromatic):
