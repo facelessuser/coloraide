@@ -2980,6 +2980,16 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
 
 
+@overload
+def vstack(arrays: Sequence[float | Vector | Matrix]) -> Matrix:
+    ...
+
+
+@overload
+def vstack(arrays: Sequence[Tensor]) -> Tensor:
+    ...
+
+
 def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
     """Vertical stack."""
 
