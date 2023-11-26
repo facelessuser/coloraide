@@ -11,7 +11,7 @@ from .. import algebra as alg
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
-from ..types import Vector
+from ..types import Vector, Matrix  # noqa: F401
 from typing import Any
 import math
 from .. import util
@@ -47,7 +47,7 @@ ACHROMATIC_RESPONSE = [
     [0.03097697795223092, 2.3991989122003048e-06, 329.7602673180789],
     [0.9999910919149724, 7.745034210925492e-05, 329.7602673179579],
     [5.243613106559707, 0.0004061232467760781, 329.76026731814255]
-]  # type: list[Vector]
+]  # type: Matrix
 
 
 def xyz_to_ipt(xyz: Vector) -> Vector:

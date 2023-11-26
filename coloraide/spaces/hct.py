@@ -53,7 +53,7 @@ from .cam16_jmh import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
 from .lab import EPSILON, KAPPA, KE
-from ..types import Vector, VectorLike
+from ..types import Vector, VectorLike, Matrix  # noqa: F401
 from typing import Any
 import math
 
@@ -112,7 +112,7 @@ ACHROMATIC_RESPONSE = [
     [357.8063946931686, 6.7599912702266085, 209.53078968985596],
     [390.2870215828255, 7.125170758147506, 209.52919524657287],
     [422.13028305191517, 7.462166817890066, 209.52763347977915]
-]  # type: list[Vector]
+]  # type: Matrix
 
 
 def y_to_lstar(y: float, white: VectorLike) -> float:

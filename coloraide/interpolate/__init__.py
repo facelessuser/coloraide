@@ -19,7 +19,7 @@ import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
 from .. spaces import HSVish, HSLish, Cylindrical, RGBish, LChish, Labish
-from ..types import Vector, ColorInput, Plugin
+from ..types import Matrix, Vector, ColorInput, Plugin
 from typing import Callable, Sequence, Mapping, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -70,7 +70,7 @@ class Interpolator(metaclass=ABCMeta):
 
     def __init__(
         self,
-        coordinates: list[Vector],
+        coordinates: Matrix,
         channel_names: Sequence[str],
         create: type[Color],
         easings: list[Callable[..., float] | None],
@@ -458,7 +458,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     @abstractmethod
     def interpolator(
         self,
-        coordinates: list[Vector],
+        coordinates: Matrix,
         channel_names: Sequence[str],
         create: type[Color],
         easings: list[Callable[..., float] | None],

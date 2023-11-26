@@ -17,7 +17,7 @@ from ..channels import Channel, FLG_ANGLE
 from .achromatic import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
-from ..types import Vector, VectorLike
+from ..types import Vector, VectorLike, Matrix
 from typing import Any
 
 # CAT16
@@ -164,7 +164,7 @@ ACHROMATIC_RESPONSE = [
     [754.5646557486314, 5.769380001437249, 209.51992286490193],
     [763.4420665704857, 5.79846542176912, 209.51977127465065],
     [772.3292010063437, 5.827342057308235, 209.519619957194]
-]  # type: list[Vector]
+]  # type: Matrix
 
 
 class Achromatic(_Achromatic):
@@ -182,7 +182,7 @@ class Achromatic(_Achromatic):
 
     def __init__(
         self,
-        data: list[Vector] | None = None,
+        data: Matrix | None = None,
         threshold_upper: float = 0.0,
         threshold_lower: float = 0.0,
         threshold_cutoff: float = math.inf,
