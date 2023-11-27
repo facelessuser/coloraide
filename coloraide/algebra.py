@@ -2638,7 +2638,7 @@ def lu(
             size = s[1]
             wide = True
             for _ in range(diff):
-                matrix.append([0.0] * size)  # type: ignore[arg-type]  # noqa: PERF401
+                matrix.append([0.0] * size)  # type: ignore[list-item]  # noqa: PERF401
         # Tall
         else:
             tall = True

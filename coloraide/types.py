@@ -10,13 +10,13 @@ ColorInput = Union['Color', str, Mapping[str, Any]]
 # Vectors, Matrices, and Arrays are assumed to be mutable lists
 Vector = List[float]
 Matrix = List[Vector]
-Tensor = List[Union[Matrix, 'Tensor']]
+Tensor = List[List[List[Any]]]
 Array = Union[Matrix, Vector, Tensor]
 
 # Anything that resembles a sequence will be considered "like" one of our types above
 VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
-TensorLike = Sequence[Union[MatrixLike, 'TensorLike']]
+TensorLike = Sequence[Sequence[Sequence[Any]]]
 ArrayLike = Union[VectorLike, MatrixLike, TensorLike]
 
 # Vectors, Matrices, and Arrays of various, specific types
