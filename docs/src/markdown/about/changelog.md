@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-   **FIX**: Fix typing of deeply nested arrays in `algebra`.
+
 ## 2.13.1
 
 -   **FIX**: Minor typing regressions and fixes.

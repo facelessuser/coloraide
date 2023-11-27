@@ -10,24 +10,24 @@ ColorInput = Union['Color', str, Mapping[str, Any]]
 # Vectors, Matrices, and Arrays are assumed to be mutable lists
 Vector = List[float]
 Matrix = List[Vector]
-Tensor = List[Union[Matrix, 'Tensor']]
+Tensor = List[List[List[Union[float, Any]]]]
 Array = Union[Matrix, Vector, Tensor]
 
 # Anything that resembles a sequence will be considered "like" one of our types above
 VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
-TensorLike = Sequence[Union[MatrixLike, 'TensorLike']]
+TensorLike = Sequence[Sequence[Sequence[Union[float, Any]]]]
 ArrayLike = Union[VectorLike, MatrixLike, TensorLike]
 
 # Vectors, Matrices, and Arrays of various, specific types
 VectorBool = List[bool]
 MatrixBool = List[VectorBool]
-TensorBool = List[Union[MatrixBool, 'TensorBool']]
+TensorBool = List[List[List[Union[bool, Any]]]]
 ArrayBool = Union[MatrixBool, VectorBool, TensorBool]
 
 VectorInt = List[int]
 MatrixInt = List[VectorInt]
-TensorInt = List[Union[MatrixInt, 'TensorInt']]
+TensorInt = List[List[List[Union[int, Any]]]]
 ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
 
 # General algebra types
