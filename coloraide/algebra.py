@@ -686,13 +686,13 @@ def pprint(value: float | ArrayLike) -> None:
 def all(a: float | ArrayLike) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _all(flatiter(a))  # type: ignore[arg-type]
+    return _all(flatiter(a))
 
 
 def any(a: float | ArrayLike) -> bool:  # noqa: A001
     """Return true if all elements are "true"."""
 
-    return _any(flatiter(a))  # type: ignore[arg-type]
+    return _any(flatiter(a))
 
 
 def vdot(a: VectorLike, b: VectorLike) -> float:
@@ -1272,7 +1272,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
             is_vector = True
 
     # Make sure everything is a 2-D matrix as the next calculations only work for 2-D.
-    if not _all(len(s) == 2 for s in shapes):  # type: ignore[arg-type]
+    if not _all(len(s) == 2 for s in shapes):
         raise ValueError('All arrays must be 2-D matrices')
 
     # No need to do the expensive and complicated chain order algorithm for only 3.
