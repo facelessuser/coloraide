@@ -70,7 +70,7 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
 def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     """From XYZ to ICtCp."""
 
-    # Convert from XYZ D65 to an absolute XYZ D5
+    # Convert from XYZ D65 to an absolute XYZ D65
     absxyz = util.xyz_to_absxyz(xyzd65)
 
     # Convert to LMS
