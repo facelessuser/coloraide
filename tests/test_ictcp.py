@@ -9,13 +9,13 @@ class TestICtCp(util.ColorAssertsPyTest):
     """Test ICtCp."""
 
     COLORS = [
-        ('red', 'color(--ictcp 0.42785 -0.11574 0.2788)'),
-        ('orange', 'color(--ictcp 0.50497 -0.20797 0.11077)'),
-        ('yellow', 'color(--ictcp 0.56981 -0.25166 0.0379)'),
-        ('green', 'color(--ictcp 0.39138 -0.24057 -0.04421)'),
-        ('blue', 'color(--ictcp 0.35607 0.26914 -0.16143)'),
-        ('indigo', 'color(--ictcp 0.27954 0.23658 -0.00107)'),
-        ('violet', 'color(--ictcp 0.49387 0.13657 0.05828)'),
+        ('red', 'color(--ictcp 0.42788 -0.1157 0.27873)'),
+        ('orange', 'color(--ictcp 0.50498 -0.20797 0.11073)'),
+        ('yellow', 'color(--ictcp 0.56983 -0.25169 0.03788)'),
+        ('green', 'color(--ictcp 0.39138 -0.24061 -0.04423)'),
+        ('blue', 'color(--ictcp 0.35598 0.26933 -0.16137)'),
+        ('indigo', 'color(--ictcp 0.2795 0.23671 -0.00097)'),
+        ('violet', 'color(--ictcp 0.49386 0.13661 0.05832)'),
         ('white', 'color(--ictcp 0.58069 0 0)'),
         ('gray', 'color(--ictcp 0.42781 0 0)'),
         ('black', 'color(--ictcp 0 0 0)'),
@@ -31,7 +31,7 @@ class TestICtCp(util.ColorAssertsPyTest):
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
-    def test_igpgtg_colors(self, color1, color2):
+    def test_colors(self, color1, color2):
         """Test colors."""
 
         self.assertColorEqual(Color(color1).convert('ictcp'), Color(color2))
