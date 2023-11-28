@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+-   **FIX**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 
 ## 2.13.1

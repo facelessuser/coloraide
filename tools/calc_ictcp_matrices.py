@@ -9,22 +9,18 @@ import os
 sys.path.insert(0, os.getcwd())
 
 from coloraide import algebra as alg  # noqa: E402
+import tools.calc_xyz_transform as xyzt  # noqa: E402
 
 
-a = [
-    [0.92, 0.04, 0.04],
-    [0.04, 0.92, 0.04],
-    [0.04, 0.04, 0.92]
+RGB_TO_XYZ, XYZ_TO_RGB = xyzt.get_matrix(xyzt.white_d65, 'rec2020')
+
+# Use rational values and apply Rec. 2020 matrix to get a precise XYZ to LMS matrix
+m1 = [
+    [1688, 2146, 262],
+    [683, 2951, 462],
+    [99, 309, 3688]
 ]
-
-b = [
-    [0.4002, 0.7076, -0.0808],
-    [-0.2263, 1.1653, 0.0457],
-    [0, 0, 0.9182]
-]
-
-# XYZ to LMS
-m1 = alg.matmul(a, b)
+m1 = alg.matmul(alg.divide(m1, 4096), XYZ_TO_RGB)
 
 # LMS to ICtCp
 m2 = [
@@ -32,9 +28,7 @@ m2 = [
     [6610, -13613, 7003],
     [17933, -17390, -543]
 ]
-
 m2 = alg.divide(m2, 4096)
-
 
 if __name__ == "__main__":
     print('===== XYZ to LMS =====')
