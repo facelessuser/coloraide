@@ -4,6 +4,7 @@
 
 -   **FIX**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
+-   **FIX**: Fix issue with HCT undefined channel resolver.
 
 ## 2.13.1
 

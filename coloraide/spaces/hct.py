@@ -279,7 +279,7 @@ class HCT(LChish, Space):
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(coords[2]) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
