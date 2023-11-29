@@ -1,8 +1,0 @@
-[run]
-omit=coloraide/gamut/fit_css_color_4.py
-
-[report]
-omit=coloraide/gamut/fit_css_color_4.py
-exclude_lines =
-    pragma: no cover
-    @overload

@@ -71,6 +71,13 @@ class TestHCTMisc(util.ColorAsserts, unittest.TestCase):
         c2 = c1.convert('xyy').convert('hct')
         self.assertColorEqual(c1, c2)
 
+    def test_negative_chroma(self):
+        """Negative chroma should be treated like zero."""
+
+        c1 = Color('hct', [330, 0, 0.5])
+        c2 = Color('hct', [330, -10, 0.5])
+        self.assertColorEqual(c1.convert('srgb'), c2.convert('srgb'))
+
 
 class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
     """Test HCT properties."""

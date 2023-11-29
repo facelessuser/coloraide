@@ -29,7 +29,6 @@ from .spaces.aces2065_1 import ACES20651
 from .spaces.acescg import ACEScg
 from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
-from .spaces.cam16 import CAM16
 from .spaces.cam16_jmh import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
 from .spaces.hct import HCT

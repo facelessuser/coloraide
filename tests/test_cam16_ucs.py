@@ -61,6 +61,31 @@ class TestCAM16UCSSerialize(util.ColorAssertsPyTest):
         self.assertEqual(Color(color1).to_string(**options), color2)
 
 
+class TestCAM16UCSMisc(util.ColorAsserts, unittest.TestCase):
+    """Test miscellaneous cases."""
+
+    def test_negative_j_convert_from(self):
+        """Negative lightness should be treated like zero when convert from."""
+
+        c1 = Color('cam16-ucs', [0, 0, 0.0])
+        c2 = Color('cam16-ucs', [-0.1, 0, 0])
+        self.assertColorEqual(c1.convert('srgb'), c2.convert('srgb'))
+
+    def test_negative_j_convert_to(self):
+        """Negative lightness should be treated like zero when converting to."""
+
+        c1 = Color('cam16-jmh', [0, 0, 0.0])
+        c2 = Color('cam16-jmh', [-0.1, 0, 0])
+        self.assertColorEqual(c1.convert('cam16-ucs'), c2.convert('cam16-ucs'))
+
+    def test_negative_chroma_convert_to(self):
+        """Negative chroma should be treated like zero when converting to."""
+
+        c1 = Color('cam16-jmh', [50, 0, 0])
+        c2 = Color('cam16-jmh', [50, -10, 0])
+        self.assertColorEqual(c1.convert('cam16-ucs'), c2.convert('cam16-ucs'))
+
+
 class TestCAM16UCSPoperties(util.ColorAsserts, unittest.TestCase):
     """Test CAM16 UCS."""
 

@@ -83,8 +83,7 @@ show_error_codes = true
 line-length = 120
 
 extend-exclude = [
-    "tools/oklab_srgb_gamut_approximation.py",
-    "coloraide/spaces/cam16.py"
+    "tools/oklab_srgb_gamut_approximation.py"
 ]
 
 select = [
@@ -118,6 +117,17 @@ ignore = [
     "RUF005",
     "PGH004",
     "RUF100"
+]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+omit = [
+    "coloraide/spaces/cam16.py"
+]
+
+exclude_lines = [
+    "pragma: no cover",
+    "@overload"
 ]
 
 [tool.tox]
