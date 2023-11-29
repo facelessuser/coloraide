@@ -31,21 +31,25 @@ class JzCzhz(LCh):
     }
     ACHROMATIC = Jzazbz.ACHROMATIC
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, limit=(0.0, None)),
-        Channel("cz", 0.0, 0.5, limit=(0.0, None)),
+        Channel("jz", 0.0, 1.0),
+        Channel("cz", 0.0, 0.5),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
 
+        j = coords[0]
+        if j < 0.0:
+            j = 0.0
+
         if index == 2:
             h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(j) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(j) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value

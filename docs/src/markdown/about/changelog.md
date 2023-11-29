@@ -2,7 +2,12 @@
 
 ## Unreleased
 
--   **FIX**: Much more accurate ICtCp matrices.
+-   **NEW**: In spaces that require clamping channels for conversion, clamping will _only_ occur in conversions, not
+    during normal assignment.
+-   **NEW**: Deprecate the non-standard Jab variant of CAM16. CAM16 JMH, CAM16-UCS, CAM16-SCD, and CAM16-LCD should be
+    used instead. While still available, it is no longer registered in `coloraide.everything` and will be removed in a
+    future version.
+-   **NEW**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 -   **FIX**: Fix issue with HCT undefined channel resolver.
 

@@ -78,10 +78,10 @@ flowchart TB
 
     xyz-d65 --- lab-d65 --- lch-d65
 
-    xyz-d65 --- cam16-jmh --- cam16
-        cam16 --- cam16-ucs
-        cam16 --- cam16-scd
-        cam16 --- cam16-lcd
+    xyz-d65 --- cam16-jmh
+        cam16-jmh --- cam16-ucs
+        cam16-jmh --- cam16-scd
+        cam16-jmh --- cam16-lcd
 
     xyz-d65 --- hct
 
@@ -157,7 +157,6 @@ flowchart TB
     acescg(ACEScg)
     acescc(ACEScc)
     acescct(ACEScct)
-    cam16(CAM16)
     cam16-jmh(CAM16 JMh)
     cam16-ucs(CAM16 UCS)
     cam16-scd(CAM16 SCD)
@@ -217,7 +216,6 @@ flowchart TB
     click acescg "./acescg/" _self
     click acescc "./acescc/" _self
     click acescct "./acescct/" _self
-    click cam16 "./cam16/" _self
     click cam16-jmh "./cam16_jmh/" _self
     click cam16-ucs "./cam16_ucs/" _self
     click cam16-scd "./cam16_scd/" _self

@@ -83,7 +83,8 @@ show_error_codes = true
 line-length = 120
 
 extend-exclude = [
-    "tools/oklab_srgb_gamut_approximation.py"
+    "tools/oklab_srgb_gamut_approximation.py",
+    "coloraide/spaces/cam16.py"
 ]
 
 select = [

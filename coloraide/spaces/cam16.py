@@ -14,6 +14,8 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from ..types import Vector
+from typing import Any
+from .. import deprecate
 from .. import algebra as alg
 
 
@@ -21,6 +23,10 @@ def cam16_jmh_to_cam16_jab(jmh: Vector) -> Vector:
     """Translate a CAM16 JMh to Jab of the same viewing conditions."""
 
     J, M, h = jmh
+
+    if M < 0.0:
+        M = 0.0
+
     return [
         J,
         M * math.cos(math.radians(h)),
@@ -45,7 +51,7 @@ class CAM16(Labish, Space):
     NAME = "cam16"
     SERIALIZE = ("--cam16",)
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
         Channel("a", -90.0, 90.0, flags=FLG_MIRROR_PERCENT),
         Channel("b", -90.0, 90.0, flags=FLG_MIRROR_PERCENT)
     )
@@ -56,6 +62,18 @@ class CAM16(Labish, Space):
     # Use the same environment as CAM16JMh
     ENV = CAM16JMh.ENV
     ACHROMATIC = CAM16JMh.ACHROMATIC
+
+    def __init__(self, **kwargs: Any) -> None:
+        """Initialize."""
+
+        super().__init__(**kwargs)
+
+        deprecate.warn_deprecated(
+            '\nCAM16 (Jab) is a non-standard rectangular form of CAM16.\n'
+            'Because this is a non-standard way to represent the space, it\n'
+            'will be removed in a future version. Please use "cam16-jmh",\n'
+            '"cam16-ucs", "cam16-scd", or "cam16-lcd" instead.'
+        )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
@@ -73,7 +91,7 @@ class CAM16(Labish, Space):
         """Check if color is achromatic."""
 
         m, h = alg.rect_to_polar(coords[1], coords[2])
-        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], m, h)
+        return coords[0] <= 0.0 or self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

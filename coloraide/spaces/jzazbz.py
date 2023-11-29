@@ -232,7 +232,7 @@ class Jzazbz(Labish, Space):
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, limit=(0.0, None)),
+        Channel("jz", 0.0, 1.0),
         Channel("az", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
         Channel("bz", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )

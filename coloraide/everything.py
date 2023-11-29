@@ -89,7 +89,6 @@ ColorAll.register(
         ACEScg(),
         ACEScc(),
         ACEScct(),
-        CAM16(),
         CAM16JMh(),
         CAM16UCS(),
         CAM16SCD(),

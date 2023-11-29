@@ -391,7 +391,7 @@ def cam16_to_xyz_d65(
         raise ValueError("No viewing conditions/environment provided")
 
     # Black
-    if J == 0.0 or Q == 0.0:
+    if (J is not None and J <= 0.0) or (Q is not None and Q <= 0.0):
         return [0.0, 0.0, 0.0]
 
     # Break hue into Cartesian components
@@ -543,21 +543,25 @@ class CAM16JMh(LChish, Space):
         env=ENV
     )
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
-        Channel("m", 0, 105.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
+        Channel("m", 0, 105.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
 
+        J = coords[0]
+        if J < 0.0:
+            J = 0.0
+
         if index == 2:
             h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(J) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(J) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -565,7 +569,7 @@ class CAM16JMh(LChish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], coords[1], coords[2])
+        return coords[0] <= 0.0 or self.ACHROMATIC.test(coords[0], coords[1], coords[2])
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""

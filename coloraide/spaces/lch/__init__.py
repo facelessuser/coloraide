@@ -26,6 +26,9 @@ def lch_to_lab(lch: Vector) -> Vector:
 
     l, c, h = lch
 
+    if c < 0.0:
+        c = 0.0
+
     return [
         l,
         c * math.cos(math.radians(h)),
@@ -38,7 +41,7 @@ class LCh(LChish, Space):
 
     CHANNELS = (
         Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 1.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 1.0, flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
@@ -71,7 +74,7 @@ class CIELCh(LCh):
     SERIALIZE = ("--lch",)
     CHANNELS = (
         Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 150.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 150.0, flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
