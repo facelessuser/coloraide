@@ -31,7 +31,7 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--cam16-jmh 0% 0% 0%)', 'color(--cam16-jmh 0 0 0)'),
         ('color(--cam16-jmh 100% 100% 100%)', 'color(--cam16-jmh 100 105 360 / 1)'),
-        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh 0 0 -360 / 1)')
+        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh -100% -100% -100%)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

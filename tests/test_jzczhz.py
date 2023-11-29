@@ -28,7 +28,7 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 0)'),
         ('color(--jzczhz 100% 100% 100%)', 'color(--jzczhz 1 0.5 360 / 1)'),
-        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz 0 0 -360 / 1)')
+        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz -1 -0.5 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

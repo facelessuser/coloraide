@@ -28,7 +28,7 @@ class TestLChuv(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--lchuv 0% 0% 0%)', 'color(--lchuv 0 0 none)'),
         ('color(--lchuv 100% 100% 100%)', 'color(--lchuv 100 220 360 / 1)'),
-        ('color(--lchuv -100% -100% -100%)', 'color(--lchuv -100 0 -360 / 1)')
+        ('color(--lchuv -100% -100% -100%)', 'color(--lchuv -100 -220 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

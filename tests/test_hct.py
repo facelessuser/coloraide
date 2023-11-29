@@ -27,7 +27,7 @@ class TestHCT(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--hct 0% 0% 0%)', 'color(--hct 0 0 none)'),
         ('color(--hct 100% 100% 100%)', 'color(--hct 360 145 100 / 1)'),
-        ('color(--hct -100% -100% -100%)', 'color(--hct -360 0 0 / 1)')
+        ('color(--hct -100% -100% -100%)', 'color(--hct -360 -145 -100)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

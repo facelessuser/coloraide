@@ -28,7 +28,7 @@ class TestLCh99o(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--lch99o 0% 0% 0%)', 'color(--lch99o 0 0 none)'),
         ('color(--lch99o 100% 100% 100%)', 'color(--lch99o 100 60 360 / 1)'),
-        ('color(--lch99o -100% -100% -100%)', 'color(--lch99o -100 0 -360 / 1)')
+        ('color(--lch99o -100% -100% -100%)', 'color(--lch99o -100 -60 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

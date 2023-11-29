@@ -43,7 +43,7 @@ class TestLCh(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--lch 0% 0% 0%)', 'color(--lch 0 0 none)'),
         ('color(--lch 100% 100% 100%)', 'color(--lch 100 150 360 / 1)'),
-        ('color(--lch -100% -100% -100%)', 'color(--lch -100 0 -360 / 1)')
+        ('color(--lch -100% -100% -100%)', 'color(--lch -100 -150 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

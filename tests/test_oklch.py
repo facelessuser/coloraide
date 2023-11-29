@@ -42,7 +42,7 @@ class TestsOkLCh(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--oklch 0% 0% 0%)', 'color(--oklch 0 0 0)'),
         ('color(--oklch 100% 100% 100%)', 'color(--oklch 1 0.4 360 / 1)'),
-        ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 0 -360 / 1)')
+        ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 -0.4 -360)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
