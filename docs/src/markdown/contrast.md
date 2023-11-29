@@ -111,7 +111,7 @@ Color("blue").contrast("red", method='wcag21')
 ///
 
 Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
-[CAM16](./colors/cam16.md) and the tone/lightness from CIELab. For contrast, they determined using tones that are
+[CAM16](./colors/cam16_jmh.md) and the tone/lightness from CIELab. For contrast, they determined using tones that are
 "far enough apart" in the HCT color space was a good indication of sufficient contrast. Since HCT tone is exactly the
 same as CIELab's lightness (also known as L\*), we've referred to this approach as Lstar.
 

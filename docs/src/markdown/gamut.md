@@ -276,8 +276,8 @@ Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut m
 [LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.
 
 Google's Material Design uses a new color space called [HCT](./colors/hct.md). It uses the hue and chroma from
-[CAM16 (JMh)](./colors/cam16.md) space and the tone/lightness from the [CIELab](./colors/lab_d65.md) space. HCT takes
-advantage of the good hue preservation of CAM16 and has the better lightness predictability of CIELab. Using these
+[CAM16 (JMh)](./colors/cam16_jmh.md) space and the tone/lightness from the [CIELab](./colors/lab_d65.md) space. HCT
+takes advantage of the good hue preservation of CAM16 and has the better lightness predictability of CIELab. Using these
 characteristics, the color space is adept at generating tonal palettes with predictable lightness. This makes it easier
 to construct UIs with decent contrast. But to do this well, you must work in HCT and gamut map in HCT. For this reason,
 the HCT Chroma gamut mapping method was added.
