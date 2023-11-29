@@ -119,6 +119,17 @@ ignore = [
     "RUF100"
 ]
 
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+omit = [
+    "coloraide/spaces/cam16.py"
+]
+
+exclude_lines = [
+    "pragma: no cover",
+    "@overload"
+]
+
 [tool.tox]
 legacy_tox_ini = """
     [tox]

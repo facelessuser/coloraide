@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+-   **NEW**: Deprecate non-standard CAM16 (Jab) space. People should use the standard CAM16 JMh or the CAM16 UCS, SCD,
+    or LCD Jab spaces. The non-standard Jab is still available via `coloraide.spaces.cam16.CAM16`, but it is no longer
+    available in `coloraide.everything` and will be removed at a future time.
 -   **FIX**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 -   **FIX**: Fix issue with HCT undefined channel resolver.

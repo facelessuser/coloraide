@@ -338,8 +338,8 @@ always be true.
     This behavior can be seen in non cylindrical spaces as well, like the Lab form of CAM16.
 
     ```py play
-    Color('gray').convert('cam16')
-    Color('cam16', [43.042, NaN, NaN]).normalize(nans=False)
+    Color('gray').convert('cam16-ucs')
+    Color('cam16-ucs', [56.23, NaN, NaN]).normalize(nans=False)
     ```
 
     The selected values may not always perfectly precise, but they are much better than blindly assuming zero.
