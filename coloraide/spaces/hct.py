@@ -278,7 +278,7 @@ class HCT(LChish, Space):
 
         t = coords[2]
         if t < 0.0:
-            t == 0.0
+            t = 0.0
         if index == 0:
             h = coords[0]
             return self.ACHROMATIC.get_ideal_hue(t) if math.isnan(h) else h
