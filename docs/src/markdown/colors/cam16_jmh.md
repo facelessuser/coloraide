@@ -35,8 +35,8 @@ A color appearance model (CAM) is a mathematical model that seeks to describe th
 vision, i.e. viewing conditions under which the appearance of a color does not tally with the corresponding physical
 measurement of the stimulus source.
 
-[CAM16](./cam16.md) is a successor of CIECAM02 with various fixes and improvements. The model actually defines numerous
-different attributes:
+CAM16 is a successor of CIECAM02 with various fixes and improvements. The model actually defines numerous different
+attributes:
 
 Name | Description
 ---- | -----------
