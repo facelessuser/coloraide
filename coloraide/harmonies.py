@@ -106,6 +106,7 @@ class Harmony(metaclass=ABCMeta):
                 SERIALIZE = ('---harmoncy-cylinder',)
                 BASE = name
                 GAMUT_CHECK = name
+                CLIP_SPACE = None
                 WHITE = cs.WHITE
                 DYAMIC_RANGE = cs.DYNAMIC_RANGE
                 INDEXES = cs.indexes() if hasattr(cs, 'indexes') else [0, 1, 2]

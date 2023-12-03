@@ -53,6 +53,7 @@ class HSV(HSVish, Space):
         "value": "v"
     }
     GAMUT_CHECK = "srgb"
+    CLIP_SPACE = "hsv"  # type: str | None
     WHITE = WHITES['2deg']['D65']
 
     def is_achromatic(self, coords: Vector) -> bool:

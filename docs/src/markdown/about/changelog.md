@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+-   **NEW**: Color spaces that specify the gamut space via `GAMUT_CHECK` must use that color space as a reference when
+    when gamut mapping or clipping by default.
+-   **NEW**: New color space attribute `CLIP_SPACE` added which will override the space specified by `GAMUT_CHECK`.
+    Used to force clipping in origin space even if a gamut mapping space is defined if it is advantageous (faster and
+    still practical) to clip in the origin space.
 -   **NEW**: Deprecate non-standard CAM16 (Jab) space. People should use the standard CAM16 JMh or the CAM16 UCS, SCD,
     or LCD Jab spaces. The non-standard Jab is still available via `coloraide.spaces.cam16.CAM16`, but it is no longer
     available in `coloraide.everything` and will be removed at a future time.

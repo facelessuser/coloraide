@@ -56,30 +56,31 @@ due to [limitations of floating-point arithmetic][floating-point] and precision 
 edge cases where colors don't round trip perfectly. By default, `in_gamut` allows for a tolerance of `#!py3 0.000075` to
 account for such cases where a color is "close enough". If desired, this "tolerance" can be adjusted.
 
-Let's consider CIELab with a D65 white point. The sRGB round trip through CIELab D65 for `#!color white` does not
-perfectly convert back to the original color. This is due to the perils of floating point arithmetic.
+Let's consider the oRGB color model. When converting from sRGB to oRGB, both of which share the same gamut, we can see
+that the conversion back is very, very close to being correct, but still technically out of gamut with one channel value
+falling below zero, but only slightly. This is due to the perils of floating point arithmetic.
+
 
 ```py play
-Color('color(srgb 1 1 1)').convert('lab-d65')[:]
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
+Color('red').convert('orgb')[:]
+Color('red').convert('orgb').convert('orgb')[:]
 ```
 
-We can see that when using a tolerance of zero, and gamut checking in sRGB, that the color is considered out of gamut.
-This makes sense as the round trip through CIELab D65 and back is so very close, but ever so slightly off. Depending on
-what you are doing, this may not be an issue up until you are ready to finalize the color, so sometimes it may be
-desirable to have some tolerance, and other times not.
+When testing with a tolerance, the color is considered in gamut, but when testing with a tolerance of zero, the color is
+considered out of gamut. Depending on what you are doing, this may not be an issue up until you are ready to finalize
+the color as very close to in gamut is usually good enough, so sometimes it may be desirable to have some tolerance, and
+other times not.
 
 ```py play
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb')[:]
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut()
-Color('color(srgb 1 1 1)').convert('lab-d65').convert('srgb').in_gamut(tolerance=0)
+Color('red').convert('orgb').convert('srgb')[:]
+Color('red').convert('orgb').convert('srgb').in_gamut()
+Color('red').convert('orgb').convert('srgb').in_gamut(tolerance=0)
 ```
 
-On the topic of tolerance, lets consider some color models that do not handle out of gamut colors very well. There are
-some color models that are alternate representations of an existing color space. For instance, the cylindrical spaces
-HSL, HSV, and HWB are just different color models for the sRGB color space. They are are essentially the sRGB color
-space, just with cylindrical coordinates that isolate certain attributes of the color space: saturation, whiteness,
-blackness, etc. So their gamut is exactly the same as the sRGB space, because they are the sRGB color space. So it
+Let's consider some color models that handle out of gamut colors in a less subtle way. HSL, HSV, and HWB are color 
+models designed to represent an RGB color space in a cylindrical format, traditionally sRGB. Each of these spaces
+isolate different attributes of a color: saturation, whiteness, lightness, etc. Because these models are just
+representing the color space in a different way, they share the same gamut as the reference RGB color space. So it
 stands to reason that simply using the sRGB gamut check for them should be sufficient, and if we are using strict
 tolerance, this would be true.
 
@@ -92,43 +93,46 @@ Color('hsl(0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 ```
 
-But when we are not using a strict threshold, and we check one of these models **only** using the sRGB gamut, there are
-some cases where these cylindrical colors can exhibit coordinates wildly outside of the model's range but still very
-close to the sRGB gamut.
+But when we are using a tolerance, and we check one of these models **only** using the sRGB gamut, there are some cases
+where these cylindrical colors can exhibit coordinates wildly outside of the model's range but still very close to the
+sRGB gamut. This is isn't an error or a bug, but simply how the color model behaves with out of gamut colors. These
+values can still convert right back to the original color, but this might not always be the case with all color models.
 
 In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL,
-we can see wildly large saturation.
+we can see wildly large saturation. But since it round trips back to sRGB just fine, it exhibit extreme values in HSL,
+but can still be considered in the sRGB gamut.
 
 ```py play
-hsl = Color('color(srgb 1 1.000002 1)').convert('hsl')
-hsl.to_string(fit=False)
+hsl = Color('color(srgb 0.999999 1.000002 0.999999)').convert('hsl')
+hsl
 hsl.in_gamut('srgb')
 ```
 
-This happens because these cylindrical color models do not represent colors in a very sane way when lightness exceeds
-the SDR range of 0 - 1. They are simply not designed to extend past such limits in a sane way. So even a slightly out of
-gamut sRGB color _could_ translate to a value way outside the cylindrical color model's boundaries.
+This happens because these cylindrical color models do not represent out of gamut colors in a very sane way. When
+lightness exceeds the SDR range of 0 - 1, they can return extremely high saturation or even negative saturation. So even
+a slightly out of gamut sRGB color _could_ translate to a value way outside the cylindrical color model's boundaries.
 
-For this reason, gamut checks in the HSL, HSV, or HWB models apply tolerance checks on the color's coordinates in the
+For this reason, gamut checks in the HSL, HSV, and HWB models apply tolerance checks on the color's coordinates in the
 sRGB color space **and** the respective cylindrical model ensuring we have coordinates that are close to the color's
-actual gamut and reasonably close to the cylindrical model's constraints as well.
-
-So, when using HSL as the gamut check, we can see that it ensures the color is not only very close to the sRGB gamut,
-but that it is also very close the color model's constraints.
+actual gamut and reasonably close to the cylindrical model's constraints as well. But if we specifically request `srgb`,
+we will see that only `srgb` is referenced.
 
 ```py play
-hsl = Color('color(srgb 0.9999999999994 1.0000000000002 0.9999999999997)').convert('hsl')
+hsl = Color('color(srgb 0.999999 1.000002 0.999999)').convert('hsl')
 hsl
+hsl.in_gamut()
 hsl.in_gamut('hsl')
+hsl.in_gamut('srgb')
 ```
 
-If the Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a
-problem, `srgb` can always be specified. `#!py3 tolerance=0` can also be used to constrain the check to values exactly
-in the gamut.
+In short, ColorAide will figure out what best to test unless you explicitly tell it to use something else. If the
+Cartesian check is the only desired check, and the strange cylindrical values that are returned are not a problem,
+`srgb` can always be specified. `#!py3 tolerance=0` can also be used to constrain the check to values exactly in the
+gamut.
 
 HSL has a very tight conversion to and from sRGB, so when an sRGB color is precisely in gamut, it will remain in gamut
 throughout the conversion to and from HSL, both forwards and backwards. On the other hand, there may be color models
-that have a looser conversion algorithm. There may be cases where it may be beneficial to increase the threshold.
+that have a looser conversion algorithm. There may even be cases where it may be beneficial to increase the threshold.
 
 ## Gamut Mapping Colors
 

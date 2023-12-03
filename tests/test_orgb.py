@@ -47,10 +47,10 @@ class TestoRGBSerialize(util.ColorAssertsPyTest):
         ('color(--orgb 0.75 0.1 -0.1)', {'alpha': True}, 'color(--orgb 0.75 0.1 -0.1 / 1)'),
         ('color(--orgb 0.75 0.1 -0.1 / 0.5)', {'alpha': False}, 'color(--orgb 0.75 0.1 -0.1)'),
         # Test None
-        ('color(--orgb none 0.1 -0.1)', {}, 'color(--orgb 0 0.1 -0.1)'),
-        ('color(--orgb none 0.1 -0.1)', {'none': True}, 'color(--orgb none 0.1 -0.1)'),
+        ('color(--orgb 0.67882 0.75654 none)', {}, 'color(--orgb 0.67882 0.75654 0)'),
+        ('color(--orgb 0.67882 0.75654 none)', {'none': True}, 'color(--orgb 0.67882 0.75654 none)'),
         # Test Fit
-        ('color(--orgb 0.75 1.2 -0.1)', {}, 'color(--orgb 0.76398 1 -0.05221)'),
+        ('color(--orgb 0.75 1.2 -0.1)', {}, 'color(--orgb 0.78983 0.88509 -0.04563)'),
         ('color(--orgb 0.75 1.2 -0.1)', {'fit': False}, 'color(--orgb 0.75 1.2 -0.1)')
     ]
 

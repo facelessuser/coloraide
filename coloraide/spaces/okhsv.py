@@ -153,6 +153,7 @@ class Okhsv(HSV):
         "saturation": "s",
         "value": "v"
     }
+    CLIP_SPACE = 'okhsv'
 
     def to_base(self, okhsv: Vector) -> Vector:
         """To Oklab from Okhsv."""
