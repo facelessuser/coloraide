@@ -853,12 +853,11 @@ class Color(metaclass=ColorMeta):
         """Clip the color channels."""
 
         orig_space = self.space()
-        clip_space = self._space.CLIP_SPACE
-        gamut_space = self._space.GAMUT_CHECK
         if space is None:
-            space = clip_space or gamut_space or orig_space
+            space = self._space.CLIP_SPACE or self._space.GAMUT_CHECK or orig_space
         else:
-            space = clip_space or gamut_space or space
+            cs = self.CS_MAP[space]
+            space = cs.CLIP_SPACE or cs.GAMUT_CHECK or cs.NAME
 
         # Convert to desired space and clip the color
         if space != orig_space:
@@ -894,6 +893,9 @@ class Color(metaclass=ColorMeta):
         orig_space = self.space()
         if space is None:
             space = self._space.GAMUT_CHECK or orig_space
+        else:
+            cs = self.CS_MAP[space]
+            space = cs.GAMUT_CHECK or cs.NAME
 
         # Select appropriate mapping algorithm
         mapping = self.FIT_MAP.get(method)
