@@ -103,7 +103,7 @@ class XYZD65(Space):
 
     # Some color spaces are a transform of a specific RGB color space gamut, e.g. HSL has a gamut of sRGB.
     # When testing or gamut mapping a color within the current color space's gamut, `GAMUT_CHECK` will
-    # declare which space must be used as reference.
+    # declare which space must be used as reference if anything other than the current space is required.
     #
     # Specifically, when testing if a color is in gamut, both the origin space and the specified gamut
     # space will be checked as sometimes a color is within the threshold of being "close enough" to the gamut,
