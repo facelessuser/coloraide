@@ -10,6 +10,8 @@
 -   **NEW**: Deprecate non-standard CAM16 (Jab) space. People should use the standard CAM16 JMh or the CAM16 UCS, SCD,
     or LCD Jab spaces. The non-standard Jab is still available via `coloraide.spaces.cam16.CAM16`, but it is no longer
     available in `coloraide.everything` and will be removed at a future time.
+-   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the RGB space.
+-   **FIX**: Okhsl and Okhsv must be clipped in sRGB.
 -   **FIX**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 -   **FIX**: Fix issue with HCT undefined channel resolver.
