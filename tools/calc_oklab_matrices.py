@@ -172,25 +172,18 @@ LMS_TO_SRGBL = alg.inv(SRGBL_TO_LMS)
 # ]
 # ```
 # But since the matrix is provided in 32 bit, we are not able to get the
-# inverse, and in return, we do not get a good resolution to `[1, 0, 0]`
-# for white. In order to adjust for this, take documented 32 bit inverse
-# matrix # that expects `[1, 0, 0]` and work backwards to calculate the 64
-# bit version. Make sure to process the value as 32 bit but emit it as 64
-# bit, then correct the 64 bit matrix to ensure it still aligns for `[1, 0, 0]`.
-OKLAB_TO_LMS3 = float32(
-    [
-        [1.0, 0.3963377774, 0.2158037573],
-        [1.0, -0.1055613458, -0.0638541728],
-        [1.0, -0.0894841775, -1.2914855480]
-    ]
-)
-
-# Calculate what we expect the ideal translation for D65 white to be.
-correct = alg.diag([alg.nth_root(c, 3) for c in alg.matmul(XYZ_TO_LMS, xyzt.white_d65)])
-
-# Adjust to target a precise translation for white
-lms3 = alg.diag(alg.matmul(OKLAB_TO_LMS3, [1.0, 0.0, 0.0]))
-OKLAB_TO_LMS3 = alg.matmul(OKLAB_TO_LMS3, alg.matmul(lms3, alg.inv(correct)))
+# proper inverse for `[1, 0, 0]` in 64 bit, even if we calculate the a
+# new 64 bit inverse for the above forward transform. What we need is a
+# proper 64 bit forward and reverse transform.
+#
+# In order to adjust for this, we take documented 32 bit inverse matrix which
+# gives us a perfect translation from Oklab `[1, 0, 0]` to LMS of `[1, 1, 1]`
+# and parse the matrix as float 32 and emit it as 64 bit and then take the inverse.
+OKLAB_TO_LMS3 = [
+    [1.0, 0.3963377774, 0.2158037573],
+    [1.0, -0.1055613458, -0.0638541728],
+    [1.0, -0.0894841775, -1.2914855480]
+]
 
 # Calculate the inverse
 LMS3_TO_OKLAB = alg.inv(OKLAB_TO_LMS3)
