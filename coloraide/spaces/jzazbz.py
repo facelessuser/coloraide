@@ -239,7 +239,8 @@ class Jzazbz(Labish, Space):
     CHANNEL_ALIASES = {
         "lightness": 'jz',
         "a": 'az',
-        "b": 'bz'
+        "b": 'bz',
+        "j": 'jz'
     }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'

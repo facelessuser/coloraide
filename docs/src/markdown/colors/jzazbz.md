@@ -46,7 +46,7 @@ _[Learn about Jzazbz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 Channels | Aliases
 -------- | -------
-`jz`     | `lightness`
+`jz`     | `lightness`, `j`
 `az`     | `a`
 `bz`     | `b`
 

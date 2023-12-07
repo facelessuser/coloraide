@@ -40,9 +40,9 @@ _[Learn about JzCzhz](https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13
 
 Channels | Aliases
 -------- | -------
-`jz`     | `lightness`
-`cz`     | `chroma`
-`hz`     | `hue`
+`jz`     | `lightness`, `j`
+`cz`     | `chroma`, `c`
+`hz`     | `hue`, `h`
 
 ## Input/Output
 

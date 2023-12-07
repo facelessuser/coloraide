@@ -42,7 +42,7 @@ _[Learn about HPLuv](https://www.hsluv.org/)_
 Channels    | Aliases
 ----------- | -------
 `h`         | `hue`
-`s`         | `perpendiculars`
+`p`         | `perpendiculars`
 `l`         | `lightness`
 
 ## Inputs/Output

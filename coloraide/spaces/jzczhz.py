@@ -27,7 +27,10 @@ class JzCzhz(LCh):
     CHANNEL_ALIASES = {
         "lightness": "jz",
         "chroma": "cz",
-        "hue": "hz"
+        "hue": "hz",
+        "h": 'hz',
+        'c': 'cz',
+        'j': 'jz'
     }
     ACHROMATIC = Jzazbz.ACHROMATIC
     CHANNELS = (
