@@ -744,7 +744,7 @@ def interpolator(
         stops,
         space,
         out_space,
-        process_mapping(progress, current._space.CHANNEL_ALIASES),
+        process_mapping(progress, current._space.aliases),
         premultiplied,
         extrapolate,
         domain,

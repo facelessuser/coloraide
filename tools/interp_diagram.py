@@ -93,9 +93,9 @@ def main():
     c1 = colors[0]
     name1 = args.xaxis.split(":", 1)[0]
     name2 = args.yaxis.split(":", 1)[0]
-    name1 = c1._space.CHANNEL_ALIASES.get(name1, name1)
+    name1 = c1._space.aliases.get(name1, name1)
     index1 = c1._space.get_channel_index(name1)
-    name2 = c1._space.CHANNEL_ALIASES.get(name2, name2)
+    name2 = c1._space.aliases.get(name2, name2)
     hue_index = -1
 
     if isinstance(c1._space, Cylindrical):
