@@ -195,15 +195,15 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Initialize."""
 
         self.channels = self.CHANNELS + (alpha_channel,)
+        self._chan_index = {c: e for e, c in enumerate(self.channels)}
         self._color_ids = (self.NAME,) if not self.SERIALIZE else self.SERIALIZE
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
-        self.aliases = {str(e): str(c) for e, c in enumerate(self.channels)}
-        self.aliases.update(self.CHANNEL_ALIASES)
 
     def get_channel_index(self, name: str) -> int:
         """Get channel index."""
 
-        return self.channels.index(self.aliases.get(name, name))
+        idx = self._chan_index.get(self.CHANNEL_ALIASES.get(name, name))
+        return int(name) if idx is None else idx
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
