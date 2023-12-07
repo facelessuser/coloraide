@@ -195,7 +195,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         """Initialize."""
 
         self.channels = self.CHANNELS + (alpha_channel,)
-        self._chan_index = {c: e for e, c in enumerate(self.channels)}
+        self._chan_index = {c: e for e, c in enumerate(self.channels)}  # type: dict[str, int]
         self._color_ids = (self.NAME,) if not self.SERIALIZE else self.SERIALIZE
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
 
