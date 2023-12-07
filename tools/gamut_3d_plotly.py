@@ -19,7 +19,7 @@ from coloraide import algebra as alg  # noqa: E402
 from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl  # noqa: E402
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
-CYL_GAMUT = {'hpluv',}
+CYL_GAMUT = {'hpluv', 'okhsl', 'okhsv'}
 
 
 def create_custom_hsl(gamut):
@@ -325,7 +325,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if is_hwbish or space in ('hpluv',):
+    if is_hwbish or space in CYL_GAMUT:
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
 
     if is_cyl and not is_labish and not is_lchish:
