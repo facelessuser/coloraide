@@ -53,7 +53,7 @@ class TestOkhslSerialize(util.ColorAssertsPyTest):
         ('color(--okhsl 50 0.3 none)', {}, 'color(--okhsl 50 0.3 0)'),
         ('color(--okhsl 50 0.3 none)', {'none': True}, 'color(--okhsl 50 0.3 none)'),
         # Test Fit (not bound)
-        ('color(--okhsl 50 1.1 0.5)', {}, 'color(--okhsl 48.679 1 0.50045)'),
+        ('color(--okhsl 50 1.1 0.5)', {}, 'color(--okhsl 50 1 0.5)'),
         ('color(--okhsl 50 1.1 0.5)', {'fit': False}, 'color(--okhsl 50 1.1 0.5)')
     ]
 

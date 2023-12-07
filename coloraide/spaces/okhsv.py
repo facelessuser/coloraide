@@ -145,10 +145,7 @@ class Okhsv(HSV):
     SERIALIZE = ("--okhsv",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        # We cannot be certain a saturation will fall on 1 or even under 1.
-        # This is a weakness of the Okhsv algorithm. Gamut mapping, including
-        # clipping, will be performed in sRGB for a more reliable, assured gamut.
-        Channel("s", 0.0, 1.0),
+        Channel("s", 0.0, 1.0, bound=True),
         Channel("v", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
@@ -156,6 +153,7 @@ class Okhsv(HSV):
         "saturation": "s",
         "value": "v"
     }
+    GAMUT_CHECK = None
     CLIP_SPACE = None
 
     def to_base(self, okhsv: Vector) -> Vector:

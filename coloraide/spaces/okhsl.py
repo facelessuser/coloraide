@@ -471,10 +471,7 @@ class Okhsl(HSL):
     SERIALIZE = ("--okhsl",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
-        # We cannot be certain a saturation will fall on 1 or even under 1.
-        # This is a weakness of the Okhsl algorithm. Gamut mapping, including
-        # clipping, will be performed in sRGB for a more reliable, assured gamut.
-        Channel("s", 0.0, 1.0),
+        Channel("s", 0.0, 1.0, bound=True),
         Channel("l", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
@@ -482,6 +479,7 @@ class Okhsl(HSL):
         "saturation": "s",
         "lightness": "l"
     }
+    GAMUT_CHECK = None
     CLIP_SPACE = None
 
     def to_base(self, coords: Vector) -> Vector:

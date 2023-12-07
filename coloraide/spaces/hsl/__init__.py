@@ -67,7 +67,7 @@ class HSL(HSLish, Space):
         "lightness": "l"
     }
     WHITE = WHITES['2deg']['D65']
-    GAMUT_CHECK = "srgb"
+    GAMUT_CHECK = "srgb"  # type: str | None
     CLIP_SPACE = "hsl"  # type: str | None
 
     def is_achromatic(self, coords: Vector) -> bool:
