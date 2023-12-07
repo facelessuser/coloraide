@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 2.14
 
+-   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
 -   **NEW**: Color spaces that specify the gamut space via `GAMUT_CHECK` must use that color space as a reference when
     when gamut mapping or clipping by default.
 -   **NEW**: New color space attribute `CLIP_SPACE` added which will override the space specified by `GAMUT_CHECK`.

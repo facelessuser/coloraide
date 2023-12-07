@@ -284,6 +284,12 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('orange')
         self.assertEqual(c1.get("red"), 1.0)
 
+    def test_get_num(self):
+        """Test get numerical."""
+
+        c1 = Color('orange')
+        self.assertEqual(c1.get("0"), 1.0)
+
     def test_get_no_nans(self):
         """Test get with no NaN."""
 
@@ -295,6 +301,12 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         c1 = Color('orange')
         self.assertEqual(c1.get("hsl.lightness"), 0.5)
+
+    def test_space_get_num(self):
+        """Test get with another space and numerical channel."""
+
+        c1 = Color('orange')
+        self.assertEqual(c1.get("hsl.2"), 0.5)
 
     def test_get_bad(self):
         """Test bad get."""
@@ -318,6 +330,13 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('orange')
         c1.set("red", 0.5)
         self.assertEqual(c1.get("red"), 0.5)
+
+    def test_set_num(self):
+        """Test set numerical."""
+
+        c1 = Color('orange')
+        c1.set("red", 0.5)
+        self.assertEqual(c1.get("0"), 0.5)
 
     def test_set_undefined(self):
         """Test set."""
@@ -412,6 +431,13 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('orange')
         c1.set("hsl.hue", 270)
         self.assertEqual(c1.get("hsl.hue"), 270)
+
+    def test_space_set_num(self):
+        """Test set in another space numerical."""
+
+        c1 = Color('orange')
+        c1.set("hsl.0", 270)
+        self.assertEqual(c1.get("hsl.0"), 270)
 
     def test_function_set(self):
         """Test set with a function."""

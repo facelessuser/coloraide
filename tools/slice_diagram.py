@@ -76,7 +76,7 @@ def plot_slice(
         n, v = [
             c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(chan.split(':'), 0)
         ]
-        n = c._space.CHANNEL_ALIASES.get(n, n)
+        n = c._space.aliases.get(n, n)
         i = c._space.get_channel_index(n)
         chan_constants.append((n, v, i))
 
@@ -89,9 +89,9 @@ def plot_slice(
     ]
 
     # Get the actual indexes of the specified channels
-    name1 = c._space.CHANNEL_ALIASES.get(name1, name1)
+    name1 = c._space.aliases.get(name1, name1)
     index1 = c._space.get_channel_index(name1)
-    name2 = c._space.CHANNEL_ALIASES.get(name2, name2)
+    name2 = c._space.aliases.get(name2, name2)
     index2 = c._space.get_channel_index(name2)
     hue_index = -1
 

@@ -123,6 +123,19 @@ color.get('red')
 color.get('oklch.hue')
 ```
 
+Numerical values for channels can be used as well, but the input should still be a string.
+
+```py play
+color = Color("pink")
+color
+color.get('0')
+color.get('oklch.0')
+```
+
+/// new | New in 2.14
+Parsing numerical representations of channels is new in 2.14
+///
+
 Like `get()`, `set()` is a method that allows for the setting of any color channel via the color channel names. The
 value can be set via numerical values or functions with more complex logic.
 
@@ -131,6 +144,7 @@ color = Color("pink")
 color
 color.set('blue', 0.5)
 color.set('green', lambda g: g * 1.3)
+color.set('2', 0.0)
 ```
 
 Since `set()` returns a reference to the current color object, we can also chain multiple `set()` operations.
@@ -147,6 +161,7 @@ Even more interesting is that, like `get()`, you can modify a channel in another
 color = Color("orange")
 color
 color.set('oklab.lightness', 0.50)
+color.set('oklab.0', 0.2)
 ```
 
 When getting/setting a color channel in a different color space than the current color space, the underlying color must

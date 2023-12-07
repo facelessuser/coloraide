@@ -959,7 +959,7 @@ class Color(metaclass=ColorMeta):
         """Mask color channels."""
 
         this = self if in_place else self.clone()
-        aliases = self._space.CHANNEL_ALIASES
+        aliases = self._space.aliases
         masks = set(
             [aliases.get(channel, channel)] if isinstance(channel, str) else [aliases.get(c, c) for c in channel]
         )
