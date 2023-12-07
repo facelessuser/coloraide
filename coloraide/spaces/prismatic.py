@@ -52,6 +52,8 @@ class Prismatic(Space):
         "blue": 'b'
     }
     WHITE = WHITES['2deg']['D65']
+    GAMUT_CHECK = 'srgb'
+    CLIP_SPACE = 'prismatic'
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Test if color is achromatic."""

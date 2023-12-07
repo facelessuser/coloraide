@@ -87,6 +87,19 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(color2, Color('rgb(0 255 0)'))
         self.assertTrue(color2.in_gamut('srgb'))
 
+    def test_clip_other_gamut(self):
+        """Test clip when a space defines another space as the gamut."""
+
+        color = Color('orgb', [0.2, 1, 0.8])
+        self.assertColorEqual(color.clip(), Color('color(--orgb 0.28313 0.1328 0.6872)'))
+
+    def test_clip_other_gamut_in_gamut(self):
+        """Test clip when a space defines another space as the gamut but it is in gamut."""
+
+        color = Color('orange').convert('orgb')
+        color2 = color.clone()
+        self.assertColorEqual(color.clip(), color2)
+
     def test_sdr_extremes_low(self):
         """Test SDR extreme low case."""
 

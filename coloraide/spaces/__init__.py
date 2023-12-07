@@ -165,15 +165,21 @@ class Space(Plugin, metaclass=SpaceMeta):
     CHANNEL_ALIASES = {}  # type: dict[str, str]
     # Enable or disable default color format parsing and serialization.
     COLOR_FORMAT = True
-    # Should this color also be checked in a different color space? Only when set to a string (specifying a color space)
-    # will the default gamut checking also check the specified space as well as the current.
+    # Some color spaces are a transform of a specific RGB color space gamut, e.g. HSL has a gamut of sRGB.
+    # When testing or gamut mapping a color within the current color space's gamut, `GAMUT_CHECK` will
+    # declare which space must be used as reference if anything other than the current space is required.
     #
-    # Gamut checking:
-    #   The specified color space will be checked first followed by the original. Assuming the parent color space fits,
-    #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
-    #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
-    #   space, the values can be greatly out of specification (looking at you HSL).
+    # Specifically, when testing if a color is in gamut, both the origin space and the specified gamut
+    # space will be checked as sometimes a color is within the threshold of being "close enough" to the gamut,
+    # but the color can still be far outside the origin space's coordinates. Checking both ensures sane values
+    # that are also close enough to the gamut.
+    #
+    # When actually gamut mapping, only the gamut space is used, if none is specified, the origin space is used.
     GAMUT_CHECK = None  # type: str | None
+    # `CLIP_SPACE` forces a different space to be used for clipping than what is specified by `GAMUT_CHECK`.
+    # This is used in cases like HSL where the `GAMUT_CHECK` space is sRGB, but we want to clip in HSL as it
+    # is still reasonable and faster.
+    CLIP_SPACE = None  # type: str | None
     # When set to `True`, this denotes that the color space has the ability to represent out of gamut in colors in an
     # extended range. When interpolation is done, if colors are interpolated in a smaller gamut than the colors being
     # interpolated, the colors will usually be gamut mapped, but if the interpolation space happens to support extended

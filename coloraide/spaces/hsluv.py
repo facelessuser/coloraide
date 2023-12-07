@@ -120,6 +120,7 @@ class HSLuv(HSLish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
+    CLIP_SPACE = "hsluv"
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""

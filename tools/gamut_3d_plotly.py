@@ -31,6 +31,7 @@ def create_custom_hsl(gamut):
         NAME = '-hsl-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
+        CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
@@ -59,6 +60,7 @@ def create_custom_rgb(gamut):
         NAME = '-rgb-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
+        CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
         INDEXES = cs.indexes()

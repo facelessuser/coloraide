@@ -28,13 +28,12 @@ Okhsv color space in 3D
 /////
 ////
 
-Okhsv is a color space created by Björn Ottosson. It is based off his early work and leverages the [Oklab](./oklab.md) color
-space. The aim was to create a color space that was better suited for being used in color pickers than the current HSV.
+Okhsv was created by Björn Ottosson and is a transform of the [Oklab](./oklab.md) color space that approximates the sRGB
+gamut perceptually in an HSL color model. The aim was to create a color space that was better suited for being used in
+color pickers than the current HSV.
 
 _[Learn about Okhsv](https://bottosson.github.io/posts/colorpicker/)_
 ///
-
-??? abstract "ColorAide Details"
 
 ## Channel Aliases
 

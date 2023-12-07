@@ -101,16 +101,22 @@ class XYZD65(Space):
     # Some basic ones are provided in the `cat` module for both 2 degree and 10 degree observer.
     WHITE = cat.WHITES['2deg']['D65']
 
-    # If `GAMUT_CHECK` is set to a color space name, the provided color space will be used to verify the an "in gamut"
-    # check in addition to the current color space's channel ranges. This is often used with color spaces such as:
-    # HSL, HSV, and HWB where `GAMUT_CHECK` will be set to `srgb`.
+    # Some color spaces are a transform of a specific RGB color space gamut, e.g. HSL has a gamut of sRGB.
+    # When testing or gamut mapping a color within the current color space's gamut, `GAMUT_CHECK` will
+    # declare which space must be used as reference if anything other than the current space is required.
     #
-    # Gamut checking:
-    #   The specified color space will be checked first followed by the original. Assuming the parent color space fits,
-    #   the original should fit as well, but there are some cases when a parent color space that is slightly out of
-    #   gamut, when evaluated with a threshold, may appear to be in gamut enough, but when checking the original color
-    #   space, the values can be greatly out of specification (looking at you HSL).
+    # Specifically, when testing if a color is in gamut, both the origin space and the specified gamut
+    # space will be checked as sometimes a color is within the threshold of being "close enough" to the gamut,
+    # but the color can still be far outside the origin space's coordinates. Checking both ensures sane values
+    # that are also close enough to the gamut.
+    #
+    # When actually gamut mapping, only the gamut space is used, if none is specified, the origin space is used.
     GAMUT_CHECK = None
+
+    # `CLIP_SPACE` forces a different space to be used for clipping than what is specified by `GAMUT_CHECK`.
+    # This is used in cases like HSL where the `GAMUT_CHECK` space is sRGB, but we want to clip in HSL as it
+    # is still reasonable and faster.
+    CLIP_SPACE = None
 
     # What is the color space's dynamic range
     DYNAMIC_RANGE = 'sdr'

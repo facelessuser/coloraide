@@ -91,6 +91,7 @@ class HSI(HSV):
     }
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = "srgb"
+    CLIP_SPACE = None
 
     def to_base(self, coords: Vector) -> Vector:
         """To sRGB from HSI."""

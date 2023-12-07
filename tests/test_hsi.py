@@ -51,7 +51,7 @@ class TestHSISerialize(util.ColorAssertsPyTest):
         ('color(--hsi 50 0.3 none)', {}, 'color(--hsi 50 0.3 0)'),
         ('color(--hsi 50 0.3 none)', {'none': True}, 'color(--hsi 50 0.3 none)'),
         # Test Fit (not bound)
-        ('color(--hsi 50 1.1 0.5)', {}, 'color(--hsi 50 1 0.5)'),
+        ('color(--hsi 50 1.1 0.5)', {}, 'color(--hsi 49.412 1 0.51667)'),
         ('color(--hsi 50 1.1 0.5)', {'fit': False}, 'color(--hsi 50 1.1 0.5)')
     ]
 

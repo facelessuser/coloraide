@@ -1,7 +1,6 @@
 """Gamut handling."""
 from __future__ import annotations
 import math
-from .. import algebra as alg
 from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
@@ -15,8 +14,10 @@ if TYPE_CHECKING:  # pragma: no cover
 __all__ = ('clip_channels', 'verify', 'Fit', 'pointer')
 
 
-def clip_channels(color: Color, nans: bool = True) -> None:
+def clip_channels(color: Color, nans: bool = True) -> bool:
     """Clip channels."""
+
+    clipped = False
 
     for i, value in enumerate(color[:-1]):
 
@@ -32,7 +33,16 @@ def clip_channels(color: Color, nans: bool = True) -> None:
             continue
 
         # Fit value in bounds.
-        color[i] = alg.clamp(value, chan.low, chan.high)
+        if value < chan.low:
+            color[i] = chan.low
+        elif value > chan.high:
+            color[i] = chan.high
+        else:
+            continue
+
+        clipped = True
+
+    return clipped
 
 
 def verify(color: Color, tolerance: float) -> bool:

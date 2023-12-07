@@ -74,6 +74,7 @@ class oRGB(Labish, Space):
     CHANNEL_ALIASES = {
         "luma": "l"
     }
+    GAMUT_CHECK = 'srgb'
 
     def to_base(self, coords: Vector) -> Vector:
         """To base from oRGB."""

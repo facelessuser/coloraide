@@ -67,7 +67,7 @@ SRGBL_COEFF = [
         # Limit
         [0.13110758, 1.81333971],
         # `Kn` coefficients
-        [1.35691251, -0.00926975, -1.15076744, -0.50647251, 0.00645585]
+        [1.35733652, -0.00915799, -1.1513021, -0.50559606, 0.00692167]
     ]
 ]  # type: list[Matrix]
 
@@ -479,6 +479,8 @@ class Okhsl(HSL):
         "saturation": "s",
         "lightness": "l"
     }
+    GAMUT_CHECK = None
+    CLIP_SPACE = None
 
     def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""

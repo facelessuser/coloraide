@@ -51,7 +51,7 @@ class TestCubehelixSerialize(util.ColorAssertsPyTest):
         ('color(--cubehelix 50 0.3 none)', {}, 'color(--cubehelix 50 0.3 0)'),
         ('color(--cubehelix 50 0.3 none)', {'none': True}, 'color(--cubehelix 50 0.3 none)'),
         # Test Fit (not bound)
-        ('color(--cubehelix 50 5 0.5)', {}, 'color(--cubehelix 50.905 4.6144 0.48511)'),
+        ('color(--cubehelix 50 5 0.5)', {}, 'color(--cubehelix 54.82 0.93023 0.45289)'),
         ('color(--cubehelix 50 5 0.5)', {'fit': False}, 'color(--cubehelix 50 5 0.5)')
     ]
 

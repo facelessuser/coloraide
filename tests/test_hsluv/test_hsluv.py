@@ -51,7 +51,7 @@ class TestHSLuvSerialize(util.ColorAssertsPyTest):
         ('color(--hsluv 50 30 none)', {}, 'color(--hsluv 50 30 0)'),
         ('color(--hsluv 50 30 none)', {'none': True}, 'color(--hsluv 50 30 none)'),
         # Test Fit (not bound)
-        ('color(--hsluv 50 110 50)', {}, 'color(--hsluv 51.208 100 50)'),
+        ('color(--hsluv 50 110 50)', {}, 'color(--hsluv 50.212 100 50.069)'),
         ('color(--hsluv 50 110 50)', {'fit': False}, 'color(--hsluv 50 110 50)')
     ]
 

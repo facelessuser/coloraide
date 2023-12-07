@@ -583,7 +583,7 @@ class Color(metaclass=ColorMeta):
             method = None if not isinstance(fit, str) else fit
             if not self.in_gamut(space, tolerance=0.0):
                 converted = self.convert(space, in_place=in_place, norm=norm)
-                return converted.fit(space, method=method)
+                return converted.fit(method=method)
 
         # Nothing to do, just return the color with no alterations.
         if space == self.space():
@@ -854,14 +854,25 @@ class Color(metaclass=ColorMeta):
 
         orig_space = self.space()
         if space is None:
-            space = self.space()
+            space = self._space.CLIP_SPACE or self._space.GAMUT_CHECK or orig_space
+        else:
+            cs = self.CS_MAP[space]
+            space = cs.CLIP_SPACE or cs.GAMUT_CHECK or cs.NAME
 
-        # Convert to desired space
-        c = self.convert(space, in_place=True, norm=False)
-        gamut.clip_channels(c)
+        # Convert to desired space and clip the color
+        if space != orig_space:
+            conv = self.convert(space, norm=False)
+            if not gamut.clip_channels(conv):
+                # Clipping only made non-essential changes (normalize hue),
+                # just clip in the current space to preserve 'None' and clean up noise
+                # at color space boundary limits (if any).
+                gamut.clip_channels(self)
+                return self
+            # Copy results to current color.
+            return self._hotswap(conv.convert(orig_space, in_place=True))
 
-        # Adjust "this" color
-        return c.convert(orig_space, in_place=True)
+        gamut.clip_channels(self)
+        return self
 
     def fit(
         self,
@@ -881,7 +892,10 @@ class Color(metaclass=ColorMeta):
 
         orig_space = self.space()
         if space is None:
-            space = self.space()
+            space = self._space.GAMUT_CHECK or orig_space
+        else:
+            cs = self.CS_MAP[space]
+            space = cs.GAMUT_CHECK or cs.NAME
 
         # Select appropriate mapping algorithm
         mapping = self.FIT_MAP.get(method)
@@ -890,18 +904,26 @@ class Color(metaclass=ColorMeta):
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
         # Convert to desired space
-        self.convert(space, in_place=True, norm=False)
+        if space != orig_space:
+            conv = self.convert(space, norm=False)
 
-        # If within gamut, just normalize hue range by calling clip.
+            # If within gamut, just normalize hue range by calling clip.
+            if conv.in_gamut(tolerance=0):
+                gamut.clip_channels(self)
+                return self
+
+            # Perform gamut mapping.
+            mapping.fit(conv, **kwargs)
+
+            # Convert back to the original color space
+            return self._hotswap(conv.convert(orig_space, in_place=True))
+
+        # Gamut map the color directly
         if self.in_gamut(tolerance=0):
             gamut.clip_channels(self)
-
-        # Perform gamut mapping.
-        else:
-            mapping.fit(self, **kwargs)
-
-        # Convert back to the original color space
-        return self.convert(orig_space, in_place=True)
+            return self
+        mapping.fit(self, **kwargs)
+        return self
 
     def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:
         """Check if current color is in gamut."""
