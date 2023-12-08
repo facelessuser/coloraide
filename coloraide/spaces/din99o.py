@@ -82,7 +82,7 @@ def din99o_to_lab(din99o: Vector) -> Vector:
     f = g * math.sin(h99o - RADS)
 
     return [
-        math.copysign(1, l99o) * (math.exp((abs(l99o) * KE) / C1) - 1) / C2,
+        (math.exp(l99o * KE / C1) - 1) / C2,
         e * math.cos(RADS) - (f / FACTOR) * math.sin(RADS),
         e * math.sin(RADS) + (f / FACTOR) * math.cos(RADS)
     ]
