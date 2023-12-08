@@ -19,6 +19,7 @@
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 -   **FIX**: Fix issue with HCT undefined channel resolver.
 -   **FIX**: Proper handling of negative lightness for DIN99o.
+-   **FIX**: Circular mean should return positive values.
 
 ## 2.13.1
 

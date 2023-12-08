@@ -68,7 +68,8 @@ def average(
         if not total:
             sums[i] = math.nan
         elif i == hue_index:
-            sums[i] = math.degrees(math.atan2(sin / total, cos / total))
+            avg_theta = math.degrees(math.atan2(sin / total, cos / total))
+            sums[i] = (avg_theta + 360) if avg_theta < 0 else avg_theta
         else:
             sums[i] /= total * alpha if premultiplied else total
 
