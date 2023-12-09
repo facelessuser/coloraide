@@ -51,7 +51,8 @@ class TestHSVSerialize(util.ColorAssertsPyTest):
         ('color(--hsv 50 0.3 none)', {'none': True}, 'color(--hsv 50 0.3 none)'),
         # Test Fit (not bound)
         ('color(--hsv 50 1.1 0.5)', {}, 'color(--hsv 49 1 0.5)'),
-        ('color(--hsv 50 1.1 0.5)', {'fit': False}, 'color(--hsv 50 1.1 0.5)')
+        ('color(--hsv 50 1.1 0.5)', {'fit': False}, 'color(--hsv 50 1.1 0.5)'),
+        ('color(--hsv 180 -1 1)', {}, 'color(--hsv 0 0 1)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -59,6 +60,18 @@ class TestHSVSerialize(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestMiscHSV(util.ColorAsserts, unittest.TestCase):
+    """Test miscellaneous HSV cases."""
+
+    def test_normalize_negative_saturation(self):
+        """Test normalization of negative saturation."""
+
+        self.assertColorEqual(
+            Color('color(--hsv 180 -1 1)').normalize(),
+            Color('color(--hsv 180 -1 1)')
+        )
 
 
 class TestHSVProperties(util.ColorAsserts, unittest.TestCase):

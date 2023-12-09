@@ -28,7 +28,7 @@ class TestLCh99o(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--lch99o 0% 0% 0%)', 'color(--lch99o 0 0 none)'),
         ('color(--lch99o 100% 100% 100%)', 'color(--lch99o 100 60 360 / 1)'),
-        ('color(--lch99o -100% -100% -100%)', 'color(--lch99o -100 0 -360 / 1)')
+        ('color(--lch99o -100% -100% -100%)', 'color(--lch99o -100 -60 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -150,5 +150,5 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('color(--lch99o 90% -10 120 / 1)').convert('din99o'),
-            Color('color(--din99o 90% 0 0)')
+            Color('color(--lch99o 90% 10 300 / 1)').convert('din99o')
         )

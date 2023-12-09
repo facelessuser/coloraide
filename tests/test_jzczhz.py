@@ -28,7 +28,7 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 0)'),
         ('color(--jzczhz 100% 100% 100%)', 'color(--jzczhz 1 0.5 360 / 1)'),
-        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz -1 0 -360 / 1)')
+        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz -1 -0.5 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -148,7 +148,8 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
         """Test handling of negative chroma when converting to Jzazbz."""
 
         self.assertColorEqual(
-            Color('color(--jzczhz 90% -10 120 / 1)').convert('jzazbz'), Color('color(--jzazbz 0.9 0 0)')
+            Color('color(--jzczhz 90% -10 120 / 1)').convert('jzazbz'),
+            Color('color(--jzczhz 90% 10 300 / 1)').convert('jzazbz')
         )
 
     def test_to_negative_lightness(self):
@@ -169,7 +170,11 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         """Test when color is achromatic."""
 
         self.assertEqual(Color('#222222').convert('jzczhz').is_achromatic(), True)
-        self.assertEqual(Color('#222222').convert('jzczhz').set('cz', lambda x: x + 1e-8).is_achromatic(), True)
+        self.assertEqual(Color('#222222').convert('jzczhz').set('cz', lambda c: c + 1e-8).is_achromatic(), True)
+        self.assertEqual(
+            Color('#222222').convert('jzczhz').set('cz', lambda c: -c).set('h', lambda h: h + 180).is_achromatic(),
+            True
+        )
         self.assertEqual(Color('srgb', [5.2, 5.2, 5.2]).convert('jzczhz').is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [NaN, 0.0, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0, NaN, 270]).is_achromatic(), True)

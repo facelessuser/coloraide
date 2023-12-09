@@ -37,7 +37,7 @@ class OkLCh(LCh):
     SERIALIZE = ("--oklch",)
     CHANNELS = (
         Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 0.4, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 0.4, flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

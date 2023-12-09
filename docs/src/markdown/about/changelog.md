@@ -2,14 +2,18 @@
 
 ## 2.14
 
--   **NEW**: Do not clamp user input of lightness in various spaces. Clamping will only occur during conversion if the
-    algorithm requires it.
+-   **NEW**: `normalize()` will now also normalize a cylindrical color model with negative chroma/saturation to its
+    positive chroma/saturation form, assuming one exists.
+-   **NEW**: Gamut clipping is performed on a cylindrical color's normalized form ensuring that a color which is in
+    gamut but has a negative chroma/saturation will be mapped more correctly.
+-   **NEW**: Do not clamp user input of lightness and chroma in various spaces. Clamping will only occur during
+    conversion if the algorithm requires it.
 -   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
 -   **NEW**: Color spaces plugins that specify the gamut space via `GAMUT_CHECK` must use that color space as a
     reference when when gamut mapping or clipping by default.
 -   **NEW**: New color space plugin attribute `CLIP_SPACE` added which will override the space specified by
-    `GAMUT_CHECK` to force clipping in the origin space even if a gamut mapping space is defined if it is advantageous
-    (faster and still practical) to clip in the origin space.
+    `GAMUT_CHECK` to force clipping in the origin space even if a gamut mapping space is defined. This is only used when
+    it is advantageous to clip in the origin space, e.g. when faster and still practical.
 -   **NEW**: Deprecate non-standard CAM16 (Jab) space. People should use the standard CAM16 JMh or the CAM16 UCS, SCD,
     or LCD Jab spaces. The non-standard Jab is still available via `coloraide.spaces.cam16.CAM16`, but it is no longer
     available in `coloraide.everything` and will be removed at a future time.

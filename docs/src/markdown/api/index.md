@@ -491,9 +491,9 @@ def normalize(
 /// define
 Description
 
--   Force normalization of a color's channels by cleaning up channels that setting hue to undefined if the color is
-    achromatic. if `nans` is set to `#!py False`, the hue normalization step (setting hue to undefined) will be skipped.
-    Normalize modifies the current color in place.
+-   Force normalization of a color's channels by forcing cylindrical colors with negative chroma/saturation to their
+    positive form and setting hue to undefined if the color is achromatic. If `nans` is set to `#!py False`, the hue
+    normalization step (setting hue to undefined) will be skipped. Normalize modifies the current color in place.
 
 Parameters
 

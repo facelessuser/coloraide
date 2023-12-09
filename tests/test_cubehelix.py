@@ -52,7 +52,8 @@ class TestCubehelixSerialize(util.ColorAssertsPyTest):
         ('color(--cubehelix 50 0.3 none)', {'none': True}, 'color(--cubehelix 50 0.3 none)'),
         # Test Fit (not bound)
         ('color(--cubehelix 50 5 0.5)', {}, 'color(--cubehelix 54.82 0.93023 0.45289)'),
-        ('color(--cubehelix 50 5 0.5)', {'fit': False}, 'color(--cubehelix 50 5 0.5)')
+        ('color(--cubehelix 50 5 0.5)', {'fit': False}, 'color(--cubehelix 50 5 0.5)'),
+        ('color(--cubehelix 171.81 -1.9489 0.3)', {}, 'color(--cubehelix 351.81 1.9489 0.3)'),
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -60,6 +61,18 @@ class TestCubehelixSerialize(util.ColorAssertsPyTest):
         """Test colors."""
 
         self.assertEqual(Color(color1).to_string(**options), color2)
+
+
+class TestMiscCubehelix(util.ColorAsserts, unittest.TestCase):
+    """Test miscellaneous Cubehelix cases."""
+
+    def test_normalize_negative_saturation(self):
+        """Test normalization of negative saturation."""
+
+        self.assertColorEqual(
+            Color('color(--cubehelix 171.81 -1.9489 0.3)').normalize(),
+            Color('color(--cubehelix 351.81 1.9489 0.3)')
+        )
 
 
 class TestCubehelixPoperties(util.ColorAsserts, unittest.TestCase):

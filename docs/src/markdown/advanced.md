@@ -10,7 +10,22 @@ CSS is a convenient color syntax that people are familiar with, so it makes a gr
 ColorAide supports the input and output of CSS syntax, but that doesn't mean it is attempting to be a CSS color library.
 CSS goals and ColorAide goals are at times different, and some of the decisions they make are at odds with how we feel
 colors should be treated in general. While we may not have all of CSS's behaviors enabled by default, we do provide a
-way to simulate CSS logic.
+way to simulate _most_ CSS logic.
+
+### What is Not Supported?
+
+It should be noted that ColorAide does not provide compatibility for CSS parse-time clamping. CSS clamps RGB channels
+when using `rgb()` syntax, it clamps lightness of Lab and LCh color spaces (Oklab and OkLCh included), it clamps
+hues, chroma, and saturation in many cylindrical color spaces. ColorAide does not do any of this.
+
+- ColorAide only clamps channels if the conversion algorithm requires it or when performing gamut mapping/clipping.
+- Hues are left as specified except when converted to another color space, gamut mapping/clipping, or when normalizing
+  a color.
+
+Currently, the only thing ColorAide clamps is the `alpha` channel as there is no practical use for transparency or
+opaqueness beyond the range of [0, 1]. ColorAide clamps alpha on every set.
+
+### What is Supported?
 
 There are four features that allow ColorAide to mimic CSS behavior. All four features can be used on demand via special
 parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a `Color`

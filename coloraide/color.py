@@ -524,7 +524,7 @@ class Color(metaclass=ColorMeta):
     def normalize(self, *, nans: bool = True) -> Color:
         """Normalize the color."""
 
-        self[:-1] = self.coords(nans=False)
+        self[:-1] = self._space.normalize(self.coords(nans=False))
         if nans and hasattr(self._space, 'hue_index') and self.is_achromatic():
             i = self._space.hue_index()
             self[i] = math.nan

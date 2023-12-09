@@ -111,6 +111,7 @@ class TestHSLSerialize(util.ColorAssertsPyTest):
         # Test Fit
         ('color(--hsl 0 -1.1 0.3)', {'color': True}, 'color(--hsl 180 1 0.315)'),
         ('color(--hsl 0 -1.1 0.3)', {'color': True, 'fit': False}, 'color(--hsl 0 -1.1 0.3)'),
+        ('color(--hsl 180 -1 0.5)', {'color': True}, 'color(--hsl 0 1 0.5)'),
         # Test corner cases
         ('hsl(270deg-0.9%.9)', {'color': True, 'fit': False}, 'color(--hsl 270 -0.009 0.009)')
     ]

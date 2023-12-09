@@ -60,6 +60,14 @@ class HSV(HSVish, Space):
     CLIP_SPACE = "hsv"  # type: str | None
     WHITE = WHITES['2deg']['D65']
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            return self.from_base(self.to_base(coords))
+        coords[0] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 

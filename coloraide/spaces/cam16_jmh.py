@@ -645,7 +645,7 @@ class CAM16JMh(LChish, Space):
     )
     CHANNELS = (
         Channel("j", 0.0, 100.0),
-        Channel("m", 0, 105.0, limit=(0.0, None)),
+        Channel("m", 0, 105.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
@@ -667,21 +667,24 @@ class CAM16JMh(LChish, Space):
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize."""
+
+        if coords[1] < 0.0:
+            return self.from_base(self.to_base(coords))
+        coords[2] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         if coords[0] == 0:
             return True
 
-        # Account for negative colorfulness
-        # Supported, but not currently allowed
-        if coords[1] < 0.0:  # pragma: no cover
-            coords = self.from_base(self.to_base(coords))
-
         if coords[0] < 0:
-            return self.INV_ACHROMATIC.test(*coords)
+            return self.INV_ACHROMATIC.test(*self.normalize(coords))
 
-        return self.ACHROMATIC.test(*coords)
+        return self.ACHROMATIC.test(*self.normalize(coords))
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""

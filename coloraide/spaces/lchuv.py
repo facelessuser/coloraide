@@ -16,7 +16,7 @@ class LChuv(LCh, Space):
     WHITE = WHITES['2deg']['D65']
     CHANNELS = (
         Channel("l", 0.0, 100.0),
-        Channel("c", 0.0, 220.0, limit=(0.0, None)),
+        Channel("c", 0.0, 220.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
 

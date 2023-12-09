@@ -42,7 +42,7 @@ class TestsOkLCh(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--oklch 0% 0% 0%)', 'color(--oklch 0 0 0)'),
         ('color(--oklch 100% 100% 100%)', 'color(--oklch 1 0.4 360 / 1)'),
-        ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 0 -360 / 1)')
+        ('color(--oklch -100% -100% -100%)', 'color(--oklch -1 -0.4 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -181,7 +181,10 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
     def test_chroma_less_than_zero_convert(self):
         """Test handling of negative chroma when converting to Oklab."""
 
-        self.assertColorEqual(Color('color(--oklch 90% -10 120 / 1)').convert('oklab'), Color('color(--oklab 0.9 0 0)'))
+        self.assertColorEqual(
+            Color('color(--oklch 90% -10 120 / 1)').convert('oklab'),
+            Color('color(--oklch 90% 10 300 / 1)').convert('oklab')
+        )
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
