@@ -5,11 +5,11 @@
 -   **NEW**: Do not clamp user input of lightness in various spaces. Clamping will only occur during conversion if the
     algorithm requires it.
 -   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
--   **NEW**: Color spaces that specify the gamut space via `GAMUT_CHECK` must use that color space as a reference when
-    when gamut mapping or clipping by default.
--   **NEW**: New color space attribute `CLIP_SPACE` added which will override the space specified by `GAMUT_CHECK`.
-    Used to force clipping in origin space even if a gamut mapping space is defined if it is advantageous (faster and
-    still practical) to clip in the origin space.
+-   **NEW**: Color spaces plugins that specify the gamut space via `GAMUT_CHECK` must use that color space as a
+    reference when when gamut mapping or clipping by default.
+-   **NEW**: New color space plugin attribute `CLIP_SPACE` added which will override the space specified by
+    `GAMUT_CHECK` to force clipping in the origin space even if a gamut mapping space is defined if it is advantageous
+    (faster and still practical) to clip in the origin space.
 -   **NEW**: Deprecate non-standard CAM16 (Jab) space. People should use the standard CAM16 JMh or the CAM16 UCS, SCD,
     or LCD Jab spaces. The non-standard Jab is still available via `coloraide.spaces.cam16.CAM16`, but it is no longer
     available in `coloraide.everything` and will be removed at a future time.
@@ -18,7 +18,8 @@
 -   **FIX**: Don't return scientific notation when serializing colors.
 -   **FIX**: Small fix for Rec. 2100 PQ conversion algorithm.
 -   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the RGB space.
--   **FIX**: Okhsl and Okhsv have a rough sRGB approximation and are instead gamut mapped to their own gamut.
+-   **FIX**: Because Okhsl and Okhsv have a rough sRGB approximation and not precise, they are instead gamut mapped to
+    their own gamut by default.
 -   **FIX**: Much more accurate ICtCp matrices.
 -   **FIX**: Fix typing of deeply nested arrays in `algebra`.
 -   **FIX**: Fix issue with HCT undefined channel resolver.
