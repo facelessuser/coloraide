@@ -40,7 +40,7 @@ def lab_to_din99o(lab: Vector) -> Vector:
 
     l, a, b = lab
     val = 1 + C2 * l
-    l99o = C1 * math.log(val) / KE if val >= 0 else math.nan
+    l99o = C1 * math.log(val) / KE if val >= 0 else 0.0
 
     if a == 0 and b == 0:
         a99o = b99o = 0.0
