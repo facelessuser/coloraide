@@ -178,7 +178,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 class TestQuirks(util.ColorAsserts, unittest.TestCase):
     """Test quirks."""
 
-    def test_chorma_less_than_zero_convert(self):
+    def test_chroma_less_than_zero_convert(self):
         """Test handling of negative chroma when converting to Oklab."""
 
         self.assertColorEqual(Color('color(--oklch 90% -10 120 / 1)').convert('oklab'), Color('color(--oklab 0.9 0 0)'))

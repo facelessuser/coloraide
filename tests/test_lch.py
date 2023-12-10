@@ -179,7 +179,7 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
 class TestQuirks(util.ColorAsserts, unittest.TestCase):
     """Test quirks."""
 
-    def test_chorma_less_than_zero_convert(self):
+    def test_chroma_less_than_zero_convert(self):
         """Test handling of negative chroma when converting to lab."""
 
         self.assertColorEqual(Color('lch(90% -10 120 / 1)').convert('lab'), Color('lab(90% 0 0)'))
