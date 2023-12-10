@@ -151,7 +151,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     h, c, t = coords[:]
 
     # Shortcut out for black
-    if t == 0:
+    if t <= 0:
         return [0.0, 0.0, 0.0]
 
     # Calculate the Y we need to target
@@ -209,8 +209,10 @@ def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
     t = y_to_lstar(coords[1], env.ref_white)
+    if t <= 0.0:
+        return [0.0, 0.0, 0.0]
     c, h = xyz_d65_to_cam16(coords, env)[1:3]
-    return [h, max(0.0, c), max(0.0, t)]
+    return [h, c, t]
 
 
 class Achromatic(_Achromatic):
@@ -267,19 +269,24 @@ class HCT(LChish, Space):
     CHANNELS = (
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("c", 0.0, 145.0, limit=(0.0, None)),
-        Channel("t", 0.0, 100.0, limit=(0.0, None))
+        Channel("t", 0.0, 100.0)
     )
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
 
+        # Treat tone less than zero as black
+        t = coords[2]
+        if t < 0:
+            t = 0.0
+
         if index == 0:
             h = coords[0]
-            return self.ACHROMATIC.get_ideal_hue(coords[2]) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(t) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[2]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(t) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -287,7 +294,10 @@ class HCT(LChish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[2] == 0.0 or self.ACHROMATIC.test(coords[2], coords[1], coords[0])
+        if coords[2] <= 0:
+            return True
+
+        return self.ACHROMATIC.test(coords[2], coords[1], coords[0])
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L C h."""

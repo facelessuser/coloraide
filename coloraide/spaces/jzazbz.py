@@ -232,7 +232,7 @@ class Jzazbz(Labish, Space):
     NAME = "jzazbz"
     SERIALIZE = ("--jzazbz",)
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, limit=(0.0, None)),
+        Channel("jz", 0.0, 1.0),
         Channel("az", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
         Channel("bz", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
     )
@@ -262,10 +262,13 @@ class Jzazbz(Labish, Space):
         """Resolve channels."""
 
         if index in (1, 2):
+            jz = coords[0]
+            if jz < 0:
+                jz = 0.0
             if not math.isnan(coords[index]):
                 return coords[index]
 
-            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+            return self.ACHROMATIC.get_ideal_ab(jz)[index - 1]
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -273,8 +276,11 @@ class Jzazbz(Labish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
+        if coords[0] < 0:
+            return True
+
         c, h = alg.rect_to_polar(coords[1], coords[2])
-        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], c, h)
+        return self.ACHROMATIC.test(coords[0], c, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Jzazbz."""

@@ -21,6 +21,10 @@ def cam16_jmh_to_cam16_jab(jmh: Vector) -> Vector:
     """Translate a CAM16 JMh to Jab of the same viewing conditions."""
 
     J, M, h = jmh
+
+    if J < 0.0:
+        J = 0.0
+
     return [
         J,
         M * math.cos(math.radians(h)),
@@ -32,6 +36,10 @@ def cam16_jab_to_cam16_jmh(jab: Vector) -> Vector:
     """Translate a CAM16 Jab to JMh of the same viewing conditions."""
 
     J, a, b = jab
+
+    if J < 0.0:
+        J = 0.0
+
     M = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
 
@@ -45,7 +53,7 @@ class CAM16(Labish, Space):
     NAME = "cam16"
     SERIALIZE = ("--cam16",)
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
         Channel("a", -90.0, 90.0, flags=FLG_MIRROR_PERCENT),
         Channel("b", -90.0, 90.0, flags=FLG_MIRROR_PERCENT)
     )
@@ -61,10 +69,15 @@ class CAM16(Labish, Space):
         """Resolve channels."""
 
         if index in (1, 2):
+            # Assume black if J is below zero
+            J = coords[0]
+            if J < 0:
+                J = 0.0
+
             if not math.isnan(coords[index]):
                 return coords[index]
 
-            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+            return self.ACHROMATIC.get_ideal_ab(J)[index - 1]
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -73,7 +86,7 @@ class CAM16(Labish, Space):
         """Check if color is achromatic."""
 
         m, h = alg.rect_to_polar(coords[1], coords[2])
-        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], m, h)
+        return coords[0] <= 0.0 or self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

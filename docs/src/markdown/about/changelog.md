@@ -2,6 +2,8 @@
 
 ## 2.14
 
+-   **NEW**: Do not clamp user input of lightness in various spaces. Clamping will only occur during conversion if the
+    algorithm requires it.
 -   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
 -   **NEW**: Color spaces that specify the gamut space via `GAMUT_CHECK` must use that color space as a reference when
     when gamut mapping or clipping by default.

@@ -503,13 +503,13 @@ def xyz_d65_to_cam16_jmh(xyzd65: Vector, env: Environment) -> Vector:
 
     cam16 = xyz_d65_to_cam16(xyzd65, env)
     J, M, h = cam16[0], cam16[5], cam16[2]
-    return [max(0.0, J), max(0.0, M), h]
+    return [J, M, h] if J >= 0 else [0.0, 0.0, 0.0]
 
 
 def cam16_jmh_to_xyz_d65(jmh: Vector, env: Environment) -> Vector:
     """CAM16 JMh to XYZ."""
 
-    J, M, h = jmh
+    J, M, h = jmh if jmh[0] >= 0 else [0.0, 0.0, 0.0]
     return cam16_to_xyz_d65(J=J, M=M, h=h, env=env)
 
 
@@ -543,7 +543,7 @@ class CAM16JMh(LChish, Space):
         env=ENV
     )
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
         Channel("m", 0, 105.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
@@ -551,13 +551,18 @@ class CAM16JMh(LChish, Space):
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
 
+        # Assume black if J is below zero
+        J = coords[0]
+        if J < 0:
+            J = 0.0
+
         if index == 2:
             h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(J) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(J) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -565,7 +570,10 @@ class CAM16JMh(LChish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[0] == 0.0 or self.ACHROMATIC.test(coords[0], coords[1], coords[2])
+        if coords[0] <= 0.0:
+            return True
+
+        return self.ACHROMATIC.test(*coords)
 
     def to_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to XYZ."""

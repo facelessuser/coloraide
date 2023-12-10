@@ -31,6 +31,9 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str) -> Vector:
 
     J, M, h = jmh
 
+    if J < 0.0:
+        return [0.0, 0.0, 0.0]
+
     c1, c2 = COEFFICENTS[model][1:]
 
     M = math.log(1 + c2 * M) / c2
@@ -53,6 +56,9 @@ def cam16_ucs_to_cam16_jmh(ucs: Vector, model: str) -> Vector:
     """
 
     J, a, b = ucs
+
+    if J < 0.0:
+        return [0.0, 0.0, 0.0]
 
     c1, c2 = COEFFICENTS[model][1:]
 
@@ -91,10 +97,15 @@ class CAM16UCS(Labish, Space):
         """Resolve channels."""
 
         if index in (1, 2):
+            # Assume black if J is below zero
+            J = coords[0]
+            if J < 0:
+                J = 0.0
+
             if not math.isnan(coords[index]):
                 return coords[index]
 
-            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
+            return self.ACHROMATIC.get_ideal_ab(J)[index - 1]
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -123,7 +134,7 @@ class CAM16LCD(CAM16UCS):
     SERIALIZE = ("--cam16-lcd",)
     MODEL = 'lcd'
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
         Channel("a", -70.0, 70.0, flags=FLG_MIRROR_PERCENT),
         Channel("b", -70.0, 70.0, flags=FLG_MIRROR_PERCENT)
     )
@@ -136,7 +147,7 @@ class CAM16SCD(CAM16UCS):
     SERIALIZE = ("--cam16-scd",)
     MODEL = 'scd'
     CHANNELS = (
-        Channel("j", 0.0, 100.0, limit=(0.0, None)),
+        Channel("j", 0.0, 100.0),
         Channel("a", -40.0, 40.0, flags=FLG_MIRROR_PERCENT),
         Channel("b", -40.0, 40.0, flags=FLG_MIRROR_PERCENT)
     )

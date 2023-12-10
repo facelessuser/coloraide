@@ -28,7 +28,7 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--jzczhz 0% 0% 0%)', 'color(--jzczhz 0 0 0)'),
         ('color(--jzczhz 100% 100% 100%)', 'color(--jzczhz 1 0.5 360 / 1)'),
-        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz 0 0 -360 / 1)')
+        ('color(--jzczhz -100% -100% -100%)', 'color(--jzczhz -1 0 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -161,10 +161,11 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('#222222').convert('jzczhz').is_achromatic(), True)
         self.assertEqual(Color('#222222').convert('jzczhz').set('cz', lambda x: x + 1e-8).is_achromatic(), True)
         self.assertEqual(Color('srgb', [5.2, 5.2, 5.2]).convert('jzczhz').is_achromatic(), True)
-        self.assertEqual(Color('jzczhz', [NaN, 0.00001, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [NaN, 0.0, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0, NaN, 270]).is_achromatic(), True)
-        self.assertEqual(Color('jzczhz', [0, 0.5, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [0, 0.5, 270]).is_achromatic(), False)
         self.assertEqual(Color('pink').convert('jzczhz').is_achromatic(), False)
-        self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), False)
         self.assertEqual(Color('jzczhz', [0.2, NaN, 270]).is_achromatic(), False)
         self.assertEqual(Color('jzczhz', [NaN, NaN, 270]).is_achromatic(), True)
+        self.assertEqual(Color('jzczhz', [-0.05, 0, 0]).is_achromatic(), True)

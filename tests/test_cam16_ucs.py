@@ -22,12 +22,14 @@ class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
         # Test color
         ('color(--cam16-ucs 50 10 -10)', 'color(--cam16-ucs 50 10 -10)'),
         ('color(--cam16-ucs 50 10 -10 / 0.5)', 'color(--cam16-ucs 50 10 -10 / 0.5)'),
-        ('color(--cam16-ucs 50% 50% -50% / 50%)', 'color(--cam16-ucs 50 25 -25 / 0.5)'),
         ('color(--cam16-ucs none none none / none)', 'color(--cam16-ucs none none none / none)'),
         # Test percent ranges
         ('color(--cam16-ucs 0% 0% 0%)', 'color(--cam16-ucs 0 0 0)'),
+        ('color(--cam16-ucs 50% 50% -50% / 50%)', 'color(--cam16-ucs 50 25 -25 / 0.5)'),
         ('color(--cam16-ucs 100% 100% 100%)', 'color(--cam16-ucs 100 50 50)'),
-        ('color(--cam16-ucs -100% -100% -100%)', 'color(--cam16-ucs -100 -50 -50)')
+        ('color(--cam16-ucs -100% -100% -100%)', 'color(--cam16-ucs -100 -50 -50)'),
+        # Miscellaneous cases
+        ('color(--cam16-jmh -10 30 270)', 'color(--cam16-ucs 0 0 0)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -279,6 +281,15 @@ class TestCAM16LCDPoperties(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(c['alpha'], 1)
         c['alpha'] = 0.5
         self.assertEqual(c['alpha'], 0.5)
+
+
+class TestsMisc(util.ColorAsserts, unittest.TestCase):
+    """Test miscellaneous cases."""
+
+    def test_from_negative_lightness(self):
+        """Test conversion from negative lightness."""
+
+        self.assertColorEqual(Color('cam16-ucs', [-10, 20, -10]).convert('srgb'), Color('black'))
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):

@@ -34,7 +34,7 @@ class JzCzhz(LCh):
     }
     ACHROMATIC = Jzazbz.ACHROMATIC
     CHANNELS = (
-        Channel("jz", 0.0, 1.0, limit=(0.0, None)),
+        Channel("jz", 0.0, 1.0),
         Channel("cz", 0.0, 0.5, limit=(0.0, None)),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
@@ -42,6 +42,9 @@ class JzCzhz(LCh):
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
 
+        jz = coords[0]
+        if jz < 0:
+            jz = 0.0
         if index == 2:
             h = coords[2]
             return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
@@ -56,7 +59,10 @@ class JzCzhz(LCh):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[0] == 0.0 or self.ACHROMATIC.test(*coords)
+        if coords[0] < 0.0:
+            return True
+
+        return self.ACHROMATIC.test(*coords)
 
     def hue_name(self) -> str:
         """Hue name."""

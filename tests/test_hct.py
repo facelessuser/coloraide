@@ -27,7 +27,7 @@ class TestHCT(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--hct 0% 0% 0%)', 'color(--hct 0 0 none)'),
         ('color(--hct 100% 100% 100%)', 'color(--hct 360 145 100 / 1)'),
-        ('color(--hct -100% -100% -100%)', 'color(--hct -360 0 0 / 1)')
+        ('color(--hct -100% -100% -100%)', 'color(--hct -360 0 -100 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -70,6 +70,16 @@ class TestHCTMisc(util.ColorAsserts, unittest.TestCase):
         c1 = Color('hct', (330.2920013462662, 484.58580542051413, 91.57114928085913))
         c2 = c1.convert('xyy').convert('hct')
         self.assertColorEqual(c1, c2)
+
+    def test_from_negative_lightness(self):
+        """Test conversion from HCT negative lightness."""
+
+        self.assertColorEqual(Color('hct', [60, 20, -10]).convert('srgb'), Color('black'))
+
+    def test_to_negative_lightness(self):
+        """Test conversion to HCT negative lightness."""
+
+        self.assertColorEqual(Color('lab-d65', [-10, 20, -10]).convert('hct'), Color('hct', [NaN, 0, 0]))
 
 
 class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
