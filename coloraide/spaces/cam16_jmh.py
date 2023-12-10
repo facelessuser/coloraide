@@ -558,7 +558,7 @@ class CAM16JMh(LChish, Space):
 
         if index == 2:
             h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(J) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(J, coords[1]) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]

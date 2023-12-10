@@ -47,11 +47,11 @@ class JzCzhz(LCh):
             jz = 0.0
         if index == 2:
             h = coords[2]
-            return self.ACHROMATIC.get_ideal_hue(coords[0]) if math.isnan(h) else h
+            return self.ACHROMATIC.get_ideal_hue(jz, coords[1]) if math.isnan(h) else h
 
         elif index == 1:
             c = coords[1]
-            return self.ACHROMATIC.get_ideal_chroma(coords[0]) if math.isnan(c) else c
+            return self.ACHROMATIC.get_ideal_chroma(jz) if math.isnan(c) else c
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
