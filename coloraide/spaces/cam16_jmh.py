@@ -429,7 +429,7 @@ def cam16_to_xyz_d65(
     # Calculate red-green and yellow-blue components
     p1 = 5e4 / 13 * env.nc * env.ncb * et
     p2 = A / env.nbb
-    r = 23 * (p2 + 0.305) * t / (23 * p1 + t * (11 * cos_h + 108 * sin_h))
+    r = 23 * (p2 + 0.305) * alg.zdiv(t, 23 * p1 + t * (11 * cos_h + 108 * sin_h))
     a = r * cos_h
     b = r * sin_h
 
@@ -464,8 +464,8 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
     t = (
-        5e4 / 13 * env.nc * env.ncb * et * math.sqrt(a ** 2 + b ** 2) /
-        (rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
+        5e4 / 13 * env.nc * env.ncb *
+        alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
     )
     alpha = alg.npow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 

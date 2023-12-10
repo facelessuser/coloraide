@@ -139,6 +139,14 @@ def clamp(
         return value
 
 
+def zdiv(a: float, b: float) -> float:
+    """Protect against zero divide."""
+
+    if b == 0:
+        return 0.0
+    return a / b
+
+
 def cbrt(n: float) -> float:
     """Calculate cube root."""
 

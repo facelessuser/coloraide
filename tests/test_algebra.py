@@ -2195,6 +2195,11 @@ class TestAlgebra(unittest.TestCase):
         v = [1, 2, 3]
         self.assertEqual(list(alg._extract_cols(v, alg.shape(v))), [[1, 2, 3]])
 
+    def test_zdiv(self):
+        """Test zero dividing."""
+
+        self.assertEqual(alg.zdiv(4, 0), 0)
+
 
 def test_pprint(capsys):
     """Test matrix print."""
