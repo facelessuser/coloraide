@@ -14,6 +14,7 @@
 -   **NEW**: Add new channel aliases: `j` for `jz` in Jzazbz and JzCzhz. Also add `c` for `cz` and `h` for `hz` in
     JzCzhz.
 -   **FIX**: Don't return scientific notation when serializing colors.
+-   **FIX**: Small fix for Rec. 2100 PQ conversion algorithm.
 -   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the RGB space.
 -   **FIX**: Okhsl and Okhsv have a rough sRGB approximation and are instead gamut mapped to their own gamut.
 -   **FIX**: Much more accurate ICtCp matrices.
