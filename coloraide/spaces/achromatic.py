@@ -142,14 +142,18 @@ class Achromatic(metaclass=ABCMeta):
 
         return self.spline(self.scale(l))[1]
 
-    def get_ideal_hue(self, l: float) -> float:
+    def get_ideal_hue(self, l: float, c: float = alg.NaN) -> float:
         """Get the ideal chroma."""
 
         if math.isnan(l):
             return 0.0
 
-        elif self.mirror and l < 0.0:
-            return (self.spline(self.scale(abs(l)))[2] - 180) % 360
+        # Adjust hue if lightness is negative and/or chroma is negative.
+        # Negative chroma is not currently allowed even if code can handle it.
+        if self.mirror and l < 0.0:
+            return (self.spline(self.scale(abs(l)))[2] - 180 + (180.0 if c < 0 else 0.0)) % 360
+        elif c < 0:  # pragma: no cover
+            return (self.spline(self.scale(l))[2] + 180) % 360
 
         return self.spline(self.scale(l))[2]
 
@@ -163,6 +167,12 @@ class Achromatic(metaclass=ABCMeta):
 
     def test(self, l: float, c: float, h: float) -> bool:
         """Test if the current color is achromatic."""
+
+        # Most LCh spaces with negative chroma can be shifted to a positive chroma as shown below.
+        # Negative chroma is not currently allowed even if code can handle it.
+        if c < 0:  # pragma: no cover
+            c = -c
+            h += 180.0
 
         # If colorfulness is past this limit, we'd have to have a lightness
         # so high, that our test has already broken down.
