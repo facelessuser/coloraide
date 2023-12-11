@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from ..distance import DeltaE
 from ..spaces.cam16_ucs import COEFFICENTS
-from ..types import Vector
+from ..types import VectorLike
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -12,15 +12,23 @@ if TYPE_CHECKING:  # pragma: no cover
 COEFF2 = COEFFICENTS['ucs'][2]
 
 
-def convert_ucs_ab(c: float, h: float) -> Vector:
-    """Convert HCT chroma and hue (CAM16 JMh colorfulness and hue) to UCS a and b."""
+def convert_ucs_ab(color: Color) -> VectorLike:
+    """Convert HCT chroma and hue (CAM16 JMh colorfulness and hue) using UCS logic for a and b."""
 
+    # Handle negative chroma
+    # Supported, but not currently allowed.
+    if color[1] < 0:  # pragma: no cover
+        base = color._space.BASE
+        color.convert(base, norm=False, in_place=True).convert('hct', norm=False, in_place=True)
+
+    env = color._space.ENV  # type: ignore[attr-defined]
+    h, c, t = color.coords()
     hrad = math.radians(h)
-    M = math.log(1 + COEFF2 * c) / COEFF2
+    M = math.log(1 + COEFF2 * c * env.fl_root) / COEFF2
     a = M * math.cos(hrad)
     b = M * math.sin(hrad)
 
-    return [a, b]
+    return t, a, b
 
 
 class DEHCT(DeltaE):
@@ -31,11 +39,12 @@ class DEHCT(DeltaE):
     def distance(self, color: Color, sample: Color, **kwargs: Any) -> float:
         """Delta E HCT color distance formula."""
 
-        h1, c1, t1 = color.convert('hct', norm=False).coords(nans=False)
-        h2, c2, t2 = sample.convert('hct', norm=False).coords(nans=False)
-
-        a1, b1 = convert_ucs_ab(c1, h1)
-        a2, b2 = convert_ucs_ab(c2, h2)
+        t1, a1, b1 = convert_ucs_ab(
+            color.convert('hct', norm=False) if color.space() != 'hct' else color.clone().normalize(nans=False)
+        )
+        t2, a2, b2 = convert_ucs_ab(
+            sample.convert('hct', norm=False) if sample.space() != 'hct' else sample.clone().normalize(nans=False)
+        )
 
         # Use simple euclidean distance
         return math.sqrt((t1 - t2) ** 2 + (a1 - a2) ** 2 + (b1 - b2) ** 2)

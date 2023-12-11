@@ -15,6 +15,7 @@
     available in `coloraide.everything` and will be removed at a future time.
 -   **NEW**: Add new channel aliases: `j` for `jz` in Jzazbz and JzCzhz. Also add `c` for `cz` and `h` for `hz` in
     JzCzhz.
+-   **FIX**: ∆E HCT should use colorfulness, not chroma, in the calculation.
 -   **FIX**: Don't return scientific notation when serializing colors.
 -   **FIX**: Small fix for Rec. 2100 PQ conversion algorithm.
 -   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the sRGB space.
