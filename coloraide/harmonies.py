@@ -88,6 +88,12 @@ class Harmony(metaclass=ABCMeta):
                 WHITE = cs.WHITE
                 DYAMIC_RANGE = cs.DYNAMIC_RANGE
                 INDEXES = cs.indexes()  # type: ignore[attr-defined]
+                ORIG_SPACE = cs
+
+                def is_achromatic(self, coords: Vector) -> bool | None:
+                    """Check if space is achromatic."""
+
+                    return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
 
             class ColorCyl(type(color)):  # type: ignore[misc]
                 """Custom color."""
@@ -110,6 +116,12 @@ class Harmony(metaclass=ABCMeta):
                 WHITE = cs.WHITE
                 DYAMIC_RANGE = cs.DYNAMIC_RANGE
                 INDEXES = cs.indexes() if hasattr(cs, 'indexes') else [0, 1, 2]
+                ORIG_SPACE = cs
+
+                def is_achromatic(self, coords: Vector) -> bool | None:
+                    """Check if space is achromatic."""
+
+                    return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
 
             class ColorCyl(type(color)):  # type: ignore[no-redef, misc]
                 """Custom color."""

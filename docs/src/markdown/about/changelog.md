@@ -15,6 +15,8 @@
     available in `coloraide.everything` and will be removed at a future time.
 -   **NEW**: Add new channel aliases: `j` for `jz` in Jzazbz and JzCzhz. Also add `c` for `cz` and `h` for `hz` in
     JzCzhz.
+-   **FIX**: Ensure that when `harmony` auto creates a cylindrical space from a rectangular space that it checks
+    achromatic status in the original color space.
 -   **FIX**: ∆E HCT should use colorfulness, not chroma, in the calculation.
 -   **FIX**: Don't return scientific notation when serializing colors.
 -   **FIX**: Small fix for Rec. 2100 PQ conversion algorithm.

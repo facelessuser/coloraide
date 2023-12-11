@@ -47,7 +47,7 @@ class LCh(LChish, Space):
         "hue": "h"
     }
 
-    def is_achromatic(self, coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma

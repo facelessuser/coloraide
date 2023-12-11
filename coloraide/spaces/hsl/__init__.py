@@ -70,7 +70,7 @@ class HSL(HSLish, Space):
     GAMUT_CHECK = "srgb"  # type: str | None
     CLIP_SPACE = "hsl"  # type: str | None
 
-    def is_achromatic(self, coords: Vector) -> bool:
+    def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
         return abs(coords[1]) < 1e-4 or coords[2] == 0.0 or abs(1 - coords[2]) < 1e-7
