@@ -37,8 +37,8 @@ class LCh(LChish, Space):
     """LCh class."""
 
     CHANNELS = (
-        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 1.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 1.0),
+        Channel("c", 0.0, 1.0, limit=(0.0, None)),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
