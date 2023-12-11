@@ -17,7 +17,7 @@
     JzCzhz.
 -   **FIX**: Don't return scientific notation when serializing colors.
 -   **FIX**: Small fix for Rec. 2100 PQ conversion algorithm.
--   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the RGB space.
+-   **FIX**: The oRGB color space should be gamut mapped in `srgb` as it is a transform of the sRGB space.
 -   **FIX**: Because Okhsl and Okhsv have a rough sRGB approximation and not precise, they are instead gamut mapped to
     their own gamut by default.
 -   **FIX**: Much more accurate ICtCp matrices.
