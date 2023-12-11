@@ -573,6 +573,11 @@ class CAM16JMh(LChish, Space):
         if coords[0] <= 0.0:
             return True
 
+        # Account for negative colorfulness
+        # Supported, but not currently allowed
+        if coords[1] < 0.0:  # pragma: no cover
+            coords = self.from_base(self.to_base(coords))
+
         return self.ACHROMATIC.test(*coords)
 
     def to_base(self, coords: Vector) -> Vector:

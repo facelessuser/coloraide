@@ -50,7 +50,9 @@ class LCh(LChish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        return coords[1] < ACHROMATIC_THRESHOLD
+        # Account for both positive and negative chroma
+        # Negative chroma is supported, but not currently allowed
+        return abs(coords[1]) < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To Lab from LCh."""

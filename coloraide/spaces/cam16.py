@@ -8,7 +8,7 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import CAM16JMh
+from .cam16_jmh import CAM16JMh, xyz_d65_to_cam16, cam16_to_xyz_d65, Environment
 from ..spaces import Space, Labish
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -17,13 +17,19 @@ from ..types import Vector
 from .. import algebra as alg
 
 
-def cam16_jmh_to_cam16_jab(jmh: Vector) -> Vector:
+def cam16_jmh_to_cam16_jab(jmh: Vector, env: Environment) -> Vector:
     """Translate a CAM16 JMh to Jab of the same viewing conditions."""
 
     J, M, h = jmh
 
     if J < 0.0:
         J = 0.0
+
+    # Account for negative colorfulness by reconverting
+    # Supported, but not currently allowed
+    if M < 0:  # pragma: no cover
+        cam16 = xyz_d65_to_cam16(cam16_to_xyz_d65(J=J, M=M, h=h, env=env), env=env)
+        J, M, h = cam16[0], cam16[5], cam16[2]
 
     return [
         J,
@@ -96,4 +102,4 @@ class CAM16(Labish, Space):
     def from_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to CAM16."""
 
-        return cam16_jmh_to_cam16_jab(coords)
+        return cam16_jmh_to_cam16_jab(coords, self.ENV)

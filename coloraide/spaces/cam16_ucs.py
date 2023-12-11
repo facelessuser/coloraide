@@ -7,7 +7,7 @@ https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
-from .cam16_jmh import CAM16JMh
+from .cam16_jmh import CAM16JMh, xyz_d65_to_cam16, cam16_to_xyz_d65, Environment
 from ..spaces import Space, Labish
 from ..cat import WHITES
 from .. import util
@@ -21,7 +21,7 @@ COEFFICENTS = {
 }
 
 
-def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str) -> Vector:
+def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
     """
     CAM16 (Jab) to CAM16 UCS (Jab).
 
@@ -33,6 +33,12 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str) -> Vector:
 
     if J < 0.0:
         return [0.0, 0.0, 0.0]
+
+    # Account for negative colorfulness by reconverting
+    # Supported, but not currently allowed
+    if M < 0:  # pragma: no cover
+        cam16 = xyz_d65_to_cam16(cam16_to_xyz_d65(J=J, M=M, h=h, env=env), env=env)
+        J, M, h = cam16[0], cam16[5], cam16[2]
 
     c1, c2 = COEFFICENTS[model][1:]
 
@@ -124,7 +130,7 @@ class CAM16UCS(Labish, Space):
     def from_base(self, coords: Vector) -> Vector:
         """From CAM16 JMh to CAM16."""
 
-        return cam16_jmh_to_cam16_ucs(coords, self.MODEL)
+        return cam16_jmh_to_cam16_ucs(coords, self.MODEL, self.ENV)
 
 
 class CAM16LCD(CAM16UCS):

@@ -297,6 +297,11 @@ class HCT(LChish, Space):
         if coords[2] <= 0:
             return True
 
+        # Account for negative chroma
+        # Supported, but not currently allowed
+        if coords[1] < 0:  # pragma: no cover
+            coords = self.from_base(self.to_base(coords))
+
         return self.ACHROMATIC.test(coords[2], coords[1], coords[0])
 
     def names(self) -> tuple[str, ...]:
