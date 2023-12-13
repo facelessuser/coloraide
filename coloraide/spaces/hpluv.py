@@ -31,6 +31,7 @@ from ..channels import Channel, FLG_ANGLE
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
 import math
+from .. import algebra as alg
 from .. import util
 from ..types import Vector
 
@@ -70,7 +71,7 @@ def max_safe_chroma_for_l(l: float) -> float:
     return min(distance_line_from_origin(bound) for bound in get_bounds(l))
 
 
-def hpluv_to_lch(hpluv: Vector) -> Vector:
+def hpluv_to_luv(hpluv: Vector) -> Vector:
     """Convert HPLuv to LCh."""
 
     h, s, l = hpluv
@@ -82,13 +83,15 @@ def hpluv_to_lch(hpluv: Vector) -> Vector:
     else:
         _hx_max = max_safe_chroma_for_l(l)
         c = _hx_max / 100 * s
-    return [l, c, util.constrain_hue(h)]
+    a, b = alg.polar_to_rect(c, h)
+    return [l, a, b]
 
 
-def lch_to_hpluv(lch: Vector) -> Vector:
+def luv_to_hpluv(luv: Vector) -> Vector:
     """Convert LCh to HPLuv."""
 
-    l, c, h = lch
+    l = luv[0]
+    c, h = alg.rect_to_polar(luv[1], luv[2])
     s = 0.0
     if l > 100 - 1e-7:
         l = 100
@@ -103,7 +106,7 @@ def lch_to_hpluv(lch: Vector) -> Vector:
 class HPLuv(HSLish, Space):
     """HPLuv class."""
 
-    BASE = 'lchuv'
+    BASE = 'luv'
     NAME = "hpluv"
     SERIALIZE = ("--hpluv",)
     CHANNELS = (
@@ -126,9 +129,9 @@ class HPLuv(HSLish, Space):
     def to_base(self, coords: Vector) -> Vector:
         """To LChuv from HPLuv."""
 
-        return hpluv_to_lch(coords)
+        return hpluv_to_luv(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From LChuv to HPLuv."""
 
-        return lch_to_hpluv(coords)
+        return luv_to_hpluv(coords)

@@ -1,13 +1,14 @@
 """HSV class."""
 from __future__ import annotations
 from ..spaces import Space, HSVish
+from .hsl import srgb_to_hsl, hsl_to_srgb
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
 from ..types import Vector
 
 
-def hsv_to_hsl(hsv: Vector) -> Vector:
+def hsv_to_srgb(hsv: Vector) -> Vector:
     """
     HSV to HSL.
 
@@ -18,18 +19,21 @@ def hsv_to_hsl(hsv: Vector) -> Vector:
     l = v * (1.0 - s / 2.0)
     s = 0.0 if l == 0.0 or l == 1.0 else (v - l) / min(l, 1.0 - l)
 
-    return [util.constrain_hue(h), s, l]
+    return hsl_to_srgb([h, s, l])
 
 
-def hsl_to_hsv(hsl: Vector) -> Vector:
+def srgb_to_hsv(srgb: Vector) -> Vector:
     """
     HSL to HSV.
 
     https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
     """
 
-    h, s, l = hsl
-
+    h, s, l = srgb_to_hsl(srgb)
+    # Rotate hue for negative saturation
+    if s < 0.0:
+        s = -s
+        h += 180.0
     v = l + s * min(l, 1.0 - l)
     s = 0.0 if v == 0.0 else 2 * (1.0 - l / v)
 
@@ -39,7 +43,7 @@ def hsl_to_hsv(hsl: Vector) -> Vector:
 class HSV(HSVish, Space):
     """HSL class."""
 
-    BASE = "hsl"
+    BASE = "srgb"
     NAME = "hsv"
     SERIALIZE = ("--hsv",)
     CHANNELS = (
@@ -64,9 +68,9 @@ class HSV(HSVish, Space):
     def to_base(self, coords: Vector) -> Vector:
         """To HSL from HSV."""
 
-        return hsv_to_hsl(coords)
+        return hsv_to_srgb(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From HSL to HSV."""
 
-        return hsl_to_hsv(coords)
+        return srgb_to_hsv(coords)

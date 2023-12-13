@@ -29,7 +29,7 @@ class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
         ('color(--cam16-ucs 100% 100% 100%)', 'color(--cam16-ucs 100 50 50)'),
         ('color(--cam16-ucs -100% -100% -100%)', 'color(--cam16-ucs -100 -50 -50)'),
         # Miscellaneous cases
-        ('color(--cam16-jmh -10 30 270)', 'color(--cam16-ucs 0 0 0)')
+        ('color(--cam16-jmh -10 30 270)', 'color(--cam16-ucs -15.888 0 -22.858)'),
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -289,7 +289,7 @@ class TestsMisc(util.ColorAsserts, unittest.TestCase):
     def test_from_negative_lightness(self):
         """Test conversion from negative lightness."""
 
-        self.assertColorEqual(Color('cam16-ucs', [-10, 20, -10]).convert('srgb'), Color('black'))
+        self.assertColorEqual(Color('cam16-ucs', [-10, 20, -10]).convert('srgb'), Color('rgb(12.124 -27.51 -1.8913)'))
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
@@ -306,3 +306,4 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('cam16-ucs', [NaN, 0, -3]).is_achromatic(), True)
         self.assertEqual(Color('cam16-ucs', [30, NaN, 0]).is_achromatic(), False)
         self.assertEqual(Color('cam16-ucs', [NaN, NaN, 0]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-ucs', [-12.625, 0.40666, 0.23042]).is_achromatic(), True)

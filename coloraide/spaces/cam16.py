@@ -22,8 +22,8 @@ def cam16_jmh_to_cam16_jab(jmh: Vector, env: Environment) -> Vector:
 
     J, M, h = jmh
 
-    if J < 0.0:
-        J = 0.0
+    if J == 0.0:
+        return [0.0, 0.0, 0.0]
 
     # Account for negative colorfulness by reconverting
     # Supported, but not currently allowed
@@ -43,8 +43,8 @@ def cam16_jab_to_cam16_jmh(jab: Vector) -> Vector:
 
     J, a, b = jab
 
-    if J < 0.0:
-        J = 0.0
+    if J == 0.0:
+        return [0.0, 0.0, 0.0]
 
     M = math.sqrt(a ** 2 + b ** 2)
     h = math.degrees(math.atan2(b, a))
@@ -70,6 +70,7 @@ class CAM16(Labish, Space):
     # Use the same environment as CAM16JMh
     ENV = CAM16JMh.ENV
     ACHROMATIC = CAM16JMh.ACHROMATIC
+    INV_ACHROMATIC = CAM16JMh.INV_ACHROMATIC
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
@@ -77,13 +78,13 @@ class CAM16(Labish, Space):
         if index in (1, 2):
             # Assume black if J is below zero
             J = coords[0]
-            if J < 0:
-                J = 0.0
+
+            achromatic = self.INV_ACHROMATIC if J < 0 else self.ACHROMATIC
 
             if not math.isnan(coords[index]):
                 return coords[index]
 
-            return self.ACHROMATIC.get_ideal_ab(J)[index - 1]
+            return achromatic.get_ideal_ab(J)[index - 1]
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -91,8 +92,16 @@ class CAM16(Labish, Space):
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
+        j = coords[0]
         m, h = alg.rect_to_polar(coords[1], coords[2])
-        return coords[0] <= 0.0 or self.ACHROMATIC.test(coords[0], m, h)
+
+        if j == 0.0:
+            return True
+
+        if j < 0.0:
+            return self.INV_ACHROMATIC.test(j, m, h)
+
+        return self.ACHROMATIC.test(j, m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

@@ -74,12 +74,12 @@ class TestHCTMisc(util.ColorAsserts, unittest.TestCase):
     def test_from_negative_lightness(self):
         """Test conversion from HCT negative lightness."""
 
-        self.assertColorEqual(Color('hct', [60, 20, -10]).convert('srgb'), Color('black'))
+        self.assertColorEqual(Color('hct', [60, 20, -10]).convert('srgb'), Color('rgb(18.035 -30.445 -55.93)'))
 
     def test_to_negative_lightness(self):
         """Test conversion to HCT negative lightness."""
 
-        self.assertColorEqual(Color('lab-d65', [-10, 20, -10]).convert('hct'), Color('hct', [NaN, 0, 0]))
+        self.assertColorEqual(Color('lab-d65', [-10, 20, -10]).convert('hct'), Color('color(--hct 335.33 30.905 -10)'))
 
 
 class TestHCTPoperties(util.ColorAsserts, unittest.TestCase):
@@ -177,3 +177,4 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('hct', [270, 50, NaN]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, NaN, 20]).is_achromatic(), False)
         self.assertEqual(Color('hct', [270, NaN, NaN]).is_achromatic(), True)
+        self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), True)

@@ -151,6 +151,16 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
             Color('color(--jzczhz 90% -10 120 / 1)').convert('jzazbz'), Color('color(--jzazbz 0.9 0 0)')
         )
 
+    def test_to_negative_lightness(self):
+        """Test conversion to negative lightness."""
+
+        self.assertColorEqual(Color('jzazbz', [-0.5, 0, 0]).convert('jzczhz'), Color('jzczhz', [-0.5, 0, NaN]))
+
+    def test_from_negative_lightness(self):
+        """Test conversion to negative lightness."""
+
+        self.assertColorEqual(Color('jzczhz', [-0.5, 0, 0]).convert('jzazbz'), Color('jzazbz', [-0.5, 0, 0]))
+
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
     """Test achromatic."""

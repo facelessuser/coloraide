@@ -31,7 +31,7 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
 
     J, M, h = jmh
 
-    if J < 0.0:
+    if J == 0.0:
         return [0.0, 0.0, 0.0]
 
     # Account for negative colorfulness by reconverting
@@ -46,8 +46,9 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
     a = M * math.cos(math.radians(h))
     b = M * math.sin(math.radians(h))
 
+    absj = abs(J)
     return [
-        (1 + 100 * c1) * J / (1 + c1 * J),
+        math.copysign((1 + 100 * c1) * absj / (1 + c1 * absj), J),
         a,
         b
     ]
@@ -63,7 +64,7 @@ def cam16_ucs_to_cam16_jmh(ucs: Vector, model: str) -> Vector:
 
     J, a, b = ucs
 
-    if J < 0.0:
+    if J == 0.0:
         return [0.0, 0.0, 0.0]
 
     c1, c2 = COEFFICENTS[model][1:]
@@ -72,8 +73,9 @@ def cam16_ucs_to_cam16_jmh(ucs: Vector, model: str) -> Vector:
     M = (math.exp(M * c2) - 1) / c2
     h = math.degrees(math.atan2(b, a))
 
+    absj = abs(J)
     return [
-        J / (1 - c1 * (J - 100)),
+        math.copysign(absj / (1 - c1 * (absj - 100)), J),
         M,
         util.constrain_hue(h)
     ]
@@ -98,6 +100,7 @@ class CAM16UCS(Labish, Space):
     # Use the same environment as CAM16JMh
     ENV = CAM16JMh.ENV
     ACHROMATIC = CAM16JMh.ACHROMATIC
+    INV_ACHROMATIC = CAM16JMh.INV_ACHROMATIC
 
     def resolve_channel(self, index: int, coords: Vector) -> float:
         """Resolve channels."""
@@ -105,13 +108,13 @@ class CAM16UCS(Labish, Space):
         if index in (1, 2):
             # Assume black if J is below zero
             J = coords[0]
-            if J < 0:
-                J = 0.0
+
+            achromatic = self.INV_ACHROMATIC if J < 0 else self.ACHROMATIC
 
             if not math.isnan(coords[index]):
                 return coords[index]
 
-            return self.ACHROMATIC.get_ideal_ab(J)[index - 1]
+            return achromatic.get_ideal_ab(J)[index - 1]
 
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
@@ -120,7 +123,14 @@ class CAM16UCS(Labish, Space):
         """Check if color is achromatic."""
 
         j, m, h = cam16_ucs_to_cam16_jmh(coords, self.MODEL)
-        return j <= 0.0 or self.ACHROMATIC.test(j, m, h)
+
+        if j == 0.0:
+            return True
+
+        if j < 0.0:
+            return self.INV_ACHROMATIC.test(j, m, h)
+
+        return self.ACHROMATIC.test(j, m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""

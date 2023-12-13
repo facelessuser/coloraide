@@ -24,7 +24,7 @@ class TestRoundTrip:
     Color.deregister('space:ryb-biased')
 
     SPACES = {k: 5 for k in Color.CS_MAP.keys()}
-    # Not as accurate due to bisect back to CAM16
+    # Not as accurate due to approximation back to CAM16
     SPACES['hct'] = 3
 
     COLORS = [

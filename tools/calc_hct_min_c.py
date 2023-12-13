@@ -33,19 +33,22 @@ def main():
         help="Spline tuning parameters: start:end:step:scale (int:int:int:float)"
     )
     parser.add_argument(
+        '--negative', '-n', action='store_true', help="Negative lightness spline."
+    )
+    parser.add_argument(
         '--dump', action='store_true', help="Dump calculated values."
     )
     args = parser.parse_args()
 
-    return run(args.spline, args.tuning, args.res, args.dump)
+    return run(args.spline, args.tuning, args.res, args.negative, args.dump)
 
 
-def run(spline, tuning, res, dump):
+def run(spline, tuning, res, negative, dump):
     """Run."""
 
     tune = [[int(i) if e < 3 else float(i) for e, i in enumerate(x.split(':'))] for x in tuning]
     env = HCT.ENV
-    test = Achromatic(spline=spline, env=env)
+    test = Achromatic(spline=spline, env=env, negative=negative)
     test.calc_achromatic_response(tune, env=env)
 
     color = Color('srgb', [0, 0, 0])
@@ -59,8 +62,12 @@ def run(spline, tuning, res, dump):
     for i in range(res + 1):
         div = res / 5
         v = i / div
-        if v < 0.001:
+        if negative:
+            v = -v
+
+        if abs(v) < 0.001:
             continue
+
         color.update('srgb', [v, v, v])
         xyz = color.convert('xyz-d65')
         h, c, t = xyz_to_hct(xyz[:-1], HCT.ENV)
@@ -73,7 +80,7 @@ def run(spline, tuning, res, dump):
             max_m = c
 
         domain = test.scale(t)
-        calc = test.spline(domain)
+        calc = test.spline(domain)[:]
 
         delta = calc[1] - c
         if delta >= 0 and delta > diff_over:

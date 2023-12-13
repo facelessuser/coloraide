@@ -23,6 +23,7 @@ class Achromatic(metaclass=ABCMeta):
         threshold_cutoff: float = math.inf,
         spline: str = 'linear',
         mirror: bool = False,
+        negative: bool = False,
         **kwargs: Any
     ) -> None:
         """
@@ -42,6 +43,7 @@ class Achromatic(metaclass=ABCMeta):
         self.threshold_upper = threshold_upper
         self.threshold_lower = threshold_lower
         self.threshold_cutoff = threshold_cutoff
+        self.negative = negative
 
         self.domain = []  # type: Vector
         self.min_colorfulness = 1e10
@@ -80,14 +82,22 @@ class Achromatic(metaclass=ABCMeta):
         for segment in parameters:
             start, end, step, scale = segment
             for p in range(start, end, step):
-                color = self.convert([p / scale] * 3, **kwargs)
+                color = self.convert([(-p if self.negative else p) / scale] * 3, **kwargs)
                 l, c, h = color[self.L_IDX], color[self.C_IDX], color[self.H_IDX]
-                if l < self.min_lightness:
-                    self.min_lightness = l
+                if self.negative:
+                    la = abs(l)
+                    if la < self.min_lightness:
+                        self.min_lightness = la
+                else:
+                    if l < self.min_lightness:
+                        self.min_lightness = l
                 if c < self.min_colorfulness:
                     self.min_colorfulness = c
                 self.domain.append(l)
                 points.append([l, c, h % 360])
+        if self.negative:
+            self.domain.sort()
+            points.sort()
         self.spline = alg.interpolate(points, method=self.spline_type)
         self.hue = self.convert([1] * 3, **kwargs)[self.H_IDX] % 360
         self.ihue = (self.hue - 180) % 360
@@ -102,8 +112,13 @@ class Achromatic(metaclass=ABCMeta):
         points = []  # type: Matrix
         for entry in tuning:
             l, c, h = entry
-            if l < self.min_lightness:
-                self.min_lightness = l
+            if self.negative:
+                la = abs(l)
+                if la < self.min_lightness:
+                    self.min_lightness = la
+            else:
+                if l < self.min_lightness:
+                    self.min_lightness = l
             if c < self.min_colorfulness:
                 self.min_colorfulness = c
             points.append([l, c, h])
@@ -168,15 +183,12 @@ class Achromatic(metaclass=ABCMeta):
     def test(self, l: float, c: float, h: float) -> bool:
         """Test if the current color is achromatic."""
 
-        # Most LCh spaces with negative chroma can be shifted to a positive chroma as shown below.
-        # Negative chroma is not currently allowed even if code can handle it.
-        if c < 0:  # pragma: no cover
-            c = -c
-            h += 180.0
-
         # If colorfulness is past this limit, we'd have to have a lightness
         # so high, that our test has already broken down.
-        if c > self.threshold_cutoff or (not self.mirror and l < 0.0):
+        if (
+            abs(c) > self.threshold_cutoff or
+            (not self.mirror and ((not self.negative and l < 0.0) or (self.negative and l > 0.0)))
+        ):
             return False
 
         # If we are higher than 1, we are extrapolating;

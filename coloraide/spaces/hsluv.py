@@ -31,6 +31,7 @@ from ..channels import Channel, FLG_ANGLE
 from .lab import EPSILON, KAPPA
 from .srgb_linear import XYZ_TO_RGB
 import math
+from .. import algebra as alg
 from .. import util
 from ..types import Vector
 
@@ -72,7 +73,7 @@ def max_chroma_for_lh(l: float, h: float) -> float:
     return min(length for length in lengths if length >= 0)
 
 
-def hsluv_to_lch(hsluv: Vector) -> Vector:
+def hsluv_to_luv(hsluv: Vector) -> Vector:
     """Convert HSLuv to LCh."""
 
     h, s, l = hsluv
@@ -84,13 +85,16 @@ def hsluv_to_lch(hsluv: Vector) -> Vector:
     else:
         _hx_max = max_chroma_for_lh(l, h)
         c = _hx_max / 100.0 * s
-    return [l, c, util.constrain_hue(h)]
+
+    a, b = alg.polar_to_rect(c, h)
+    return [l, a, b]
 
 
-def lch_to_hsluv(lch: Vector) -> Vector:
+def luv_to_hsluv(luv: Vector) -> Vector:
     """Convert LCh to HSLuv."""
 
-    l, c, h = lch
+    l = luv[0]
+    c, h = alg.rect_to_polar(luv[1], luv[2])
     s = 0.0
     if l > 100 - 1e-7:
         l = 100.0
@@ -105,7 +109,7 @@ def lch_to_hsluv(lch: Vector) -> Vector:
 class HSLuv(HSLish, Space):
     """HSLuv class."""
 
-    BASE = 'lchuv'
+    BASE = 'luv'
     NAME = "hsluv"
     SERIALIZE = ("--hsluv",)
     CHANNELS = (
@@ -130,9 +134,9 @@ class HSLuv(HSLish, Space):
     def to_base(self, coords: Vector) -> Vector:
         """To LChuv from HSLuv."""
 
-        return hsluv_to_lch(coords)
+        return hsluv_to_luv(coords)
 
     def from_base(self, coords: Vector) -> Vector:
         """From LChuv to HSLuv."""
 
-        return lch_to_hsluv(coords)
+        return luv_to_hsluv(coords)

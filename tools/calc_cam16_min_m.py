@@ -46,6 +46,9 @@ def main():
         '--spline', '-S', type=str, default='catrom', help="Spline to use for approximation of achromatic line"
     )
     parser.add_argument(
+        '--negative', '-n', action='store_true', help="Negative lightness spline."
+    )
+    parser.add_argument(
         '--tuning', '-t', type=str, action='append',
         help="Spline tuning parameters: start:end:step:scale (int:int:int:float)"
     )
@@ -63,11 +66,12 @@ def main():
         args.spline,
         args.tuning,
         args.res,
+        args.negative,
         args.dump
     )
 
 
-def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
+def run(white_point, la, ba, surround, discounting, spline, tuning, res, negative, dump):
     """Run."""
 
     deg, wp = white_point.split(':')
@@ -76,7 +80,7 @@ def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
     env = Environment(WHITES[deg][wp], la, ba, surround, discounting)
     convert = xyz_d65_to_cam16
 
-    test = Achromatic(spline=spline, env=env)
+    test = Achromatic(spline=spline, env=env, negative=negative)
     test.calc_achromatic_response(tune, env=env)
 
     color = Color('srgb', [0, 0, 0])
@@ -84,14 +88,20 @@ def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
     points2 = {}
     diff_over = 0
     diff_under = 0
+    j_under = 0
+    j_over = 0
     max_m = 0
     first = False
 
     for i in range(1, res + 1):
         div = res / 5
         v = i / div
-        if v < 0.001:
+        if negative:
+            v = -v
+
+        if abs(v) < 0.001:
             continue
+
         color.update('srgb', [v, v, v])
         xyz = color.convert('xyz-d65')
         coords = convert(xyz[:-1], env)[:]
@@ -106,21 +116,23 @@ def run(white_point, la, ba, surround, discounting, spline, tuning, res, dump):
 
         if not env.discounting:
             domain = test.scale(j)
-            calc = test.spline(domain)
+            calc = test.spline(domain)[:]
         else:
-            calc = (j, 1e-08, 0.0)
+            calc = (j, 1e-08, 0)
 
         delta = calc[1] - m
         if delta >= 0 and delta > diff_over:
             diff_over = delta
+            j_over = j
         if delta < 0 and abs(delta) > diff_under:
             diff_under = abs(delta)
+            j_under = j
 
         points1[j] = (m, h)
         points2[calc[0]] = (calc[1], calc[2])
 
-    print('Delta Over: ', diff_over)
-    print('Delta Under: ', diff_under)
+    print('Delta Over: ', diff_over, j_over)
+    print('Delta Under: ', diff_under, j_under)
     print('Max M: ', max_m)
     if not env.discounting:
         print('Data Points: ', test.spline.length)
