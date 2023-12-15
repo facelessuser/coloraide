@@ -232,11 +232,11 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
     Convert HCT to XYZ.
 
-    Use Newton Raphson method to try and converge as quick as possible or
+    Use Newton's method to try and converge as quick as possible or
     converge as close as we can. If we don't converge in about 7 iterations,
     we will instead correct the Y in XYZ and re-calculate the J. This will
     incrementally get our J closer. If we do not converge, we will do a final
-    round with Newton Raphson one last time with a more accurate J.
+    round with Newton's one last time with a more accurate J.
 
     If, for whatever reason, we cannot achieve the accuracy we seek in the
     allotted iterations, just return the closest we were able to get.
@@ -280,7 +280,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             best = j
             last = delta
 
-        # Use Newton Raphson method to see if we can quickly converge (or get as close as we can)
+        # Use Newton's method to see if we can quickly converge (or get as close as we can)
         if (attempt < 7 or attempt >= 13) and xyz[1] != 0:
             # ```
             # f(j_root) = (j ** (1 / 2)) * 0.1

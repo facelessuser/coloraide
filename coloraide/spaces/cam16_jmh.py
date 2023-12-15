@@ -463,8 +463,6 @@ def cam16_to_xyz_d65(
     """
 
     # These check ensure one, and only one attribute for a given category is provided.
-    # Unfortunately, `mypy` is not smart enough to tell which one is not `None`,
-    # so we have to we must test each again later, but it is still faster than calling `cast()`.
     if not ((J is not None) ^ (Q is not None)):
         raise ValueError("Conversion requires one and only one: 'J' or 'Q'")
 
