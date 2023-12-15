@@ -4,6 +4,7 @@ DIN99o class.
 https://de.wikipedia.org/wiki/DIN99-Farbraum
 """
 from __future__ import annotations
+import sys
 from ..cat import WHITES
 from .lab import Lab
 import math
@@ -33,14 +34,14 @@ C1 = 100 / math.log(1.39)
 C2 = 0.0039
 C3 = 0.075
 C4 = 0.0435
+MIN_FLOAT = sys.float_info.min
 
 
 def lab_to_din99o(lab: Vector) -> Vector:
     """XYZ to DIN99o."""
 
     l, a, b = lab
-    val = 1 + C2 * l
-    l99o = C1 * math.log(val) / KE if val >= 0 else 0.0
+    l99o = C1 * math.log(max(1 + C2 * l, MIN_FLOAT)) / KE
 
     if a == 0 and b == 0:
         a99o = b99o = 0.0
@@ -48,8 +49,7 @@ def lab_to_din99o(lab: Vector) -> Vector:
         eo = a * math.cos(RADS) + b * math.sin(RADS)
         fo = FACTOR * (b * math.cos(RADS) - a * math.sin(RADS))
         go = math.sqrt(eo ** 2 + fo ** 2)
-        val = 1 + C3 * go
-        c99o = math.log(val) / (C4 * KE * KCH)
+        c99o = math.log(max(1 + C3 * go, MIN_FLOAT)) / (C4 * KE * KCH)
         h99o = math.atan2(fo, eo) + RADS
 
         a99o = c99o * math.cos(h99o)

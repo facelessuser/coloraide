@@ -17,8 +17,12 @@ def convert_ucs_ab(color: Color) -> VectorLike:
 
     env = color._space.ENV  # type: ignore[attr-defined]
     h, c, t = color.coords()
+
+    # Only in extreme cases (far outside the visible spectrum)
+    # can the input value for log become negative.
+    # Avoid domain error by forcing zero.
+    M = math.log(max(1 + COEFF2 * c * env.fl_root, 1.0)) / COEFF2
     hrad = math.radians(h)
-    M = math.log(1 + COEFF2 * c * env.fl_root) / COEFF2
     a = M * math.cos(hrad)
     b = M * math.sin(hrad)
 

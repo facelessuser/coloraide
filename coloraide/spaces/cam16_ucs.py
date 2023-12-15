@@ -41,7 +41,10 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
 
     c1, c2 = COEFFICENTS[model][1:]
 
-    M = math.log(1 + c2 * M) / c2
+    # Only in extreme cases (outside the visible spectrum)
+    # can the input value for log become negative.
+    # Avoid domain error by forcing zero.
+    M = math.log(max(1 + c2 * M, 1.0)) / c2
     a = M * math.cos(math.radians(h))
     b = M * math.sin(math.radians(h))
 
