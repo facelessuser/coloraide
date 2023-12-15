@@ -7,8 +7,7 @@ textarea#__notebook-input,
 
   margin: 0;
   padding: .7720588235em 1.1764705882em;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto;
   color: var(--md-code-fg-color);
   caret-color: var(--md-code-fg-color);
 
@@ -24,7 +23,7 @@ textarea#__notebook-input,
   outline: none;
   cursor: text;
   appearance: textarea;
-  resize: none;
+  resize: vertical;
 
   &::selection {
     color: var(--md-code-bg-color);

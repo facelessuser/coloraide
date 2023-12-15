@@ -76,7 +76,7 @@ ${content}
       (document.documentElement || document.body.parentNode || document.body).scrollTop
 
     inpt.style.height = "5px"
-    inpt.style.height = `${inpt.scrollHeight}px`
+    inpt.style.height = `${Math.min(inpt.scrollHeight, 408)}px`
 
     window.scrollTo(scrollLeft, scrollTop)
   }
@@ -271,6 +271,9 @@ ${content}
         editTemp[notebookInput.id] = notebookInput.value
         document.getElementById("__notebook-render").classList.toggle("hidden")
         document.getElementById("__notebook-source").classList.toggle("hidden")
+        // Reset height
+        const inpt = document.getElementById("__notebook-input")
+        inpt.setAttribute('style', '')
         textResize(document.getElementById("__notebook-input"))
       })
 
