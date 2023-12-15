@@ -9,7 +9,7 @@
 -   **NEW**: Do not clamp user input of lightness and chroma in various spaces. Clamping will only occur during
     conversion if the algorithm requires it.
 -   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
--   **NEW**: Color spaces plugins that specify the gamut space via `GAMUT_CHECK` must use that color space as a
+-   **NEW**: Color space plugins that specify the gamut space via `GAMUT_CHECK` must use that color space as a
     reference when when gamut mapping or clipping by default.
 -   **NEW**: New color space plugin attribute `CLIP_SPACE` added which will override the space specified by
     `GAMUT_CHECK` to force clipping in the origin space even if a gamut mapping space is defined. This is only used when
