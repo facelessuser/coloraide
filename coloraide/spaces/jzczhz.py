@@ -35,7 +35,7 @@ class JzCzhz(LCh):
     ACHROMATIC = Jzazbz.ACHROMATIC
     CHANNELS = (
         Channel("jz", 0.0, 1.0),
-        Channel("cz", 0.0, 0.5, limit=(0.0, None)),
+        Channel("cz", 0.0, 0.5),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE, nans=ACHROMATIC.hue)
     )
 
@@ -62,7 +62,7 @@ class JzCzhz(LCh):
         if coords[0] < 0.0:
             return True
 
-        return self.ACHROMATIC.test(*coords)
+        return self.ACHROMATIC.test(*self.normalize(coords))
 
     def hue_name(self) -> str:
         """Hue name."""

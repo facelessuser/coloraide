@@ -15,12 +15,6 @@ COEFF2 = COEFFICENTS['ucs'][2]
 def convert_ucs_ab(color: Color) -> VectorLike:
     """Convert HCT chroma and hue (CAM16 JMh colorfulness and hue) using UCS logic for a and b."""
 
-    # Handle negative chroma
-    # Supported, but not currently allowed.
-    if color[1] < 0:  # pragma: no cover
-        base = color._space.BASE
-        color.convert(base, norm=False, in_place=True).convert('hct', norm=False, in_place=True)
-
     env = color._space.ENV  # type: ignore[attr-defined]
     h, c, t = color.coords()
     hrad = math.radians(h)

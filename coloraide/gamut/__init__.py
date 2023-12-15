@@ -5,7 +5,6 @@ from ..channels import FLG_ANGLE
 from abc import ABCMeta, abstractmethod
 from ..types import Plugin
 from typing import TYPE_CHECKING, Any
-from .. import util
 from . import pointer
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -19,17 +18,14 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
 
     clipped = False
 
-    for i, value in enumerate(color[:-1]):
+    cs = color._space
+    for i, value in enumerate(cs.normalize(color[:-1])):
 
-        chan = color._space.CHANNELS[i]
+        chan = cs.CHANNELS[i]
 
-        # Wrap the angle. Not technically out of gamut, but we will clean it up.
-        if chan.flags & FLG_ANGLE:
-            color[i] = util.constrain_hue(value)
-            continue
-
-        # Ignore undefined or unbounded channels
-        if not chan.bound or math.isnan(value):
+        # Ignore angles, undefined, or unbounded channels
+        if not chan.bound or math.isnan(value) or chan.flags & FLG_ANGLE:
+            color[i] = value
             continue
 
         # Fit value in bounds.
@@ -38,6 +34,7 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
         elif value > chan.high:
             color[i] = chan.high
         else:
+            color[i] = value
             continue
 
         clipped = True
@@ -48,11 +45,12 @@ def clip_channels(color: Color, nans: bool = True) -> bool:
 def verify(color: Color, tolerance: float) -> bool:
     """Verify the values are in bound."""
 
-    for i, value in enumerate(color[:-1]):
-        chan = color._space.CHANNELS[i]
+    cs = color._space
+    for i, value in enumerate(cs.normalize(color[:-1])):
+        chan = cs.CHANNELS[i]
 
         # Ignore undefined channels, angles which wrap, and unbounded channels
-        if chan.flags & FLG_ANGLE or not chan.bound or math.isnan(value):
+        if not chan.bound or math.isnan(value) or chan.flags & FLG_ANGLE:
             continue
 
         a = chan.low

@@ -379,9 +379,10 @@ class HCT(LChish, Space):
         negative=True
     )
 
+
     CHANNELS = (
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
-        Channel("c", 0.0, 145.0, limit=(0.0, None)),
+        Channel("c", 0.0, 145.0),
         Channel("t", 0.0, 100.0)
     )
 
@@ -403,16 +404,21 @@ class HCT(LChish, Space):
         value = coords[index]
         return self.channels[index].nans if math.isnan(value) else value
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize."""
+
+        if coords[1] < 0.0:
+            return self.from_base(self.to_base(coords))
+        coords[0] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
         if coords[2] == 0:
             return True
 
-        # Account for negative chroma
-        # Supported, but not currently allowed
-        if coords[1] < 0:  # pragma: no cover
-            coords = self.from_base(self.to_base(coords))
+        coords = self.normalize(coords)
 
         if coords[2] < 0:
             return self.INV_ACHROMATIC.test(coords[2], coords[1], coords[0])

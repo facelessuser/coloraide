@@ -70,6 +70,15 @@ class HSL(HSLish, Space):
     GAMUT_CHECK = "srgb"  # type: str | None
     CLIP_SPACE = "hsl"  # type: str | None
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            coords[1] *= -1.0
+            coords[0] += 180.0
+        coords[0] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 

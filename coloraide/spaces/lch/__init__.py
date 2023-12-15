@@ -38,7 +38,7 @@ class LCh(LChish, Space):
 
     CHANNELS = (
         Channel("l", 0.0, 1.0),
-        Channel("c", 0.0, 1.0, limit=(0.0, None)),
+        Channel("c", 0.0, 1.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {
@@ -47,11 +47,19 @@ class LCh(LChish, Space):
         "hue": "h"
     }
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            coords[1] *= -1.0
+            coords[2] += 180.0
+        coords[2] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool | None:
         """Check if color is achromatic."""
 
         # Account for both positive and negative chroma
-        # Negative chroma is supported, but not currently allowed
         return abs(coords[1]) < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
@@ -73,7 +81,7 @@ class CIELCh(LCh):
     SERIALIZE = ("--lch",)
     CHANNELS = (
         Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 150.0, limit=(0.0, None), flags=FLG_OPT_PERCENT),
+        Channel("c", 0.0, 150.0, flags=FLG_OPT_PERCENT),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

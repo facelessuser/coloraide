@@ -482,6 +482,14 @@ class Okhsl(HSL):
     GAMUT_CHECK = None
     CLIP_SPACE = None
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            return self.from_base(self.to_base(coords))
+        coords[0] %= 360.0
+        return coords
+
     def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsl."""
 

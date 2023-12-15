@@ -164,10 +164,9 @@ class Achromatic(metaclass=ABCMeta):
             return 0.0
 
         # Adjust hue if lightness is negative and/or chroma is negative.
-        # Negative chroma is not currently allowed even if code can handle it.
         if self.mirror and l < 0.0:
             return (self.spline(self.scale(abs(l)))[2] - 180 + (180.0 if c < 0 else 0.0)) % 360
-        elif c < 0:  # pragma: no cover
+        elif c < 0:
             return (self.spline(self.scale(l))[2] + 180) % 360
 
         return self.spline(self.scale(l))[2]

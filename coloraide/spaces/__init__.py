@@ -216,6 +216,18 @@ class Space(Plugin, metaclass=SpaceMeta):
 
         return self._color_ids
 
+    def normalize(self, coords: Vector) -> Vector:
+        """
+        Normalize coordinates.
+
+        This allows a color space to normalize valid, but non-standard coordinates.
+        An example is cylindrical spaces with negative chroma/saturation. Such models
+        often have a valid, positive chroma/saturation and hue configuration that
+        matches the same color.
+        """
+
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool | None:  # pragma: no cover
         """Check if color is achromatic."""
 

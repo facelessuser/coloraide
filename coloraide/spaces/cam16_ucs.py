@@ -35,8 +35,7 @@ def cam16_jmh_to_cam16_ucs(jmh: Vector, model: str, env: Environment) -> Vector:
         return [0.0, 0.0, 0.0]
 
     # Account for negative colorfulness by reconverting
-    # Supported, but not currently allowed
-    if M < 0:  # pragma: no cover
+    if M < 0:
         cam16 = xyz_d65_to_cam16(cam16_to_xyz_d65(J=J, M=M, h=h, env=env), env=env)
         J, M, h = cam16[0], cam16[5], cam16[2]
 

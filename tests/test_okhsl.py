@@ -52,9 +52,10 @@ class TestOkhslSerialize(util.ColorAssertsPyTest):
         # Test None
         ('color(--okhsl 50 0.3 none)', {}, 'color(--okhsl 50 0.3 0)'),
         ('color(--okhsl 50 0.3 none)', {'none': True}, 'color(--okhsl 50 0.3 none)'),
-        # Test Fit (not bound)
+        # Test Fit
         ('color(--okhsl 50 1.1 0.5)', {}, 'color(--okhsl 50 1 0.5)'),
-        ('color(--okhsl 50 1.1 0.5)', {'fit': False}, 'color(--okhsl 50 1.1 0.5)')
+        ('color(--okhsl 50 1.1 0.5)', {'fit': False}, 'color(--okhsl 50 1.1 0.5)'),
+        ('color(--okhsl 50 -1.1 0.5)', {}, 'color(--okhsl 230 0.1676 0.5)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

@@ -91,6 +91,15 @@ class Cubehelix(HSLish, Space):
     WHITE = WHITES['2deg']['D65']
     GAMUT_CHECK = 'srgb'
 
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            coords[1] *= -1.0
+            coords[0] += 180.0
+        coords[0] %= 360.0
+        return coords
+
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 

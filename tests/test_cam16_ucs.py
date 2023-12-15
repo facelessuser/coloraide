@@ -30,6 +30,7 @@ class TestCAM16CAM16UCS(util.ColorAssertsPyTest):
         ('color(--cam16-ucs -100% -100% -100%)', 'color(--cam16-ucs -100 -50 -50)'),
         # Miscellaneous cases
         ('color(--cam16-jmh -10 30 270)', 'color(--cam16-ucs -15.888 0 -22.858)'),
+        ('color(--cam16-jmh 10 -20 90)', 'color(--cam16-ucs 15.888 0 -23.466)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

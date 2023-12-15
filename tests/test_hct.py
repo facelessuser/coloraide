@@ -27,7 +27,7 @@ class TestHCT(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--hct 0% 0% 0%)', 'color(--hct 0 0 none)'),
         ('color(--hct 100% 100% 100%)', 'color(--hct 360 145 100 / 1)'),
-        ('color(--hct -100% -100% -100%)', 'color(--hct -360 0 -100 / 1)')
+        ('color(--hct -100% -100% -100%)', 'color(--hct -360 -145 -100 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -51,7 +51,8 @@ class TestHCTSerialize(util.ColorAssertsPyTest):
         ('color(--hct 50 30 none)', {'none': True}, 'color(--hct 50 30 none)'),
         # Test Fit (not bound)
         ('color(--hct 50 230 75)', {}, 'color(--hct 50 230 75)'),
-        ('color(--hct 50 230 75)', {'fit': False}, 'color(--hct 50 230 75)')
+        ('color(--hct 50 230 75)', {'fit': False}, 'color(--hct 50 230 75)'),
+        ('color(--hct 207.41 -113.36 53.237)', {}, 'color(--hct 27.41 77.618 53.237)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)
@@ -177,4 +178,5 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('hct', [270, 50, NaN]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, NaN, 20]).is_achromatic(), False)
         self.assertEqual(Color('hct', [270, NaN, NaN]).is_achromatic(), True)
-        self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), True)
+        self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), True),
+        self.assertEqual(Color('hct', [270, -20, 50]).is_achromatic(), False)

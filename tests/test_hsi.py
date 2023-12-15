@@ -52,7 +52,8 @@ class TestHSISerialize(util.ColorAssertsPyTest):
         ('color(--hsi 50 0.3 none)', {'none': True}, 'color(--hsi 50 0.3 none)'),
         # Test Fit (not bound)
         ('color(--hsi 50 1.1 0.5)', {}, 'color(--hsi 49.412 1 0.51667)'),
-        ('color(--hsi 50 1.1 0.5)', {'fit': False}, 'color(--hsi 50 1.1 0.5)')
+        ('color(--hsi 50 1.1 0.5)', {'fit': False}, 'color(--hsi 50 1.1 0.5)'),
+        ('color(--hsi 180 -1 0.33333)', {}, 'color(--hsi 0 0.5 0.33333)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

@@ -198,6 +198,48 @@ override `is_achromatic()`. For instance, LCh is achromatic when chroma is very 
         return coords[1] < ACHROMATIC_THRESHOLD
 ```
 
+## Coordinate Normalization
+
+There are some color spaces that can have multiple representations of the same color. For instance, in many cylindrical
+color spaces, a negative chroma/saturation, while technically considered invalid, can often represent a positive form
+of the same color. For instance, the CIE LCh to CIE Lab algorithm converts a negative chroma back to Lab just fine. HSL
+can generate negative saturation for some HDR colors but will round trip back to the original color.
+
+A color space can specify a normalized form of itself via the `Space.normalize()` method. This method is called anytime
+`Color.normalize()` is called. Additionally, when clipping colors, this is also called so that clipping is performed on
+the normalized form of the color and does not incorrectly cutoff chroma/saturation.
+
+It should be noted that undefined channels are **not** handled in this method.
+
+Below shows an example for most LCh spaces. Hues are constrained to [0, 360) and negative chroma colors have their hue
+rotated 180˚ and the chroma is set to the absolute value. Some cylindrical spaces, and even LCh like spaces, may require
+a different approach, but this is generally true for many.
+
+```py
+class LCh(LChish, Space):
+    """LCh class."""
+
+    CHANNELS = (
+        Channel("l", 0.0, 1.0),
+        Channel("c", 0.0, 1.0),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
+    )
+    CHANNEL_ALIASES = {
+        "lightness": "l",
+        "chroma": "c",
+        "hue": "h"
+    }
+
+    def normalize(self, coords: Vector) -> Vector:
+        """Normalize coordinates."""
+
+        if coords[1] < 0:
+            coords[1] *= -1.0
+            coords[2] += 180.0
+        coords[2] %= 360.0
+        return coords
+```
+
 ## Resolve Undefined Values
 
 By default, undefined color channels are resolved as `0`, but there are color spaces where zero just does not work well

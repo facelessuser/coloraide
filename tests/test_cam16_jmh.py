@@ -31,7 +31,7 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--cam16-jmh 0% 0% 0%)', 'color(--cam16-jmh 0 0 0)'),
         ('color(--cam16-jmh 100% 100% 100%)', 'color(--cam16-jmh 100 105 360 / 1)'),
-        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh -100 0 -360 / 1)'),
+        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh -100 -105 -360 / 1)'),
         # Test miscellaneous cases
         ('color(--cam16-jmh -10 none 270)', 'color(--cam16-jmh -10 0.52358 270)')
     ]
@@ -138,7 +138,8 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('cam16-jmh', [NaN, 50, 270]).is_achromatic(), True)
         self.assertEqual(Color('cam16-jmh', [20, NaN, 270]).is_achromatic(), False)
         self.assertEqual(Color('cam16-jmh', [NaN, NaN, 270]).is_achromatic(), True)
-        self.assertEqual(Color('cam16-jmh', [-42.841, 1.0322, 29.535]).is_achromatic(), True)
+        self.assertEqual(Color('cam16-jmh', [-42.841, 1.0322, 29.535]).is_achromatic(), True),
+        self.assertEqual(Color('cam16-jmh', [20, -1.3, 90]).is_achromatic(), False)
 
 
 class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):

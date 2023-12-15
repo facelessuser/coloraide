@@ -28,7 +28,7 @@ class TestLChuv(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--lchuv 0% 0% 0%)', 'color(--lchuv 0 0 none)'),
         ('color(--lchuv 100% 100% 100%)', 'color(--lchuv 100 220 360 / 1)'),
-        ('color(--lchuv -100% -100% -100%)', 'color(--lchuv -100 0 -360 / 1)')
+        ('color(--lchuv -100% -100% -100%)', 'color(--lchuv -100 -220 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
@@ -154,7 +154,10 @@ class TestQuirks(util.ColorAsserts, unittest.TestCase):
     def test_chroma_less_than_zero_convert(self):
         """Test handling of negative chroma when converting to lab."""
 
-        self.assertColorEqual(Color('color(--lchuv 90% -10 120 / 1)').convert('luv'), Color('color(--luv 90% 0 0)'))
+        self.assertColorEqual(
+            Color('color(--lchuv 90% -10 120 / 1)').convert('luv'),
+            Color('color(--lchuv 90% 10 300)').convert('luv')
+        )
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
