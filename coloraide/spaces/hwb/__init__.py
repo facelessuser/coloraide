@@ -29,7 +29,7 @@ class HWB(HWBish, Space):
     NAME = "hwb"
     SERIALIZE = ("--hwb",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("w", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
         Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
     )

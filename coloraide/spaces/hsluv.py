@@ -113,7 +113,7 @@ class HSLuv(HSLish, Space):
     NAME = "hsluv"
     SERIALIZE = ("--hsluv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("s", 0.0, 100.0, bound=True),
         Channel("l", 0.0, 100.0, bound=True)
     )

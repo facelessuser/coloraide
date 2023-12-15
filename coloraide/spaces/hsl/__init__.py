@@ -57,7 +57,7 @@ class HSL(HSLish, Space):
     NAME = "hsl"
     SERIALIZE = ("--hsl",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
         Channel("l", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
     )

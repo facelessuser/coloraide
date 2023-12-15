@@ -110,7 +110,7 @@ class HPLuv(HSLish, Space):
     NAME = "hpluv"
     SERIALIZE = ("--hpluv",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("p", 0.0, 100.0, bound=True),
         Channel("l", 0.0, 100.0, bound=True)
     )

@@ -72,7 +72,7 @@ class HSI(HSV):
     NAME = "hsi"
     SERIALIZE = ("--hsi",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("s", 0.0, 1.0, bound=True),
         Channel("i", 0.0, 1.0, bound=True)
     )

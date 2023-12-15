@@ -79,7 +79,7 @@ class Cubehelix(HSLish, Space):
     NAME = "cubehelix"
     SERIALIZE = ("--cubehelix",)
     CHANNELS = (
-        Channel("h", 0.0, 360.0, bound=True, flags=FLG_ANGLE),
+        Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
         Channel("s", 0.0, MAX_SAT, bound=True),
         Channel("l", 0.0, 1.0, bound=True)
     )
