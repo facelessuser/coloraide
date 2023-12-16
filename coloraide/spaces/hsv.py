@@ -30,10 +30,6 @@ def srgb_to_hsv(srgb: Vector) -> Vector:
     """
 
     h, s, l = srgb_to_hsl(srgb)
-    # Rotate hue for negative saturation
-    if s < 0.0:
-        s = -s
-        h += 180.0
     v = l + s * min(l, 1.0 - l)
     s = 0.0 if v == 0.0 else 2 * (1.0 - l / v)
 

@@ -19,6 +19,7 @@
     available in `coloraide.everything` and will be removed at a future time.
 -   **NEW**: Add new channel aliases: `j` for `jz` in Jzazbz and JzCzhz. Also add `c` for `cz` and `h` for `hz` in
     JzCzhz.
+-   **NEW**: HSL will now always return positive saturation for wide gamut colors via its conversion.
 -   **FIX**: Fix a an issue with the CAM16 model's transformation that prevented good round trip with negative
     lightness.
 -   **FIX**: Ensure that when `harmony` auto creates a cylindrical space from a rectangular space that it checks

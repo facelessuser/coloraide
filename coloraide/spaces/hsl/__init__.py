@@ -28,6 +28,11 @@ def srgb_to_hsl(rgb: Vector) -> Vector:
         s = 0 if l == 0.0 or l == 1.0 else (mx - l) / min(l, 1 - l)
         h *= 60.0
 
+    # Adjust for negative saturation
+    if s < 0:
+        s *= -1.0
+        h += 180.0
+
     return [util.constrain_hue(h), s, l]
 
 
@@ -73,6 +78,7 @@ class HSL(HSLish, Space):
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
 
+        return coords
         if coords[1] < 0:
             coords[1] *= -1.0
             coords[0] += 180.0
