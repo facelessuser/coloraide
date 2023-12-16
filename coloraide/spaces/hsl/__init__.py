@@ -78,7 +78,6 @@ class HSL(HSLish, Space):
     def normalize(self, coords: Vector) -> Vector:
         """Normalize coordinates."""
 
-        return coords
         if coords[1] < 0:
             coords[1] *= -1.0
             coords[0] += 180.0
