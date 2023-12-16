@@ -224,7 +224,7 @@ from coloraide import algebra as alg
 from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl
 
 FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
-CYL_GAMUT = {'hpluv',}
+CYL_GAMUT = {'hpluv', 'okhsl', 'okhsv'}
 
 
 def create_custom_hsl(gamut):
@@ -236,6 +236,7 @@ def create_custom_hsl(gamut):
         NAME = 'hsl-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
+        CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
 
@@ -264,6 +265,7 @@ def create_custom_rgb(gamut):
         NAME = '-rgb-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
+        CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
         INDEXES = cs.indexes()
@@ -524,7 +526,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if is_hwbish or space in ('hpluv',):
+    if is_hwbish or space in CYL_GAMUT:
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
 
     if is_cyl and not is_labish and not is_lchish:
@@ -742,7 +744,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-2.13.1-py3-none-any.whl'
+let package = 'coloraide-2.14-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
