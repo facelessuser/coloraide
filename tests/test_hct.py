@@ -19,6 +19,9 @@ class TestHCT(util.ColorAssertsPyTest):
         ('white', 'color(--hct 209.54 2.8716 100)'),
         ('gray', 'color(--hct 209.54 1.8977 53.585)'),
         ('black', 'color(--hct 209.55 0 0)'),
+        # Very wide gamut
+        ('color(--acescg 1 0 1)', 'color(--hct 342.46 146.18 63.808 / 1)'),
+        ('color(--acescg 1 0 0)', 'color(--hct 25.381 186.54 58.758 / 1)'),
         # Test color
         ('color(--hct 270 30 100)', 'color(--hct 270 30 100)'),
         ('color(--hct 270 30 100 / 0.5)', 'color(--hct 270 30 100 / 0.5)'),
@@ -64,13 +67,6 @@ class TestHCTSerialize(util.ColorAssertsPyTest):
 
 class TestHCTMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous cases."""
-
-    def test_wide_gamut(self):
-        """Test wide gamut conversion logic."""
-
-        c1 = Color('hct', (330.2920013462662, 484.58580542051413, 91.57114928085913))
-        c2 = c1.convert('xyy').convert('hct')
-        self.assertColorEqual(c1, c2)
 
     def test_from_negative_lightness(self):
         """Test conversion from HCT negative lightness."""

@@ -232,18 +232,13 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     """
     Convert HCT to XYZ.
 
-    Use Newton's method to try and converge as quick as possible or
-    converge as close as we can. If we don't converge in about 7 iterations,
-    we will instead correct the Y in XYZ and re-calculate the J. This will
-    incrementally get our J closer. If we do not converge, we will do a final
-    round with Newton's one last time with a more accurate J.
-
-    If, for whatever reason, we cannot achieve the accuracy we seek in the
-    allotted iterations, just return the closest we were able to get.
+    Use Newton's method to try and converge as quick as possible or converge as
+    close as we can. While the requested precision is achieved most of the time,
+    it may not always be achievable. Especially past the visible spectrum, the
+    algorithm will likely struggle to get the same precision. If, for whatever
+    reason, we cannot achieve the accuracy we seek in the allotted iterations,
+    just return the closest we were able to get.
     """
-
-    # Threshold of how close is close enough
-    threshold = 2e-8
 
     h, c, t = coords[:]
 
@@ -255,20 +250,26 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     y = lstar_to_y(t, env.ref_white)
 
     # Try to start with a reasonable initial guess for J
-    if 0 < c < 142:
-        # Calculated by curve fitting J vs T. Works well with colors within a mid-sized gamut, but not ultra wide.
-        j = 0.00462403 * t ** 2 + 0.51460278 * t + 2.62845677
+    # Calculated by curve fitting J vs T.
+    if t > 0:
+        j = 0.00379058511492914 * t ** 2 + 0.608983189401032 * t + 0.9155088574762233
     else:
-        # For ultra wide gamuts we can get a better J by correcting Y in XYZ and then calculating our J
-        xyz = cam16_to_xyz_d65(J=t, C=c, h=h, env=env)
-        xyz[1] = y
-        j = xyz_d65_to_cam16(xyz, env)[0]
+        j = 9.514440756550361e-06 * t ** 2 + 0.08693057439788597 * t -21.928975842194614
 
-    # Try to find a J such that the returned y matches the returned y of the L*
+    # Threshold of how close is close enough, and max number of attempts.
+    # More precision means and more attempts means more time spent iterating.
+    # Higher required precision gives more accuracy but also increases the
+    # chance of not hitting the goal. 2e-12 allows us to convert round trip
+    # with reasonable accuracy of six decimal places or more.
+    threshold = 2e-12
+    max_attempt = 15
+
     attempt = 0
     last = math.inf
     best = j
-    while attempt < 16:
+
+    # Try to find a J such that the returned y matches the returned y of the L*
+    while attempt <= max_attempt:
         xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
@@ -280,21 +281,14 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
             best = j
             last = delta
 
-        # Use Newton's method to see if we can quickly converge (or get as close as we can)
-        if (attempt < 7 or attempt >= 13) and xyz[1] != 0:
-            # ```
-            # f(j_root) = (j ** (1 / 2)) * 0.1
-            # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
-            # f(j_root) = Y = y / 100
-            # f(j) = (y ** 2) / j - 1
-            # f'(j) = (2 * y) / j
-            # ```
-            j = j - (xyz[1] - y) * j / (2 * xyz[1])
-
-        # Correct the lightness in XYZ and then re-calculate J
-        else:
-            xyz[1] = y
-            j = xyz_d65_to_cam16(xyz, env)[0]
+        # ```
+        # f(j_root) = (j ** (1 / 2)) * 0.1
+        # f(j) = ((f(j_root) * 100) ** 2) / j - 1 = 0
+        # f(j_root) = Y = y / 100
+        # f(j) = (y ** 2) / j - 1
+        # f'(j) = (2 * y) / j
+        # ```
+        j = j - (xyz[1] - y) * j / (2 * xyz[1])
 
         attempt += 1
 
