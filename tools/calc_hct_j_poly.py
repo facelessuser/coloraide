@@ -1,13 +1,13 @@
 """Calculate HCT J approximation polynomial."""
 import sys
 import os
+import numpy as np
 
 sys.path.insert(0, os.getcwd())
 
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide.spaces import cam16_jmh  # noqa: E402
 from coloraide.spaces import hct  # noqa: E402
-import numpy as np
 
 env = hct.HCT.ENV
 

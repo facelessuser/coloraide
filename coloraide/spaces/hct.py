@@ -6,12 +6,12 @@ We simply, as described, create a color space with CIELAB L* and CAM16's C and h
 Environment settings are calculated with the assumption of L* 50.
 
 As ColorAide usually cares about setting powerless hues as NaN, especially for good interpolation,
-we've also calculated the cut off for chromatic colors and will properly enforce achromatic,powerless
+we've also calculated the cut off for chromatic colors and will properly enforce achromatic, powerless
 hues. This is because CAM16 actually resolves colors as achromatic before chroma reaches zero as
 lightness increases. In the SDR range, a Tone of 100 will have a cut off as high as ~2.87 chroma.
 
-Generally, the HCT color space is restricted to SDR range in the Material library, but we do not have
-such restrictions.
+Generally, the HCT color space is restricted to sRGB and SDR range in the Material library, but we do
+not have such restrictions.
 
 Though we did not port HCT from Material Color Utilities, we did test against it, and are pretty
 much on point. The only differences are due to matrix precision and white point precision. Material
@@ -40,7 +40,6 @@ ColorAide:
 color(--hct 256.79 31.766 33.344 / 1)
 ```
 
-Differences are inconsequential.
 """
 from __future__ import annotations
 from .. import algebra as alg
@@ -257,7 +256,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         j = 9.514440756550361e-06 * t ** 2 + 0.08693057439788597 * t -21.928975842194614
 
     # Threshold of how close is close enough, and max number of attempts.
-    # More precision means and more attempts means more time spent iterating.
+    # More precision and more attempts means more time spent iterating.
     # Higher required precision gives more accuracy but also increases the
     # chance of not hitting the goal. 2e-12 allows us to convert round trip
     # with reasonable accuracy of six decimal places or more.
