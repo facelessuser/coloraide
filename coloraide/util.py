@@ -204,16 +204,17 @@ def fmt_float(f: float, p: int = 0, percent: float = 0.0, offset: float = 0.0) -
 
     value = alg.round_to((f + offset) / (percent * 0.01) if percent else f, p)
     if p == -1:
-        p = 17  # double precision
+        p = 17  # ~double precision
 
-    # Adjust precision to account for integer length
-    frac, i = math.modf(value)
-    if frac and i:
-        l = len('%i' % abs(i))
-        if 0 < l < p:
-            p = p - l
+    # Calculate actual print decimal precision
+    whole = int(value)
+    if whole:
+        whole = int(math.log10(-whole if whole < 0 else whole)) + 1
+        if p:
+            p = max(p - whole, 0)
 
-    s = '{{:{}{}f}}'.format('' if abs(value) >= 10 ** p else '.', p).format(value).rstrip('0').rstrip('.')
+    # Format the string
+    s = '{{:{}{}f}}'.format('' if whole >= p else '.', p).format(value).rstrip('0').rstrip('.')
     return s + '%' if percent else s
 
 

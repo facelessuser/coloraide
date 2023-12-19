@@ -1073,10 +1073,25 @@ class TestAlgebra(unittest.TestCase):
             [[[False, True], [True, False]], [[False, True], [True, False]]]
         )
 
-    def test_round_inf(self):
+    def test_round_to_inf(self):
         """Test rounding of infinity."""
 
         self.assertEqual(alg.round_to(math.inf, 2), math.inf)
+
+    def test_round_to_full(self):
+        """Test rounding of full precision."""
+
+        self.assertEqual(alg.round_to(1 / 3, -1), 0.3333333333333333)
+
+    def test_round_to_zero(self):
+        """Test rounding of zero decimal."""
+
+        self.assertEqual(alg.round_to(4.567, 0), 5)
+
+    def test_round_to_num(self):
+        """Test rounding of decimal number."""
+
+        self.assertEqual(alg.round_to(4.567, 2), 4.6)
 
     def test_round(self):
         """Test rounding."""

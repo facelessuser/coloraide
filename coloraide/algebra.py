@@ -100,26 +100,28 @@ def round_half_up(n: float, scale: int = 0) -> float:
     return math.floor(n * mult + 0.5) / mult
 
 
-def round_to(f: float, p: int = 0) -> float:
+def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
     """Round to the specified precision using "half up" rounding."""
+
+    _round = round_half_up if half_up else round  # type: Callable[..., float]  # type: ignore[assignment]
 
     # Do no rounding, just return a float with full precision
     if p == -1:
         return float(f)
 
     # Integer rounding
-    elif p == 0:
-        return round_half_up(f)
+    if p == 0:
+        return _round(f)
 
     # Ignore infinity
-    elif math.isinf(f):
+    if math.isinf(f):
         return f
 
     # Round to the specified precision
     else:
         whole = int(f)
         digits = 0 if whole == 0 else int(math.log10(-whole if whole < 0 else whole)) + 1
-        return round_half_up(whole if digits > p else f, p - digits)
+        return _round(whole if digits > p else f, p - digits)
 
 
 def clamp(
