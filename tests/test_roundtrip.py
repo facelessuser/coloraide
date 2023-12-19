@@ -20,12 +20,10 @@ class TestRoundTrip:
         """Local color object."""
 
     Color.deregister('space:hpluv')
-    Color.deregister('space:ryb')
     Color.deregister('space:ryb-biased')
 
-    SPACES = {k: 5 for k in Color.CS_MAP.keys()}
+    SPACES = {k: 6 for k in Color.CS_MAP.keys()}
     # Not as accurate due to approximation back to CAM16
-    SPACES['hct'] = 3
 
     COLORS = [
         Color('red'),
@@ -94,7 +92,7 @@ class TestAchromaticRoundTrip(TestRoundTrip):
     Color.deregister('space:ryb')
     Color.deregister('space:ryb-biased')
 
-    SPACES = {k: 5 for k in Color.CS_MAP.keys()}
+    SPACES = {k: 6 for k in Color.CS_MAP.keys()}
     # Precision just isn't as high for these in achromatic region
     # but it is good enough for practical purposes.
 
@@ -124,7 +122,7 @@ class TestRYBRoundTrip(TestRoundTrip):
     class Color(Base):
         """Local color object."""
 
-    SPACES = {'srgb': 5}
+    SPACES = {'srgb': 6}
 
     COLORS = [
         Color('ryb', [1, 1, 1]),
@@ -162,7 +160,7 @@ class TestRYBBiasedRoundTrip(TestRoundTrip):
     class Color(Base):
         """Local color object."""
 
-    SPACES = {'srgb': 5}
+    SPACES = {'srgb': 6}
 
     COLORS = [
         Color('ryb-biased', [1, 1, 1]),

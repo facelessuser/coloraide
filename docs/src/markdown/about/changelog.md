@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.14.1
+
+-   **FIX**: More precision for HCT conversion for better round trip conversions.
+
 ## 2.14
 
 -   **NEW**: `normalize()` will now also normalize a cylindrical color model with negative chroma/saturation to its
