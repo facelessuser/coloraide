@@ -50,7 +50,7 @@ class TestPrismaticSerialize(util.ColorAssertsPyTest):
         ('color(--prismatic none 0.3 0.75 0.5)', {}, 'color(--prismatic 0 0.3 0.75 0.5)'),
         ('color(--prismatic none 0.3 0.75 0.5)', {'none': True}, 'color(--prismatic none 0.3 0.75 0.5)'),
         # Test Fit
-        ('color(--prismatic 1.2 0.2 0 0.5)', {}, 'color(--prismatic 1 0.30074 0.10948 0.58978)'),
+        ('color(--prismatic 1.2 0.2 0 0.5)', {}, 'color(--prismatic 1 0.30075 0.10941 0.58984)'),
         ('color(--prismatic 1.2 0.2 0 0.5)', {'fit': False}, 'color(--prismatic 1.2 0.2 0 0.5)')
     ]
 

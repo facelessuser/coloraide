@@ -80,6 +80,13 @@ Color("rgb(30% 105% 0%)").to_string()
 Color("rgb(30% 105% 0%)").to_string(fit='clip')
 ```
 
+Some gamut mapping plugins may expose more options. To set these options, you can use a dictionary. Specify the method
+via the `method` and any other options by their name.
+
+```py play
+Color("rgb(30% 105% 0%)").to_string(fit={'method': 'oklch-chroma', 'jnd': 0.002})
+```
+
 ### Color
 
 `color`, for some color spaces, is the default output, but for others this format can be explicitly requested by setting

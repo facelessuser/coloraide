@@ -63,7 +63,7 @@ falling below zero, but only slightly. This is due to the perils of floating poi
 
 ```py play
 Color('red').convert('orgb')[:]
-Color('red').convert('orgb').convert('orgb')[:]
+Color('red').convert('orgb').convert('srgb')[:]
 ```
 
 When testing with a tolerance, the color is considered in gamut, but when testing with a tolerance of zero, the color is
@@ -77,7 +77,7 @@ Color('red').convert('orgb').convert('srgb').in_gamut()
 Color('red').convert('orgb').convert('srgb').in_gamut(tolerance=0)
 ```
 
-Let's consider some color models that handle out of gamut colors in a less subtle way. HSL, HSV, and HWB are color 
+Let's consider some color models that handle out of gamut colors in a less subtle way. HSL, HSV, and HWB are color
 models designed to represent an RGB color space in a cylindrical format, traditionally sRGB. Each of these spaces
 isolate different attributes of a color: saturation, whiteness, lightness, etc. Because these models are just
 representing the color space in a different way, they share the same gamut as the reference RGB color space. So it
@@ -244,9 +244,15 @@ calling `fit()` or by calling `fit(method='lch-chroma')`.
 
 ```py play
 c = Color('srgb', [2, -1, 0])
-c.fit(method='clip')
+c.fit(method='lch-chroma')
+```
+
+Additionally, the JND target can be controlled for tighter or looser gamut mapping via the `jnd` option. The default is
+`2`.
+
+```py play
 c = Color('srgb', [2, -1, 0])
-c.fit(method='clip')
+c.fit(method='lch-chroma', jnd=0.2)
 ```
 
 ### OkLCh Chroma
@@ -263,6 +269,14 @@ OkLCh has the advantage of doing a better job at holding hues uniform than CIELC
 ```py play
 c = Color('srgb', [2, -1, 0])
 c.fit(method='oklch-chroma')
+```
+
+Additionally, the JND target can be controlled for tighter or looser gamut mapping via the `jnd` option. The default is
+`2`.
+
+```py play
+c = Color('srgb', [2, -1, 0])
+c.fit(method='oklch-chroma', jnd=0.002)
 ```
 
 OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness are
@@ -294,8 +308,11 @@ can allow creating good tonal palettes:
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
 ```
+
+As shown above, the JND target can be controlled for tighter or looser gamut mapping via the `jnd` option. The default
+is `2`, but to get tonal palette results comparable to Google Material, we are using `0.02`.
 
 To HCT Chroma plugin is not registered by default, but can be added by subclassing `Color`. You must register the
 [∆E~hct~](./distance.md#delta-e-hct) distancing algorithm and the HCT color space as well.

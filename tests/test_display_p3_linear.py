@@ -50,7 +50,7 @@ class TestLinearDisplayP3Serialize(util.ColorAssertsPyTest):
         ('color(--display-p3-linear none 0.3 0.75)', {}, 'color(--display-p3-linear 0 0.3 0.75)'),
         ('color(--display-p3-linear none 0.3 0.75)', {'none': True}, 'color(--display-p3-linear none 0.3 0.75)'),
         # Test Fit
-        ('color(--display-p3-linear 1.2 0.2 0)', {}, 'color(--display-p3-linear 1 0.23465 0.01349)'),
+        ('color(--display-p3-linear 1.2 0.2 0)', {}, 'color(--display-p3-linear 1 0.23331 0.01276)'),
         ('color(--display-p3-linear 1.2 0.2 0)', {'fit': False}, 'color(--display-p3-linear 1.2 0.2 0)')
     ]
 

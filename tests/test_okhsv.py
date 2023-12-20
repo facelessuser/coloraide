@@ -53,7 +53,7 @@ class TestOkhsvSerialize(util.ColorAssertsPyTest):
         # Test Fit (not bound)
         ('color(--okhsv 50 1.1 0.5)', {}, 'color(--okhsv 50 1 0.5)'),
         ('color(--okhsv 50 1.1 0.5)', {'fit': False}, 'color(--okhsv 50 1.1 0.5)'),
-        ('color(--okhsv 50 -1.1 0.5)', {}, 'color(--okhsv 234.53 1 0.39277)')
+        ('color(--okhsv 50 -1.1 0.5)', {}, 'color(--okhsv 234.49 1 0.39311)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

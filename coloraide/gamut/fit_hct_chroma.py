@@ -8,8 +8,8 @@ class HCTChroma(LChChroma):
 
     NAME = "hct-chroma"
 
-    EPSILON = 0.001
-    LIMIT = 0.02
+    EPSILON = 0.01
+    LIMIT = 2.0
     DE = "hct"
     DE_OPTIONS = {}
     SPACE = "hct"

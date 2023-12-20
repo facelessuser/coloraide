@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.15
+
+-   **BREAK**: ∆E HCT used an extremely small JND by default to yield tonal palettes that were comparable to Google's
+    Material. This was not inline with other gamut mapping function defaults. The default is now a more appropriate
+    value of `2`. Users that relied on ∆E HCT to help generate tonal pallets with HCT should now use the `jnd` parameter
+    to set the JND to `0.02` in order to generate tonal pallets more like Google.
+-   **NEW**: `fit()` now accepts a `jnd` option to control the JND limit when gamut mapping with `lch-chroma`,
+    `oklch-chroma`, and `hct-chroma`.
+-   **NEW**: `to_string()` can now accept a dictionary of arguments to control gamut mapping via the `fit` argument.
+-   **FIX**: Update `lch-chroma` epsilon to be consistent with other gamut mapping plugin conventions.
+
 ## 2.14.1
 
 -   **FIX**: More precision for HCT conversion for better round trip conversions.

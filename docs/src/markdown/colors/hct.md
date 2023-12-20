@@ -110,7 +110,7 @@ palettes just like in Material Color Utilities.
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
 ```
 
 Material Color Utilities, as they currently implement it, only works within the sRGB color space, but ColorAide
@@ -119,9 +119,9 @@ implements HCT such that it can be used in various wide gamuts as well.
 ```py play
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 c1 = Color('display-p3', [1, 0, 1]).convert('hct')
-Steps([c1.clone().set('tone', tone).convert('display-p3').to_string(fit='hct-chroma') for tone in tones])
+Steps([c1.clone().set('tone', tone).convert('display-p3').to_string(fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
 c2 = Color('rec2020', [0, 0, 1]).convert('hct')
-Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit='hct-chroma') for tone in tones])
+Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
 ```
 
 Due to differences in approximation techniques, general precision differences, and gamut mapping of the two
@@ -136,7 +136,7 @@ correct than the other? Can you say there is notable, visual difference?
 ```py play
 def tonal_palette(c):
     tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-    return [c.clone().set('tone', tone).fit('srgb', method='hct-chroma') for tone in tones]
+    return [c.clone().set('tone', tone).fit('srgb', method='hct-chroma', jnd=0.02) for tone in tones]
 
 material1 = ['#000000', '#00006e', '#0001ac',
              '#0000ef', '#343dff', '#5a64ff',

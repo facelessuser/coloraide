@@ -19,7 +19,7 @@ class HWB(base.HWB):
         *,
         alpha: bool | None = None,
         precision: int | None = None,
-        fit: str | bool = True,
+        fit: bool | str | dict[str, Any] = True,
         none: bool = False,
         color: bool = False,
         percent: bool | Sequence[bool] | None = None,

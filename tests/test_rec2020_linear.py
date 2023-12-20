@@ -50,7 +50,7 @@ class TestLinearRec2020Serialize(util.ColorAssertsPyTest):
         ('color(--rec2020-linear none 0.3 0.75)', {}, 'color(--rec2020-linear 0 0.3 0.75)'),
         ('color(--rec2020-linear none 0.3 0.75)', {'none': True}, 'color(--rec2020-linear none 0.3 0.75)'),
         # Test Fit
-        ('color(--rec2020-linear 1.2 0.2 0)', {}, 'color(--rec2020-linear 1 0.24165 0.01231)'),
+        ('color(--rec2020-linear 1.2 0.2 0)', {}, 'color(--rec2020-linear 1 0.24083 0.01197)'),
         ('color(--rec2020-linear 1.2 0.2 0)', {'fit': False}, 'color(--rec2020-linear 1.2 0.2 0)')
     ]
 

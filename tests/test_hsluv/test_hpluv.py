@@ -43,7 +43,7 @@ class TestHPLuvSerialize(util.ColorAssertsPyTest):
         # Test Fit (not bound)
         ('color(--hpluv 50 110 50)', {}, 'color(--hpluv 50 100 50)'),
         ('color(--hpluv 50 110 50)', {'fit': False}, 'color(--hpluv 50 110 50)'),
-        ('color(--hpluv 192.18 -426.75 53.237)', {}, 'color(--hpluv 23.888 100 53.237)')
+        ('color(--hpluv 192.18 -426.75 53.237)', {}, 'color(--hpluv 23.879 100 53.237)')
     ]
 
     @pytest.mark.parametrize('color1,options,color2', COLORS)

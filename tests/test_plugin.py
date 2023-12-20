@@ -36,7 +36,7 @@ class TestCustom(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(
             Color('color(srgb 2 -1 0)').fit().to_string(),
-            'rgb(255 101.26 98.291)'
+            'rgb(255 101.13 98.204)'
         )
 
         self.assertEqual(
