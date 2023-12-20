@@ -7,7 +7,7 @@ from .. import algebra as alg
 from .color_names import to_name
 from ..channels import FLG_PERCENT, FLG_OPT_PERCENT, FLG_ANGLE
 from ..types import Vector
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Sequence, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -23,7 +23,7 @@ EMPTY = ''
 def named_color(
     obj: 'Color',
     alpha: bool | None,
-    fit: str | bool
+    fit: str | bool | dict[str, Any]
 ) -> str | None:
     """Get the CSS color name."""
 
@@ -38,7 +38,7 @@ def color_function(
     func: str | None,
     alpha: bool | None,
     precision: int,
-    fit: str | bool,
+    fit: str | bool | dict[str, Any],
     none: bool,
     percent: bool | Sequence[bool],
     legacy: bool,
@@ -105,13 +105,21 @@ def color_function(
 
 def get_coords(
     obj: 'Color',
-    fit: str | bool,
+    fit: bool | str | dict[str, Any],
     none: bool,
     legacy: bool
 ) -> Vector:
     """Get the coordinates."""
 
-    color = (obj.fit(method=None if not isinstance(fit, str) else fit) if fit else obj)
+    if fit:
+        if fit is True:
+            color = obj.fit()
+        elif isinstance(fit, str):
+            color = obj.fit(method=fit)
+        else:
+            color = obj.fit(**fit)
+    else:
+        color = obj
     return color.coords(nans=False if legacy or not none else True)
 
 
@@ -131,7 +139,7 @@ def get_alpha(
 def hexadecimal(
     obj: 'Color',
     alpha: bool | None = None,
-    fit: str | bool = True,
+    fit: str | bool | dict[str, Any] = True,
     upper: bool = False,
     compress: bool = False
 ) -> str:
@@ -170,7 +178,7 @@ def serialize_css(
     color: bool = False,
     alpha: bool | None = None,
     precision: int | None = None,
-    fit: str | bool = True,
+    fit: bool | str | dict[str, Any] = True,
     none: bool = False,
     percent: bool | Sequence[bool] = False,
     hexa: bool = False,

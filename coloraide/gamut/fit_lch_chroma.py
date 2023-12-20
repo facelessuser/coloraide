@@ -1,9 +1,11 @@
 """Fit by compressing chroma in LCh."""
 from __future__ import annotations
+import functools
 from ..gamut import Fit, clip_channels
 from ..cat import WHITES
 from .. import util
 import math
+from .. import algebra as alg
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -11,6 +13,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 BLACK = [0, 0, 0]
+
+
+@functools.lru_cache(maxsize=10)
+def calc_epsilon(jnd: float) -> float:
+    """Calculate the epsilon to 2 degrees smaller than the specified JND."""
+
+    return float("1e{:d}".format(alg.order(jnd) - 2))
 
 
 class LChChroma(Fit):
@@ -31,7 +40,7 @@ class LChChroma(Fit):
 
     NAME = "lch-chroma"
 
-    EPSILON = 0.1
+    EPSILON = 0.01
     LIMIT = 2.0
     DE = "2000"
     DE_OPTIONS = {'space': 'lab-d65'}  # type: dict[str, Any]
@@ -40,7 +49,7 @@ class LChChroma(Fit):
     MAX_LIGHTNESS = 100
     MIN_CONVERGENCE = 0.0001
 
-    def fit(self, color: Color, **kwargs: Any) -> None:
+    def fit(self, color: Color, *, jnd: float | None = None, **kwargs: Any) -> None:
         """Gamut mapping via CIELCh chroma."""
 
         space = color.space()
@@ -48,6 +57,11 @@ class LChChroma(Fit):
         l, c = mapcolor._space.indexes()[:2]  # type: ignore[attr-defined]
         lightness = mapcolor[l]
         sdr = color._space.DYNAMIC_RANGE == 'sdr'
+        if jnd is None:
+            jnd = self.LIMIT
+            epsilon = self.EPSILON
+        else:
+            epsilon = calc_epsilon(jnd)
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
@@ -64,7 +78,7 @@ class LChChroma(Fit):
         clip_channels(color._hotswap(mapcolor.convert(space, norm=False)))
 
         # Adjust chroma if we are not under the JND yet.
-        if mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS) >= self.LIMIT:
+        if mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS) >= jnd:
             # Perform "in gamut" checks until we know our lower bound is no longer in gamut.
             lower_in_gamut = True
 
@@ -79,10 +93,10 @@ class LChChroma(Fit):
                 else:
                     clip_channels(color._hotswap(mapcolor.convert(space, norm=False)))
                     de = mapcolor.delta_e(color, method=self.DE, **self.DE_OPTIONS)
-                    if de < self.LIMIT:
+                    if de < jnd:
                         # Kick out as soon as we are close enough to the JND.
                         # Too far below and we may reduce chroma too aggressively.
-                        if (self.LIMIT - de) < self.EPSILON:
+                        if (jnd - de) < epsilon:
                             break
 
                         # Our lower bound is now out of gamut, so all future searches are

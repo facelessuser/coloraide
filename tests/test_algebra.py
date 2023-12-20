@@ -2215,6 +2215,14 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(alg.zdiv(4, 0), 0)
 
+    def test_order(self):
+        """Test order."""
+
+        self.assertEqual(alg.order(0), 0)
+        self.assertEqual(alg.order(20), 1)
+        self.assertEqual(alg.order(2), 0)
+        self.assertEqual(alg.order(0.002), -3)
+
 
 def test_pprint(capsys):
     """Test matrix print."""

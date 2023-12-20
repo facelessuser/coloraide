@@ -79,6 +79,14 @@ def is_nan(obj: float) -> bool:
     return math.isnan(obj)
 
 
+def order(x: float) -> int:
+    """Get the order of magnitude of a number."""
+
+    if x == 0:
+        return 0
+    return math.floor(math.log10(abs(x)))
+
+
 @deprecated("This will be removed at a future time")
 def no_nans(value: VectorLike | Iterable[float], default: float = 0.0) -> Vector:
     """Ensure there are no `NaN` values in a sequence."""

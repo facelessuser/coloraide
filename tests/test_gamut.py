@@ -116,7 +116,7 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         """Test HDR extreme high case."""
 
         color = Color('color(--rec2100-pq 1.01 0.2 0)')
-        self.assertColorEqual(color.fit(), Color('color(--rec2100-pq 1 0.45921 0)'))
+        self.assertColorEqual(color.fit(), Color('color(--rec2100-pq 1 0.45327 0)'))
 
     def test_hdr_extreme_low(self):
         """Test HDR extreme low case."""
@@ -153,6 +153,35 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 
         self.assertFalse(Color('color(srgb 2 0 0)').convert('lch').in_gamut('srgb'))
 
+    def test_fit_options(self):
+        """Test fit options."""
+
+        self.assertColorEqual(
+            Color('color(display-p3 0 1 0)').convert('srgb').fit(method='oklch-chroma', jnd=0.002),
+            Color('rgb(0 247.37 75.73)')
+        )
+
+        self.assertColorEqual(
+            Color('color(display-p3 0 1 0)').convert('srgb').fit(method='oklch-chroma', jnd=0.0),
+            Color('rgb(0 246.92 78.614)')
+        )
+
+    def test_fit_method_to_string(self):
+        """Test fit method to string."""
+
+        self.assertEqual(
+            Color('color(display-p3 0 1 0)').convert('srgb').to_string(fit='oklch-chroma'),
+            'rgb(0 251.37 40.734)'
+        )
+
+    def test_fit_options_to_string(self):
+        """Test fit options to string."""
+
+        self.assertEqual(
+            Color('color(display-p3 0 1 0)').convert('srgb').to_string(fit={'method': 'oklch-chroma', 'jnd': 0.002}),
+            'rgb(0 247.37 75.73)'
+        )
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
@@ -175,8 +204,9 @@ class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
 
         # A channel should be off no more than by 1 in a scale of 0 - 255
         # Due to the fact that Material uses less precise matrices
+        options = {'method': 'hct-chroma', 'jnd': 0.02}
         for tone, answer in zip(tones, expect):
-            s1 = [c * 255 for c in hct.clone().set('tone', tone).convert('srgb').fit(method='hct-chroma')[:-1]]
+            s1 = [c * 255 for c in hct.clone().set('tone', tone).convert('srgb').fit(**options)[:-1]]
             s2 = [c * 255 for c in Color(answer)[:-1]]
             for c1, c2 in zip(s1, s2):
                 self.assertTrue(math.isclose(c1, c2, abs_tol=1.0))
@@ -187,7 +217,7 @@ class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
                   '#444559', '#2e2f42', '#191a2c', '#000000']
 
         for tone, answer in zip(tones, expect):
-            s1 = [c * 255 for c in hct.clone().set('tone', tone).convert('srgb').fit(method='hct-chroma')[:-1]]
+            s1 = [c * 255 for c in hct.clone().set('tone', tone).convert('srgb').fit(**options)[:-1]]
             s2 = [c * 255 for c in Color(answer)[:-1]]
             for c1, c2 in zip(s1, s2):
                 self.assertTrue(math.isclose(c1, c2, abs_tol=1.0))

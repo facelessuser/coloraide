@@ -50,7 +50,7 @@ class TestLinearsRGBSerialize(util.ColorAssertsPyTest):
         ('color(srgb-linear none 0.3 0.75)', {}, 'color(srgb-linear 0 0.3 0.75)'),
         ('color(srgb-linear none 0.3 0.75)', {'none': True}, 'color(srgb-linear none 0.3 0.75)'),
         # Test Fit
-        ('color(srgb-linear 1.2 0.2 0)', {}, 'color(srgb-linear 1 0.22803 0.02349)'),
+        ('color(srgb-linear 1.2 0.2 0)', {}, 'color(srgb-linear 1 0.22783 0.0233)'),
         ('color(srgb-linear 1.2 0.2 0)', {'fit': False}, 'color(srgb-linear 1.2 0.2 0)')
     ]
 

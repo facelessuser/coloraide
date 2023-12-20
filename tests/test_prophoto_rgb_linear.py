@@ -50,7 +50,7 @@ class TestLinearProPhotoRGBSerialize(util.ColorAssertsPyTest):
         ('color(--prophoto-rgb-linear none 0.3 0.75)', {}, 'color(--prophoto-rgb-linear 0 0.3 0.75)'),
         ('color(--prophoto-rgb-linear none 0.3 0.75)', {'none': True}, 'color(--prophoto-rgb-linear none 0.3 0.75)'),
         # Test Fit
-        ('color(--prophoto-rgb-linear 1.2 0.2 0)', {}, 'color(--prophoto-rgb-linear 1 0.24172 0.01194)'),
+        ('color(--prophoto-rgb-linear 1.2 0.2 0)', {}, 'color(--prophoto-rgb-linear 1 0.24098 0.01167)'),
         ('color(--prophoto-rgb-linear 1.2 0.2 0)', {'fit': False}, 'color(--prophoto-rgb-linear 1.2 0.2 0)')
     ]
 

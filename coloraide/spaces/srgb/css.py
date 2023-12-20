@@ -19,7 +19,7 @@ class sRGB(base.sRGB):
         *,
         alpha: bool | None = None,
         precision: int | None = None,
-        fit: str | bool = True,
+        fit: bool | str | dict[str, Any] = True,
         none: bool = False,
         color: bool = False,
         hex: bool = False,  # noqa: A002

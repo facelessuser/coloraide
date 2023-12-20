@@ -50,7 +50,7 @@ class TestRec2020Serialize(util.ColorAssertsPyTest):
         ('color(rec2020 none 0.3 0.75)', {}, 'color(rec2020 0 0.3 0.75)'),
         ('color(rec2020 none 0.3 0.75)', {'none': True}, 'color(rec2020 none 0.3 0.75)'),
         # Test Fit
-        ('color(rec2020 1.2 0.2 0)', {}, 'color(rec2020 1 0.41836 0.13834)'),
+        ('color(rec2020 1.2 0.2 0)', {}, 'color(rec2020 1 0.41739 0.13711)'),
         ('color(rec2020 1.2 0.2 0)', {'fit': False}, 'color(rec2020 1.2 0.2 0)')
     ]
 
