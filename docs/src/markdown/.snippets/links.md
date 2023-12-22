@@ -5,6 +5,7 @@
 [color-math]: https://github.com/gtaylor/python-colormath
 [colour-science]: https://github.com/colour-science/colour
 [compositing-level-1]: https://www.w3.org/TR/compositing-1/
+[css-color-hdr-1]: https://drafts.csswg.org/css-color-hdr/
 [css-spec-convert]: https://drafts.csswg.org/css-color/#color-conversion-code
 [de2000]: http://www.brucelindbloom.com/index.html?Math.html
 [de76]: http://www.brucelindbloom.com/index.html?Math.html

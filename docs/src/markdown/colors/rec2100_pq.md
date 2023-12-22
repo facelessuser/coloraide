@@ -50,8 +50,14 @@ Channels | Aliases
 
 ## Input/Output
 
-Rec. 2100 PQ is not supported via the CSS spec and the parser input and string output only supports the
-`#!css-color color()` function format using the custom name `#!css-color --rec2100-pq`:
+/// warning | CSS Support
+This color space is present the [Color HDR draft][css-color-hdr-1], but is not yet published in an official spec. If
+this goes into an official, published spec, the ID and/or format is likely to change depending on the final decision on
+format. We will likely keep the current format as a fallback for backward compatibility for some time.
+///
+
+Rec. 2100 PQ is not currently supported in the official CSS spec, only a draft, so the parsed input and string output
+format only supports the `#!css-color color()` function format using the custom name `#!css-color --rec2100-pq`:
 
 ```css-color
 color(--rec2100-pq r g b / a)  // Color function

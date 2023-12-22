@@ -107,6 +107,10 @@ One of the applications of HCT is generating tonal palettes. When coupled with C
 distancing algorithm and the [`hct-chroma` gamut mapping algorithm](../gamut.md#hct-chroma), we can produce tonal
 palettes just like in Material Color Utilities.
 
+The basic idea with generating tonal palettes is to pick a reasonable color, change the tone via a good distance,
+and make sure the color fits the target gamut. We can quickly demonstrate that this works by generating a simple tonal
+palette.
+
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -124,6 +128,47 @@ c2 = Color('rec2020', [0, 0, 1]).convert('hct')
 Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
 ```
 
+It should be noted though, that while we've been able to generate tonal palettes quite easily, there are some edge
+cases. Material Color Utilities strictly manages the colors so that they are always within the sRGB hex range and
+accuracy. All of this is hidden behind the current. The reality is that you can generate some some colors using this
+method that produce colors outside the visible spectrum, and the CAM16 algorithm, which HCT is built on, can't handle
+this quite like you'd expect. Let's try increasing the range of our tonal palette:
+
+```py play
+tones = [0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100]
+c1 = Color('blue').convert('hct')
+Steps([c1.clone().set('tone', tone).convert('srgb').to_string(fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
+```
+
+Now we have some not quite expected colors. This mainly happens in low lightness scenarios. These low lightness colors
+can't support the massive chroma of the seed color, in this case `#!color blue`. But we can manage this as shown below.
+Problem solved!
+
+```py play
+def hct_tonal_palette(c):
+    """HCT tonal palettes."""
+
+    c = Color(c).convert('hct')
+    tones = [0, 5, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100]
+    colors = []
+    for tone in tones:
+        c1 = c.clone().set('t', tone)
+        # Any color in CAM16 that has too high of chroma can cause issues,
+        # but this is most likely to occur in low lightness.
+        if tone < 20:
+            c2 = c1.convert('xyz-d65').convert('hct', in_place=True)
+            # We are either using a seed color too far out of gamut
+            # or the seed color's chroma is grossly over what the conversion can handle.
+            # The indicator is round trip conversion gives you a different chroma and hue.
+            # Cut the chroma in half so we can work with the color.
+            if abs(c2[1] - c1[1]) > 1:
+                c1[1] *= 0.5
+        colors.append(c1.fit('srgb', method='hct-chroma', jnd=0.02).convert('srgb'))
+    return colors
+
+Steps(hct_tonal_palette('blue'))
+```
+
 Due to differences in approximation techniques, general precision differences, and gamut mapping of the two
 implementations internally, ColorAide may return colors slightly different from Material Color Utilities. These
 differences are extremely small and not perceptible to the eye.
@@ -135,8 +180,25 @@ correct than the other? Can you say there is notable, visual difference?
 
 ```py play
 def tonal_palette(c):
+    """HCT tonal palettes."""
+
+    c = Color(c).convert('hct')
     tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-    return [c.clone().set('tone', tone).fit('srgb', method='hct-chroma', jnd=0.02) for tone in tones]
+    colors = []
+    for tone in tones:
+        c1 = c.clone().set('t', tone)
+        # Any color in CAM16 that has too high of chroma can cause issues,
+        # but this is most likely to occur in low lightness.
+        if tone < 20:
+            c2 = c1.convert('xyz-d65').convert('hct', in_place=True)
+            # We are either using a seed color too far out of gamut
+            # or the seed color's chroma is grossly over what the conversion can handle.
+            # The indicator is round trip conversion gives you a different chroma and hue.
+            # Cut the chroma in half so we can work with the color.
+            if abs(c2[1] - c1[1]) > 1:
+                c1[1] *= 0.5
+        colors.append(c1.fit('srgb', method='hct-chroma', jnd=0.02))
+    return colors
 
 material1 = ['#000000', '#00006e', '#0001ac',
              '#0000ef', '#343dff', '#5a64ff',

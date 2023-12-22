@@ -46,8 +46,14 @@ Channels | Aliases
 
 ## Input/Output
 
-As JzCzhz is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --jzczhz`:
+/// warning | CSS Support
+This color space is present the [Color HDR draft][css-color-hdr-1], but is not yet published in an official spec. If
+this goes into an official, published spec, the ID and/or format is likely to change depending on the final decision on
+format. We will likely keep the current format as a fallback for backward compatibility for some time.
+///
+
+As JzCzhz is not currently supported in the official CSS spec, only a draft, so the parsed input and string output
+formats use the `#!css-color color()` function format using the custom name `#!css-color --jzczhz`:
 
 ```css-color
 color(--jzczhz jz cz hz / a)  // Color function
