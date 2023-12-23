@@ -211,20 +211,19 @@ INV_ACHROMATIC_RESPONSE = [
 ]  # type: Matrix
 
 
-def y_to_lstar(y: float, white: VectorLike) -> float:
+def y_to_lstar(y: float) -> float:
     """Convert XYZ Y to Lab L*."""
 
-    y = y / white[1]
     fy = alg.nth_root(y, 3) if y > EPSILON else (KAPPA * y + 16) / 116
     return (116.0 * fy) - 16.0
 
 
-def lstar_to_y(lstar: float, white: VectorLike) -> float:
+def lstar_to_y(lstar: float) -> float:
     """Convert Lab L* to XYZ Y."""
 
     fy = (lstar + 16) / 116
     y = fy ** 3 if lstar > KE else lstar / KAPPA
-    return y * white[1]
+    return y
 
 
 def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
@@ -246,7 +245,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         return [0.0, 0.0, 0.0]
 
     # Calculate the Y we need to target
-    y = lstar_to_y(t, env.ref_white)
+    y = lstar_to_y(t)
 
     # Try to start with a reasonable initial guess for J
     # Calculated by curve fitting J vs T.
@@ -298,7 +297,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
     """Convert XYZ to HCT."""
 
-    t = y_to_lstar(coords[1], env.ref_white)
+    t = y_to_lstar(coords[1])
     if t == 0.0:
         return [0.0, 0.0, 0.0]
     c, h = xyz_d65_to_cam16(coords, env)[1:3]
@@ -328,8 +327,8 @@ class HCT(LChish, Space):
     WHITE = WHITES['2deg']['D65']
     ENV = Environment(
         WHITE,
-        200 / math.pi * lstar_to_y(50.0, util.xy_to_xyz(WHITE)),
-        lstar_to_y(50.0, util.xy_to_xyz(WHITE)) * 100,
+        200 / math.pi * lstar_to_y(50.0),
+        lstar_to_y(50.0) * 100,
         'average',
         False
     )
