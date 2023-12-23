@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.15.1
+
+-  **FIX**: Small regression related to indirectly gamut mapping in another space other than its own.
+
 ## 2.15
 
 -   **BREAK**: ∆E HCT used an extremely small JND by default to yield tonal palettes that were comparable to Google's

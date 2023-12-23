@@ -853,6 +853,13 @@ class Color(metaclass=ColorMeta):
         """Clip the color channels."""
 
         orig_space = self.space()
+        target_space = space or orig_space
+
+        # We are indirectly clipping this space
+        if orig_space != target_space:
+            return self.convert(target_space, norm=False, in_place=True).clip().convert(orig_space, in_place=True)
+
+        # Determine what space we actually need to clip in
         if space is None:
             space = self._space.CLIP_SPACE or self._space.GAMUT_CHECK or orig_space
         else:
@@ -891,6 +898,19 @@ class Color(metaclass=ColorMeta):
             return self.clip(space)
 
         orig_space = self.space()
+        target_space = space or orig_space
+
+        # We are indirectly mapping this space
+        if orig_space != target_space:
+            return self.convert(
+                target_space, norm=False, in_place=True
+            ).fit(
+                method=method, **kwargs
+            ).convert(
+                orig_space, in_place=True
+            )
+
+        # Determine what space we actually need to gamut map in
         if space is None:
             space = self._space.GAMUT_CHECK or orig_space
         else:

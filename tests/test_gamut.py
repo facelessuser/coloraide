@@ -222,6 +222,14 @@ class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
             for c1, c2 in zip(s1, s2):
                 self.assertTrue(math.isclose(c1, c2, abs_tol=1.0))
 
+    def test_inside_but_high_chroma(self):
+        """Test gamut mapping a color with high chroma, but inside gamut due to technically of algorithm."""
+
+        self.assertColorEqual(
+            Color('hct', [270, 30, 0]).fit('srgb', method='hct-chroma'),
+            Color('hct', [float('nan'), 0, 0])
+        )
+
 
 class TestPointerGamut(util.ColorAsserts, unittest.TestCase):
     """Test Pointer's gamut."""
