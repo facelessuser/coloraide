@@ -38,6 +38,15 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         self.assertIsNot(color, color2)
         self.assertTrue(color2.in_gamut())
 
+    def test_fit_self(self):
+        """Test fit explicitly in own gamut."""
+
+        color = Color('color(srgb 2 0.5 0.5)')
+        self.assertFalse(color.in_gamut())
+        color2 = color.clone().fit('srgb')
+        self.assertIsNot(color, color2)
+        self.assertTrue(color2.in_gamut())
+
     def test_fit_clip(self):
         """Test fit."""
 
