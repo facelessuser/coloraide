@@ -43,7 +43,6 @@ color(--hct 256.79 31.766 33.344 / 1)
 """
 from __future__ import annotations
 from .. import algebra as alg
-from .. import util
 from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
@@ -52,7 +51,7 @@ from .cam16_jmh import Achromatic as _Achromatic
 from .srgb_linear import lin_srgb_to_xyz
 from .srgb import lin_srgb
 from .lab import EPSILON, KAPPA, KE
-from ..types import Vector, VectorLike, Matrix  # noqa: F401
+from ..types import Vector, Matrix  # noqa: F401
 from typing import Any
 import math
 
