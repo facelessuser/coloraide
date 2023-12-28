@@ -4,7 +4,7 @@
 
 -   **NEW**: Gamut mapping plugins now must accept a `space` parameter and the color will not already be in the desired
     gamut color space. This change was specifically made in order to fix a bug with HCT gamut mapping.
--   **FIX**: Fix corner cases in HCT gamut mapping that would struggle with high chroma low lightness.
+-   **FIX**: Fix corner cases in HCT gamut mapping that would struggle with colors with high chroma and low lightness.
 
 ## 2.15.1
 
