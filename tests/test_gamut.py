@@ -213,7 +213,7 @@ class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
 
         # A channel should be off no more than by 1 in a scale of 0 - 255
         # Due to the fact that Material uses less precise matrices
-        options = {'method': 'hct-chroma', 'jnd': 0.02}
+        options = {'method': 'hct-chroma', 'jnd': 0.0}
         for tone, answer in zip(tones, expect):
             s1 = [c * 255 for c in hct.clone().set('tone', tone).convert('srgb').fit(**options)[:-1]]
             s2 = [c * 255 for c in Color(answer)[:-1]]

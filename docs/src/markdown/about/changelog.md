@@ -1,8 +1,14 @@
 # Changelog
 
+## 2.16
+
+-   **NEW**: Gamut mapping plugins now must accept `space` parameter and the color will not already be in the desired
+    gamut color space. This change was specifically made in order to fix a bug with HCT gamut mapping.
+-   **FIX**: Fix corner cases in HCT gamut mapping that would struggle with high chroma low lightness.
+
 ## 2.15.1
 
--  **FIX**: Small regression related to indirectly gamut mapping in another space other than its own.
+-   **FIX**: Small regression related to indirectly gamut mapping in another space other than its own.
 
 ## 2.15
 

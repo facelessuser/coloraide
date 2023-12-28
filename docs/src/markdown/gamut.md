@@ -308,7 +308,7 @@ can allow creating good tonal palettes:
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'hct-chroma', 'jnd': 0.02}) for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'hct-chroma', 'jnd': 0.0}) for tone in tones])
 ```
 
 As shown above, the JND target can be controlled for tighter or looser gamut mapping via the `jnd` option. The default

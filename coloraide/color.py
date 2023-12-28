@@ -897,25 +897,17 @@ class Color(metaclass=ColorMeta):
         if method == 'clip':
             return self.clip(space)
 
-        orig_space = self.space()
-        target_space = space or orig_space
-
-        # We are indirectly mapping this space
-        if orig_space != target_space:
-            return self.convert(
-                target_space, norm=False, in_place=True
-            ).fit(
-                method=method, **kwargs
-            ).convert(
-                orig_space, in_place=True
-            )
+        # If within gamut, just normalize hue range by calling clip.
+        if self.in_gamut(space, tolerance=0):
+            self.clip(space)
+            return self
 
         # Determine what space we actually need to gamut map in
         if space is None:
-            space = self._space.GAMUT_CHECK or orig_space
+            target = self._space.GAMUT_CHECK or self.space()
         else:
             cs = self.CS_MAP[space]
-            space = cs.GAMUT_CHECK or cs.NAME
+            target = cs.GAMUT_CHECK or cs.NAME
 
         # Select appropriate mapping algorithm
         mapping = self.FIT_MAP.get(method)
@@ -923,26 +915,7 @@ class Color(metaclass=ColorMeta):
             # Unknown fit method
             raise ValueError("'{}' gamut mapping is not currently supported".format(method))
 
-        # Convert to desired space
-        if space != orig_space:
-            conv = self.convert(space, norm=False)
-
-            # If within gamut, just normalize hue range by calling clip.
-            if conv.in_gamut(tolerance=0):
-                gamut.clip_channels(self)
-                return self
-
-            # Perform gamut mapping.
-            mapping.fit(conv, **kwargs)
-
-            # Convert back to the original color space
-            return self._hotswap(conv.convert(orig_space, in_place=True))
-
-        # Gamut map the color directly
-        if self.in_gamut(tolerance=0):
-            gamut.clip_channels(self)
-            return self
-        mapping.fit(self, **kwargs)
+        mapping.fit(self, target, **kwargs)
         return self
 
     def in_gamut(self, space: str | None = None, *, tolerance: float = util.DEF_FIT_TOLERANCE) -> bool:

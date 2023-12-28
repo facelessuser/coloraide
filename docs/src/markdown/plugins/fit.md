@@ -12,12 +12,11 @@ Plugins are are created by subclassing `#!py3 coloraide.gamut.Fit`.
 ```py
 class Fit(Plugin, metaclass=ABCMeta):
     """Fit plugin class."""
-    """Fit plugin class."""
 
     NAME = ''
 
     @abstractmethod
-    def fit(self, color: 'Color', **kwargs) -> None:
+    def fit(self, color: 'Color', space: str, **kwargs) -> None:
         """Get coordinates of the new gamut mapped color."""
 ```
 
