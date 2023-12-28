@@ -68,5 +68,5 @@ class Fit(Plugin, metaclass=ABCMeta):
     NAME = ''
 
     @abstractmethod
-    def fit(self, color: Color, **kwargs: Any) -> None:
+    def fit(self, color: Color, space: str, **kwargs: Any) -> None:
         """Get coordinates of the new gamut mapped color."""
