@@ -7,6 +7,10 @@
 Use ColorAide to pick a color in any of the color spaces available. ACES color spaces have been arbitrarily limited
 has they have ginormous headroom.
 
+All results, from any color space, are gamut mapped to the detected display gamut (sRGB, Display P3, or Rec. 2020), but
+you can force lower gamuts that fit inside your detected gamut as well. Larger gamuts than the detected gamut will be
+unavailable.
+
 [Try it out](./colorpicker.html)
 
 ## Interactive 3D Color Space Models
