@@ -2408,9 +2408,8 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
         v = ravel(array)
         if len(v) == 1:
             return v[0]
-        elif v:
-            # Kick out if the requested shape doesn't match the data
-            raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
+        # Kick out if the requested shape doesn't match the data
+        raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
 
     current_shape = shape(array)
 

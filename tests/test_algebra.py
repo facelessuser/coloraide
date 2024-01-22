@@ -840,7 +840,8 @@ class TestAlgebra(unittest.TestCase):
             alg.reshape([1, 2], ())
 
         # Reshaping empty data sets
-        self.assertEqual(alg.reshape([], ()), [])
+        with self.assertRaises(ValueError):
+            alg.reshape([], ())
         self.assertEqual(alg.reshape([], (0,)), [])
         self.assertEqual(alg.reshape([], (2, 0)), [[], []])
         self.assertEqual(alg.reshape([], (2, 3, 0)), [[[], [], []], [[], [], []]])
