@@ -1505,8 +1505,19 @@ class _SimpleBroadcast:
                 yield from self.vector_broadcast(a, b)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Broadcast two 2-D matrices
-                for ra, rb in it.zip_longest(a, b):  # type: ignore[arg-type]
-                    yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                la = len(a)  # type: ignore[arg-type]
+                lb = len(b)  # type: ignore[arg-type]
+                if la == 1 and lb != 1:
+                    ra = a[0]  # type: ignore[index]
+                    for rb in b:  # type: ignore[union-attr]
+                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                elif lb == 1 and la != 1:
+                    rb = b[0]  # type: ignore[index]
+                    for ra in a:  # type: ignore[union-attr]
+                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
+                else:
+                    for ra, rb in it.zip_longest(a, b):  # type: ignore[arg-type]
+                        yield from self.vector_broadcast(ra, rb)  # type: ignore[arg-type]
             else:
                 yield a, b  # type: ignore[misc]
 
@@ -1851,12 +1862,20 @@ class vectorize2:
             if dims_a == 1:
                 # Apply math to two vectors
                 return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
+            elif not dims_a:
+                # Apply math to two scalars
+                return self.func(a, b, **kwargs)
+            elif shape_a[0] == 1 and shape_b[0] != 1:
+                ra = a[0]  # type: ignore[index]
+                return [self._vector_apply(ra, rb) for rb in b]  # type: ignore[arg-type, union-attr]
+            elif shape_b[0] == 1 and shape_a[0] != 1:
+                rb = b[0]  # type: ignore[index]
+                return [self._vector_apply(ra, rb) for ra in a]  # type: ignore[arg-type, union-attr]
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
                 return [
                     self._vector_apply(ra, rb, **kwargs) for ra, rb in it.zip_longest(a, b)  # type: ignore[arg-type]
                 ]
-            return self.func(a, b, **kwargs)
 
         # Inputs containing a scalar on either side
         elif not dims_a or not dims_b:

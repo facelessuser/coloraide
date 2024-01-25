@@ -562,6 +562,21 @@ class TestAlgebra(unittest.TestCase):
         )
         self.assertEqual(b.shape, (3,))
 
+
+        b = alg.broadcast([[1, 2, 3]], [[4], [5], [6]])
+        self.assertEqual(
+            list(b),
+            [(1, 4), (2, 4), (3, 4), (1, 5), (2, 5), (3, 5), (1, 6), (2, 6), (3, 6)]
+        )
+        self.assertEqual(b.shape, (3, 3))
+
+        b = alg.broadcast([[4], [5], [6]], [[1, 2, 3]])
+        self.assertEqual(
+            list(b),
+            [(4, 1), (4, 2), (4, 3), (5, 1), (5, 2), (5, 3), (6, 1), (6, 2), (6, 3)]
+        )
+        self.assertEqual(b.shape, (3, 3))
+
         b = alg.broadcast([[1], [2], [3]], [[], [], []])
         self.assertEqual(
             list(b),
@@ -1492,6 +1507,22 @@ class TestAlgebra(unittest.TestCase):
                 [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
             ),
             [[8, 8, 8], [2, 0, 2], [4, 6, 8]]
+        )
+
+        self.assertEqual(
+            alg.multiply(
+                [[1, 2, 3]],
+                [[4], [5], [6]]
+            ),
+            [[4, 8, 12], [5, 10, 15], [6, 12, 18]]
+        )
+
+        self.assertEqual(
+            alg.multiply(
+                [[4], [5], [6]],
+                [[1, 2, 3]]
+            ),
+            [[4, 8, 12], [5, 10, 15], [6, 12, 18]]
         )
 
         m1 = [[[[1, 2, 3, 4],
