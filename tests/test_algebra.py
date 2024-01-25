@@ -18,7 +18,7 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(
             alg.cross([1, 2], [4, 5]),
-            [-3]
+            -3
         )
 
         self.assertEqual(
@@ -75,7 +75,7 @@ class TestAlgebra(unittest.TestCase):
                 [[1, 2],
                  [4, 5]]
             ),
-            [[6], [3]]
+            [6, 3]
         )
 
         self.assertEqual(
@@ -151,6 +151,34 @@ class TestAlgebra(unittest.TestCase):
               [-12, -12, 18]],
              [[-6, 0, 2],
               [-13, 8, 2]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[[1, 2, 3],
+                  [4, 5, 6]]],
+                [[[4, 8, 9],
+                  [2, 7, 6]],
+                 [[1, 4, 3],
+                  [2, 3, 1]]]
+            ),
+            [[[-6, 3, 0],
+              [-12, -12, 18]],
+             [[-6, 0, 2],
+              [-13, 8, 2]]]
+        )
+
+        self.assertEqual(
+            alg.cross(
+                [[[1, 2],
+                  [4, 5]]],
+                [[[4, 8],
+                  [2, 7]],
+                 [[1, 4],
+                  [2, 3]]]
+            ),
+            [[0, 18],
+             [2, 2]]
         )
 
         with self.assertRaises(ValueError):

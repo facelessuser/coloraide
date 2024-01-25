@@ -727,13 +727,13 @@ def vdot(a: VectorLike, b: VectorLike) -> float:
     return s
 
 
-def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
+def vcross(v1: VectorLike, v2: VectorLike) -> Any:  # pragma: no cover
     """
     Cross two vectors.
 
     Takes vectors of either 2 or 3 dimensions. If 2 dimensions, will return the z component.
     To mix 2 and 3 vector components, please use `cross` instead which will pad 2 dimension
-    vectors if the other is of 3 dimensions. `cross` has more overhead, so use `cross` if
+    vectors if the other is of 3 dimensions. `cross` has more overhead, so use `vcross` if
     you don't need broadcasting of any kind.
     """
 
@@ -742,7 +742,7 @@ def vcross(v1: VectorLike, v2: VectorLike) -> Vector:  # pragma: no cover
         raise ValueError('Incompatible dimensions of {} and {} for cross product'.format(l1, len(v2)))
 
     if l1 == 2:
-        return [v1[0] * v2[1] - v1[1] * v2[0]]
+        return v1[0] * v2[1] - v1[1] * v2[0]
     elif l1 == 3:
         return [
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -816,32 +816,7 @@ def _cross_pad(a: ArrayLike, s: Shape) -> Array:
     return m
 
 
-@overload
-def cross(a: VectorLike, b: VectorLike) -> Vector:
-    ...
-
-
-@overload
-def cross(a: MatrixLike, b: VectorLike | MatrixLike) -> Matrix:
-    ...
-
-
-@overload
-def cross(a: VectorLike | MatrixLike, b: MatrixLike) -> Matrix:
-    ...
-
-
-@overload
-def cross(a: TensorLike, b: Any) -> Tensor:
-    ...
-
-
-@overload
-def cross(a: Any, b: TensorLike) -> Tensor:
-    ...
-
-
-def cross(a: ArrayLike, b: ArrayLike) -> Array:
+def cross(a: ArrayLike, b: ArrayLike) -> Any:
     """Vector cross product."""
 
     # Determine shape of arrays
@@ -863,29 +838,35 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
             b = _cross_pad(b, shape_b)
             shape_b = shape_b[:-1] + (3,)
 
-    if dims_a == 1:
-        if dims_b == 1:
-            # Cross two vectors
-            return vcross(a, b)  # type: ignore[arg-type]
+    # Cross two vectors
+    if dims_a == 1 and dims_b == 1:
+        return vcross(a, b)  # type: ignore[arg-type]
+
+    # Calculate cases of vector crossed either 2-D or N-D matrix and vice versa
+    if dims_a == 1 or dims_b == 1:
+        # Calculate target shape
+        mdim = max(dims_a, dims_b)
+        new_shape = list(_broadcast_shape([shape_a, shape_b], mdim))
+        if mdim > 1 and new_shape[-1] == 2:
+            new_shape.pop(-1)
+
+        if dims_a == 2:
+            # Cross a 2-D matrix and a vector
+            result = [vcross(r, b) for r in a]  # type: ignore[arg-type]
+
         elif dims_b == 2:
             # Cross a vector and a 2-D matrix
-            return [vcross(a, r) for r in b]  # type: ignore[arg-type]
+            result = [vcross(a, r) for r in b]  # type: ignore[arg-type]
+
+        elif dims_a > 2:
+            # Cross an N-D matrix and a vector
+            result = [vcross(r, b) for r in _extract_rows(a, shape_a)]  # type: ignore[arg-type]
+
         else:
             # Cross a vector and an N-D matrix
-            return reshape(  # type: ignore[return-value]
-                [vcross(a, r) for r in _extract_rows(b, shape_b)],  # type: ignore[arg-type]
-                shape_b
-            )
-    elif dims_a == 2:
-        if dims_b == 1:
-            # Cross a 2-D matrix and a vector
-            return [vcross(r, b) for r in a]  # type: ignore[arg-type]
-    elif dims_b == 1:
-        # Cross an N-D matrix and a vector
-        return reshape(  # type: ignore[return-value]
-            [vcross(r, b) for r in _extract_rows(a, shape_a)],  # type: ignore[arg-type]
-            shape_a
-        )
+            result = [vcross(a, r) for r in _extract_rows(b, shape_b)]  # type: ignore[arg-type]
+
+        return reshape(result, new_shape)
 
     # Cross an N-D and M-D matrix
     bcast = broadcast(a, b)
@@ -903,7 +884,14 @@ def cross(a: ArrayLike, b: ArrayLike) -> Array:
             b2 = []
             count = 0
         count += 1
-    return reshape(data, bcast.shape)  # type: ignore[return-value]
+
+    # Adjust shape for the way cross outputs data
+    new_shape = list(bcast.shape)
+    mdim = max(dims_a, dims_b)
+    if mdim > 1 and new_shape[-1] == 2:
+        new_shape.pop(-1)
+
+    return reshape(data, new_shape)
 
 
 def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:

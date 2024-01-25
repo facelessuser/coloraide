@@ -32,9 +32,8 @@ class xyY(Space):
         if math.isclose(0.0, coords[-1], abs_tol=1e-4):
             return True
 
-        for x in alg.vcross(coords[:-1], self.WHITE):
-            if not math.isclose(0.0, x, abs_tol=1e-6):
-                return False
+        if not math.isclose(0.0, alg.vcross(coords[:-1], self.WHITE), abs_tol=1e-6):
+            return False
         return True
 
     def to_base(self, coords: Vector) -> Vector:
