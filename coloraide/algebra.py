@@ -1852,10 +1852,12 @@ class vectorize2:
                 return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
-                if shape_a[0] == 1 and shape_b[0] != 1:
+                la = len(a)
+                lb = len(b)
+                if la == 1 and lb != 1:
                     ra = a[0]  # type: ignore[index]
                     return [self._vector_apply(ra, rb) for rb in b]  # type: ignore[arg-type, union-attr]
-                elif shape_b[0] == 1 and shape_a[0] != 1:
+                elif lb == 1 and la != 1:
                     rb = b[0]  # type: ignore[index]
                     return [self._vector_apply(ra, rb) for ra in a]  # type: ignore[arg-type, union-attr]
                 return [
