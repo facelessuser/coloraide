@@ -1796,10 +1796,10 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(TypeError):
             log([10, 100], base=[10, math.e])
 
-    def test_vectorize2(self):
-        """Test `vectorize2`."""
+    def test_vectorize1(self):
+        """Test `vectorize1`."""
 
-        cbrt = alg.vectorize2(lambda x: alg.nth_root(x, 3))
+        cbrt = alg.vectorize1(lambda x: alg.nth_root(x, 3))
 
         self.assertEqual(
             cbrt([8, 27]),
@@ -1809,11 +1809,10 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(TypeError):
             cbrt([8, 27], 4)
 
+    def test_vectorize2(self):
+        """Test `vectorize2`."""
+
         log = alg.vectorize2(math.log)
-        self.assertEqual(
-            log([10, 100]),
-            [2.302585092994046, 4.605170185988092]
-        )
 
         self.assertEqual(
             log([10, 100], 10),

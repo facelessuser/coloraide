@@ -1747,6 +1747,57 @@ class vectorize:
         return self.func(*inputs, **kwargs)
 
 
+class vectorize1:
+    """
+    A special version of vectorize that only broadcasts the first two inputs.
+
+    This approach is faster than vectorize because it limits the inputs and allows us
+    to skip a lot of the generalized code that can slow the things down. Additionally,
+    we allow a `dims` keyword that allows you to specify the dimensions of the inputs
+    that can fast track a decision on how to process in the inputs. The positional
+    argument is always vectorized and are expected to be numbers.
+
+    For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
+    all inputs at the cost of speed.
+    """
+
+    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None):
+        """Initialize."""
+
+        self.func = pyfunc
+
+        # Setup function name and docstring
+        self.__name__ = self.func.__name__
+        self.__doc__ = self.func.__doc__ if doc is None else doc
+
+    def __call__(
+        self,
+        a: ArrayLike | float,
+        dims: DimHints | None = None,
+        **kwargs: Any
+    ) -> Any:
+        """Call the vectorized function."""
+
+        if dims and 0 <= dims[0] <= 2:
+            dims_a = dims[0]
+        else:
+            dims_a = len(shape(a))
+
+        # Fast paths for scalar, vectors, and 2D matrices
+        # Scalar
+        if dims_a == 0:
+            return self.func(a, **kwargs)
+        # Vector
+        elif dims_a == 1:
+            return [self.func(i, **kwargs) for i in a]  # type: ignore[union-attr]
+        # 2D matrix
+        elif dims_a == 2:
+            return [[self.func(c, **kwargs) for c in r] for r in a]  # type: ignore[union-attr]
+
+        # Unknown size or larger than 2D (slow)
+        return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
+
+
 class vectorize2:
     """
     A special version of vectorize that only broadcasts the first two inputs.
@@ -1754,10 +1805,7 @@ class vectorize2:
     This approach is faster than vectorize because it limits the inputs and allows us
     to skip a lot of the generalized code that can slow the things down. Additionally,
     we allow a `dims` keyword that allows you to specify the dimensions of the inputs
-    that can fast track a decision on how to process in the inputs.
-
-    If desired, a function that takes either one or two positional arguments is allowed,
-    no more no less. The second positional argument can be optional. The positional
+    that can fast track a decision on how to process in the inputs. The positional
     arguments are always vectorized and are expected to be numbers.
 
     For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
@@ -1786,37 +1834,12 @@ class vectorize2:
 
     def __call__(
         self,
-        *args: ArrayLike | float,
+        a: ArrayLike | float,
+        b: ArrayLike | float,
         dims: DimHints | None = None,
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
-
-        if len(args) == 1:
-            a, = args
-            if dims and 0 <= dims[0] <= 2:
-                dims_a = dims[0]
-                # Shape doesn't matter as we will utilize a fast path
-                shape_a = (0,)  # type: Shape
-            else:
-                shape_a = shape(a)
-                dims_a = len(shape(a))
-
-            # Fast paths for scalar, vectors, and 2D matrices
-            # Scalar
-            if dims_a == 0:
-                return self.func(a, **kwargs)
-            # Vector
-            elif dims_a == 1:
-                return [self.func(i, **kwargs) for i in a]  # type: ignore[union-attr]
-            # 2D matrix
-            elif dims_a == 2:
-                return [[self.func(c, **kwargs) for c in r] for r in a]  # type: ignore[union-attr]
-
-            # Unknown size or larger than 2D (slow)
-            return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape_a)
-
-        a, b = args
 
         if not dims or dims[0] > 2 or dims[1] > 2:
             shape_a = shape(a)
@@ -1852,8 +1875,8 @@ class vectorize2:
                 return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
-                la = len(a)
-                lb = len(b)
+                la = len(a)  # type: ignore[arg-type]
+                lb = len(b)  # type: ignore[arg-type]
                 if la == 1 and lb != 1:
                     ra = a[0]  # type: ignore[index]
                     return [self._vector_apply(ra, rb) for rb in b]  # type: ignore[arg-type, union-attr]
@@ -2025,7 +2048,7 @@ def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> Tenso
     ...
 
 
-isnan = vectorize2(math.isnan)  # type: ignore[assignment]
+isnan = vectorize1(math.isnan)  # type: ignore[assignment]
 
 
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
@@ -2220,7 +2243,7 @@ def apply(fn: Callable[..., float], a: float | ArrayLike, b: TensorLike) -> Tens
     ...
 
 
-@deprecated("Please use vectorize2 (comparable in speed and features) or vectorize (more general purpose)")
+@deprecated("Use vectorize1 or vectorize2 (comparable in speed and features) or vectorize (more general purpose)")
 def apply(
     fn: Callable[..., float],
     *args: ArrayLike | float,
@@ -2228,7 +2251,7 @@ def apply(
 ) -> float | Array:
     """Apply a given function over each element of the matrix."""
 
-    return vectorize2(fn)(*args, dims=dims)  # type: ignore[no-any-return]
+    return (vectorize2 if len(args) == 2 else vectorize1)(fn)(*args, dims=dims) # type: ignore[operator, no-any-return]
 
 
 def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
