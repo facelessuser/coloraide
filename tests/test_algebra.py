@@ -1824,6 +1824,9 @@ class TestAlgebra(unittest.TestCase):
             [1.0, 4.605170185988092]
         )
 
+        with self.assertRaises(TypeError):
+            log([10, 100])
+
     def test_apply_two_inputs(self):
         """Test apply with two inputs."""
 
