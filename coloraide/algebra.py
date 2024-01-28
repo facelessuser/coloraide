@@ -1043,28 +1043,12 @@ def dot(
     else:
         dims_a, dims_b = dims
 
-    # Optimize to handle arrays <= 2-D
-    if dims_a == 1:
-        if dims_b == 1:
-            # Dot product of two vectors
-            return vdot(a, b)  # type: ignore[arg-type]
-        elif dims_b == 2:
-            # Dot product of vector and a matrix
-            return [vdot(a, col) for col in it.zip_longest(*b)]  # type: ignore[arg-type, misc]
-
-    elif dims_a == 2:
-        if dims_b == 1:
-            # Dot product of matrix and a vector
-            return [vdot(row, b) for row in a]  # type: ignore[arg-type, union-attr]
-        elif dims_b == 2:
-            # Dot product of two matrices
-            cols = list(it.zip_longest(*b))  # type: ignore[arg-type, misc]
-            return [
-                [vdot(row, col) for col in cols] for row in a  # type: ignore[arg-type, union-attr]
-            ]
+    # Scalars are just multiplied
+    if not dims_a or not dims_b:
+        return multiply(a, b, dims=(dims_a, dims_b))
 
     # Trying to dot a number with a vector or a matrix, so just multiply
-    return multiply(a, b, dims=(dims_a, dims_b))
+    return matmul(a, b, dims=(dims_a, dims_b))
 
 
 @overload
