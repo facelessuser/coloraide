@@ -1043,11 +1043,11 @@ def dot(
     else:
         dims_a, dims_b = dims
 
-    # Scalars are just multiplied
+    # Operations with scalars are the same as simply multiplying
     if not dims_a or not dims_b:
         return multiply(a, b, dims=(dims_a, dims_b))
 
-    # Trying to dot a number with a vector or a matrix, so just multiply
+    # Dot is identical to matrix multiply when dimensions are less than or equal to 2,
     return matmul(a, b, dims=(dims_a, dims_b))
 
 
