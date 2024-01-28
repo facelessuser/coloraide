@@ -1048,7 +1048,7 @@ def dot(
         return multiply(a, b, dims=(dims_a, dims_b))
 
     # Dot is identical to matrix multiply when dimensions are less than or equal to 2,
-    return matmul(a, b, dims=(dims_a, dims_b))
+    return matmul(a, b, dims=(dims_a, dims_b))  # type: ignore[arg-type]
 
 
 @overload
