@@ -80,7 +80,7 @@ class Saturate(Filter):
 
 
 class Invert(Filter):
-    """Grayscale filter."""
+    """Invert filter."""
 
     NAME = 'invert'
     ALLOWED_SPACES = ('srgb-linear', 'srgb')
