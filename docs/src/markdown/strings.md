@@ -29,7 +29,7 @@ When in the default state, `alpha` will only be shown if the alpha channel has a
 
 ### Precision
 
-`precision` controls the precision of the output values. The name is a little misleading as it will actually adjust the
+`precision` controls the precision of the output values. The name is a little misleading as it will actually adjusts the
 precision and scale of the values. The default is 5. In some cases, like the sRGB hex output, precision may not really
 come into play as hex values are rounded to the nearest whole number.
 
@@ -41,7 +41,7 @@ Color("rgb(30.3456% 75% 100%)").to_string(precision=2, percent=True)
 Color("rgb(30.3456% 75% 100%)").to_string(precision=1, percent=True)
 ```
 
-Providing a precision of `0` will simply enable simple rounding to the nearest whole number.
+Providing a precision of `0` will enable simple rounding to the nearest whole number.
 
 ```py play
 Color("rgb(30.3456% 75% 100%)").to_string(precision=0, percent=True)

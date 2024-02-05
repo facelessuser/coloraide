@@ -1131,7 +1131,7 @@ or feature could be removed entirely. Use at your own risk.
 ///
 
 Normally, ColorAide respects the user's explicitly defined hues. This gives the user power to do things like masking
-off all channels but the hue to interpolate only the hue.
+off all channels but the hue in order to interpolate only the hue channel.
 
 ```py play
 Color.interpolate(['oklch(none none 0)', 'oklch(0.75 0.2 360)'], space='oklch', hue='specified')
@@ -1147,7 +1147,7 @@ Color.interpolate(['oklch(1 0 None)', 'oklch(0.75 0.2 180)'], space='oklch')
 
 CSS has the concept of powerless hues which causes explicitly defined hues to be powerless (or act as
 [undefined](#null-handling)) when a color is considered achromatic. This means a user never has to think about
-achromatic hues, so even if the erroneously define a hue, they will automatically be treated as undefined when
+achromatic hues, so even if they erroneously define a hue, the hue will automatically be treated as undefined when
 interpolating. ColorAide implements this behavior via the `powerless` option.
 
 ```py play
