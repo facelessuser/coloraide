@@ -13,12 +13,12 @@ class TestsHPLuv(util.ColorAssertsPyTest):
         # Test color
         ('color(--hpluv 270 30 50)', 'color(--hpluv 270 30 50)'),
         ('color(--hpluv 270 30 50 / 0.5)', 'color(--hpluv 270 30 50 / 0.5)'),
-        ('color(--hpluv 50% 50% 50% / 50%)', 'color(--hpluv 180 50 50 / 0.5)'),
+        ('color(--hpluv 180 50% 50% / 50%)', 'color(--hpluv 180 50 50 / 0.5)'),
         ('color(--hpluv none none none / none)', 'color(--hpluv none none none / none)'),
         # Test percent ranges
-        ('color(--hpluv 0% 0% 0%)', 'color(--hpluv 0 0 none)'),
-        ('color(--hpluv 100% 100% 100%)', 'color(--hpluv 360 100 100 / 1)'),
-        ('color(--hpluv -100% -100% -100%)', 'color(--hpluv -360 -100 -100 / 1)')
+        ('color(--hpluv 0 0% 0%)', 'color(--hpluv 0 0 none)'),
+        ('color(--hpluv 360 100% 100%)', 'color(--hpluv 360 100 100 / 1)'),
+        ('color(--hpluv -360 -100% -100%)', 'color(--hpluv -360 -100 -100 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

@@ -23,12 +23,12 @@ class TestLCh99o(util.ColorAssertsPyTest):
         # Test color
         ('color(--lch99o 100 30 270)', 'color(--lch99o 100 30 270)'),
         ('color(--lch99o 100 30 270 / 0.5)', 'color(--lch99o 100 30 270 / 0.5)'),
-        ('color(--lch99o 50% 50% 50% / 50%)', 'color(--lch99o 50 30 180 / 0.5)'),
+        ('color(--lch99o 50% 50% 180 / 50%)', 'color(--lch99o 50 30 180 / 0.5)'),
         ('color(--lch99o none none none / none)', 'color(--lch99o none none none / none)'),
         # Test percent ranges
-        ('color(--lch99o 0% 0% 0%)', 'color(--lch99o 0 0 none)'),
-        ('color(--lch99o 100% 100% 100%)', 'color(--lch99o 100 60 360 / 1)'),
-        ('color(--lch99o -100% -100% -100%)', 'color(--lch99o -100 -60 -360 / 1)')
+        ('color(--lch99o 0% 0% 0)', 'color(--lch99o 0 0 none)'),
+        ('color(--lch99o 100% 100% 360)', 'color(--lch99o 100 60 360 / 1)'),
+        ('color(--lch99o -100% -100% -360)', 'color(--lch99o -100 -60 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

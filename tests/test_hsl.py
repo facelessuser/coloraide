@@ -53,12 +53,12 @@ class TestHSL(util.ColorAssertsPyTest):
         # Test CSS color
         ('color(--hsl 270 0.3 0.5)', 'color(--hsl 270 0.3 0.5)'),
         ('color(--hsl 270 0.3 0.5 / 0.5)', 'color(--hsl 270 0.3 0.5 / 0.5)'),
-        ('color(--hsl 50% 50% 50% / 50%)', 'color(--hsl 180 0.5 0.5 / 0.5)'),
+        ('color(--hsl 180 50% 50% / 50%)', 'color(--hsl 180 0.5 0.5 / 0.5)'),
         ('color(--hsl none none none / none)', 'color(--hsl none none none / none)'),
         # Test range
-        ('color(--hsl 0% 0% 0%)', 'color(--hsl 0 0 0)'),
-        ('color(--hsl 100% 100% 100%)', 'color(--hsl 360 1 1)'),
-        ('color(--hsl -100% -100% -100%)', 'color(--hsl -360 -1 -1)')
+        ('color(--hsl 0 0% 0%)', 'color(--hsl 0 0 0)'),
+        ('color(--hsl 360 100% 100%)', 'color(--hsl 360 1 1)'),
+        ('color(--hsl -360 -100% -100%)', 'color(--hsl -360 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

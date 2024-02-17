@@ -23,12 +23,12 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         # Test color
         ('color(--okhsl 270 0.3 0.5)', 'color(--okhsl 270 0.3 0.5)'),
         ('color(--okhsl 270 0.3 0.5 / 0.5)', 'color(--okhsl 270 0.3 0.5 / 0.5)'),
-        ('color(--okhsl 50% 50% 50% / 50%)', 'color(--okhsl 180 0.5 0.5 / 0.5)'),
+        ('color(--okhsl 180 50% 50% / 50%)', 'color(--okhsl 180 0.5 0.5 / 0.5)'),
         ('color(--okhsl none none none / none)', 'color(--okhsl none none none / none)'),
         # Test percent ranges
-        ('color(--okhsl 0% 0% 0%)', 'color(--okhsl 0 0 none)'),
-        ('color(--okhsl 100% 100% 100%)', 'color(--okhsl 360 1 1 / 1)'),
-        ('color(--okhsl -100% -100% -100%)', 'color(--okhsl -360 -1 -1 / 1)'),
+        ('color(--okhsl 0 0% 0%)', 'color(--okhsl 0 0 none)'),
+        ('color(--okhsl 360 100% 100%)', 'color(--okhsl 360 1 1 / 1)'),
+        ('color(--okhsl -360 -100% -100%)', 'color(--okhsl -360 -1 -1 / 1)'),
         # Space specific tests to ensure complete coverage in algorithm
         ('color(--oklab 0.5 0.1 0)', 'color(--okhsl 0 0.49656 0.42114)')
     ]

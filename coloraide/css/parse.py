@@ -193,14 +193,17 @@ def parse_color(tokens: dict[str, Any], space: Space) -> tuple[Vector, float] | 
     for i in range(num_channels):
         c = tokens['func']['values'][i]['value']
         channel = properties[i]
-        channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
+        if channel.flags & FLG_ANGLE:
+            channels.append(norm_angle_channel(c))
+        else:
+            channels.append(norm_color_channel(c.lower(), channel.span, channel.offset))
     return (channels, alpha)
 
 
 def validate_color(tokens: dict[str, Any]) -> bool:
     """Validate the color function syntax."""
 
-    return not any(v['type'] == 'degree' for v in tokens['func']['values'])
+    return True
 
 
 def validate_srgb(tokens: dict[str, Any]) -> bool:
