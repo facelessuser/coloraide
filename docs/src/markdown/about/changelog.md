@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.17
+
+-   **NEW**: `jzazbz`, `jzczhz`, `ictcp`, `rec2100-pq`, and `rec2100-hlg` are now formally recognized, and by default
+    serialized, without the `--` prefix as all the spaces are now part of the official HDR specification in CSS.
+    Previously, the spec was unofficial. `--` prefixed names will still be recognized, but at some future time they `--`
+    support will be removed for these spaces. Additionally, these spaces are now registered by default.
+-   **NEW**: ∆E methods `z` and `itp` are now registered by default as their associated color spaces are now registered
+    by default as well.
+
 ## 2.16
 
 -   **NEW**: Gamut mapping plugins now must accept a `space` parameter and the color will not already be in the desired

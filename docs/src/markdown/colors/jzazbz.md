@@ -1,6 +1,6 @@
 # Jzazbz
 
-/// failure | The Jzazbz color space is not registered in `Color` by default
+/// success | The Jzazbz color space is registered in `Color` by default
 ///
 
 /// html | div.info-container
@@ -52,17 +52,10 @@ Channels | Aliases
 
 ## Input/Output
 
-/// warning | CSS Support
-This color space is present the [Color HDR draft][css-color-hdr-1], but is not yet published in an official spec. If
-this goes into an official, published spec, the ID and/or format is likely to change depending on the final decision on
-format. We will likely keep the current format as a fallback for backward compatibility for some time.
-///
-
-As Jzazbz is not currently supported in the official CSS spec, only a draft, so the parsed input and string output
-formats use the `#!css-color color()` function format using the custom name `#!css-color --jzazbz`.
+Parsed input and string output formats support all valid CSS forms:
 
 ```css-color
-color(--jzazbz jz az bz / a)  // Color function
+color(jzazbz jz az bz / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
@@ -73,7 +66,7 @@ Color("jzazbz", [0, 0, 0], 1)
 ```
 
 The string representation of the color object and the default string output use the
-`#!css-color color(--jzazbz jz az bz / a)` form.
+`#!css-color color(jzazbz jz az bz / a)` form.
 
 ```py play
 Color("jzazbz", [0.13438, 0.11789, 0.11188])

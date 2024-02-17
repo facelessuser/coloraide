@@ -104,7 +104,7 @@ clamped to the SDR range. If we convert an HDR color from Jzazbz to HSLuv, round
 simply does not support the HDR range.
 
 ```py play
-jz = Color('color(--jzazbz 0.25 0 0)')
+jz = Color('color(jzazbz 0.25 0 0)')
 jz
 hsluv = jz.convert('hsluv')
 hsluv

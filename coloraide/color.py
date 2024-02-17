@@ -42,6 +42,11 @@ from .spaces.xyz_d65 import XYZD65
 from .spaces.xyz_d50 import XYZD50
 from .spaces.oklab.css import Oklab
 from .spaces.oklch.css import OkLCh
+from .spaces.rec2100_pq import Rec2100PQ
+from .spaces.rec2100_hlg import Rec2100HLG
+from .spaces.jzazbz import Jzazbz
+from .spaces.jzczhz import JzCzhz
+from .spaces.ictcp import ICtCp
 from .distance import DeltaE
 from .distance.delta_e_76 import DE76
 from .distance.delta_e_94 import DE94
@@ -49,6 +54,8 @@ from .distance.delta_e_cmc import DECMC
 from .distance.delta_e_2000 import DE2000
 from .distance.delta_e_hyab import DEHyAB
 from .distance.delta_e_ok import DEOK
+from .distance.delta_e_itp import DEITP
+from .distance.delta_e_z import DEZ
 from .contrast import ColorContrast
 from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
@@ -1356,11 +1363,16 @@ Color.register(
         LCh(),
         LabD65(),
         LChD65(),
+        Jzazbz(),
+        JzCzhz(),
+        ICtCp(),
         HSV(),
         HSL(),
         HWB(),
         Rec2020(),
         Rec2020Linear(),
+        Rec2100PQ(),
+        Rec2100HLG(),
         A98RGB(),
         A98RGBLinear(),
         ProPhotoRGB(),
@@ -1376,6 +1388,8 @@ Color.register(
         DE2000(),
         DEHyAB(),
         DEOK(),
+        DEITP(),
+        DEZ(),
 
         # Fit
         LChChroma(),

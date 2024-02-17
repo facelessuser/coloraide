@@ -89,7 +89,7 @@ class Rec2100HLG(sRGB):
 
     BASE = "rec2020-linear"
     NAME = "rec2100-hlg"
-    SERIALIZE = ('--rec2100-hlg',)
+    SERIALIZE = ('rec2100-hlg', '--rec2100-hlg',)
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
     ENV = Environment(1000, 0, SCALE)

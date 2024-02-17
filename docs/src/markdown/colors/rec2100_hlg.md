@@ -1,6 +1,6 @@
 # REC. 2100 HLG
 
-/// failure | The Rec. 2100 HLG is not registered in `Color` by default
+/// success | The Rec. 2100 HLG is registered in `Color` by default
 ///
 
 /// html | div.info-container
@@ -51,17 +51,10 @@ Channels | Aliases
 
 ## Input/Output
 
-/// warning | CSS Support
-This color space is present the [Color HDR draft][css-color-hdr-1], but is not yet published in an official spec. If
-this goes into an official, published spec, the ID and/or format is likely to change depending on the final decision on
-format. We will likely keep the current format as a fallback for backward compatibility for some time.
-///
-
-Rec. 2100 HLG is not currently supported in the official CSS spec, only a draft, so the parsed input and string output
-format only supports the `#!css-color color()` function format using the custom name `#!css-color --rec2100-hlg`:
+Parsed input and string output formats support all valid CSS forms:
 
 ```css-color
-color(--rec2100-hlg r g b / a)  // Color function
+color(rec2100-hlg r g b / a)  // Color function
 ```
 
 When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
@@ -72,7 +65,7 @@ Color("rec2100-hlg", [0, 0, 0], 1)
 ```
 
 The string representation of the color object and the default string output will be in the
-`#!css-color color(--rec2100-hlg r g b / a)` form.
+`#!css-color color(rec2100-hlg r g b / a)` form.
 
 ```py play
 Color("rec2100-hlg", [0.65587, 0.23436, 0.11415], 1)

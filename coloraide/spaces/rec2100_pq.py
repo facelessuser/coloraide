@@ -15,7 +15,7 @@ class Rec2100PQ(sRGB):
 
     BASE = "rec2020-linear"
     NAME = "rec2100-pq"
-    SERIALIZE = ('--rec2100-pq',)
+    SERIALIZE = ('rec2100-pq', '--rec2100-pq',)
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
 

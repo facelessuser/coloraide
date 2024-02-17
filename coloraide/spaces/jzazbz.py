@@ -230,7 +230,7 @@ class Jzazbz(Labish, Space):
 
     BASE = "xyz-d65"
     NAME = "jzazbz"
-    SERIALIZE = ("--jzazbz",)
+    SERIALIZE = ("jzazbz", "--jzazbz",)
     CHANNELS = (
         Channel("jz", 0.0, 1.0),
         Channel("az", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
