@@ -178,7 +178,7 @@ the result up if desired.
 
 ### Delta E ITP
 
-/// failure | The ∆E~itp~ distancing algorithm is **not** registered in `Color` by default
+/// success | The ∆E~itp~ distancing algorithm is registered in `Color` by default
 ///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
@@ -190,21 +190,9 @@ distancing in the HDR range using the [ICtCp](./colors/ictcp.md) color space (mu
 It was determined that a `scalar` of 240 was more comparable to the average [∆E^\*^~00~](#delta-e-2000) result from the
 JND data set and 720 equates them to a JND.
 
-Both the ICtCp color space and the ∆E algorithm must be registered to use.
-
-```py
-from coloraide import Color as Base
-from coloraide.distance.delta_e_itp import DEITP
-from coloraide.spaces.ictcp import ICtCp
-
-class Color(Base): ...
-
-Color.register([ICtCp(), DEITP()])
-```
-
 ### Delta E Z
 
-/// failure | The ∆E~z~ distancing algorithm is **not** registered in `Color` by default
+/// success | The ∆E~z~ distancing algorithm is registered in `Color` by default
 ///
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
@@ -212,18 +200,6 @@ Delta\ E                                 | Symmetrical           | Name         
 [∆E~z~][dez]\ (Jzazbz)                   | :octicons-check-16:   | `jz`            |
 
 Performs Euclidean distancing in the [Jzazbz](./colors/jzazbz.md) color space, useful for the HDR range.
-
-Both the Jzazbz color space and the ∆E algorithm must be registered to use.
-
-```py
-from coloraide import Color as Base
-from coloraide.distance.delta_e_z import DEZ
-from coloraide.spaces.jzazbz import Jzazbz
-
-class Color(Base): ...
-
-Color.register([Jzazbz(), DEZ()])
-```
 
 ### Delta E 99o
 
