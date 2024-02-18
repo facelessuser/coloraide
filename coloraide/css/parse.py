@@ -413,7 +413,7 @@ def tokenize_css(css: str, start: int = 0) -> dict[str, Any]:
         # Do basic validation on the supported color functions
         tokens['end'] = m.end()
         if func_name == 'color' and not validate_color(tokens):
-            return {}
+            return {}  # pragma: no cover
 
         elif func_name.startswith('rgb'):
             tokens['id'] = 'srgb'
