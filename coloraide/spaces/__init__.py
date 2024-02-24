@@ -1,7 +1,7 @@
 """Color base."""
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
-from ..channels import Channel, FLG_OPT_PERCENT
+from ..channels import Channel
 from ..css import serialize
 from ..deprecate import deprecated
 from ..types import VectorLike, Vector, Plugin
@@ -143,7 +143,7 @@ class LChish(Cylindrical):
         return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
 
 
-alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0), flags=FLG_OPT_PERCENT)
+alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))
 
 
 class SpaceMeta(ABCMeta):

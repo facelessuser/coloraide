@@ -83,7 +83,7 @@ def color_function(
             string.append(COMMA if legacy else SPACE)
         channel = channels[idx]
 
-        if channel.flags & FLG_PERCENT or (plist and plist[idx] and channel.flags & FLG_OPT_PERCENT):
+        if not (channel.flags & FLG_ANGLE) and plist and plist[idx]:
             span, offset = channel.span, channel.offset
         else:
             span = offset = 0.0

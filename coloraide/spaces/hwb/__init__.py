@@ -3,7 +3,7 @@ from __future__ import annotations
 from ...spaces import Space, HWBish
 from ..hsl import srgb_to_hsl, hsl_to_srgb
 from ...cat import WHITES
-from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_ANGLE
 from ...types import Vector
 
 
@@ -30,8 +30,8 @@ class HWB(HWBish, Space):
     SERIALIZE = ("--hwb",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
-        Channel("w", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("w", 0.0, 1.0, bound=True),
+        Channel("b", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

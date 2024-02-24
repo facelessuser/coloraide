@@ -2,7 +2,7 @@
 from __future__ import annotations
 from ...spaces import Space, LChish
 from ...cat import WHITES
-from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_ANGLE
 from ... import util
 import math
 from ...types import Vector
@@ -80,8 +80,8 @@ class CIELCh(LCh):
     NAME = "lch"
     SERIALIZE = ("--lch",)
     CHANNELS = (
-        Channel("l", 0.0, 100.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 150.0, flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 100.0),
+        Channel("c", 0.0, 150.0),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

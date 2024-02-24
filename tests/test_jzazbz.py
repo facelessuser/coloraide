@@ -22,12 +22,12 @@ class TestJzazbz(util.ColorAssertsPyTest):
         # Test color
         ('color(jzazbz 0.5 0.1 -0.1)', 'color(jzazbz 0.5 0.1 -0.1)'),
         ('color(jzazbz 0.5 0.1 -0.1 / 0.5)', 'color(jzazbz 0.5 0.1 -0.1 / 0.5)'),
-        ('color(jzazbz 50% 50% -50% / 50%)', 'color(jzazbz 0.5 0.25 -0.25 / 0.5)'),
+        ('color(jzazbz 50% 50% -50% / 50%)', 'color(jzazbz 0.5 0.5 -0.5/ 0.5)'),
         ('color(jzazbz none none none / none)', 'color(jzazbz none none none / none)'),
         # Test percent ranges
         ('color(jzazbz 0% 0% 0%)', 'color(jzazbz 0 0 0)'),
-        ('color(jzazbz 100% 100% 100%)', 'color(jzazbz 1 0.5 0.5)'),
-        ('color(jzazbz -100% -100% -100%)', 'color(jzazbz -1 -0.5 -0.5)')
+        ('color(jzazbz 100% 100% 100%)', 'color(jzazbz 1 1 1)'),
+        ('color(jzazbz -100% -100% -100%)', 'color(jzazbz -1 -1 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
