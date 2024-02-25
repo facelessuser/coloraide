@@ -679,7 +679,7 @@ def interpolate(points: list[Vector], method: str = 'linear') -> Interpolate:
 ################################
 # Ray tracing.
 ################################
-def raytrace_cube(size, start, end):
+def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector]:
     """
     Returns the face and the intersection tuple of an array from start to end of a cube of size [x, y, z].
 
