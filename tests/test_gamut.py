@@ -192,6 +192,28 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
         )
 
 
+class TestRayTrace(util.ColorAsserts, unittest.TestCase):
+    """Test gamut mapping/fitting with ray tracing."""
+
+    def test_sdr_extremes_low(self):
+        """Test SDR extreme low case."""
+
+        color = Color('oklch(-10% 0 none)')
+        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0 0 none)'))
+
+    def test_sdr_extremes_high(self):
+        """Test SDR extreme high case."""
+
+        color = Color('oklch(110% 0 none)')
+        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(100% 0 none)'))
+
+    def test_non_rgb_space(self):
+        """Test failure with non-RGB space."""
+
+        with self.assertRaises(ValueError):
+            Color('display-p3', [1, 0, 0]).fit('hpluv', method='oklch-raytrace')
+
+
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
     Test HCT gamut mapping by producing tonal maps.
