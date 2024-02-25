@@ -8,6 +8,7 @@
     support will be removed for these spaces. Additionally, these spaces are now registered by default.
 -   **NEW**: ∆E methods `z` and `itp` are now registered by default as their associated color spaces are now registered
     by default as well.
+-   **FIX**: Ensure that when using discrete interpolation that spline based interpolations are truly discrete.
 
 ## 2.16
 

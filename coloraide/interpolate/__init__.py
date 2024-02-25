@@ -127,8 +127,10 @@ class Interpolator(metaclass=ABCMeta):
         max_delta_e: float = 0,
         delta_e: str | None = None,
         delta_e_args: dict[str, Any] | None = None,
-    ) -> None:
+    ) -> Interpolator:
         """Make the interpolation a discretized interpolation."""
+
+        from .linear import Linear
 
         # Get the discrete steps for the new discrete interpolation
         colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)
@@ -149,21 +151,21 @@ class Interpolator(metaclass=ABCMeta):
             coords.extend([step1, step2])
             count += 2
 
-        # Update colors and stops
-        self.coordinates = coords
-        self.length = len(self.coordinates)
-        self.stops = stops
-        self.start = self.stops[0]
-        self.end = self.stops[len(self.stops) - 1]
-
-        # Reset features that were used to generate the discrete steps
-        self.easings = [None] * (self.length - 1)
-        self.progress = None
-        self.current_easing = None
-        self._padding = None
-        self._domain = []
-
-        self.setup()
+        return Linear().interpolator(
+            coordinates=coords,
+            channel_names=self.channel_names,
+            create=self.create,
+            easings=[None] * (len(coords) - 1),
+            stops=stops,
+            space=self.space,
+            out_space=self._out_space,
+            progress=self.progress,
+            premultiplied=self.premultiplied,
+            extrapolate=self.extrapolate,
+            domain=[],
+            padding=None,
+            hue = self.hue
+        )
 
     def out_space(self, space: str) -> None:
         """Set output space."""
