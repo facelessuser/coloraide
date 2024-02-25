@@ -234,11 +234,11 @@ low JND, we can see that the odd shape of LCh can cause us to get a very desatur
 its own quirks as well.
 
 /// tab | JND 0
-![Traces 3X](images/trace-3x.png)
+![Traces 3X](images/jnd-0.png)
 ///
 
 /// tab | JND 2
-![Traces 1X](images/trace-1x.png)
+![Traces 1X](images/jnd-2.png)
 ///
 
 #### LCh Chroma
