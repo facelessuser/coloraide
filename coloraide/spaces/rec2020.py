@@ -1,7 +1,6 @@
 """Rec 2020 color class."""
 from __future__ import annotations
-from ..cat import WHITES
-from .srgb import sRGB
+from .srgb_linear import sRGBLinear
 import math
 from .. import algebra as alg
 from ..types import Vector
@@ -48,12 +47,16 @@ def gam_2020(rgb: Vector) -> Vector:
     return result
 
 
-class Rec2020(sRGB):
+class Rec2020(sRGBLinear):
     """Rec 2020 class."""
 
     BASE = "rec2020-linear"
     NAME = "rec2020"
-    WHITE = WHITES['2deg']['D65']
+
+    def linear(self) -> str:
+        """Return linear version of the RGB (if available)."""
+
+        return self.BASE
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Rec. 2020."""

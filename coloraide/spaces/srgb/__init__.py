@@ -1,8 +1,6 @@
 """sRGB color class."""
 from __future__ import annotations
-from ...spaces import RGBish, Space
-from ...cat import WHITES
-from ...channels import Channel, FLG_OPT_PERCENT
+from ..srgb_linear import sRGBLinear
 from ... import algebra as alg
 from ...types import Vector
 import math
@@ -44,33 +42,18 @@ def gam_srgb(rgb: Vector) -> Vector:
     return result
 
 
-class sRGB(RGBish, Space):
+class sRGB(sRGBLinear):
     """sRGB class."""
 
     BASE = "srgb-linear"
     NAME = "srgb"
-    CHANNELS = (
-        Channel("r", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("g", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
-    )
-    CHANNEL_ALIASES = {
-        "red": 'r',
-        "green": 'g',
-        "blue": 'b'
-    }
-    WHITE = WHITES['2deg']['D65']
-
+    SERIALIZE = ("srgb",)
     EXTENDED_RANGE = True
 
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Test if color is achromatic."""
+    def linear(self) -> str:
+        """Return linear version of the RGB (if available)."""
 
-        white = [1, 1, 1]
-        for x in alg.vcross(coords, white):
-            if not math.isclose(0.0, x, abs_tol=1e-5):
-                return False
-        return True
+        return self.BASE
 
     def from_base(self, coords: Vector) -> Vector:
         """From sRGB Linear to sRGB."""

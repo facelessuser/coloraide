@@ -61,6 +61,8 @@ from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
+from .gamut.fit_oklch_raytrace import OkLChRayTrace
+from .gamut.fit_lch_raytrace import LChRayTrace
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -1394,6 +1396,8 @@ Color.register(
         # Fit
         LChChroma(),
         OkLChChroma(),
+        LChRayTrace(),
+        OkLChRayTrace(),
 
         # Filters
         Sepia(),

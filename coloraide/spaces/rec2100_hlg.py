@@ -16,7 +16,7 @@ Suggests the scale of 0.26496256042100724 to satisfy the above requirement.
 """
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb import sRGB
+from .srgb_linear import sRGBLinear
 from .. import algebra as alg
 from ..types import Vector
 import math
@@ -84,7 +84,7 @@ def hlg_eotf(values: Vector, env: Environment) -> Vector:
     return adjusted
 
 
-class Rec2100HLG(sRGB):
+class Rec2100HLG(sRGBLinear):
     """Rec. 2100 HLG class."""
 
     BASE = "rec2020-linear"
@@ -93,6 +93,11 @@ class Rec2100HLG(sRGB):
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
     ENV = Environment(1000, 0, SCALE)
+
+    def linear(self) -> str:
+        """Return linear version of the RGB (if available)."""
+
+        return self.BASE
 
     def to_base(self, coords: Vector) -> Vector:
         """To base from Rec 2100 HLG."""

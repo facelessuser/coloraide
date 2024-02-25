@@ -8,6 +8,12 @@
     support will be removed for these spaces. Additionally, these spaces are now registered by default.
 -   **NEW**: ∆E methods `z` and `itp` are now registered by default as their associated color spaces are now registered
     by default as well.
+-   **NEW**: Ray tracing gamut mapping algorithms have been added: `oklch-raytrace` and `lch-raytrace`. Both require
+    the target gamut to have an RGB gamut equivalent and will choose the linear variant if one is detected.
+-   **NEW**: RGB spaces now expose a `linear()` function on the underlying class to specify if they have a linear
+    equivalent.
+-   **NEW**: Adjust inheritance order of RGB spaces. Previously, many inherited from `sRGB`, now they inherit from
+    `sRGBLinear`.
 -   **FIX**: Ensure that when using discrete interpolation that spline based interpolations are truly discrete.
 
 ## 2.16

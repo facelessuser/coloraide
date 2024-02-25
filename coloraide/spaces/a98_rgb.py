@@ -1,7 +1,6 @@
 """A98 RGB color class."""
 from __future__ import annotations
-from ..cat import WHITES
-from .srgb import sRGB
+from .srgb_linear import sRGBLinear
 from .. import algebra as alg
 from ..types import Vector
 
@@ -18,12 +17,16 @@ def gam_a98rgb(rgb: Vector) -> Vector:
     return [alg.npow(val, 256 / 563) for val in rgb]
 
 
-class A98RGB(sRGB):
+class A98RGB(sRGBLinear):
     """A98 RGB class."""
 
     BASE = "a98-rgb-linear"
     NAME = "a98-rgb"
-    WHITE = WHITES['2deg']['D65']
+
+    def linear(self) -> str:
+        """Return linear version of the RGB (if available)."""
+
+        return self.BASE
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from A98 RGB."""

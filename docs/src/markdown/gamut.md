@@ -211,33 +211,55 @@ Clipping is unique to all other clipping methods in that it has its own dedicate
 method name `clip` is reserved. While not always the best approach for gamut mapping in general, clip is very important
 to some other gamut mapping and has specific cases where its speed and simplicity are of great value.
 
-### LCh Chroma
+### MINDE Chroma Reduction
+
+MINDE chroma reduction is an approach that reduces the chroma in a perceptual color space until the color is within
+gamut of a targeted color space. As the exact point at which the color will be in gamut is unknown, the chroma is
+reduced using bisection. The color is compared periodically to the the clipped version of the current iteration to see
+if the ∆E distance between them is below the "just noticeable difference" (JND) defined for the color space. If the
+color is close enough to the clipped version, the clipped version is returned.
+
+This method is good because it does a fairly accurate job at approach the gamut surface. It is not prone to over
+correcting, and clipping before you reach the surface helps soften gamut mapping to reduce hard edges in interpolation.
+This approach also keeps lightness and hue fairly constant. If the JND is reduced, the lightness and hue will be held
+even more constant.
+
+Computationally, MINDE Chroma Reduction is slower to compute than clipping, but generally provides better results.
+
+All MINDE Chroma Reduction methods allow the setting of the JND. The default is usually specific to the perceptual
+space being used, but it should be noted that while a lower JND will give you a theoretically better value, some color
+spaces have quirks. Consider the color `#!color color(display-p3 1 1 0)`. If we were to gamut map it in LCh with a very
+low JND, we can see that the odd shape of LCh can cause us to get a very desaturated color. By using the default JND of
+2 for LCh, the fuzziness of the MINDE will catch the more saturated yellow. This isn't a problem in OkLCh, but it has
+its own quirks as well.
+
+/// tab | JND 0
+![Traces 3X](images/trace-3x.png)
+///
+
+/// tab | JND 2
+![Traces 1X](images/trace-1x.png)
+///
+
+#### LCh Chroma
 
 /// success | The `lch-chroma` gamut mapping is registered in `Color` by default
 ///
 
-LCh Chroma uses a combination of chroma reduction and MINDE in the CIELCh color space to bring a color into gamut. By
-reducing chroma in the CIELCh color space, LCh Chroma can hold hue and lightness in the LCh color space relatively
-constant. This is currently the default method used.
+LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space. This is the default in ColorAide.
 
 /// note
 As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
 ///
 
-The algorithm generally works by performing both clipping and chroma reduction. Using bisection, the chroma is reduced
-and then the chroma reduced color is clipped. Using ∆E~2000~, the distance between the chroma reduced color and the
-clipped chroma reduced color is measured. If the resultant distance falls within the specified threshold, the clipped
-color is returned.
+CIELCh, is not necessarily the best perceptual color space available, but it is a generally well understood color space
+that has been available a long time. It does suffer from a purple shift when dealing with blue colors, but can generally
+handle colors in very wide gamuts reasonably due to its fairly consistent shape well past the spectral locus.
 
-Computationally, LCh Chroma is slower to compute than clipping, but generally provides better results. CIELCh, is not
-necessarily the best perceptual color space available, but it is a generally well understood color space that has been
-available a long time. It does suffer from a purple shift when dealing with blue colors, but can generally handle colors
-in very wide gamuts reasonably.
-
-While CSS has currently proposed LCh Chroma reduction to be done with OkLCh, and we do offer an [OkLCh variant](#oklch-chroma),
-we currently still use CIELCh as the default until OkLCh can be evaluated more fully as it suffers from its own set of
-issues even if generally has better hue preservation. In the future, the default gamut mapping approach could change if
-a definitively better option is determined.
+CSS originally proposed MINDE Chroma Reduction with CIELCh, but has later changed to OkLCh. It is possible that the
+entire choice in algorithms could change as well in the future. We do offer an [OkLCh variant](#oklch-chroma), but we
+currently still use CIELCh due to its consistency even with colors far outside the gamut. If you are working within
+reasonable gamuts, OkLCh may be a better choice.
 
 LCh Chroma is the default gamut mapping algorithm by default, unless otherwise changed, and can be performed by simply
 calling `fit()` or by calling `fit(method='lch-chroma')`.
@@ -255,14 +277,18 @@ c = Color('srgb', [2, -1, 0])
 c.fit(method='lch-chroma', jnd=0.2)
 ```
 
-### OkLCh Chroma
+#### OkLCh Chroma
 
 /// success | The `lch-chroma` gamut mapping is registered in `Color` by default
 ///
 
 The CSS [CSS Color Level 4 specification](https://drafts.csswg.org/css-color/#binsearch) currently recommends using
-OkLCh as the gamut mapping color space. OkLCh Chroma is performed exactly like [LCh Chroma](#lch-chroma) except that it
-uses the perceptually uniform OkLCh color space as the LCh color space of choice.
+perceptually uniform OkLCh color space with the MINDE Chroma Reduction approach.
+
+OkLCh does a much better job holding hues constant. When combined with gamut mapping, it generally does a better job
+than CIELCh, but it does have limitations. When colors get near the edge of the visible spectrum, the shape of the
+color space distorts, and gamut mapping will not be as good. But if you are working within reasonable gamuts, it may
+be a option.
 
 OkLCh has the advantage of doing a better job at holding hues uniform than CIELCh.
 
@@ -279,13 +305,7 @@ c = Color('srgb', [2, -1, 0])
 c.fit(method='oklch-chroma', jnd=0.002)
 ```
 
-OkLCh is a very new color space to be used in the field of gamut mapping. While CIELCh is not perfect, its weakness are
-known. OkLCh does seem to have certain quirks of its own, and may have more that have yet to be discovered. OkLCh gamut
-mapping can exhibit some issues with some colors with extremely large chroma, near the edge of the visible spectrum.
-While we have not made `oklch-chroma` our default, we have exposed the algorithm so users can begin exploring it mimic
-the CSS approach.
-
-### HCT Chroma
+#### HCT Chroma
 
 /// failure | The `hct-chroma` gamut mapping is **not** registered in `Color` by default
 ///
@@ -328,6 +348,105 @@ class Color(Base): ...
 Color.register([HCT(), DEHCT(), HCTChroma()])
 ```
 
+### Ray Tracing Chroma Reduction
+
+ColorAide has developed an experimental chroma reduction technique that employs ray tracing. This approach currently
+only works with RGB gamuts, or spaces that are represented with RGB gamuts. If ColorAide can detect a linear version of
+the targeted RGB space, that version will be used automatically for best results.
+
+The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
+achromatic version of the color (chroma set to zero) is calculated. Both of these colors are converted to the targeted
+RGB color space. Then a ray traced from the out of gamut RGB color to the achromatic color within the RGB cube
+representing the color gamut. The intersection of the line and the cube is returned as the most saturated color.
+Because the RGB space is not perceptual, the color is then corrected by setting the lightness and hue back to the
+original color's. Before the color is returned, a final clip is applied.
+
+This is an approximation, but with a couple of iterations of ray tracing and corrections before the final clip (backing
+off on the chroma a little on each attempt) you can get a color reasonably close to what you would get by reducing
+chroma via bisection in the perceptual space, but in less time.
+
+As noted, the one downside is that results aren't as accurate as using MINDE Chroma Reduction as it isn't directly
+operating in the perceptual space, but they can be reasonably close.
+
+As noted earlier, the targeted gamut must be an RGB space or RGB equivalent space.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
+Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace')
+```
+
+But will not work with a space not precisely equivalent with an RGB gamut, but you can still gamut such colors with a
+reasonably close gamut if one is available.
+
+```py play
+try:
+    Color('color(--okhsl 270 1.2 0.5)').fit('okhsl', method='lch-raytrace')
+except ValueError:
+    print('Not supported')
+Color('color(--okhsl 270 1.2 0.5)').fit('srgb', method='lch-raytrace')
+```
+
+All ray tracing methods allow configuring number of passes or traces performed, up to 3x. More traces usually mean
+better results and closer hugging of the gamut shape, by default 3X is used. Depending on the perceptual space used to
+correct the gamut mapping, this can expose non-optimal geometry. Consider the color `#!color color(display-p3 1 1 0)`.
+This can be particularly problematic when gamut mapping using CIELCh. 3X traces holds lightness very constant, and can
+get very desaturated yellow. If you use 1X traces, you get a less accurate color, but a color that makes more sense to
+the user. This is not a bug, but just the way a color space's geometry can work with you or against you. While this
+is not an issue in OkLCh, it has its own quirks.
+
+/// tab | 3X Traces
+![Traces 3X](images/trace-3x.png)
+///
+
+/// tab | 1X Traces
+![Traces 1X](images/trace-1x.png)
+///
+
+#### LCh Ray Tracing Chroma Reduction
+
+/// success | The `lch-raytrace` gamut mapping is registered in `Color` by default.
+///
+
+This is a ray tracing approach to chroma reduction using CIELCh D65. This can be a faster approach to gamut mapping.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
+Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace')
+```
+
+Ray Tracing Chroma reduction can be performed at either 1X, 2X, or 3X traces, 3X being the default as it provides the
+best results. You can change the required traces on demand via the `traces` argument.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace', traces=1)
+Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=2)
+Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=3)
+```
+
+It should be noted that increased traces mean the gamut mapping will generally hug the gamut space much closer, usually
+this is fine, but with LCh, the shape is a big funny for certain hues. 
+
+#### OkLCh Ray Tracing Chroma Reduction
+
+/// success | The `oklch-raytrace` gamut mapping is registered in `Color` by default.
+///
+
+This is a ray tracing approach to chroma reduction using OkLCh. This can be a faster approach to gamut mapping.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace')
+Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace')
+```
+
+Ray Tracing Chroma reduction can be performed at either 1X, 2X, or 3X traces, 3X being the default as it provides the
+best results. You can change the required traces on demand via the `traces` argument.
+
+```py play
+Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace', traces=1)
+Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace', traces=2)
+Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace', traces=3)
+```
+
 ## Why Not Just Clip?
 
 In the past, clipping has been the default way in which out of gamut colors have been handled in web browsers. It is
@@ -335,39 +454,26 @@ fast, and has generally been fine as most browsers have been constrained to usin
 adopt more wide gamut monitors such as Display P3, and CSS grows to support an assortment of wide and ultra wide color
 spaces, representing the best intent of an out of gamut color becomes even more important.
 
-ColorAide currently uses a default gamut mapping algorithm that performs gamut mapping in the CIELCh color space using
-chroma reduction coupled with minimum ∆E (MINDE). This approach is meant to preserve enough of the important attributes
-of the out of gamut color as is possible, mostly preserving both lightness and hue, hue being the attribute that people
-are most sensitive to. MINDE is used to abandon chroma reduction and clip the color when the color is very close to
-being in gamut. MINDE also allows us to catch cases where the geometry of the color space's gamut is such that we may
-slip by higher chroma options resulting in undesirable, aggressive chroma reduction. While CIELCh is not a perfect
-color space, and we may use a different color space in the future, this method is generally more accurate that using
-clipping alone.
-
-Below we have an example of using chroma reduction with MINDE. It can be noted that chroma is reduced until we are very
-close to being in gamut. The MINDE helps us catch the peak of the yellow shape as, otherwise, we would have continued
-reducing chroma until we were at a very chroma reduced, pale yellow.
-
-![Gamut LCh Chroma - yellow](images/gamut-lch-chroma-yellow.png)
-
 One might see some cases of clipping and think it does a fine job and question why any of this complexity is necessary.
 In order to demonstrate the differences in gamut mapping vs clipping, see the example below. We start with the color
-`#!color color(display-p3 1 1 0)` and interpolate with it in the CIELCh color space reducing just the lightness. This
-will leave both chroma and hue intact. The Interactive playground below automatically gamut maps the color previews to
-sRGB, but we'll control the method being used by providing two different `#!py Color` objects: one that uses
-`lch-chroma` (the default) for gamut mapping, and one that uses `clip`. Notice how clipping, the bottom color set, clips
-these dark colors and makes them reddish. This is a very undesirable outcome.
+`#!color color(display-p3 1 1 0)` and interpolate with in the LCh color space reducing just the lightness. This
+will leave both chroma and hue intact. The high chroma in lower and brighter lightness will be too much to display on
+the screen, so we will employ various gamut mapping approaches: `oklch-chroma`, `oklch-raytrace`, and `clip`. Notice how
+clipping, the bottom color set, clips these dark colors and makes them reddish. This is a very undesirable outcome.
 
 ```py play
-# Gamut mapping in LCh
+# Gamut mapping in OkLCh with Ray Tracing
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-Row([c.fit('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
-
+Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+# Gamut mapping in OkLCh
+yellow = Color('color(display-p3 1 1 0)')
+lightness_mask = Color('lch(0% none none)')
+Steps([c.fit('srgb', method='oklch-raytrace') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 # Clipping
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-Row([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=10, space='lch')])
+Steps([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 ```
 
 There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is
