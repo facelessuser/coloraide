@@ -1035,7 +1035,7 @@ class Color(metaclass=ColorMeta):
         num = sum((not callable(c) or not isinstance(c, interpolate.stop)) for c in colors) if steps is None else steps
         i = cls.interpolate(colors, space=space, **interpolate_args)
         # Convert the interpolation into a discretized interpolation with the requested number of steps
-        i.discretize(num, max_steps, max_delta_e, delta_e, delta_e_args)
+        i = i.discretize(num, max_steps, max_delta_e, delta_e, delta_e_args)
         if domain is not None:
             i.domain(domain)
         if out_space is not None:
