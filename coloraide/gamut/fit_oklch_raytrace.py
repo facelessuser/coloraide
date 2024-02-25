@@ -15,7 +15,7 @@ from .. import util
 from ..cat import WHITES
 import math
 from ..types import Vector
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Callable, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -23,8 +23,9 @@ if TYPE_CHECKING:  # pragma: no cover
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 BLACK = [0, 0, 0]
 
+
 @functools.lru_cache(maxsize=10)
-def coerce_to_rgb(color: type[Color], cs: Space) -> tuple[type[Color], str]:
+def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
     """
     Coerce an HSL, HSV, or HWB color space to RGB to allow us to ray trace the gamut.
 
@@ -38,15 +39,15 @@ def coerce_to_rgb(color: type[Color], cs: Space) -> tuple[type[Color], str]:
     """
 
     if isinstance(cs, HSLish):
-        to_ = hsl_to_srgb
-        from_ = srgb_to_hsl
+        to_ = hsl_to_srgb  # type: Callable[[Vector], Vector]
+        from_ = srgb_to_hsl  # type: Callable[[Vector], Vector]
     elif isinstance(cs, HSVish):
         to_ = hsv_to_srgb
         from_ = srgb_to_hsv
-    elif isinstance(cs, HWBish):
+    elif isinstance(cs, HWBish):  # pragma: no cover
         to_ = hwb_to_srgb
         from_ = srgb_to_hwb
-    else:
+    else:  # pragma: no cover
         raise ValueError('Cannot coerce {} to an RGB space.'.format(cs.NAME))
 
     class RGB(sRGBLinear):
@@ -58,7 +59,7 @@ def coerce_to_rgb(color: type[Color], cs: Space) -> tuple[type[Color], str]:
         CLIP_SPACE = None
         WHITE = cs.WHITE
         DYAMIC_RANGE = cs.DYNAMIC_RANGE
-        INDEXES = cs.indexes()
+        INDEXES = cs.indexes()  # type: ignore[attr-defined]
         # Scale saturation and lightness (or HWB whiteness and blackness)
         SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
         SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
@@ -87,7 +88,7 @@ def coerce_to_rgb(color: type[Color], cs: Space) -> tuple[type[Color], str]:
             coords = to_(coords)
             return coords
 
-    class ColorRGB(color):
+    class ColorRGB(OrigColor):  # type: ignore[valid-type, misc]
         """Custom color."""
 
     ColorRGB.register(RGB())
@@ -200,7 +201,7 @@ def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector
                 tstart * start[2] + tend * end[2]
             ]
         )
-    else:
+    else:  # pragma: no cover
         return 0, []
 
 
@@ -233,7 +234,7 @@ class OkLChRayTrace(Fit):
             color = Color_(color)
 
         # For now, if a non-linear CSS variant is specified, just use the linear form.
-        linear = cs.linear()
+        linear = cs.linear()  # type: ignore[attr-defined]
         if linear and linear in color.CS_MAP:
             space = linear
 
@@ -279,7 +280,7 @@ class OkLChRayTrace(Fit):
                         H: mapcolor[h]
                     }
                 )
-            else:
+            else:  # pragma: no cover
                 # We were already within the cube
                 break
 
