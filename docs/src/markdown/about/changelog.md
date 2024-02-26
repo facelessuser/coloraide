@@ -23,6 +23,8 @@
     equivalent.
 -   **NEW**: Adjust inheritance order of RGB spaces. Previously, many inherited from `sRGB`, now they inherit from
     `sRGBLinear`.
+-   **NEW**: Add `rec2100-linear`, essentially and alias for `rec2020-linear`, that is specified in the CSS HDR
+    specification.
 -   **FIX**: Ensure that when using discrete interpolation that spline based interpolations are truly discrete.
 
 ## 2.16

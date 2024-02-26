@@ -44,6 +44,7 @@ from .spaces.oklab.css import Oklab
 from .spaces.oklch.css import OkLCh
 from .spaces.rec2100_pq import Rec2100PQ
 from .spaces.rec2100_hlg import Rec2100HLG
+from .spaces.rec2100_linear import Rec2100Linear
 from .spaces.jzazbz import Jzazbz
 from .spaces.jzczhz import JzCzhz
 from .spaces.ictcp import ICtCp
@@ -1375,6 +1376,7 @@ Color.register(
         Rec2020Linear(),
         Rec2100PQ(),
         Rec2100HLG(),
+        Rec2100Linear(),
         A98RGB(),
         A98RGBLinear(),
         ProPhotoRGB(),
