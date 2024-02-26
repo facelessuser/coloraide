@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-@functools.lru_cache(maxsize=10)
+@functools.lru_cache(maxsize=1)
 def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
     """
     Coerce an HSL, HSV, or HWB color space to RGB to allow us to ray trace the gamut.
