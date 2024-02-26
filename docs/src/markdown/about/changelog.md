@@ -7,7 +7,7 @@
     to support this change. This is likely low impact as using percentages for hues is fairly uncommon.
 -   **BREAK**: Remove previously deprecated functions: `algebra.apply`, `algebra.no_nans`, `algebra.no_nan`,
     `algebra.is_nan`, `Labish.labish_names`, `Labish.labish_indexes`, `LChish.lchish_names`, and
-    `LCHish.lchish_indexes`.
+    `LCHish.lchish_indexes`. These were mainly used internally, so breakage is likely low.
 -   **NEW**: `jzazbz`, `jzczhz`, `ictcp`, `rec2100-pq`, and `rec2100-hlg` are now formally recognized, and by default
     serialized, without the `--` prefix as all the spaces are now part of the official HDR specification in CSS.
     Previously, the spec was unofficial. `--` prefixed names will still be recognized, but at some future time `--`
@@ -17,8 +17,7 @@
 -   **NEW**: Color space channel flags `FLG_PERCENT` and `FLG_OPT_PERCENT` are deprecated and no longer used. They are
     still present, but will be removed in the future.
 -   **NEW**: Update CSS percentage input/output ranges for `jzazbz`, `jzczhz`, and `ictcp` to match the CSS HDR spec.
--   **NEW**: Ray tracing gamut mapping algorithms have been added: `oklch-raytrace` and `lch-raytrace`. Both require
-    the target gamut to have an RGB gamut equivalent and will choose the linear variant if one is detected.
+-   **NEW**: Ray tracing gamut mapping algorithms have been added: `oklch-raytrace` and `lch-raytrace`.
 -   **NEW**: RGB spaces now expose a `linear()` function on the underlying class to specify if they have a linear
     equivalent.
 -   **NEW**: Adjust inheritance order of RGB spaces. Previously, many inherited from `sRGB`, now they inherit from
