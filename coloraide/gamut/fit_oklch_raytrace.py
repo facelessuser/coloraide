@@ -14,7 +14,7 @@ from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
 from ..types import Vector
-from typing import TYPE_CHECKING, Callable, Any
+from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -266,7 +266,7 @@ class OkLChRayTrace(Fit):
                     gamutcolor.set(
                         {
                             L: mapcolor[l],
-                            C: lambda current, original=mapcolor[c], i=i: (original - ((original - current) * backoff[i])),
+                            C: lambda a, b=mapcolor[c], i=i: (b - ((b - a) * backoff[i])),
                             H: mapcolor[h]
                         }
                     )

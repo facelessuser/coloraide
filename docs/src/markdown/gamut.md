@@ -368,31 +368,44 @@ chroma via bisection in the perceptual space, but in less time.
 As noted, the one downside is that results aren't as accurate as using MINDE Chroma Reduction as it isn't directly
 operating in the perceptual space, but they can be reasonably close.
 
-As noted earlier, the targeted gamut must be an RGB space or RGB equivalent space.
+As noted earlier, the targeted gamut should be an RGB space or RGB equivalent space.
 
 ```py play
 Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
-Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace')
 ```
 
-But will not work with a space not precisely equivalent with an RGB gamut, but you can still gamut such colors with a
-reasonably close gamut if one is available.
+In general, no matter what approach is being used, RGB is usually preferred. As a matter of fact, by default, most
+spaces will automatically redirect to an RGB gamut, such as HSL, HSV, etc. But there are some spaces that do not have a
+clearly defined RGB gamut.
+
+For instance, HPLuv is a space that is only defined as a cylindrical space and contains only a portion of the sRGB
+space. Okhsl and Okhsv are another exception. They generally represent the sRGB gamut, but it is only an approximation
+and has some colors on the fringe missing and contains some colors that are actually outside the sRGB gamut. Gamut
+correcting in these spaces can have hit or miss results, even when using the default MINDE chroma reduction approach,
+and so it is in ray tracing as well.
 
 ```py play
-try:
-    Color('color(--okhsl 270 1.2 0.5)').fit('okhsl', method='lch-raytrace')
-except ValueError:
-    print('Not supported')
-Color('color(--okhsl 270 1.2 0.5)').fit('srgb', method='lch-raytrace')
+Steps([c.fit('okhsl', method='lch-chroma') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
+Steps([c.fit('okhsl', method='lch-raytrace') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
 ```
 
-All ray tracing methods allow configuring number of passes or traces performed, up to 3x. More traces usually mean
-better results and closer hugging of the gamut shape, by default 3X is used. Depending on the perceptual space used to
-correct the gamut mapping, this can expose non-optimal geometry. Consider the color `#!color color(display-p3 1 1 0)`.
-This can be particularly problematic when gamut mapping using CIELCh. 3X traces holds lightness very constant, and can
-get very desaturated yellow. If you use 1X traces, you get a less accurate color, but a color that makes more sense to
-the user. This is not a bug, but just the way a color space's geometry can work with you or against you. While this
-is not an issue in OkLCh, it has its own quirks.
+ColorAide will actually transform these spaces into a cube in order to apply the ray tracing approach. Results are
+comparable, especially when applying max traces (the default). Some spaces, like HPLuv, gamut map better than others.
+
+```py play
+Steps([c.fit('hpluv', method='lch-chroma') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
+Steps([c.fit('hpluv', method='lch-raytrace') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
+```
+
+Lastly, all ray tracing methods allow configuring number of passes or traces performed, from as low as 1X up to 3X. More
+traces usually mean better results and closer hugging of the gamut shape, less traces means it will be faster, but with
+somewhat diminished results. By default 3X, the best, is used.
+
+Depending on the perceptual space used to correct the gamut mapping, this can expose non-optimal geometry. Consider the
+color `#!color color(display-p3 1 1 0)`. This can be particularly problematic when gamut mapping using CIELCh. 3X traces
+holds lightness very constant, and can get very desaturated yellow. If you use 1X traces, you get a less accurate color,
+but a color that makes more sense to the user. This is not a bug, but just the way a color space's geometry can work
+with you or against you. While this is not an issue in OkLCh, it has its own quirks.
 
 /// tab | 3X Traces
 ![Traces 3X](images/trace-3x.png)
@@ -422,9 +435,6 @@ Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace', traces=1)
 Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=2)
 Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=3)
 ```
-
-It should be noted that increased traces mean the gamut mapping will generally hug the gamut space much closer, usually
-this is fine, but with LCh, the shape is a big funny for certain hues. 
 
 #### OkLCh Ray Tracing Chroma Reduction
 
