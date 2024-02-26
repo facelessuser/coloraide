@@ -11,5 +11,3 @@ class LChRayTrace(OkLChRayTrace):
 
     NAME = 'lch-raytrace'
     SPACE = "lch-d65"
-    MAX_LIGHTNESS = 100
-    MIN_LIGHTNESS = 0

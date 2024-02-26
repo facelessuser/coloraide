@@ -205,8 +205,6 @@ class OkLChRayTrace(Fit):
 
     NAME = "oklch-raytrace"
     SPACE = "oklch"
-    MAX_LIGHTNESS = 1
-    MIN_LIGHTNESS = 0
     TRACES = 3
     BACKOFF_MAP = {
         1: [0.99],

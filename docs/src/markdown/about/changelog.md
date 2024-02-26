@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.1
+
+-   **FIX**: Don't cache coercion of non-RGB space to RGB space in ray tracing gamut mapping algorithm as the underlying
+    color object could change underneath.
+
 ## 3.0
 
 -   **BREAK**: The CSS HDR spec now defines the polar spaces such as JzCzhz `color()` with hue channels that support
