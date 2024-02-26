@@ -498,7 +498,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
 
             # Fit gamut
             if not c.in_gamut():
-                c.fit()
+                c.fit(method='lch-raytrace')
 
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
@@ -560,7 +560,7 @@ def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, e
 
             # Fit gamut
             if not t.in_gamut():
-                t.fit()
+                t.fit(method='lch-raytrace')
 
             # Fit colors to output gamut
             s = t.convert('srgb')
