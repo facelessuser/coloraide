@@ -5,7 +5,7 @@ import math
 from .. import util
 from .. import algebra as alg
 from .color_names import to_name
-from ..channels import FLG_PERCENT, FLG_OPT_PERCENT, FLG_ANGLE
+from ..channels import FLG_ANGLE
 from ..types import Vector
 from typing import TYPE_CHECKING, Sequence, Any
 
