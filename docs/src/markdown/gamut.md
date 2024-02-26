@@ -350,6 +350,9 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ### Ray Tracing Chroma Reduction
 
+/// warning | Experimental Gamut Mapping
+///
+
 ColorAide has developed an experimental chroma reduction technique that employs ray tracing. This approach currently
 only works with RGB gamuts, or spaces that are represented with RGB gamuts. If ColorAide can detect a linear version of
 the targeted RGB space, that version will be used automatically for best results.

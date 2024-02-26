@@ -5,7 +5,6 @@ This employs a faster approach than bisecting to reduce chroma.
 """
 from __future__ import annotations
 import functools
-import math
 from .. import algebra as alg
 from ..gamut import Fit
 from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
@@ -237,12 +236,14 @@ class OkLChRayTrace(Fit):
         orig = color.space()
         mapcolor = color.convert(self.SPACE, norm=False) if orig != self.SPACE else color.clone().normalize(nans=False)
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
+        gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
 
+        mn, mx = alg.minmax(gamutcolor[:-1])
         # Return white for white or black.
-        lightness = mapcolor[l]
-        if lightness >= self.MAX_LIGHTNESS or math.isclose(lightness, self.MAX_LIGHTNESS, abs_tol=1e-6):
+        if mn == mx and mx >= 1:
             color.update(space, [1.0, 1.0, 1.0], mapcolor[-1])
-        elif lightness <= self.MIN_LIGHTNESS:
+        elif mn == mx and mx <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
             # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
