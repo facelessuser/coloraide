@@ -122,7 +122,8 @@ ignore = [
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 omit = [
-    "coloraide/spaces/cam16.py"
+    "coloraide/spaces/cam16.py",
+    "coloraide/deprecate.py"
 ]
 
 exclude_lines = [

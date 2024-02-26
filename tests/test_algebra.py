@@ -1796,6 +1796,36 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(TypeError):
             log([10, 100])
 
+    def test_apply_two_inputs(self):
+        """Test vectorize2 with two inputs."""
+
+        npow = alg.vectorize2(alg.npow)
+        self.assertEqual(
+            npow([[1, 2, 3], [4, 5, 6]], 2),
+            [[1, 4, 9], [16, 25, 36]]
+        )
+
+    def test_apply_one_input(self):
+        """Test apply with one input."""
+
+        sqrt = alg.vectorize1(math.sqrt)
+        self.assertEqual(
+            sqrt([[1, 4, 9], [16, 25, 36]]),
+            [[1, 2, 3], [4, 5, 6]]
+        )
+
+        isnan = alg.vectorize1(math.isnan)
+        self.assertTrue(isnan(math.nan))
+        self.assertEqual(isnan([2, math.nan, 1]), [False, True, False])
+        self.assertEqual(isnan([[2, math.nan], [math.nan, 1]]), [[False, True], [True, False]])
+        self.assertTrue(isnan(math.nan, dims=alg.SC))
+        self.assertEqual(isnan([2, math.nan, 1], dims=alg.D1), [False, True, False])
+        self.assertEqual(isnan([[2, math.nan], [math.nan, 1]], dims=alg.D2), [[False, True], [True, False]])
+        self.assertEqual(isnan(
+            [[[2, math.nan], [math.nan, 1]], [[2, math.nan], [math.nan, 1]]]),
+            [[[False, True], [True, False]], [[False, True], [True, False]]]
+        )
+
     def test_linspace(self):
         """Test `linspace`."""
 

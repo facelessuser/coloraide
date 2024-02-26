@@ -5,7 +5,7 @@ from functools import wraps
 from typing import Any, Callable
 
 
-def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # pragma: no cover
+def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:
     """
     Raise a `DeprecationWarning` when wrapped function/method is called.
 
@@ -29,7 +29,7 @@ def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:  # prag
     return _wrapper
 
 
-def warn_deprecated(message: str, stacklevel: int = 2) -> None:  # pragma: no cover
+def warn_deprecated(message: str, stacklevel: int = 2) -> None:
     """Warn deprecated."""
 
     warnings.warn(
