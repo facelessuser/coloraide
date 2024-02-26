@@ -43,6 +43,11 @@ class RGBish(Regular):
 
         return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
 
+    def linear(self) -> str:
+        """Will return the name of the space which is the linear version of itself (if available)."""
+
+        return ''
+
 
 class HSLish(Cylindrical):
     """HSL-ish space."""

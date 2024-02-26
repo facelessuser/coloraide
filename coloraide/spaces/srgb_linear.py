@@ -1,9 +1,11 @@
 """sRGB Linear color class."""
 from __future__ import annotations
 from ..cat import WHITES
-from .srgb import sRGB
+from ..spaces import RGBish, Space
+from ..channels import Channel, FLG_OPT_PERCENT
 from .. import algebra as alg
 from ..types import Vector
+import math
 
 
 RGB_TO_XYZ = [
@@ -35,13 +37,31 @@ def xyz_to_lin_srgb(xyz: Vector) -> Vector:
     return alg.matmul(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
-class sRGBLinear(sRGB):
+class sRGBLinear(RGBish, Space):
     """sRGB linear."""
 
     BASE = 'xyz-d65'
     NAME = "srgb-linear"
-    SERIALIZE = ("srgb-linear",)
     WHITE = WHITES['2deg']['D65']
+    CHANNELS = (
+        Channel("r", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("g", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
+        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+    )
+    CHANNEL_ALIASES = {
+        "red": 'r',
+        "green": 'g',
+        "blue": 'b'
+    }
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Test if color is achromatic."""
+
+        white = [1, 1, 1]
+        for x in alg.vcross(coords, white):
+            if not math.isclose(0.0, x, abs_tol=1e-5):
+                return False
+        return True
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from sRGB Linear."""

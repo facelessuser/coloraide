@@ -126,6 +126,7 @@ class TestsRGBSerialize(util.ColorAssertsPyTest):
         ('rgb(0 255 25.5 / 0.5)', {'color': True, 'alpha': False}, 'color(srgb 0 1 0.1)'),
         # Test Fit
         ('color(srgb 1.2 0.2 0)', {'color': True}, 'color(srgb 1 0.42056 0.2633)'),
+        ('color(srgb 1.2 0.2 0)', {'color': True, 'fit': 'lch-raytrace'}, 'color(srgb 0.99476 0.46349 0.32156)'),
         ('color(srgb 1.2 0.2 0)', {'color': True, 'fit': False}, 'color(srgb 1.2 0.2 0)')
     ]
 

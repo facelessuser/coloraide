@@ -52,9 +52,13 @@ def plot_slice(
     subtitle='',
     polar=False,
     border=False,
-    pointer=False
+    pointer=False,
+    gmap=None
 ):
     """Plot a slice."""
+
+    if gmap is None:
+        gmap = {}
 
     res = resolution
     if not dark:
@@ -207,7 +211,7 @@ def plot_slice(
                 # Save the points
                 xaxis.append(c1)
                 yaxis.append(c2)
-                c_map.append(r.convert('srgb').to_string(hex=True))
+                c_map.append(r.convert('srgb').to_string(hex=True, fit=gmap))
 
     # Create axes
     ax = plt.axes(
@@ -300,6 +304,7 @@ def main():
     parser = argparse.ArgumentParser(prog='slice_diagrams', description='Plot a slice of a color space.')
     parser.add_argument('--space', '-s', help='Desired space.')
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
+    parser.add_argument('--jnd', default=-1, help='Gamut mapping approach (default is lch-chroma).')
     parser.add_argument('--pointer', '-P', action='store_true', help="Restrict to Pointer gamut")
     parser.add_argument(
         '--constant', '-c', help="The channel(s) to hold constant and the value to use 'name:value;name2:value2'."
@@ -316,8 +321,20 @@ def main():
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--gmap', '-G', default='lch-chroma', help='Gamut mapping approach (default is lch-chroma).')
+    parser.add_argument(
+        '--jnd', type=float, default=-1.0,
+        help="Set the JND for MINDE approaches. If set to -1, default JND is used."
+    )
+    parser.add_argument(
+        '--traces', type=int, default=3,
+        help="Set the number of ray trace passes for ray trace approaches. Default is 3."
+    )
 
     args = parser.parse_args()
+
+    jnd = None if args.jnd == -1 else args.jnd
+    traces = args.traces
 
     plot_slice(
         args.space,
@@ -325,6 +342,7 @@ def main():
         args.xaxis,
         args.yaxis,
         gamut=args.gamut,
+        gmap={'method': args.gmap, 'jnd': jnd, 'traces': traces},
         resolution=int(args.resolution),
         title=args.title,
         subtitle=args.sub_title,

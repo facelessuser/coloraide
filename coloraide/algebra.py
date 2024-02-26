@@ -132,6 +132,26 @@ def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
         return _round(whole if digits > p else f, p - digits)
 
 
+def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:
+    """Return the minimum and maximum value."""
+
+    mn = INF
+    mx = -INF
+    e = -1
+
+    for i in value:
+        e += 1
+        if i > mx:
+            mx = i
+        if i < mn:
+            mn = i
+
+    if e == -1:
+        raise ValueError("minmax() arg is an empty sequence")
+
+    return mn, mx
+
+
 def clamp(
     value: SupportsFloatOrInt,
     mn: SupportsFloatOrInt | None = None,

@@ -5,7 +5,7 @@ https://www.oscars.org/science-technology/aces/aces-documentation
 """
 from __future__ import annotations
 from ..channels import Channel
-from ..spaces.srgb import sRGB
+from ..spaces.srgb_linear import sRGBLinear
 from .. import algebra as alg
 from ..types import Vector
 
@@ -34,7 +34,7 @@ def xyz_to_acescg(xyz: Vector) -> Vector:
     return alg.matmul(XYZ_TO_AP1, xyz, dims=alg.D2_D1)
 
 
-class ACEScg(sRGB):
+class ACEScg(sRGBLinear):
     """The ACEScg color class."""
 
     BASE = "xyz-d65"

@@ -51,6 +51,11 @@ class TestRec2100PQSerialize(util.ColorAssertsPyTest):
         ('color(rec2100-pq none 0.3 0.75)', {'none': True}, 'color(rec2100-pq none 0.3 0.75)'),
         # Test Fit
         ('color(rec2100-pq 1.2 0.2 0)', {}, 'color(rec2100-pq 1 1 1)'),
+        (
+            'color(rec2100-pq 1.2 0.2 0)',
+            {'color': True, 'fit': 'lch-raytrace'},
+            'color(rec2100-pq 0.58069 0.2 0)'
+        ),
         ('color(rec2100-pq 1.2 0.2 0)', {'fit': False}, 'color(rec2100-pq 1.2 0.2 0)')
     ]
 
