@@ -236,19 +236,16 @@ class OkLChRayTrace(Fit):
         orig = color.space()
         mapcolor = color.convert(self.SPACE, norm=False) if orig != self.SPACE else color.clone().normalize(nans=False)
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
-        gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
+        achroma = mapcolor.clone().set(str(c), 0).convert(space)
 
-        mn, mx = alg.minmax(gamutcolor[:-1])
         # Return white for white or black.
-        if mn == mx and mx >= 1:
+        mn, mx = alg.minmax(achroma[:-1])
+        if mx >= 1:
             color.update(space, [1.0, 1.0, 1.0], mapcolor[-1])
-        elif mn == mx and mx <= 0:
+        elif mn <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
-            # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
             gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
-            achroma = mapcolor.clone().set('c', 0).convert(space)
 
             L = self.SPACE + '.' + str(l)
             C = self.SPACE + '.' + str(c)

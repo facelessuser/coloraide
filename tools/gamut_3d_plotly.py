@@ -179,7 +179,7 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method='lch-chroma')
             else:
                 s.clip()
             cmap.append(s)
@@ -302,7 +302,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method='lch-chroma')
             else:
                 s.clip()
 
@@ -364,7 +364,7 @@ def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, e
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method='lch-chroma')
             else:
                 s.clip()
             cmap.append(s)
