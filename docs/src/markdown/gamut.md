@@ -378,8 +378,9 @@ Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
 ```
 
 In general, no matter what approach is being used, RGB is usually preferred. As a matter of fact, by default, most
-spaces will automatically redirect to an RGB gamut, such as HSL, HSV, etc. But there are some spaces that do not have a
-clearly defined RGB gamut.
+spaces will automatically redirect to an RGB gamut, such as HSL, HSV, etc. But there are a few spaces that do not have a
+clearly defined RGB gamut. In these cases, the color space will be mapped to a cube to apply the algorithm. Results
+are often comparable to the MINDE Chroma Reduction approach (especially when using the max traces, the default).
 
 For instance, HPLuv is a space that is only defined as a cylindrical space and contains only a portion of the sRGB
 space. Okhsl and Okhsv are another exception. They generally represent the sRGB gamut, but it is only an approximation
@@ -387,18 +388,8 @@ and has some colors on the fringe missing and contains some colors that are actu
 correcting in these spaces can have hit or miss results, even when using the default MINDE chroma reduction approach,
 and so it is in ray tracing as well.
 
-```py play
-Steps([c.fit('okhsl', method='lch-chroma') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
-Steps([c.fit('okhsl', method='lch-raytrace') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
-```
-
-ColorAide will actually transform these spaces into a cube in order to apply the ray tracing approach. Results are
-comparable, especially when applying max traces (the default). Some spaces, like HPLuv, gamut map better than others.
-
-```py play
-Steps([c.fit('hpluv', method='lch-chroma') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
-Steps([c.fit('hpluv', method='lch-raytrace') for c in Color.steps(['lch(75% 50 0)', 'lch(75% 50 300)'], steps=100, space='lch', hue='longer')])
-```
+In general, while ColorAide can map some of these exception spaces, you will get the best results by gamut mapping to
+the closest RGB space.
 
 Lastly, all ray tracing methods allow configuring number of passes or traces performed, from as low as 1X up to 3X. More
 traces usually mean better results and closer hugging of the gamut shape, less traces means it will be faster, but with
