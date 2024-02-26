@@ -238,7 +238,7 @@ class OkLChRayTrace(Fit):
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
         achroma = mapcolor.clone().set(str(c), 0).convert(space)
 
-        # Return white for white or black.
+        # Return white or black if the achromatic version is not within the RGB cube.
         mn, mx = alg.minmax(achroma[:-1])
         if mx >= 1:
             color.update(space, [1.0, 1.0, 1.0], mapcolor[-1])
