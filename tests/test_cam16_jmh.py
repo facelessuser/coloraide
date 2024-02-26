@@ -26,12 +26,12 @@ class TestCAM16JMh(util.ColorAssertsPyTest):
         # Test color
         ('color(--cam16-jmh 50 30 270)', 'color(--cam16-jmh 50 30 270)'),
         ('color(--cam16-jmh 50 30 270 / 0.5)', 'color(--cam16-jmh 50 30 270 / 0.5)'),
-        ('color(--cam16-jmh 50% 50% 50% / 50%)', 'color(--cam16-jmh 50 52.5 180 / 0.5)'),
+        ('color(--cam16-jmh 50% 50% 100 / 50%)', 'color(--cam16-jmh 50 52.5 100 / 0.5)'),
         ('color(--cam16-jmh none none none / none)', 'color(--cam16-jmh none none none / none)'),
         # Test percent ranges
-        ('color(--cam16-jmh 0% 0% 0%)', 'color(--cam16-jmh 0 0 0)'),
-        ('color(--cam16-jmh 100% 100% 100%)', 'color(--cam16-jmh 100 105 360 / 1)'),
-        ('color(--cam16-jmh -100% -100% -100%)', 'color(--cam16-jmh -100 -105 -360 / 1)'),
+        ('color(--cam16-jmh 0% 0% 0)', 'color(--cam16-jmh 0 0 0)'),
+        ('color(--cam16-jmh 100% 100% 100)', 'color(--cam16-jmh 100 105 100 / 1)'),
+        ('color(--cam16-jmh -100% -100% 100)', 'color(--cam16-jmh -100 -105 100 / 1)'),
         # Test miscellaneous cases
         ('color(--cam16-jmh -10 none 270)', 'color(--cam16-jmh -10 0.52358 270)')
     ]

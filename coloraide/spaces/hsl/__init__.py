@@ -2,7 +2,7 @@
 from __future__ import annotations
 from ...spaces import HSLish, Space
 from ...cat import WHITES
-from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_ANGLE
 from ... import util
 from ...types import Vector
 
@@ -63,8 +63,8 @@ class HSL(HSLish, Space):
     SERIALIZE = ("--hsl",)
     CHANNELS = (
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE),
-        Channel("s", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("l", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("s", 0.0, 1.0, bound=True),
+        Channel("l", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "hue": "h",

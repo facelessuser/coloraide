@@ -19,8 +19,8 @@ Name       | Range^\*^
 `ct`       | [-0.5, 0.5]
 `cp`       | [-0.5, 0.5]
 
-^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-to define percentage inputs/outputs.
+^\*^ Space is not bound to the above, defined range but represents a practical range for HDR color spaces. CSS uses a
+range of `i` = [0, 1], `ct` = [-1, 1] and `cp` = [1, 1] for percentage input and output.
 ////
 
 //// html | figure

@@ -91,8 +91,8 @@ class ICtCp(Lab):
     SERIALIZE = ("ictcp", "--ictcp",)
     CHANNELS = (
         Channel("i", 0.0, 1.0),
-        Channel("ct", -0.5, 0.5, flags=FLG_MIRROR_PERCENT),
-        Channel("cp", -0.5, 0.5, flags=FLG_MIRROR_PERCENT)
+        Channel("ct", -1.0, 1.0, flags=FLG_MIRROR_PERCENT),
+        Channel("cp", -1.0, 1.0, flags=FLG_MIRROR_PERCENT)
     )
     CHANNEL_ALIASES = {
         "intensity": "i",

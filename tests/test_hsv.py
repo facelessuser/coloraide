@@ -22,12 +22,12 @@ class TestHSV(util.ColorAssertsPyTest):
         # Test color
         ('color(--hsv 270 0.3 0.5)', 'color(--hsv 270 0.3 0.5)'),
         ('color(--hsv 270 0.3 0.5 / 0.5)', 'color(--hsv 270 0.3 0.5 / 0.5)'),
-        ('color(--hsv 50% 50% 50% / 50%)', 'color(--hsv 180 0.5 0.5 / 0.5)'),
+        ('color(--hsv 180 50% 50% / 50%)', 'color(--hsv 180 0.5 0.5 / 0.5)'),
         ('color(--hsv none none none / none)', 'color(--hsv none none none / none)'),
         # Test percent ranges
-        ('color(--hsv 0% 0% 0%)', 'color(--hsv 0 0 none)'),
-        ('color(--hsv 100% 100% 100%)', 'color(--hsv 360 1 1 / 1)'),
-        ('color(--hsv -100% -100% -100%)', 'color(--hsv -360 -1 -1 / 1)')
+        ('color(--hsv 0 0% 0%)', 'color(--hsv 0 0 none)'),
+        ('color(--hsv 360 100% 100%)', 'color(--hsv 360 1 1 / 1)'),
+        ('color(--hsv -360 -100% -100%)', 'color(--hsv -360 -1 -1 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

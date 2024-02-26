@@ -19,8 +19,8 @@ Name | Range^\*^
 `az` | [-0.5, 0.5]
 `bz` | [-0.5, 0.5]
 
-^\*^ Space is not bound to the range but is specified to enclose the full range of an HDR BT.2020 gamut and is used
-to define percentage inputs/outputs.
+^\*^ Space is not bound to the defined range above but represents a practical range for HDR color spaces. CSS uses a
+range of `jz` = [0, 1], `az` = [-1, 1] and `bz` = [1, 1] for percentage input and output.
 ////
 
 //// html | figure

@@ -23,12 +23,12 @@ class TestsOkhsv(util.ColorAssertsPyTest):
         # Test color
         ('color(--okhsv 270 0.3 0.5)', 'color(--okhsv 270 0.3 0.5)'),
         ('color(--okhsv 270 0.3 0.5 / 0.5)', 'color(--okhsv 270 0.3 0.5 / 0.5)'),
-        ('color(--okhsv 50% 50% 50% / 50%)', 'color(--okhsv 180 0.5 0.5 / 0.5)'),
+        ('color(--okhsv 180 50% 50% / 50%)', 'color(--okhsv 180 0.5 0.5 / 0.5)'),
         ('color(--okhsv none none none / none)', 'color(--okhsv none none none / none)'),
         # Test percent ranges
-        ('color(--okhsv 0% 0% 0%)', 'color(--okhsv 0 0 none)'),
-        ('color(--okhsv 100% 100% 100%)', 'color(--okhsv 360 1 1 / 1)'),
-        ('color(--okhsv -100% -100% -100%)', 'color(--okhsv -360 -1 -1 / 1)')
+        ('color(--okhsv 0 0% 0%)', 'color(--okhsv 0 0 none)'),
+        ('color(--okhsv 360 100% 100%)', 'color(--okhsv 360 1 1 / 1)'),
+        ('color(--okhsv -360 -100% -100%)', 'color(--okhsv -360 -1 -1 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

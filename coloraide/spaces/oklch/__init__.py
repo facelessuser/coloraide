@@ -26,7 +26,7 @@ SOFTWARE.
 from __future__ import annotations
 from ..lch import LCh
 from ...cat import WHITES
-from ...channels import Channel, FLG_ANGLE, FLG_OPT_PERCENT
+from ...channels import Channel, FLG_ANGLE
 
 
 class OkLCh(LCh):
@@ -36,8 +36,8 @@ class OkLCh(LCh):
     NAME = "oklch"
     SERIALIZE = ("--oklch",)
     CHANNELS = (
-        Channel("l", 0.0, 1.0, flags=FLG_OPT_PERCENT),
-        Channel("c", 0.0, 0.4, flags=FLG_OPT_PERCENT),
+        Channel("l", 0.0, 1.0),
+        Channel("c", 0.0, 0.4),
         Channel("h", 0.0, 360.0, flags=FLG_ANGLE)
     )
     CHANNEL_ALIASES = {

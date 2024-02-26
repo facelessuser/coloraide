@@ -2,7 +2,7 @@
 from __future__ import annotations
 from ..cat import WHITES
 from ..spaces import RGBish, Space
-from ..channels import Channel, FLG_OPT_PERCENT
+from ..channels import Channel
 from .. import algebra as alg
 from ..types import Vector
 import math
@@ -44,9 +44,9 @@ class sRGBLinear(RGBish, Space):
     NAME = "srgb-linear"
     WHITE = WHITES['2deg']['D65']
     CHANNELS = (
-        Channel("r", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("g", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT),
-        Channel("b", 0.0, 1.0, bound=True, flags=FLG_OPT_PERCENT)
+        Channel("r", 0.0, 1.0, bound=True),
+        Channel("g", 0.0, 1.0, bound=True),
+        Channel("b", 0.0, 1.0, bound=True)
     )
     CHANNEL_ALIASES = {
         "red": 'r',

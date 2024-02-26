@@ -23,12 +23,12 @@ class TestCubehelix(util.ColorAssertsPyTest):
         # Test color
         ('color(--cubehelix 270 0.3 0.5)', 'color(--cubehelix 270 0.3 0.5)'),
         ('color(--cubehelix 270 0.3 0.5 / 0.5)', 'color(--cubehelix 270 0.3 0.5 / 0.5)'),
-        ('color(--cubehelix 50% 50% 50% / 50%)', 'color(--cubehelix 180 2.3072 0.5 / 0.5)'),
+        ('color(--cubehelix 180 50% 50% / 50%)', 'color(--cubehelix 180 2.3072 0.5 / 0.5)'),
         ('color(--cubehelix none none none / none)', 'color(--cubehelix 0 0 0 / 0)'),
         # Test percent ranges
-        ('color(--cubehelix 0% 0% 0%)', 'color(--cubehelix 0 0 0)'),
-        ('color(--cubehelix 100% 100% 100%)', 'color(--cubehelix 360 4.6144 1)'),
-        ('color(--cubehelix -100% -100% -100%)', 'color(--cubehelix -360 -4.6144 -1)')
+        ('color(--cubehelix 0 0% 0%)', 'color(--cubehelix 0 0 0)'),
+        ('color(--cubehelix 360 100% 100%)', 'color(--cubehelix 360 4.6144 1)'),
+        ('color(--cubehelix -360 -100% -100%)', 'color(--cubehelix -360 -4.6144 -1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

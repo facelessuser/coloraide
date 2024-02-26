@@ -31,12 +31,12 @@ class TestHWB(util.ColorAssertsPyTest):
         # Test color
         ('color(--hwb 270 0.3 0.5)', 'color(--hwb 270 0.3 0.5)'),
         ('color(--hwb 270 0.3 0.5 / 0.5)', 'color(--hwb 270 0.3 0.5 / 0.5)'),
-        ('color(--hwb 50% 30% 50% / 50%)', 'color(--hwb 180 0.3 0.5 / 0.5)'),
+        ('color(--hwb 180 30% 50% / 50%)', 'color(--hwb 180 0.3 0.5 / 0.5)'),
         ('color(--hwb none none none / none)', 'color(--hwb none none none / none)'),
         # Test percent ranges
-        ('color(--hwb 0% 0% 0%)', 'color(--hwb 0 0 none)'),
-        ('color(--hwb 100% 100% 100%)', 'color(--hwb 360 1 1 / 1)'),
-        ('color(--hwb -100% -100% -100%)', 'color(--hwb -360 -1 -1 / 1)')
+        ('color(--hwb 0 0% 0%)', 'color(--hwb 0 0 none)'),
+        ('color(--hwb 360 100% 100%)', 'color(--hwb 360 1 1 / 1)'),
+        ('color(--hwb -360 -100% -100%)', 'color(--hwb -360 -1 -1 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

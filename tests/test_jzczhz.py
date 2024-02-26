@@ -23,12 +23,12 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         # Test color
         ('color(jzczhz 1 0.3 270)', 'color(jzczhz 1 0.3 270)'),
         ('color(jzczhz 1 0.3 270 / 0.5)', 'color(jzczhz 1 0.3 270 / 0.5)'),
-        ('color(jzczhz 50% 50% 50% / 50%)', 'color(jzczhz 0.5 0.25 180 / 0.5)'),
+        ('color(jzczhz 50% 50% 180 / 50%)', 'color(jzczhz 0.5 0.5 180 / 0.5)'),
         ('color(jzczhz none none none / none)', 'color(jzczhz none none none / none)'),
         # Test percent ranges
-        ('color(jzczhz 0% 0% 0%)', 'color(jzczhz 0 0 0)'),
-        ('color(jzczhz 100% 100% 100%)', 'color(jzczhz 1 0.5 360 / 1)'),
-        ('color(jzczhz -100% -100% -100%)', 'color(jzczhz -1 -0.5 -360 / 1)')
+        ('color(jzczhz 0% 0% 0)', 'color(jzczhz 0 0 0)'),
+        ('color(jzczhz 100% 100% 360)', 'color(jzczhz 1 1 360 / 1)'),
+        ('color(jzczhz -100% -100% -360)', 'color(jzczhz -1 -1 -360 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

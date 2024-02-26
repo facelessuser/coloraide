@@ -23,12 +23,12 @@ class TestsOkhsl(util.ColorAssertsPyTest):
         # Test color
         ('color(--hsluv 270 30 50)', 'color(--hsluv 270 30 50)'),
         ('color(--hsluv 270 30 50 / 0.5)', 'color(--hsluv 270 30 50 / 0.5)'),
-        ('color(--hsluv 50% 50% 50% / 50%)', 'color(--hsluv 180 50 50 / 0.5)'),
+        ('color(--hsluv 180 50% 50% / 50%)', 'color(--hsluv 180 50 50 / 0.5)'),
         ('color(--hsluv none none none / none)', 'color(--hsluv none none none / none)'),
         # Test percent ranges
-        ('color(--hsluv 0% 0% 0%)', 'color(--hsluv 0 0 none)'),
-        ('color(--hsluv 100% 100% 100%)', 'color(--hsluv 360 100 100 / 1)'),
-        ('color(--hsluv -100% -100% -100%)', 'color(--hsluv -360 -100 -100 / 1)')
+        ('color(--hsluv 0 0% 0%)', 'color(--hsluv 0 0 none)'),
+        ('color(--hsluv 360 100% 100%)', 'color(--hsluv 360 100 100 / 1)'),
+        ('color(--hsluv -360 -100% -100%)', 'color(--hsluv -360 -100 -100 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)
