@@ -5,23 +5,19 @@ This employs a faster approach than bisecting to reduce chroma.
 """
 from __future__ import annotations
 import functools
-from ..gamut import Fit, clip_channels
+import math
+from .. import algebra as alg
+from ..gamut import Fit
 from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
-from .. import util
-from ..cat import WHITES
-import math
 from ..types import Vector
 from typing import TYPE_CHECKING, Callable, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
-
-WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
-BLACK = [0, 0, 0]
 
 
 @functools.lru_cache(maxsize=10)
@@ -245,47 +241,42 @@ class OkLChRayTrace(Fit):
         # Return white for white or black.
         lightness = mapcolor[l]
         if lightness >= self.MAX_LIGHTNESS or math.isclose(lightness, self.MAX_LIGHTNESS, abs_tol=1e-6):
-            clip_channels(color.update('xyz-d65', WHITE, mapcolor[-1]))
-            if coerced:
-                coerced.update(color)
-            return
+            color.update(space, [1.0, 1.0, 1.0], mapcolor[-1])
         elif lightness <= self.MIN_LIGHTNESS:
-            clip_channels(color.update('xyz-d65', BLACK, mapcolor[-1]))
-            if coerced:
-                coerced.update(color)
-            return
+            color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
+        else:
+            # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
+            gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
+            achroma = mapcolor.clone().set('c', 0).convert(space)
 
-        # Perform the iteration(s) scaling within the RGB space but afterwards preserving all but chroma
-        gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
-        achroma = mapcolor.clone().set('c', 0).convert(space)
+            L = self.SPACE + '.' + str(l)
+            C = self.SPACE + '.' + str(c)
+            H = self.SPACE + '.' + str(h)
 
-        L = self.SPACE + '.' + str(l)
-        C = self.SPACE + '.' + str(c)
-        H = self.SPACE + '.' + str(h)
+            # Create a line from our color to color with zero lightness.
+            # Trace the line to the RGB cube finding the face and the point where it intersects.
+            # Back off chroma on each iteration, less as we get closer.
+            size = [1.0, 1.0, 1.0]
+            backoff = self.BACKOFF_MAP[traces if traces else self.TRACES]
+            for i in range(len(backoff)):
+                face, intersection = raytrace_cube(size, gamutcolor.coords(), achroma.coords())
+                if face:
+                    gamutcolor[:-1] = intersection
+                    # Back off chroma and try with a closer point
+                    gamutcolor.set(
+                        {
+                            L: mapcolor[l],
+                            C: lambda current, original=mapcolor[c], i=i: (original - ((original - current) * backoff[i])),
+                            H: mapcolor[h]
+                        }
+                    )
+                else:  # pragma: no cover
+                    # We were already within the cube
+                    break
 
-        # Create a line from our color to color with zero lightness.
-        # Trace the line to the RGB cube finding the face and the point where it intersects.
-        # Back off chroma on each iteration, less as we get closer.
-        size = [1.0, 1.0, 1.0]
-        backoff = self.BACKOFF_MAP[traces if traces else self.TRACES]
-        for i in range(len(backoff)):
-            face, intersection = raytrace_cube(size, gamutcolor.coords(), achroma.coords())
-            if face:
-                gamutcolor[:-1] = intersection
-                # Back off chroma and try with a closer point
-                gamutcolor.set(
-                    {
-                        L: mapcolor[l],
-                        C: lambda current, original=mapcolor[c], i=i: (original - ((original - current) * backoff[i])),
-                        H: mapcolor[h]
-                    }
-                )
-            else:  # pragma: no cover
-                # We were already within the cube
-                break
+            # Finally, clip the color just in case
+            gamutcolor[:-1] = [alg.clamp(x, 0, 1) for x in gamutcolor[:-1]]
+            color.update(gamutcolor)
 
-        # Finally, clip the color just in case
-        clip_channels(gamutcolor)
-        color.update(gamutcolor)
         if coerced:
             coerced.update(color)
