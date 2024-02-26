@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
-from ..deprecate import deprecated
 from ..types import VectorLike, Vector, Plugin
 from typing import Any, TYPE_CHECKING, Sequence
 import math
@@ -94,18 +93,6 @@ class HWBish(Cylindrical):
 class Labish:
     """Lab-ish color spaces."""
 
-    @deprecated("Please use 'names' instead.")
-    def labish_names(self) -> tuple[str, ...]:  # pragma: no cover
-        """Return Lab-ish names in the order L a b."""
-
-        return self.names()
-
-    @deprecated("Please use 'indexes' instead.")
-    def labish_indexes(self) -> list[int]:  # pragma: no cover
-        """Return the index of the Lab-ish channels."""
-
-        return self.indexes()
-
     def names(self) -> tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""
 
@@ -119,18 +106,6 @@ class Labish:
 
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
-
-    @deprecated("Please use 'names' instead.")
-    def lchish_names(self) -> tuple[str, ...]:  # pragma: no cover
-        """Return LCh-ish names in the order L c h."""
-
-        return self.names()
-
-    @deprecated("Please use 'indexes' instead.")
-    def lchish_indexes(self) -> list[int]:  # pragma: no cover
-        """Return the index of the Lab-ish channels."""
-
-        return self.indexes()
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L c h."""
