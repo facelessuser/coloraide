@@ -1,7 +1,6 @@
 """Test Algebra."""
 import unittest
 import math
-import pytest
 from coloraide import algebra as alg
 
 
@@ -1087,36 +1086,6 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.fill_diagonal(alg.zeros((3, 2, 4)), 3)
 
-    def test_no_nan(self):
-        """Test no `NaN`."""
-
-        with pytest.warns(DeprecationWarning):
-            self.assertEqual(alg.no_nan(math.nan), 0)
-            self.assertEqual(alg.no_nans([0, 1, 2, math.nan]), [0, 1, 2, 0])
-
-    def test_is_nan(self):
-        """Test if is `NaN`."""
-
-        with pytest.warns(DeprecationWarning):
-            self.assertTrue(alg.is_nan(math.nan))
-            self.assertTrue(math.nan)
-            self.assertFalse(alg.is_nan(3))
-            self.assertFalse(alg.is_nan(0))
-
-    def test_isnan(self):
-        """Test if object has `NaN`."""
-
-        self.assertTrue(alg.isnan(math.nan))
-        self.assertEqual(alg.isnan([2, math.nan, 1]), [False, True, False])
-        self.assertEqual(alg.isnan([[2, math.nan], [math.nan, 1]]), [[False, True], [True, False]])
-        self.assertTrue(alg.isnan(math.nan, dims=alg.SC))
-        self.assertEqual(alg.isnan([2, math.nan, 1], dims=alg.D1), [False, True, False])
-        self.assertEqual(alg.isnan([[2, math.nan], [math.nan, 1]], dims=alg.D2), [[False, True], [True, False]])
-        self.assertEqual(alg.isnan(
-            [[[2, math.nan], [math.nan, 1]], [[2, math.nan], [math.nan, 1]]]),
-            [[[False, True], [True, False]], [[False, True], [True, False]]]
-        )
-
     def test_round_to_inf(self):
         """Test rounding of infinity."""
 
@@ -1828,22 +1797,34 @@ class TestAlgebra(unittest.TestCase):
             log([10, 100])
 
     def test_apply_two_inputs(self):
-        """Test apply with two inputs."""
+        """Test vectorize2 with two inputs."""
 
-        with pytest.warns(DeprecationWarning):
-            self.assertEqual(
-                alg.apply(alg.npow, [[1, 2, 3], [4, 5, 6]], 2),
-                [[1, 4, 9], [16, 25, 36]]
-            )
+        npow = alg.vectorize2(alg.npow)
+        self.assertEqual(
+            npow([[1, 2, 3], [4, 5, 6]], 2),
+            [[1, 4, 9], [16, 25, 36]]
+        )
 
     def test_apply_one_input(self):
         """Test apply with one input."""
 
-        with pytest.warns(DeprecationWarning):
-            self.assertEqual(
-                alg.apply(math.sqrt, [[1, 4, 9], [16, 25, 36]]),
-                [[1, 2, 3], [4, 5, 6]]
-            )
+        sqrt = alg.vectorize1(math.sqrt)
+        self.assertEqual(
+            sqrt([[1, 4, 9], [16, 25, 36]]),
+            [[1, 2, 3], [4, 5, 6]]
+        )
+
+        isnan = alg.vectorize1(math.isnan)
+        self.assertTrue(isnan(math.nan))
+        self.assertEqual(isnan([2, math.nan, 1]), [False, True, False])
+        self.assertEqual(isnan([[2, math.nan], [math.nan, 1]]), [[False, True], [True, False]])
+        self.assertTrue(isnan(math.nan, dims=alg.SC))
+        self.assertEqual(isnan([2, math.nan, 1], dims=alg.D1), [False, True, False])
+        self.assertEqual(isnan([[2, math.nan], [math.nan, 1]], dims=alg.D2), [[False, True], [True, False]])
+        self.assertEqual(isnan(
+            [[[2, math.nan], [math.nan, 1]], [[2, math.nan], [math.nan, 1]]]),
+            [[[False, True], [True, False]], [[False, True], [True, False]]]
+        )
 
     def test_linspace(self):
         """Test `linspace`."""

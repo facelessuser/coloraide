@@ -27,7 +27,6 @@ import math
 import operator
 import functools
 import itertools as it
-from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool,
     MatrixInt, MathType, Shape, ShapeLike, DimHints, SupportsFloatOrInt
@@ -72,33 +71,12 @@ M141 = [1, 4, 1]
 ################################
 # General math
 ################################
-@deprecated("Please use math.isnan or alg.isnan for a generic approach for vectors and matrices")
-def is_nan(obj: float) -> bool:
-    """Check if "not a number"."""
-
-    return math.isnan(obj)
-
-
 def order(x: float) -> int:
     """Get the order of magnitude of a number."""
 
     if x == 0:
         return 0
     return math.floor(math.log10(abs(x)))
-
-
-@deprecated("This will be removed at a future time")
-def no_nans(value: VectorLike | Iterable[float], default: float = 0.0) -> Vector:
-    """Ensure there are no `NaN` values in a sequence."""
-
-    return [(default if is_nan(x) else x) for x in value]
-
-
-@deprecated("This will be removed at a future time")
-def no_nan(value: float, default: float = 0.0) -> float:
-    """Convert list of numbers or single number to valid numbers."""
-
-    return default if is_nan(value) else value
 
 
 def round_half_up(n: float, scale: int = 0) -> float:
@@ -2210,52 +2188,6 @@ def subtract(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...
     ...
 
 subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")  # type: ignore[assignment]
-
-
-@overload
-def apply(fn: Callable[..., float], a: float, b: float | None = None) -> float:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: float | VectorLike, b: VectorLike) -> Vector:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: VectorLike, b: float | VectorLike | None = None) -> Vector:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: MatrixLike, b: float | VectorLike | MatrixLike) -> Matrix:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: float | VectorLike | MatrixLike, b: MatrixLike) -> Matrix:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: TensorLike, b: float | ArrayLike) -> Tensor:
-    ...
-
-
-@overload
-def apply(fn: Callable[..., float], a: float | ArrayLike, b: TensorLike) -> Tensor:
-    ...
-
-
-@deprecated("Use vectorize1 or vectorize2 (comparable in speed and features) or vectorize (more general purpose)")
-def apply(
-    fn: Callable[..., float],
-    *args: ArrayLike | float,
-    dims: DimHints | None = None
-) -> float | Array:
-    """Apply a given function over each element of the matrix."""
-
-    return (vectorize2 if len(args) == 2 else vectorize1)(fn)(*args, dims=dims) # type: ignore[operator, no-any-return]
 
 
 def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:

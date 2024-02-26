@@ -5,6 +5,9 @@
 -   **BREAK**: The CSS HDR spec now defines the polar spaces such as JzCzhz `color()` with hue channels that support
     traditional hue syntax instead of percentages. Updated all polar spaces that are represented in the `color()` format
     to support this change. This is likely low impact as using percentages for hues is fairly uncommon.
+-   **BREAK**: Remove previously deprecated functions: `algebra.apply`, `algebra.no_nans`, `algebra.no_nan`,
+    `algebra.is_nan`, `Labish.labish_names`, `Labish.labish_indexes`, `LChish.lchish_names`, and
+    `LCHish.lchish_indexes`.
 -   **NEW**: `jzazbz`, `jzczhz`, `ictcp`, `rec2100-pq`, and `rec2100-hlg` are now formally recognized, and by default
     serialized, without the `--` prefix as all the spaces are now part of the official HDR specification in CSS.
     Previously, the spec was unofficial. `--` prefixed names will still be recognized, but at some future time `--`
