@@ -69,8 +69,9 @@ flowchart TB
 
     rec2020-linear --- xyz-d65
         rec2020 --- rec2020-linear
-        rec2100-pq --- rec2020-linear
-        rec2100-hlg --- rec2020-linear
+        rec2100-linear --- rec2020-linear
+            rec2100-pq --- rec2100-linear
+            rec2100-hlg --- rec2100-linear
 
     prophoto-rgb --- prophoto-rgb-linear --- xyz-d50 ----- xyz-d65
 
@@ -113,6 +114,7 @@ flowchart TB
     rec2020-linear(Linear Rec. 2020)
     rec2100-pq(Rec. 2100 PQ)
     rec2100-hlg(Rec. 2100 HLG)
+    rec2100-linear(Linear Rec. 2100)
     srgb-linear(Linear sRGB)
     srgb(sRGB)
     rec709(Rec. 709)
@@ -172,6 +174,7 @@ flowchart TB
     click rec2020-linear "./rec2020_linear/" _self
     click rec2100-pq "./rec2100_pq/" _self
     click rec2100-hlg "./rec2100_hlg/" _self
+    click rec2100-linear "./rec2100_linear/" _self
     click srgb-linear "./srgb_linear/" _self
     click srgb "./srgb/" _self
     click rec709 "./rec709/" _self

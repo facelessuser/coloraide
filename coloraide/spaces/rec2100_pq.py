@@ -13,7 +13,7 @@ from .. import util
 class Rec2100PQ(sRGBLinear):
     """Rec. 2100 PQ class."""
 
-    BASE = "rec2020-linear"
+    BASE = "rec2100-linear"
     NAME = "rec2100-pq"
     SERIALIZE = ('rec2100-pq', '--rec2100-pq',)
     WHITE = WHITES['2deg']['D65']

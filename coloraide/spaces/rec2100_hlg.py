@@ -87,7 +87,7 @@ def hlg_eotf(values: Vector, env: Environment) -> Vector:
 class Rec2100HLG(sRGBLinear):
     """Rec. 2100 HLG class."""
 
-    BASE = "rec2020-linear"
+    BASE = "rec2100-linear"
     NAME = "rec2100-hlg"
     SERIALIZE = ('rec2100-hlg', '--rec2100-hlg',)
     WHITE = WHITES['2deg']['D65']

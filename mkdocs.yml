@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/coloraide
 edit_uri: ""
 site_description: A library to aid in using colors
 copyright: |
-  Copyright &copy; 2020 - 2024 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -70,6 +70,7 @@ nav:
         - Linear Display P3: colors/display_p3_linear.md
         - Linear A98 RGB: colors/a98_rgb_linear.md
         - Linear Rec. 2020: colors/rec2020_linear.md
+        - Linear Rec. 2100: colors/rec2100_linear.md
         - Linear ProPhoto RGB: colors/prophoto_rgb_linear.md
 
       - Cylindrical sRGB Spaces:

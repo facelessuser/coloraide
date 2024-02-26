@@ -70,6 +70,7 @@ nav:
         - Linear Display P3: colors/display_p3_linear.md
         - Linear A98 RGB: colors/a98_rgb_linear.md
         - Linear Rec. 2020: colors/rec2020_linear.md
+        - Linear Rec. 2100: colors/rec2100_linear.md
         - Linear ProPhoto RGB: colors/prophoto_rgb_linear.md
 
       - Cylindrical sRGB Spaces:
