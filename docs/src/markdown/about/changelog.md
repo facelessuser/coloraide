@@ -7,6 +7,7 @@
     perceptual space.
 -   **NEW**: Ray tracing gamut mapping algorithm parameter `traces` will no longer do anything as the approach no longer
     has variable passes after new accuracy enhancements.
+-   **FIX**: Jzazbz bug was fixed that would result in a divide by zero failure.
 
 ## 3.0.1
 
