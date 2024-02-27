@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1
+
+-   **NEW**: Dramatically increase accuracy of ray tracing algorithm for gamut mapping.
+-   **NEW**: Add generic ray tracing method that can be used with any LCh perceptual space.
+-   **NEW**: Ray tracing gamut mapping algorithm parameter `traces` will no longer do anything as the approach no longer
+    has variable passes.
+
 ## 3.0.1
 
 -   **FIX**: Don't cache coercion of non-RGB space to RGB space in ray tracing gamut mapping algorithm as the underlying

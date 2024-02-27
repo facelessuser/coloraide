@@ -1,12 +1,8 @@
-"""
-Gamut mapping by scaling.
-
-This employs a faster approach than bisecting to reduce chroma.
-"""
-from .fit_oklch_raytrace import OkLChRayTrace
+"""Gamut map using ray tracing."""
+from .fit_raytrace import RayTrace
 
 
-class LChRayTrace(OkLChRayTrace):
+class LChRayTrace(RayTrace):
     """Apply gamut mapping using ray tracing."""
 
     NAME = 'lch-raytrace'

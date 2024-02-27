@@ -64,6 +64,7 @@ from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
 from .gamut.fit_oklch_raytrace import OkLChRayTrace
 from .gamut.fit_lch_raytrace import LChRayTrace
+from .gamut.fit_raytrace import RayTrace
 from .cat import CAT, Bradford
 from .filters import Filter
 from .filters.w3c_filter_effects import Sepia, Brightness, Contrast, Saturate, Opacity, HueRotate, Grayscale, Invert
@@ -1398,6 +1399,7 @@ Color.register(
         # Fit
         LChChroma(),
         OkLChChroma(),
+        RayTrace(),
         LChRayTrace(),
         OkLChRayTrace(),
 

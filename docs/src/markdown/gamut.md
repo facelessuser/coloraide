@@ -263,11 +263,11 @@ desaturated color. By using the default JND of 2 for LCh, the fuzziness of the M
 yellow. This isn't a problem in OkLCh, but it has its own quirks as well.
 
 /// tab | JND 0
-![Traces 3X](images/jnd-0.png)
+![JND 0](images/jnd-0.png)
 ///
 
 /// tab | JND 2
-![Traces 1X](images/jnd-2.png)
+![JND 2](images/jnd-2.png)
 ///
 
 #### LCh Chroma
@@ -389,14 +389,12 @@ achromatic version of the color (chroma set to zero) is calculated. Both of thes
 RGB color space. Then a ray is traced from the out of gamut RGB color to the achromatic color within the RGB cube
 representing the color gamut. The intersection of the line and the cube is returned as the most saturated color.
 Because the RGB space is not perceptual, the color is then corrected in the perceptual color space by setting the
-lightness and hue back to the original color's. Before the color is returned, a final clip is applied.
+lightness and hue back to the original color's. This correction in LCh may place the color once again out of gamut or
+in gamut potentially undersaturated. If out of gamut, we trace one more time correcting lightness and hue. Finally,
+to account for undersaturated colors, we project the vector back outside the RGB cube and find the point of the final
+gamut mapped color on the surface.
 
-This is an approximation, but with a couple of iterations of ray tracing and corrections before the final clip (backing
-off on the chroma a little on each attempt) you can get a color reasonably close to what you would get by reducing
-chroma via MINDE Chroma Reduction, but in less time.
-
-As noted, the one downside is that results aren't as accurate as using MINDE Chroma Reduction as it isn't directly
-operating in the perceptual space, but they are often very close.
+The results are comparable to MINDE using a low JND, but at much faster.
 
 As noted earlier, the targeted gamut should be an RGB space or RGB equivalent space.
 
@@ -425,24 +423,6 @@ Steps([c.fit('okhsl', method='oklch-raytrace') for c in Color.steps(['oklch(90% 
 Steps([c.fit('srgb', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 ```
 
-Lastly, all ray tracing methods allow configuring number of passes or traces performed, from as low as 1X up to 3X. More
-traces usually mean better results and closer hugging of the gamut shape, less traces means it will be faster, but with
-somewhat diminished results. By default 3X, the best, is used.
-
-Depending on the perceptual space used to correct the gamut mapping, this can expose non-optimal geometry. Consider the
-color `#!color color(display-p3 1 1 0)`. This can be particularly problematic when gamut mapping using CIELCh. 3X traces
-holds lightness very constant, and can get very desaturated yellow. If you use 1X traces, you get a less accurate color,
-but a color that makes more sense to the user. This is not a bug, but just the way a color space's geometry can work
-with you or against you. While this is not an issue in OkLCh, it has its own quirks.
-
-/// tab | 3X Traces
-![Traces 3X](images/trace-3x.png)
-///
-
-/// tab | 1X Traces
-![Traces 1X](images/trace-1x.png)
-///
-
 #### LCh Ray Tracing Chroma Reduction
 
 /// success | The `lch-raytrace` gamut mapping is registered in `Color` by default.
@@ -453,15 +433,6 @@ This is a ray tracing approach to chroma reduction using CIELCh D65. This can be
 ```py play
 Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
 Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace')
-```
-
-Ray Tracing Chroma Reduction can be performed at either 1X, 2X, or 3X traces, 3X being the default as it provides the
-best results. You can change the required traces on demand via the `traces` argument.
-
-```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace', traces=1)
-Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=2)
-Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace', traces=3)
 ```
 
 #### OkLCh Ray Tracing Chroma Reduction
@@ -476,14 +447,20 @@ Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace')
 Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace')
 ```
 
-Ray Tracing Chroma Reduction can be performed at either 1X, 2X, or 3X traces, 3X being the default as it provides the
-best results. You can change the required traces on demand via the `traces` argument.
+#### Ray Tracing Chroma Reduction in Any LCh space
+
+/// success | The `raytrace` gamut mapping is registered in `Color` by default.
+///
+
+This is a generic ray tracing approach that allows a user to specify any perceptual LCh-ish color space for use in
+gamut mapping with ray tracing.
 
 ```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace', traces=1)
-Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace', traces=2)
-Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace', traces=3)
+Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='cam16-jmh')
+Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='lchuv')
 ```
+
+Gamut mapping will be limited by the capabilities of the perceptual space being used.
 
 ## Why Not Just Clip?
 

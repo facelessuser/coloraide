@@ -54,7 +54,7 @@ class TestA98RGBSerialize(util.ColorAssertsPyTest):
         (
             'color(a98-rgb 1.2 0.2 0)',
             {'color': True, 'fit': 'lch-raytrace'},
-            'color(a98-rgb 0.99981 0.53028 0.39084)'
+            'color(a98-rgb 1 0.53149 0.37343)'
         ),
         ('color(a98-rgb 1.2 0.2 0)', {'fit': False}, 'color(a98-rgb 1.2 0.2 0)')
     ]
