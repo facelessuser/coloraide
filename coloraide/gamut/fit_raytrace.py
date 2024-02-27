@@ -124,9 +124,9 @@ def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector
     szy = ndz * size[1]
 
     # Cross terms
-    cxy = end[0] *start[1] - end[1] * start[0]
-    cxz = end[0] *start[2] - end[2] * start[0]
-    cyz = end[1] *start[2] - end[2] * start[1]
+    cxy = end[0] * start[1] - end[1] * start[0]
+    cxz = end[0] * start[2] - end[2] * start[0]
+    cyz = end[1] * start[2] - end[2] * start[1]
 
     # Absolute delta products
     axy = abs(ndx * ndy)
@@ -244,7 +244,8 @@ class RayTrace(Fit):
             H = lch + '.' + str(h)
 
             # Create a line from our color to color with zero lightness.
-            # Trace the line to the RGB cube finding the face and the point where it intersects.
+            # Trace the line to the RGB cube finding the face and the point
+            # where it intersects. Correct L and H, which will likely shift the point.
             # Take two rounds to get us as close as we can get.
             size = [1.0, 1.0, 1.0]
             for _ in range(2):
@@ -254,8 +255,9 @@ class RayTrace(Fit):
                     gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
 
             # We might be under saturated now, so extend the vector out,
-            # ignoring the original point and find the surface one last
-            # Give us the most saturated color at that point on the RGB cube.
+            # ignoring the original point, and find the surface one last time.
+            # This gives us the most saturated color directly out from that point
+            # on the RGB cube.
             x1, y1, z1 = achroma
             x2, y2, z2 = gamutcolor[:-1]
             x3 = x2 + (x2 - x1) * 100
@@ -266,6 +268,7 @@ class RayTrace(Fit):
                 gamutcolor[:-1] = intersection
                 gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
 
+            # Clip off any noise from the last L and H adjustment
             gamutcolor[:-1] = [alg.clamp(x, 0, 1) for x in gamutcolor[:-1]]
             color.update(gamutcolor)
 
