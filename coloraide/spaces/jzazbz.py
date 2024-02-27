@@ -186,7 +186,7 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     jz, az, bz = jzazbz
 
     # Calculate Iz
-    iz = (jz + D0) / (1 + D - D * (jz + D0))
+    iz = alg.zdiv((jz + D0), (1 + D - D * (jz + D0)))
 
     # Convert to LMS prime
     pqlms = alg.matmul(izazbz_to_lms_p_mi, [iz, az, bz], dims=alg.D2_D1)

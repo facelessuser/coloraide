@@ -54,7 +54,7 @@ class TestRec709Serialize(util.ColorAssertsPyTest):
         (
             'color(--rec709 1.2 0.2 0)',
             {'color': True, 'fit': 'lch-raytrace'},
-            'color(--rec709 1 0.41266 0.21703)'
+            'color(--rec709 1 0.40442 0.23311)'
         ),
         ('color(--rec709 1.2 0.2 0)', {'fit': False}, 'color(--rec709 1.2 0.2 0)')
     ]

@@ -54,7 +54,7 @@ class TestRec2020Serialize(util.ColorAssertsPyTest):
         (
             'color(rec2020 1.2 0.2 0)',
             {'color': True, 'fit': 'lch-raytrace'},
-            'color(rec2020 1 0.46614 0.08124)'
+            'color(rec2020 1 0.42308 0.14443)'
         ),
         ('color(rec2020 1.2 0.2 0)', {'fit': False}, 'color(rec2020 1.2 0.2 0)')
     ]

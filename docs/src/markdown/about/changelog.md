@@ -2,10 +2,11 @@
 
 ## 3.1
 
--   **NEW**: Dramatically increase accuracy of ray tracing algorithm for gamut mapping.
--   **NEW**: Add generic ray tracing method that can be used with any LCh perceptual space.
+-   **NEW**: Increase accuracy of the experimental ray tracing gamut mapping algorithm.
+-   **NEW**: Add generic gamut mapping algorithm that employs ray tracing method that can be used with any LCh
+    perceptual space.
 -   **NEW**: Ray tracing gamut mapping algorithm parameter `traces` will no longer do anything as the approach no longer
-    has variable passes.
+    has variable passes after new accuracy enhancements.
 
 ## 3.0.1
 

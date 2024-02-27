@@ -460,7 +460,38 @@ Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='cam16-jmh')
 Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='lchuv')
 ```
 
-Gamut mapping will be limited by the capabilities of the perceptual space being used.
+It should be noted that mapping will be limited by the capabilities of the perceptual space being used. Some color
+spaces can swing to varying degrees outside the visible spectrum. Some color spaces can tolerate this more than others,
+and this can affect gamut mapping results, this does not mean the gamut mapping approach does not work.
+
+Consider the example below. We take a very saturated yellow in Display P3 (`#!color color(display-p3 1 1 0)`) and then
+we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. This means
+lower lightness colors will retain a very high chroma that needs to be gamut mapped. What we can observe is some spaces
+will struggle to map these colors as the hue naturally shifts with these imaginary colors that are super low light but
+super high chroma. Some spaces handle this fine, and others do not.
+
+```py play
+yellow = Color('color(display-p3 1 1 0)')
+lightness_mask = Color('lch(0% none none)')
+Steps([c.fit('srgb', method='raytrace', lch='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', lch='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', lch='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+```
+
+While in these extreme cases, the space can fail, but that doesn't mean they can't be used in environments when where
+we know the values are not not beyond their capabilities, for instance, let's try the same thing, but now we use JzCzhz
+as the interpolating space. JzCzhz will not produce such extreme chroma values when working directly within it.
+
+```py play
+yellow = Color('color(display-p3 1 1 0)')
+lightness_mask = Color('color(jzczhz 0% none none)')
+Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
+Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
+```
+
+Every color space has limitations, some spaces just have more agreeable ones.
 
 ## Why Not Just Clip?
 
