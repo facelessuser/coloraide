@@ -545,7 +545,7 @@ def plot_gamut_in_space(
         return render_space_cyl(fig, space, gamut, resolution, opacity, edges, edgecolor, gmap)
 
 
-def plot_gamut_wire_frames(fig, space, gamut_wires, gmap):
+def plot_gamut_frames(fig, space, gamut_wires, gmap):
     """Plot gamut wire frames."""
 
     if not gamut_wires:
@@ -558,14 +558,23 @@ def plot_gamut_wire_frames(fig, space, gamut_wires, gmap):
         if res == 50:
             res = 51
 
+        opacity = 0
+        ecolor = '#333333'
+        edges = False
+        if color.startswith('opacity('):
+            opacity = float(color[8:-1].strip())
+        else:
+            ecolor = color
+            edges = True
+
         target = Color.CS_MAP[space]
         is_regular = isinstance(target, Regular)
         if is_regular:
             # Use a rectangular space for RGB-ish spaces to give a sharper cube
-            render_space_rect(fig, space, gamut, res, 0, True, color, gmap)
+            render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap)
         else:
             # Render the space plot using a cylindrical space as the gamut space
-            render_space_cyl(fig, space, gamut, res, 0, True, color, gmap)
+            render_space_cyl(fig, space, gamut, res, opacity, edges, ecolor, gmap)
 
 
 def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
@@ -754,11 +763,13 @@ def main():
         )
     )
     parser.add_argument(
-        '--gamut-wires',
+        '--gamut-shell',
         default='',
         help=(
             'Wire frames of other gamuts. Each should be separated by a semicolons, '
-            'and each gamut should be in the form gamut:color:resolution.'
+            'and each gamut should be in the form gamut:color:resolution. If "opacity(number)"" is '
+            'specified for the edge color, edges will be hidden and a transparent shell at the specified opacity '
+            'will be shown instead.'
         )
     )
     parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
@@ -829,8 +840,8 @@ def main():
         projection=args.projection
     )
 
-    # Plot additional gamut wire frames
-    plot_gamut_wire_frames(fig, args.space, args.gamut_wires, args.gmap)
+    # Plot additional gamut frames
+    plot_gamut_frames(fig, args.space, args.gamut_shell, args.gmap)
 
     # Plot interpolation
     plot_interpolation(
