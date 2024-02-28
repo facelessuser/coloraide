@@ -5,7 +5,7 @@ import argparse
 
 sys.path.insert(0, os.getcwd())
 
-from coloraide.everything import ColorAll as Color
+from coloraide.everything import ColorAll as Color  # noqa: E402
 
 
 def run(space, max_chroma):
