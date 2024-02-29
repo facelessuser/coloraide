@@ -203,6 +203,47 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges, ecolo
     return trace
 
 
+def store_coords(c, x, y, z, flags):
+    """Store coordinates."""
+
+    # LCh spaces
+    if flags['is_lchish']:
+        light, chroma, hue = c._space.names()
+        a, b = alg.polar_to_rect(c[chroma], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[light])
+
+    # HSL, HSV, or HWB spaces
+    elif flags['is_hslish'] or flags['is_hsvish'] or flags['is_hwbish']:
+        hue, sat, light = c._space.names()
+        a, b = alg.polar_to_rect(c[sat], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[light])
+
+    # Any other generic cylindrical space that doesn't fit in the categories above.
+    elif flags['is_cyl']:
+        hue = c._space.hue_index()
+        a, b = alg.polar_to_rect(c[1], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[2])
+
+    # Lab spaces
+    elif flags['is_labish']:
+        light, a, b = c._space.names()
+        x.append(c[a])
+        y.append(c[b])
+        z.append(c[light])
+
+    # Non-cylindrical spaces could be done here, but normally are not.
+    else:
+        x.append(c[0])
+        y.append(c[1])
+        z.append(c[2])
+
+
 def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap):
     """
     Renders the color space using an RGB cylinder that is then mapped to the given space.
@@ -213,16 +254,18 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
     """
 
     target = Color.CS_MAP[space]
-    is_cyl = isinstance(target, Cylindrical)
-    is_labish = isinstance(target, Labish)
-    is_lchish = isinstance(target, LChish)
-    is_hslish = isinstance(target, HSLish)
-    is_hwbish = isinstance(target, HWBish)
-    is_hsvish = isinstance(target, HSVish)
+    flags = {
+        'is_cyl': isinstance(target, Cylindrical),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
 
     # Determine the gamut mapping space to use.
     # Some spaces cannot be generalized (HWB and HPLuv for instance).
-    if is_hwbish or space in FORCE_OWN_GAMUT:
+    if flags['is_hwbish'] or space in FORCE_OWN_GAMUT:
         ColorCyl = Color
         gamut_space = space
     elif gamut in CYL_GAMUT:
@@ -259,42 +302,8 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
-            # LCh spaces
-            if is_lchish:
-                light, chroma, hue = c._space.names()
-                a, b = alg.polar_to_rect(c[chroma], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
 
-            # HSL, HSV, or HWB spaces
-            elif is_hslish or is_hsvish or is_hwbish:
-                hue, sat, light = c._space.names()
-                a, b = alg.polar_to_rect(c[sat], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
-
-            # Any other generic cylindrical space that doesn't fit in the categories above.
-            elif is_cyl:
-                hue = c._space.hue_index()
-                a, b = alg.polar_to_rect(c[1], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[2])
-
-            # Lab spaces
-            elif is_labish:
-                light, a, b = c._space.names()
-                x.append(c[a])
-                y.append(c[b])
-                z.append(c[light])
-
-            # Non-cylindrical spaces could be done here, but normally are not.
-            else:
-                x.append(c[0])
-                y.append(c[1])
-                z.append(c[2])
+            store_coords(c, x, y, z, flags)
 
             # Fit gamut
             if not c.in_gamut():
@@ -327,10 +336,10 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
     fig.add_traces(trace)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if is_hwbish or space in CYL_GAMUT:
+    if flags['is_hwbish'] or space in CYL_GAMUT:
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, ecolor, gmap))
 
-    if is_cyl and not is_labish and not is_lchish:
+    if flags['is_cyl'] and not flags['is_labish'] and not flags['is_lchish']:
         # We normally get a bottom except in the case of HWB.
         fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, ecolor, gmap))
 
@@ -586,12 +595,14 @@ def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
     gamut_mapping = gmap_colors.split(';')
     if gamut_mapping:
         target = Color.CS_MAP[space]
-        is_labish = isinstance(target, Labish)
-        is_lchish = isinstance(target, LChish)
-        is_cyl = isinstance(target, Cylindrical)
-        is_hslish = isinstance(target, HSLish)
-        is_hwbish = isinstance(target, HWBish)
-        is_hsvish = isinstance(target, HSVish)
+        flags = {
+            'is_cyl': isinstance(target, Cylindrical),
+            'is_labish': isinstance(target, Labish),
+            'is_lchish': isinstance(target, LChish),
+            'is_hslish': isinstance(target, HSLish),
+            'is_hwbish': isinstance(target, HWBish),
+            'is_hsvish': isinstance(target, HSVish)
+        }
 
         for c in gamut_mapping:
             c1 = Color(c)
@@ -602,41 +613,7 @@ def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
             y = []
             z = []
             for c in [c1, c2]:
-                if is_lchish:
-                    light, chroma, hue = c._space.names()
-                    a, b = alg.polar_to_rect(c[chroma], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[light])
-
-                # HSL, HSV, or HWB spaces
-                elif is_hslish or is_hsvish or is_hwbish:
-                    hue, sat, light = c._space.names()
-                    a, b = alg.polar_to_rect(c[sat], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[light])
-
-                # Any other generic cylindrical space that doesn't fit in the categories above.
-                elif is_cyl:
-                    hue = c._space.hue_index()
-                    a, b = alg.polar_to_rect(c[1], c[hue])
-                    x.append(a)
-                    y.append(b)
-                    z.append(c[2])
-
-                # Lab spaces
-                elif is_labish:
-                    light, a, b = c._space.names()
-                    x.append(c[a])
-                    y.append(c[b])
-                    z.append(c[light])
-
-                # Non-cylindrical spaces
-                else:
-                    x.append(c[0])
-                    y.append(c[1])
-                    z.append(c[2])
+                store_coords(c, x, y, z, flags)
 
             fig.add_trace(
                 go.Scatter3d(
@@ -681,12 +658,14 @@ def plot_interpolation(
     )
 
     target = Color.CS_MAP[space]
-    is_labish = isinstance(target, Labish)
-    is_lchish = isinstance(target, LChish)
-    is_cyl = isinstance(target, Cylindrical)
-    is_hslish = isinstance(target, HSLish)
-    is_hwbish = isinstance(target, HWBish)
-    is_hsvish = isinstance(target, HSVish)
+    flags = {
+        'is_cyl': isinstance(target, Cylindrical),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
 
     x = []
     y = []
@@ -694,41 +673,7 @@ def plot_interpolation(
     cmap = []
     for c in colors:
         c.convert(space, in_place=True)
-        if is_lchish:
-            light, chroma, hue = c._space.names()
-            a, b = alg.polar_to_rect(c[chroma], c[hue])
-            x.append(a)
-            y.append(b)
-            z.append(c[light])
-
-        # HSL, HSV, or HWB spaces
-        elif is_hslish or is_hsvish or is_hwbish:
-            hue, sat, light = c._space.names()
-            a, b = alg.polar_to_rect(c[sat], c[hue])
-            x.append(a)
-            y.append(b)
-            z.append(c[light])
-
-        # Any other generic cylindrical space that doesn't fit in the categories above.
-        elif is_cyl:
-            hue = c._space.hue_index()
-            a, b = alg.polar_to_rect(c[1], c[hue])
-            x.append(a)
-            y.append(b)
-            z.append(c[2])
-
-        # Lab spaces
-        elif is_labish:
-            light, a, b = c._space.names()
-            x.append(c[a])
-            y.append(c[b])
-            z.append(c[light])
-
-        # Non-cylindrical spaces
-        else:
-            x.append(c[0])
-            y.append(c[1])
-            z.append(c[2])
+        store_coords(c, x, y, z, flags)
 
         c.convert('srgb', in_place=True)
         c.fit(method=gmap)
@@ -737,6 +682,7 @@ def plot_interpolation(
     fig.add_trace(
         go.Scatter3d(
             x=x, y=y, z=z,
+            mode = 'markers',
             marker={'color': cmap},
             showlegend=False
         )
@@ -822,6 +768,7 @@ def main():
     args = parser.parse_args()
 
     aspect = {k: float(v) for k, v in zip(['x', 'y', 'z'], args.aspect_ratio.split(':'))}
+    res = max(8, int(args.resolution))
 
     # Plot the color space
     fig = plot_gamut_in_space(
@@ -829,7 +776,7 @@ def main():
         args.gamut,
         title=args.title,
         dark=args.dark,
-        resolution=max(8, int(args.resolution)),
+        resolution=res,
         opacity=args.opacity,
         edges=args.edges,
         edge_color=args.edge_color,
