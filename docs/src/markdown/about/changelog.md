@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+-   **ENHANCE**: Improved performance of ray tracing GMA.
+
 ## 3.1
 
 -   **NEW**: Increase accuracy of the experimental ray tracing gamut mapping algorithm.

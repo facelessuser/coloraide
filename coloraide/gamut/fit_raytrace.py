@@ -248,29 +248,24 @@ class RayTrace(Fit):
             # where it intersects. Correct L and H, which will likely shift the point.
             # Take two rounds to get us as close as we can get.
             size = [1.0, 1.0, 1.0]
-            for _ in range(2):
-                face, intersection = raytrace_cube(size, gamutcolor[:-1], achroma)
+            xa, ya, za = achroma
+            for i in range(3):
+                # On subsequent runs correct L and H and
+                # extend the vector in case we are now under saturated
+                if i:
+                    gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
+                    x, y, z = gamutcolor[:-1]
+                    coords = [alg.lerp(xa, x, 100), alg.lerp(ya, y, 100), alg.lerp(za, z, 100)]
+                else:
+                    coords = gamutcolor[:-1]
+                face, intersection = raytrace_cube(size, coords, achroma)
                 if face:
                     gamutcolor[:-1] = intersection
-                    gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
+                    continue
+                break  # pragma: no cover
 
-            # We might be under saturated now, so extend the vector out,
-            # ignoring the original point, and find the surface one last time.
-            # This gives us the most saturated color directly out from that point
-            # on the RGB cube.
-            x1, y1, z1 = achroma
-            x2, y2, z2 = gamutcolor[:-1]
-            x3 = x2 + (x2 - x1) * 100
-            y3 = y2 + (y2 - y1) * 100
-            z3 = z2 + (z2 - z1) * 100
-            face, intersection = raytrace_cube(size, [x3, y3, z3], achroma)
-            if face:
-                gamutcolor[:-1] = intersection
-                gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
-
-            # Clip off any noise from the last L and H adjustment
-            gamutcolor[:-1] = [alg.clamp(x, 0, 1) for x in gamutcolor[:-1]]
             color.update(gamutcolor)
 
+        # If we have coerced a space to RGB, update the original
         if coerced:
             coerced.update(color)
