@@ -2,7 +2,7 @@
 
 ## 3.1.1
 
--   **ENHANCE**: Improved performance of ray tracing GMA.
+-   **ENHANCE**: Improved performance of ray tracing gamut mapping algorithm.
 
 ## 3.1
 
