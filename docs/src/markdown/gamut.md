@@ -7,7 +7,7 @@ make it easy for authors and artists to know exactly where those color boundarie
 space is designed for is called a color gamut.
 
 There are some color spaces that are theoretically unbounded, and even some color spaces that are bounded but can
-actually still give meaningful data if extended, but often, when it comes time to display a color, paint an a product,
+actually still give meaningful data if extended, but often, when it comes time to display a color, paint a product, or
 print a book, the actual colors are limited to what that device or process can handle.
 
 The sRGB and Display P3 color spaces are both RGB color spaces, but they actually can represent a different amount of
@@ -27,8 +27,18 @@ help find a suitable, alternative color that is within the gamut.
 
 ## Checking Gamut
 
-When dealing with colors, it can be important to know whether a color is within its own gamut. The `in_gamut` function
-allows for comparing the current color's specified values against the color space's gamut.
+When dealing with colors, it can be important to know whether a color is within its own gamut. Let's say we are working
+with colors in Display P3, but we want to output to an sRGB display. Let's say the color of interest is
+`#!color color(display-p3 1 0 0)`. If we plot the color as shown below, we can see that it is in Display P3, the faint
+transparent shell, but it is outside the sRGB gamut, the color solid in the middle. We'd like to detect these cases and
+make an adjustment to ensure we don't get unexpected behavior.
+
+
+![Out of Gamut](images/out-of-gamut-3d.png)
+
+
+The `in_gamut` function allows for comparing the current color's specified values against the target color space's
+gamut.
 
 Let's assume we have a color `#!color rgb(30% 105% 0%)`. The color is out of gamut due to the green channel exceeding
 the channel's limit of `#!py3 100%`. When we execute `in_gamut`, we can see that the color is not in its own gamut.
@@ -37,9 +47,15 @@ the channel's limit of `#!py3 100%`. When we execute `in_gamut`, we can see that
 Color("rgb(30% 105% 0%)").in_gamut()
 ```
 
-On the other hand, some color spaces do not have a limit. CIELab is one such color space. Sometimes limits will be
-placed on the color space channels for practicality, but theoretically, there are no bounds. When we check a CIELab
-color, we will find that it is always considered in gamut.
+On the other hand, some color spaces do not have a limit. CIELab and Oklab are such color spaces and can be represented
+in any gamut that'd you'd like.
+
+![Out of Gamut](images/oklab-gamuts-3d.png)
+
+Sometimes limits will be placed on the color space channels (as done above) for practicality, but theoretically, there
+are no bounds.
+
+When we check a CIELab color, we will find that it is always considered in gamut as it has no gamut.
 
 ```py play
 Color("lab(200% -20 40 / 1)").in_gamut()
@@ -144,7 +160,12 @@ that have a looser conversion algorithm. There may even be cases where it may be
 ## Gamut Mapping Colors
 
 Gamut mapping is the process of taking a color that is out of gamut and adjusting it in such a way that it fits within
-the gamut. There are various ways to map or compress values of an out of bound color to an in bound color, each with
+the gamut. Essentially, gamut mapping takes a color that is out of gamut and maps it to some place on the target gamut
+that makes sense.
+
+![Gamut Mapping](images/gamut-map-3d.png)
+
+There are various ways to map or compress values of an out of bound color to an in bound color, each with
 their own pros and cons. ColorAide offers a couple of methods related to gamut mapping: `#!py3 clip()` and
 `#!py3 fit()`. `#!py3 clip()` is a dedicated function that performs the speedy, yet naive, approach of simply truncating
 a color channel's value to fit within the specified gamut, and `#!py3 fit()` is a method that allows you to do more
@@ -382,41 +403,45 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ColorAide has developed an experimental chroma reduction technique that employs ray tracing. This approach specifically
 targets RGB gamuts, or spaces that can be represented with RGB gamuts. Additionally, if ColorAide can detect a linear
-version of the targeted RGB gamut, that version will be used automatically for best results.
+version of the targeted RGB gamut, that version will be used automatically for best results. Currently ColorAide can
+gamut map all officially supported color spaces as they either have an RGB gamut or can be coerced into one.
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
 achromatic version of the color (chroma set to zero) is calculated. Both of these colors are converted to the targeted
 RGB color space. Then a ray is traced from the out of gamut RGB color to the achromatic color within the RGB cube
-representing the color gamut. The intersection of the line and the cube is returned as the most saturated color.
-Because the RGB space is not perceptual, the color is then corrected in the perceptual color space by setting the
-lightness and hue back to the original color's. This correction in LCh may place the color once again out of gamut or
-in gamut potentially undersaturated. If out of gamut, we trace one more time correcting lightness and hue. Finally,
-to account for undersaturated colors, we project the vector back outside the RGB cube and find the point of the final
-gamut mapped color on the surface.
+find the intersection of the cube and the ray.
 
-The results are comparable to MINDE using a low JND, but at much faster.
+![Ray Trace Example](images/raytrace-3d.png)
 
-As noted earlier, the targeted gamut should be an RGB space or RGB equivalent space.
+The intersection of the line and the cube is returned as the most saturated color, but because the RGB space is not
+perceptual, the color is then corrected in the perceptual color space by setting the lightness and hue back to the
+original color's. This correction in an LCh space will place the color even closer to the target, but may place the
+color once again out of the gamut or in gamut potentially undersaturated. These issues can be corrected by projecting
+the line from the achromatic color, through the new corrected point, and back out the RGB cube, ignoring the original
+color. Then we can trace the line back to the surface again. About two iterations of this and we have a color with
+chroma reduced very close to the sRGB gamut's surface. Then we can clip off any noise.
+
+The results are comparable to MINDE using a low JND, but resolves much faster.
 
 ```py play
 Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
 ```
 
 As noted earlier, this method specifically targets RGB gamuts. This is because the ray tracing is performed on a simple
-RGB cube which is easy to calculate. ColorAide maps almost all non-RGB gamuts to an actual RGB gamut, and those gamuts
-are often associated with their linear RGB counterpart which is preferred when gamut mapping, but there are a few
+RGB cube which is easy to calculate. ColorAide maps almost all colors to an RGB gamut, if they have one. And those
+gamuts are often associated with a linear RGB counterpart which is preferred when gamut mapping, but there are a few
 color spaces/models that do not map to an obvious RGB gamut.
 
-HPLuv, which is only defined as a cylindrical color space that represent only a subset of the sRGB color space has no
+HPLuv, which is only defined as a cylindrical color space that represent only a subset of the sRGB color space, has no
 defined RGB gamut on which to operate on. Additionally Okhsl and Okhsv are two cylindrical color spaces, based on the
 perceptual Oklab color space, that are meant to target the sRGB gamut, but are only a loose approximation which actually
 can slightly clip the sRGB gamut while simultaneously containing a few colors that exceed the sRGB gamut. ColorAide will
-not automatically associate these color spaces with an RGB gamuts as their is not one that precisely represent the
-colors in Okhsl and Okhsv.
+not automatically associate these color spaces with an RGB gamut as their is not one that precisely represent the colors
+in Okhsl and Okhsv.
 
 With that said, ColorAide will translate these spaces into a cube shape to apply gamut mapping on them if they are
 specifically used. In the case of HPLuv, results are usually fine, but you may find that gamut mapping Okhsl
-may not provide the intended results. When gamut mapping such spaces, you may want to use the closest RGB gamut.
+may not provide the intended results. For Okhsl and Okhsv, it is better to use the closest RGB gamut.
 
 ```py play
 Steps([c.fit('okhsl', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
