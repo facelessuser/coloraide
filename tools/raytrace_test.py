@@ -64,7 +64,7 @@ if __name__ == "__main__":
         )
     )
 
-    title = args.title if args.title else title
+    title = args.title if args.title else ''
     go.Figure(
         layout={
             'title': title,

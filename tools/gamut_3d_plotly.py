@@ -722,7 +722,11 @@ def main():
     )
     parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
     parser.add_argument('--gmap-colors', default='', help='Color(s) to gamut map, separated by semicolons.')
-    parser.add_argument('--colors', default='', help='Plot arbitrary color points. Colors are separated with semicolons.')
+    parser.add_argument(
+        '--colors',
+        default='',
+        help='Plot arbitrary color points. Colors are separated with semicolons.'
+    )
 
     # Interpolation visualization
     parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
