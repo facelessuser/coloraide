@@ -89,7 +89,7 @@ def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
     return ColorRGB, RGB.NAME
 
 
-def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector]:
+def raytrace_box(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector]:
     """
     Returns the face and the intersection tuple of an array from start to end of a cube of size [x, y, z].
 
@@ -144,46 +144,61 @@ def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector
     if start[0] < 0 and 0 < end[0]:
         # Face 1: x == 0
         tau = -start[0] * ayz
-        if tau < face_tau and cxy >= 0 and cxz >= 0 and cxy <= -sxy and cxz <= -sxz:
+        if tau <= face_tau and cxy >= 0 and cxz >= 0 and cxy <= -sxy and cxz <= -sxz:
             face_tau = tau
             face_num = 1
 
     elif end[0] < size[0] and size[0] < start[0]:
         # Face 2: x == size[0]
         tau = (start[0] - size[0]) * ayz
-        if tau < face_tau and cxy <= syx and cxz <= szx and cxy >= syx - sxy and cxz >= szx - sxz:
+        if tau <= face_tau and cxy <= syx and cxz <= szx and cxy >= syx - sxy and cxz >= szx - sxz:
             face_tau = tau
             face_num = 2
 
     if start[1] < 0 and end[1] > 0:
         # Face 3: y == 0
         tau = -start[1] * axz
-        if tau < face_tau and cxy <= 0 and cyz >= 0 and cxy >= syx and cyz <= -syz:
+        if tau <= face_tau and cxy <= 0 and cyz >= 0 and cxy >= syx and cyz <= -syz:
             face_tau = tau
             face_num = 3
 
     elif start[1] > size[1] and end[1] < size[1]:
         # Face 4: y == size[1]
         tau = (start[1] - size[1]) * axz
-        if tau < face_tau and cxy >= -sxy and cyz <= szy and cxy <= syx - sxy and cyz >= szy - syz:
+        if tau <= face_tau and cxy >= -sxy and cyz <= szy and cxy <= syx - sxy and cyz >= szy - syz:
             face_tau = tau
             face_num = 4
 
     if start[2] < 0 and end[2] > 0:
         # Face 5: z == 0
         tau = -start[2] * axy
-        if tau < face_tau and cxz <= 0 and cyz <= 0 and cxz >= szx and cyz >= szy:
+        if tau <= face_tau and cxz <= 0 and cyz <= 0 and cxz >= szx and cyz >= szy:
             face_tau = tau
             face_num = 5
 
     elif start[2] > size[2] and end[2] < size[2]:
         # Face 6: z == size[2]
         tau = (start[2] - size[2]) * axy
-        if tau < face_tau and cxz >= -sxz and cyz >= -syz and cxz <= szx - sxz and cyz <= szy - syz:
+        if tau <= face_tau and cxz >= -sxz and cyz >= -syz and cxz <= szx - sxz and cyz <= szy - syz:
             face_tau = tau
             face_num = 6
 
     if face_num > 0:
+        # Handle a cases where the ray is perpendicular (and other similar cases).
+        # Use the face to identify the boundary limit and calculate intersection via interpolation.
+        if axyz == 0:
+            idx = (face_num - 1) // 2
+            boundary = ((face_num - 1) % 2) * size[idx]
+            factor = alg.ilerp(start[idx], end[idx], boundary)
+            return (
+                face_num,
+                [
+                    alg.lerp(start[0], end[0], factor),
+                    alg.lerp(start[1], end[1], factor),
+                    alg.lerp(start[2], end[2], factor),
+                ]
+            )
+
         tend = face_tau / axyz
         tstart = 1.0 - tend
         return (
@@ -194,8 +209,8 @@ def raytrace_cube(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector
                 tstart * start[2] + tend * end[2]
             ]
         )
-    else:  # pragma: no cover
-        return 0, []
+
+    return face_num, []  # pragma: no cover
 
 
 class RayTrace(Fit):
@@ -258,12 +273,13 @@ class RayTrace(Fit):
                     coords = [alg.lerp(xa, x, 100), alg.lerp(ya, y, 100), alg.lerp(za, z, 100)]
                 else:
                     coords = gamutcolor[:-1]
-                face, intersection = raytrace_cube(size, coords, achroma)
+                face, intersection = raytrace_box(size, coords, achroma)
                 if face:
                     gamutcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover
 
+            gamutcolor[:-1] = [alg.clamp(x, 0.0, 1.0) for x in gamutcolor[:-1]]
             color.update(gamutcolor)
 
         # If we have coerced a space to RGB, update the original

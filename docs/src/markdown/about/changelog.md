@@ -3,6 +3,7 @@
 ## 3.1.1
 
 -   **ENHANCE**: Improved performance of ray tracing gamut mapping algorithm.
+-   **FIX**: Fix corner cases for detecting ray trace hits on gamut.
 
 ## 3.1
 

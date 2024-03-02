@@ -3,6 +3,7 @@ import unittest
 import math
 from coloraide.everything import ColorAll as Color
 from coloraide import gamut
+from coloraide.gamut.fit_raytrace import raytrace_box
 from . import util
 
 
@@ -263,6 +264,28 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
 
         color = Color('oklch(90% .4 270)')
         self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.04813 270)'))
+
+    def test_trace_perpendicular(self):
+        """
+        Test perpendicular cases.
+
+        Cases are unlikely to occur, but were broken in the original implementation.
+        """
+
+        self.assertEqual(raytrace_box([1, 1, 1], [-2, 0.5, 0.5], [2, 0.5, 0.5]), (1, [0, 0.5, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [0.5, -2, 0.5], [0.5, 2, 0.5]), (3, [0.5, 0, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 0.5, -2], [0.5, 0.5, 2]), (5, [0.5, 0.5, 0]))
+
+        self.assertEqual(raytrace_box([1, 1, 1], [2, 0.5, 0.5], [-2, 0.5, 0.5]), (2, [1, 0.5, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 2, 0.5], [0.5, -2, 0.5]), (4, [0.5, 1, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 0.5, 2], [0.5, 0.5, -2]), (6, [0.5, 0.5, 1]))
+
+        self.assertEqual(raytrace_box([1, 1, 1], [2, 0.5, 0.5], [1.5, 0.5, 0.5]), (0, []))
+        self.assertEqual(raytrace_box([1, 1, 1], [0, 2, 0.5], [1, -2, 0.5]), (4, [0.25, 1, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [1, 2, 0.5], [0, -2, 0.5]), (4, [0.75, 1, 0.5]))
+
+        self.assertEqual(raytrace_box([1, 1, 1], [0.25, 2, 0.5], [0.75, -2, 0.5]), (4, [0.375, 1.0, 0.5]))
+        self.assertEqual(raytrace_box([1, 1, 1], [1, 2, 0.5], [0, -2, 0.5]), (4, [0.75, 1.0, 0.5]))
 
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
