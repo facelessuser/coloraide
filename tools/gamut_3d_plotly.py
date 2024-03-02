@@ -618,10 +618,10 @@ def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
             fig.add_trace(
                 go.Scatter3d(
                     x=x, y=y, z=z,
-                    line={'color': 'black'},
+                    line={'color': 'black', 'width': 2},
                     marker={
                         'color': c2.convert('srgb').to_string(hex=True, fit=gmap),
-                        'line': {'width': 8, 'color': 'black'}
+                        'size': [16, 0],
                     },
                     showlegend=False
                 )
