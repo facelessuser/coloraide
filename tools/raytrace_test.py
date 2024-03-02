@@ -16,33 +16,35 @@ if __name__ == "__main__":
     )
     # Flag arguments
     parser.add_argument(
-        '--size', '-S', default='1,1,1', help="Dimension sizes, default is 1:1:1."
+        '--size', '-s', default='1,1,1', help="Dimension sizes, default is 1:1:1."
     )
     parser.add_argument(
-        '--start', '-s', help="Staring point of ray in the form x,y,z."
-    )
-    parser.add_argument(
-        '--end', '-e', help="Ending point of ray in the form x,y,z."
+        '--ray', '-r', help="Staring point of ray in the form x1,y1,z1:x2,y2,z2;..."
     )
     args = parser.parse_args()
 
-    origin = (0,0,0)
-    size = [float(x) for x in args.size.split(',')]
-    start = [float(x) for x in args.start.split(',')]
-    end = [float(x) for x in args.end.split(',')]
-    xmin, ymin, zmin = origin
-    xmax, ymax, zmax = size
+    data = []
+    for ray in args.ray.split(';'):
+        a, b = ray.split(':')
+        origin = (0,0,0)
+        size = [float(x) for x in args.size.split(',')]
+        start = [float(x) for x in a.split(',')]
+        end = [float(x) for x in b.split(',')]
+        xmin, ymin, zmin = origin
+        xmax, ymax, zmax = size
 
-    face, pt = raytrace_box(size, start, end)
-    px, py, pz = zip(start, end) if not pt else zip(start, pt, end)
+        face, pt = raytrace_box(size, start, end)
+        px, py, pz = zip(start, end) if not pt else zip(start, pt, end)
+        data.append(
+            go.Scatter3d(
+                x=px,
+                y=py,
+                z=pz,
+                marker={"color": 'red' if not pt else 'green', "size": 4}
+            )
+        )
 
-    fig = go.Figure(data=[
-        go.Scatter3d(
-            x=px,
-            y=py,
-            z=pz,
-            marker={"color": "red", "size": 4}
-        ),
+    data.append(
         go.Mesh3d(
             # 8 vertices of a cube
             x=[xmin, xmin, xmax, xmax, xmin, xmin, xmax, xmax],
@@ -52,9 +54,9 @@ if __name__ == "__main__":
             j=[3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
             k=[0, 7, 2, 3, 6, 7, 1, 6, 5, 5, 7, 2],
             opacity=0.6,
-            color='#bbbbff',
+            color='#ddddff',
             flatshading = True
         )
-    ])
+    )
 
-    fig.show()
+    go.Figure(data=data).show()
