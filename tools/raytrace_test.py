@@ -21,6 +21,11 @@ if __name__ == "__main__":
     parser.add_argument(
         '--ray', '-r', help="Staring point of ray in the form x1,y1,z1:x2,y2,z2;..."
     )
+    parser.add_argument(
+        '--title', '-t', help="Title."
+    )
+    parser.add_argument('--height', '-H', type=int, default=800, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
     args = parser.parse_args()
 
     data = []
@@ -59,4 +64,12 @@ if __name__ == "__main__":
         )
     )
 
-    go.Figure(data=data).show()
+    title = args.title if args.title else title
+    go.Figure(
+        layout={
+            'title': title,
+            'width': args.width,
+            'height': args.height
+        },
+        data=data
+    ).show()

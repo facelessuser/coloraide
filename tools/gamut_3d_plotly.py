@@ -586,14 +586,15 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
             render_space_cyl(fig, space, gamut, res, opacity, edges, ecolor, gmap)
 
 
-def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
+def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
     """Plot gamut mapping."""
 
-    if not gmap_colors:
+    if not gmap_colors and not colors:
         return
 
-    gamut_mapping = gmap_colors.split(';')
-    if gamut_mapping:
+    gamut_mapping = gmap_colors.split(';') if gmap_colors.strip() else []
+    non_mapped = colors.split(';') if colors.strip() else []
+    if gamut_mapping or non_mapped:
         target = Color.CS_MAP[space]
         flags = {
             'is_cyl': isinstance(target, Cylindrical),
@@ -604,7 +605,8 @@ def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
             'is_hsvish': isinstance(target, HSVish)
         }
 
-        for c in gamut_mapping:
+        l = len(gamut_mapping)
+        for i, c in enumerate(gamut_mapping + non_mapped):
             c1 = Color(c)
             c2 = Color(c).fit(gamut, method=gmap)
             c1.convert(space, in_place=True)
@@ -612,7 +614,7 @@ def plot_gamut_mapping(fig, space, gamut, gmap_colors, gmap):
             x = []
             y = []
             z = []
-            for c in [c1, c2]:
+            for c in ([c1, c2] if i < l else [c1]):
                 store_coords(c, x, y, z, flags)
 
             fig.add_trace(
@@ -647,7 +649,7 @@ def plot_interpolation(
         return
 
     colors = Color.steps(
-        interp_colors.split(':'),
+        interp_colors.split(';'),
         space=interp_space,
         steps=steps,
         hue=hue,
@@ -720,9 +722,10 @@ def main():
     )
     parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
     parser.add_argument('--gmap-colors', default='', help='Color(s) to gamut map, separated by semicolons.')
+    parser.add_argument('--colors', default='', help='Plot arbitrary color points. Colors are separated with semicolons.')
 
     # Interpolation visualization
-    parser.add_argument('--interp-colors', default='', help='Interpolation colors.')
+    parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
     parser.add_argument('--interp-method', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--interp-space', default='oklab', help="Interpolation space.")
     parser.add_argument('--hue', default='shorter', help="Hue interpolation handling.")
@@ -806,7 +809,7 @@ def main():
     )
 
     # Plot gamut mapping examples
-    plot_gamut_mapping(fig, args.space, args.gamut, args.gmap_colors, args.gmap)
+    plot_colors(fig, args.space, args.gamut, args.gmap_colors, args.colors, args.gmap)
 
     # Show or save the data as an image, etc.
     if fig:
