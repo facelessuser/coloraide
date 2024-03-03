@@ -214,7 +214,6 @@ json.dumps(options)
 <script id="payload" type="text/python">
 """Plot color space using Plotly."""
 from scipy.spatial import Delaunay
-from plotly.figure_factory import create_trisurf as trisurf
 import plotly.graph_objects as go
 import math
 import plotly.io as io
@@ -233,7 +232,7 @@ def create_custom_hsl(gamut):
     cs = Color.CS_MAP[gamut]
 
     class HSL(type(Color.CS_MAP['hsl'])):
-        NAME = 'hsl-{}'.format(gamut)
+        NAME = '-hsl-{}'.format(gamut)
         BASE = gamut
         GAMUT_CHECK = gamut
         CLIP_SPACE = None
@@ -272,7 +271,7 @@ def create_custom_rgb(gamut):
         SCALE_SAT = cs.CHANNELS[INDEXES[1]].high
         SCALE_LIGHT = cs.CHANNELS[INDEXES[1]].high
 
-        def to_base(self, coords):
+        def to_base(self, coords):  # noqa: N804 # Faulty lint error
             """Convert from RGB to HSL."""
 
             coords = srgb_to_hsl(coords)
@@ -285,7 +284,7 @@ def create_custom_rgb(gamut):
                 ordered[self.INDEXES[e]] = c
             return ordered
 
-        def from_base(self, coords):
+        def from_base(self, coords):  # noqa: N804 # Faulty lint error
             """Convert from HSL to RGB."""
 
             coords = [coords[i] for i in self.INDEXES]
@@ -304,13 +303,56 @@ def create_custom_rgb(gamut):
     return ColorRGB
 
 
-def get_face_color(cmap, simplex):
-    """Get best color."""
+def create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity):
+    """Create the 3D renders."""
 
-    return Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb').to_string(hex=True)
+    i, j, k = tri.simplices.T
+    if opacity:
+        mesh = go.Mesh3d(
+            x=x,
+            y=y,
+            z=z,
+            i=i,
+            j=j,
+            k=k,
+            vertexcolor=cmap
+        )
+        mesh.update(hoverinfo='skip')
+        mesh.update(opacity=opacity)
+        fig.add_traces([mesh])
+
+    if edges:
+        # Draw the triangles, but ensure they are separate by adding `None` to the end.
+        xe = []
+        ye = []
+        ze = []
+        tri_colors = []
+        for p0, p1, p2 in tri.simplices:
+            xe.extend([x[p0], x[p1], x[p2], x[p0], None])
+            ye.extend([y[p0], y[p1], y[p2], y[p0], None])
+            ze.extend([z[p0], z[p1], z[p2], z[p0], None])
+            if ecolor is None:
+                tri_colors.extend([cmap[p0], cmap[p1], cmap[p2], cmap[p0], 'white'])
+
+        # Use a single color for edges.
+        if ecolor is not None:
+            tri_colors = ecolor
+
+        lines = go.Scatter3d(
+            x=xe,
+            y=ye,
+            z=ze,
+            mode='lines',
+            marker={'size':0},
+            showlegend=False,
+            name='',
+            line={'color': tri_colors}
+        )
+        lines.update(hoverinfo='skip')
+        fig.add_traces([lines])
 
 
-def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
+def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, ecolor, gmap):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
 
@@ -329,9 +371,9 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
     zpos = 0.0 if location == 'bottom' else 1.0 * factor
     # HWB bottom disc will have a single point in the center that is a different colors at different hues. The mesh will
     # resolve one of them as the center, usually red. This will cause color averaging in the center of the disc to be
-    # red-ish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
+    # reddish for all colors in the center. At lower resolutions, this is more noticeable. To avoid this, interpolate
     # rings very close to zero radius, but not zero radius. The mesh will still connect all the points near the center,
-    # but it will be too small to see.
+    # but will leave a small hole at the center which will be too small to see.
     start, end = 1.0 * factor, (1e-6 if is_hwbish and location == 'bottom' else 0.0)
 
     # Render the two halves of the disc
@@ -380,30 +422,59 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges):
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method=gmap)
             else:
                 s.clip()
-            cmap.append(s)
+            cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
     tri = Delaunay(list(zip(u, v)))
 
-    # Generate triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-
-    return trace
+    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
 
 
-def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
+def store_coords(c, x, y, z, flags):
+    """Store coordinates."""
+
+    # LCh spaces
+    if flags['is_lchish']:
+        light, chroma, hue = c._space.names()
+        a, b = alg.polar_to_rect(c[chroma], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[light])
+
+    # HSL, HSV, or HWB spaces
+    elif flags['is_hslish'] or flags['is_hsvish'] or flags['is_hwbish']:
+        hue, sat, light = c._space.names()
+        a, b = alg.polar_to_rect(c[sat], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[light])
+
+    # Any other generic cylindrical space that doesn't fit in the categories above.
+    elif flags['is_cyl']:
+        hue = c._space.hue_index()
+        a, b = alg.polar_to_rect(c[1], c[hue])
+        x.append(a)
+        y.append(b)
+        z.append(c[2])
+
+    # Lab spaces
+    elif flags['is_labish']:
+        light, a, b = c._space.names()
+        x.append(c[a])
+        y.append(c[b])
+        z.append(c[light])
+
+    # Non-cylindrical spaces could be done here, but normally are not.
+    else:
+        x.append(c[0])
+        y.append(c[1])
+        z.append(c[2])
+
+
+def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap):
     """
     Renders the color space using an RGB cylinder that is then mapped to the given space.
 
@@ -413,16 +484,18 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
     """
 
     target = Color.CS_MAP[space]
-    is_cyl = isinstance(target, Cylindrical)
-    is_labish = isinstance(target, Labish)
-    is_lchish = isinstance(target, LChish)
-    is_hslish = isinstance(target, HSLish)
-    is_hwbish = isinstance(target, HWBish)
-    is_hsvish = isinstance(target, HSVish)
+    flags = {
+        'is_cyl': isinstance(target, Cylindrical),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
 
     # Determine the gamut mapping space to use.
     # Some spaces cannot be generalized (HWB and HPLuv for instance).
-    if is_hwbish or space in FORCE_OWN_GAMUT:
+    if flags['is_hwbish'] or space in FORCE_OWN_GAMUT:
         ColorCyl = Color
         gamut_space = space
     elif gamut in CYL_GAMUT:
@@ -430,7 +503,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
         gamut_space = gamut
     else:
         ColorCyl = create_custom_hsl(gamut)
-        gamut_space = 'hsl-{}'.format(gamut)
+        gamut_space = '-hsl-{}'.format(gamut)
     gspace = ColorCyl.CS_MAP[gamut_space]
 
     # Adjust scaling factor if the mapping space requires it
@@ -459,84 +532,35 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges):
             u.append(c[2])
             v.append(c['hue'])
             c.convert(space, norm=False, in_place=True)
-            # LCh spaces
-            if is_lchish:
-                light, chroma, hue = c._space.names()
-                a, b = alg.polar_to_rect(c[chroma], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
 
-            # HSL, HSV, or HWB spaces
-            elif is_hslish or is_hsvish or is_hwbish:
-                hue, sat, light = c._space.names()
-                a, b = alg.polar_to_rect(c[sat], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[light])
-
-            # Any other generic cylindrical space that doesn't fit in the categories above.
-            elif is_cyl:
-                hue = c._space.hue_index()
-                a, b = alg.polar_to_rect(c[1], c[hue])
-                x.append(a)
-                y.append(b)
-                z.append(c[2])
-
-            # Lab spaces
-            elif is_labish:
-                light, a, b = c._space.names()
-                x.append(c[a])
-                y.append(c[b])
-                z.append(c[light])
-
-            # Non-cylindrical spaces could be done here, but normally are not.
-            else:
-                x.append(c[0])
-                y.append(c[1])
-                z.append(c[2])
-
-            # Fit gamut
-            if not c.in_gamut():
-                c.fit(method='lch-raytrace')
+            store_coords(c, x, y, z, flags)
 
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method=gmap)
             else:
                 s.clip()
 
-            cmap.append(s)
+            cmap.append(s.to_string(hex=True))
 
     # Calculate the triangles
     tri = Delaunay(list(zip(u, v)))
 
-    # Build the triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-    fig.add_traces(trace)
+    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
 
     # Generate tops for spaces that do not normally get tops automatically.
-    if is_hwbish or space in CYL_GAMUT:
-        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges))
+    if flags['is_hwbish'] or space in CYL_GAMUT:
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, ecolor, gmap)
 
-    if is_cyl and not is_labish and not is_lchish:
+    if flags['is_cyl'] and not flags['is_labish'] and not flags['is_lchish']:
         # We normally get a bottom except in the case of HWB.
-        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges))
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, ecolor, gmap)
 
     return fig
 
 
-def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges):
+def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, ecolor, gmap):
     """Render the RGB rectangular face."""
 
     x = []
@@ -558,37 +582,20 @@ def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, e
             Y.append(t[1])
             Z.append(t[2])
 
-            # Fit gamut
-            if not t.in_gamut():
-                t.fit(method='lch-raytrace')
-
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
-                s.fit(method='lch-raytrace')
+                s.fit(method=gmap)
             else:
                 s.clip()
-            cmap.append(s)
+            cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
     tri = Delaunay(list(zip(locals().get(dim[0]), locals().get(dim[1]))))
-
-    # Generate triangulated surface
-    trace = trisurf(
-        x=X, y=Y, z=Z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-
-    return trace
+    create3d(fig, X, Y, Z, tri, cmap, edges, ecolor, opacity)
 
 
-def render_space_rect(fig, space, gamut, resolution, opacity, edges):
+def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
     """Render rectangular space."""
 
     if space in FORCE_OWN_GAMUT:
@@ -612,20 +619,20 @@ def render_space_rect(fig, space, gamut, resolution, opacity, edges):
     cm = colorrgb(gamut, [1, 0, 1])
 
     # Interpolate two sides of a given face and interpolate the rest
-    s1 = colorrgb.steps([cy, cw], steps=resolution, space=gamut)
-    s2 = colorrgb.steps([cg, cc], steps=resolution, space=gamut)
-    s3 = colorrgb.steps([cr, cm], steps=resolution, space=gamut)
-    s4 = colorrgb.steps([ck, cb], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(colorrgb, s1, s3, ('y', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(colorrgb, s3, s4, ('x', 'z'), space, gamut, resolution, opacity, edges))
-    fig.add_traces(render_rect_face(colorrgb, s4, s2, ('y', 'z'), space, gamut, resolution, opacity, edges))
-    s1 = colorrgb.steps([cb, cc], steps=resolution, space=gamut)
-    s2 = colorrgb.steps([cm, cw], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
-    s1 = colorrgb.steps([ck, cg], steps=resolution, space=gamut)
-    s2 = colorrgb.steps([cr, cy], steps=resolution, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, resolution, opacity, edges))
+    s1 = colorrgb.steps([cy, cw], steps=res, space=gamut)
+    s2 = colorrgb.steps([cg, cc], steps=res, space=gamut)
+    s3 = colorrgb.steps([cr, cm], steps=res, space=gamut)
+    s4 = colorrgb.steps([ck, cb], steps=res, space=gamut)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    s1 = colorrgb.steps([cb, cc], steps=res, space=gamut)
+    s2 = colorrgb.steps([cm, cw], steps=res, space=gamut)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
+    s1 = colorrgb.steps([ck, cg], steps=res, space=gamut)
+    s2 = colorrgb.steps([cr, cy], steps=res, space=gamut)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
 
     return fig
 
@@ -638,6 +645,8 @@ def plot_gamut_in_space(
     resolution=200,
     opacity=1.0,
     edges=False,
+    edge_color='#333333',
+    gmap='raytrace',
     size=(800, 800),
     camera=None,
     aspect=None,
@@ -730,13 +739,159 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
+    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, method=gmap) if edge_color else None
+
     target = Color.CS_MAP[space]
     if is_regular:
         # Use a rectangular space for RGB-ish spaces to give a sharper cube
-        return render_space_rect(fig, space, gamut, resolution, opacity, edges)
+        return render_space_rect(fig, space, gamut, resolution, opacity, edges, edgecolor, gmap)
     else:
         # Render the space plot using a cylindrical space as the gamut space
-        return render_space_cyl(fig, space, gamut, resolution, opacity, edges)
+        return render_space_cyl(fig, space, gamut, resolution, opacity, edges, edgecolor, gmap)
+
+
+def plot_gamut_frames(fig, space, gamut_wires, gmap):
+    """Plot gamut wire frames."""
+
+    if not gamut_wires:
+        return
+
+    wires = gamut_wires.split(';') if gamut_wires else []
+    for wire in wires:
+        gamut, color, res = wire.split(':')
+        res = max(8, int(res))
+        if res == 50:
+            res = 51
+
+        opacity = 0.2
+        ecolor = None
+        edges = False
+        if color.startswith('edge('):
+            parts = [c.strip() for c in color[5:-1].split(',')]
+            if len(parts) == 1:
+                p1 = parts[0]
+                p2 = '0.2'
+            else:
+                p1, p2 = parts
+            if p1.lower() != 'false':
+                edges = True
+                if p1.lower() != 'true':
+                    ecolor = Color(p1).convert('srgb').to_string(hex=True, method=gmap)
+            opacity = float(p2)
+
+        target = Color.CS_MAP[space]
+        is_regular = isinstance(target, Regular)
+        if is_regular:
+            # Use a rectangular space for RGB-ish spaces to give a sharper cube
+            render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap)
+        else:
+            # Render the space plot using a cylindrical space as the gamut space
+            render_space_cyl(fig, space, gamut, res, opacity, edges, ecolor, gmap)
+
+
+def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
+    """Plot gamut mapping."""
+
+    if not gmap_colors and not colors:
+        return
+
+    gamut_mapping = gmap_colors.split(';') if gmap_colors.strip() else []
+    non_mapped = colors.split(';') if colors.strip() else []
+    if gamut_mapping or non_mapped:
+        target = Color.CS_MAP[space]
+        flags = {
+            'is_cyl': isinstance(target, Cylindrical),
+            'is_labish': isinstance(target, Labish),
+            'is_lchish': isinstance(target, LChish),
+            'is_hslish': isinstance(target, HSLish),
+            'is_hwbish': isinstance(target, HWBish),
+            'is_hsvish': isinstance(target, HSVish)
+        }
+
+        l = len(gamut_mapping)
+        for i, c in enumerate(gamut_mapping + non_mapped):
+            c1 = Color(c)
+            c2 = Color(c).fit(gamut, method=gmap)
+            c1.convert(space, in_place=True)
+            c2.convert(space, in_place=True)
+            x = []
+            y = []
+            z = []
+            for c in ([c1, c2] if i < l else [c1]):
+                store_coords(c, x, y, z, flags)
+
+            fig.add_trace(
+                go.Scatter3d(
+                    x=x, y=y, z=z,
+                    line={'color': 'black', 'width': 2},
+                    marker={
+                        'color': c2.convert('srgb').to_string(hex=True, fit=gmap),
+                        'size': [16, 0],
+                    },
+                    showlegend=False
+                )
+            )
+
+
+def plot_interpolation(
+    fig,
+    space,
+    interp_colors,
+    interp_space,
+    interp_method,
+    hue,
+    carryfoward,
+    powerless,
+    extrapolate,
+    steps,
+    gmap
+):
+    """Plot interpolations."""
+
+    if not interp_colors:
+        return
+
+    colors = Color.steps(
+        interp_colors.split(';'),
+        space=interp_space,
+        steps=steps,
+        hue=hue,
+        carryfoward=carryfoward,
+        powerless=powerless,
+        extrapolate=extrapolate,
+        method=interp_method
+    )
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': isinstance(target, Cylindrical),
+        'is_labish': isinstance(target, Labish),
+        'is_lchish': isinstance(target, LChish),
+        'is_hslish': isinstance(target, HSLish),
+        'is_hwbish': isinstance(target, HWBish),
+        'is_hsvish': isinstance(target, HSVish)
+    }
+
+    x = []
+    y = []
+    z = []
+    cmap = []
+    for c in colors:
+        c.convert(space, in_place=True)
+        store_coords(c, x, y, z, flags)
+
+        c.convert('srgb', in_place=True)
+        c.fit(method=gmap)
+        cmap.append(c.to_string(hex=True))
+
+    fig.add_trace(
+        go.Scatter3d(
+            x=x, y=y, z=z,
+            mode = 'markers',
+            marker={'color': cmap},
+            showlegend=False
+        )
+    )
 </script>
 <script type="text/javascript">
 let pyodide = null
@@ -848,11 +1003,14 @@ fig = plot_gamut_in_space(
     '${space}',
     '${gamut}',
     title="${gamut} gamut rendered in the ${space} space",
-    resolution=80,
+    resolution=${(edges) ? '50' : '80'},
     size=(600, 600),
     edges=${(edges) ? 'True' : 'False'},
+    edge_color='',
+    opacity=${(edges) ? '0.2' : '1'},
     aspect={'x': ${ratio[0]}, 'y': ${ratio[1]}, 'z': ${ratio[2]}},
-    projection='${projection}'
+    projection='${projection}',
+    gmap='raytrace'
 )
 
 fig.to_json()

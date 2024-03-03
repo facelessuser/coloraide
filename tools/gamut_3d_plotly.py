@@ -2,7 +2,6 @@
 import sys
 import argparse
 from scipy.spatial import Delaunay
-from plotly.figure_factory import create_trisurf as trisurf
 import plotly.graph_objects as go
 import math
 import plotly.io as io
@@ -99,13 +98,56 @@ def create_custom_rgb(gamut):
     return ColorRGB
 
 
-def get_face_color(cmap, simplex):
-    """Get best color."""
+def create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity):
+    """Create the 3D renders."""
 
-    return Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb').to_string(hex=True)
+    i, j, k = tri.simplices.T
+    if opacity:
+        mesh = go.Mesh3d(
+            x=x,
+            y=y,
+            z=z,
+            i=i,
+            j=j,
+            k=k,
+            vertexcolor=cmap
+        )
+        mesh.update(hoverinfo='skip')
+        mesh.update(opacity=opacity)
+        fig.add_traces([mesh])
+
+    if edges:
+        # Draw the triangles, but ensure they are separate by adding `None` to the end.
+        xe = []
+        ye = []
+        ze = []
+        tri_colors = []
+        for p0, p1, p2 in tri.simplices:
+            xe.extend([x[p0], x[p1], x[p2], x[p0], None])
+            ye.extend([y[p0], y[p1], y[p2], y[p0], None])
+            ze.extend([z[p0], z[p1], z[p2], z[p0], None])
+            if ecolor is None:
+                tri_colors.extend([cmap[p0], cmap[p1], cmap[p2], cmap[p0], '#000000'])
+
+        # Use a single color for edges.
+        if ecolor is not None:
+            tri_colors = ecolor
+
+        lines = go.Scatter3d(
+            x=xe,
+            y=ye,
+            z=ze,
+            mode='lines',
+            marker={'size':0},
+            showlegend=False,
+            name='',
+            line={'color': tri_colors}
+        )
+        lines.update(hoverinfo='skip')
+        fig.add_traces([lines])
 
 
-def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges, ecolor, gmap):
+def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, ecolor, gmap):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
 
@@ -172,35 +214,19 @@ def cyl_disc(ColorCyl, space, gamut, location, resolution, opacity, edges, ecolo
                 y.append(b)
                 z.append(c[2])
 
-            # Fit gamut
-            if not c.in_gamut():
-                c.fit(method=gmap)
-
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
                 s.fit(method=gmap)
             else:
                 s.clip()
-            cmap.append(s)
+
+            cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
     tri = Delaunay(list(zip(u, v)))
 
-    # Generate triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        edges_color=ecolor,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-
-    return trace
+    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
 
 
 def store_coords(c, x, y, z, flags):
@@ -305,10 +331,6 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
 
             store_coords(c, x, y, z, flags)
 
-            # Fit gamut
-            if not c.in_gamut():
-                c.fit(method=gmap)
-
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
@@ -316,37 +338,25 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
             else:
                 s.clip()
 
-            cmap.append(s)
+            cmap.append(s.to_string(hex=True))
 
     # Calculate the triangles
     tri = Delaunay(list(zip(u, v)))
 
-    # Build the triangulated surface
-    trace = trisurf(
-        x=x, y=y, z=z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        edges_color=ecolor,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-    fig.add_traces(trace)
+    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
 
     # Generate tops for spaces that do not normally get tops automatically.
     if flags['is_hwbish'] or space in CYL_GAMUT:
-        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, ecolor, gmap))
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, ecolor, gmap)
 
     if flags['is_cyl'] and not flags['is_labish'] and not flags['is_lchish']:
         # We normally get a bottom except in the case of HWB.
-        fig.add_traces(cyl_disc(ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, ecolor, gmap))
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, ecolor, gmap)
 
     return fig
 
 
-def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, ecolor, gmap):
+def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, ecolor, gmap):
     """Render the RGB rectangular face."""
 
     x = []
@@ -368,35 +378,17 @@ def render_rect_face(colorrgb, s1, s2, dim, space, gamut, resolution, opacity, e
             Y.append(t[1])
             Z.append(t[2])
 
-            # Fit gamut
-            if not t.in_gamut():
-                t.fit(method=gmap)
-
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
                 s.fit(method=gmap)
             else:
                 s.clip()
-            cmap.append(s)
+            cmap.append(s.to_string(hex=True))
 
     # Calculate triangles
     tri = Delaunay(list(zip(locals().get(dim[0]), locals().get(dim[1]))))
-
-    # Generate triangulated surface
-    trace = trisurf(
-        x=X, y=Y, z=Z,
-        simplices=tri.simplices,
-        show_colorbar=False,
-        plot_edges=edges,
-        edges_color=ecolor,
-        color_func=[get_face_color(cmap, t) for t in tri.simplices]
-    ).data
-    trace[0].update(opacity=opacity)
-    if edges:
-        trace[1].update(hoverinfo='skip')
-
-    return trace
+    create3d(fig, X, Y, Z, tri, cmap, edges, ecolor, opacity)
 
 
 def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
@@ -427,16 +419,16 @@ def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
     s2 = colorrgb.steps([cg, cc], steps=res, space=gamut)
     s3 = colorrgb.steps([cr, cm], steps=res, space=gamut)
     s4 = colorrgb.steps([ck, cb], steps=res, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap))
-    fig.add_traces(render_rect_face(colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap))
-    fig.add_traces(render_rect_face(colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap))
-    fig.add_traces(render_rect_face(colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap))
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
     s1 = colorrgb.steps([cb, cc], steps=res, space=gamut)
     s2 = colorrgb.steps([cm, cw], steps=res, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap))
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
     s1 = colorrgb.steps([ck, cg], steps=res, space=gamut)
     s2 = colorrgb.steps([cr, cy], steps=res, space=gamut)
-    fig.add_traces(render_rect_face(colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap))
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
 
     return fig
 
@@ -543,7 +535,7 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, fit='raytrace')
+    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, method=gmap) if edge_color else None
 
     target = Color.CS_MAP[space]
     if is_regular:
@@ -567,14 +559,21 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
         if res == 50:
             res = 51
 
-        opacity = 0
-        ecolor = '#333333'
+        opacity = 0.2
+        ecolor = None
         edges = False
-        if color.startswith('opacity('):
-            opacity = float(color[8:-1].strip())
-        else:
-            ecolor = color
-            edges = True
+        if color.startswith('edge('):
+            parts = [c.strip() for c in color[5:-1].split(',')]
+            if len(parts) == 1:
+                p1 = parts[0]
+                p2 = '0.2'
+            else:
+                p1, p2 = parts
+            if p1.lower() != 'false':
+                edges = True
+                if p1.lower() != 'true':
+                    ecolor = Color(p1).convert('srgb').to_string(hex=True, method=gmap)
+            opacity = float(p2)
 
         target = Color.CS_MAP[space]
         is_regular = isinstance(target, Regular)
@@ -714,10 +713,10 @@ def main():
         '--gamut-shell',
         default='',
         help=(
-            'Wire frames of other gamuts. Each should be separated by a semicolons, '
-            'and each gamut should be in the form gamut:color:resolution. If "opacity(number)"" is '
-            'specified for the edge color, edges will be hidden and a transparent shell at the specified opacity '
-            'will be shown instead.'
+            'Gamut shells are specified in the form gamut:edge(bool | color, int):resolution. Each shell should be '
+            'separated by a semicolon. The first parameter of the edge function can be `true` to turn on edges, '
+            '`false` to turn off edges, or a color to set the edges to one color. The next parameter sets the opacity, '
+            'of the surface (not the edges), the default being 0.2 if opacity is omitted.'
         )
     )
     parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
@@ -750,7 +749,11 @@ def main():
         )
     )
     parser.add_argument('--edges', '-e', action="store_true", help="Plot edges.")
-    parser.add_argument('--edge-color', default="#333333", help="Edge color.")
+    parser.add_argument(
+        '--edge-color',
+        default="",
+        help="Edge color. If no color is specified, edges will be based on vertices."
+    )
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=800, help="Height")
