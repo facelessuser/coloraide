@@ -105,6 +105,7 @@ def plot_slice(
     constant,
     max_chroma,
     gamut='srgb',
+    gmap=None,
     res=500
 ):
     """Plot a slice."""
@@ -130,7 +131,7 @@ def plot_slice(
             custom[lightness] = constant
             custom[chroma] = c
             if custom.in_gamut(gamut):
-                cmap.append(custom.convert('srgb').to_string(hex=True))
+                cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap))
                 x.append(math.radians(h))
                 chromas.append(c)
         mx = max(chromas)
@@ -220,26 +221,39 @@ def main():
     ax.set_aspect('equal')
     figure.add_axes(ax)
 
+    gmap = None if not args.gamut_map_method else args.gamut_map_method
+
     maximums = plot_slice(
         CustomColor,
         space,
         c_value,
         float(args.max_chroma),
         gamut=args.gamut,
+        gmap=gmap,
         res=int(args.resolution)
     )
 
     if args.harmony:
         colors = c1.harmony(args.harmony, space=space)
         if args.map_colors:
-            [c.fit(args.gamut, method=None if not args.gamut_map_method else args.gamut_map_method) for c in colors]
+            [c.fit(args.gamut, method=gmap) for c in colors]
 
         hues = [m[0] for m in maximums]
         for c in colors:
             h = c[hue]
             i = bisect.bisect_left(hues, h)
-            t = alg.ilerp(maximums[i][0], maximums[i + 1][0], h)
-            max_c = alg.lerp(maximums[i][1], maximums[i + 1][1], t)
+            if i == 0:
+                start = len(hues) - 1
+                end = 0
+            elif i == len(hues):
+                end = 0
+                start = i - 1
+            else:
+                start = i - 1
+                end = i
+            t = alg.ilerp(maximums[start][0], maximums[end][0], h)
+            print(h, hues[start], hues[end])
+            max_c = alg.lerp(maximums[start][1], maximums[end][1], t)
             norm_c = c[chroma] / max_c
             hr = math.radians(h)
 
@@ -247,7 +261,7 @@ def main():
                 hr,
                 norm_c,
                 marker="o",
-                color=c.convert('srgb').to_string(hex=True),
+                color=c.convert('srgb').to_string(hex=True, fit=gmap),
                 edgecolor='black',
                 s=8 ** 2,
                 zorder=100
