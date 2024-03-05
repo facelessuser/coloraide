@@ -408,7 +408,7 @@ gamut map all officially supported color spaces as they either have an RGB gamut
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
 achromatic version of the color (chroma set to zero) is calculated. Both of these colors are converted to the targeted
-RGB color space. Then a ray is traced from the out of gamut RGB color to the achromatic color within the RGB cube
+RGB color space. Then a ray is traced from the out of gamut RGB color to the achromatic color within the RGB cube to
 find the intersection of the cube and the ray.
 
 ![Ray Trace Example](images/raytrace-3d.png)
@@ -417,11 +417,35 @@ The intersection of the line and the cube is returned as the most saturated colo
 perceptual, the color is then corrected in the perceptual color space by setting the lightness and hue back to the
 original color's. This correction in an LCh space will place the color even closer to the target, but may place the
 color once again out of the gamut or in gamut potentially undersaturated. These issues can be corrected by projecting
-the line from the achromatic color, through the new corrected point, and back out the RGB cube, ignoring the original
+a new ray from the achromatic color, through the new corrected point, and back out the RGB cube, ignoring the original
 color. Then we can trace the line back to the surface again. About two iterations of this and we have a color with
-chroma reduced very close to the sRGB gamut's surface. Then we can clip off any noise.
+chroma reduced very close to the sRGB gamut's surface. Finally, we can clip off any noise.
 
-The results are comparable to MINDE using a low JND, but resolves much faster.
+/// example | Ray Trace Steps
+1.  Trace from original color to achromatic color in the RGB space and find intersection.
+2.  Correct L and H in the targeted perceptual LCh model.
+3.  Project from the achromatic color, through the new corrected color, and back outside the RGB space and find
+    intersection again.
+4.  Repeat steps 2 and 3.
+5.  Clip the color in the RGB space.
+///
+
+/// note
+The goal is not to completely reduce chroma perfectly such that there is absolutely no shift in lightness and hue,
+just close enough that the eye could not perceive additional improvements. Currently, ∆L will be very small and ∆h will
+be very small in most regions, but at worst it can shift to at most ~4.4˚ in a few regions.
+
+```
+∆L = -0.0002675930809542537
+∆h = 4.433984999095699
+```
+
+Repeating step \#4 one additional time could reduce ∆h below 2 degrees, but since the difference is very hard for the
+eye to see, we currently favor the speed and only execute step \#4 once.
+///
+
+The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
+time.
 
 ```py play
 Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
@@ -441,10 +465,12 @@ in Okhsl and Okhsv.
 
 With that said, ColorAide will translate these spaces into a cube shape to apply gamut mapping on them if they are
 specifically used. In the case of HPLuv, results are usually fine, but you may find that gamut mapping Okhsl
-may not provide the intended results. For Okhsl and Okhsv, it is better to use the closest RGB gamut.
+may not provide the intended results. It should be noted that the currently suggested CSS gamut mapping algorithm
+(`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the closest RGB gamut.
 
 ```py play
 Steps([c.fit('okhsl', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('okhsl', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 Steps([c.fit('srgb', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 ```
 
