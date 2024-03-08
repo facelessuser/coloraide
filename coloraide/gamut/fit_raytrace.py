@@ -4,6 +4,7 @@ Gamut mapping by using ray tracing.
 This employs a faster approach than bisecting to reduce chroma.
 """
 from __future__ import annotations
+import math
 from .. import algebra as alg
 from ..gamut import Fit
 from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
@@ -89,128 +90,50 @@ def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
     return ColorRGB, RGB.NAME
 
 
-def raytrace_box(size: Vector, start: Vector, end: Vector) -> tuple[int, Vector]:
+def raytrace_box(start, end, bmin=(0.0, 0.0, 0,0), bmax=(1.0, 1.0, 1.0)):
     """
-    Returns the face and the intersection tuple of an array from start to end of a cube of size [x, y, z].
+    Return the intersection of an axis aligned box using slab method.
 
-    - 0: None, (point is None)
-    - 1: intersection with x==0 face,
-    - 2: intersection with x==size[0] face,
-    - 3: intersection with y==0 face,
-    - 4: intersection with y==size[1] face,
-    - 5: intersection with z==0 face,
-    - 6: intersection with z==size[2] face,
-
-    The cube is an axis-aligned cube: (0,0,0)-(size[0],size[1],size[2]).
-
-    ```
-    mwt (https://math.stackexchange.com/users/591865/mwt),
-    Finding the side of a cube intersecting a line using the shortest computation,
-    URL (version: 2020-08-01): https://math.stackexchange.com/q/3776157
-    ```
+    https://en.wikipedia.org/wiki/Slab_method
     """
 
-    # Negated deltas
-    ndx = start[0] - end[0]
-    ndy = start[1] - end[1]
-    ndz = start[2] - end[2]
+    tfar = math.inf
+    tnear = -math.inf
+    direction = []
+    for i in range(3):
+        a = start[i]
+        b = end[i]
+        d = b - a
+        direction.append(d)
+        bn = bmin[i]
+        bx = bmax[i]
 
-    # Sizes scaled by the negated deltas
-    sxy = ndx * size[1]
-    sxz = ndx * size[2]
-    syx = ndy * size[0]
-    syz = ndy * size[2]
-    szx = ndz * size[0]
-    szy = ndz * size[1]
+        # Both start and end are outside on one side
+        if (a < bn and b < bn) or (a > bx and b > bx):
+            return []
 
-    # Cross terms
-    cxy = end[0] * start[1] - end[1] * start[0]
-    cxz = end[0] * start[2] - end[2] * start[0]
-    cyz = end[1] * start[2] - end[2] * start[1]
+        # Non parallel case
+        elif d:
+            inv_d = 1 / d
+            t1 = (bmin[i] - a) * inv_d
+            t2 = (bmax[i] - a) * inv_d
+            tnear = max(min(t1, t2), tnear)
+            tfar = min(max(t1, t2), tfar)
 
-    # Absolute delta products
-    axy = abs(ndx * ndy)
-    axz = abs(ndx * ndz)
-    ayz = abs(ndy * ndz)
-    axyz = abs(ndz * axy)
+        # Parallel case outside
+        elif a < bn or a > bx:
+            return []
 
-    # Default to "no intersection"
-    face_num = 0
-    face_tau = abs(ndz * axy)
+    # No hit
+    if tnear > tfar or tfar < 0:
+        return []
 
-    # These variables are no longer used:
-    del ndx, ndy, ndz
-
-    if start[0] < 0 and 0 < end[0]:
-        # Face 1: x == 0
-        tau = -start[0] * ayz
-        if tau <= face_tau and cxy >= 0 and cxz >= 0 and cxy <= -sxy and cxz <= -sxz:
-            face_tau = tau
-            face_num = 1
-
-    elif end[0] < size[0] and size[0] < start[0]:
-        # Face 2: x == size[0]
-        tau = (start[0] - size[0]) * ayz
-        if tau <= face_tau and cxy <= syx and cxz <= szx and cxy >= syx - sxy and cxz >= szx - sxz:
-            face_tau = tau
-            face_num = 2
-
-    if start[1] < 0 and end[1] > 0:
-        # Face 3: y == 0
-        tau = -start[1] * axz
-        if tau <= face_tau and cxy <= 0 and cyz >= 0 and cxy >= syx and cyz <= -syz:
-            face_tau = tau
-            face_num = 3
-
-    elif start[1] > size[1] and end[1] < size[1]:
-        # Face 4: y == size[1]
-        tau = (start[1] - size[1]) * axz
-        if tau <= face_tau and cxy >= -sxy and cyz <= szy and cxy <= syx - sxy and cyz >= szy - syz:
-            face_tau = tau
-            face_num = 4
-
-    if start[2] < 0 and end[2] > 0:
-        # Face 5: z == 0
-        tau = -start[2] * axy
-        if tau <= face_tau and cxz <= 0 and cyz <= 0 and cxz >= szx and cyz >= szy:
-            face_tau = tau
-            face_num = 5
-
-    elif start[2] > size[2] and end[2] < size[2]:
-        # Face 6: z == size[2]
-        tau = (start[2] - size[2]) * axy
-        if tau <= face_tau and cxz >= -sxz and cyz >= -syz and cxz <= szx - sxz and cyz <= szy - syz:
-            face_tau = tau
-            face_num = 6
-
-    if face_num > 0:
-        # Handle a cases where the ray is perpendicular (and other similar cases).
-        # Use the face to identify the boundary limit and calculate intersection via interpolation.
-        if axyz == 0:
-            idx = (face_num - 1) // 2
-            boundary = ((face_num - 1) % 2) * size[idx]
-            factor = alg.ilerp(start[idx], end[idx], boundary)
-            return (
-                face_num,
-                [
-                    alg.lerp(start[0], end[0], factor),
-                    alg.lerp(start[1], end[1], factor),
-                    alg.lerp(start[2], end[2], factor),
-                ]
-            )
-
-        tend = face_tau / axyz
-        tstart = 1.0 - tend
-        return (
-            face_num,
-            [
-                tstart * start[0] + tend * end[0],
-                tstart * start[1] + tend * end[1],
-                tstart * start[2] + tend * end[2]
-            ]
-        )
-
-    return face_num, []  # pragma: no cover
+    # Calculate intersection with the nearest intersection
+    return [
+        start[0] + direction[0] * tnear,
+        start[1] + direction[1] * tnear,
+        start[2] + direction[2] * tnear
+    ]
 
 
 class RayTrace(Fit):
@@ -262,7 +185,6 @@ class RayTrace(Fit):
             # Trace the line to the RGB cube finding the face and the point
             # where it intersects. Correct L and H, which will likely shift the point.
             # Take two rounds to get us as close as we can get.
-            size = [1.0, 1.0, 1.0]
             xa, ya, za = achroma
             for i in range(3):
                 # On subsequent runs correct L and H and
@@ -273,8 +195,8 @@ class RayTrace(Fit):
                     coords = [alg.lerp(xa, x, 100), alg.lerp(ya, y, 100), alg.lerp(za, z, 100)]
                 else:
                     coords = gamutcolor[:-1]
-                face, intersection = raytrace_box(size, coords, achroma)
-                if face:
+                intersection = raytrace_box(coords, achroma)
+                if intersection:
                     gamutcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover

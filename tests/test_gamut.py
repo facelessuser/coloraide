@@ -272,20 +272,20 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         Cases are unlikely to occur, but were broken in the original implementation.
         """
 
-        self.assertEqual(raytrace_box([1, 1, 1], [-2, 0.5, 0.5], [2, 0.5, 0.5]), (1, [0, 0.5, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [0.5, -2, 0.5], [0.5, 2, 0.5]), (3, [0.5, 0, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 0.5, -2], [0.5, 0.5, 2]), (5, [0.5, 0.5, 0]))
+        self.assertEqual(raytrace_box([-2, 0.5, 0.5], [2, 0.5, 0.5]), [0, 0.5, 0.5])
+        self.assertEqual(raytrace_box([0.5, -2, 0.5], [0.5, 2, 0.5]), [0.5, 0, 0.5])
+        self.assertEqual(raytrace_box([0.5, 0.5, -2], [0.5, 0.5, 2]), [0.5, 0.5, 0])
 
-        self.assertEqual(raytrace_box([1, 1, 1], [2, 0.5, 0.5], [-2, 0.5, 0.5]), (2, [1, 0.5, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 2, 0.5], [0.5, -2, 0.5]), (4, [0.5, 1, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [0.5, 0.5, 2], [0.5, 0.5, -2]), (6, [0.5, 0.5, 1]))
+        self.assertEqual(raytrace_box([2, 0.5, 0.5], [-2, 0.5, 0.5]), [1, 0.5, 0.5])
+        self.assertEqual(raytrace_box([0.5, 2, 0.5], [0.5, -2, 0.5]), [0.5, 1, 0.5])
+        self.assertEqual(raytrace_box([0.5, 0.5, 2], [0.5, 0.5, -2]), [0.5, 0.5, 1])
 
-        self.assertEqual(raytrace_box([1, 1, 1], [2, 0.5, 0.5], [1.5, 0.5, 0.5]), (0, []))
-        self.assertEqual(raytrace_box([1, 1, 1], [0, 2, 0.5], [1, -2, 0.5]), (4, [0.25, 1, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [1, 2, 0.5], [0, -2, 0.5]), (4, [0.75, 1, 0.5]))
+        self.assertEqual(raytrace_box([2, 0.5, 0.5], [1.5, 0.5, 0.5]), [])
+        self.assertEqual(raytrace_box([0, 2, 0.5], [1, -2, 0.5]), [0.25, 1, 0.5])
+        self.assertEqual(raytrace_box([1, 2, 0.5], [0, -2, 0.5]), [0.75, 1, 0.5])
 
-        self.assertEqual(raytrace_box([1, 1, 1], [0.25, 2, 0.5], [0.75, -2, 0.5]), (4, [0.375, 1.0, 0.5]))
-        self.assertEqual(raytrace_box([1, 1, 1], [1, 2, 0.5], [0, -2, 0.5]), (4, [0.75, 1.0, 0.5]))
+        self.assertEqual(raytrace_box([0.25, 2, 0.5], [0.75, -2, 0.5]), [0.375, 1.0, 0.5])
+        self.assertEqual(raytrace_box([1, 2, 0.5], [0, -2, 0.5]), [0.75, 1.0, 0.5])
 
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):

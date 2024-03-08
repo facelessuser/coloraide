@@ -38,7 +38,7 @@ if __name__ == "__main__":
         xmin, ymin, zmin = origin
         xmax, ymax, zmax = size
 
-        face, pt = raytrace_box(size, start, end)
+        pt = raytrace_box(start, end)
         px, py, pz = zip(start, end) if not pt else zip(start, pt, end)
         data.append(
             go.Scatter3d(
