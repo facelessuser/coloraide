@@ -190,7 +190,6 @@ class RayTrace(Fit):
             # Trace the line to the RGB cube finding the face and the point
             # where it intersects. Correct L and H, which will likely shift the point.
             # Take two rounds to get us as close as we can get.
-            xa, ya, za = achroma
             for i in range(3):
                 # On subsequent runs correct L and H and
                 # extend the vector in case we are now under saturated
