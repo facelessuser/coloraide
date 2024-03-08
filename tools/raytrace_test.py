@@ -16,39 +16,48 @@ if __name__ == "__main__":
     )
     # Flag arguments
     parser.add_argument(
-        '--size', '-s', default='1,1,1', help="Dimension sizes, default is 1:1:1."
+        '--bmax',
+        '-B',
+        default='(1,1,1)',
+        help="Max axis aligned box point in the form `(x, y, z)`, default is (1, 1, 1)."
     )
     parser.add_argument(
-        '--ray', '-r', help="Staring point of ray in the form x1,y1,z1:x2,y2,z2;..."
+        '--bmin',
+        '-b',
+        default='(0,0,0)',
+        help="Min axis aligned box point in the form `(x, y, z)`, default is (0, 0, 0)."
+    )
+    parser.add_argument(
+        '--ray', '-r', action='append', help="Ray described in the form (x1,y1,z1)->(x2,y2,z2)."
     )
     parser.add_argument(
         '--title', '-t', help="Title."
     )
-    parser.add_argument('--height', '-H', type=int, default=800, help="Height")
-    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
+    parser.add_argument('--height', '-H', type=int, default=800, help="Diagram height.")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Diagram width.")
     args = parser.parse_args()
 
+    # Cast rays and find intersection with the defined box.
     data = []
-    for ray in args.ray.split(';'):
-        a, b = ray.split(':')
-        origin = (0,0,0)
-        size = [float(x) for x in args.size.split(',')]
-        start = [float(x) for x in a.split(',')]
-        end = [float(x) for x in b.split(',')]
-        xmin, ymin, zmin = origin
-        xmax, ymax, zmax = size
+    bmin = [float(v) for v in args.bmin.strip()[1:-1].split(',')]
+    bmax = [float(v) for v in args.bmax.strip()[1:-1].split(',')]
 
-        pt = raytrace_box(start, end)
-        px, py, pz = zip(start, end) if not pt else zip(start, pt, end)
+    for ray in args.ray:
+        start, end = [[float(v.strip()) for v in c.split(',')] for c in [r.strip()[1:-1] for r in ray.split('->')]]
+        intersect = raytrace_box(start, end, bmin=bmin, bmax=bmax)
+        px, py, pz = zip(start, end) if not intersect else zip(start, intersect, end)
         data.append(
             go.Scatter3d(
                 x=px,
                 y=py,
                 z=pz,
-                marker={"color": 'red' if not pt else 'green', "size": 4}
+                marker={"color": 'red' if not intersect else 'green', "size": 4}
             )
         )
 
+    # Render box.
+    xmin, ymin, zmin = bmin
+    xmax, ymax, zmax = bmax
     data.append(
         go.Mesh3d(
             # 8 vertices of a cube
@@ -58,11 +67,12 @@ if __name__ == "__main__":
             i=[7, 0, 0, 0, 4, 4, 6, 1, 4, 0, 3, 6],
             j=[3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
             k=[0, 7, 2, 3, 6, 7, 1, 6, 5, 5, 7, 2],
-            opacity=0.6,
-            color='#ddddff',
+            opacity=0.3,
+            color='#eeddff',
             flatshading = True
         )
     )
+    data[-1].update(hoverinfo='skip')
 
     title = args.title if args.title else ''
     go.Figure(
