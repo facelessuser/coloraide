@@ -287,6 +287,11 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(raytrace_box([0.25, 2, 0.5], [0.75, -2, 0.5]), [0.375, 1.0, 0.5])
         self.assertEqual(raytrace_box([1, 2, 0.5], [0, -2, 0.5]), [0.75, 1.0, 0.5])
 
+    def test_trace_miss(self):
+        """Test some cases that completely miss the box."""
+
+        self.assertEqual(raytrace_box([-1, -3, -1], [5, 6, 7]), [])
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """

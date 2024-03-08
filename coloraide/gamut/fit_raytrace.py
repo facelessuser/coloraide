@@ -125,10 +125,6 @@ def raytrace_box(
             tnear = max(min(t1, t2), tnear)
             tfar = min(max(t1, t2), tfar)
 
-        # Parallel case outside
-        elif a < bn or a > bx:
-            return []
-
     # No hit
     if tnear > tfar or tfar < 0:
         return []
