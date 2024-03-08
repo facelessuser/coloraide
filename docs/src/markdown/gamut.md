@@ -413,13 +413,21 @@ find the intersection of the cube and the ray.
 
 ![Ray Trace Example](images/raytrace-3d.png)
 
-The intersection of the line and the cube is returned as the most saturated color, but because the RGB space is not
-perceptual, the color is then corrected in the perceptual color space by setting the lightness and hue back to the
-original color's. This correction in an LCh space will place the color even closer to the target, but may place the
-color once again out of the gamut or in gamut potentially undersaturated. These issues can be corrected by projecting
-a new ray from the achromatic color, through the new corrected point, and back out the RGB cube, ignoring the original
-color. Then we can can find the intersection from the inside back out to the surface again. About two iterations of this
-and we have a color with chroma reduced very close to the sRGB gamut's surface. Finally, we can clip off any noise.
+/// note | Ray Trace Algorithm
+Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
+selected is the first one encountered when following the ray from the origin point in the direction of the specified end
+point.
+///
+
+The intersection of the line and the cube is returned as the most supported. saturated color. Because the RGB space is
+not perceptual, the color is not the ideal color that you would get if you ray traced in the perceptual LCh space. To 
+account for this, the color is then corrected in the perceptual color space by setting the lightness and hue back to the
+original color's. This correction in an LCh space will place the color even closer to the ideal target in the perceptual
+space. The color may be once again out of the gamut or in gamut potentially undersaturated, but to far less degree.
+These issues can be corrected by projecting a new ray, this time from inside the cube, from the achromatic color,
+through the new corrected point, and back out the RGB cube. Then we can can find the intersection from the inside back
+out to the surface again. About two iterations of this and we have a color with chroma reduced very close to the sRGB
+gamut's surface. Finally, we can clip off any noise.
 
 /// example | Ray Trace Steps
 1.  Trace from original color to achromatic color in the RGB space and find intersection.
@@ -512,14 +520,16 @@ Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='lchuv')
 ```
 
 It should be noted that mapping will be limited by the capabilities of the perceptual space being used. Some color
-spaces can swing to varying degrees outside the visible spectrum. Some color spaces can tolerate this more than others,
-and this can affect gamut mapping results, this does not mean the gamut mapping approach does not work.
+spaces can swing to varying degrees outside the visible spectrum and some perceptual LCh models can tolerate this more
+than others, and this can affect gamut mapping results, this does not mean the gamut mapping approach does not work,
+only that some color models may work better under more constraints than others.
 
 Consider the example below. We take a very saturated yellow in Display P3 (`#!color color(display-p3 1 1 0)`) and then
-we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. This means
-lower lightness colors will retain a very high chroma that needs to be gamut mapped. What we can observe is some spaces
-will struggle to map these colors as the hue naturally shifts with these imaginary colors that are super low light but
-super high chroma. Some spaces handle this fine, and others do not.
+we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. We do this
+interpolation in CIELCh, which is known to have chroma that can swing very far outside the visible spectrum when
+interpolating hues at more extreme lightness. Finally, we gamut map in various LCh models. What we can observe is some
+models will struggle to map some of these colors as the models hue preservation can break down at extreme limits.
+Some models can tolerate this more than others.
 
 ```py play
 yellow = Color('color(display-p3 1 1 0)')
@@ -531,13 +541,21 @@ Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yell
 Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 ```
 
-While in these extreme cases, the space can fail, but that doesn't mean they can't be used in environments when where
-we know the values are not not beyond their capabilities, for instance, let's try the same thing, but now we use JzCzhz
-as the interpolating space. JzCzhz will not produce such extreme chroma values when working directly within it.
+In these extreme cases, some color models can produce undesirable results. This is often due to how they bend the hue
+lines to give better perceptual hues, but at some extreme points, often beyond the visual spectrum, these hues can
+drift. This doesn't mean these models can't be used, only that if they are, it needs to be in environments where we know
+the values are going to be within capabilities of the perceptual color model.
+
+For instance, let's try the same thing again, but now let's use the worst offender, JzCzhz, as the interpolating space.
+Since it is the least tolerant in these examples, we will use it as it will likely produce far less extreme colors
+outside the visible spectrum. The results look much better.
 
 ```py play
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(jzczhz 0% none none)')
+Steps([c.fit('srgb', method='raytrace', lch='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
+Steps([c.fit('srgb', method='raytrace', lch='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
+Steps([c.fit('srgb', method='raytrace', lch='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
 Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
 Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
 ```
