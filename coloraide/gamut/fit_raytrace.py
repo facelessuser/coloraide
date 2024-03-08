@@ -12,7 +12,7 @@ from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
-from ..types import Vector
+from ..types import Vector, VectorLike
 from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -90,7 +90,12 @@ def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
     return ColorRGB, RGB.NAME
 
 
-def raytrace_box(start, end, bmin=(0.0, 0.0, 0,0), bmax=(1.0, 1.0, 1.0)):
+def raytrace_box(
+    start: Vector,
+    end: Vector,
+    bmin: VectorLike = (0.0, 0.0, 0,0),
+    bmax: VectorLike = (1.0, 1.0, 1.0)
+) -> Vector:
     """
     Return the intersection of an axis aligned box using slab method.
 
