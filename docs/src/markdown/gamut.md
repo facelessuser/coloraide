@@ -418,14 +418,14 @@ perceptual, the color is then corrected in the perceptual color space by setting
 original color's. This correction in an LCh space will place the color even closer to the target, but may place the
 color once again out of the gamut or in gamut potentially undersaturated. These issues can be corrected by projecting
 a new ray from the achromatic color, through the new corrected point, and back out the RGB cube, ignoring the original
-color. Then we can trace the line back to the surface again. About two iterations of this and we have a color with
-chroma reduced very close to the sRGB gamut's surface. Finally, we can clip off any noise.
+color. Then we can can find the intersection from the inside back out to the surface again. About two iterations of this
+and we have a color with chroma reduced very close to the sRGB gamut's surface. Finally, we can clip off any noise.
 
 /// example | Ray Trace Steps
 1.  Trace from original color to achromatic color in the RGB space and find intersection.
 2.  Correct L and H in the targeted perceptual LCh model.
-3.  Project from the achromatic color, through the new corrected color, and back outside the RGB space and find
-    intersection again.
+3.  Project a new ray from the achromatic color, through the new corrected color, and back outside the RGB space and
+    find intersection again.
 4.  Repeat steps 2 and 3.
 5.  Clip the color in the RGB space.
 ///
