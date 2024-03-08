@@ -193,8 +193,9 @@ Steps([c.filter('tritan').clip() for c in confusing_colors])
 
 By default, ColorAide uses the [Brettel 1997 method][brettel] to simulate tritanopia as it is the only option that has
 decent accuracy for tritanopia. [Viénot, Brettel, and Mollon 1999 approach][vienot] is used to simulate protanopia and
-deuteranopia as it is not only faster than Brettel, but handles extreme case a little better. [Machado 2009][machado]
-has it strengths as well which we will cover in [Anomalous Trichromacy](#anomalous-trichromacy).
+deuteranopia as it is not only faster than Brettel, but it handles extreme cases a little better.
+[Machado 2009][machado] has its strengths as well which we will cover in
+[Anomalous Trichromacy](#anomalous-trichromacy).
 
 ```py play
 inputs = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
