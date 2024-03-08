@@ -43,7 +43,7 @@ class. The for features are as follows:
     both `shorter` and `longer` hue fix-ups that there should be no arc to interpolate along.
 
 3.  Auto powerless handling in CSS will force hues to be interpolated as powerless if under certain circumstances. This
-    is usually happens when color space chroma/saturation components are zero. While this behavior does make general
+    usually happens when a color space's chroma/saturation components are zero. While this behavior does make general
     sense, and ensures that a user is always treating achromatic colors as achromatic, it cripples the user's control of
     how a color is interpolated.
 
@@ -52,8 +52,8 @@ class. The for features are as follows:
     very transparent. Only through natural conversions do hues become achromatic. If a user has explicitly defined a
     hue, they need to use `normalize()` to force ColorAide to update powerless hues.
 
-    With all of this said, there are times when a user wants to force powerless hues, even when not explicitly defined.
-    In these cases ColorAide can enforce this behavior.
+    With all of this said, there are times when a user may want to force powerless hues, even when not explicitly
+    defined, in these cases ColorAide can enforce this behavior.
 
 4.  CSS also implements the idea of carrying forward undefined values during interpolation. Essentially, if a user
     specifies an undefined components, but interpolation is performed in a different color space, after conversion, if
