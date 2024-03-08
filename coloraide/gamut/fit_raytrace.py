@@ -113,23 +113,27 @@ def raytrace_box(
         bn = bmin[i]
         bx = bmax[i]
 
-        # Both start and end are outside on one side
-        if (a < bn and b < bn) or (a > bx and b > bx):
-            return []
-
         # Non parallel case
-        elif d:
+        if d:
             inv_d = 1 / d
             t1 = (bmin[i] - a) * inv_d
             t2 = (bmax[i] - a) * inv_d
             tnear = max(min(t1, t2), tnear)
             tfar = min(max(t1, t2), tfar)
 
+        # Parallel case outside
+        elif a < bn or a > bx:
+            return []
+
     # No hit
     if tnear > tfar or tfar < 0:
         return []
 
-    # Calculate intersection with the nearest intersection
+    # Favor the intersection first in the direction start -> end
+    if tnear < 0:
+        tnear = tfar
+
+    # Calculate intersection interpolation.
     return [
         start[0] + direction[0] * tnear,
         start[1] + direction[1] * tnear,
@@ -192,11 +196,9 @@ class RayTrace(Fit):
                 # extend the vector in case we are now under saturated
                 if i:
                     gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
-                    x, y, z = gamutcolor[:-1]
-                    coords = [alg.lerp(xa, x, 100), alg.lerp(ya, y, 100), alg.lerp(za, z, 100)]
+                    intersection = raytrace_box(achroma, gamutcolor[:-1])
                 else:
-                    coords = gamutcolor[:-1]
-                intersection = raytrace_box(coords, achroma)
+                    intersection = raytrace_box(gamutcolor[:-1], achroma)
                 if intersection:
                     gamutcolor[:-1] = intersection
                     continue
