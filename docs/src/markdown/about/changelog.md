@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2
+
+-   **FIX**: Handle gamut mapping HDR spaces via ray trace more sanely.
+
 ## 3.1.1
 
 -   **ENHANCE**: Improved performance of ray tracing gamut mapping algorithm.

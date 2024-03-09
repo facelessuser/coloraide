@@ -156,6 +156,8 @@ class RayTrace(Fit):
         # Requires an RGB-ish space, preferably a linear space.
         coerced = None
         cs = color.CS_MAP[space]
+        sdr = cs.DYNAMIC_RANGE != 'hdr'
+        bmax = [1.0, 1.0, 1.0]
 
         # Coerce RGB cylinders with no defined RGB space to RGB
         if not isinstance(cs, RGBish):
@@ -167,17 +169,20 @@ class RayTrace(Fit):
         # For now, if a non-linear CSS variant is specified, just use the linear form.
         linear = cs.linear()  # type: ignore[attr-defined]
         if linear and linear in color.CS_MAP:
+            if not sdr:
+                bmax = color.new(space, [chan.high for chan in cs.CHANNELS]).convert(linear)[:-1]
             space = linear
 
         orig = color.space()
         mapcolor = color.convert(lch, norm=False) if orig != lch else color.clone().normalize(nans=False)
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        achroma = mapcolor.clone().set(str(c), 0).convert(space)[:-1]
+        achroma = mapcolor.clone().set(str(c), 0).set(str(h), alg.NaN).convert(space)[:-1]
 
         # Return white or black if the achromatic version is not within the RGB cube.
         mn, mx = alg.minmax(achroma)
-        if mx >= 1:
-            color.update(space, [1.0, 1.0, 1.0], mapcolor[-1])
+        bmx = bmax[0]
+        if mx >= bmx:
+            color.update(space, bmax, mapcolor[-1])
         elif mn <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
@@ -195,15 +200,15 @@ class RayTrace(Fit):
             for i in range(3):
                 if i:
                     gamutcolor.set(correction)
-                    intersection = raytrace_box(achroma, gamutcolor[:-1])
+                    intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
                 else:
-                    intersection = raytrace_box(gamutcolor[:-1], achroma)
+                    intersection = raytrace_box(gamutcolor[:-1], achroma, bmax=bmax)
                 if intersection:
                     gamutcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover
 
-            gamutcolor[:-1] = [alg.clamp(x, 0.0, 1.0) for x in gamutcolor[:-1]]
+            gamutcolor[:-1] = [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]]
             color.update(gamutcolor)
 
         # If we have coerced a space to RGB, update the original
