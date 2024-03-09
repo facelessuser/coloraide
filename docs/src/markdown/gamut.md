@@ -419,37 +419,23 @@ selected is the first one encountered when following the ray from the origin poi
 point.
 ///
 
-The intersection of the line and the cube is returned as the most supported. saturated color. Because the RGB space is
-not perceptual, the color is not the ideal color that you would get if you ray traced in the perceptual LCh space. To 
-account for this, the color is then corrected in the perceptual color space by setting the lightness and hue back to the
-original color's. This correction in an LCh space will place the color even closer to the ideal target in the perceptual
-space. The color may be once again out of the gamut or in gamut potentially undersaturated, but to far less degree.
-These issues can be corrected by projecting a new ray, this time from inside the cube, from the achromatic color,
-through the new corrected point, and back out the RGB cube. Then we can can find the intersection from the inside back
-out to the surface again. About two iterations of this and we have a color with chroma reduced very close to the sRGB
-gamut's surface. Finally, we can clip off any noise.
+The intersection of the line and the cube is returned representing an approximation of the the most saturated color
+for that lightness and hue. But because the RGB space is not perceptual, the color is not the ideal color and there is
+some shifting of lightness and hue, especially on the first attempt. So, we then correct the color in the perceptual
+color space by setting the lightness and hue back to the original color's, this becomes our new color. We can repeat
+this process 2X more times, each time finding a better color at max saturation with a closer hue and lightness to our
+target than we found before. At this point, we should have a color very close and we could stop there, but we can trace
+one more time, omitting corrections afterwards to which should correct any under saturation. Then we can clip off
+floating point math errors.
 
 /// example | Ray Trace Steps
-1.  Trace from original color to achromatic color in the RGB space and find intersection.
-2.  Correct L and H in the targeted perceptual LCh model.
-3.  Project a new ray from the achromatic color, through the new corrected color, and back outside the RGB space and
-    find intersection again.
-4.  Repeat steps 2 and 3.
-5.  Clip the color in the RGB space.
-///
-
-/// note
-The goal is not to completely reduce chroma perfectly such that there is absolutely no shift in lightness and hue,
-just close enough that the eye could not perceive additional improvements. Currently, ∆L will be very small and ∆h will
-be very small in most regions, but at worst it can shift to at most ~4.4˚ in a few regions.
-
-```
-∆L = -0.0002675930809542537
-∆h = 4.433984999095699
-```
-
-Repeating step \#4 one additional time could reduce ∆h below 2 degrees, but since the difference is very hard for the
-eye to see, we currently favor the speed and only execute step \#4 once.
+1.  Trace from achromatic color to current color in the RGB space and find intersection.
+2.  Correct L and h in the targeted perceptual LCh model, the corrected color becomes the current color.
+3.  Repeat steps 1 and 2 either two or three times (two times reduced hue ∆h to ~4.4 and and three reduces ∆h to ~1.7).
+    Either are more than acceptable, ColorAide currently does three.
+4.  Trace one last time, this is our most saturated color on the RGB gamut that has an L and h close to the original,
+    out-of-gamut color.
+5.  Clip the color in the RGB space to remove floating point rounding errors.
 ///
 
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent

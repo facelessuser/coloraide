@@ -153,20 +153,22 @@ class RayTrace(Fit):
         if lch is None:
             lch = self.SPACE
 
-        # Requires an RGB-ish space, preferably a linear space.
-        coerced = None
         cs = color.CS_MAP[space]
-        sdr = cs.DYNAMIC_RANGE != 'hdr'
         bmax = [1.0, 1.0, 1.0]
 
+        # Requires an RGB-ish space, preferably a linear space.
         # Coerce RGB cylinders with no defined RGB space to RGB
+        coerced = None
         if not isinstance(cs, RGBish):
             coerced = color
             Color_, space = coerce_to_rgb(type(color), cs)
             cs = Color_.CS_MAP[space]
             color = Color_(color)
 
-        # For now, if a non-linear CSS variant is specified, just use the linear form.
+        # If there is a non-linear version of the RGB space, results will be
+        # better if we use that. If the target RGB space is HDR, we need to
+        # calculate the bounding box size based on the HDR limit.
+        sdr = cs.DYNAMIC_RANGE != 'hdr'
         linear = cs.linear()  # type: ignore[attr-defined]
         if linear and linear in color.CS_MAP:
             if not sdr:
@@ -176,7 +178,8 @@ class RayTrace(Fit):
         orig = color.space()
         mapcolor = color.convert(lch, norm=False) if orig != lch else color.clone().normalize(nans=False)
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        achroma = mapcolor.clone().set(str(c), 0).set(str(h), alg.NaN).convert(space)[:-1]
+        mapcolor[c] = 0
+        achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
 
         # Return white or black if the achromatic version is not within the RGB cube.
         mn, mx = alg.minmax(achroma)
@@ -187,29 +190,26 @@ class RayTrace(Fit):
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
             gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
-            correction = {
-                lch + '.' + str(l): mapcolor[l],
-                lch + '.' + str(h): mapcolor[h]
-            }
+            light = mapcolor[l]
+            hue = mapcolor[h]
 
-            # Create a ray from our color to the color with zero chroma.
+            # Create a ray from our current color to the color with zero chroma.
             # Trace the line to the RGB cube finding the intersection.
-            # On subsequent passes correct L and H and and then cast
-            # the ray out from zero chroma through the corrected color
-            # finding the intersection again.
-            for i in range(3):
+            # In between iterations, correct the L and H and then cast a ray
+            # through the new corrected color finding the intersection again.
+            for i in range(4):
                 if i:
-                    gamutcolor.set(correction)
-                    intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
-                else:
-                    intersection = raytrace_box(gamutcolor[:-1], achroma, bmax=bmax)
+                    gamutcolor.convert(lch, in_place=True)
+                    gamutcolor[l] = light
+                    gamutcolor[h] = hue
+                    gamutcolor.convert(space, in_place=True)
+                intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
                 if intersection:
                     gamutcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover
 
-            gamutcolor[:-1] = [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]]
-            color.update(gamutcolor)
+            color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]])
 
         # If we have coerced a space to RGB, update the original
         if coerced:

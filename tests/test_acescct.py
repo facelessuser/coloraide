@@ -58,7 +58,7 @@ class TestACEScctSerialize(util.ColorAssertsPyTest):
         (
             'color(--acescct 1.5 0.2 0)',
             {'color': True, 'fit': 'lch-raytrace'},
-            'color(--acescct 1.468 0.55306 0.07291)'
+            'color(--acescct 1.468 0.58402 0.07291)'
         ),
         ('color(--acescct 1.5 0.2 0)', {'fit': False}, 'color(--acescct 1.5 0.2 0)')
     ]
