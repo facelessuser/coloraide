@@ -182,19 +182,19 @@ class RayTrace(Fit):
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
             gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
+            correction = {
+                lch + '.' + str(l): mapcolor[l],
+                lch + '.' + str(h): mapcolor[h]
+            }
 
-            L = lch + '.' + str(l)
-            H = lch + '.' + str(h)
-
-            # Create a line from our color to color with zero lightness.
-            # Trace the line to the RGB cube finding the face and the point
-            # where it intersects. Correct L and H, which will likely shift the point.
-            # Take two rounds to get us as close as we can get.
+            # Create a ray from our color to the color with zero chroma.
+            # Trace the line to the RGB cube finding the intersection.
+            # On subsequent passes correct L and H and and then cast
+            # the ray out from zero chroma through the corrected color
+            # finding the intersection again.
             for i in range(3):
-                # On subsequent runs correct L and H and
-                # extend the vector in case we are now under saturated
                 if i:
-                    gamutcolor.set({L: mapcolor[l], H: mapcolor[h]})
+                    gamutcolor.set(correction)
                     intersection = raytrace_box(achroma, gamutcolor[:-1])
                 else:
                     intersection = raytrace_box(gamutcolor[:-1], achroma)
