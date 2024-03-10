@@ -1,10 +1,10 @@
 """Harmony diagram."""
 import sys
 import os
-import matplotlib.pyplot as plt
 import argparse
 import bisect
-import math
+import plotly.graph_objects as go
+import plotly.io as io
 
 sys.path.insert(0, os.getcwd())
 
@@ -100,6 +100,7 @@ def get_cylinder(color, space):
 
 
 def plot_slice(
+    fig,
     create,
     space,
     constant,
@@ -121,31 +122,32 @@ def plot_slice(
 
     # Interpolate between each x axis color along the y axis
     cmap = []
-    x = []
-    y = []
+    theta = []
+    r = []
     maximums = []
     for h in alg.linspace(0, 360, res):
         custom[hue] = h
+        custom[lightness] = constant
+        custom[chroma] = max_chroma
+        custom.fit(gamut, method=gmap)
+        mx = custom[chroma]
         chromas = []
-        for c in alg.linspace(0, max_chroma, res):
+        for c in alg.linspace(0, mx, res):
             custom[lightness] = constant
             custom[chroma] = c
-            if custom.in_gamut(gamut):
-                cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap))
-                x.append(math.radians(h))
-                chromas.append(c)
-        mx = max(chromas)
+            theta.append(h)
+            chromas.append(c)
+            cmap.append(custom.convert('srgb').to_string(hex=True, fit=gmap))
         maximums.append((h, mx))
-        y.extend(alg.divide(chromas, mx))
+        r.extend(alg.divide(chromas, mx))
 
-    # Fill colors
-    plt.scatter(
-        x,
-        y,
-        marker="o",
-        color=cmap,
-        s=2
-    )
+    fig.add_traces(data=go.Scatterpolar(
+        r=r,
+        theta=theta,
+        mode='markers',
+        marker={'color': cmap, 'size': 16},
+        showlegend=False
+    ))
 
     return maximums
 
@@ -162,11 +164,10 @@ def main():
     parser.add_argument('--map-colors', '-m', action='store_true', help="Gamut map colors to be within the gamut.")
     parser.add_argument('--gamut-map-method', '-f', help="Gamut mapping space.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
-    parser.add_argument('--yaxis', '-y', help="The channel to plot on Y axis (other than hue or l) 'name:min:max'.")
     parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
-    parser.add_argument('--dark', action="store_true", help="Use dark theme.")
-    parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--height', '-H', type=int, default=800, help="Height")
+    parser.add_argument('--width', '-W', type=int, default=800, help="Width")
 
     args = parser.parse_args()
 
@@ -195,35 +196,23 @@ def main():
     else:
         title = args.title
 
-    if not args.dark:
-        plt.style.use('seaborn-v0_8-darkgrid')
-    else:
-        plt.style.use('dark_background')
-
-    figure = plt.figure()
-
-    # Create axes
-    ax = plt.axes(
-        xlabel=hue,
-        ylabel=chroma,
-        projection='polar'
-    )
-
-    plt.yticks([])
-
     # Create titles
     if not title:
         title = "Slice of {} at {} = {}".format(original, lightness, fmt_float(c_value, 5))
 
-    plt.title(title)
-
-    # Set aspect
-    ax.set_aspect('equal')
-    figure.add_axes(ax)
+    fig = go.Figure(
+        layout={
+            'title': title,
+            'polar': {'radialaxis': {'showline': False, 'tickvals': []}},
+            'height': args.height,
+            'width': args.width
+        }
+    )
 
     gmap = None if not args.gamut_map_method else args.gamut_map_method
 
     maximums = plot_slice(
+        fig,
         CustomColor,
         space,
         c_value,
@@ -235,55 +224,67 @@ def main():
 
     if args.harmony:
         colors = c1.harmony(args.harmony, space=space)
+
         if args.map_colors:
             [c.fit(args.gamut, method=gmap) for c in colors]
 
-        hues = [m[0] for m in maximums]
-        for c in colors:
-            h = c[hue]
-            i = bisect.bisect_left(hues, h)
+        hues1 = [c[hue] % 360 for c in colors]
+        chromas = [c[chroma] for c in colors]
+        hues2 = [m[0] for m in maximums]
+
+        for e, h in enumerate(hues1):
+            # Find the points in our hue/chroma map
+            i = bisect.bisect_left(hues2, h)
             if i == 0:
-                start = len(hues) - 1
+                start = len(hues2) - 1
                 end = 0
-            elif i == len(hues):
+            elif i == len(hues2):
                 end = 0
                 start = i - 1
             else:
                 start = i - 1
                 end = i
-            t = alg.ilerp(maximums[start][0], maximums[end][0], h)
-            print(h, hues[start], hues[end])
+
+            # Ensure we we account for wrapping from 360 to 0
+            h1 = maximums[start][0]
+            h2 = maximums[end][1]
+            dh = (h1 - h2)
+            if dh > 180:
+                h2 += 360
+
+            # Use inverse interpolation to determine where between our hue map we are.
+            # Then use that point to calculate the approximate max chroma for that hue.
+            # Use that to normalize the chroma of the points on the plot.
+            t = alg.ilerp(h1, h2, h)
             max_c = alg.lerp(maximums[start][1], maximums[end][1], t)
-            norm_c = c[chroma] / max_c
-            hr = math.radians(h)
+            norm_c = chromas[e] / max_c
 
-            plt.scatter(
-                hr,
-                norm_c,
-                marker="o",
-                color=c.convert('srgb').to_string(hex=True, fit=gmap),
-                edgecolor='black',
-                s=8 ** 2,
-                zorder=100
-            )
-            xs = [0, hr]
-            ys = [0, norm_c]
-
-            plt.plot(
-                xs,
-                ys,
-                color='black',
-                marker="",
-                linewidth=1.5,
-                markersize=2,
-                antialiased=True
-            )
+            fig.add_traces(data=go.Scatterpolar(
+                r=[0, norm_c],
+                theta=[0, h],
+                mode="lines+markers",
+                line={'color': 'black', 'width': 2},
+                marker={
+                    'color': colors[e].convert('srgb').to_string(hex=True, fit=gmap),
+                    'size': [0, 16],
+                    'line': {'width': 2},
+                    'opacity': 1
+                },
+                showlegend=False
+            ))
 
     if args.output:
-        plt.savefig(args.output, dpi=args.dpi)
+        filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+        if filetype == 'html':
+            with open(args.output, 'w') as f:
+                f.write(io.to_html(fig))
+        elif filetype == 'json':
+            io.write_json(fig, args.output)
+        else:
+            with open(args.output, 'wb') as f:
+                f.write(fig.to_image(format=filetype))
     else:
-        plt.gcf().set_dpi(args.dpi)
-        plt.show()
+        fig.show()
 
 
 if __name__ == "__main__":
