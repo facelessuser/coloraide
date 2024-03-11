@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import math
 import plotly.io as io
 import os
+import json
 
 sys.path.insert(0, os.getcwd())
 
@@ -217,7 +218,7 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
 
@@ -334,7 +335,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
 
@@ -381,7 +382,7 @@ def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opaci
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
             cmap.append(s.to_string(hex=True))
@@ -535,7 +536,7 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, method=gmap) if edge_color else None
+    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, fit=gmap) if edge_color else None
 
     target = Color.CS_MAP[space]
     if is_regular:
@@ -572,7 +573,7 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
             if p1.lower() != 'false':
                 edges = True
                 if p1.lower() != 'true':
-                    ecolor = Color(p1).convert('srgb').to_string(hex=True, method=gmap)
+                    ecolor = Color(p1).convert('srgb').to_string(hex=True, fit=gmap)
             opacity = float(p2)
 
         target = Color.CS_MAP[space]
@@ -607,7 +608,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
         l = len(gamut_mapping)
         for i, c in enumerate(gamut_mapping + non_mapped):
             c1 = Color(c)
-            c2 = Color(c).fit(gamut, method=gmap)
+            c2 = Color(c).fit(gamut, **gmap)
             c1.convert(space, in_place=True)
             c2.convert(space, in_place=True)
             x = []
@@ -623,6 +624,8 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
                     marker={
                         'color': c2.convert('srgb').to_string(hex=True, fit=gmap),
                         'size': [16, 0],
+                        'opacity': 1,
+                        'line': {'width': 2}
                     },
                     showlegend=False
                 )
@@ -640,7 +643,8 @@ def plot_interpolation(
     powerless,
     extrapolate,
     steps,
-    gmap
+    gmap,
+    opacity=1
 ):
     """Plot interpolations."""
 
@@ -677,17 +681,18 @@ def plot_interpolation(
         store_coords(c, x, y, z, flags)
 
         c.convert('srgb', in_place=True)
-        c.fit(method=gmap)
+        c.fit(**gmap)
         cmap.append(c.to_string(hex=True))
 
-    fig.add_trace(
-        go.Scatter3d(
-            x=x, y=y, z=z,
-            mode = 'markers',
-            marker={'color': cmap},
-            showlegend=False
-        )
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        mode = 'markers',
+        marker={'color': cmap},
+        showlegend=False
     )
+
+    trace.update(opacity=opacity)
+    fig.add_trace(trace)
 
 
 def main():
@@ -721,6 +726,11 @@ def main():
     )
     parser.add_argument('--gmap', default='raytrace', help="Gamut mapping algorithm.")
     parser.add_argument('--gmap-colors', default='', help='Color(s) to gamut map, separated by semicolons.')
+    parser.add_argument(
+        '--gmap-options',
+        default='{}',
+        help='Options to pass to the gamut mapping method (JSON string).'
+    )
     parser.add_argument(
         '--colors',
         default='',
@@ -779,6 +789,8 @@ def main():
 
     aspect = {k: float(v) for k, v in zip(['x', 'y', 'z'], args.aspect_ratio.split(':'))}
     res = max(8, int(args.resolution))
+    gmap = {'method': args.gmap}
+    gmap.update(json.loads(args.gmap_options))
 
     # Plot the color space
     fig = plot_gamut_in_space(
@@ -790,7 +802,7 @@ def main():
         opacity=args.opacity,
         edges=args.edges,
         edge_color=args.edge_color,
-        gmap=args.gmap,
+        gmap={'method': gmap},
         size=(args.width, args.height),
         camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance},
         aspect=aspect,
@@ -798,7 +810,7 @@ def main():
     )
 
     # Plot additional gamut frames
-    plot_gamut_frames(fig, args.space, args.gamut_shell, args.gmap)
+    plot_gamut_frames(fig, args.space, args.gamut_shell, gmap)
 
     # Plot interpolation
     plot_interpolation(
@@ -812,11 +824,11 @@ def main():
         args.powerless,
         args.extrapolate,
         args.steps,
-        args.gmap
+        gmap
     )
 
     # Plot gamut mapping examples
-    plot_colors(fig, args.space, args.gamut, args.gmap_colors, args.colors, args.gmap)
+    plot_colors(fig, args.space, args.gamut, args.gmap_colors, args.colors, gmap)
 
     # Show or save the data as an image, etc.
     if fig:
