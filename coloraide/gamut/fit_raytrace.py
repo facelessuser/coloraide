@@ -213,4 +213,4 @@ class RayTrace(Fit):
 
         # If we have coerced a space to RGB, update the original
         if coerced:
-            coerced.update(color, color[-1])
+            coerced.update(color)

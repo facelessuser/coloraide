@@ -233,7 +233,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         *,
         alpha: bool | None = None,
         precision: int | None = None,
-        fit: bool | str = True,
+        fit: str | bool | dict[str, Any] = True,
         none: bool = False,
         percent: bool | Sequence[bool] = False,
         **kwargs: Any
