@@ -5,6 +5,7 @@
 *[CMFs]: color matching functions
 *[CVD]: color vision deficiency
 *[CVDs]: color vision deficiency
+*[GMA]: gamut mapping algorithm
 *[HDR]: High Dynamic Range
 *[HPE]: Hunt-Pointer-Estevez
 *[JND]: just noticeable difference

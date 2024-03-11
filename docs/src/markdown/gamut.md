@@ -242,7 +242,7 @@ to some other gamut mapping and has specific cases where its speed and simplicit
 
 ### MINDE Chroma Reduction
 
-MINDE chroma reduction is an approach that reduces the chroma in a perceptual color space until the color is within
+MINDE chroma reduction is an approach that reduces the chroma in a perceptual color space until the color is within the
 gamut of a targeted color space. As the exact point at which the color will be in gamut is unknown, the chroma is
 reduced using bisection. The color is compared periodically to the the clipped version of the current iteration to see
 if the ∆E distance between them is below the "just noticeable difference" (JND) defined for the color space. If the
@@ -408,10 +408,10 @@ gamut map all officially supported color spaces as they either have an RGB gamut
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
 achromatic version of the color (chroma set to zero) is calculated. Both of these colors are converted to the targeted
-RGB color space. Then a ray is traced from the out of gamut RGB color to the achromatic color within the RGB cube to
-find the intersection of the cube and the ray.
+RGB color space. Then a ray is traced from the achromatic color, through the current color. The intersection along this
+path with the RGB surface boundary is then found and returned.
 
-![Ray Trace Example](images/raytrace-3d.png)
+![Ray Trace Demonstration](images/raytrace-3d.png)
 
 /// note | Ray Trace Algorithm
 Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
@@ -419,24 +419,20 @@ selected is the first one encountered when following the ray from the origin poi
 point.
 ///
 
-The intersection of the line and the cube is returned representing an approximation of the the most saturated color
-for that lightness and hue. But because the RGB space is not perceptual, the color is not the ideal color and there is
-some shifting of lightness and hue, especially on the first attempt. So, we then correct the color in the perceptual
-color space by setting the lightness and hue back to the original color's, this becomes our new color. We can repeat
-this process 2X more times, each time finding a better color at max saturation with a closer hue and lightness to our
-target than we found before. At this point, we should have a color very close and we could stop there, but we can trace
-one more time, omitting corrections afterwards to which should correct any under saturation. Then we can clip off
-floating point math errors.
+The intersection of the line and the cube represents an approximation of the the most saturated color for that lightness
+and hue. But because the RGB space is not perceptual, the initial approximation will be quite off because decreasing
+chroma and holding lightness and hue constant in a perceptual space will create a twisting path through the the RGB
+space. In order to converge, we must refine our result with a few additional iterations.
 
-/// example | Ray Trace Steps
-1.  Trace from achromatic color to current color in the RGB space and find intersection.
-2.  Correct L and h in the targeted perceptual LCh model, the corrected color becomes the current color.
-3.  Repeat steps 1 and 2 either two or three times (two times reduced hue ∆h to ~4.4 and and three reduces ∆h to ~1.7).
-    Either are more than acceptable, ColorAide currently does three.
-4.  Trace one last time, this is our most saturated color on the RGB gamut that has an L and h close to the original,
-    out-of-gamut color.
-5.  Clip the color in the RGB space to remove floating point rounding errors.
-///
+In order to converge on the actual chroma reduced color we seek, we can take the intersection we find and correct the
+color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
+The corrected color becomes our new current color and should be a much closer color on the reduced chroma line. We can
+repeat this process a few more times, each time finding a better a closer on the line. After about two to three
+iterations (ColorAide performs 3), we will be extremely close. Finally, we can trace one more time, with no correction,
+and then clip off floating point math errors. With this, we will now have an accurate approximation of the color we
+seek.
+
+![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
 
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
 time.
