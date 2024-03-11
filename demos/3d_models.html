@@ -739,7 +739,7 @@ def plot_gamut_in_space(
     # Create figure to store the plot
     fig = go.Figure(layout=layout)
 
-    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, method=gmap) if edge_color else None
+    edgecolor = Color(edge_color).convert('srgb').to_string(hex=True, fit=gmap) if edge_color else None
 
     target = Color.CS_MAP[space]
     if is_regular:
@@ -776,7 +776,7 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
             if p1.lower() != 'false':
                 edges = True
                 if p1.lower() != 'true':
-                    ecolor = Color(p1).convert('srgb').to_string(hex=True, method=gmap)
+                    ecolor = Color(p1).convert('srgb').to_string(hex=True, fit=gmap)
             opacity = float(p2)
 
         target = Color.CS_MAP[space]
@@ -899,7 +899,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-3.1.1-py3-none-any.whl'
+let package = 'coloraide-3.1.2-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
