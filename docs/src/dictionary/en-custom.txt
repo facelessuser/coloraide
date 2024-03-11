@@ -68,6 +68,7 @@ FNL
 Fairchild
 Florian
 Formatter
+GMA
 Gosset
 Gossett
 HCT
