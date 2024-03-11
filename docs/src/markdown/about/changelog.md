@@ -2,6 +2,7 @@
 
 ## 3.1.2
 
+-   **ENHANCE**: Further improvements to both speed and accuracy of ray trace gamut mapping.
 -   **FIX**: Handle gamut mapping HDR spaces via ray trace more sanely.
 
 ## 3.1.1
