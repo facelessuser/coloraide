@@ -209,8 +209,8 @@ class RayTrace(Fit):
                     continue
                 break  # pragma: no cover
 
-            color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]])
+            color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]], gamutcolor[-1])
 
         # If we have coerced a space to RGB, update the original
         if coerced:
-            coerced.update(color)
+            coerced.update(color, color[-1])
