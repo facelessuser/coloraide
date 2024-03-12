@@ -5,15 +5,10 @@ https://www.researchgate.net/publication/\
 221677980_Development_and_Testing_of_a_Color_Space_IPT_with_Improved_Hue_Uniformity.
 """
 from __future__ import annotations
-from ..spaces import Space, Labish
+from .lab import Lab
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import algebra as alg
-from .achromatic import Achromatic as _Achromatic
-from .srgb_linear import lin_srgb_to_xyz
-from .srgb import lin_srgb
-from ..types import Vector, Matrix  # noqa: F401
-from typing import Any
-import math
+from ..types import Vector
 from .. import util
 
 XYZ_TO_LMS = [
@@ -40,15 +35,6 @@ IPT_TO_LMS_P = [
     [1.0, 0.03261510991706641, -0.6768871830691794]
 ]
 
-ACHROMATIC_RESPONSE = [
-    [0.017066845239980113, 1.3218447776798768e-06, 329.76026731824635],
-    [0.022993026958471587, 1.7808336678784566e-06, 329.76026731797435],
-    [0.02737255832988907, 2.1200328924793134e-06, 329.7602673179663],
-    [0.03097697795223092, 2.3991989122003048e-06, 329.7602673180789],
-    [0.9999910919149724, 7.745034210925492e-05, 329.7602673179579],
-    [5.243613106559707, 0.0004061232467760781, 329.76026731814255]
-]  # type: Matrix
-
 
 def xyz_to_ipt(xyz: Vector) -> Vector:
     """XYZ to IPT."""
@@ -64,19 +50,7 @@ def ipt_to_xyz(ipt: Vector) -> Vector:
     return alg.matmul(LMS_TO_XYZ, lms, dims=alg.D2_D1)
 
 
-class Achromatic(_Achromatic):
-    """Test achromatic response."""
-
-    def convert(self, coords: Vector, **kwargs: Any) -> Vector:
-        """Convert to the target color space."""
-
-        lab = xyz_to_ipt(lin_srgb_to_xyz(lin_srgb(coords)))
-        l = lab[0]
-        c, h = alg.rect_to_polar(*lab[1:])
-        return [l, c, h]
-
-
-class IPT(Labish, Space):
+class IPT(Lab):
     """The IPT class."""
 
     BASE = "xyz-d65"
@@ -97,38 +71,6 @@ class IPT(Labish, Space):
     # We use chromaticity points (0.31270, 0.3290) which gives us an XYZ of ~[0.9505, 1.0000, 1.0890]
     # IPT uses XYZ of [0.9504, 1.0, 1.0889] which yields chromaticity points ~(0.3127035830618893, 0.32902313032606195)
     WHITE = tuple(util.xyz_to_xyY([0.9504, 1.0, 1.0889])[:-1])  # type: ignore[assignment]
-    # Precalculated from:
-    # [
-    #     (1, 5, 1, 1000.0),
-    #     (100, 101, 1, 100),
-    #     (520, 521, 1, 100)
-    # ]
-    ACHROMATIC = Achromatic(
-        ACHROMATIC_RESPONSE,
-        1e-5,
-        1e-5,
-        0.00049,
-        'linear',
-        mirror=True
-    )  # type: _Achromatic
-
-    def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resolve channels."""
-
-        if index in (1, 2):
-            if not math.isnan(coords[index]):
-                return coords[index]
-
-            return self.ACHROMATIC.get_ideal_ab(coords[0])[index - 1]
-
-        value = coords[index]
-        return self.channels[index].nans if math.isnan(value) else value
-
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        m, h = alg.rect_to_polar(coords[1], coords[2])
-        return self.ACHROMATIC.test(coords[0], m, h)
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""

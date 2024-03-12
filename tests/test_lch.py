@@ -158,6 +158,12 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
         c = Color('lch(90% 0 120 / 1)').normalize()
         self.assertTrue(c.is_nan('hue'))
 
+    def test_null_normalization_negative_chroma(self):
+        """Test minimum saturation."""
+
+        c = Color('lch(90% -10 120 / 1)').normalize()
+        self.assertColorEqual(c, Color('lch(90% 10 300)'))
+
     def test_from_lab(self):
         """Test null from Lab conversion."""
 

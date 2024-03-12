@@ -17,8 +17,8 @@ class TestJzCzhz(util.ColorAssertsPyTest):
         ('blue', 'color(jzczhz 0.09577 0.19029 257.61)'),
         ('indigo', 'color(jzczhz 0.06146 0.10408 287.05)'),
         ('violet', 'color(jzczhz 0.16771 0.08468 319.37)'),
-        ('white', 'color(jzczhz 0.22207 0.0002 none)'),
-        ('gray', 'color(jzczhz 0.11827 0.00014 none)'),
+        ('white', 'color(jzczhz 0.22207 0.0002 216.08)'),
+        ('gray', 'color(jzczhz 0.11827 0.00014 216.08)'),
         ('black', 'color(jzczhz 0 0 none)'),
         # Test color
         ('color(jzczhz 1 0.3 270)', 'color(jzczhz 1 0.3 270)'),
@@ -122,23 +122,8 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color(Color('white').convert('jzczhz').to_string(precision=6)).normalize()
+        c = Color(Color('jzczhz', [0.2, 0, 270]).convert('jzczhz').to_string(precision=6)).normalize()
         self.assertTrue(c.is_nan('hue'))
-
-        c = Color(Color('gray').convert('jzczhz').to_string(precision=6)).normalize()
-        self.assertTrue(c.is_nan('hue'))
-
-        c = Color(Color('darkgray').convert('jzczhz').to_string(precision=6)).normalize()
-        self.assertTrue(c.is_nan('hue'))
-
-    def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to OkLCh with a null hue."""
-
-        for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
-            for x in range(0, 256):
-                color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
-                color2 = color.convert('jzczhz')
-                self.assertTrue(color2.is_nan('hue'))
 
 
 class TestQuirks(util.ColorAsserts, unittest.TestCase):
@@ -175,12 +160,11 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
             Color('#222222').convert('jzczhz').set('cz', lambda c: -c).set('h', lambda h: h + 180).is_achromatic(),
             True
         )
-        self.assertEqual(Color('srgb', [5.2, 5.2, 5.2]).convert('jzczhz').is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [NaN, 0.0, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [0, 0.5, 270]).is_achromatic(), False)
         self.assertEqual(Color('pink').convert('jzczhz').is_achromatic(), False)
         self.assertEqual(Color('jzczhz', [NaN, 0.5, 270]).is_achromatic(), False)
-        self.assertEqual(Color('jzczhz', [0.2, NaN, 270]).is_achromatic(), False)
+        self.assertEqual(Color('jzczhz', [0.2, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [NaN, NaN, 270]).is_achromatic(), True)
         self.assertEqual(Color('jzczhz', [-0.05, 0, 0]).is_achromatic(), True)

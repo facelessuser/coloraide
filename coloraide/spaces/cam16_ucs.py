@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from .cam16_jmh import CAM16JMh, xyz_d65_to_cam16, cam16_to_xyz_d65, Environment
 from ..spaces import Space, Labish
+from .lch import ACHROMATIC_THRESHOLD
 from ..cat import WHITES
 from .. import util
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -101,38 +102,12 @@ class CAM16UCS(Labish, Space):
     WHITE = WHITES['2deg']['D65']
     # Use the same environment as CAM16JMh
     ENV = CAM16JMh.ENV
-    ACHROMATIC = CAM16JMh.ACHROMATIC
-    INV_ACHROMATIC = CAM16JMh.INV_ACHROMATIC
-
-    def resolve_channel(self, index: int, coords: Vector) -> float:
-        """Resolve channels."""
-
-        if index in (1, 2):
-            # Assume black if J is below zero
-            J = coords[0]
-
-            achromatic = self.INV_ACHROMATIC if J < 0 else self.ACHROMATIC
-
-            if not math.isnan(coords[index]):
-                return coords[index]
-
-            return achromatic.get_ideal_ab(J)[index - 1]
-
-        value = coords[index]
-        return self.channels[index].nans if math.isnan(value) else value
 
     def is_achromatic(self, coords: Vector) -> bool:
         """Check if color is achromatic."""
 
-        j, m, h = cam16_ucs_to_cam16_jmh(coords, self.MODEL)
-
-        if j == 0.0:
-            return True
-
-        if j < 0.0:
-            return self.INV_ACHROMATIC.test(j, m, h)
-
-        return self.ACHROMATIC.test(j, m, h)
+        j, m = cam16_ucs_to_cam16_jmh(coords, self.MODEL)[:-1]
+        return j == 0 or abs(m) < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To CAM16 JMh from CAM16."""
