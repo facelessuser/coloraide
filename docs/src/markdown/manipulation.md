@@ -348,18 +348,8 @@ always be true.
     jmh.set('hue', 0).convert('srgb')
     ```
 
-    For color spaces with more dynamic achromatic response, ColorAide will resolve undefined hues and chroma with real
-    values that are neutral for that color's given lightness. This doesn't just apply to cylindrical spaces either.
-    This behavior can be seen in non cylindrical spaces as well, like the Lab form of CAM16.
-
-    ```py play
-    Color('gray').convert('cam16-ucs')
-    Color('cam16-ucs', [56.23, NaN, NaN]).normalize(nans=False)
-    ```
-
-    The selected values may not always perfectly precise, but they are much better than blindly assuming zero.
-
-    There are a number of spaces that benefit from this approach: Jzazbz/JzCzhz, IPT, IgPgTg.
+    Some color spaces, due to things like adapting luminance and background luminance, will have their own achromatic
+    response, meaning that achromatic colors are neutral, but may not be pure white, gray, etc.
 
 2.  Most of the time, if you set all color channels to undefined, when resolved, the color will be black (or white in
     the case of CMYK). Unfortunately, using `0` for undefined channels in some color spaces can create colors outside

@@ -18,7 +18,7 @@ class TestHCT(util.ColorAssertsPyTest):
         ('violet', 'color(--hct 331.49 65.001 69.695)'),
         ('white', 'color(--hct 209.54 2.8716 100)'),
         ('gray', 'color(--hct 209.54 1.8977 53.585)'),
-        ('black', 'color(--hct 209.55 0 0)'),
+        ('black', 'color(--hct 0 0 0)'),
         # Very wide gamut
         ('color(--acescg 1 0 1)', 'color(--hct 342.46 146.18 63.808 / 1)'),
         ('color(--acescg 1 0 0)', 'color(--hct 25.381 186.54 58.758 / 1)'),
@@ -138,23 +138,8 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum saturation."""
 
-        c = Color(Color('white').convert('hct').to_string()).normalize()
+        c = Color(Color('hct', [270, 0, 20]).convert('hct').to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
-
-        c = Color(Color('gray').convert('hct').to_string()).normalize()
-        self.assertTrue(c.is_nan('hue'))
-
-        c = Color(Color('darkgray').convert('hct').to_string()).normalize()
-        self.assertTrue(c.is_nan('hue'))
-
-    def test_achromatic_hue(self):
-        """Test that all RGB-ish colors convert to HCT with a null hue."""
-
-        for space in ('srgb', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'):
-            for x in range(0, 256):
-                color = Color('color({space} {num:f} {num:f} {num:f})'.format(space=space, num=x / 255))
-                color2 = color.convert('hct')
-                self.assertTrue(color2.is_nan('hue'))
 
 
 class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
@@ -163,7 +148,6 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
     def test_achromatic(self):
         """Test when color is achromatic."""
 
-        self.assertEqual(Color('#222222').convert('hct').is_achromatic(), True)
         self.assertEqual(
             Color('srgb', [0.000000001] * 3).convert('hct').set('c', lambda x: x + 1e-8).is_achromatic(),
             True
@@ -172,7 +156,7 @@ class TestsAchromatic(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(Color('hct', [270, NaN, 0]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, 50, 0]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, 50, NaN]).is_achromatic(), True)
-        self.assertEqual(Color('hct', [270, NaN, 20]).is_achromatic(), False)
+        self.assertEqual(Color('hct', [270, NaN, 20]).is_achromatic(), True)
         self.assertEqual(Color('hct', [270, NaN, NaN]).is_achromatic(), True)
-        self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), True),
+        self.assertEqual(Color('hct', [29.546, 0.60569, -9.0536]).is_achromatic(), False),
         self.assertEqual(Color('hct', [270, -20, 50]).is_achromatic(), False)

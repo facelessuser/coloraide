@@ -1057,7 +1057,7 @@ color.mix(color2, space="hsl")
 ```
 
 Technically, any channel can be set to `NaN`. And there are various ways to do this. The
-[Color Manipulation documentation](./manipulation.md#undefined-values) goes into the details of how these `Nan` values
+[Color Manipulation documentation](./manipulation.md#undefined-values) goes into the details of how these `NaN` values
 naturally occur and the various ways a user and manipulate them.
 
 ## Carrying-Forward
