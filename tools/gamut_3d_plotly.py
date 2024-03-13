@@ -802,7 +802,7 @@ def main():
         opacity=args.opacity,
         edges=args.edges,
         edge_color=args.edge_color,
-        gmap={'method': gmap},
+        gmap=gmap,
         size=(args.width, args.height),
         camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance},
         aspect=aspect,
