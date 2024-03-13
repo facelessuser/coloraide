@@ -165,11 +165,11 @@ def simulate_raytrace_gamut_mapping(args):
 
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
-        args.gamut_rgb,
+        space,
         args.gamut_rgb,
         title=args.title,
         resolution=100,
-        opacity=0.2,
+        opacity=0.3,
         edges=False,
         gmap=gmap,
         size=(args.width, args.height)
