@@ -772,7 +772,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_interpolate_empty_list(self):
         """Test interpolate with empty list."""
 
-        with self.assertRaises(IndexError):
+        with self.assertRaises(ValueError):
             Color('green').interpolate([])(0.5)
 
     def test_interpolate_piecewise(self):
@@ -1073,7 +1073,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_steps_empty_list(self):
         """Test steps with empty list."""
 
-        with self.assertRaises(IndexError):
+        with self.assertRaises(ValueError):
             Color.steps([], steps=3)
 
     def test_steps_space(self):
@@ -1273,8 +1273,10 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_too_few_colors_linear(self):
         """Test too few colors during linear interpolation."""
 
-        with self.assertRaises(ValueError):
-            Color.interpolate(['green', lambda t: t * 3])
+        self.assertColorEqual(
+            Color.interpolate(['green', lambda t: t * 3], out_space='srgb')(0.5),
+            Color('green')
+        )
 
     def test_continuos_hue_shorter_cases(self):
         """Cover shorter hue cases."""
@@ -1481,8 +1483,10 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
     def test_too_few_colors_bspline(self):
         """Test too few colors during B-spline interpolation."""
 
-        with self.assertRaises(ValueError):
-            Color.interpolate(['green', lambda t: t * 3], method='bspline')
+        self.assertColorEqual(
+            Color.interpolate(['green', lambda t: t * 3], method='bspline', out_space='srgb')(0.5),
+            Color('green')
+        )
 
     def test_bad_method(self):
         """Test bad interpolation method."""
@@ -1636,6 +1640,31 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(i(60), Color('yellow'))
         self.assertColorEqual(i(87), Color('red'))
         self.assertColorEqual(i(100), Color('red'))
+
+    def test_discrete_zero(self):
+        """Cannot create discrete steps of zero."""
+
+        with self.assertRaises(ValueError):
+            Color.discrete(
+                ['blue', 'green', 'yellow', 'orange', 'red'],
+                domain=[-32, 32, 60, 85, 95],
+                steps=0,
+                space='srgb'
+            )
+
+    def test_discrete_one(self):
+        """Discrete steps of one."""
+
+        i = Color.discrete(
+            ['blue', 'green', 'yellow', 'orange', 'red'],
+            domain=[-32, 32, 60, 85, 95],
+            steps=1,
+            space='srgb'
+        )
+
+        self.assertColorEqual(i(-20), Color('yellow'))
+        self.assertColorEqual(i(60), Color('yellow'))
+        self.assertColorEqual(i(100), Color('yellow'))
 
     def test_padding(self):
         """Test padding."""

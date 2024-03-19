@@ -135,6 +135,9 @@ class Interpolator(metaclass=ABCMeta):
         # Get the discrete steps for the new discrete interpolation
         colors = self.steps(steps, max_steps, max_delta_e, delta_e, delta_e_args)
 
+        if not colors:
+            raise ValueError('Discrete interpolation requires at least 1 discrete step.')
+
         # Calculate new coordinate list and discrete stops
         total = len(colors)
         coords = []
@@ -151,6 +154,13 @@ class Interpolator(metaclass=ABCMeta):
             coords.extend([step1, step2])
             count += 2
 
+        hue = self.hue
+        if total == 1:
+            coords.extend([colors[-1][:], colors[-1][:]])
+            stops[0] = 0.0
+            stops[1] = 1.0
+            hue = 'shorter'
+
         return Linear().interpolator(
             coordinates=coords,
             channel_names=self.channel_names,
@@ -164,7 +174,7 @@ class Interpolator(metaclass=ABCMeta):
             extrapolate=self.extrapolate,
             domain=[],
             padding=None,
-            hue = self.hue
+            hue = hue
         )
 
     def out_space(self, space: str) -> None:
@@ -670,6 +680,9 @@ def interpolator(
     if space is None:
         space = create.INTERPOLATE
 
+    if not colors:
+        raise ValueError('At least one color must be specified.')
+
     if isinstance(colors[0], stop):
         current = create(colors[0].color)
         stops[0] = colors[0].stop
@@ -730,8 +743,12 @@ def interpolator(
         current = color
 
     i += 1
-    if i < 2:
-        raise ValueError('Need at least two colors to interpolate')
+    if i == 1:
+        coords.append(coords[-1][:])
+        easings.append(None)
+        stops[i] = None
+        hue = 'shorter'
+        i += 1
 
     # Calculate stops
     stops = calc_stops(stops, i)

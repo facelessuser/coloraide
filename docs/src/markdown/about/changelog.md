@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.3
+
+-   **NEW**: Interpolation will now gracefully handle a list of a single color causing the interpolation to just return
+    the single color.
+-   **NEW**: More helpful interpolation errors will raise for an empty list.
+-   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
+
 ## 3.2
 
 -   **NEW**: `cam16-jmh`, `cam16-ucs`, `jzczhz`, `jzazbz`, `ipt`, and `igpgtg` will perform achromatic handling relative
