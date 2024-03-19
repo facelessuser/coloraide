@@ -8,7 +8,7 @@ sys.path.insert(0, os.getcwd())
 from coloraide.everything import ColorAll as Color  # noqa: E402
 
 
-def run(space, max_chroma):
+def run(gamut, space, max_chroma):
     """Test the gamut mapping algorithm noting the ∆L, ∆h, and the worst ∆h offender."""
 
     max_delta_h = 0
@@ -21,7 +21,7 @@ def run(space, max_chroma):
     for light in range(0, 100):
         for hue in range(360):
             c1 = Color(space, [light * scale, max_chroma, hue / 2])
-            c2 = c1.clone().fit('display-p3', method='raytrace', lch=space)
+            c2 = c1.clone().fit(gamut, method='raytrace', lch=space)
             dl = (c1[l] - c2[l])
             if abs(dl) > abs(max_delta_l):
                 max_delta_l = dl
@@ -50,14 +50,17 @@ def main():
     )
     # Flag arguments
     parser.add_argument(
-        '--lch', '-l', type=str, default='oklch', help="LCh space to use as the mapping space."
+        '--lch', '-l', default='oklch', help="LCh space to use as the mapping space."
+    )
+    parser.add_argument(
+        '--gamut', '-g', default='display-p3', help="Gamut to test.",
     )
     parser.add_argument(
         '--max-chroma', '-c', type=float, default=0.8, help="Max chroma to test GMA with."
     )
     args = parser.parse_args()
 
-    run(args.lch, args.max_chroma)
+    run(args.gamut, args.lch, args.max_chroma)
 
     return 0
 

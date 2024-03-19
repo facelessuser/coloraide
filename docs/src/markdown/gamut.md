@@ -407,11 +407,9 @@ version of the targeted RGB gamut, that version will be used automatically for b
 gamut map all officially supported color spaces as they either have an RGB gamut or can be coerced into one.
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
-achromatic version of the color (chroma set to zero) is calculated. Both of these colors are converted to the targeted
-RGB color space. Then a ray is traced from the achromatic color, through the current color. The intersection along this
-path with the RGB surface boundary is then found and returned.
-
-![Ray Trace Demonstration](images/raytrace-3d.png)
+achromatic version of the color (chroma set to zero) is calculated. A ray is cast from the inside of the cube, from the
+achromatic point, through a point barely saturated above the achromatic point give direction, out to the targeted gamut
+surface. The intersection along this path with the RGB surface boundary is then found.
 
 /// note | Ray Trace Algorithm
 Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
@@ -424,15 +422,20 @@ and hue. But because the RGB space is not perceptual, the initial approximation 
 chroma and holding lightness and hue constant in a perceptual space will create a twisting path through the the RGB
 space. In order to converge, we must refine our result with a few additional iterations.
 
-In order to converge on the actual chroma reduced color we seek, we can take the intersection we find and correct the
-color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
-The corrected color becomes our new current color and should be a much closer color on the reduced chroma line. We can
-repeat this process a few more times, each time finding a better a closer on the line. After about two to three
-iterations (ColorAide performs 3), we will be extremely close. Finally, we can trace one more time, with no correction,
-and then clip off floating point math errors. With this, we will now have an accurate approximation of the color we
-seek.
+In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
+the color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
+The corrected color becomes our new current color and should be much closer color on the reduced chroma line. We can
+repeat this process a few more times, each time finding a better, closer closer color on the path. After about two
+_additional_ iterations (a combined total of three for the entire process), we will be close enough where we can stop.
+Finally, we can then clip off floating point math errors. With this, we will now have an accurate approximation of the
+color we seek.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
+
+/// note
+For accuracy, iterations could be increased to a total of 4 which would reduce a potential ∆h shift to less than a hue,
+but ColorAide has opted to keep iterations at 3 which provides more speed and has a potential ∆h shift of only ~2.
+///
 
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
 time.
@@ -523,7 +526,7 @@ Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yell
 Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 ```
 
-Each perceptual LCh model above will bend the the hues to be perceptual and scale lightness and chroma a bit 
+Each perceptual LCh model above will bend the the hues to be perceptual and scale lightness and chroma a bit
 differently, and at the edge of the visual spectrum, it is not uncommon to see larger shifts in hues as these color
 spaces are not meant to be perceptual infinitely out into imaginary colors. Converting between these spaces _before_
 reducing chroma can introduce such disparities. If you push any color space far enough, they all will break down in some

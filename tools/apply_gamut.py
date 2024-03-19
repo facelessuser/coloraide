@@ -1,6 +1,7 @@
 """Modify a picture by increasing chroma and applying gamut mapping."""
 from functools import lru_cache
 from PIL import Image
+from PIL import ImageCms
 import time
 import argparse
 import sys
@@ -45,17 +46,18 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_gamut_map(amount, p, fit):
+def apply_gamut_map(amount, p, gamut, fit):
     """Apply filter."""
 
     has_alpha = len(p) > 3
-    color = Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
-    color.set('oklch.c', lambda c: c * amount)
+    color = Color(gamut, [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
+    if amount:
+        color.set('oklch.c', lambda c: c * amount)
     # Fit the color back into the color gamut and return the results
-    return tuple(int(x * 255) for x in color.fit(method=fit)[:4 if has_alpha else -1])
+    return tuple(int(x * 255) for x in color.convert('srgb').fit(method=fit)[:4 if has_alpha else -1])
 
 
-def process_image(img, output, amount, fit):
+def process_image(img, output, amount, gamut, fit):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
@@ -74,12 +76,12 @@ def process_image(img, output, amount, fit):
         print('> 0%', end='\r')
         for i in range(im.size[0]):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], fit)
+                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut, fit)
             print('> {}%'.format(int((i * j) * factor)), end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
         printt(t)
-        im.save(output)
+        im.save(output, icc_profile=ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes(), quality=100)
 
 
 def main():
@@ -92,13 +94,15 @@ def main():
     parser.add_argument('--input', '-i', help='Input image.')
     parser.add_argument('--output', '-o', help='Output name and location.')
     parser.add_argument('--amount', '-a', type=float, help='Amount to increase chroma.')
-    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default simple clipping)")
+    parser.add_argument('--gamut', default='srgb', help="Photo's current gamut.")
+    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
     args = parser.parse_args()
 
     process_image(
         args.input,
         args.output,
         args.amount,
+        args.gamut,
         args.gamut_map
     )
 

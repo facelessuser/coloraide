@@ -102,7 +102,6 @@ def simulate_raytrace_gamut_mapping(args):
     l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
     mapcolor[c] = 0
     achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
-    points.append(achroma)
 
     # Return white or black if the achromatic version is not within the RGB cube.
     mn, mx = alg.minmax(achroma)
@@ -111,20 +110,24 @@ def simulate_raytrace_gamut_mapping(args):
         color.update(space, bmax, mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
+        points.append(achroma)
     elif mn <= 0:
         color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
+        points.append(achroma)
     else:
-        gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
+        # gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
         light = mapcolor[l]
         hue = mapcolor[h]
+        mapcolor[c] = 1e-8
+        gamutcolor = mapcolor.convert(space)
 
         # Create a ray from our current color to the color with zero chroma.
         # Trace the line to the RGB cube finding the intersection.
         # In between iterations, correct the L and H and then cast a ray
         # through the new corrected color finding the intersection again.
-        for i in range(4):
+        for i in range(3):
             if i:
                 gamutcolor.convert(lch, in_place=True)
                 gamutcolor[l] = light
@@ -218,7 +221,7 @@ if __name__ == "__main__":
         '--ray', '-r', action='append', help="Ray described in the form (x1,y1,z1)->(x2,y2,z2)."
     )
     parser.add_argument(
-        '--gamut-lch', default='lch-d65', help="Perceptual space to simulate gamut mapping in."
+        '--gamut-lch', default='oklch', help="Perceptual space to simulate gamut mapping in."
     )
     parser.add_argument(
         '--gamut-rgb', default='srgb', help="RGB space to gamut map within."

@@ -133,6 +133,9 @@ def raytrace_box(
     if tnear < 0:
         tnear = tfar
 
+    if math.isinf(tnear):
+        return []
+
     # Calculate intersection interpolation.
     return [
         start[0] + direction[0] * tnear,
@@ -147,7 +150,14 @@ class RayTrace(Fit):
     NAME = "raytrace"
     SPACE = "lch-d65"
 
-    def fit(self, color: Color, space: str, *, lch: str | None = None, **kwargs: Any) -> None:
+    def fit(
+        self,
+        color: Color,
+        space: str,
+        *,
+        lch: str | None = None,
+        **kwargs: Any
+    ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
         if lch is None:
@@ -189,15 +199,16 @@ class RayTrace(Fit):
         elif mn <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
-            gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
             light = mapcolor[l]
             hue = mapcolor[h]
+            mapcolor[c] = 1e-8
+            gamutcolor = mapcolor.convert(space, in_place=True)
 
             # Create a ray from our current color to the color with zero chroma.
             # Trace the line to the RGB cube finding the intersection.
             # In between iterations, correct the L and H and then cast a ray
             # through the new corrected color finding the intersection again.
-            for i in range(4):
+            for i in range(3):
                 if i:
                     gamutcolor.convert(lch, in_place=True)
                     gamutcolor[l] = light
