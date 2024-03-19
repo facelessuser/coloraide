@@ -117,7 +117,6 @@ def simulate_raytrace_gamut_mapping(args):
         points.append(color.convert(space)[:-1])
         points.append(achroma)
     else:
-        # gamutcolor = color.convert(space, norm=False) if orig != space else color.clone().normalize(nans=False)
         light = mapcolor[l]
         hue = mapcolor[h]
         mapcolor[c] = 1e-8
