@@ -133,6 +133,10 @@ def raytrace_box(
     if tnear < 0:
         tnear = tfar
 
+    # An infinitesimally small point was used, not a ray.
+    # The origin is the intersection. Our use case will
+    # discard such scenarios, but others may wish to set
+    # intersection to origin.
     if math.isinf(tnear):
         return []
 

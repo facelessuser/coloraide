@@ -297,6 +297,13 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         self.assertEqual(raytrace_box([-1, -3, -1], [5, 6, 7]), [])
         self.assertEqual(raytrace_box([0.5, 1.1, -2], [0.5, 1.1, 2]), [])
 
+        # Our use cases will discard hits that are caused by a point instead of a ray.
+        # It is feasible that some implementations would prefer to count this as a hit,
+        # but we prefer to ignore non-rays, in the context of gamut mapping, as they
+        # represent a point already on the surface which require no further work.
+        # Therefore, this case is a miss.
+        self.assertEqual(raytrace_box([1, 0, 0], [1, 0, 0]), [])
+
 
 class TestHCTGamut(util.ColorAsserts, unittest.TestCase):
     """
