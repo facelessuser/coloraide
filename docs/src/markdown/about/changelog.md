@@ -5,6 +5,8 @@
 -   **NEW**: Interpolation will now gracefully handle a list of a single color causing the interpolation to just return
     the single color.
 -   **NEW**: More helpful interpolation errors will raise for an empty list.
+-   **NEW**: Add new `space` method in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is more
+    flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
 
 ## 3.2

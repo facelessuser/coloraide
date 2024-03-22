@@ -696,7 +696,7 @@ class TestDistance(util.ColorAssertsPyTest):
         print('color1: ', color1)
         print('color2: ', color2)
         self.assertCompare(
-            Color(color1).delta_e(color2, method="cam16", model='lcd'),
+            Color(color1).delta_e(color2, method="cam16", space='cam16-lcd'),
             value,
             rounding=4
         )
@@ -732,7 +732,7 @@ class TestDistance(util.ColorAssertsPyTest):
         print('color1: ', color1)
         print('color2: ', color2)
         self.assertCompare(
-            Color(color1).delta_e(color2, method="cam16", model='scd'),
+            Color(color1).delta_e(color2, method="cam16", space='cam16-scd'),
             value,
             rounding=4
         )

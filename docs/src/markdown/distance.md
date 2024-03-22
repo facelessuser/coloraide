@@ -238,9 +238,14 @@ and colorfulness so that a color difference metric ΔE can be based more closely
 performs distancing using the CAM16 UCS color space. If desired `model` can be changed to use the SCD or LCD model for
 "small" and "large" distancing respectively
 
-Parameter | Default | Small | Large
---------- | ------- | ----- | -----
-`model`   | `ucs`   | `scd` | `lcd`
+Parameter | Default     | Description
+--------- | ----------- | -----------
+`space`   | `cam16-ucs` | The CAM16 color space derived from the `CAM16UCS` space. `cam16-ucs`, `cam16-scd`, and `cam16-lcd` are provided in ColorAide (unregistered by default). Variants using different lighting environments can be created and registered and provided as the UCS space to operate in.
+
+/// warning | Deprecated `model` parameter
+In 3.3 the `model` parameter was deprecated and will be removed at some future time. `space` is more flexible and should
+be used instead.
+///
 
 The one or more of the CAM16 (UCS/SCD/LCD) color spaces and the ∆E algorithm must be registered to use.
 
