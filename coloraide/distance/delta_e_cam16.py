@@ -45,7 +45,7 @@ class DECAM16(DeltaE):
             cs = color.CS_MAP[space]
             if not isinstance(color.CS_MAP[space], CAM16UCS):
                 raise ValueError("Distance color space must be derived from CAM16UCS.")
-            model = cs.MODEL
+            model = cs.MODEL  # type: ignore[attr-defined]
             kl = COEFFICENTS[model][0]
 
         j1, a1, b1 = color.convert(space).coords(nans=False)
