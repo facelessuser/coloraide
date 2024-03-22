@@ -824,3 +824,9 @@ class TestClosest(util.ColorAsserts, unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Color('red').delta_e('blue', method='bad')
+
+    def test_bad_de_cam16_space(self):
+        """Test bad space in CAM16."""
+
+        with self.assertRaises(ValueError):
+            Color('red').delta_e('blue', method='cam16', space='lab')
