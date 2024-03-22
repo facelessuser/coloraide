@@ -41,7 +41,7 @@ class DECAM16(DeltaE):
             kl = COEFFICENTS[model][0]
 
         # Normal approach to specifying CAM16 target space
-        elif space is not None:
+        else:
             cs = color.CS_MAP[space]
             if not isinstance(color.CS_MAP[space], CAM16UCS):
                 raise ValueError("Distance color space must be derived from CAM16UCS.")
