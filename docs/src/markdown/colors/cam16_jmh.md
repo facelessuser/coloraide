@@ -55,6 +55,63 @@ represents the JMh configuration.
 [Learn more](https://doi.org/10.1002/col.22131).
 ///
 
+## Viewing Conditions
+
+CAM16 is a color appearance model and can be configured with different viewing environments. A CAM16 color space will
+also have an associated environment object. This environment object determines the viewing conditions. Colors will
+appear different based on the viewing conditions.
+
+Viewing\ Conditions    | Description
+---------------------- | -----------
+Reference\ White       | The XYZ values of the reference white scaled by 100.
+Adapting\ Luminance    | The luminance of the adapting field (`La`). The units are in cd/m2.
+Background\ Luminance  | The background luminance (`Yb`) the relative luminance of the nearby background (out to 10°), relative to the the reference white's luminance (`Y`). Usually 20 providing a gray world assumption.
+Surround               | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
+Discounting            | Discounts the illuminant. If true, the eye is assumed to be fully adapted to the illuminant. Otherwise, the degree of discounting is based on other parameters. When the eye is not fully adapted, it can affect the way colors appear and the chromatic response.
+
+ColorAide generally tries to make things easy for the average user and provides CAM16 with a default set of viewing
+conditions that uses a D65 white point, an adapting luminance of 64 lux or a value of ~4 cd/m^2^, it uses the "gray
+world" assumption and sets the background to 20, an "average" surround and leaves discounting set to `#!py False`.
+Variants such as [CAM16 UCS](./cam16_ucs.md), [CAM16 SCD](./cam16_scd.md), and [CAM16 LCD](./cam16_lcd.md) assume these
+same defaults.
+
+For more advanced users, a new CAM16 variant with different viewing conditions can be created. When doing this, the
+space should be derived from the default. A UCS variant would be derived from their defaults, etc.
+
+```py play
+from coloraide import Color as Base
+from coloraide.spaces.cam16_jmh import CAM16JMh, Environment
+from coloraide.cat import WHITES
+from coloraide import util
+import math
+
+class CustomCAM16JMh(CAM16JMh):
+    NAME = "cam16-custom"
+    SERIALIZE = ("--cam16-custom",)
+    WHITE = WHITES['2deg']['D65']
+    ENV = Environment(
+        reference_white=[x * 100 for x in util.xy_to_xyz(WHITE)],
+        adapting_luminance=1000 / math.pi,
+        background_luminance=20,
+        surround='average',
+        discounting=False
+    )
+
+class Color(Base): ...
+
+Color.register([CAM16JMh(), CustomCAM16JMh()])
+
+Color('white').convert('cam16-jmh')
+Color('white').convert('cam16-custom')
+```
+
+/// note
+It can be noted in the above example that white does not have the typical zero chroma. This is because the eye is not
+assumed as being fully adapted to the environment. If `discounting` was enabled, the eye is then assumed to be fully
+adapted, white would have a chroma of zero. So the settings can affect things like what is considered achromatic in the
+space. This is not a bug, but simply the way the model works.
+///
+
 ## Channel Aliases
 
 Channels | Aliases

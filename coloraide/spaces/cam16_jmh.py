@@ -1,10 +1,11 @@
 """
 CAM16 class (JMh).
 
-https://www.imaging.org/site/PDFS/Papers/2000/PICS-0-81/1611.pdf
+https://www.researchgate.net/publication/318152296_Comprehensive_color_solutions_CAM16_CAT16_and_CAM16-UCS
+https://www.researchgate.net/publication/220865484_Usage_guidelines_for_CIECAM97s
+https://doi.org/10.1002/col.22131
 https://observablehq.com/@jrus/cam16
 https://arxiv.org/abs/1802.06067
-https://doi.org/10.1002/col.22131
 """
 from __future__ import annotations
 import math
@@ -102,7 +103,7 @@ class Environment:
     Class to calculate and contain any required environmental data (viewing conditions included).
 
     Usage Guidelines for CIECAM97s (Nathan Moroney)
-    https://www.imaging.org/site/PDFS/Papers/2000/PICS-0-81/1611.pdf
+    https://www.researchgate.net/publication/220865484_Usage_guidelines_for_CIECAM97s
 
     ref_white: The reference white XYZ. We assume XYZ is in the range 0 - 1 as that is how ColorAide
         handles XYZ everywhere else. It will be scaled up to 0 - 100.
@@ -130,7 +131,8 @@ class Environment:
 
     def __init__(
         self,
-        ref_white: VectorLike,
+        *,
+        reference_white: VectorLike,
         adapting_luminance: float,
         background_luminance: float,
         surround: str,
@@ -144,19 +146,18 @@ class Environment:
         """
 
         self.discounting = discounting
-        self.ref_white = util.xy_to_xyz(ref_white)
+        self.ref_white = reference_white
         self.surround = surround
-        xyz_w = alg.multiply(self.ref_white, 100, dims=alg.D1_SC)
 
         # The average luminance of the environment in `cd/m^2cd/m` (a.k.a. nits)
         self.la = adapting_luminance
         # The relative luminance of the nearby background
         self.yb = background_luminance
         # Absolute luminance of the reference white.
-        yw = xyz_w[1]
+        yw = reference_white[1]
 
         # Cone response for reference white
-        rgb_w = alg.matmul(M16, xyz_w, dims=alg.D2_D1)
+        rgb_w = alg.matmul(M16, reference_white, dims=alg.D2_D1)
 
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]
@@ -354,8 +355,20 @@ class CAM16JMh(LChish, Space):
         "hue": 'h'
     }
     WHITE = WHITES['2deg']['D65']
-    # Assuming sRGB which has a lux of 64
-    ENV = Environment(WHITE, 64 / math.pi * 0.2, 20, 'average', False)
+    # Assuming sRGB which has a lux of 64: `((E * R) / PI) / 5` where `R = 1`.
+    ENV = Environment(
+        # D65 scaled by 100
+        reference_white=alg.multiply(util.xy_to_xyz(WHITE), 100, dims=alg.D1_SC),
+        # Assuming sRGB which has a lux of 64: `((E * R) / PI)` where `R = 1`.
+        # Divided by 5 (or multiplied by 20%) assuming gray world.
+        adapting_luminance=64 / math.pi * 0.2,
+        # Gray world assumption, 20% of reference white's `Yw = 100`.
+        background_luminance=20,
+        # Average surround
+        surround='average',
+        # No discount of illuminant
+        discounting=False
+    )
     CHANNELS = (
         Channel("j", 0.0, 100.0),
         Channel("m", 0, 105.0),
