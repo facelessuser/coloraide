@@ -6,4 +6,4 @@ class OkLChRayTrace(RayTrace):
     """Apply gamut mapping using ray tracing."""
 
     NAME = 'oklch-raytrace'
-    SPACE = "oklch"
+    PSPACE = "oklch"
