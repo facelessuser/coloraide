@@ -13,6 +13,7 @@ import argparse
 import sys
 import os
 import math
+import json
 from shapely.geometry import Polygon
 from shapely.geometry.base import dump_coords
 from shapely.geometry.collection import GeometryCollection
@@ -53,7 +54,8 @@ def plot_slice(
     polar=False,
     border=False,
     pointer=False,
-    gmap=None
+    gmap=None,
+    allow_oog=False
 ):
     """Plot a slice."""
 
@@ -162,9 +164,11 @@ def plot_slice(
         for r in Color.steps([t1, t2], steps=res, space=space, hue='specified'):
             # Only process colors within the specified gamut.
             if (
-                r.in_gamut(gamut, tolerance=0) and
-                (not pointer or r.in_pointer_gamut(tolerance=0)) and
-                (not is_lchish or not ignore_LCh_high_chroma_black(r))
+                allow_oog or (
+                    r.in_gamut(gamut, tolerance=0) and
+                    (not pointer or r.in_pointer_gamut(tolerance=0)) and
+                    (not is_lchish or not ignore_LCh_high_chroma_black(r))
+                )
             ):
                 c1 = r[index1]
                 c2 = r[index2]
@@ -304,7 +308,6 @@ def main():
     parser = argparse.ArgumentParser(prog='slice_diagrams', description='Plot a slice of a color space.')
     parser.add_argument('--space', '-s', help='Desired space.')
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
-    parser.add_argument('--jnd', default=-1, help='Gamut mapping approach (default is lch-chroma).')
     parser.add_argument('--pointer', '-P', action='store_true', help="Restrict to Pointer gamut")
     parser.add_argument(
         '--constant', '-c', help="The channel(s) to hold constant and the value to use 'name:value;name2:value2'."
@@ -323,6 +326,12 @@ def main():
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--gmap', '-G', default='lch-chroma', help='Gamut mapping approach (default is lch-chroma).')
     parser.add_argument(
+        '--gmap-options',
+        default='{}',
+        help='Options to pass to the gamut mapping method (JSON string).'
+    )
+    parser.add_argument('--allow-oog', '-a', action='store_true', help="Allow out of gamut.")
+    parser.add_argument(
         '--jnd', type=float, default=-1.0,
         help="Set the JND for MINDE approaches. If set to -1, default JND is used."
     )
@@ -333,8 +342,8 @@ def main():
 
     args = parser.parse_args()
 
-    jnd = None if args.jnd == -1 else args.jnd
-    traces = args.traces
+    gmap = {'method': args.gmap}
+    gmap.update(json.loads(args.gmap_options))
 
     plot_slice(
         args.space,
@@ -342,14 +351,15 @@ def main():
         args.xaxis,
         args.yaxis,
         gamut=args.gamut,
-        gmap={'method': args.gmap, 'jnd': jnd, 'traces': traces},
+        gmap=gmap,
         resolution=int(args.resolution),
         title=args.title,
         subtitle=args.sub_title,
         dark=args.dark,
         polar=args.polar,
         border=not args.no_border,
-        pointer=args.pointer
+        pointer=args.pointer,
+        allow_oog=args.allow_oog
     )
 
     if args.output:
