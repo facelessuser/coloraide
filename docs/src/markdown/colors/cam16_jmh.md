@@ -69,14 +69,13 @@ Background\ Luminance  | The background luminance (`Yb`) the relative luminance 
 Surround               | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
 Discounting            | Discounts the illuminant. If true, the eye is assumed to be fully adapted to the illuminant. Otherwise, the degree of discounting is based on other parameters. When the eye is not fully adapted, it can affect the way colors appear and the chromatic response.
 
-ColorAide generally tries to make things easy for the average user and provides CAM16 with a default set of viewing
-conditions that uses a D65 white point, an adapting luminance of 64 lux or a value of ~4 cd/m^2^, it uses the "gray
-world" assumption and sets the background to 20, an "average" surround and leaves discounting set to `#!py False`.
-Variants such as [CAM16 UCS](./cam16_ucs.md), [CAM16 SCD](./cam16_scd.md), and [CAM16 LCD](./cam16_lcd.md) assume these
-same defaults.
+ColorAide must provide some defaults, so CAM16 comes with a default set of viewing conditions that uses a D65 white
+point, an adapting luminance of 64 lux or a value of ~4 cd/m^2^, it uses the "gray world" assumption and sets the
+background to 20, an "average" surround and leaves discounting set to `#!py False`. Variants such as
+[CAM16 UCS](./cam16_ucs.md), [CAM16 SCD](./cam16_scd.md), and [CAM16 LCD](./cam16_lcd.md) assume these same defaults.
 
-For more advanced users, a new CAM16 variant with different viewing conditions can be created. When doing this, the
-space should be derived from the default. A UCS variant would be derived from their defaults, etc.
+The default settings do not have to be used and a new CAM16 variant with different viewing conditions can be created.
+When doing this, the space should be derived from the default. A UCS variant would be derived from their defaults, etc.
 
 ```py play
 from coloraide import Color as Base

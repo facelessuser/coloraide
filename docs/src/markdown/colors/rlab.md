@@ -53,8 +53,9 @@ Viewing\ Conditions    | Description
 `surround`             | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
 `discounting`          | Degree of discounting of the illuminant. A string of either "hard-copy", "projected-transparency", or "soft-copy". Hard copy indicates full discount, or the eye is assumed to be fully adapted to the illuminant. Projected transparency performs 50% discount.
 
-ColorAide provides RLAB space with a default set of viewing conditions that uses a D65 white point, an adapting
-luminance of 1000 lux or a value of ~318.31 cd/m^2^, an "average" surround, and sets discounting to "hard-copy".
+ColorAide must provide some defaults, so the RLAB space has a default set of viewing conditions that uses a D65 white
+point, an adapting luminance of 1000 lux or a value of ~318.31 cd/m^2^, an "average" surround, and sets discounting to
+"hard-copy".
 
 These settings do not have to be used, and a new RLAB variant with different viewing conditions can be created. When
 doing this, the space should be derived from the default RLAB space.
@@ -74,15 +75,15 @@ class CustomRLAB(RLAB):
         reference_white=[x * 100 for x in util.xy_to_xyz(WHITE)],
         adapting_luminance=64 / math.pi * 0.2,
         surround='average',
-        discounting="hard-copy"
+        discounting="soft-copy"
     )
 
 class Color(Base): ...
 
 Color.register([RLAB(), CustomRLAB()])
 
-Color('red').convert('rlab')
-Color('red').convert('rlab-custom')
+Color('white').convert('rlab')
+Color('white').convert('rlab-custom')
 ```
 
 /// note
