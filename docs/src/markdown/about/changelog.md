@@ -9,6 +9,9 @@
     flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
 -   **NEW**: Normalize how color spaces with special viewing conditions are configured. Document configuring viewing
     conditions of color models where applicable.
+-   **NEW**: Generic ray trace gamut mapping now has a new `pspace` parameter that can be used to specify a perceptual
+    space in either LCh-ish or Lab-ish form. `lch` parameter is now deprecated, but currently still present, but
+    `pspace` will take priority if both are defined.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
 
 ## 3.2

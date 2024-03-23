@@ -7,11 +7,12 @@ from __future__ import annotations
 import math
 from .. import algebra as alg
 from ..gamut import Fit
-from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
+from ..spaces import Space, RGBish, HSLish, HSVish, HWBish, Labish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
+from ..deprecate import warn_deprecated
 from ..types import Vector, VectorLike
 from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
@@ -152,20 +153,28 @@ class RayTrace(Fit):
     """Gamut mapping by using ray tracing."""
 
     NAME = "raytrace"
-    SPACE = "lch-d65"
+    PSPACE = "lch-d65"
 
     def fit(
         self,
         color: Color,
         space: str,
         *,
+        pspace: str | None = None,
         lch: str | None = None,
         **kwargs: Any
     ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
-        if lch is None:
-            lch = self.SPACE
+        is_lab = False
+        if lch is not None and pspace is None:
+            pspace = lch
+            warn_deprecated(
+                "'lch' parameter has been deprecated, please use 'pspace' to specify the perceptual space."
+            )
+        elif pspace is None:
+            pspace = self.PSPACE
+        is_lab = isinstance(color.CS_MAP[pspace], Labish)
 
         cs = color.CS_MAP[space]
         bmax = [1.0, 1.0, 1.0]
@@ -190,9 +199,16 @@ class RayTrace(Fit):
             space = linear
 
         orig = color.space()
-        mapcolor = color.convert(lch, norm=False) if orig != lch else color.clone().normalize(nans=False)
-        l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        mapcolor[c] = 0
+        mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
+        if is_lab:
+            l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
+            mapcolor[a] = 0
+            mapcolor[b] = 0
+        else:
+            l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            hue = mapcolor[h]
+            mapcolor[c] = 0
         achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
 
         # Return white or black if the achromatic version is not within the RGB cube.
@@ -204,8 +220,12 @@ class RayTrace(Fit):
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
             light = mapcolor[l]
-            hue = mapcolor[h]
-            mapcolor[c] = 1e-8
+            if is_lab:
+                ab = alg.polar_to_rect(1e-8, hue)
+                mapcolor[a] = ab[0]
+                mapcolor[b] = ab[1]
+            else:
+                mapcolor[c] = 1e-8
             gamutcolor = mapcolor.convert(space, in_place=True)
 
             # Create a ray from our current color to the color with zero chroma.
@@ -214,9 +234,16 @@ class RayTrace(Fit):
             # through the new corrected color finding the intersection again.
             for i in range(3):
                 if i:
-                    gamutcolor.convert(lch, in_place=True)
-                    gamutcolor[l] = light
-                    gamutcolor[h] = hue
+                    gamutcolor.convert(pspace, in_place=True)
+                    if is_lab:
+                        chroma = alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0]
+                        ab = alg.polar_to_rect(chroma, hue)
+                        gamutcolor[l] = light
+                        gamutcolor[a] = ab[0]
+                        gamutcolor[b] = ab[1]
+                    else:
+                        gamutcolor[l] = light
+                        gamutcolor[h] = hue
                     gamutcolor.convert(space, in_place=True)
                 intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
                 if intersection:

@@ -491,23 +491,29 @@ Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace')
 Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace')
 ```
 
-#### Ray Tracing Chroma Reduction in Any LCh space
+#### Ray Tracing Chroma Reduction in Any Perceptual Space
 
 /// success | The `raytrace` gamut mapping is registered in `Color` by default.
 ///
 
-This is a generic ray tracing approach that allows a user to specify any perceptual LCh-ish color space for use in
-gamut mapping with ray tracing.
+This is a generic ray tracing approach that allows a user to specify any perceptual LCh-ish or Lab-ish color space for
+use in gamut mapping with ray tracing. Any perceptual space in the LCh-ish or Lab-ish form can be specified via the
+`pspace` parameter.
 
 ```py play
-Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='cam16-jmh')
-Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', lch='lchuv')
+Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', pspace='cam16-jmh')
+Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', pspace='luv')
 ```
 
-It should be noted that mapping will be limited by the capabilities of the perceptual space being used. Some color
-spaces can swing to varying degrees outside the visible spectrum and some perceptual LCh models can tolerate this more
-than others, and this can affect gamut mapping results, this does not mean the gamut mapping approach does not work,
-only that some color models may work better under more constraints than others.
+/// warning | Deprecated 3.3
+The `lch` parameter in the `raytrace` method has been deprecated in 3.3 in favor of the `pspace` parameter that allows
+for perceptual spaces in both LCh and Lab form.
+///
+
+It should be noted that gamut mapping will be limited by the capabilities of the perceptual space being used. Some color
+spaces can swing to varying degrees outside the visible spectrum and some perceptual models can tolerate this more than
+others, and this can affect gamut mapping results, this does not mean the gamut mapping approach does not work, only
+that some color models may work better under more constraints than others.
 
 Consider the example below. We take a very saturated yellow in Display P3 (`#!color color(display-p3 1 1 0)`) and then
 we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. We do this
@@ -519,18 +525,18 @@ Some models can tolerate this more than others.
 ```py play
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('lch(0% none none)')
-Steps([c.fit('srgb', method='raytrace', lch='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-Steps([c.fit('srgb', method='raytrace', lch='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-Steps([c.fit('srgb', method='raytrace', lch='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', pspace='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', pspace='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', pspace='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', pspace='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 ```
 
-Each perceptual LCh model above will bend the the hues to be perceptual and scale lightness and chroma a bit
-differently, and at the edge of the visual spectrum, it is not uncommon to see larger shifts in hues as these color
-spaces are not meant to be perceptual infinitely out into imaginary colors. Converting between these spaces _before_
-reducing chroma can introduce such disparities. If you push any color space far enough, they all will break down in some
-way, some are more tolerable than others.
+Each perceptual model above will bend the the hues to be perceptual and scale lightness and chroma a bit differently,
+and at the edge of the visual spectrum, it is not uncommon to see larger shifts in hues as these color spaces are not
+meant to be perceptual infinitely out into imaginary colors. Converting between these spaces _before_ reducing chroma
+can introduce such disparities. If you push any color space far enough, they all will break down in some way, some are
+more tolerable than others.
 
 If you are working within reasonable gamuts, most will work just fine. And if you want to do something like above,
 holding chroma really high for all lightness values, you will often find that it works best when you do it directly in
@@ -541,19 +547,19 @@ space.
 ```py play
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('oklch(0% none none)')
-Steps([c.fit('srgb', method='raytrace', lch='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='oklch')])
+Steps([c.fit('srgb', method='raytrace', pspace='oklch') for c in Color.steps([yellow, lightness_mask], steps=20, space='oklch')])
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(--lch99o 0% none none)')
-Steps([c.fit('srgb', method='raytrace', lch='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch99o')])
+Steps([c.fit('srgb', method='raytrace', pspace='lch99o') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch99o')])
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(--hct none none 0%)')
-Steps([c.fit('srgb', method='raytrace', lch='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='hct')])
+Steps([c.fit('srgb', method='raytrace', pspace='hct') for c in Color.steps([yellow, lightness_mask], steps=20, space='hct')])
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(jzczhz 0% none none)')
-Steps([c.fit('srgb', method='raytrace', lch='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
+Steps([c.fit('srgb', method='raytrace', pspace='jzczhz') for c in Color.steps([yellow, lightness_mask], steps=20, space='jzczhz')])
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(--lchuv 0% none none)')
-Steps([c.fit('srgb', method='raytrace', lch='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lchuv')])
+Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lchuv')])
 ```
 
 Every color space has limitations, some spaces just have more agreeable ones.

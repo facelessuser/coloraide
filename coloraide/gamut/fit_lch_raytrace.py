@@ -6,4 +6,4 @@ class LChRayTrace(RayTrace):
     """Apply gamut mapping using ray tracing."""
 
     NAME = 'lch-raytrace'
-    SPACE = "lch-d65"
+    PSPACE = "lch-d65"
