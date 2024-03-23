@@ -196,6 +196,22 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 class TestRayTrace(util.ColorAsserts, unittest.TestCase):
     """Test gamut mapping/fitting with ray tracing."""
 
+    def test_generic_raytrace_lch(self):
+        """Test generic ray trace with an LCh space."""
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 0, 0]).fit('srgb', method='raytrace', pspace='lchuv'),
+            Color('color(display-p3 0.91916 0.25208 0.25208)')
+        )
+
+    def test_generic_raytrace_lab(self):
+        """Test generic ray trace with a Lab space."""
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 0, 0]).fit('srgb', method='raytrace', pspace='luv'),
+            Color('color(display-p3 0.91916 0.25208 0.25208)')
+        )
+
     def test_sdr_extremes_low(self):
         """Test SDR extreme low case."""
 
