@@ -167,7 +167,7 @@ class RayTrace(Fit):
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
         is_lab = False
-        if lch is not None and pspace is None:
+        if lch is not None and pspace is None:  # pragma: no cover
             pspace = lch
             warn_deprecated(
                 "'lch' parameter has been deprecated, please use 'pspace' to specify the perceptual space."
