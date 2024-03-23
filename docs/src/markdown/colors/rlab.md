@@ -40,6 +40,58 @@ illuminant). It is also configured to use an absolute adapting luminance of 318 
 [Learn more](https://scholarworks.rit.edu/cgi/viewcontent.cgi?article=1153&context=article).
 ///
 
+## Viewing Conditions
+
+RLAB can be configured with different viewing environments. An RLAB color space will also have an associated environment
+object. This environment object determines the viewing conditions. Colors will appear different based on the viewing
+conditions.
+
+Viewing\ Conditions    | Description
+---------------------- | -----------
+`white`                | The XYZ values of the reference white scaled by 100.
+`adapting_luminance`   | The luminance of the adapting field (often known as `La`). The units are in cd/m2.
+`surround`             | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
+`discounting`          | Degree of discounting of the illuminant. A string of either "hard-copy", "projected-transparency", or "soft-copy". Hard copy indicates full discount, or the eye is assumed to be fully adapted to the illuminant. Projected transparency performs 50% discount.
+
+ColorAide must provide some defaults, so the RLAB space has a default set of viewing conditions that uses a D65 white
+point, an adapting luminance of 1000 lux or a value of ~318.31 cd/m^2^, an "average" surround, and sets discounting to
+"hard-copy".
+
+These settings do not have to be used, and a new RLAB variant with different viewing conditions can be created. When
+doing this, the space should be derived from the default RLAB space.
+
+```py play
+from coloraide import Color as Base
+from coloraide.spaces.rlab import RLAB, Environment
+from coloraide.cat import WHITES
+from coloraide import util
+import math
+
+class CustomRLAB(RLAB):
+    NAME = "rlab-custom"
+    SERIALIZE = ("--rlab-custom",)
+    WHITE = WHITES['2deg']['D65']
+    ENV = Environment(
+        reference_white=[x * 100 for x in util.xy_to_xyz(WHITE)],
+        adapting_luminance=64 / math.pi * 0.2,
+        surround='average',
+        discounting="soft-copy"
+    )
+
+class Color(Base): ...
+
+Color.register([RLAB(), CustomRLAB()])
+
+Color('white').convert('rlab')
+Color('white').convert('rlab-custom')
+```
+
+/// note
+If a `discounting` of anything other than "hard-copy" is used, you will notice the achromatic response to cause colors
+like white to not have value of zero chroma. This is because the eye is not fully adapted, and colors appear different
+with this context. This is not a bug, just the way viewing conditions can affect model.
+///
+
 ## Channel Aliases
 
 Channels | Aliases

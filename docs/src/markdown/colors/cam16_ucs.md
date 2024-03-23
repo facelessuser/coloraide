@@ -44,6 +44,11 @@ variants which optimize the spaces for "small" and "large" color distancing resp
 [Learn more](https://doi.org/10.1002/col.22131).
 ///
 
+## Viewing Conditions
+
+CAM16 UCS uses the same environment setup for viewing conditions as [CAM16 JMh](./cam16_jmh.md), so check out the
+related documentation if creating a CAM16 UCS variant is desired.
+
 ## Channel Aliases
 
 Channels | Aliases

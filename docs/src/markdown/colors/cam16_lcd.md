@@ -37,6 +37,11 @@ This is the LCD variant of the CAM16 UCS color space and is optimized for "large
 [Learn more](https://doi.org/10.1002/col.22131).
 ///
 
+## Viewing Conditions
+
+CAM16 LCD uses the same environment setup for viewing conditions as [CAM16 JMh](./cam16_jmh.md), so check out the
+related documentation if creating a CAM16 LCD variant is desired.
+
 ## Channel Aliases
 
 Channels | Aliases

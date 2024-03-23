@@ -7,6 +7,8 @@
 -   **NEW**: More helpful interpolation errors will raise for an empty list.
 -   **NEW**: Add new `space` method in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is more
     flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
+-   **NEW**: Normalize how color spaces with special viewing conditions are configured. Document configuring viewing
+    conditions of color models where applicable.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
 
 ## 3.2
