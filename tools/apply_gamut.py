@@ -46,7 +46,7 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_gamut_map(amount, p, gamut, fit):
+def apply_gamut_map(amount, p, gamut, fit, jnd, pspace):
     """Apply filter."""
 
     has_alpha = len(p) > 3
@@ -54,10 +54,13 @@ def apply_gamut_map(amount, p, gamut, fit):
     if amount:
         color.set('oklch.c', lambda c: c * amount)
     # Fit the color back into the color gamut and return the results
-    return tuple(int(x * 255) for x in color.convert('srgb').fit(method=fit)[:4 if has_alpha else -1])
+    return tuple(
+        int(x * 255)
+        for x in color.convert('srgb').fit(method=fit, jnd=jnd, pspace=pspace)[:4 if has_alpha else -1]
+    )
 
 
-def process_image(img, output, amount, gamut, fit):
+def process_image(img, output, amount, gamut, fit, jnd, pspace):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
@@ -76,7 +79,7 @@ def process_image(img, output, amount, gamut, fit):
         print('> 0%', end='\r')
         for i in range(im.size[0]):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut, fit)
+                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut, fit, jnd, pspace)
             print('> {}%'.format(int((i * j) * factor)), end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
@@ -96,6 +99,8 @@ def main():
     parser.add_argument('--amount', '-a', type=float, help='Amount to increase chroma.')
     parser.add_argument('--gamut', default='srgb', help="Photo's current gamut.")
     parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
+    parser.add_argument('--gamut-jnd', '-j', default="clip", help="Adjust JND of old style chroma reduction.")
+    parser.add_argument('--gamut-pspace', '-p', default="clip", help="Specify perceptual space of ray trace method.")
     args = parser.parse_args()
 
     process_image(
@@ -103,7 +108,9 @@ def main():
         args.output,
         args.amount,
         args.gamut,
-        args.gamut_map
+        args.gamut_map,
+        args.gamut_jnd,
+        args.gamut_pspace
     )
 
     return 0

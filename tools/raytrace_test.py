@@ -12,6 +12,123 @@ from coloraide.gamut.fit_raytrace import raytrace_box  # noqa: E402
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
+from coloraide.spaces.lch import LCh  # noqa: E402
+
+
+class _LCh(LCh):
+    """Custom LCh."""
+
+    INDEXES = [0, 1, 2]
+
+    def to_base(self, coords):
+        """Convert to the base."""
+
+        ordered = [0.0, 0.0, 0.0]
+        for e, c in enumerate(super().to_base(coords)):
+            ordered[self.INDEXES[e]] = c
+        return ordered
+
+    def from_base(self, coords):
+        """Convert from the base."""
+
+        return super().from_base([coords[i] for i in self.INDEXES])
+
+
+def coerce_to_lch(space):
+    """Coerce Lab to LCh."""
+
+    cs = Color.CS_MAP[space]
+    name = cs.NAME
+
+    class CustomLCh(_LCh):
+        NAME = '-cylinder'
+        SERIALIZE = ('-cylinder',)
+        BASE = name
+        WHITE = cs.WHITE
+        DYAMIC_RANGE = cs.DYNAMIC_RANGE
+        INDEXES = cs.indexes()
+        ORIG_SPACE = cs
+
+        def is_achromatic(self, coords) -> bool | None:
+            """Check if space is achromatic."""
+
+            return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
+
+    class ColorCyl(Color):
+        """Custom color."""
+
+    ColorCyl.register(CustomLCh())
+
+    return ColorCyl
+
+
+def plot_interpolation(
+    fig,
+    space,
+    interp_colors,
+    interp_space,
+    interp_method,
+    hue,
+    carryfoward,
+    powerless,
+    extrapolate,
+    steps,
+    gmap,
+    opacity=1
+):
+    """Plot interpolations, but force Lab to operate like LCh."""
+
+    if not interp_colors:
+        return
+
+    if not isinstance(Color.CS_MAP[interp_space], plt3d.Cylindrical):
+        Color_ = coerce_to_lch(interp_space)
+        interp_space = '-cylinder'
+    else:
+        Color_ = Color
+
+    colors = Color_.steps(
+        interp_colors.split(';'),
+        space=interp_space,
+        steps=steps,
+        hue=hue,
+        carryfoward=carryfoward,
+        powerless=powerless,
+        extrapolate=extrapolate,
+        method=interp_method
+    )
+
+    target = Color.CS_MAP[space]
+    flags = {
+        'is_cyl': isinstance(target, plt3d.Cylindrical),
+        'is_labish': isinstance(target, plt3d.Labish),
+        'is_lchish': isinstance(target, plt3d.LChish),
+        'is_hslish': isinstance(target, plt3d.HSLish),
+        'is_hwbish': isinstance(target, plt3d.HWBish),
+        'is_hsvish': isinstance(target, plt3d.HSVish)
+    }
+
+    x = []
+    y = []
+    z = []
+    cmap = []
+    for c in colors:
+        c.convert(space, in_place=True)
+        plt3d.store_coords(c, x, y, z, flags)
+
+        c.convert('srgb', in_place=True)
+        c.fit(**gmap)
+        cmap.append(c.to_string(hex=True))
+
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        mode = 'markers',
+        marker={'color': cmap},
+        showlegend=False
+    )
+
+    trace.update(opacity=opacity)
+    fig.add_trace(trace)
 
 
 def raytrace(args):
@@ -71,7 +188,9 @@ def simulate_raytrace_gamut_mapping(args):
     points = []
     color = Color(args.gamut_color)
 
-    lch = args.gamut_lch
+    options = json.loads(args.gmap_options)
+    pspace = options.get('pspace', 'lch-d65')
+    is_lab = isinstance(color.CS_MAP[pspace], fit.Labish)
     space = args.gamut_rgb
 
     cs = color.CS_MAP[space]
@@ -97,10 +216,17 @@ def simulate_raytrace_gamut_mapping(args):
         space = linear
 
     orig = color.space()
-    mapcolor = color.convert(lch, norm=False) if orig != lch else color.clone().normalize(nans=False)
+    mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
     first = mapcolor.clone()
-    l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-    mapcolor[c] = 0
+    if is_lab:
+        l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
+        mapcolor[a] = 0
+        mapcolor[b] = 0
+    else:
+        l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        hue = mapcolor[h]
+        mapcolor[c] = 0
     achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
 
     # Return white or black if the achromatic version is not within the RGB cube.
@@ -118,8 +244,12 @@ def simulate_raytrace_gamut_mapping(args):
         points.append(achroma)
     else:
         light = mapcolor[l]
-        hue = mapcolor[h]
-        mapcolor[c] = 1e-8
+        if is_lab:
+            ab = alg.polar_to_rect(1e-8, hue)
+            mapcolor[a] = ab[0]
+            mapcolor[b] = ab[1]
+        else:
+            mapcolor[c] = 1e-8
         gamutcolor = mapcolor.convert(space)
 
         # Create a ray from our current color to the color with zero chroma.
@@ -128,9 +258,16 @@ def simulate_raytrace_gamut_mapping(args):
         # through the new corrected color finding the intersection again.
         for i in range(3):
             if i:
-                gamutcolor.convert(lch, in_place=True)
-                gamutcolor[l] = light
-                gamutcolor[h] = hue
+                gamutcolor.convert(pspace, in_place=True)
+                if is_lab:
+                    chroma = alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0]
+                    ab = alg.polar_to_rect(chroma, hue)
+                    gamutcolor[l] = light
+                    gamutcolor[a] = ab[0]
+                    gamutcolor[b] = ab[1]
+                else:
+                    gamutcolor[l] = light
+                    gamutcolor[h] = hue
                 gamutcolor.convert(space, in_place=True)
             intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
             if intersection:
@@ -163,7 +300,7 @@ def simulate_raytrace_gamut_mapping(args):
         i += 3
 
     gmap = {'method': 'raytrace'}
-    gmap.update(json.loads(args.gmap_options))
+    gmap.update(options)
 
     # Plot the color space
     fig = plt3d.plot_gamut_in_space(
@@ -180,11 +317,11 @@ def simulate_raytrace_gamut_mapping(args):
     fig.add_traces(data)
 
     if args.gamut_interp:
-        plt3d.plot_interpolation(
+        plot_interpolation(
             fig,
             space,
             first.to_string(fit=False) + ';' + mapcolor.to_string(fit=False),
-            lch,
+            pspace,
             'linear',
             'shorter',
             False,
@@ -218,9 +355,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--ray', '-r', action='append', help="Ray described in the form (x1,y1,z1)->(x2,y2,z2)."
-    )
-    parser.add_argument(
-        '--gamut-lch', default='oklch', help="Perceptual space to simulate gamut mapping in."
     )
     parser.add_argument(
         '--gamut-rgb', default='srgb', help="RGB space to gamut map within."
