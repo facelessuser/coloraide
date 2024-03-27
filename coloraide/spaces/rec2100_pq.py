@@ -9,6 +9,8 @@ from .srgb_linear import sRGBLinear
 from ..types import Vector
 from .. import util
 
+YW = 203
+
 
 class Rec2100PQ(sRGBLinear):
     """Rec. 2100 PQ class."""
@@ -25,11 +27,11 @@ class Rec2100PQ(sRGBLinear):
         return self.BASE
 
     def to_base(self, coords: Vector) -> Vector:
-        """To XYZ from Rec. 2100 PQ."""
+        """To base from Rec. 2100 PQ."""
 
-        return [max(c / util.YW, 0.0) for c in util.pq_st2084_eotf(coords)]
+        return [c / YW for c in util.pq_st2084_eotf(coords)]
 
     def from_base(self, coords: Vector) -> Vector:
-        """From XYZ to Rec. 2100 PQ."""
+        """From base to Rec. 2100 PQ."""
 
-        return util.pq_st2084_oetf([max(c * util.YW, 0.0) for c in coords])
+        return util.pq_st2084_oetf([c * YW for c in coords])

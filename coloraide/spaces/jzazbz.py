@@ -3,34 +3,26 @@ Jzazbz class.
 
 https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 
-There seems to be some debate on how to scale Jzazbz. Colour Science chooses not to scale at all.
-Colorio seems to scale at 100.
-
-The spec mentions multiple times targeting a luminance of 10,000 cd/m^2.
-Relative XYZ has Y=1 for media white
-BT.2048 says media white Y=203 at PQ 58
+Relative XYZ has Y=100 for media white
+BT.2048 says media white Y=203 at PQ 58, which is about 1000 cd/m^2.
 This is confirmed here: https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-BT.2408-3-2019-PDF-E.pdf
-
-It is tough to tell who is correct as everything passes through the MATLAB scripts fine as it
-just scales the results differently, so forward and backwards translation comes out great regardless,
-but looking at the images in the spec, it seems the scaling using Y=203 at PQ 58 may be correct. It
-is almost certain that some scaling is being applied and that applying none is almost certainly wrong.
 
 If at some time that these assumptions are incorrect, we will be happy to alter the model.
 """
 from __future__ import annotations
-from ..spaces import Space, Labish
+from ..spaces import Space
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
 from ..types import Vector  # noqa: F401
-from .lch import ACHROMATIC_THRESHOLD
+from .lab import Lab
 
 B = 1.15
 G = 0.66
 D = -0.56
 D0 = 1.6295499532821566E-11
+YW = 203
 
 # All PQ Values are equivalent to defaults as stated in link below except `M2` (and `IM2`):
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
@@ -94,14 +86,14 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     ya = (ym + ((G - 1) * xa)) / G
 
     # Convert back to normal XYZ D65
-    return util.absxyz_to_xyz([xa, ya, za])
+    return util.absxyz_to_xyz([xa, ya, za], YW)
 
 
 def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     """From XYZ to Jzazbz."""
 
     # Convert from XYZ D65 to an absolute XYZ D5
-    xa, ya, za = util.xyz_to_absxyz(xyzd65)
+    xa, ya, za = util.xyz_to_absxyz(xyzd65, YW)
     xm = (B * xa) - ((B - 1) * za)
     ym = (G * ya) - ((G - 1) * xa)
 
@@ -119,7 +111,7 @@ def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     return [jz, az, bz]
 
 
-class Jzazbz(Labish, Space):
+class Jzazbz(Lab, Space):
     """Jzazbz class."""
 
     BASE = "xyz-d65"
@@ -138,12 +130,6 @@ class Jzazbz(Labish, Space):
     }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
-
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        # Account for both positive and negative chroma
-        return coords[0] < 0 or alg.rect_to_polar(coords[1], coords[2])[0] < ACHROMATIC_THRESHOLD
 
     def to_base(self, coords: Vector) -> Vector:
         """To XYZ from Jzazbz."""

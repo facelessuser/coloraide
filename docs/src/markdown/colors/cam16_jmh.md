@@ -63,7 +63,7 @@ appear different based on the viewing conditions.
 
 Viewing\ Conditions    | Description
 ---------------------- | -----------
-Reference\ White       | The XYZ values of the reference white scaled by 100.
+White                  | This is the white point and should be the same as defined in the color class. This is provided as (x, y) chromaticity coordinates.
 Adapting\ Luminance    | The luminance of the adapting field (`La`). The units are in cd/m2.
 Background\ Luminance  | The background luminance (`Yb`) the relative luminance of the nearby background (out to 10°), relative to the the reference white's luminance (`Y`). Usually 20 providing a gray world assumption.
 Surround               | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
@@ -89,7 +89,7 @@ class CustomCAM16JMh(CAM16JMh):
     SERIALIZE = ("--cam16-custom",)
     WHITE = WHITES['2deg']['D65']
     ENV = Environment(
-        reference_white=[x * 100 for x in util.xy_to_xyz(WHITE)],
+        white=WHITE,
         adapting_luminance=1000 / math.pi,
         background_luminance=20,
         surround='average',

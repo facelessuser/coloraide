@@ -42,11 +42,11 @@ def hlab_to_xyz(hlab: Vector, white: VectorLike) -> Vector:
     ka = CKA * alg.nth_root(xn / CXN, 2)
     kb = CKB * alg.nth_root(zn / CZN, 2)
     l, a, b = hlab
-    l /= 100
+    l *= 0.01
     y = (l ** 2) * yn
     x = (((a * l) / ka) + (y / yn)) * xn
     z = (((b * l) / kb) - (y / yn)) * -zn
-    return alg.divide([x, y, z], 100, dims=alg.D1_SC)
+    return alg.multiply([x, y, z], 0.01, dims=alg.D1_SC)
 
 
 class HunterLab(Lab):
