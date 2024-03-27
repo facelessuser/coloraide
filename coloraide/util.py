@@ -156,13 +156,13 @@ def rgb_scale(vec: VectorLike) -> Vector:
     return [v / m if m else v for v in vec]
 
 
-def scale100(coords):
+def scale100(coords: Vector) -> Vector:
     """Scale from 1 to 100."""
 
     return [c * 100 for c in coords]
 
 
-def scale1(coords):
+def scale1(coords: Vector) -> Vector:
     """Scale from 1 to 100."""
 
     return [c * 0.01 for c in coords]
