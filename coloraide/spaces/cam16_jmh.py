@@ -94,7 +94,7 @@ def unadapt(adapted: Vector, fl: float) -> Vector:
     constant = 100 / fl * (27.13 ** ADAPTED_COEF_INV)
     for c in adapted:
         cabs = abs(c)
-        coords.append(math.copysign(constant * alg.npow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
+        coords.append(math.copysign(constant * alg.spow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
     return coords
 
 
@@ -249,13 +249,13 @@ def cam16_to_xyz_d65(
         alpha = (M / env.fl_root) / J_root
     elif s is not None:
         alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
-    t = alg.npow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
+    t = alg.spow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
     # Achromatic response
-    A = env.a_w * alg.npow(J_root, 2 / env.c / env.z)
+    A = env.a_w * alg.spow(J_root, 2 / env.c / env.z)
 
     # Calculate red-green and yellow-blue components
     p1 = 5e4 / 13 * env.nc * env.ncb * et
@@ -294,15 +294,15 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
         5e4 / 13 * env.nc * env.ncb *
         alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
     )
-    alpha = alg.npow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
+    alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
     A = env.nbb * (2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2])
 
-    J_root = alg.npow(A / env.a_w, 0.5 * env.c * env.z)
+    J_root = alg.spow(A / env.a_w, 0.5 * env.c * env.z)
 
     # Lightness
-    J = 100 * alg.npow(J_root, 2)
+    J = 100 * alg.spow(J_root, 2)
 
     # Brightness
     Q = (4 / env.c * J_root * (env.a_w + 4) * env.fl_root)

@@ -87,9 +87,9 @@ def rlab_to_xyz(rlab: Vector, env: Environment) -> Vector:
 
     LR, aR, bR = rlab
     yr = LR * 0.01
-    xr = alg.npow((aR / 430) + yr, env.surround)
-    zr = alg.npow(yr - (bR / 170), env.surround)
-    return alg.matmul(env.iram, [xr, alg.npow(yr, env.surround), zr], dims=alg.D2_D1)
+    xr = alg.spow((aR / 430) + yr, env.surround)
+    zr = alg.spow(yr - (bR / 170), env.surround)
+    return alg.matmul(env.iram, [xr, alg.spow(yr, env.surround), zr], dims=alg.D2_D1)
 
 
 def xyz_to_rlab(xyz: Vector, env: Environment) -> Vector:

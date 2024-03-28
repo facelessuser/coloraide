@@ -24,7 +24,7 @@ def lin_prophoto(rgb: Vector) -> Vector:
         if abs(i) < ET2:
             result.append(i / 16.0)
         else:
-            result.append(alg.npow(i, 1.8))
+            result.append(alg.spow(i, 1.8))
     return result
 
 
