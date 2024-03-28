@@ -109,9 +109,8 @@ def pq_st2084_oetf(
 
     adjusted = []
     for c in values:
-        c = alg.npow(c / 10000, m1)
-        r = (c1 + c2 * c) / (1 + c3 * c)
-        adjusted.append(alg.npow(r, m2))
+        c = alg.spow(c / 10000, m1)
+        adjusted.append(alg.spow((c1 + c2 * c) / (1 + c3 * c), m2))
     return adjusted
 
 
@@ -130,9 +129,8 @@ def pq_st2084_eotf(
 
     adjusted = []
     for c in values:
-        c = alg.npow(c, im2)
-        r = max((c - c1), 0) / (c2 - c3 * c)
-        adjusted.append(10000 * alg.npow(r, im1))
+        c = alg.spow(c, im2)
+        adjusted.append(10000 * alg.spow(max((c - c1), 0) / (c2 - c3 * c), im1))
     return adjusted
 
 

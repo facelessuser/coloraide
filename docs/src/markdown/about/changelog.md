@@ -12,6 +12,8 @@
 -   **NEW**: Generic ray trace gamut mapping now has a new `pspace` parameter that can be used to specify a perceptual
     space in either LCh-ish or Lab-ish form. `lch` parameter is now deprecated, but currently still present, but
     `pspace` will take priority if both are defined.
+-   **NEW**: Rename `algebra.npow` to `algebra.spow` (signed power). `algebra.npow` is now deprecated and will be
+    removed at some future time.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
 -   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces. This allows better
     round trip values when the color space can handle them.
