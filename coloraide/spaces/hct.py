@@ -43,7 +43,6 @@ color(--hct 256.79 31.766 33.344 / 1)
 """
 from __future__ import annotations
 from .. import algebra as alg
-from .. import util
 from ..spaces import Space, LChish
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
@@ -155,8 +154,8 @@ class HCT(LChish, Space):
     SERIALIZE = ("--hct",)
     WHITE = WHITES['2deg']['D65']
     ENV = Environment(
-        # D65 scaled by 100
-        reference_white=alg.multiply(util.xy_to_xyz(WHITE), 100, dims=alg.D1_SC),
+        # D65 white point.
+        white=WHITE,
         # 200 lux or `~11.72 cd/m2` multiplied by ~18.42%, a variation of gray world assumption.
         adapting_luminance=200 / math.pi * lstar_to_y(50.0),
         # A variation on gray world assumption: ~18.42% of reference white's `Yw == 100`.

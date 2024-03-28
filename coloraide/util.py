@@ -21,13 +21,6 @@ DEF_CONTRAST = "wcag21"
 DEF_CCT = "robertson-1968"
 DEF_INTERPOLATOR = "linear"
 
-# Maximum luminance in PQ is 10,000 cd/m^2
-# Relative XYZ has Y=1 for media white
-# BT.2048 says media white Y=203 at PQ 58
-#
-# This is confirmed here: https://www.itu.int/dms_pub/itu-r/opb/rep/R-REP-BT.2408-3-2019-PDF-E.pdf
-YW = 203
-
 # PQ Constants
 # https://en.wikipedia.org/wiki/High-dynamic-range_video#Perceptual_quantizer
 M1 = 2610 / 16384
@@ -116,9 +109,28 @@ def pq_st2084_oetf(
 
     adjusted = []
     for c in values:
-        c = alg.npow(c / 10000, m1)
-        r = (c1 + c2 * c) / (1 + c3 * c)
-        adjusted.append(alg.npow(r, m2))
+        c = alg.spow(c / 10000, m1)
+        adjusted.append(alg.spow((c1 + c2 * c) / (1 + c3 * c), m2))
+    return adjusted
+
+
+def pq_st2084_eotf(
+    values: VectorLike,
+    c1: float = C1,
+    c2: float = C2,
+    c3: float = C3,
+    m1: float = M1,
+    m2: float = M2
+) -> Vector:
+    """Perceptual quantizer (SMPTE ST 2084) - EOTF."""
+
+    im1 = 1 / m1
+    im2 = 1 / m2
+
+    adjusted = []
+    for c in values:
+        c = alg.spow(c, im2)
+        adjusted.append(10000 * alg.spow(max((c - c1), 0) / (c2 - c3 * c), im1))
     return adjusted
 
 
@@ -142,37 +154,28 @@ def rgb_scale(vec: VectorLike) -> Vector:
     return [v / m if m else v for v in vec]
 
 
-def pq_st2084_eotf(
-    values: VectorLike,
-    c1: float = C1,
-    c2: float = C2,
-    c3: float = C3,
-    m1: float = M1,
-    m2: float = M2
-) -> Vector:
-    """Perceptual quantizer (SMPTE ST 2084) - EOTF."""
+def scale100(coords: Vector) -> Vector:
+    """Scale from 1 to 100."""
 
-    im1 = 1 / m1
-    im2 = 1 / m2
-
-    adjusted = []
-    for c in values:
-        c = alg.npow(c, im2)
-        r = (c - c1) / (c2 - c3 * c)
-        adjusted.append(10000 * alg.npow(r, im1))
-    return adjusted
+    return [c * 100 for c in coords]
 
 
-def xyz_to_absxyz(xyzd65: VectorLike, yw: float = YW) -> Vector:
+def scale1(coords: Vector) -> Vector:
+    """Scale from 1 to 100."""
+
+    return [c * 0.01 for c in coords]
+
+
+def xyz_to_absxyz(xyzd65: VectorLike, yw: float = 100) -> Vector:
     """XYZ to Absolute XYZ."""
 
-    return [max(c * yw, 0) for c in xyzd65]
+    return [c * yw for c in xyzd65]
 
 
-def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = YW) -> Vector:
+def absxyz_to_xyz(absxyzd65: VectorLike, yw: float = 100) -> Vector:
     """Absolute XYZ to XYZ."""
 
-    return [max(c / yw, 0) for c in absxyzd65]
+    return [c / yw for c in absxyzd65]
 
 
 def constrain_hue(hue: float) -> float:

@@ -197,6 +197,7 @@ XYZ
 YCbCr
 Yoshi
 ZD
+absolutizing
 accessor
 accessors
 achromatomaly

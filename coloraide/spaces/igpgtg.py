@@ -40,9 +40,9 @@ def xyz_to_igpgtg(xyz: Vector) -> Vector:
 
     lms_in = alg.matmul(XYZ_TO_LMS, xyz, dims=alg.D2_D1)
     lms = [
-        alg.npow(lms_in[0] / 18.36, 0.427),
-        alg.npow(lms_in[1] / 21.46, 0.427),
-        alg.npow(lms_in[2] / 19435, 0.427)
+        alg.spow(lms_in[0] / 18.36, 0.427),
+        alg.spow(lms_in[1] / 21.46, 0.427),
+        alg.spow(lms_in[2] / 19435, 0.427)
     ]
     return alg.matmul(LMS_TO_IGPGTG, lms, dims=alg.D2_D1)
 

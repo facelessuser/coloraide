@@ -48,14 +48,14 @@ conditions.
 
 Viewing\ Conditions    | Description
 ---------------------- | -----------
-`white`                | The XYZ values of the reference white scaled by 100.
+`white`                | This is the white point and should be the same as defined in the color class. This is provided as (x, y) chromaticity coordinates.
 `adapting_luminance`   | The luminance of the adapting field (often known as `La`). The units are in cd/m2.
 `surround`             | A description of the peripheral area. Use "dark" for a movie theater, "dim" for e.g. viewing a bright television in a dimly lit room, or "average" for surface colors.
 `discounting`          | Degree of discounting of the illuminant. A string of either "hard-copy", "projected-transparency", or "soft-copy". Hard copy indicates full discount, or the eye is assumed to be fully adapted to the illuminant. Projected transparency performs 50% discount.
 
 ColorAide must provide some defaults, so the RLAB space has a default set of viewing conditions that uses a D65 white
 point, an adapting luminance of 1000 lux or a value of ~318.31 cd/m^2^, an "average" surround, and sets discounting to
-"hard-copy".
+"hard-copy". These are the same settings that were demonstrated in the original paper.
 
 These settings do not have to be used, and a new RLAB variant with different viewing conditions can be created. When
 doing this, the space should be derived from the default RLAB space.
@@ -72,7 +72,7 @@ class CustomRLAB(RLAB):
     SERIALIZE = ("--rlab-custom",)
     WHITE = WHITES['2deg']['D65']
     ENV = Environment(
-        reference_white=[x * 100 for x in util.xy_to_xyz(WHITE)],
+        white=WHITE,
         adapting_luminance=64 / math.pi * 0.2,
         surround='average',
         discounting="soft-copy"

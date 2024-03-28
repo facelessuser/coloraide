@@ -84,7 +84,7 @@ def hsluv_to_luv(hsluv: Vector) -> Vector:
         l = 0.0
     else:
         _hx_max = max_chroma_for_lh(l, h)
-        c = _hx_max / 100.0 * s
+        c = _hx_max * 0.01 * s
 
     a, b = alg.polar_to_rect(c, h)
     return [l, a, b]

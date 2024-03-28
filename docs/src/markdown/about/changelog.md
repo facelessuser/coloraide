@@ -13,6 +13,9 @@
     space in either LCh-ish or Lab-ish form. `lch` parameter is now deprecated, but currently still present, but
     `pspace` will take priority if both are defined.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
+-   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces. This allows better
+    round trip values when the color space can handle them.
+-   **FIX**: Ensure ST2084 EOTF implements the `max` as specified in the spec.
 
 ## 3.2
 

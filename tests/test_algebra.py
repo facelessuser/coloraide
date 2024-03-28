@@ -1799,9 +1799,9 @@ class TestAlgebra(unittest.TestCase):
     def test_apply_two_inputs(self):
         """Test vectorize2 with two inputs."""
 
-        npow = alg.vectorize2(alg.npow)
+        spow = alg.vectorize2(alg.spow)
         self.assertEqual(
-            npow([[1, 2, 3], [4, 5, 6]], 2),
+            spow([[1, 2, 3], [4, 5, 6]], 2),
             [[1, 4, 9], [16, 25, 36]]
         )
 

@@ -94,7 +94,7 @@ def unadapt(adapted: Vector, fl: float) -> Vector:
     constant = 100 / fl * (27.13 ** ADAPTED_COEF_INV)
     for c in adapted:
         cabs = abs(c)
-        coords.append(math.copysign(constant * alg.npow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
+        coords.append(math.copysign(constant * alg.spow(cabs / (400 - cabs), ADAPTED_COEF_INV), c))
     return coords
 
 
@@ -105,14 +105,14 @@ class Environment:
     Usage Guidelines for CIECAM97s (Nathan Moroney)
     https://www.researchgate.net/publication/220865484_Usage_guidelines_for_CIECAM97s
 
-    ref_white: The reference white XYZ. We assume XYZ is in the range 0 - 1 as that is how ColorAide
-        handles XYZ everywhere else. It will be scaled up to 0 - 100.
+    white: This is the (x, y) chromaticity points for the white point. This should be the same
+        value as set in the color class `WHITE` value.
 
     adapting_luminance: This is the the luminance of the adapting field. The units are in cd/m2.
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
         For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).
-        This results in `La = E / π * 0.2`.
+        This results in `La = E / π * 0.2`. Some also simplify this to simply `lux / π`.
 
     background_luminance: The background is the region immediately surrounding the stimulus and
         for images is the neighboring portion of the image. Generally, this value is set to a value of 20.
@@ -132,7 +132,7 @@ class Environment:
     def __init__(
         self,
         *,
-        reference_white: VectorLike,
+        white: VectorLike,
         adapting_luminance: float,
         background_luminance: float,
         surround: str,
@@ -146,7 +146,7 @@ class Environment:
         """
 
         self.discounting = discounting
-        self.ref_white = reference_white
+        self.ref_white = util.xy_to_xyz(white)
         self.surround = surround
 
         # The average luminance of the environment in `cd/m^2cd/m` (a.k.a. nits)
@@ -154,10 +154,11 @@ class Environment:
         # The relative luminance of the nearby background
         self.yb = background_luminance
         # Absolute luminance of the reference white.
-        yw = reference_white[1]
+        xyz_w = util.scale100(self.ref_white)
+        yw = xyz_w[1]
 
         # Cone response for reference white
-        rgb_w = alg.matmul(M16, reference_white, dims=alg.D2_D1)
+        rgb_w = alg.matmul(M16, xyz_w, dims=alg.D2_D1)
 
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]
@@ -248,13 +249,13 @@ def cam16_to_xyz_d65(
         alpha = (M / env.fl_root) / J_root
     elif s is not None:
         alpha = 0.0004 * (s ** 2) * (env.a_w + 4) / env.c
-    t = alg.npow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
+    t = alg.spow(alpha * math.pow(1.64 - math.pow(0.29, env.n), -0.73), 10 / 9)
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
     # Achromatic response
-    A = env.a_w * alg.npow(J_root, 2 / env.c / env.z)
+    A = env.a_w * alg.spow(J_root, 2 / env.c / env.z)
 
     # Calculate red-green and yellow-blue components
     p1 = 5e4 / 13 * env.nc * env.ncb * et
@@ -265,11 +266,7 @@ def cam16_to_xyz_d65(
 
     # Calculate back from cone response to XYZ
     rgb_c = unadapt(alg.multiply(alg.matmul(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
-    return alg.divide(
-        alg.matmul(MI6_INV, alg.multiply(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1),
-        100,
-        dims=alg.D1_SC
-    )
+    return util.scale1(alg.matmul(MI6_INV, alg.multiply(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
@@ -278,7 +275,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
     # Cone response
     rgb_a = adapt(
         alg.multiply(
-            alg.matmul(M16, alg.multiply(xyzd65, 100, dims=alg.D1_SC), dims=alg.D2_D1),
+            alg.matmul(M16, util.scale100(xyzd65), dims=alg.D2_D1),
             env.d_rgb,
             dims=alg.D1
         ),
@@ -297,15 +294,15 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
         5e4 / 13 * env.nc * env.ncb *
         alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
     )
-    alpha = alg.npow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
+    alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
     A = env.nbb * (2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2])
 
-    J_root = alg.npow(A / env.a_w, 0.5 * env.c * env.z)
+    J_root = alg.spow(A / env.a_w, 0.5 * env.c * env.z)
 
     # Lightness
-    J = 100 * alg.npow(J_root, 2)
+    J = 100 * alg.spow(J_root, 2)
 
     # Brightness
     Q = (4 / env.c * J_root * (env.a_w + 4) * env.fl_root)
@@ -357,8 +354,8 @@ class CAM16JMh(LChish, Space):
     WHITE = WHITES['2deg']['D65']
     # Assuming sRGB which has a lux of 64: `((E * R) / PI) / 5` where `R = 1`.
     ENV = Environment(
-        # D65 scaled by 100
-        reference_white=alg.multiply(util.xy_to_xyz(WHITE), 100, dims=alg.D1_SC),
+        # Our white point.
+        white=WHITE,
         # Assuming sRGB which has a lux of 64: `((E * R) / PI)` where `R = 1`.
         # Divided by 5 (or multiplied by 20%) assuming gray world.
         adapting_luminance=64 / math.pi * 0.2,
