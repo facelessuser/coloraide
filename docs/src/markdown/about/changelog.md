@@ -1,7 +1,13 @@
 # Changelog
 
-## 3.3
+## 3.2
 
+-   **NEW**: `cam16-jmh`, `cam16-ucs`, `jzczhz`, `jzazbz`, `ipt`, and `igpgtg` will perform achromatic handling relative
+    to themselves. As an example, in CAM16, when chroma is close to zero, color will be determined as achromatic. This
+    is due to adapting luminance and background luminance, zero chroma may not always be perfect white, but it is
+    achromatic according to the space. This simplifies logic, improves speed, and lessens confusion as to what
+    achromatic means.
+-   **NEW**: Remove deprecated CAM16 Jab implementation. Use `cam16-ucs` instead.
 -   **NEW**: Interpolation will now gracefully handle a list of a single color causing the interpolation to just return
     the single color.
 -   **NEW**: More helpful interpolation errors will raise for an empty list.
@@ -15,18 +21,8 @@
 -   **NEW**: Rename `algebra.npow` to `algebra.spow` (signed power). `algebra.npow` is now deprecated and will be
     removed at some future time.
 -   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
--   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces. This allows better
-    round trip values when the color space can handle them.
+-   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces.
 -   **FIX**: Ensure ST2084 EOTF implements the `max` as specified in the spec.
-
-## 3.2
-
--   **NEW**: `cam16-jmh`, `cam16-ucs`, `jzczhz`, `jzazbz`, `ipt`, and `igpgtg` will perform achromatic handling relative
-    to themselves. As an example, in CAM16, when chroma is close to zero, color will be determined as achromatic. This
-    is due to adapting luminance and background luminance, zero chroma may not always be perfect white, but it is
-    achromatic according to the space. This simplifies logic, improves speed, and lessens confusion as to what
-    achromatic means.
--   **NEW**: Remove deprecated CAM16 Jab implementation. Use `cam16-ucs` instead.
 
 ## 3.1.2
 

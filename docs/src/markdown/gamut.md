@@ -519,7 +519,8 @@ Consider the example below. We take a very saturated yellow in Display P3 (`#!co
 we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. We do this
 interpolation in CIELCh, which is known to have chroma that can swing very far outside the visible spectrum when
 interpolating hues at more extreme lightness. Finally, we gamut map in various LCh models. What we can observe is some
-models will struggle to map some of these colors as the models hue preservation can break down at extreme limits.
+models will struggle to map some of these colors as the hue preservation can break down at extreme limits. In the cases
+below, this specifically happens due to negative XYZ values that are produced due to high chroma in lower lightness.
 Some models can tolerate this more than others.
 
 ```py play
@@ -532,15 +533,13 @@ Steps([c.fit('srgb', method='raytrace', pspace='jzczhz') for c in Color.steps([y
 Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
 ```
 
-Each perceptual model above will bend the the hues to be perceptual and scale lightness and chroma a bit differently,
-and at the edge of the visual spectrum, it is not uncommon to see larger shifts in hues as these color spaces are not
-meant to be perceptual infinitely out into imaginary colors. Converting between these spaces _before_ reducing chroma
-can introduce such disparities. If you push any color space far enough, they all will break down in some way, some are
-more tolerable than others.
+Almost any perceptual model, if pushed far enough, can start to break down. Converting to and from these spaces _before_
+reducing chroma can introduce such disparities. Every color space has limitations, some spaces just have more agreeable
+ones.
 
 If you are working within reasonable gamuts, most will work just fine. And if you want to do something like above,
 holding chroma really high for all lightness values, you will often find that it works best when you do it directly in
-the color space that is doing the gamut mapping as you will have "fit" the color before converting to another color
+the color space that is doing the gamut mapping as you will have to "fit" the color before converting to another color
 space.
 
 
@@ -561,8 +560,6 @@ yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(--lchuv 0% none none)')
 Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lchuv')])
 ```
-
-Every color space has limitations, some spaces just have more agreeable ones.
 
 ## Why Not Just Clip?
 
