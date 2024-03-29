@@ -255,7 +255,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         """Test tracing of face 2."""
 
         color = Color('oklch(90% .4 60)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.06482 60.044)'))
+        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.06478 60.008)'))
 
     def test_trace_face3(self):
         """Test tracing of face 3."""
@@ -273,7 +273,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         """Test tracing of face 5."""
 
         color = Color('oklch(30% .4 100)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.3 0.06237 100)'))
+        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.3 0.06237 99.999)'))
 
     def test_trace_face6(self):
         """Test tracing of face 6."""

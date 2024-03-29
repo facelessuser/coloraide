@@ -220,11 +220,12 @@ def simulate_raytrace_gamut_mapping(args):
     first = mapcolor.clone()
     if is_lab:
         l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
+        chroma, hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])
         mapcolor[a] = 0
         mapcolor[b] = 0
     else:
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        chroma = mapcolor[c]
         hue = mapcolor[h]
         mapcolor[c] = 0
     achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
@@ -245,18 +246,18 @@ def simulate_raytrace_gamut_mapping(args):
     else:
         light = mapcolor[l]
         if is_lab:
-            ab = alg.polar_to_rect(1e-8, hue)
+            ab = alg.polar_to_rect(chroma, hue)
             mapcolor[a] = ab[0]
             mapcolor[b] = ab[1]
         else:
-            mapcolor[c] = 1e-8
+            mapcolor[c] = chroma
         gamutcolor = mapcolor.convert(space)
 
         # Create a ray from our current color to the color with zero chroma.
         # Trace the line to the RGB cube finding the intersection.
         # In between iterations, correct the L and H and then cast a ray
         # through the new corrected color finding the intersection again.
-        for i in range(3):
+        for i in range(4):
             if i:
                 gamutcolor.convert(pspace, in_place=True)
                 if is_lab:
@@ -317,6 +318,11 @@ def simulate_raytrace_gamut_mapping(args):
     fig.add_traces(data)
 
     if args.gamut_interp:
+        if is_lab:
+            mapcolor[a] = 0
+            mapcolor[b] = 0
+        else:
+            mapcolor[c] = 0
         plot_interpolation(
             fig,
             space,

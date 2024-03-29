@@ -117,8 +117,8 @@ def raytrace_box(
         # Non parallel case
         if d:
             inv_d = 1 / d
-            t1 = (bmin[i] - a) * inv_d
-            t2 = (bmax[i] - a) * inv_d
+            t1 = (bn - a) * inv_d
+            t2 = (bx - a) * inv_d
             tnear = max(min(t1, t2), tnear)
             tfar = min(max(t1, t2), tfar)
 
@@ -202,14 +202,15 @@ class RayTrace(Fit):
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
         if is_lab:
             l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-            hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
+            chroma, hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])
             mapcolor[a] = 0
             mapcolor[b] = 0
         else:
             l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            chroma = mapcolor[c]
             hue = mapcolor[h]
             mapcolor[c] = 0
-        achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
+        achroma = mapcolor.convert(space)[:-1]
 
         # Return white or black if the achromatic version is not within the RGB cube.
         mn, mx = alg.minmax(achroma)
@@ -221,37 +222,37 @@ class RayTrace(Fit):
         else:
             light = mapcolor[l]
             if is_lab:
-                ab = alg.polar_to_rect(1e-8, hue)
+                ab = alg.polar_to_rect(chroma, hue)
                 mapcolor[a] = ab[0]
                 mapcolor[b] = ab[1]
             else:
-                mapcolor[c] = 1e-8
-            gamutcolor = mapcolor.convert(space, in_place=True)
+                mapcolor[c] = chroma
+            mapcolor.convert(space, in_place=True)
 
             # Create a ray from our current color to the color with zero chroma.
             # Trace the line to the RGB cube finding the intersection.
             # In between iterations, correct the L and H and then cast a ray
             # through the new corrected color finding the intersection again.
-            for i in range(3):
+            for i in range(4):
                 if i:
-                    gamutcolor.convert(pspace, in_place=True)
+                    mapcolor.convert(pspace, in_place=True)
                     if is_lab:
-                        chroma = alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0]
+                        chroma = alg.rect_to_polar(mapcolor[a], mapcolor[b])[0]
                         ab = alg.polar_to_rect(chroma, hue)
-                        gamutcolor[l] = light
-                        gamutcolor[a] = ab[0]
-                        gamutcolor[b] = ab[1]
+                        mapcolor[l] = light
+                        mapcolor[a] = ab[0]
+                        mapcolor[b] = ab[1]
                     else:
-                        gamutcolor[l] = light
-                        gamutcolor[h] = hue
-                    gamutcolor.convert(space, in_place=True)
-                intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
+                        mapcolor[l] = light
+                        mapcolor[h] = hue
+                    mapcolor.convert(space, in_place=True)
+                intersection = raytrace_box(achroma, mapcolor[:-1], bmax=bmax)
                 if intersection:
-                    gamutcolor[:-1] = intersection
+                    mapcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover
 
-            color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]], gamutcolor[-1])
+            color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
 
         # If we have coerced a space to RGB, update the original
         if coerced:

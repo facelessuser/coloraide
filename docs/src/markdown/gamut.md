@@ -425,16 +425,19 @@ space. In order to converge, we must refine our result with a few additional ite
 In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
 the color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
 The corrected color becomes our new current color and should be much closer color on the reduced chroma line. We can
-repeat this process a few more times, each time finding a better, closer closer color on the path. After about two
-_additional_ iterations (a combined total of three for the entire process), we will be close enough where we can stop.
+repeat this process a few more times, each time finding a better, closer closer color on the path. After about three
+_additional_ iterations (a combined total of four for the entire process), we will be close enough where we can stop.
 Finally, we can then clip off floating point math errors. With this, we will now have an accurate approximation of the
 color we seek.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
 
 /// note
-For accuracy, iterations could be increased to a total of 4 which would reduce a potential ∆h shift to less than a hue,
-but ColorAide has opted to keep iterations at 3 which provides more speed and has a potential ∆h shift of only ~2.
+For accuracy, iterations could be increased further which would reduce a potential ∆h shift even more, but ColorAide has
+opted to keep iterations at 4 which can gamut map colors to sRGB with ∆h shift of less than 1, and when gamut mapping
+to a larger space like Rec. 2020, still below a ∆h of 2. It can be noted that the further away the gamut boundary is
+from the achromatic line, the less accurate gamut mapping can be, but with a shift still below ∆h of 2 for a large space
+like Rec. 2020, the accuracy is plenty sufficient.
 ///
 
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent

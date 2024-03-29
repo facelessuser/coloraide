@@ -20,7 +20,6 @@
     `pspace` will take priority if both are defined.
 -   **NEW**: Rename `algebra.npow` to `algebra.spow` (signed power). `algebra.npow` is now deprecated and will be
     removed at some future time.
--   **ENHANCE**: Ray trace gamut mapping now performs faster at roughly same accuracy.
 -   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces.
 -   **FIX**: Ensure ST2084 EOTF implements the `max` as specified in the spec.
 
