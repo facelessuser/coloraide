@@ -269,7 +269,7 @@ def cam16_to_xyz_d65(
     return util.scale1(alg.matmul(MI6_INV, alg.multiply(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
-def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
+def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
     """From XYZ to CAM16."""
 
     # Cone response
@@ -317,7 +317,7 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment) -> Vector:
     h = util.constrain_hue(math.degrees(h_rad))
 
     # Hue quadrature
-    H = hue_quadrature(h)
+    H = hue_quadrature(h) if calc_hue_quadrature else alg.NaN
 
     # Saturation
     s = 50 * alg.nth_root(env.c * alpha / (env.a_w + 4), 2)
@@ -363,7 +363,7 @@ class CAM16JMh(LChish, Space):
         background_luminance=20,
         # Average surround
         surround='average',
-        # No discount of illuminant
+        # Do not discount illuminant
         discounting=False
     )
     CHANNELS = (

@@ -98,6 +98,7 @@ Interpolator
 Itten
 Iz
 Izazbz
+Izazbz
 JCh
 JMh
 JND
@@ -117,6 +118,7 @@ Lab
 Labish
 Lilley
 Lstar
+Luo
 Luv
 MATLAB
 MERCHANTABILITY
@@ -154,6 +156,7 @@ PyPI
 Pyodide
 QCh
 QMh
+Qiyan
 Qsh
 RGB
 RGBish
@@ -196,7 +199,9 @@ XYB
 XYZ
 YCbCr
 Yoshi
+ZCAM
 ZD
+Zhai
 absolutizing
 accessor
 accessors

@@ -15,7 +15,7 @@ from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
 from .. import util
 from .. import algebra as alg
-from ..types import Vector  # noqa: F401
+from ..types import Vector, Matrix  # noqa: F401
 from .lab import Lab
 
 B = 1.15
@@ -40,30 +40,64 @@ M2 = 1.7 * 2523 / (2 ** 5)
 
 
 # XYZ transform matrices
-xyz_to_lms_m = [
+XYZ_TO_LMS = [
     [0.41478972, 0.579999, 0.014648],
     [-0.20151, 1.120649, 0.0531008],
     [-0.0166008, 0.2648, 0.6684799]
 ]
 
-lms_to_xyz_mi = [
+LMS_TO_XYZ = [
     [1.9242264357876069, -1.0047923125953657, 0.037651404030617994],
     [0.35031676209499907, 0.7264811939316552, -0.06538442294808501],
     [-0.09098281098284755, -0.31272829052307394, 1.5227665613052603]
 ]
 
 # LMS to Izazbz matrices
-lms_p_to_izazbz_m = [
+LMS_P_TO_IZAZBZ = [
     [0.5, 0.5, 0],
     [3.524, -4.066708, 0.542708],
     [0.199076, 1.096799, -1.295875]
 ]
 
-izazbz_to_lms_p_mi = [
+IZAZBZ_TO_LMS_P = [
     [1.0, 0.13860504327153927, 0.05804731615611883],
     [1.0, -0.1386050432715393, -0.058047316156118904],
     [1.0, -0.09601924202631895, -0.811891896056039]
 ]
+
+
+def xyz_d65_to_izazbz(xyz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
+    """Absolute XYZ to Izazbz."""
+
+    xa, ya, za = xyz
+    xm = (B * xa) - ((B - 1) * za)
+    ym = (G * ya) - ((G - 1) * xa)
+
+    # Convert to LMS
+    lms = alg.matmul(XYZ_TO_LMS, [xm, ym, za], dims=alg.D2_D1)
+
+    # PQ encode the LMS
+    pqlms = util.pq_st2084_oetf(lms, m2=m2)
+
+    # Calculate Izazbz
+    return alg.matmul(lms_matrix, pqlms, dims=alg.D2_D1)
+
+
+def izazbz_to_xyz_d65(izazbz: Vector, lms_matrix: Matrix, m2: float) -> Vector:
+    """Izazbz to absolute XYZ."""
+
+    # Convert to LMS prime
+    pqlms = alg.matmul(lms_matrix, izazbz, dims=alg.D2_D1)
+
+    # Decode PQ LMS to LMS
+    lms = util.pq_st2084_eotf(pqlms, m2=m2)
+
+    # Convert back to absolute XYZ D65
+    xm, ym, za = alg.matmul(LMS_TO_XYZ, lms, dims=alg.D2_D1)
+    xa = (xm + ((B - 1) * za)) / B
+    ya = (ym + ((G - 1) * xa)) / G
+
+    return [xa, ya, za]
 
 
 def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
@@ -74,37 +108,14 @@ def jzazbz_to_xyz_d65(jzazbz: Vector) -> Vector:
     # Calculate Iz
     iz = alg.zdiv((jz + D0), (1 + D - D * (jz + D0)))
 
-    # Convert to LMS prime
-    pqlms = alg.matmul(izazbz_to_lms_p_mi, [iz, az, bz], dims=alg.D2_D1)
-
-    # Decode PQ LMS to LMS
-    lms = util.pq_st2084_eotf(pqlms, m2=M2)
-
-    # Convert back to absolute XYZ D65
-    xm, ym, za = alg.matmul(lms_to_xyz_mi, lms, dims=alg.D2_D1)
-    xa = (xm + ((B - 1) * za)) / B
-    ya = (ym + ((G - 1) * xa)) / G
-
     # Convert back to normal XYZ D65
-    return util.absxyz_to_xyz([xa, ya, za], YW)
+    return util.absxyz_to_xyz(izazbz_to_xyz_d65([iz, az, bz], IZAZBZ_TO_LMS_P, M2), YW)
 
 
 def xyz_d65_to_jzazbz(xyzd65: Vector) -> Vector:
     """From XYZ to Jzazbz."""
 
-    # Convert from XYZ D65 to an absolute XYZ D5
-    xa, ya, za = util.xyz_to_absxyz(xyzd65, YW)
-    xm = (B * xa) - ((B - 1) * za)
-    ym = (G * ya) - ((G - 1) * xa)
-
-    # Convert to LMS
-    lms = alg.matmul(xyz_to_lms_m, [xm, ym, za], dims=alg.D2_D1)
-
-    # PQ encode the LMS
-    pqlms = util.pq_st2084_oetf(lms, m2=M2)
-
-    # Calculate Izazbz
-    iz, az, bz = alg.matmul(lms_p_to_izazbz_m, pqlms, dims=alg.D2_D1)
+    iz, az, bz = xyz_d65_to_izazbz(util.xyz_to_absxyz(xyzd65, YW), LMS_P_TO_IZAZBZ,  M2)
 
     # Calculate Jz
     jz = ((1 + D) * iz) / (1 + (D * iz)) - D0
