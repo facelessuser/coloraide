@@ -8,13 +8,13 @@ from ..types import Vector
 def lin_a98rgb(rgb: Vector) -> Vector:
     """Convert an array of a98-rgb values in the range 0.0 - 1.0 to linear light (un-corrected) form."""
 
-    return [alg.npow(val, 563 / 256) for val in rgb]
+    return [alg.spow(val, 563 / 256) for val in rgb]
 
 
 def gam_a98rgb(rgb: Vector) -> Vector:
     """Convert an array of linear-light a98-rgb  in the range 0.0-1.0 to gamma corrected form."""
 
-    return [alg.npow(val, 256 / 563) for val in rgb]
+    return [alg.spow(val, 256 / 563) for val in rgb]
 
 
 class A98RGB(sRGBLinear):

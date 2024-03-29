@@ -6,9 +6,7 @@ https://www.osapublishing.org/oe/fulltext.cfm?uri=oe-25-13-15131&id=368272
 from __future__ import annotations
 from ..cat import WHITES
 from .lch import LCh
-from .jzazbz import ACHROMATIC_THRESHOLD  # type: ignore[attr-defined]
 from ..channels import Channel, FLG_ANGLE
-from ..types import Vector
 
 
 class JzCzhz(LCh):
@@ -36,12 +34,6 @@ class JzCzhz(LCh):
         Channel("cz", 0.0, 1.0),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
     )
-
-    def is_achromatic(self, coords: Vector) -> bool:
-        """Check if color is achromatic."""
-
-        # Account for both positive and negative chroma
-        return coords[0] < 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
 
     def hue_name(self) -> str:
         """Hue name."""

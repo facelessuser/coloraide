@@ -27,6 +27,7 @@ import math
 import operator
 import functools
 import itertools as it
+from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool,
     MatrixInt, MathType, Shape, ShapeLike, DimHints, SupportsFloatOrInt
@@ -174,10 +175,17 @@ def nth_root(n: float, p: float) -> float:
     return math.copysign(abs(n) ** (p ** -1), n)
 
 
-def npow(base: float, exp: float) -> float:
-    """Perform `pow` with a negative number."""
+def spow(base: float, exp: float) -> float:
+    """Perform `pow` with signed number."""
 
     return math.copysign(abs(base) ** exp, base)
+
+
+@deprecated("'npow' has been renamed to 'spow' (signed power), please migrate to avoid future issues.")
+def npow(base: float, exp: float) -> float:  # pragma: no cover
+    """Signed power."""
+
+    return spow(base, exp)
 
 
 def rect_to_polar(a: float, b: float) -> tuple[float, float]:

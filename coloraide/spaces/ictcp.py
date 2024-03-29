@@ -50,6 +50,8 @@ ictcp_to_lms_p_mi = [
     [1.0, 0.5600313357106791, -0.32062717498731885]
 ]
 
+YW = 203
+
 
 def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     """From ICtCp to XYZ."""
@@ -64,14 +66,14 @@ def ictcp_to_xyz_d65(ictcp: Vector) -> Vector:
     absxyz = alg.matmul(lms_to_xyz_mi, lms, dims=alg.D2_D1)
 
     # Convert back to normal XYZ D65
-    return util.absxyz_to_xyz(absxyz)
+    return util.absxyz_to_xyz(absxyz, YW)
 
 
 def xyz_d65_to_ictcp(xyzd65: Vector) -> Vector:
     """From XYZ to ICtCp."""
 
     # Convert from XYZ D65 to an absolute XYZ D65
-    absxyz = util.xyz_to_absxyz(xyzd65)
+    absxyz = util.xyz_to_absxyz(xyzd65, YW)
 
     # Convert to LMS
     lms = alg.matmul(xyz_to_lms_m, absxyz, dims=alg.D2_D1)

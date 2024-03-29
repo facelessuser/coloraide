@@ -54,14 +54,14 @@ class Environment:
     def __init__(
         self,
         *,
-        reference_white: VectorLike,
+        white: VectorLike,
         adapting_luminance: float,
         surround: str,
         discounting: str
     ) -> None:
         """Initialize."""
 
-        self.ref_white = alg.multiply(reference_white, 0.01, dims=alg.D1_SC)
+        self.ref_white = util.xy_to_xyz(white)
         self.surround = SURROUND[surround]
         self.yn = adapting_luminance
         self.d = alg.clamp(D[discounting] if isinstance(discounting, str) else discounting, 0.0, 1.0)
@@ -86,10 +86,10 @@ def rlab_to_xyz(rlab: Vector, env: Environment) -> Vector:
     """RLAB to XYZ."""
 
     LR, aR, bR = rlab
-    yr = LR / 100
-    xr = alg.npow((aR / 430) + yr, env.surround)
-    zr = alg.npow(yr - (bR / 170), env.surround)
-    return alg.matmul(env.iram, [xr, alg.npow(yr, env.surround), zr], dims=alg.D2_D1)
+    yr = LR * 0.01
+    xr = alg.spow((aR / 430) + yr, env.surround)
+    zr = alg.spow(yr - (bR / 170), env.surround)
+    return alg.matmul(env.iram, [xr, alg.spow(yr, env.surround), zr], dims=alg.D2_D1)
 
 
 def xyz_to_rlab(xyz: Vector, env: Environment) -> Vector:
@@ -118,8 +118,8 @@ class RLAB(Lab):
     # Using less than full discounting would require special achromatic handling
     # to identify achromatic colors as `a == b == 0.0` would no longer be true.
     ENV = Environment(
-        # D65 scaled by 100
-        reference_white=alg.multiply(util.xy_to_xyz(WHITE), 100, dims=alg.D1_SC),
+        # D65 white point.
+        white=WHITE,
         # 1000 lux or `~318.31 cd/m2`
         adapting_luminance=YN,
         # Average surround
