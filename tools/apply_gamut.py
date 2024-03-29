@@ -49,6 +49,9 @@ def printt(t):
 def apply_gamut_map(amount, p, gamut, fit, jnd, pspace):
     """Apply filter."""
 
+    if jnd is not None:
+        jnd = float(jnd)
+
     has_alpha = len(p) > 3
     color = Color(gamut, [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
     if amount:
@@ -99,8 +102,8 @@ def main():
     parser.add_argument('--amount', '-a', type=float, help='Amount to increase chroma.')
     parser.add_argument('--gamut', default='srgb', help="Photo's current gamut.")
     parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
-    parser.add_argument('--gamut-jnd', '-j', default="clip", help="Adjust JND of old style chroma reduction.")
-    parser.add_argument('--gamut-pspace', '-p', default="clip", help="Specify perceptual space of ray trace method.")
+    parser.add_argument('--gamut-jnd', '-j', help="Adjust JND of old style chroma reduction.")
+    parser.add_argument('--gamut-pspace', '-p', default="oklch", help="Specify perceptual space of ray trace method.")
     args = parser.parse_args()
 
     process_image(
