@@ -141,7 +141,8 @@ class Environment:
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
         For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).
-        This results in `La = E / π * 0.2`. Some also simplify this to simply `lux / π`.
+        This results in `La = E / π * 0.2`. You can also ignore this gray world assumption converting
+        lux directly to nits (cd/m2) `lux / π`.
 
     background_luminance: The background is the region immediately surrounding the stimulus and
         for images is the neighboring portion of the image. Generally, this value is set to a value of 20.
@@ -286,10 +287,14 @@ def zcam_to_xyz_d65(
     if Cz is not None:
         Mz = (Cz / 100) * env.qzw
 
-    Czp = ((Mz * (env.izw ** (0.78)) * (env.fb ** 0.1)) / (100 * (ez ** 0.068) * (env.fl ** 0.2))) ** (1.0 / 0.37 / 2)
+    Czp = alg.spow(
+        (Mz * (env.izw ** (0.78)) * (env.fb ** 0.1)) / (100 * (ez ** 0.068) * (env.fl ** 0.2)),
+        1.0 / 0.37 / 2
+    )
 
     # Convert back to XYZ
     az, bz = cos_h * Czp, sin_h * Czp
+    print(Mz, Czp, az, bz)
     iz += env.epsilon
     xyz_abs = izazbz_to_xyz_d65([iz, az, bz], IZAZBZ_TO_LMS_P, env.rho)
 
@@ -369,7 +374,7 @@ def zcam_jmh_to_xyz_d65(jmh: Vector, env: Environment) -> Vector:
     return zcam_to_xyz_d65(Jz=Jz, Mz=Mz, hz=hz, env=env)
 
 
-class ZCAM(LCh, Space):
+class ZCAMJMh(LCh, Space):
     """ZCAM class (JMh)."""
 
     BASE = "xyz-d65"
@@ -378,7 +383,10 @@ class ZCAM(LCh, Space):
     CHANNEL_ALIASES = {
         "lightness": "jz",
         "colorfulness": 'mz',
-        "hue": 'hz'
+        "hue": 'hz',
+        'j': 'jz',
+        'm': "mz",
+        'h': 'hz'
     }
     WHITE = WHITES['2deg']['D65']
     DYNAMIC_RANGE = 'hdr'
@@ -389,8 +397,9 @@ class ZCAM(LCh, Space):
         white=WHITE,
         # The reference white in XYZ scaled by 100
         reference_white=util.xyz_to_absxyz(util.xy_to_xyz(WHITE), 100),
-        # Adapting luminance in cd/m2 based on 1000 lux.
-        adapting_luminance=100,
+        # Assuming sRGB which has a lux of 64: `((E * R) / PI)` where `R = 1`.
+        # Divided by 5 (or multiplied by 20%) assuming gray world.
+        adapting_luminance=64 / math.pi * 0.2,
         # 20% relative to an XYZ luminance of 100 (scaled by 100) for the gray world assumption.
         background_luminance=20,
         # Assume an average surround
@@ -400,7 +409,7 @@ class ZCAM(LCh, Space):
     )
     CHANNELS = (
         Channel("jz", 0.0, 100.0),
-        Channel("mz", 0, 70.17),
+        Channel("mz", 0, 60.0),
         Channel("hz", 0.0, 360.0, flags=FLG_ANGLE)
     )
 

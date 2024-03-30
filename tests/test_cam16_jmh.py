@@ -59,13 +59,13 @@ class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
         c['h'] = 270
         self.assertEqual(c['h'], 270)
 
-    def test_c(self):
+    def test_m(self):
         """Test `m`."""
 
-        c = Color('color(--cam16-jmh 97.139 75.504 111.05)')
-        self.assertEqual(c['m'], 75.504)
-        c['m'] = 30
-        self.assertEqual(c['m'], 30)
+        m = Color('color(--cam16-jmh 97.139 75.504 111.05)')
+        self.assertEqual(m['m'], 75.504)
+        m['m'] = 30
+        self.assertEqual(m['m'], 30)
 
     def test_j(self):
         """Test `j`."""
@@ -102,13 +102,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum chroma."""
 
-        c = Color(Color('cam16-jmh', [20, 0, 270]).convert('cam16-jmh').to_string()).normalize()
+        c = Color(Color('cam16-jmh', [20, 0, 270]).to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_negative_chroma(self):
         """Test negative chroma."""
 
-        c = Color(Color('cam16-jmh', [20, -5, 270]).convert('cam16-jmh').to_string()).normalize()
+        c = Color(Color('cam16-jmh', [20, -5, 270]).to_string()).normalize()
         self.assertTrue(c.get('hue'), 270 + 180)
 
 

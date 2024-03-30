@@ -112,7 +112,8 @@ class Environment:
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
         For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).
-        This results in `La = E / π * 0.2`. Some also simplify this to simply `lux / π`.
+        This results in `La = E / π * 0.2`. You can also ignore this gray world assumption converting
+        lux directly to nits (cd/m2) `lux / π`.
 
     background_luminance: The background is the region immediately surrounding the stimulus and
         for images is the neighboring portion of the image. Generally, this value is set to a value of 20.
