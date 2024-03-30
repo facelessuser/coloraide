@@ -26,7 +26,8 @@ ColorAide available at all times, so to keep the Color object lighter, and color
 [Linear Rec.\ 2020](./rec2020_linear.md) | [Linear ProPhoto\ RGB](./prophoto_rgb_linear.md) | [sRGB](./srgb.md)               | [Display\ P3](./display_p3.md)               | [A98\ RGB](./a98_rgb.md)
 [Rec.\ 2020](./rec2020.md)               | [ProPhoto\ RGB](./prophoto_rgb.md)               | [HSL](./hsl.md)                 | [HSV](./hsv.md)                              | [HWB](./hwb.md)
 [Lab](./lab.md)                          | [LCh](./lch.md)                                  | [Lab\ D65](./lab_d65.md)        | [LCh\ D65](./lch_d65.md)                     | [Oklab](./oklab.md)
-[OkLCh](./oklch.md)                      |                                                  |                                 |                                              |
+[OkLCh](./oklch.md)                      | [Jzazbz](./jzazbz.md)                            | [JzCzhz](./jzczhz.md)           | [ICtCp](./ictcp.md)                          | [Rec.\ 2100\ HLG](./rec2100_hlg.md)
+[Rec.\ 2100\ PQ](./rec2100_pq.md)        | [Linear\ Rec.\ 2100](./rec2100_linear.md)        |                                 |                                              |
 
 ## Color Space Map
 
@@ -229,3 +230,70 @@ flowchart TB
     click cubehelix "./cubehelix/" _self
 ```
 ///
+
+## Supported Color Space IDs
+
+As an easy reference, this table contains all the color space names and their associated IDs that are used to specify
+a specific color space for conversion or otherwise.
+
+Color Space                                     | ID
+----------------------------------------------- | --------
+[A98 RGB](./aces2065_1.md)                      | `a98-rgb`
+[Linear A98 RGB](./a98_rgb_linear.md)           | `a98-rgb-linear`
+[ACES 2065-1](./aces2065_1.md)                  | `aces2065-1`
+[ACEScc](./acescc.md)                           | `acescc`
+[ACEScct](./acescct.md)                         | `acescct`
+[ACEScg](./acescg.md)                           | `acescg`
+[CAM16 JMh](./cam16_jmh.md)                     | `cam16-jmh`
+[CAM16 LCD](./cam16_lcd.md)                     | `cam16-lcd`
+[CAM16 SCD](./cam16_scd.md)                     | `cam16-scd`
+[CAM16 UCS](./cam16_ucs.md)                     | `cam16-ucs`
+[CMY](./cmy.md)                                 | `cmy`
+[CMYK](./cmyk.md)                               | `cmyk`
+[Cubehelix](./cubehelix.md)                     | `cubehelix`
+[DIN99o](./din99o.md)                           | `din99o`
+[Display P3](./display_p3.md)                   | `display-p3`
+[Linear Display P3](.)                          | `display-p3-linear`
+[HCT](./hct.md)                                 | `hct`
+[HPLuv](./hpluv.md)                             | `hpluv`
+[HSI](./hsi.md)                                 | `hsi`
+[HSL](./hsl.md)                                 | `hsl`
+[HSLuv](./hsluv.md)                             | `hsluv`
+[HSV](./hsv.md)                                 | `hsv`
+[Hunter Lab](./hunter_lab.md)                   | `hunter-lab`
+[HWB](./hwb.md)                                 | `hwb`
+[ICtCp](./ictcp.md)                             | `ictcp`
+[IgPgTg](./igpgtg.md)                           | `igpgtg`
+[IPT](./ipt.md)                                 | `ipt`
+[Jzazbz](./jzazbz.md)                           | `jzazbz`
+[JzCzhz](./jzczhz.md)                           | `jzczhz`
+[Lab (D50)](./lab.md)                           | `lab`
+[Lab (D65)](./lab_d65.md)                       | `lab-d65`
+[LCh (D50)](./lch.md)                           | `lch`
+[LCH (D65)](./lch_d65.md)                       | `lch-d65`
+[DIN99o LCh](./lch99o.md)                       | `lch99o`
+[Luv LCh](./lchuv.md)                           | `lchuv`
+[Luv](./luv.md)                                 | `luv`
+[Okhsl](./okhsl.md)                             | `okhsl`
+[Okhsv](./okhsv.md)                             | `okhsv`
+[Oklab](./oklab.md)                             | `oklab`
+[OkLCh](./oklch.md)                             | `oklch`
+[oRGB](./orgb.md)                               | `orgb`
+[Prismatic](./prismatic.md)                     | `prismatic`
+[ProPhoto RGB](./prophoto_rgb.md)               | `prophoto-rgb`
+[Linear ProPhoto RGB](./prophoto_rgb_linear.md) | `prophoto-rgb-linear`
+[Rec. 2020](./rec2020.md)                       | `rec2020`
+[Linear Rec. 2020](./rec2020_linear.md)         | `rec2020-linear`
+[Rec. 2100 HLG](./rec2100_hlg.md)               | `rec2100-hlg`
+[Linear Rec. 2100](./rec2100_linear.md)         | `rec2100-linear`
+[Rec. 2100 PQ](./rec2100_pq.md)                 | `rec2100-pq`
+[Rec. 709](./rec709.md)                         | `rec709`
+[RLAB](./rlab.md)                               | `rlab`
+[RYB](./ryb.md)                                 | `ryb`
+[sRGB](./srgb.md)                               | `srgb`
+[Linear sRGB](./srgb_linear.md)                 | `srgb-linear`
+[UCS](./ucs.md)                                 | `ucs`
+[XYB](./xyb.md)                                 | `xyb`
+[xyY](./xyy.md)                                 | `xyy`
+[XYZ (D50)](./xyz_d50.md)                       | `xyz-d50`
+[XYZ (D65)](./xyz_d65.md)                       | `xyz-d65`

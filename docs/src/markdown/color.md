@@ -35,6 +35,11 @@ To add more plugins or tweak color defaults, see [Custom Color Classes](#custom-
 Once the `Color` class is imported, colors can be created using various forms of input, including: numerical inputs,
 dictionaries, CSS color strings, and even other `Color` instances.
 
+/// note
+Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
+///
+
 ### Numerical Inputs
 
 The quickest way to create a color is by simply specifying the color space, color coordinates, and the optional alpha
@@ -172,6 +177,11 @@ Here we update the sRGB `#!color red` with the color `#!color lch(80% 50 130)`.
 Color("red").update("lch(80% 50 130)")
 ```
 
+/// note
+Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
+///
+
 ## Mutating
 
 "Mutating" is similar to [updating](#updating) except that it will update the color **and** the color space from another
@@ -197,6 +207,11 @@ call the `convert` method with the desired color space.
 ```py play
 Color('yellow').convert("lab")
 ```
+
+/// note
+Reference of supported color space IDs can be found [here](./colors/index.md#supported-color-space-ids).
+Reference of color spaces that registered by default can be found [here](./colors/index.md#default-color-spaces).
+///
 
 /// note | Notes on [Round Trip Accuracy](./advanced.md#round-trip-accuracy)
 ///

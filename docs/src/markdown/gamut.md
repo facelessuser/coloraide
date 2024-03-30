@@ -240,6 +240,9 @@ Clipping is unique to all other clipping methods in that it has its own dedicate
 method name `clip` is reserved. While not always the best approach for gamut mapping in general, clip is very important
 to some other gamut mapping and has specific cases where its speed and simplicity are of great value.
 
+While clipping may not preserve perceptual colors very well, at times it can be useful, and preferred over other
+approaches.
+
 ### MINDE Chroma Reduction
 
 MINDE chroma reduction is an approach that reduces the chroma in a perceptual color space until the color is within the
@@ -248,10 +251,10 @@ reduced using bisection. The color is compared periodically to the the clipped v
 if the ∆E distance between them is below the "just noticeable difference" (JND) defined for the color space. If the
 color is close enough to the clipped version, the clipped version is returned.
 
-This method is good because it does a fairly accurate job at approach the gamut surface. It is not prone to over
-correcting, and clipping before you reach the surface helps soften gamut mapping to reduce hard edges in interpolation.
-This approach also keeps lightness and hue fairly constant. If the JND is reduced, the lightness and hue will be held
-even more constant and will often approach the gamut surface even closer.
+Preserving lightness in this way is useful when creating tones or mixing and interpolating colors, but desiring to
+preserve their lightness for contrast. It also does a fairly accurate job at approaching the gamut surface. If the JND
+is reduced, the lightness and hue will be held even more constant and will often approach the gamut surface even closer
+and more accurately.
 
 Computationally, MINDE Chroma Reduction is slower to compute than clipping due to how many iterations it must perform
 to get close enough to the gamut surface, but it generally provides good results, far surpassing naive clipping.
@@ -260,7 +263,7 @@ It should be noted that most color spaces that have a defined gamut are tied to 
 gamut mapped, they are done so in those RGB spaces. For instance HSL, which represents the sRGB gamut in a cylindrical
 form will be gamut mapped in sRGB (though simple clipping may be done directly in HSL).
 
-There are a few color spaces/models that do not have a clearly defined gamut. One such case is HPLuv, which is only
+There are a few color spaces/models that do not have a clearly defined gamuts. One such case is HPLuv, which is only
 defined as a cylindrical color space that represent only a subset of the sRGB color space. Additionally Okhsl and Okhsv
 are two cylindrical color spaces based on the perceptual Oklab color space that are meant to target the sRGB gamut, but
 are only a loose approximation which actually can slightly clip the sRGB gamut while simultaneously containing a few
@@ -567,37 +570,73 @@ Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([ye
 ## Why Not Just Clip?
 
 In the past, clipping has been the default way in which out of gamut colors have been handled in web browsers. It is
-fast, and has generally been fine as most browsers have been constrained to using sRGB. But as modern browsers begin to
-adopt more wide gamut monitors such as Display P3, and CSS grows to support an assortment of wide and ultra wide color
-spaces, representing the best intent of an out of gamut color becomes even more important.
+fast, and has generally been fine as most browsers have been constrained to using sRGB. Additionally, it can perform
+better in some circumstances depending on what you are doing.
 
-One might see some cases of clipping and think it does a fine job and question why any of this complexity is necessary.
-In order to demonstrate the differences in gamut mapping vs clipping, see the example below. We start with the color
-`#!color color(display-p3 1 1 0)` and interpolate with in the LCh color space reducing just the lightness. This
-will leave both chroma and hue intact. The high chroma in lower and brighter lightness will be too much to display on
-the screen, so we will employ various gamut mapping approaches: `oklch-chroma`, `oklch-raytrace`, and `clip`. Notice how
-clipping, the bottom color set, clips these dark colors and makes them reddish. This is a very undesirable outcome.
+ColorAide currently only has clipping and chroma reduction approaches to gamut mapping. Clipping can often be preferred
+when colorfulness is found to be most important as it will keep colors vivid. For instance, in photos, if you have
+colors that are entirely in one gamut and that gamut is fairly close to a smaller target gamut, clipping can provide
+reasonable results.
+
+Clipping a Display P3 or even a Rec. 2020 photo may give visually, reasonable results. When preserving chroma, the
+lightness and hue is prioritized, and there may simply not be a color vivid enough with that hue and lightness to map
+to. In this instance, chroma reduction may not be ideal.
+
+Consider the example below that displays colors in a Rec. 2020 image. When comparing clipping to chroma reduction, we
+can see that the clipping results feel arguably more natural. Note that the original will be modified by the browser
+you are viewing it in to display it on your monitor.
+
+/// tab | Original
+![Rec. 2020 Spectrum](./images/rec2020-spectrum.jpg)
+///
+
+/// tab | Clip
+![Rec. 2020 Spectrum Clipped](./images/rec2020-spectrum-clip.jpg)
+///
+
+///tab | Chroma Reduction
+![Rec. 2020 Spectrum Clipped](./images/rec2020-spectrum-reduce.jpg)
+///
+
+But when working with colors in other ways, such behavior may not be desirable. For instance, if we wanted generate
+tones using LCH D65, we can select a color and convert it to that space. Then we can just adjust the lightness. A gamut
+mapping approach such as chroma reduction will ensure the chroma is reasonable for each level of lightness making decent
+tones, while clipping will instead favor the colorfulness not retaining the lightness ore sometimes even the hue.
 
 ```py play
-# Gamut mapping in OkLCh with Ray Tracing
-yellow = Color('color(display-p3 1 1 0)')
-lightness_mask = Color('lch(0% none none)')
-Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-# Gamut mapping in OkLCh
-yellow = Color('color(display-p3 1 1 0)')
-lightness_mask = Color('lch(0% none none)')
-Steps([c.fit('srgb', method='oklch-raytrace') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
-# Clipping
-yellow = Color('color(display-p3 1 1 0)')
-lightness_mask = Color('lch(0% none none)')
-Steps([c.clip('srgb') for c in Color.steps([yellow, lightness_mask], steps=20, space='lch')])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+green = Color('green').convert('lch-d65')
+
+Steps([green.clone().set('l', tone).fit('srgb', method='raytrace', pspace='lch-d65') for tone in tones])
+Steps([green.clone().set('l', tone).clip('srgb') for tone in tones])
 ```
 
-There are times when clipping is simply preferred. It is fast, and if you are just trimming noise off channels, it is
-very useful, but if the idea is to present an in gamut color that tries to preserve as much of the intent of the
-original color as possible, other methods may be desired. There are no doubt better gamut methods available than what
-ColorAide offers currently, and more may be added in the future, but ColorAide can also be extended using 3rd party
-plugins as well.
+If creating gradients that may have text overlaid on them, clipping doesn't keep consistent or expected lightness
+either. Colors of the same lightness don't always have the same maximum chroma within a certain color gamut. In the
+example below, we interpolate with 75% lightness, but clipping will yield much darker and inconsistent lightness with
+colors due to the high chroma, while chroma reduction will have colors that are generally closer to the expected
+lightness.
+
+```py play
+
+Steps(
+    [
+        c.fit('srgb', method='raytrace', pspace='lch-d65')
+        for c in Color.steps(['color(--lch-d65 75% 120 0)', 'color(--lch-d65 75% 120 360)'], space='lch-d65', steps=500, hue='longer')
+    ]
+)
+
+Steps(
+    [
+        c.clip('srgb')
+        for c in Color.steps(['color(--lch-d65 75% 120 0)', 'color(--lch-d65 75% 120 360)'], space='lch-d65', steps=500, hue='longer')
+    ]
+)
+```
+
+No perceptual color space is perfect and no gamut mapping approach is either. There are other gamut mapping approaches
+that can even offer compromises between such approaches. In the future, it is possible that ColorAide can expose more
+such approaches, but it is good to know why some approaches may be more favorable at times than others.
 
 ## Pointer's Gamut
 
