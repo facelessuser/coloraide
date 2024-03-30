@@ -26,6 +26,7 @@ from .spaces.acescc import ACEScc
 from .spaces.acescct import ACEScct
 from .spaces.cam16_jmh import CAM16JMh
 from .spaces.cam16_ucs import CAM16UCS, CAM16LCD, CAM16SCD
+from .spaces.zcam_jmh import ZCAMJMh
 from .spaces.hct import HCT
 from .spaces.ucs import UCS
 from .spaces.rec709 import Rec709
@@ -85,6 +86,7 @@ ColorAll.register(
         RYB(),
         RYBBiased(),
         Cubehelix(),
+        ZCAMJMh(),
 
         # Delta E
         DE99o(),

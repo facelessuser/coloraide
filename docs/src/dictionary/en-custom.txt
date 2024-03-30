@@ -98,6 +98,7 @@ Interpolator
 Itten
 Iz
 Izazbz
+Izazbz
 JCh
 JMh
 JND
@@ -107,8 +108,10 @@ Jsh
 Judd
 Jz
 JzCzhz
+JzMzhz
 Jzazbz
 Kries
+Kz
 LCh
 LChish
 LChuv
@@ -117,6 +120,7 @@ Lab
 Labish
 Lilley
 Lstar
+Luo
 Luv
 MATLAB
 MERCHANTABILITY
@@ -128,6 +132,7 @@ MkDocs
 Mollon
 Monochromacy
 Moroney
+Mz
 NONINFRINGEMENT
 NaN
 NaNs
@@ -154,7 +159,10 @@ PyPI
 Pyodide
 QCh
 QMh
+Qiyan
 Qsh
+Qz
+QzMzhz
 RGB
 RGBish
 RLAB
@@ -167,8 +175,10 @@ SL
 SMPTE
 SRGB
 SVG
+Safdar
 Scalable
 Sharma
+Sz
 TODO
 TORTIOUS
 Tetradic
@@ -189,14 +199,18 @@ Verou
 Viénot
 Von
 Vos
+Vz
 WCAG
 WCG
+Wz
 XD
 XYB
 XYZ
 YCbCr
 Yoshi
+ZCAM
 ZD
+Zhai
 absolutizing
 accessor
 accessors

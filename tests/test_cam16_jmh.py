@@ -2,7 +2,7 @@
 import unittest
 from . import util
 from coloraide.everything import ColorAll as Color, NaN
-from coloraide.spaces.cam16_jmh import cam16_to_xyz_d65, CAM16JMh
+from coloraide.spaces.cam16_jmh import cam16_to_xyz_d65, xyz_d65_to_cam16, CAM16JMh
 from collections import namedtuple
 import pytest
 
@@ -59,13 +59,13 @@ class TestCAM16JMhPoperties(util.ColorAsserts, unittest.TestCase):
         c['h'] = 270
         self.assertEqual(c['h'], 270)
 
-    def test_c(self):
+    def test_m(self):
         """Test `m`."""
 
-        c = Color('color(--cam16-jmh 97.139 75.504 111.05)')
-        self.assertEqual(c['m'], 75.504)
-        c['m'] = 30
-        self.assertEqual(c['m'], 30)
+        m = Color('color(--cam16-jmh 97.139 75.504 111.05)')
+        self.assertEqual(m['m'], 75.504)
+        m['m'] = 30
+        self.assertEqual(m['m'], 30)
 
     def test_j(self):
         """Test `j`."""
@@ -102,13 +102,13 @@ class TestNull(util.ColorAsserts, unittest.TestCase):
     def test_null_normalization_min_chroma(self):
         """Test minimum chroma."""
 
-        c = Color(Color('cam16-jmh', [20, 0, 270]).convert('cam16-jmh').to_string()).normalize()
+        c = Color(Color('cam16-jmh', [20, 0, 270]).to_string()).normalize()
         self.assertTrue(c.is_nan('hue'))
 
     def test_null_normalization_negative_chroma(self):
         """Test negative chroma."""
 
-        c = Color(Color('cam16-jmh', [20, -5, 270]).convert('cam16-jmh').to_string()).normalize()
+        c = Color(Color('cam16-jmh', [20, -5, 270]).to_string()).normalize()
         self.assertTrue(c.get('hue'), 270 + 180)
 
 
@@ -194,4 +194,21 @@ class TestCAM16ApperanceModel(util.ColorAsserts, unittest.TestCase):
             cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, h=self.COORDS.h, env=CAM16JMh.ENV),
             cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16JMh.ENV)
         ):
+            self.assertCompare(a, b, 14)
+
+    def test_hue_quadrature(self):
+        """Test conversion to and from test_hue_quadrature."""
+
+        xyz = cam16_to_xyz_d65(J=self.COORDS.J, C=self.COORDS.C, H=self.COORDS.H, env=CAM16JMh.ENV)
+        coords = xyz_d65_to_cam16(xyz, CAM16JMh.ENV, True)
+        self.assertCompare(self.COORDS.H, coords[-1], 14)
+
+    def test_hue_quadrature_low_end(self):
+        """Exercise when the hue quadrature is on the low end."""
+
+        xyz = Color('pink').convert('xyz-d65')
+        coords = CAM16Coords(*xyz_d65_to_cam16(xyz.coords(), CAM16JMh.ENV, True))
+        self.assertCompare(386.0860840290135, coords[-1])
+        xyz2 = cam16_to_xyz_d65(J=coords.J, M=coords.M, H=coords.H, env=CAM16JMh.ENV)
+        for a, b in zip(xyz, xyz2):
             self.assertCompare(a, b, 14)
