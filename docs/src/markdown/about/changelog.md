@@ -2,6 +2,7 @@
 
 ## 3.2
 
+-   **NEW**: Add `zcam-jmh` color model.
 -   **NEW**: `cam16-jmh`, `cam16-ucs`, `jzczhz`, `jzazbz`, `ipt`, and `igpgtg` will perform achromatic handling relative
     to themselves. As an example, in CAM16, when chroma is close to zero, color will be determined as achromatic. This
     is due to adapting luminance and background luminance, zero chroma may not always be perfect white, but it is
@@ -11,8 +12,8 @@
 -   **NEW**: Interpolation will now gracefully handle a list of a single color causing the interpolation to just return
     the single color.
 -   **NEW**: More helpful interpolation errors will raise for an empty list.
--   **NEW**: Add new `space` method in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is more
-    flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
+-   **NEW**: Add new `space` parameter in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is
+    more flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
 -   **NEW**: Normalize how color spaces with special viewing conditions are configured. Document configuring viewing
     conditions of color models where applicable.
 -   **NEW**: Generic ray trace gamut mapping now has a new `pspace` parameter that can be used to specify a perceptual
