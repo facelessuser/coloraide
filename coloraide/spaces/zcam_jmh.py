@@ -296,7 +296,6 @@ def zcam_to_xyz_d65(
 
     # Convert back to XYZ
     az, bz = cos_h * Czp, sin_h * Czp
-    print(Mz, Czp, az, bz)
     iz += env.epsilon
     xyz_abs = izazbz_to_xyz_d65([iz, az, bz], IZAZBZ_TO_LMS_P, env.rho)
 

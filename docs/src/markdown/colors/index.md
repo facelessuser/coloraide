@@ -85,6 +85,8 @@ flowchart TB
         cam16-jmh --- cam16-scd
         cam16-jmh --- cam16-lcd
 
+    xyz-d65 --- zcam-jmh
+
     xyz-d65 --- hct
 
     xyz-d65 --- jzazbz --- jzczhz
@@ -168,6 +170,7 @@ flowchart TB
     xyb(XYB)
     ryb(RYB)
     cubehelix(Cubehelix)
+    zcam-jmh(ZCAM JMh)
 
     click xyz-d65 "./xyz_d65/" _self
     click xyz-d50 "./xyz_d50/" _self
@@ -228,6 +231,7 @@ flowchart TB
     click xyb "./xyb/" _self
     click ryb "./ryb/" _self
     click cubehelix "./cubehelix/" _self
+    click zcam-jmh "./zcam_jmh/" _self
 ```
 ///
 
@@ -297,3 +301,4 @@ Color Space                                     | ID
 [xyY](./xyy.md)                                 | `xyy`
 [XYZ (D50)](./xyz_d50.md)                       | `xyz-d50`
 [XYZ (D65)](./xyz_d65.md)                       | `xyz-d65`
+[ZCAM JMh](./zcam_jmh.md)                       | `zcam-jmh`
