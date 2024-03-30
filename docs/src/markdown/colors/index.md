@@ -257,7 +257,7 @@ Color Space                                     | ID
 [Cubehelix](./cubehelix.md)                     | `cubehelix`
 [DIN99o](./din99o.md)                           | `din99o`
 [Display P3](./display_p3.md)                   | `display-p3`
-[Linear Display P3](.)                          | `display-p3-linear`
+[Linear Display P3](./display_p3_linear.md)     | `display-p3-linear`
 [HCT](./hct.md)                                 | `hct`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
