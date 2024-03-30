@@ -277,7 +277,9 @@ def zcam_to_xyz_d65(
     )
 
     # Calculate `Mz` from the various chroma like parameters.
-    if Vz is not None:
+    if Sz is not None:
+        Cz = Qz * Sz ** 2 / (100 * env.qzw * env.fl ** 1.2)
+    elif Vz is not None:
         Cz = math.sqrt((Vz ** 2 - (Jz - 58) ** 2) / 3.4)
     elif Kz is not None:
         Cz = math.sqrt((((Kz - 100) / - 0.8) ** 2 - (Jz ** 2)) / 8)
