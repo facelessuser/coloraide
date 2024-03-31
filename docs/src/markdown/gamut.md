@@ -361,6 +361,19 @@ c.fit(method='oklch-chroma', jnd=0.002)
 /// failure | The `hct-chroma` gamut mapping is **not** registered in `Color` by default
 ///
 
+/// warning
+This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
+approach to chroma reduction in any perceptual space](#ray-tracing-chroma-reduction-in-any-perceptual-space), it is
+recommended that users apply that approach as it performs a tight chroma reduction much quicker, and it doesn't require
+a special ∆E method.
+
+```py play
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'hct': 0.0}) for tone in tones])
+```
+///
+
 Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut mapping exactly like
 [LCh Chroma](#lch-chroma) with the exception that it uses the HCT color space as the working LCh color space.
 

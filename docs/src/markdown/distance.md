@@ -264,6 +264,18 @@ Color.register([CAM16UCS(), CAM16SCD(), CAM16LCD(), DECAM16()])
 /// failure | The ∆E~hct~ distancing algorithm is **not** registered in `Color` by default
 ///
 
+/// warning
+This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
+approach to chroma reduction in any perceptual space](./gamut.md#ray-tracing-chroma-reduction-in-any-perceptual-space),
+users can defer to the ray tracing approach which does not require a special ∆E method and it performs much faster.
+
+```py play
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'hct': 0.0}) for tone in tones])
+```
+///
+
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
 ∆E~HCT~                                  | :octicons-check-16:   | `hct`           |

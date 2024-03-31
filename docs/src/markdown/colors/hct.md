@@ -103,18 +103,19 @@ Color.register(HCT())
 
 ## Tonal Palettes
 
-One of the applications of HCT is generating tonal palettes. When coupled with ColorAide's [∆E~hct~](../distance.md#delta-e-hct)
-distancing algorithm and the [`hct-chroma` gamut mapping algorithm](../gamut.md#hct-chroma), we can produce tonal
-palettes just like in Material Color Utilities.
+One of the applications of HCT is generating tonal palettes. By applying gamut mapping that focuses on chroma reduction,
+we can produce tonal palettes just like in Material Color Utilities. Specifically, we will use the
+[ray trace](../gamut.md#ray-tracing-chroma-reduction) approach within the HCT space to reduce the chroma very close to
+the gamut boundary.
 
 The basic idea with generating tonal palettes is to pick a reasonable color, change the tone via a good distance,
-and make sure the color fits the target gamut. We can quickly demonstrate that this works by generating a simple tonal
-palette.
+and make sure the color fits the target gamut by reducing the chroma until the color is within the gamut. We can quickly
+demonstrate that this works by generating a simple tonal palette as shown below.
 
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'hct-chroma', 'jnd': 0.0}) for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
 ```
 
 Material Color Utilities, as they currently implement it, only works within the sRGB color space, but ColorAide
@@ -123,12 +124,12 @@ implements HCT such that it can be used in various wide gamuts as well.
 ```py play
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 c1 = Color('display-p3', [1, 0, 1]).convert('hct')
-Steps([c1.clone().set('tone', tone).convert('display-p3').to_string(fit={'method': 'hct-chroma', 'jnd': 0.0}) for tone in tones])
+Steps([c1.clone().set('tone', tone).convert('display-p3').to_string(fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
 c2 = Color('rec2020', [0, 0, 1]).convert('hct')
-Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit={'method': 'hct-chroma', 'jnd': 0.0}) for tone in tones])
+Steps([c2.clone().set('tone', tone).convert('rec2020').to_string(fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
 ```
 
-Due to differences in approximation techniques, general precision differences, and gamut mapping of the two
+Due to differences in approximation techniques, general precision differences, and gamut mapping specifics of the two
 implementations internally, ColorAide may return colors slightly different from Material Color Utilities. These
 differences are extremely small and not perceptible to the eye.
 
@@ -143,7 +144,7 @@ def tonal_palette(c):
 
     c = Color(c).convert('hct')
     tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-    return [c.clone().set('tone', tone).fit('srgb', method='hct-chroma', jnd=0.0) for tone in tones]
+    return [c.clone().set('tone', tone).fit('srgb', method='raytrace', pspace='hct') for tone in tones]
 
 material1 = ['#000000', '#00006e', '#0001ac',
              '#0000ef', '#343dff', '#5a64ff',
