@@ -573,14 +573,15 @@ In the past, clipping has been the default way in which out of gamut colors have
 fast, and has generally been fine as most browsers have been constrained to using sRGB. Additionally, it can perform
 better in some circumstances depending on what you are doing.
 
-ColorAide currently only has clipping and chroma reduction approaches to gamut mapping. Clipping can often be preferred
-when colorfulness is found to be most important as it will keep colors vivid. For instance, in photos, if you have
-colors that are entirely in one gamut and that gamut is fairly close to a smaller target gamut, clipping can provide
-reasonable results.
+ColorAide currently only has clipping and chroma reduction approaches to gamut mapping. Clipping, which is often done in
+the RGB gamut, can often be preferred when colorfulness is found to be most important as it will keep colors vivid,
+though hue and lightness can change. For instance, in photos, if you have colors that are entirely in one gamut and that
+gamut is fairly close to a smaller target gamut, clipping can provide reasonable results. Clipping a Display P3 or even
+a Rec. 2020 photo may give visually, reasonable results.
 
-Clipping a Display P3 or even a Rec. 2020 photo may give visually, reasonable results. When preserving chroma, the
-lightness and hue is prioritized, and there may simply not be a color vivid enough with that hue and lightness to map
-to. In this instance, chroma reduction may not be ideal.
+When preserving chroma, the lightness and hue is prioritized. In the target gamut there may simply not be a color vivid
+enough with that hue and lightness to map to. When the gamut difference of the source and target are large enough, the
+results in some color regions can be less ideal.
 
 Consider the example below that displays colors in a Rec. 2020 image. When comparing clipping to chroma reduction, we
 can see that the clipping results feel arguably more natural. Note that the original will be modified by the browser
@@ -598,10 +599,14 @@ you are viewing it in to display it on your monitor.
 ![Rec. 2020 Spectrum Clipped](./images/rec2020-spectrum-reduce.jpg)
 ///
 
-But when working with colors in other ways, such behavior may not be desirable. For instance, if we wanted generate
-tones using LCH D65, we can select a color and convert it to that space. Then we can just adjust the lightness. A gamut
-mapping approach such as chroma reduction will ensure the chroma is reasonable for each level of lightness making decent
-tones, while clipping will instead favor the colorfulness not retaining the lightness ore sometimes even the hue.
+This doesn't mean clipping or preserving color is simply superior as there are use cases where preserving lightness
+is more preferable.
+
+Let's consider some common cases that arise in CSS, cases that often require placing text on colored backgrounds. If we
+wanted to generate tones using LCH, we can select a color and convert it to that space. Then we can just adjust the
+lightness. A gamut mapping approach such as chroma reduction will ensure the chroma is reasonable for each level of
+lightness making decent tones, while clipping will instead favor the colorfulness not retaining the lightness and
+sometimes even the hue.
 
 ```py play
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -612,10 +617,11 @@ Steps([green.clone().set('l', tone).clip('srgb') for tone in tones])
 ```
 
 If creating gradients that may have text overlaid on them, clipping doesn't keep consistent or expected lightness
-either. Colors of the same lightness don't always have the same maximum chroma within a certain color gamut. In the
-example below, we interpolate with 75% lightness, but clipping will yield much darker and inconsistent lightness with
-colors due to the high chroma, while chroma reduction will have colors that are generally closer to the expected
-lightness.
+either. Colors of the same lightness don't always have the same maximum chroma within a certain color gamut.
+
+In the example below, we interpolate between two colors, both of which have 75% lightness. What we would expect is that
+the colors will have a similar lightness close to 75%, but clipping will yield much darker, vivid colors with
+inconsistent lightness, while chroma reduction will have colors that are generally closer to the expected lightness.
 
 ```py play
 
@@ -634,9 +640,12 @@ Steps(
 )
 ```
 
-No perceptual color space is perfect and no gamut mapping approach is either. There are other gamut mapping approaches
-that can even offer compromises between such approaches. In the future, it is possible that ColorAide can expose more
-such approaches, but it is good to know why some approaches may be more favorable at times than others.
+No perceptual color space is perfect and no gamut mapping approach perfect for all situations either. There are other
+gamut mapping approaches that can even offer compromises providing better better hue preservation than clipping with
+less shifts in lightness.
+
+In the future, it is possible that ColorAide can expose more approaches, that provide compromises between preserving
+lightness and colorfulness, but it is good to know why some approaches may be more favorable at times than others.
 
 ## Pointer's Gamut
 

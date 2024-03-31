@@ -115,9 +115,13 @@ leave that up to the user to research as needed. Suffice it to say, the Bradford
 (in most cases), but there are a variety of options available, and research continues to try and improve upon CATs of
 the past to come up with better CATs for the future.
 
-Currently, ColorAide mainly supports von Kries type CATs (named after an early 20th century color scientist), or CATs
-that are similar to and/or are built upon the original von Kries CAT. We also do not currently support every known von
-Kries CAT out there, but a good number are available. In the future, support may be expanded.
+Currently, ColorAide only supports single step, von Kries type CATs (named after an early 20th century color scientist),
+or CATs that are similar to and/or are built upon the original von Kries CAT. We also do not currently support every
+known von Kries CAT out there.
+
+Below is a list of the various matrices that can be used during chromatic adaptation. It should be noted that there are
+a few matrices below that are designed to be used in more complex, two step chromatic adaptation, but we currently only
+apply them as simple, single step chromatic adaptation.
 
 CAT           |
 ------------- |
@@ -139,7 +143,7 @@ Afterwards, all color transforms will use the specified CAT.
 
 ```py play
 class Custom(Color):
-    CHROMATIC_ADAPTATION = 'cat02'
+    CHROMATIC_ADAPTATION = 'von-kries'
 
 d50 = Custom('color(xyz-d50 0.11627 0.07261 0.23256 / 1)')
 d65 = d50.convert('xyz-d65')
