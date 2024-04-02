@@ -26,7 +26,7 @@ import eslint from "gulp-eslint"
 import rev from "gulp-rev"
 import revReplace from "gulp-rev-replace"
 import vinylPaths from "vinyl-paths"
-import {deleteAsync} from "del"
+import {deleteAsync, deleteSync} from "del"
 import touch from "gulp-touch-fd"
 import path from "path"
 import inlineSvg from "postcss-inline-svg"
@@ -192,8 +192,7 @@ gulp.task("scss:build:sass", () => {
     autoprefixer
   ].filter(t => t)
 
-  gulp.src(`${config.folders.theme}/manifest-css.json`, {allowEmpty: true})
-    .pipe(vinylPaths(deleteAsync))
+  deleteSync(`${config.folders.theme}/manifest-css.json`)
 
   return gulp.src("./docs/src/scss/extra*.scss")
     .pipe(sourcemaps.init())
@@ -248,13 +247,11 @@ gulp.task("scss:watch", () => {
 })
 
 gulp.task("scss:clean", () => {
-  return gulp.src(config.files.css, {allowEmpty: true})
-    .pipe(vinylPaths(deleteAsync))
+  return deleteAsync(config.files.css)
 })
 
 gulp.task("js:build:rollup", async() => {
-  gulp.src(`${config.folders.theme}/manifest-js.json`, {allowEmpty: true})
-    .pipe(vinylPaths(deleteAsync))
+  deleteSync(`${config.folders.theme}/manifest-js.json`)
 
   return await rollupjs(
     [
@@ -305,8 +302,7 @@ gulp.task("js:watch", () => {
 })
 
 gulp.task("js:clean", () => {
-  return gulp.src(config.files.js, {allowEmpty: true})
-    .pipe(vinylPaths(deleteAsync))
+  return deleteAsync(config.files.js)
 })
 
 // ------------------------------
@@ -337,8 +333,7 @@ gulp.task("mkdocs:build", () => {
 })
 
 gulp.task("mkdocs:clean", () => {
-  return gulp.src(config.folders.mkdocs, {allowEmpty: true})
-    .pipe(vinylPaths(deleteAsync))
+  return deleteAsync(config.folders.mkdocs)
 })
 
 // ------------------------------
