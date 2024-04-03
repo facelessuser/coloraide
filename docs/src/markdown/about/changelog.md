@@ -3,26 +3,27 @@
 ## 3.2
 
 -   **NEW**: Add `zcam-jmh` color model.
--   **NEW**: `cam16-jmh`, `cam16-ucs`, `jzczhz`, `jzazbz`, `ipt`, and `igpgtg` will perform achromatic handling relative
-    to themselves. As an example, in CAM16, when chroma is close to zero, color will be determined as achromatic. This
-    is due to adapting luminance and background luminance, zero chroma may not always be perfect white, but it is
-    achromatic according to the space. This simplifies logic, improves speed, and lessens confusion as to what
-    achromatic means.
--   **NEW**: Remove deprecated CAM16 Jab implementation. Use `cam16-ucs` instead.
+-   **NEW**: Previously, color spaces such as `cam16-jmh`, `cam16-ucs`, `jzczhz`, etc. would handle achromatic values
+    absolutely, based on XYZ with the specified white point which could result in values with non-zero chroma. Now they
+    will be handled relative to the space, meaning colors will be considered achromatic when they are close to zero
+    chroma. What is considered achromatic is affected by the adapting luminance and other environmental settings.
+    This simplifies logic making it faster and also easier for users to subclass with their own environmental settings.
+-   **NEW**: Normalize how color spaces with special viewing conditions are configured. Document configuring viewing
+    conditions of color models where applicable.
+-   **NEW**: Add new `space` parameter in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is
+    more flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them
+    instead.
+-   **NEW**: Remove previously deprecated CAM16 Jab implementation. Use `cam16-ucs` instead.
 -   **NEW**: Interpolation will now gracefully handle a list of a single color causing the interpolation to just return
     the single color.
 -   **NEW**: More helpful interpolation errors will raise for an empty list.
--   **NEW**: Add new `space` parameter in `cam16` ∆E method to replace the now deprecate `model` parameter. `space` is
-    more flexible as users can now create CAM16 UCS spaces with different lighting environments and specify them instead.
--   **NEW**: Normalize how color spaces with special viewing conditions are configured. Document configuring viewing
-    conditions of color models where applicable.
 -   **NEW**: Generic ray trace gamut mapping now has a new `pspace` parameter that can be used to specify a perceptual
     space in either LCh-ish or Lab-ish form. `lch` parameter is now deprecated, but currently still present, but
     `pspace` will take priority if both are defined.
 -   **NEW**: Rename `algebra.npow` to `algebra.spow` (signed power). `algebra.npow` is now deprecated and will be
     removed at some future time.
 -   **FIX**: Don't force space to clamp negative XYZ when they are absolutizing them in some spaces.
--   **FIX**: Ensure ST2084 EOTF implements the `max` as specified in the spec.
+-   **FIX**: Ensure ST2084 EOTF implements the `max` step as specified in the spec.
 
 ## 3.1.2
 
