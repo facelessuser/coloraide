@@ -21,7 +21,7 @@ class Cylindrical:
     def radial_name(self) -> str:
         """Radial name."""
 
-        return ""
+        return "s"
 
     def hue_name(self) -> str:
         """Hue channel name."""
@@ -74,11 +74,6 @@ class HSLish(Cylindrical):
 
 class HSVish(Cylindrical):
     """HSV-ish space."""
-
-    def radial_name(self) -> str:
-        """Radial name."""
-
-        return "s"
 
     def names(self) -> tuple[str, ...]:
         """Return HSV-ish names in order H S V."""

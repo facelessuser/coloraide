@@ -49,7 +49,10 @@ class TestZCAMJMhPoperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test LCh-ish names."""
 
-        self.assertEqual(Color('color(--zcam-jmh 97.139 75.504 111.05)')._space.names(), ('jz', 'mz', 'hz'))
+        c = Color('color(--zcam-jmh 97.139 75.504 111.05)')
+        self.assertEqual(c._space.names(), ('jz', 'mz', 'hz'))
+        self.assertEqual(c._space.radial_name(), 'mz')
+        self.assertEqual(c._space.hue_name(), 'hz')
 
     def test_hz(self):
         """Test `hz`."""

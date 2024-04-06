@@ -88,7 +88,10 @@ class TestHWBProperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test HWB-ish names."""
 
-        self.assertEqual(Color('color(--hwb 120 50% 90% / 1)')._space.names(), ('h', 'w', 'b'))
+        c = Color('color(--hwb 120 50% 90% / 1)')
+        self.assertEqual(c._space.names(), ('h', 'w', 'b'))
+        self.assertEqual(c._space.radial_name(), 'w')
+        self.assertEqual(c._space.hue_name(), 'h')
 
     def test_indexes(self):
         """Test HWB-ish indexes."""

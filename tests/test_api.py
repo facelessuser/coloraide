@@ -9,6 +9,12 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_is_polar(self):
+        """Test check for polar."""
+
+        self.assertFalse(Color('red').is_polar())
+        self.assertTrue(Color('red').convert('hsl').is_polar())
+
     def test_max_precision(self):
         """Test max precision."""
 
