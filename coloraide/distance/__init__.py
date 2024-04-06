@@ -50,8 +50,8 @@ def distance_euclidean(color: Color, sample: Color, space: str = "lab-d65") -> f
 
     # Convert polar coordinate into rectangular coordinates
     if c1.is_polar():
-        hi = c1._space.hue_index()
-        ri = c1._space.radial_index()
+        hi = c1._space.hue_index()  # type: ignore[attr-defined]
+        ri = c1._space.radial_index()  # type: ignore[attr-defined]
         a, b = alg.polar_to_rect(c1[ri], c1[hi])
         coords1[hi] = a
         coords1[ri] = b

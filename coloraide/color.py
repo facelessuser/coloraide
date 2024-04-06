@@ -537,7 +537,7 @@ class Color(metaclass=ColorMeta):
 
         self[:-1] = self._space.normalize(self.coords(nans=False))
         if nans and self.is_polar() and self.is_achromatic():
-            i = self._space.hue_index()
+            i = self._space.hue_index()  # type: ignore[attr-defined]
             self[i] = math.nan
         alpha = self[-1]
         self[-1] = 0.0 if math.isnan(alpha) else alpha
@@ -608,7 +608,7 @@ class Color(metaclass=ColorMeta):
 
         # Normalize achromatic colors, but skip if we internally don't need this.
         if norm and this.is_polar() and this.is_achromatic():
-            this[this._space.hue_index()] = math.nan
+            this[this._space.hue_index()] = math.nan  # type: ignore[attr-defined]
 
         return this
 

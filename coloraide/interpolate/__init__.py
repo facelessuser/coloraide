@@ -103,7 +103,7 @@ class Interpolator(metaclass=ABCMeta):
         self.hue = hue
         cs = self.create.CS_MAP[space]
         if cs.is_polar():
-            self.hue_index = cs.hue_index()
+            self.hue_index = cs.hue_index()  # type: ignore[attr-defined]
         else:
             self.hue_index = -1
         self.premultiplied = premultiplied

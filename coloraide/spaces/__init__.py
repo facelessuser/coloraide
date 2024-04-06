@@ -205,10 +205,10 @@ class Space(Plugin, metaclass=SpaceMeta):
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
         self._polar = isinstance(self, Cylindrical)
 
-    def is_polar(self):
+    def is_polar(self) -> bool:
         """Return if the space is polar."""
 
-        return isinstance(self, Cylindrical)
+        return self._polar
 
     def get_channel_index(self, name: str) -> int:
         """Get channel index."""

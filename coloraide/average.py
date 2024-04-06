@@ -21,7 +21,7 @@ def average(
 
     # Get channel information
     cs = obj.CS_MAP[space]
-    hue_index = cs.hue_index() if cs.is_polar() else -1
+    hue_index = cs.hue_index() if cs.is_polar() else -1  # type: ignore[attr-defined]
     channels = cs.channels
     chan_count = len(channels)
     alpha_index = chan_count - 1
