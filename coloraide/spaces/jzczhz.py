@@ -39,3 +39,8 @@ class JzCzhz(LCh):
         """Hue name."""
 
         return "hz"
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "cz"

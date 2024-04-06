@@ -80,7 +80,10 @@ class TestHSVProperties(util.ColorAsserts, unittest.TestCase):
     def test_names(self):
         """Test HSV-ish names."""
 
-        self.assertEqual(Color('color(--hsv 120 50% 50% / 1)')._space.names(), ('h', 's', 'v'))
+        c = Color('color(--hsv 120 50% 50% / 1)')
+        self.assertEqual(c._space.names(), ('h', 's', 'v'))
+        self.assertEqual(c._space.radial_name(), 's')
+        self.assertEqual(c._space.hue_name(), 'h')
 
     def test_hue(self):
         """Test `hue`."""

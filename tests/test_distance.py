@@ -597,6 +597,24 @@ class TestDistance(util.ColorAssertsPyTest):
         'color1,color2,value',
         [
             ('red', 'red', 0),
+            ('red', 'blue', 1.7321),
+        ]
+    )
+    def test_euclidean_polar_space(self, color1, color2, value):
+        """Test Euclidean distance."""
+
+        print('color1: ', color1)
+        print('color2: ', color2)
+        self.assertCompare(
+            Color(color1).distance(color2, space="hsl"),
+            value,
+            rounding=4
+        )
+
+    @pytest.mark.parametrize(
+        'color1,color2,value',
+        [
+            ('red', 'red', 0),
             ('red', 'orange', 40.2541),
             ('red', 'yellow', 72.9114),
             ('red', 'green', 72.2197),

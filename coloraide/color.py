@@ -488,7 +488,7 @@ class Color(metaclass=ColorMeta):
 
         # Create the color
         obj = cls(space, coords)
-        if hasattr(obj._space, 'hue_index'):
+        if obj._space.is_polar():
             obj.normalize()
         return obj
 
@@ -536,8 +536,8 @@ class Color(metaclass=ColorMeta):
         """Normalize the color."""
 
         self[:-1] = self._space.normalize(self.coords(nans=False))
-        if nans and hasattr(self._space, 'hue_index') and self.is_achromatic():
-            i = self._space.hue_index()
+        if nans and self.is_polar() and self.is_achromatic():
+            i = self._space.hue_index()  # type: ignore[attr-defined]
             self[i] = math.nan
         alpha = self[-1]
         self[-1] = 0.0 if math.isnan(alpha) else alpha
@@ -607,8 +607,8 @@ class Color(metaclass=ColorMeta):
         this._coords[:-1] = coords
 
         # Normalize achromatic colors, but skip if we internally don't need this.
-        if norm and hasattr(this._space, 'hue_index') and this.is_achromatic():
-            this[this._space.hue_index()] = math.nan
+        if norm and this.is_polar() and this.is_achromatic():
+            this[this._space.hue_index()] = math.nan  # type: ignore[attr-defined]
 
         return this
 
@@ -1350,6 +1350,11 @@ class Color(metaclass=ColorMeta):
             return self[-1]
         else:
             return self._space.resolve_channel(-1, self._coords)
+
+    def is_polar(self) -> bool:
+        """Check if space is polar."""
+
+        return self._space.is_polar()
 
 
 Color.register(

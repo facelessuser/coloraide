@@ -289,6 +289,11 @@ of [0, 1], CMY and sRGB as examples.
 class Cylindrical:
     """Cylindrical space."""
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return ""
+
     def hue_name(self) -> str:
         """Hue channel name."""
 
@@ -298,6 +303,11 @@ class Cylindrical:
         """Get hue index."""
 
         return cast('Space', self).get_channel_index(self.hue_name())
+
+    def radial_index(self) -> int:
+        """Get radial index."""
+
+        return self.get_channel_index(self.radial_name())
 ```
 ///
 
@@ -330,6 +340,11 @@ class RGBish(Regular):
 class HSLish(Cylindrical):
     """HSL-ish space."""
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "s"
+
     def names(self) -> tuple[str, ...]:
         """Return HSL-ish names in order H S L."""
 
@@ -346,6 +361,11 @@ class HSLish(Cylindrical):
 ```py
 class HSVish(Cylindrical):
     """HSV-ish space."""
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "s"
 
     def names(self) -> tuple[str, ...]:
         """Return HSV-ish names in order H S V."""
@@ -364,6 +384,11 @@ class HSVish(Cylindrical):
 ```py
 class HWBish(Cylindrical):
     """HWB-ish space."""
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "w"
 
     def names(self) -> tuple[str, ...]:
         """Return HWB-ish names in order H W B."""
@@ -398,6 +423,11 @@ class Labish:
 ```py
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "c"
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L c h."""

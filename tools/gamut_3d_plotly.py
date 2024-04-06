@@ -194,7 +194,8 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
         for t1, t2 in zip(s1, s2):
             c = t1.mix(t2, r / (step - 1), space=gamut, hue='specified')
             hue = c._space.hue_index()
-            a, b = alg.polar_to_rect(c[1], c[hue])
+            radius = c._space.radial_index()
+            a, b = alg.polar_to_rect(c[radius], c[hue])
             u.append(a)
             v.append(b)
             c.convert(space, norm=False, in_place=True)
@@ -210,10 +211,11 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
             # Any other generic cylindrical space
             else:
                 hue = c._space.hue_index()
-                a, b = alg.polar_to_rect(c[1], c[hue])
+                radius = c._space.radial_index()
+                a, b = alg.polar_to_rect(c[radius], c[hue])
                 x.append(a)
                 y.append(b)
-                z.append(c[2])
+                z.append(c[3 - hue - radius])
 
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
@@ -252,10 +254,11 @@ def store_coords(c, x, y, z, flags):
     # Any other generic cylindrical space that doesn't fit in the categories above.
     elif flags['is_cyl']:
         hue = c._space.hue_index()
-        a, b = alg.polar_to_rect(c[1], c[hue])
+        radius = c._space.radial_index()
+        a, b = alg.polar_to_rect(c[radius], c[hue])
         x.append(a)
         y.append(b)
-        z.append(c[2])
+        z.append(c[3 - hue - radius])
 
     # Lab spaces
     elif flags['is_labish']:

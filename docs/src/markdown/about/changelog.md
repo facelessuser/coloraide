@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.3
+
+-   **NEW**: Add `is_polar()` method to determine if color is a polar or rectangular color space.
+-   **NEW**: Extend the `Cylindrical` mixin class to expose `radial_name()` and `radial_index()` on the color space to
+    return the default name or default index of the radial coordinate in polar color spaces.
+-   **NEW**: Euclidean distance algorithm will now handle cylindrical color spaces by converting the polar coordinates
+    to rectangular coordinates in order to return sensible results.
+
 ## 3.2
 
 -   **NEW**: Add `zcam-jmh` color model.

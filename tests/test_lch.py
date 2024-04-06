@@ -93,6 +93,14 @@ class TestLChSerialize(util.ColorAssertsPyTest):
 class TestLChProperties(util.ColorAsserts, unittest.TestCase):
     """Test LCh."""
 
+    def test_names(self):
+        """Test LCh-ish names."""
+
+        c = Color('color(--lch 90% 50 120 / 1)')
+        self.assertEqual(c._space.names(), ('l', 'c', 'h'))
+        self.assertEqual(c._space.radial_name(), 'c')
+        self.assertEqual(c._space.hue_name(), 'h')
+
     def test_lightness(self):
         """Test `lightness`."""
 

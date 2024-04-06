@@ -18,6 +18,11 @@ class Regular:
 class Cylindrical:
     """Cylindrical space."""
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "s"
+
     def hue_name(self) -> str:
         """Hue channel name."""
 
@@ -27,6 +32,11 @@ class Cylindrical:
         """Get hue index."""
 
         return self.get_channel_index(self.hue_name())  # type: ignore[no-any-return, attr-defined]
+
+    def radial_index(self) -> int:  # pragma: no cover
+        """Get radial index."""
+
+        return self.get_channel_index(self.radial_name())  # type: ignore[no-any-return, attr-defined]
 
 
 class RGBish(Regular):
@@ -79,6 +89,11 @@ class HSVish(Cylindrical):
 class HWBish(Cylindrical):
     """HWB-ish space."""
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "w"
+
     def names(self) -> tuple[str, ...]:
         """Return HWB-ish names in order H W B."""
 
@@ -106,6 +121,11 @@ class Labish:
 
 class LChish(Cylindrical):
     """LCh-ish color spaces."""
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "c"
 
     def names(self) -> tuple[str, ...]:
         """Return LCh-ish names in the order L c h."""
@@ -178,6 +198,12 @@ class Space(Plugin, metaclass=SpaceMeta):
         self._chan_index = {c: e for e, c in enumerate(self.channels)}  # type: dict[str, int]
         self._color_ids = (self.NAME,) if not self.SERIALIZE else self.SERIALIZE
         self._percents = ([True] * (len(self.channels) - 1)) + [False]
+        self._polar = isinstance(self, Cylindrical)
+
+    def is_polar(self) -> bool:
+        """Return if the space is polar."""
+
+        return self._polar
 
     def get_channel_index(self, name: str) -> int:
         """Get channel index."""

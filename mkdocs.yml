@@ -307,7 +307,7 @@ extra_css:
   - assets/coloraide-extras/extra-e1cd7ecf37.css
 extra_javascript:
   - https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js
-  - playground-config-6f907977.js
+  - playground-config-3905dc29.js
   - https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js
   - assets/coloraide-extras/extra-notebook-Cs6O_Czb.js
 

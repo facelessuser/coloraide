@@ -65,6 +65,14 @@ class TestJzCzhzSerialize(util.ColorAssertsPyTest):
 class TestJzCzhzProperties(util.ColorAsserts, unittest.TestCase):
     """Test JzCzhz."""
 
+    def test_names(self):
+        """Test LCh-ish names."""
+
+        c = Color('color(jzczhz 0.22 0.5 270 / 1)')
+        self.assertEqual(c._space.names(), ('jz', 'cz', 'hz'))
+        self.assertEqual(c._space.radial_name(), 'cz')
+        self.assertEqual(c._space.hue_name(), 'hz')
+
     def test_jz(self):
         """Test `jz`."""
 
