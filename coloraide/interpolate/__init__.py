@@ -102,7 +102,7 @@ class Interpolator(metaclass=ABCMeta):
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         self.hue = hue
         cs = self.create.CS_MAP[space]
-        if isinstance(cs, Cylindrical):
+        if cs.is_polar():
             self.hue_index = cs.hue_index()
         else:
             self.hue_index = -1

@@ -143,3 +143,8 @@ class HPLuv(HSLish, Space):
         """From LChuv to HPLuv."""
 
         return luv_to_hpluv(coords)
+
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "p"

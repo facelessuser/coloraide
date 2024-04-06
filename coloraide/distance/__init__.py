@@ -1,7 +1,8 @@
 """Distance and Delta E."""
 from __future__ import annotations
-from abc import ABCMeta, abstractmethod
 import math
+from .. import algebra as alg
+from abc import ABCMeta, abstractmethod
 from ..types import ColorInput, Plugin
 from typing import TYPE_CHECKING, Any, Sequence
 
@@ -41,8 +42,22 @@ def distance_euclidean(color: Color, sample: Color, space: str = "lab-d65") -> f
     https://en.wikipedia.org/wiki/Euclidean_distance
     """
 
-    coords1 = color.convert(space, norm=False).coords(nans=False)
-    coords2 = sample.convert(space, norm=False).coords(nans=False)
+    # convert to the specified space
+    c1 = color.convert(space, norm=False)
+    c2 = sample.convert(space, norm=False)
+    coords1 = c1.coords()
+    coords2 = c2.coords()
+
+    # Convert polar coordinate into rectangular coordinates
+    if c1.is_polar():
+        hi = c1._space.hue_index()
+        ri = c1._space.radial_index()
+        a, b = alg.polar_to_rect(c1[ri], c1[hi])
+        coords1[hi] = a
+        coords1[ri] = b
+        a, b = alg.polar_to_rect(c2[ri], c2[hi])
+        coords2[hi] = a
+        coords2[ri] = b
 
     return math.sqrt(sum((x - y) ** 2.0 for x, y in zip(coords1, coords2)))
 

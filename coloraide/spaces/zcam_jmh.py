@@ -433,6 +433,11 @@ class ZCAMJMh(LCh, Space):
 
         return "hz"
 
+    def radial_name(self) -> str:
+        """Radial name."""
+
+        return "mz"
+
     def to_base(self, coords: Vector) -> Vector:
         """From ZCAM JMh to XYZ."""
 

@@ -12,13 +12,17 @@ colors are close enough or far enough away from each other.
 
 ColorAide provides a simple euclidean color distance function. By default, it evaluates the distance in the CIELab color
 space, but it can be configured to evaluate in any color space, such as Oklab, etc. It may be less useful in some color
-spaces compared to others. Some spaces may not be well suited, such as cylindrical spaces. Some spaces might not be as
-very perceptually uniform as others requiring more complex algorithms.
+spaces compared to others. Cylindrical spaces with polar coordinates will be converted to rectangular coordinates if
+specified. Some spaces might not be as very perceptually uniform.
 
 ```py play
 Color("red").distance("blue", space="srgb")
 Color("red").distance("blue", space="lab")
 ```
+
+/// new | New 3.3
+Handling spaces with polar coordinates is new in 3.3.
+///
 
 ## Delta E
 
