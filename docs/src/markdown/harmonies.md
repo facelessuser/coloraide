@@ -133,17 +133,27 @@ harmonies are calculated with the perceptually uniform OkLCh color space, but ot
 
 ### Monochromatic
 
-The monochromatic harmony pairs various tints and shades of a color together to create pleasing color schemes.
+The monochromatic harmony pairs various tints and shades by mixing white and black respectively with the target color to
+create pleasing color schemes. The number of tints and shades that are created is determined by color distance between
+white and black via ∆E~2000~.
+
+Then number of colors returned by the monochromatic harmony can be controlled via the `count` parameter, 5 being the
+default.
 
 ![Harmony Monochromatic](images/harmony-mono.png)
 
 ```py play
 Steps(Color('red').harmony('mono'))
+Steps(Color('red').harmony('mono', count=8))
 ```
 
 /// note | Achromatic Colors
 Pure `#!color white` and `#!color black` will not be included in a monochromatic color harmony unless the color is
 achromatic.
+///
+
+/// new | New 3.3
+The `count` parameter is new in 3.3.
 ///
 
 ### Complementary
@@ -212,11 +222,12 @@ Steps(Color('red').harmony('rectangle'))
 
 ### Others
 
-If you have a particular configuration that you are after that is not covered under the defaults, you can use `harmony`
-to calculate your own. Simply use the `wheel` harmony that can generate a color wheel of any size. Simply use a color to
-seed the wheel, specify the space in which to generate the wheel. Optionally, provide the desired number of colors in
-the color wheel via the `count` argument. We can generate a wheel for any color (assuming the color space can properly
-handle the color). We can even generate an extended color wheel if so desired.
+If you have a particular configuration that you are after that is not covered with the default harmonies, you can use
+`harmony` to calculate your own via `wheel`. The `wheel` harmony that can generate a color wheel of any size. Simply use
+a color to seed the wheel, specify the space in which to generate the wheel, and optionally, provide the desired number
+of colors in the color wheel via the `count` argument. With this, we can generate a wheel for any color (assuming the
+color space can properly handle the color). We can even generate an extended color wheel if so desired. This can allow
+you to select hues at any interval you need.
 
 ```py play wheel
 Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb', count=48)

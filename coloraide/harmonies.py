@@ -137,31 +137,22 @@ class Monochromatic(Harmony):
     """
     Monochromatic harmony.
 
-    Take a given color and create both tints and shades such that we have `RANGE` total steps ranging
-    from black -> color -> white. Normally, we will throw away pure black, pure white, and the duplicate
-    target color (as we interpolate with it on both sides) leaving us with RANGE - 3 colors to extract
-    the target `STEPS` from. The one exception is when targeting an achromatic color, and in that case,
-    we only throw away the duplicate color (though if a color is close enough to white or black, white
-    or black may not be included simply because we cannot get a reasonable step that includes it).
+    Take a given color and create both tints and shades from black -> color -> white.
+    With a default count of 5, the goal is to generate 2 shades and 2 tints on either
+    side of the seed color, assuming a perfectly centered tone in the middle. If the color
+    is closer to black, more tints will be returned than shades and vice versa.
 
-    Once we have our `RANGE`, we can extract a total of `STEPS` colors with the target color at the center
-    (when possible). If the target color is too close to the either the minimum or maximum color step,
-    there may not be enough tints or shades on one side, so the result may have to draw heavier on the
-    side that has more plentiful tints or shades which would cause the target color to shift from the center.
-
-    The current `RANGE` was chosen as 12 as it seems to to provide OK contrast in most cases for the monochromatic
-    colors. The one exception is with a target color of black or very near black which may return at least one color
-    with very low contrast to black. Generally, extremely dark colors do not make a good target for color harmonies,
-    but it should be noted that OkLCh's lightness tends to the more darker side. The poor contrast may be
-    less with other color spaces.
+    If an achromatic color is specified as the input, black and white can be returned, otherwise,
+    black and white is usually not returned to only return non-achromatic palettes.
     """
 
     DELTA_E = '2000'
-    RANGE = 12
-    STEPS = 5
 
-    def harmonize(self, color: Color, space: str) -> list[Color]:
+    def harmonize(self, color: Color, space: str, count: int = 5) -> list[Color]:
         """Get color harmonies."""
+
+        if count < 1:
+            raise ValueError('Cannot generate a monochromatic palette of {} colors.'.format(count))
 
         # Convert color space
         color1 = color.convert(space, norm=False).normalize()
@@ -171,26 +162,44 @@ class Monochromatic(Harmony):
         if not is_cyl and not isinstance(color1._space, (Labish, Regular)):
             raise ValueError('Unsupported color space type {}'.format(color.space()))
 
-        # Trim off black and white unless the color is achromatic,
-        # But always trim duplicate target color from left side.
-        if not color1.is_achromatic():
-            ltrim, rtrim = slice(1, -1, None), slice(None, -1, None)
-        else:
-            ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
+        # If only one color is requested, just return the current color.
+        if count == 1:
+            return [color1]
 
         # Create black and white so we can generate tints and shades
         # Ensure hue and alpha is masked so we don't interpolate them.
         mask = ['hue', 'alpha'] if is_cyl else ['alpha']
         w = color1.new('xyz-d65', WHITE, math.nan)
+        max_lum = w[1]
         w.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
         b = color1.new('xyz-d65', BLACK, math.nan)
+        min_lum = b[1]
         b.convert(space, fit=True, in_place=True, norm=False).mask(mask, in_place=True)
 
+        # Minimum steps should be adjusted to account for trimming off white and
+        # black if the color is not achromatic. Additionally, prepare our slice
+        # to remove black and white if required, but always trim duplicate target
+        # color from left side.
+        if not color1.is_achromatic():
+            min_steps = count + 3
+            ltrim, rtrim = slice(1, -1, None), slice(None, -1, None)
+        else:
+            min_steps = count + 1
+            ltrim, rtrim = slice(None, -1, None), slice(None, None, None)
+
         # Calculate how many tints and shades we need to generate
-        db = b.delta_e(color1, method=self.DELTA_E)
-        dw = w.delta_e(color1, method=self.DELTA_E)
-        steps_w = int(alg.round_half_up((dw / (db + dw)) * self.RANGE))
-        steps_b = self.RANGE - steps_w
+        luminance = color1.luminance()
+        if luminance <= min_lum:
+            steps_w = min_steps
+            steps_b = 0
+        elif luminance >= max_lum:
+            steps_b = min_steps - 1
+            steps_w = 0
+        else:
+            db = b.delta_e(color1, method=self.DELTA_E)
+            dw = w.delta_e(color1, method=self.DELTA_E)
+            steps_w = int(alg.round_half_up((dw / (db + dw)) * min_steps))
+            steps_b = min_steps - steps_w
 
         kwargs = {
             'space': space,
@@ -203,17 +212,15 @@ class Monochromatic(Harmony):
             left = []
             if steps_b == 1:
                 left.extend(color1.steps([b, color1], steps=steps_b, **kwargs))
-            steps = min(self.RANGE - (1 + steps_b), steps_w)
-            right = color1.steps([color1, w], steps=steps, **kwargs)[rtrim]
+            right = color1.steps([color1, w], steps=min(min_steps - (1 + steps_b), steps_w), **kwargs)[rtrim]
 
         # Very close to white or is white, no need to interpolate from current color to white
         elif steps_w <= 1:
             right = []
             if steps_w == 1:
                 right.extend(color1.steps([color1, w], steps=steps_w, **kwargs))
-            steps = min(self.RANGE - (1 + steps_w), steps_b)
             right.insert(0, color1.clone())
-            left = color1.steps([b, color1], steps=steps, **kwargs)[ltrim]
+            left = color1.steps([b, color1], steps=min(min_steps - (1 + steps_w), steps_b), **kwargs)[ltrim]
 
         # Anything else in between
         else:
@@ -223,12 +230,12 @@ class Monochromatic(Harmony):
         # Extract a subset of the results
         len_l = len(left)
         len_r = len(right)
-        l = int(self.STEPS // 2)
-        r = l + (1 if self.STEPS % 2 else 0)
+        l = int(count // 2)
+        r = l + (1 if count % 2 else 0)
         if len_r < r:
-            return left[-self.STEPS + len_r:] + right
+            return left[-count + len_r:] + right
         elif len_l < l:
-            return left + right[:self.STEPS - len_l]
+            return left + right[:count - len_l]
         return left[-l:] + right[:r]
 
 

@@ -7,6 +7,8 @@
     return the default name or default index of the radial coordinate in polar color spaces.
 -   **NEW**: Euclidean distance algorithm will now handle cylindrical color spaces by converting the polar coordinates
     to rectangular coordinates in order to return sensible results.
+-   **NEW**: Allow specifying number of colors to return for monochromatic harmonies. When fewer are specify, allow them
+    to be spaced further apart for better contrast.
 
 ## 3.2
 
