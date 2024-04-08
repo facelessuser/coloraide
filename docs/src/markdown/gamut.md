@@ -657,7 +657,7 @@ No perceptual color space is perfect and no gamut mapping approach perfect for a
 gamut mapping approaches that can even offer compromises providing better better hue preservation than clipping with
 less shifts in lightness.
 
-In the future, it is possible that ColorAide can expose more approaches, that provide compromises between preserving
+In the future, it is possible that ColorAide can expose more approaches that provide compromises between preserving
 lightness and colorfulness, but it is good to know why some approaches may be more favorable at times than others.
 
 ## Pointer's Gamut
