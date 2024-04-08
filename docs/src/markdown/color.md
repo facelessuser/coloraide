@@ -158,7 +158,7 @@ c1.clone()
 
 ## Updating
 
-A color can be "updated" using another color input. When an update occurs, the current color space is updated from the
+A color can be "updated" using another color input. When an update occurs, the current color is updated from the
 data of the second color, but the color space does not change. Using `update` is the equivalent of
 [converting](#converting) the second color to the color space of the first and then updating all the coordinates
 (including alpha). The input parameters are identical to the `new` method, so we can use a color object, a color string,
