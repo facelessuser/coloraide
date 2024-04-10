@@ -9,6 +9,7 @@
     to rectangular coordinates in order to return sensible results.
 -   **NEW**: Allow specifying number of colors to return for monochromatic harmony. When fewer are specified, allow them
     to be spaced further apart for better contrast.
+-   **FIX**: Handle unexpected undefined values in Euclidean distance.
 
 ## 3.2
 
