@@ -34,7 +34,7 @@ The sRGB gamut represented within the OkLCh color space.
 
 OkLCh is the cylindrical form of [Oklab](./oklab.md).
 
-_[Learn about OkLCh](https://bottosson.github.io/posts/oklab/)_
+_[Learn about OkLCh](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl)_
 ///
 
 ## Channel Aliases
