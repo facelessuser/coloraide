@@ -32,7 +32,8 @@ The sRGB gamut represented within the OkLCh color space.
 ////
 
 
-OkLCh is the cylindrical form of [Oklab](./oklab.md).
+A perceptual color space defined by perceived lightness,
+chroma and hue values. OkLCh is the cylindrical form of [Oklab](./oklab.md).
 
 _[Learn about OkLCh](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl)_
 ///
@@ -47,16 +48,16 @@ Channels | Aliases
 
 ## Input/Output
 
-Oklch was introduce in [CSS colors level 4](https://drafts.csswg.org/css-color/#ok-lab). I can be parsed via the
+Oklch was introduce in [CSS colors level 4](https://drafts.csswg.org/css-color/#ok-lab).  I can be parsed via the
 `#!css-color oklch()` function format, with relative Oklch colors being introduced in [CSS colors level 5](https://drafts.csswg.org/css-color-5/#relative-Oklch):
 
 ```css-color
 oklch(l c h / a)          // OkLCh function
 oklch(from <color> l c h / a) // OkLCh function for relative colors
-color(--oklab l a b / a)  // Color function
+color(--oklab l a b / a)  // Color function with custom color space
 ```
 
-When using the custom color space `--oklab`, the string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
+When using oklch as the custom color space `--oklch`, the string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
 form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
 
 ```py play

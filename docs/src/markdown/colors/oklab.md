@@ -32,8 +32,7 @@ The sRGB gamut represented within the Oklab color space.
 ////
 
 
-A new perceptual color space that claims to be simple to use, while doing a good job at predicting perceived lightness,
-chroma and hue. It is called the Oklab color space, because it is an OK Lab color space.
+A perceptual color space that models the opponent color signals which the eye sends to the brain - lightness v. darkness, or "brightness" (L), red v. green (a), and yellow v. blue-violet (b). It is called the Oklab color space, because it is an OK Lab color space.
 
 _[Learn about Oklab](https://bottosson.github.io/posts/oklab/)_
 ///
@@ -48,22 +47,23 @@ Channels | Aliases
 
 ## Input/Output
 
-Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --oklab`:
+Oklab was introduce in [CSS colors level 4](https://drafts.csswg.org/css-color/#ok-lab).  I can be parsed via the
+`#!css-color oklch()` function format, with relative Oklch colors being introduced in [CSS colors level 5](https://drafts.csswg.org/css-color-5/#relative-Oklab):
 
 ```css-color
 oklab(l a b / a)          // Oklab function
-color(--oklab l a b / a)  // Color function
+oklab(from <color> l a b / a)          // Oklab relative color function
+color(--oklab l a b / a)  // Color function with custom color space
 ```
 
-When manually creating a color via raw data or specifying a color space as a parameter in a function, the color
+When using `oklab` as a custom color space when manually creating a color via raw data or specifying a color space as a parameter in a function, the color
 space name is always used:
 
 ```py
 Color("oklab", [0, 0, 0], 1)
 ```
 
-The string representation of the color object will always default to the `#!css-color color(--oklab l a b / a)`
+When using this custom color space, the string representation of the color object will always default to the `#!css-color color(--oklab l a b / a)`
 form, but the default string output will be the `#!css-color oklab(l a b / a)` form.
 
 ```py play
