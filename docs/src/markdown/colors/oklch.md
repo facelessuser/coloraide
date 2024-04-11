@@ -47,15 +47,16 @@ Channels | Aliases
 
 ## Input/Output
 
-Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --oklch`:
+Oklch was introduce in [CSS colors level 4](https://drafts.csswg.org/css-color/#ok-lab). I can be parsed via the
+`#!css-color oklch()` function format, with relative Oklch colors being introduced in [CSS colors level 5](https://drafts.csswg.org/css-color-5/#relative-Oklch):
 
 ```css-color
 oklch(l c h / a)          // OkLCh function
-color(--oklch l c h / a)  // Color function
+oklch(from <color> l c h / a) // OkLCh function for relative colors
+color(--oklab l a b / a)  // Color function
 ```
 
-The string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
+When using the custom color space `--oklab`, the string representation of the color object will always default to the `#!css-color color(--oklch l c h / a)`
 form, but the default string output will be the `#!css-color oklch(l a b / a)` form.
 
 ```py play
