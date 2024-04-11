@@ -47,8 +47,8 @@ Channels | Aliases
 
 ## Input/Output
 
-Oklab is not currently supported in the CSS spec, the parsed input and string output formats use the
-`#!css-color color()` function format using the custom name `#!css-color --oklch`:
+Parsed input and string output formats support all valid CSS forms. Additionally, the `#!css-color color()` function
+format can be used as well with the custom name `#!css-color --oklch`.
 
 ```css-color
 oklch(l c h / a)          // OkLCh function
