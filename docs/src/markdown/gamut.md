@@ -443,7 +443,7 @@ space. In order to converge, we must refine our result with a few additional ite
 In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
 the color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
 The corrected color becomes our new current color and should be much closer color on the reduced chroma line. We can
-repeat this process a few more times, each time finding a better, closer closer color on the path. After about three
+repeat this process a few more times, each time finding a better, closer color on the path. After about three 
 _additional_ iterations (a combined total of four for the entire process), we will be close enough where we can stop.
 Finally, we can then clip off floating point math errors. With this, we will now have an accurate approximation of the
 color we seek.
