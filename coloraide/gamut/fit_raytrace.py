@@ -190,7 +190,7 @@ class RayTrace(Fit):
 
         # If there is a linear version of the RGB space, results will be
         # better if we use that. If the target RGB space is HDR, we need to
-        # calculate the bounding box size based on the HDR limit.
+        # calculate the bounding box size based on the HDR limit in the linear space.
         sdr = cs.DYNAMIC_RANGE != 'hdr'
         linear = cs.linear()  # type: ignore[attr-defined]
         if linear and linear in color.CS_MAP:
@@ -200,39 +200,37 @@ class RayTrace(Fit):
 
         orig = color.space()
         mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
+        achroma = mapcolor.clone()
+
+        # Different perceptual spaces may have components in different orders, account for this
         if is_lab:
             l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-            chroma, hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])
-            mapcolor[a] = 0
-            mapcolor[b] = 0
+            light = mapcolor[l]
+            hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
+            achroma[a] = 0
+            achroma[b] = 0
         else:
-            l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
-            chroma = mapcolor[c]
+            l, c, h = achroma._space.indexes()  # type: ignore[attr-defined]
+            light = mapcolor[l]
             hue = mapcolor[h]
-            mapcolor[c] = 0
-        achroma = mapcolor.convert(space)[:-1]
+            achroma[c] = 0
+        achromatic = achroma.convert(space)[:-1]
 
         # Return white or black if the achromatic version is not within the RGB cube.
-        mn, mx = alg.minmax(achroma)
+        # HDR colors currently use the RGB maximum lightness. We do not currently
+        # clip HDR colors to SDR white, but that could be done if required.
+        mn, mx = alg.minmax(achromatic)
         bmx = bmax[0]
         if mx >= bmx:
             color.update(space, bmax, mapcolor[-1])
         elif mn <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
-            light = mapcolor[l]
-            if is_lab:
-                ab = alg.polar_to_rect(chroma, hue)
-                mapcolor[a] = ab[0]
-                mapcolor[b] = ab[1]
-            else:
-                mapcolor[c] = chroma
-            mapcolor.convert(space, in_place=True)
-
             # Create a ray from our current color to the color with zero chroma.
             # Trace the line to the RGB cube finding the intersection.
             # In between iterations, correct the L and H and then cast a ray
-            # through the new corrected color finding the intersection again.
+            # to the new corrected color finding the intersection again.
+            mapcolor.convert(space, in_place=True)
             for i in range(4):
                 if i:
                     mapcolor.convert(pspace, in_place=True)
@@ -246,12 +244,13 @@ class RayTrace(Fit):
                         mapcolor[l] = light
                         mapcolor[h] = hue
                     mapcolor.convert(space, in_place=True)
-                intersection = raytrace_box(achroma, mapcolor[:-1], bmax=bmax)
+                intersection = raytrace_box(achromatic, mapcolor[:-1], bmax=bmax)
                 if intersection:
                     mapcolor[:-1] = intersection
                     continue
                 break  # pragma: no cover
 
+            # Remove noise from floating point conversion.
             color.update(space, [alg.clamp(x, 0.0, bmx) for x in mapcolor[:-1]], mapcolor[-1])
 
         # If we have coerced a space to RGB, update the original
