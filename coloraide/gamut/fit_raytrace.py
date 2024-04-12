@@ -188,7 +188,7 @@ class RayTrace(Fit):
             cs = Color_.CS_MAP[space]
             color = Color_(color)
 
-        # If there is a non-linear version of the RGB space, results will be
+        # If there is a linear version of the RGB space, results will be
         # better if we use that. If the target RGB space is HDR, we need to
         # calculate the bounding box size based on the HDR limit.
         sdr = cs.DYNAMIC_RANGE != 'hdr'
