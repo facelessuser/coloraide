@@ -424,10 +424,10 @@ gamut map all officially supported color spaces as they either have an RGB gamut
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
 achromatic version of the color (chroma set to zero) is calculated. If the achromatic color exceeds the maximum or
-minimum lightness of the gamut the respective maximum or minimum achromatic color is returned.
+minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
 
-Assuming the lightness is within bounds, a ray is cast from the inside of the cube, from the achromatic point, to the
-current color. The intersection along this path with the RGB surface boundary is then found.
+Assuming the lightness is within bounds, a ray is cast from the inside of the cube, from the achromatic point to the
+current color. The intersection along this path with the RGB gamut surface is then found.
 
 /// note | Ray Trace Algorithm
 Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
@@ -435,15 +435,16 @@ selected is the first one encountered when following the ray from the origin poi
 point.
 ///
 
-The intersection of the line and the cube represents an approximation of the the most saturated color for that lightness
-and hue. But because the RGB space is not perceptual, the initial approximation will be quite off because decreasing
-chroma and holding lightness and hue constant in a perceptual space will create a twisting path through the the RGB
-space. In order to converge, we must refine our result with a few additional iterations.
+The intersection of the line and the gamut surface represents an approximation of the the most saturated color for that
+lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
+decreasing chroma and holding lightness and hue constant in a perceptual space will create a twisting path through the
+RGB space. In order to converge on a point as close as possible to the actual most saturated color with the given hue
+and lightness, we must refine our result with a few additional iterations.
 
 In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
 the color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
 The corrected color becomes our new current color and should be much closer color on the reduced chroma line. We can
-repeat this process a few more times, each time finding a better, closer color on the path. After about three 
+repeat this process a few more times, each time finding a better, closer color on the path. After about three
 _additional_ iterations (a combined total of four for the entire process), we will be close enough where we can stop.
 Finally, we can then clip off floating point math errors. With this, we will now have an accurate approximation of the
 color we seek.
