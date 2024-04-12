@@ -423,9 +423,11 @@ version of the targeted RGB gamut, that version will be used automatically for b
 gamut map all officially supported color spaces as they either have an RGB gamut or can be coerced into one.
 
 The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
-achromatic version of the color (chroma set to zero) is calculated. A ray is cast from the inside of the cube, from the
-achromatic point, through a point barely saturated above the achromatic point give direction, out to the targeted gamut
-surface. The intersection along this path with the RGB surface boundary is then found.
+achromatic version of the color (chroma set to zero) is calculated. If the achromatic color exceeds the maximum or
+minimum lightness of the gamut the respective maximum or minimum achromatic color is returned.
+
+Assuming the lightness is within bounds, a ray is cast from the inside of the cube, from the achromatic point, to the
+current color. The intersection along this path with the RGB surface boundary is then found.
 
 /// note | Ray Trace Algorithm
 Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
