@@ -1811,21 +1811,3 @@ Return
 
 -   Returns the converted 2D chromaticity coordinates.
 ///
-
-## `#!py Color.is_polar` {#is_polar}
-
-```py
-def is_polar(
-    self
-) -> bool:
-```
-
-/// define
-Description
-
--   Returns a boolean indicating whether the current color space is a polar/cylindrical color space.
-
-Return
-
--   Return `#!py True` if the current color space is polar/cylindrical or `#!py False` if it is not.
-///

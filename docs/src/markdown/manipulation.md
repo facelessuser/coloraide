@@ -201,18 +201,6 @@ and then converts it back making it susceptible to any possible [round trip erro
 /// new | New in 1.5: Getting/Setting Multiple Channels
 ///
 
-## Test if Polar
-
-Color spaces are either rectangular or polar. For instance, RGB spaces have rectangular coordinates, and the cylindrical
-HSL color space has polar coordinates.
-
-If needed, a color can be tested whether it is polar or rectangular with the `is_polar()` method.
-
-```py play
-Color('srgb', [1, 0, 0]).is_polar()
-Color('hsl', [0, 1, 0.5]).is_polar()
-```
-
 ## Undefined Values
 
 Colors can sometimes have undefined channels. This can actually happen in a number of ways. In almost all cases,

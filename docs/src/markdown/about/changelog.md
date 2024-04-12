@@ -2,9 +2,9 @@
 
 ## 3.3
 
--   **NEW**: Add `is_polar()` method to determine if color is a polar or rectangular color space.
 -   **NEW**: Extend the `Cylindrical` mixin class to expose `radial_name()` and `radial_index()` on the color space to
-    return the default name or default index of the radial coordinate in polar color spaces.
+    return the default name or default index of the radial coordinate in polar color spaces. It also exposes
+    `is_polar()` as a simple check to see if the space uses polar coordinates.
 -   **NEW**: Euclidean distance algorithm will now handle cylindrical color spaces by converting the polar coordinates
     to rectangular coordinates in order to return sensible results.
 -   **NEW**: Allow specifying number of colors to return for monochromatic harmony. When fewer are specified, allow them
