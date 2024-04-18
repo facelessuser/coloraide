@@ -217,32 +217,33 @@ def simulate_raytrace_gamut_mapping(args):
 
     orig = color.space()
     mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
+    achroma = mapcolor.clone()
     first = mapcolor.clone()
     if is_lab:
         l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
         chroma, hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])
-        mapcolor[a] = 0
-        mapcolor[b] = 0
+        achroma[a] = 0
+        achroma[b] = 0
     else:
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
         chroma = mapcolor[c]
         hue = mapcolor[h]
-        mapcolor[c] = 0
-    achroma = mapcolor.clone().convert(space, in_place=True)[:-1]
+        achroma[c] = 0
+    achromatic = [sum(achroma.clone().convert(space, in_place=True)[:-1]) / 3] * 3
 
     # Return white or black if the achromatic version is not within the RGB cube.
-    mn, mx = alg.minmax(achroma)
     bmx = bmax[0]
-    if mx >= bmx:
+    point = achromatic[0]
+    if point >= bmx:
         color.update(space, bmax, mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
-        points.append(achroma)
-    elif mn <= 0:
+        points.append(achromatic)
+    elif point <= 0:
         color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         points.append(first.convert(space)[:-1])
         points.append(color.convert(space)[:-1])
-        points.append(achroma)
+        points.append(achromatic)
     else:
         light = mapcolor[l]
         if is_lab:
@@ -270,11 +271,11 @@ def simulate_raytrace_gamut_mapping(args):
                     gamutcolor[l] = light
                     gamutcolor[h] = hue
                 gamutcolor.convert(space, in_place=True)
-            intersection = raytrace_box(achroma, gamutcolor[:-1], bmax=bmax)
+            intersection = raytrace_box(achromatic, gamutcolor[:-1], bmax=bmax)
             if intersection:
                 points.append(gamutcolor[:-1])
                 points.append(intersection)
-                points.append(achroma)
+                points.append(achromatic)
                 gamutcolor[:-1] = intersection
                 continue
             break  # pragma: no cover
@@ -318,15 +319,10 @@ def simulate_raytrace_gamut_mapping(args):
     fig.add_traces(data)
 
     if args.gamut_interp:
-        if is_lab:
-            mapcolor[a] = 0
-            mapcolor[b] = 0
-        else:
-            mapcolor[c] = 0
         plot_interpolation(
             fig,
             space,
-            first.to_string(fit=False) + ';' + mapcolor.to_string(fit=False),
+            first.to_string(fit=False) + ';' + achroma.to_string(fit=False),
             pspace,
             'linear',
             'shorter',
