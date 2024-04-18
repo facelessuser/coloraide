@@ -9,7 +9,7 @@ import yargs from "yargs"
 import {hideBin} from "yargs/helpers"
 import gulp from "gulp"
 import gulpSass from "gulp-sass"
-import * as sasCompile from "sass"
+import * as sassCompiler from "sass"
 import postcss from "gulp-postcss"
 import scss from "postcss-scss"
 import autoprefixer from "autoprefixer"
@@ -31,14 +31,14 @@ import touch from "gulp-touch-fd"
 import path from "path"
 import inlineSvg from "postcss-inline-svg"
 import cssSvgo from "postcss-svgo"
-import replace from "gulp-replace"
+// `import replace from "gulp-replace"`
 import outputManifest from "rollup-plugin-output-manifest"
 import sourcemaps from "gulp-sourcemaps"
 import regenerator from "rollup-plugin-regenerator"
 import fs from "fs"
 import rollupReplace from "@rollup/plugin-replace"
 
-const sass = gulpSass(sasCompile)
+const sass = gulpSass(sassCompiler)
 
 /* Argument Flags */
 const args = yargs(hideBin(process.argv))
@@ -267,27 +267,29 @@ gulp.task("js:build:rollup", async() => {
   )
 })
 
-gulp.task("html:build", () => {
-  return gulp.src("./docs/src/html/*")
-    .pipe(gulpif(config.revision, revReplace({
-      manifest: gulp.src(`${config.folders.theme}/manifest*.json`, {allowEmpty: true}),
-      replaceInExtensions: [".html"]
-    })))
-    .pipe(replace(/((?:\r?\n?\s*)<!--[\s\S]*?-->(?:\s*)(?=\r?\n)|<!--[\s\S]*?-->)/g, ""))
-    .pipe(gulp.dest("./docs/theme/partials"))
-})
+// ````
+// gulp.task("html:build", () => {
+//   return gulp.src("./docs/src/html/*.html")
+//     .pipe(gulpif(config.revision, revReplace({
+//       manifest: gulp.src(`${config.folders.theme}/manifest*.json`, {allowEmpty: true}),
+//       replaceInExtensions: [".html"]
+//     })))
+//     .pipe(replace(/((?:\r?\n?\s*)<!--[\s\S]*?-->(?:\s*)(?=\r?\n)|<!--[\s\S]*?-->)/g, ""))
+//     .pipe(gulp.dest("./docs/theme/partials/"))
+// })
+// ````
 
 gulp.task("html:watch", () => {
-  gulp.watch("./docs/src/html/*", gulp.series("html:build", "mkdocs:update"))
+  gulp.watch("./docs/src/html/*.html", gulp.series("mkdocs:update"))
 })
 
-gulp.task("js:build", gulp.series("js:build:rollup", "html:build", () => {
+gulp.task("js:build", gulp.series("js:build:rollup", () => {
   return gulp.src(config.files.mkdocsSrc)
     .pipe(gulpif(config.revision, revReplace({
       manifest: gulp.src(`${config.folders.theme}/manifest*.json`, {allowEmpty: true}),
       replaceInExtensions: [".yml"]
     })))
-    .pipe(gulp.dest("."))
+    .pipe(gulp.dest("./"))
 }))
 
 gulp.task("js:lint", () => {
