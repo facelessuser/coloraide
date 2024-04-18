@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.1
+
+-   **FIX**: Ray trace gamut mapping algorithm will better handle perceptual spaces like CAM16 and HCT which have
+    atypical achromatic responses. This prevents unexpected cutoff close to white.
+-   **FIX**: Fix some documentation examples regarding gamut mapping in HCT.
+
 ## 3.3
 
 -   **NEW**: Extend the `Cylindrical` mixin class to expose `radial_name()` and `radial_index()` on the color space to

@@ -214,16 +214,27 @@ class RayTrace(Fit):
             light = mapcolor[l]
             hue = mapcolor[h]
             achroma[c] = 0
-        achromatic = achroma.convert(space)[:-1]
+
+        # Floating point math can cause some deviations between the max and min
+        # value in the achromatic RGB color. This is usually not an issue, but
+        # some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
+        # luminance which may give an achromatic that is not quite achromatic,
+        # causing a more sizeable delta between the max and min value in the
+        # achromatic RGB color. To compensate for such deviations, take the
+        # average value of the RGB components and use that as the achromatic point.
+        # When dealing with simple floating point deviations, little to no change
+        # is observed, but for spaces like CAM16 or HCT, this can provide more
+        # reasonable gamut mapping.
+        achromatic = [sum(achroma.convert(space)[:-1]) / 3] * 3
 
         # Return white or black if the achromatic version is not within the RGB cube.
         # HDR colors currently use the RGB maximum lightness. We do not currently
         # clip HDR colors to SDR white, but that could be done if required.
-        mn, mx = alg.minmax(achromatic)
         bmx = bmax[0]
-        if mx >= bmx:
+        point = achromatic[0]
+        if point >= bmx:
             color.update(space, bmax, mapcolor[-1])
-        elif mn <= 0:
+        elif point <= 0:
             color.update(space, [0.0, 0.0, 0.0], mapcolor[-1])
         else:
             # Create a ray from our current color to the color with zero chroma.

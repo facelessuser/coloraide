@@ -367,10 +367,14 @@ approach to chroma reduction in any perceptual space](#ray-tracing-chroma-reduct
 recommended that users apply that approach as it performs a tight chroma reduction much quicker, and it doesn't require
 a special ∆E method.
 
+On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
+atypical achromatic response, but differences should be imperceptible to the eye at such lightness levels making the
+the improved performance of the ray trace approach much more desirable.
+
 ```py play
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'hct': 0.0}) for tone in tones])
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
 ```
 ///
 
