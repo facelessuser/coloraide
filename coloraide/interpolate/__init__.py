@@ -601,7 +601,7 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
                 if math.isnan(color[i]):
                     channels[name] = True
         elif cs1.is_polar():
-            if math.isnan(color[cs1.hue_index()]):
+            if math.isnan(color[cs1.hue_index()]):  # type: ignore[attr-defined]
                 channels['H'] = True
 
         # Carry alpha forward if undefined
