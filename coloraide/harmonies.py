@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from abc import ABCMeta, abstractmethod
 from . import algebra as alg
-from .spaces import Cylindrical, Labish, Regular, Space  # noqa: F401
+from .spaces import Labish, Regular, Space  # noqa: F401
 from .spaces.hsl import HSL
 from .spaces.lch import LCh
 from .cat import WHITES
@@ -74,7 +74,7 @@ class Harmony(metaclass=ABCMeta):
 
         color = color.convert(space, norm=False).normalize()
 
-        if isinstance(color._space, Cylindrical):
+        if color._space.is_polar():
             return color
 
         if isinstance(color._space, Labish):
@@ -157,7 +157,7 @@ class Monochromatic(Harmony):
         # Convert color space
         color1 = color.convert(space, norm=False).normalize()
 
-        is_cyl = isinstance(color1._space, Cylindrical)
+        is_cyl = color1._space.is_polar()
 
         if not is_cyl and not isinstance(color1._space, (Labish, Regular)):
             raise ValueError('Unsupported color space type {}'.format(color.space()))

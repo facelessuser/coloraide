@@ -27,7 +27,7 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from coloraide import NaN  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
-from coloraide.spaces import Cylindrical, LChish  # noqa: E402
+from coloraide.spaces import LChish  # noqa: E402
 
 
 def ignore_LCh_high_chroma_black(color):
@@ -102,7 +102,7 @@ def plot_slice(
     hue_index = -1
 
     kwargs = {}
-    if polar and isinstance(c._space, Cylindrical):
+    if polar and c._space.is_polar():
         kwargs['projection'] = 'polar'
         index = c._space.hue_index()
         if index == index1:

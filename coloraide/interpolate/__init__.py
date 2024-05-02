@@ -18,7 +18,7 @@ import math
 import functools
 from abc import ABCMeta, abstractmethod
 from .. import algebra as alg
-from .. spaces import HSVish, HSLish, Cylindrical, RGBish, LChish, Labish
+from .. spaces import HSVish, HSLish, RGBish, LChish, Labish
 from ..types import Matrix, Vector, ColorInput, Plugin
 from typing import Callable, Sequence, Mapping, Any, TYPE_CHECKING
 
@@ -600,7 +600,7 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
             for i, name in zip(cs1.indexes(), ('H', 'C', 'V')):
                 if math.isnan(color[i]):
                     channels[name] = True
-        elif isinstance(cs1, Cylindrical):
+        elif cs1.is_polar():
             if math.isnan(color[cs1.hue_index()]):
                 channels['H'] = True
 
@@ -697,7 +697,7 @@ def interpolator(
 
     # Adjust to space
     cs = current.CS_MAP[space]
-    is_cyl = isinstance(cs, Cylindrical)
+    is_cyl = cs.is_polar()
     hue_index = cs.hue_index() if is_cyl else -1  # type: ignore[attr-defined]
     if carryforward:
         carryforward_convert(current, space, hue_index, powerless)

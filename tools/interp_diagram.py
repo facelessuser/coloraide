@@ -16,7 +16,6 @@ try:
 except ImportError:
     from coloraide.everything import ColorAll as Color
 from tools.slice_diagram import plot_slice  # noqa: E402
-from coloraide.spaces import Cylindrical  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
 
 
@@ -98,7 +97,7 @@ def main():
     name2 = c1._space.CHANNEL_ALIASES.get(name2, name2)
     hue_index = -1
 
-    if isinstance(c1._space, Cylindrical):
+    if c1._space.is_polar():
         index = c1._space.hue_index()
         if index == index1:
             hue_index = index

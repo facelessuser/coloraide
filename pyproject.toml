@@ -86,7 +86,7 @@ extend-exclude = [
     "tools/oklab_srgb_gamut_approximation.py"
 ]
 
-select = [
+lint.select = [
     "A",    # flake8-builtins
     "B",    # flake8-bugbear
     "D",    # pydocstyle
@@ -102,7 +102,7 @@ select = [
     "PERF"  # Perflint
 ]
 
-ignore = [
+lint.ignore = [
     "E741",
     "D202",
     "D401",

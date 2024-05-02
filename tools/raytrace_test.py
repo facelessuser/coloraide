@@ -81,7 +81,7 @@ def plot_interpolation(
     if not interp_colors:
         return
 
-    if not isinstance(Color.CS_MAP[interp_space], plt3d.Cylindrical):
+    if not Color.CS_MAP[interp_space].is_polar():
         Color_ = coerce_to_lch(interp_space)
         interp_space = '-cylinder'
     else:
@@ -100,7 +100,7 @@ def plot_interpolation(
 
     target = Color.CS_MAP[space]
     flags = {
-        'is_cyl': isinstance(target, plt3d.Cylindrical),
+        'is_cyl': isinstance(target, target.is_polar()),
         'is_labish': isinstance(target, plt3d.Labish),
         'is_lchish': isinstance(target, plt3d.LChish),
         'is_hslish': isinstance(target, plt3d.HSLish),

@@ -1,6 +1,6 @@
 """Sanity check that ensures all colors round trip back."""
 from coloraide.everything import ColorAll as Base
-from coloraide.spaces import Cylindrical, HSLish, HSVish
+from coloraide.spaces import HSLish, HSVish
 from coloraide import algebra as alg
 import math
 import pytest
@@ -48,7 +48,7 @@ class TestRoundTrip:
             c2 = c1.convert(space)
             c2.convert(c1.space(), in_place=True)
             # Catch cases where we are really close to 360 which should wrap to 0
-            if isinstance(c2._space, Cylindrical):
+            if c2._space.is_polar():
                 if alg.round_half_up(c2.get('hue', nans=False), p) == 360:
                     c2.set('hue', 0)
             # In HSL and HSV spaces particularly, we can get nonsense saturation if lightness
