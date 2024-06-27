@@ -218,7 +218,7 @@ import plotly.graph_objects as go
 import math
 import plotly.io as io
 from coloraide.everything import ColorAll as Color
-from coloraide.spaces import HSLish, HSVish, HWBish, Cylindrical, Labish, LChish, Regular
+from coloraide.spaces import HSLish, HSVish, HWBish, Labish, LChish, Regular
 from coloraide import algebra as alg
 from coloraide.spaces.hsl import hsl_to_srgb, srgb_to_hsl
 
@@ -488,7 +488,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
 
     target = Color.CS_MAP[space]
     flags = {
-        'is_cyl': isinstance(target, Cylindrical),
+        'is_cyl': target.is_polar(),
         'is_labish': isinstance(target, Labish),
         'is_lchish': isinstance(target, LChish),
         'is_hslish': isinstance(target, HSLish),
@@ -684,7 +684,7 @@ def plot_gamut_in_space(
 
     names = target.CHANNELS
     is_regular = isinstance(target, Regular)
-    is_cyl = isinstance(target, Cylindrical)
+    is_cyl = target.is_polar()
     is_labish = isinstance(target, Labish)
     is_lchish = isinstance(target, LChish)
     is_hslish_hsvish = isinstance(target, (HSLish, HSVish))
@@ -803,7 +803,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
     if gamut_mapping or non_mapped:
         target = Color.CS_MAP[space]
         flags = {
-            'is_cyl': isinstance(target, Cylindrical),
+            'is_cyl': target.is_polar(),
             'is_labish': isinstance(target, Labish),
             'is_lchish': isinstance(target, LChish),
             'is_hslish': isinstance(target, HSLish),
@@ -867,7 +867,7 @@ def plot_interpolation(
 
     target = Color.CS_MAP[space]
     flags = {
-        'is_cyl': isinstance(target, Cylindrical),
+        'is_cyl': target.is_polar(),
         'is_labish': isinstance(target, Labish),
         'is_lchish': isinstance(target, LChish),
         'is_hslish': isinstance(target, HSLish),
