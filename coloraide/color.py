@@ -224,7 +224,7 @@ class Color(metaclass=ColorMeta):
         """Compare equal."""
 
         return (
-            type(other) == type(self) and
+            type(other) is type(self) and
             other.space() == self.space() and
             util.cmp_coords(other[:], self[:])
         )
