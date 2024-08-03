@@ -590,7 +590,7 @@ class HCTRayTrace(RayTrace):
 
 class Color(Base): ...
 
-Color.register(HCTRayTrace)
+Color.register(HCTRayTrace())
 
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -612,7 +612,7 @@ class MyRayTrace(RayTrace):
 
 class Color(Base): ...
 
-Color.register(MyRayTrace, overwrite=True)
+Color.register(MyRayTrace(), overwrite=True)
 
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -625,7 +625,7 @@ If we want to make ray tracing the default algorithm for all gamut mapping, we c
 class Color(Base):
     FIT = 'raytrace'
 
-Color.register(MyRayTrace, overwrite=True)
+Color.register(MyRayTrace(), overwrite=True)
 ```
 
 ## Why Not Just Clip?
