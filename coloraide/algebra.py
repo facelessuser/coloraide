@@ -724,7 +724,7 @@ def vdot(a: VectorLike, b: VectorLike) -> float:
 
     l = len(a)
     if l != len(b):
-        raise ValueError('Vectors of size {} and {} are not aligned'.format(l, len(b)))
+        raise ValueError(f'Vectors of size {l} and {len(b)} are not aligned')
     s = 0.0
     i = 0
     while i < l:
@@ -745,7 +745,7 @@ def vcross(v1: VectorLike, v2: VectorLike) -> Any:  # pragma: no cover
 
     l1 = len(v1)
     if l1 != len(v2):
-        raise ValueError('Incompatible dimensions of {} and {} for cross product'.format(l1, len(v2)))
+        raise ValueError(f'Incompatible dimensions of {l1} and {len(v2)} for cross product')
 
     if l1 == 2:
         return v1[0] * v2[1] - v1[1] * v2[0]
@@ -756,7 +756,7 @@ def vcross(v1: VectorLike, v2: VectorLike) -> Any:  # pragma: no cover
             v1[0] * v2[1] - v1[1] * v2[0]
         ]
     else:
-        raise ValueError('Expected vectors of shape (2,) or (3,) but got ({},) ({},)'.format(l1, len(v2)))
+        raise ValueError(f'Expected vectors of shape (2,) or (3,) but got ({l1},) ({len(v2)},)')
 
 
 @overload
@@ -1650,7 +1650,7 @@ def broadcast_to(a: ArrayLike | float, s: int | ShapeLike) -> Array:
     ndim_orig = len(s_orig)
     ndim_target = len(s)
     if ndim_orig > ndim_target:
-        raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
+        raise ValueError(f"Cannot broadcast {s_orig} to {s}")
 
     s1 = list(s_orig)
     if ndim_orig < ndim_target:
@@ -1658,7 +1658,7 @@ def broadcast_to(a: ArrayLike | float, s: int | ShapeLike) -> Array:
 
     for d1, d2 in zip(s1, s):
         if d1 != d2 and (d1 != 1 or d1 > d2):
-            raise ValueError("Cannot broadcast {} to {}".format(s_orig, s))
+            raise ValueError(f"Cannot broadcast {s_orig} to {s}")
 
     m = list(_BroadcastTo(a, tuple(s1), tuple(s)))
     return reshape(m, s) if len(s) > 1 else m  # type: ignore[return-value]
@@ -1965,7 +1965,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
             elif s2[0] == 1:
                 stop = stop * s1[0]  # type: ignore[operator]
             else:
-                raise ValueError('Cannot broadcast start ({}) and stop ({})'.format(s1, s2))
+                raise ValueError(f'Cannot broadcast start ({s1}) and stop ({s2})')
 
         # Apply linear interpolation steps across the vectors
         values = list(zip(start, stop))  # type: ignore[arg-type]
@@ -2384,7 +2384,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
         if len(v) == 1:
             return v[0]
         # Kick out if the requested shape doesn't match the data
-        raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
+        raise ValueError(f'Shape {new_shape} does not match the data total of {shape(array)}')
 
     current_shape = shape(array)
 
@@ -2397,7 +2397,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
     # Make sure we can actually reshape.
     total = prod(new_shape) if not empty else prod(new_shape[:-1])
     if not empty and total != prod(current_shape):
-        raise ValueError('Shape {} does not match the data total of {}'.format(new_shape, shape(array)))
+        raise ValueError(f'Shape {new_shape} does not match the data total of {shape(array)}')
 
     # Create the array
     m = []  # type: Any
@@ -2899,7 +2899,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             x.append(_back_sub_vector(u, _forward_sub_vector(l, [vi[i] for i in p], size), size))
         return reshape(x, s2)  # type: ignore[return-value]
 
-    raise ValueError("Could not broadcast {} and {}".format(s, s2))
+    raise ValueError(f"Could not broadcast {s} and {s2}")
 
 
 def trace(matrix: Matrix) -> float:
@@ -3137,7 +3137,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
 
     # If both inputs are not scalars, the last dimension must match
     if (shape_a and shape_b and shape_a[-1] != shape_b[-1]):
-        raise ValueError('The last dimensions {} and {} do not match'.format(shape_a, shape_b))
+        raise ValueError(f'The last dimensions {shape_a} and {shape_b} do not match')
 
     # If we have a scalar, we should just multiply
     if (not dims_a or not dims_b):

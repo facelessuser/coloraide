@@ -40,7 +40,7 @@ def main():
 
     if method == 'clip':
         if args.clip_space not in ('lch', 'oklch', 'hct'):
-            raise ValueError('"{}" is an unsupported clipping space'.format(args.clip_space))
+            raise ValueError(f'"{args.clip_space}" is an unsupported clipping space')
         method = args.clip_space + '-chroma'
 
     if method.startswith('lch'):
@@ -65,14 +65,14 @@ def main():
         x = 'c'
         y = 't'
     else:
-        raise ValueError('"{}" is an unsupported gamut mapping algorithm'.format(args.method))
+        raise ValueError(f'"{args.method}" is an unsupported gamut mapping algorithm')
 
     if args.method == 'clip':
-        title = 'Clipping shown in {}'.format(t_space)
+        title = f'Clipping shown in {t_space}'
     elif args.method.endswith('-chroma'):
-        title = 'MINDE and Chroma Reduction in {}'.format(t_space)
+        title = f'MINDE and Chroma Reduction in {t_space}'
     elif args.method.endswith('-raytrace'):
-        title = 'Ray Tracing Chroma Reduction in {}'.format(t_space)
+        title = f'Ray Tracing Chroma Reduction in {t_space}'
 
     jnd = None if args.jnd == -1 else args.jnd
     traces = args.traces
@@ -84,7 +84,7 @@ def main():
     mapcolor = color.convert(space)
     mapcolor2 = color2.convert(space)
     constant = 'h:{}'.format(fmt_float(mapcolor['hue'], 5))
-    subtitle = '{} ==> {}'.format(color.to_string(), color2.to_string())
+    subtitle = f'{color.to_string()} ==> {color2.to_string()}'
 
     plot_slice(
         space,

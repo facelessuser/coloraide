@@ -21,7 +21,7 @@ EMPTY = ''
 
 
 def named_color(
-    obj: 'Color',
+    obj: Color,
     alpha: bool | None,
     fit: str | bool | dict[str, Any]
 ) -> str | None:
@@ -34,7 +34,7 @@ def named_color(
 
 
 def color_function(
-    obj: 'Color',
+    obj: Color,
     func: str | None,
     alpha: bool | None,
     precision: int,
@@ -54,7 +54,7 @@ def color_function(
 
     # `color` should include the color space serialized name.
     if func is None:
-        string = ['color({} '.format(obj._space._serialize()[0])]
+        string = [f'color({obj._space._serialize()[0]} ']
     # Create the function `name` or `namea` if old legacy form.
     else:
         string = ['{}{}('.format(func, 'a' if legacy and a is not None else EMPTY)]
@@ -104,7 +104,7 @@ def color_function(
 
 
 def get_coords(
-    obj: 'Color',
+    obj: Color,
     fit: bool | str | dict[str, Any],
     none: bool,
     legacy: bool
@@ -124,7 +124,7 @@ def get_coords(
 
 
 def get_alpha(
-    obj: 'Color',
+    obj: Color,
     alpha: bool | None,
     none: bool,
     legacy: bool
@@ -137,7 +137,7 @@ def get_alpha(
 
 
 def hexadecimal(
-    obj: 'Color',
+    obj: Color,
     alpha: bool | None = None,
     fit: str | bool | dict[str, Any] = True,
     upper: bool = False,
@@ -173,7 +173,7 @@ def hexadecimal(
 
 
 def serialize_css(
-    obj: 'Color',
+    obj: Color,
     func: str = '',
     color: bool = False,
     alpha: bool | None = None,

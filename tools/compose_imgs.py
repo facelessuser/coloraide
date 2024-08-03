@@ -32,16 +32,16 @@ def printt(t):
             if h:
                 m -= h * 60
         if h:
-            print('{} hours '.format(h), end='')
+            print(f'{h} hours ', end='')
         if m:
-            print('{} minutes '.format(m), end='')
-        print('{} sec'.format(s))
+            print(f'{m} minutes ', end='')
+        print(f'{s} sec')
     elif m:
-        print('{} msec'.format(t / 1e+6))
+        print(f'{t / 1e+6} msec')
     elif u:
-        print('{} usec'.format(t / 1000))
+        print(f'{t / 1000} usec')
     else:
-        print('{} nsec'.format(t))
+        print(f'{t} nsec')
 
 
 @lru_cache(maxsize=1024 * 1024)
@@ -85,12 +85,12 @@ def process_image(imgs, bg, output, blend, porter_duff, fit, space):
 
     # Compose the various layers
     i = j = 0
-    print('Pixels: {}'.format(total))
+    print(f'Pixels: {total}')
     print('> 0%', end='\r')
     for i in range(x):
         for j in range(y):
             pixels[0][i, j] = apply_compositing(bg, blend, porter_duff, tuple([p[i, j] for p in pixels]), fit, space)
-        print('> {}%'.format(int((i * j) * factor)), end="\r")
+        print(f'> {int((i * j) * factor)}%', end="\r")
     print('> 100%')
     t = time.perf_counter_ns() - start
     printt(t)

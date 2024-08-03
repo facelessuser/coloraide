@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Calculate the required matrices for simulating color vision deficiency."""
 import sys
 import os
@@ -121,7 +120,7 @@ for axis, name, wings in zip(AXIS, NAMES, WINGS):
         m1[index] = [-v1[0] / v1[2], -v1[1] / v1[2], 0.0]
         m2[index] = [-v2[0] / v2[2], -v2[1] / v2[2], 0.0]
 
-    print('===== BRETTEL {} ====='.format(name))
+    print(f'===== BRETTEL {name} =====')
     print('--- Wing 1 (LMS to Linear sRGB included) ---')
     alg.pprint(alg.matmul(INV_T, m1))
     print('--- Wing 2 (LMS to Linear sRGB included) ---')

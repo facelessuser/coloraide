@@ -57,7 +57,7 @@ def norm_percent_channel(string: str, scale: float = 100, offset: float = 0.0) -
         return (value * scale * 0.01) - offset if scale != 100 else value
     else:  # pragma: no cover
         # Should only occur internally if we are doing something wrong.
-        raise ValueError("Unexpected value '{}'".format(string))
+        raise ValueError(f"Unexpected value '{string}'")
 
 
 def norm_color_channel(string: str, scale: float = 1, offset: float = 0.0) -> float:

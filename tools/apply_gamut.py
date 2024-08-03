@@ -33,16 +33,16 @@ def printt(t):
             if h:
                 m -= h * 60
         if h:
-            print('{} hours '.format(h), end='')
+            print(f'{h} hours ', end='')
         if m:
-            print('{} minutes '.format(m), end='')
-        print('{} sec'.format(s))
+            print(f'{m} minutes ', end='')
+        print(f'{s} sec')
     elif m:
-        print('{} msec'.format(t / 1e+6))
+        print(f'{t / 1e+6} msec')
     elif u:
-        print('{} usec'.format(t / 1000))
+        print(f'{t / 1000} usec')
     else:
-        print('{} nsec'.format(t))
+        print(f'{t} nsec')
 
 
 @lru_cache(maxsize=1024 * 1024)
@@ -78,12 +78,12 @@ def process_image(img, output, amount, gamut, fit, jnd, pspace):
         total = im.size[0] * im.size[1]
         factor = 100 / total
         i = j = 0
-        print('Pixels: {}'.format(total))
+        print(f'Pixels: {total}')
         print('> 0%', end='\r')
         for i in range(im.size[0]):
             for j in range(im.size[1]):
                 pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut, fit, jnd, pspace)
-            print('> {}%'.format(int((i * j) * factor)), end="\r")
+            print(f'> {int((i * j) * factor)}%', end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
         printt(t)

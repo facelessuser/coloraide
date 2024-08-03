@@ -13,7 +13,7 @@ class TestHSLuvSnapshot(util.ColorAsserts, unittest.TestCase):
         """Load snapshot."""
 
         snapshot = os.path.join(os.path.dirname(__file__), 'snapshot-rev4.json')
-        with open(snapshot, 'r') as f:
+        with open(snapshot) as f:
             self.snapshot = json.loads(f.read())
 
     def test_snapshot(self):

@@ -74,7 +74,7 @@ class InterpolatorCSSLinear(InterpolatorLinear):
                 c1 += 360
 
         else:
-            raise ValueError("Unknown hue adjuster '{}'".format(hue))
+            raise ValueError(f"Unknown hue adjuster '{hue}'")
 
         color1[index] = c1
         color2[index] = c2

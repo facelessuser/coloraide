@@ -181,7 +181,7 @@ class Interpolator(metaclass=ABCMeta):
         """Set output space."""
 
         if space not in self.create.CS_MAP:
-            raise ValueError("'{}' is not a valid color space".format(space))
+            raise ValueError(f"'{space}' is not a valid color space")
         self._out_space = space
 
     def padding(self, padding: float | Sequence[float]) -> None:
@@ -459,7 +459,7 @@ class Interpolator(metaclass=ABCMeta):
 
         # We shouldn't ever hit this, but provided for typing.
         # If we do hit this, it would be a bug.
-        raise RuntimeError('Iterpolation could not be found for {}'.format(point))  # pragma: no cover
+        raise RuntimeError(f'Iterpolation could not be found for {point}')  # pragma: no cover
 
 
 class Interpolate(Plugin, metaclass=ABCMeta):
@@ -672,7 +672,7 @@ def interpolator(
 
     plugin = create.INTERPOLATE_MAP.get(interpolator)
     if not plugin:
-        raise ValueError("'{}' is not a recognized interpolator".format(interpolator))
+        raise ValueError(f"'{interpolator}' is not a recognized interpolator")
 
     # Construct piecewise interpolation object
     stops = {}  # type: Any

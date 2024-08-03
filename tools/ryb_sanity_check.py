@@ -47,7 +47,7 @@ def run(space):
     for i in range(res):
         for j in range(res):
             for k in range(res):
-                print('-----{}-----'.format(count))
+                print(f'-----{count}-----')
                 ryb = Color(space, [i / div, j / div, k / div])
                 srgb = ryb.convert('srgb')
                 ryb2 = srgb.convert(space)
@@ -75,7 +75,7 @@ def main():
     if args.space in SPACES:
         return run(args.space)
 
-    print('Unrecongnized color space{}'.format(args.space))
+    print(f'Unrecongnized color space{args.space}')
     return 1
 
 

@@ -96,7 +96,7 @@ def xyz_to_rlab(xyz: Vector, env: Environment) -> Vector:
     """XYZ to RLAB."""
 
     xyz_ref = alg.matmul(env.ram, xyz, dims=alg.D2_D1)
-    xr, yr, zr = [alg.nth_root(c, env.surround) for c in xyz_ref]
+    xr, yr, zr = (alg.nth_root(c, env.surround) for c in xyz_ref)
     LR = 100 * yr
     aR = 430 * (xr - yr)
     bR = 170 * (yr - zr)

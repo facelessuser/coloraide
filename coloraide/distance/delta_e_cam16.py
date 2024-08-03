@@ -37,7 +37,7 @@ class DECAM16(DeltaE):
         # Legacy approach to specifying CAM16 approach
         if model is not None:  # pragma: no cover
             warn_deprecated(WARN_MSG)
-            space = 'cam16-{}'.format(model)
+            space = f'cam16-{model}'
             kl = COEFFICENTS[model][0]
 
         # Normal approach to specifying CAM16 target space

@@ -80,7 +80,7 @@ def build_package():
 def download_wheel(url, dest):
     """Download a wheel."""
 
-    print('Downloading: {}'.format(url))
+    print(f'Downloading: {url}')
     status = 0
     try:
         response = urllib.request.urlopen(url)
@@ -88,13 +88,13 @@ def download_wheel(url, dest):
         if status == 200:
             status = 0
             with open(dest, 'wb') as f:
-                print('Writing: {}'.format(dest))
+                print(f'Writing: {dest}')
                 f.write(response.read())
     except urllib.error.HTTPError as e:
         status = e.status
 
     if status:
-        print('Failed to download, recieved status code {}'.format(status))
+        print(f'Failed to download, recieved status code {status}')
 
     return status
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         # Get dependencies
         for file, url in NOTEBOOK.items():
             if os.path.exists(file):
-                print('Skipping: {}'.format(file))
+                print(f'Skipping: {file}')
                 continue
             status = download_wheel(url, file)
             if status:
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     if not status:
         for file, url in PLAYGROUND.items():
             if os.path.exists(file):
-                print('Skipping: {}'.format(file))
+                print(f'Skipping: {file}')
                 continue
             status = download_wheel(url, file)
             if status:
@@ -147,13 +147,13 @@ if __name__ == "__main__":
         m.update(b':')
         m.update(config)
         hsh = m.hexdigest()[0:8]
-        with open('docs/theme/playground-config-{}.js'.format(hsh), 'wb') as f:
+        with open(f'docs/theme/playground-config-{hsh}.js', 'wb') as f:
             f.write(config)
 
         for demo in ['colorpicker', '3d_models']:
             colorpicker = ''
-            with open(f'docs/src/markdown/demos/{demo}.html', 'r') as f:
-                colorpicker = re.sub(r"(?m)(^[ ]*let package = ').*?(')", r'\1{}\2'.format(package), f.read())
+            with open(f'docs/src/markdown/demos/{demo}.html') as f:
+                colorpicker = re.sub(r"(?m)(^[ ]*let package = ').*?(')", fr'\1{package}\2', f.read())
             if colorpicker:
                 with open(f'docs/src/markdown/demos/{demo}.html', 'w') as f:
                     f.write(colorpicker)
@@ -161,7 +161,7 @@ if __name__ == "__main__":
         # Update `mkdocs` source to reference wheel config
         with open(MKDOCS_YML, 'rb') as f:
             mkdocs = f.read().decode('utf-8')
-        mkdocs = RE_CONFIG.sub('playground-config-{}.js'.format(hsh), mkdocs)
+        mkdocs = RE_CONFIG.sub(f'playground-config-{hsh}.js', mkdocs)
         with open(MKDOCS_YML, 'wb') as f:
             f.write(mkdocs.encode('utf-8'))
 

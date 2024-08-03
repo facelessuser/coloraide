@@ -70,7 +70,7 @@ def main():
             color.set(c_name, c_value)
 
     if not args.title:
-        title = "Interpolation in the {} Color Space Using the {} Gamut".format(args.space, args.gamut)
+        title = f"Interpolation in the {args.space} Color Space Using the {args.gamut} Gamut"
     else:
         title = args.title
 

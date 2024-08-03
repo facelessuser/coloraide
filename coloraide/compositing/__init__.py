@@ -100,7 +100,7 @@ def compose(
         out_space = space
 
     if not isinstance(color.CS_MAP[space], RGBish):
-        raise ValueError("Can only compose in an RGBish color space, not {}".format(type(color.CS_MAP[space])))
+        raise ValueError(f"Can only compose in an RGBish color space, not {type(color.CS_MAP[space])}")
 
     if not backdrop:
         return color

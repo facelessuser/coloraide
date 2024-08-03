@@ -91,17 +91,17 @@ def plot_pointer_gamut(target, space_gamut, fit, title, dark=False):
     figure.add_axes(ax)
 
     if not title:
-        plt.suptitle('Pointer Gamut: LCh SC at Lightness {}'.format(round(lightness, 2)))
+        plt.suptitle(f'Pointer Gamut: LCh SC at Lightness {round(lightness, 2)}')
     if target:
         if len(colors) > 1:
             space = original.space()
             ax.set_title(
-                'Color: {} -> {}'.format(colors[0].convert(space).to_string(), colors[1].convert(space).to_string()),
+                f'Color: {colors[0].convert(space).to_string()} -> {colors[1].convert(space).to_string()}',
                 fontdict={'fontsize': 8},
                 pad=2
             )
         else:
-            ax.set_title('Color: {}'.format(colors[0].to_string()), fontdict={'fontsize': 8}, pad=2)
+            ax.set_title(f'Color: {colors[0].to_string()}', fontdict={'fontsize': 8}, pad=2)
 
     plt.plot(
         [math.radians(hue) for hue in gamut.pointer.LCH_H] + [0.0],

@@ -239,5 +239,5 @@ def compositor(name: str) -> type[PorterDuff]:
 
     composite = SUPPORTED.get(name)
     if not composite:
-        raise ValueError("'{}' compositing is not supported".format(name))
+        raise ValueError(f"'{name}' compositing is not supported")
     return composite

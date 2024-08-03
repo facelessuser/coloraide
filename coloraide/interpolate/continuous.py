@@ -88,7 +88,7 @@ class InterpolatorContinuous(Interpolator):
         elif hue == 'decreasing':
             adjuster = adjust_decrease
         else:
-            raise ValueError("Unknown hue adjuster '{}'".format(hue))
+            raise ValueError(f"Unknown hue adjuster '{hue}'")
 
         c1 = color1[index] + offset
         c2 = (color2[index] % 360) + offset

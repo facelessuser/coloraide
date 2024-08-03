@@ -29,7 +29,7 @@ class Channel(str):
         flags: int = 0,
         limit: tuple[float | None, float | None] = (None, None),
         nans: float = 0.0
-    ) -> 'Channel':
+    ) -> Channel:
         """Initialize."""
 
         obj = super().__new__(cls, name)

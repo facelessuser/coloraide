@@ -306,5 +306,5 @@ def get_blender(blend: str) -> Blend:
 
     blender = SUPPORTED.get(blend)
     if not blender:
-        raise ValueError("'{}' is not a recognized blend mode".format(blend))
+        raise ValueError(f"'{blend}' is not a recognized blend mode")
     return blender

@@ -79,20 +79,20 @@ def plot_slice(
     # Parse the channel strings into actual values
     chan_constants = []
     for chan in constants.split(';'):
-        n, v = [
+        n, v = (
             c if i == 0 else float(c if c != 'none' else 'nan') for i, c in enumerate(chan.split(':'), 0)
-        ]
+        )
         n = c._space.CHANNEL_ALIASES.get(n, n)
         i = c._space.get_channel_index(n)
         chan_constants.append((n, v, i))
 
-    name1, start1, end1 = [
+    name1, start1, end1 = (
         c if i == 0 else float(c) for i, c in enumerate(channel1.split(':'), 0)
-    ]
+    )
 
-    name2, start2, end2 = [
+    name2, start2, end2 = (
         c if i == 0 else float(c) for i, c in enumerate(channel2.split(':'), 0)
-    ]
+    )
 
     # Get the actual indexes of the specified channels
     name1 = c._space.CHANNEL_ALIASES.get(name1, name1)
@@ -219,15 +219,15 @@ def plot_slice(
 
     # Create axes
     ax = plt.axes(
-        xlabel='{}: {} - {}'.format(name1, fmt_float(c1_mn, 5), fmt_float(c1_mx, 5)),
-        ylabel='{}: {} - {}'.format(name2, fmt_float(c2_mn, 5), fmt_float(c2_mx, 5)),
+        xlabel=f'{name1}: {fmt_float(c1_mn, 5)} - {fmt_float(c1_mx, 5)}',
+        ylabel=f'{name2}: {fmt_float(c2_mn, 5)} - {fmt_float(c2_mx, 5)}',
         **kwargs
     )
 
     # Create titles
     if not title:
         title = "Plot of {} showing '{}' and '{}': {}".format(
-            space, name1, name2, ' '.join(['{} = {}'.format(chan[0], fmt_float(chan[1], 5)) for chan in chan_constants])
+            space, name1, name2, ' '.join([f'{chan[0]} = {fmt_float(chan[1], 5)}' for chan in chan_constants])
         )
 
     plt.suptitle(title)

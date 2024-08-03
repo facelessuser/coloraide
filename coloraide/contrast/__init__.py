@@ -26,6 +26,6 @@ def contrast(name: str | None, color1: Color, color2: Color, **kwargs: Any) -> f
 
     method = color1.CONTRAST_MAP.get(name)
     if not method:
-        raise ValueError("'{}' contrast method is not supported".format(name))
+        raise ValueError(f"'{name}' contrast method is not supported")
 
     return method.contrast(color1, color2, **kwargs)

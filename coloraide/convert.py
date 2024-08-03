@@ -27,7 +27,7 @@ def calc_path_to_xyz(
 
     obj = color.CS_MAP.get(space)
     if obj is None:
-        raise ValueError("'{}' is not a valid color space".format(space))
+        raise ValueError(f"'{space}' is not a valid color space")
 
     # Create a worse case conversion chain from XYZ to the target
     temp = obj

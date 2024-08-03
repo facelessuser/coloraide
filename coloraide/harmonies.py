@@ -130,7 +130,7 @@ class Harmony(metaclass=ABCMeta):
 
             return ColorCyl(color).convert('-harmony-cylinder')  # type: ignore[no-any-return]
 
-        raise ValueError('Unsupported color space type {}'.format(color.space()))
+        raise ValueError(f'Unsupported color space type {color.space()}')
 
 
 class Monochromatic(Harmony):
@@ -152,7 +152,7 @@ class Monochromatic(Harmony):
         """Get color harmonies."""
 
         if count < 1:
-            raise ValueError('Cannot generate a monochromatic palette of {} colors.'.format(count))
+            raise ValueError(f'Cannot generate a monochromatic palette of {count} colors.')
 
         # Convert color space
         color1 = color.convert(space, norm=False).normalize()
@@ -160,7 +160,7 @@ class Monochromatic(Harmony):
         is_cyl = color1._space.is_polar()
 
         if not is_cyl and not isinstance(color1._space, (Labish, Regular)):
-            raise ValueError('Unsupported color space type {}'.format(color.space()))
+            raise ValueError(f'Unsupported color space type {color.space()}')
 
         # If only one color is requested, just return the current color.
         if count == 1:
@@ -392,6 +392,6 @@ def harmonize(color: Color, name: str, space: str, **kwargs: Any) -> list[Color]
 
     h = SUPPORTED.get(name)
     if not h:
-        raise ValueError("The color harmony '{}' cannot be found".format(name))
+        raise ValueError(f"The color harmony '{name}' cannot be found")
 
     return h.harmonize(color, space, **kwargs)
