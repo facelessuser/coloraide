@@ -10,6 +10,10 @@
   overflow-x: scroll;
   overflow-y: hidden;
 
+  // Firefox scrollbar and thumb
+  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
+  scrollbar-width: thin;
+
   // Override native scrollbar styles
   &::-webkit-scrollbar {
     width: px2rem(4px);
@@ -29,10 +33,6 @@
       background-color: var(--md-accent-fg-color);
     }
   }
-
-  // Firefox scrollbar and thumb
-  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
-  scrollbar-width: thin;
 
   // Firefox hovered scrollbar and thumb
   &:hover {
