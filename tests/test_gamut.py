@@ -196,6 +196,14 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
 class TestRayTrace(util.ColorAsserts, unittest.TestCase):
     """Test gamut mapping/fitting with ray tracing."""
 
+    def test_generic_raytrace_default(self):
+        """Test generic ray trace with an LCh space."""
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 0, 0]).fit('srgb', method='raytrace'),
+            Color('color(display-p3 0.92047 0.28549 0.21889)')
+        )
+
     def test_generic_raytrace_lch(self):
         """Test generic ray trace with an LCh space."""
 
@@ -216,70 +224,70 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         """Test SDR extreme low case."""
 
         color = Color('oklch(-10% 0 none)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0 0 none)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0 0 none)'))
 
     def test_sdr_extremes_high(self):
         """Test SDR extreme high case."""
 
         color = Color('oklch(110% 0 none)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(100% 0 none)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(100% 0 none)'))
 
     def test_non_rgb_space(self):
         """Test coercion to RGB."""
 
         color = Color('oklch(90% .4 270)')
-        self.assertColorEqual(color.fit('hpluv', method='oklch-raytrace'), Color('oklch(0.9 0.04254 270)'))
+        self.assertColorEqual(color.fit('hpluv', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.04254 270)'))
 
         color = Color('oklch(90% .4 270)')
-        self.assertColorEqual(color.fit('okhsv', method='oklch-raytrace'), Color('oklch(0.9 0.04813 270)'))
+        self.assertColorEqual(color.fit('okhsv', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.04813 270)'))
 
     def test_sdr_extremes_high_non_rgb_space(self):
         """Test coercion of extreme high to RGB."""
 
         color = Color('oklch(110% 0 none)')
-        self.assertColorEqual(color.fit('okhsl', method='oklch-raytrace'), Color('oklch(100% 0 none)'))
+        self.assertColorEqual(color.fit('okhsl', method='raytrace', pspace='oklch'), Color('oklch(100% 0 none)'))
 
     def test_sdr_extremes_low_non_rgb_space(self):
         """Test failure with non-RGB space."""
 
         color = Color('oklch(-10% 0 none)')
-        self.assertColorEqual(color.fit('okhsl', method='oklch-raytrace'), Color('oklch(0 0 none)'))
+        self.assertColorEqual(color.fit('okhsl', method='raytrace', pspace='oklch'), Color('oklch(0 0 none)'))
 
     def test_trace_face1(self):
         """Test tracing of face 1."""
 
         color = Color('oklch(30% .4 160)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.3 0.06787 160)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.3 0.06787 160)'))
 
     def test_trace_face2(self):
         """Test tracing of face 2."""
 
         color = Color('oklch(90% .4 60)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.06478 60.008)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.06478 60.008)'))
 
     def test_trace_face3(self):
         """Test tracing of face 3."""
 
         color = Color('oklch(30% .4 10)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.3 0.11997 10)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.3 0.11997 10)'))
 
     def test_trace_face4(self):
         """Test tracing of face 4."""
 
         color = Color('oklch(90% .4 150)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.18156 150)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.18156 150)'))
 
     def test_trace_face5(self):
         """Test tracing of face 5."""
 
         color = Color('oklch(30% .4 100)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.3 0.06237 99.999)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.3 0.06237 99.999)'))
 
     def test_trace_face6(self):
         """Test tracing of face 6."""
 
         color = Color('oklch(90% .4 270)')
-        self.assertColorEqual(color.fit('srgb', method='oklch-raytrace'), Color('oklch(0.9 0.04813 270)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.04813 270)'))
 
     def test_trace_perpendicular(self):
         """

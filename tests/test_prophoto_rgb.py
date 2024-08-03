@@ -53,7 +53,7 @@ class TestProPhotoRGBSerialize(util.ColorAssertsPyTest):
         ('color(prophoto-rgb 1.2 0.2 0)', {}, 'color(prophoto-rgb 1 0.36233 0.1352)'),
         (
             'color(prophoto-rgb 1.2 0.2 0)',
-            {'color': True, 'fit': 'lch-raytrace'},
+            {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},
             'color(prophoto-rgb 1 0.40937 0.1277)'
         ),
         ('color(prophoto-rgb 1.2 0.2 0)', {'fit': False}, 'color(prophoto-rgb 1.2 0.2 0)')

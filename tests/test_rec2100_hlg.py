@@ -53,7 +53,7 @@ class TestRec2100HLGSerialize(util.ColorAssertsPyTest):
         ('color(rec2100-hlg 1.2 0.2 0)', {}, 'color(rec2100-hlg 1 0.94165 0.89523)'),
         (
             'color(rec2100-hlg 1.2 0.2 0)',
-            {'color': True, 'fit': 'lch-raytrace'},
+            {'color': True, 'fit': {'method': 'raytrace', 'pspace': 'lch-d65'}},
             'color(rec2100-hlg 1 0.94461 0.90596)'
         ),
         ('color(rec2100-hlg 1.2 0.2 0)', {'fit': False}, 'color(rec2100-hlg 1.2 0.2 0)')
