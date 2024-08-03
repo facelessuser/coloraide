@@ -125,7 +125,7 @@ def run(space, spline, tuning, mirror, res, dump):
     print('Delta Over: ', diff_over)
     print('Delta Under: ', diff_under)
     print('Max C: ', max_c)
-    print('Hue (low/high) : {} / {}'.format(min_h, max_h))
+    print(f'Hue (low/high) : {min_h} / {max_h}')
     print('Data Points: ', test.spline.length)
 
     l1 = []
@@ -153,7 +153,7 @@ def run(space, spline, tuning, mirror, res, dump):
         zlabel='L'
     )
     # ax.set_aspect('auto')
-    ax.set_title('LCh: Delta (over/under) = {:.5g}/{:.5g} - Max C = {:.5g}'.format(diff_over, diff_under, max_c))
+    ax.set_title(f'LCh: Delta (over/under) = {diff_over:.5g}/{diff_under:.5g} - Max C = {max_c:.5g}')
     figure.add_axes(ax)
 
     # Print the calculated line against the real line

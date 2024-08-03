@@ -214,4 +214,4 @@ def pointer_gamut_boundary(lightness: float | None = None) -> Matrix:
 
     # Lightness exceeds threshold
     else:
-        raise ValueError('Lightness must be between {} and {}, but was {}'.format(LCH_L[0], LCH_L[-1], lightness))
+        raise ValueError(f'Lightness must be between {LCH_L[0]} and {LCH_L[-1]}, but was {lightness}')

@@ -19,7 +19,7 @@ BLACK = [0, 0, 0]
 def calc_epsilon(jnd: float) -> float:
     """Calculate the epsilon to 2 degrees smaller than the specified JND."""
 
-    return float("1e{:d}".format(alg.order(jnd) - 2))
+    return float(f"1e{alg.order(jnd) - 2:d}")
 
 
 class LChChroma(Fit):

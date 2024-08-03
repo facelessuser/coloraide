@@ -42,12 +42,12 @@ def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:
         to_ = hwb_to_srgb
         from_ = srgb_to_hwb
     else:  # pragma: no cover
-        raise ValueError('Cannot coerce {} to an RGB space.'.format(cs.NAME))
+        raise ValueError(f'Cannot coerce {cs.NAME} to an RGB space.')
 
     class RGB(sRGBLinear):
         """Custom RGB class."""
 
-        NAME = '-rgb-{}'.format(cs.NAME)
+        NAME = f'-rgb-{cs.NAME}'
         BASE = cs.NAME
         GAMUT_CHECK = None
         CLIP_SPACE = None

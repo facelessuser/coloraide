@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/coloraide
 edit_uri: ""
 site_description: A library to aid in using colors
 copyright: |
-  Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2020 - 2024 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -309,7 +309,7 @@ extra_javascript:
   - https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js
   - playground-config-0c64f02c.js
   - https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-UYPnvA4p.js
+  - assets/coloraide-extras/extra-notebook-DLoJlANo.js
 
 extra:
   social:

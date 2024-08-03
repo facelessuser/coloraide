@@ -33,7 +33,7 @@ class DEHyAB(DeltaE):
         sample = sample.convert(space)
 
         if not isinstance(color._space, Labish):
-            raise ValueError("The space '{}' is not a 'lab-ish' color space and cannot use HyAB".format(space))
+            raise ValueError(f"The space '{space}' is not a 'lab-ish' color space and cannot use HyAB")
 
         names = color._space.names()
         l1, a1, b1 = color.get(names, nans=False)

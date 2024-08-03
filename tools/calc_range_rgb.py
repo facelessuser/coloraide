@@ -81,10 +81,10 @@ def run(target, rgb, res, p):
 
     print('')
     chan_x, chan_y, chan_z = Color('white').convert(target)._space.CHANNELS
-    print('---- {} range in {} ----'.format(target, rgb))
-    print('{}: [{}, {}]'.format(chan_x, alg.round_half_up(min_x, p), alg.round_half_up(max_x, p)))
-    print('{}: [{}, {}]'.format(chan_y, alg.round_half_up(min_y, p), alg.round_half_up(max_y, p)))
-    print('{}: [{}, {}]'.format(chan_z, alg.round_half_up(min_z, p), alg.round_half_up(max_z, p)))
+    print(f'---- {target} range in {rgb} ----')
+    print(f'{chan_x}: [{alg.round_half_up(min_x, p)}, {alg.round_half_up(max_x, p)}]')
+    print(f'{chan_y}: [{alg.round_half_up(min_y, p)}, {alg.round_half_up(max_y, p)}]')
+    print(f'{chan_z}: [{alg.round_half_up(min_z, p)}, {alg.round_half_up(max_z, p)}]')
 
     return 0
 

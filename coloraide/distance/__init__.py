@@ -18,7 +18,7 @@ def closest(color: Color, colors: Sequence[ColorInput], method: str | None = Non
 
     algorithm = color.DE_MAP.get(method)
     if not algorithm:
-        raise ValueError("'{}' is not currently a supported distancing algorithm.".format(method))
+        raise ValueError(f"'{method}' is not currently a supported distancing algorithm.")
 
     lowest = math.inf
     closest = None

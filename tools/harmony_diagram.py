@@ -96,7 +96,7 @@ def get_cylinder(color, space):
 
         return ColorCyl
 
-    raise ValueError('Unsupported color space type {}'.format(color.space()))
+    raise ValueError(f'Unsupported color space type {color.space()}')
 
 
 def plot_slice(
@@ -192,13 +192,13 @@ def main():
     c_value = c1[lightness]
 
     if not args.title:
-        title = "Color Harmony '{}'' in Color Space '{}' in Gamut '{}'".format(args.harmony, args.space, args.gamut)
+        title = f"Color Harmony '{args.harmony}'' in Color Space '{args.space}' in Gamut '{args.gamut}'"
     else:
         title = args.title
 
     # Create titles
     if not title:
-        title = "Slice of {} at {} = {}".format(original, lightness, fmt_float(c_value, 5))
+        title = f"Slice of {original} at {lightness} = {fmt_float(c_value, 5)}"
 
     fig = go.Figure(
         layout={

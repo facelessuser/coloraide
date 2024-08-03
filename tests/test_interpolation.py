@@ -91,7 +91,7 @@ class TestCarryFoward(util.ColorAssertsPyTest):
         """Test round trip."""
 
         results = Color.steps(colors, steps=steps, space=space, method='monotone', carryforward=True)
-        assert all(abs(r[cmp[0]] - cmp[1]) < 1e-12 for r in results), "{} != {} : {}".format(cmp[0], cmp[1], results)
+        assert all(abs(r[cmp[0]] - cmp[1]) < 1e-12 for r in results), f"{cmp[0]} != {cmp[1]} : {results}"
 
 
 class TestPowerless(util.ColorAsserts, unittest.TestCase):

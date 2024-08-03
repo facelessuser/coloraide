@@ -2,6 +2,7 @@
 
 ## 3.4
 
+-   **NEW**: Officially support Python 3.13.
 -   **BREAK**: Experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELab (D65).
 -   **BREAK**: Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
     method have been removed, but users can still specify other perceptual spaces if desired via the `pspace` parameter.

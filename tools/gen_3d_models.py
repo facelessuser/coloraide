@@ -14,7 +14,7 @@ TEMPLATE = 'sRGB Gamut Plotted in {} Color Space'
 def plot_model(name, title, filename, gamut='srgb', elev=45, azim=-60.0):
     """Generate the models."""
 
-    print('===> Generating {} model...'.format(name))
+    print(f'===> Generating {name} model...')
     fig = diagrams.plot_gamut_in_space(
         name,
         gamut=gamut,

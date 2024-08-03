@@ -20,7 +20,7 @@ def deprecated(message: str, stacklevel: int = 2) -> Callable[..., Any]:
         @wraps(func)
         def _deprecated_func(*args: Any, **kwargs: Any) -> Any:
             warnings.warn(
-                "'{}' is deprecated. {}".format(func.__name__, message),
+                f"'{func.__name__}' is deprecated. {message}",
                 category=DeprecationWarning,
                 stacklevel=stacklevel
             )

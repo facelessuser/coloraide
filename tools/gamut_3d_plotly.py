@@ -28,7 +28,7 @@ def create_custom_hsl(gamut):
     cs = Color.CS_MAP[gamut]
 
     class HSL(type(Color.CS_MAP['hsl'])):
-        NAME = '-hsl-{}'.format(gamut)
+        NAME = f'-hsl-{gamut}'
         BASE = gamut
         GAMUT_CHECK = gamut
         CLIP_SPACE = None
@@ -57,7 +57,7 @@ def create_custom_rgb(gamut):
     class RGB(type(Color.CS_MAP['srgb-linear'])):
         """Custom RGB class."""
 
-        NAME = '-rgb-{}'.format(gamut)
+        NAME = f'-rgb-{gamut}'
         BASE = gamut
         GAMUT_CHECK = gamut
         CLIP_SPACE = None
@@ -303,7 +303,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
         gamut_space = gamut
     else:
         ColorCyl = create_custom_hsl(gamut)
-        gamut_space = '-hsl-{}'.format(gamut)
+        gamut_space = f'-hsl-{gamut}'
     gspace = ColorCyl.CS_MAP[gamut_space]
 
     # Adjust scaling factor if the mapping space requires it
@@ -404,7 +404,7 @@ def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
     cs = Color.CS_MAP[gamut]
     if isinstance(cs, HSLish):
         colorrgb = create_custom_rgb(gamut)
-        gamut = '-rgb-{}'.format(gamut)
+        gamut = f'-rgb-{gamut}'
     else:
         colorrgb = Color
 
@@ -508,7 +508,7 @@ def plot_gamut_in_space(
         "gridcolor": gridcolor,
         "zerolinecolor": zerolinecolor,
     }
-    xaxis = str(names[axm[0]]) if not is_cyl else "{} (0˚ - 360˚)".format(names[axm[0]])
+    xaxis = str(names[axm[0]]) if not is_cyl else f"{names[axm[0]]} (0˚ - 360˚)"
     yaxis = str(names[axm[1]])
     zaxis = str(names[axm[2]])
 

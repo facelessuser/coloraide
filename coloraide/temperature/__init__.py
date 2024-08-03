@@ -39,6 +39,6 @@ def cct(name: str | None, color: type[Color] | Color) -> CCT:
 
     method = color.CCT_MAP.get(name)
     if not method:
-        raise ValueError("'{}' CCT method is not supported".format(name))
+        raise ValueError(f"'{name}' CCT method is not supported")
 
     return method

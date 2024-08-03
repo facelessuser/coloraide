@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Color vision deficiency."""
 from __future__ import annotations
 from .. import algebra as alg
@@ -254,7 +253,7 @@ class Protan(Filter):
         elif method == 'machado':
             return self.machado
         else:
-            raise ValueError("Unrecognized CVD filter method '{}'".format(method))
+            raise ValueError(f"Unrecognized CVD filter method '{method}'")
 
     def get_best_filter(self, method: str | None, max_severity: bool) -> Callable[..., None]:
         """Get the best filter based on the situation."""

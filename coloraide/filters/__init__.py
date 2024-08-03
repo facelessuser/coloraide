@@ -33,14 +33,14 @@ def filters(
 
     f = color.FILTER_MAP.get(name)
     if not f:
-        raise ValueError("'{}' filter is not supported".format(name))
+        raise ValueError(f"'{name}' filter is not supported")
 
     if space is None:
         space = f.DEFAULT_SPACE
 
     if space not in f.ALLOWED_SPACES:
         raise ValueError(
-            "The '{}' only supports filtering in the {} spaces, not '{}'".format(name, str(f.ALLOWED_SPACES), space)
+            f"The '{name}' only supports filtering in the {f.ALLOWED_SPACES!s} spaces, not '{space}'"
         )
 
     if out_space is None:

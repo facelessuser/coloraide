@@ -290,14 +290,14 @@ def compare_match(s, g, node):
         elif isinstance(node, ast.MatchClass):
             name = g.get(node.cls.id, None)
             if name is None:
-                raise NameError("name '{}' is not defined".format(node.cls.id))
+                raise NameError(f"name '{node.cls.id}' is not defined")
             if not isinstance(s, name):
                 return False
             ma = getattr(s, '__match_args__', ())
             l1 = len(ma)
             l2 = len(node.patterns)
             if l1 < l2:
-                raise TypeError("{}() accepts {} positional sub-patterns ({} given)".format(name, l1, l2))
+                raise TypeError(f"{name}() accepts {l1} positional sub-patterns ({l2} given)")
             for e, p in enumerate(node.patterns):
                 if not hasattr(s, ma[e]):
                     return False
@@ -316,7 +316,7 @@ def compare_match(s, g, node):
                 return compare_match(s, g, node.pattern)
             return True
 
-    raise RuntimeError('Unknown Match pattern {}'.format(str(node)))
+    raise RuntimeError(f'Unknown Match pattern {node!s}')
 
 
 def evaluate_except(node, e, g, loop=False):
@@ -477,7 +477,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
                 from pymdownx.inlinehilite import InlineHiliteException
                 raise InlineHiliteException from e
         import traceback
-        return '{}'.format(traceback.format_exc()), colors
+        return f'{traceback.format_exc()}', colors
 
     for node in tree.body:
         result = []
@@ -520,7 +520,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
                     from pymdownx.inlinehilite import InlineHiliteException
                     raise InlineHiliteException from e
             import traceback
-            console += '{}\n{}'.format(command, traceback.format_exc())
+            console += f'{command}\n{traceback.format_exc()}'
             # Failed for some reason, so quit
             break
 
@@ -590,8 +590,8 @@ def _color_command_console(colors, gamut=WEBSPACE):
                 color_str = color.convert(gamut).to_string()
                 if current:
                     if is_steps:
-                        stops.append('{} {}%'.format(color_str, str(last)))
-                        stops.append('{} {}%'.format(color_str, str(current)))
+                        stops.append(f'{color_str} {last!s}%')
+                        stops.append(f'{color_str} {current!s}%')
                     else:
                         stops.append(color_str)
                     last = current
@@ -606,7 +606,7 @@ def _color_command_console(colors, gamut=WEBSPACE):
             if len(stops) == 1:
                 stops.append(stops[0])
             style += ','.join(stops)
-            sub_el2 = '<span class="swatch-color" style="{}"></span>'.format(style)
+            sub_el2 = f'<span class="swatch-color" style="{style}"></span>'
             el += sub_el1.format(sub_el2)
             bar = False
         else:
@@ -627,10 +627,10 @@ def _color_command_console(colors, gamut=WEBSPACE):
                 srgb = color.color.convert(gamut)
                 value1 = srgb.to_string(alpha=False)
                 value2 = srgb.to_string()
-                style = "--swatch-stops: {} 50%, {} 50%".format(value1, value2)
+                style = f"--swatch-stops: {value1} 50%, {value2} 50%"
                 title = color.string
                 classes = base_classes
-                c = '<span class="swatch-color" style="{style}"></span>'.format(style=style)
+                c = f'<span class="swatch-color" style="{style}"></span>'
                 c = '<span class="{classes}" title="{title}&#013;Copy to clipboard">{color}</span>'.format(
                     classes=classes,
                     color=c,
@@ -724,8 +724,8 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
                     color.fit(gamut)
                     color_str = color.convert(gamut).to_string()
                     if current:
-                        stops.append('{} {}%'.format(color_str, str(last)))
-                        stops.append('{} {}%'.format(color_str, str(current)))
+                        stops.append(f'{color_str} {last!s}%')
+                        stops.append(f'{color_str} {current!s}%')
                         last = current
                         if e < (total - 1):
                             current += percent
@@ -759,7 +759,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
                 options=options,
                 **kwargs
             )
-            el = '<div class="color-command">{}</div>'.format(el)
+            el = f'<div class="color-command">{el}</div>'
             el = template.format(el_id=code_id, raw_source=_escape(src), results=el, gamut=gamut)
             code_id += 1
     except SuperFencesException:
@@ -860,7 +860,7 @@ def _live_color_command_formatter(src, init='', gamut=WEBSPACE):
             el += '<div class="swatch-bar"></div>'
 
         el += colorize(console, 'pycon', **{'python3': True, 'stripnl': False})
-        el = '<div class="color-command">{}</div>'.format(el)
+        el = f'<div class="color-command">{el}</div>'
     except Exception:
         import traceback
         return '<div class="color-command"><div class="swatch-bar"></div>{}</div>'.format(
@@ -905,7 +905,7 @@ def render_console(*args, **kwargs):
             el.remove()
         for el in temp.querySelectorAll('.swatch-bar'):
             cmd.insertBefore(el, cmd.lastChild)
-        footer.innerHTML = 'Gamut: {}'.format(gamut)
+        footer.innerHTML = f'Gamut: {gamut}'
 
         # Update code content
         pre = cmd.querySelector('pre')

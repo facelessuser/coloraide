@@ -188,10 +188,10 @@ class DiagramOptions:
             self.observer = cmfs.CIE_1964_10DEG
             self.axis_labels = ('CIE u', 'CIE v')
         elif observer != '2deg':
-            raise ValueError("Unrecognized 'observer': {}".format(observer))
+            raise ValueError(f"Unrecognized 'observer': {observer}")
 
         if mode not in ('1931', '1960', '1976'):
-            raise ValueError("Unrecognized 'mode': {}".format(mode))
+            raise ValueError(f"Unrecognized 'mode': {mode}")
 
         self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
         if mode == "1931":
@@ -303,7 +303,7 @@ def cie_diagram(
             else:
                 l = min(90, max(15, float(bounds)))
                 pts = gamut.pointer.pointer_gamut_boundary(l)
-                label = 'pointer L*={}'.format(round(l, 2))
+                label = f'pointer L*={round(l, 2)}'
             pts.append(pts[0])
             for pt in pts:
                 x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
@@ -395,7 +395,7 @@ def cie_diagram(
             lx.append(annotate[1][0])
             ly.append(annotate[1][1])
             plt.annotate(
-                '{:d}'.format(annotate[0]),
+                f'{annotate[0]:d}',
                 annotate[2],
                 size=8,
                 color=opt.locus_label_color,
@@ -463,10 +463,10 @@ def cie_diagram(
         by = []
         annot = []
         for value in cct:
-            temp, duv = [float(v) for v in value.split(':')]
+            temp, duv = (float(v) for v in value.split(':'))
             c = Color.blackbody('xyz-d65', temp, duv, scale=False, method=opt.cct)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
-            annot.append('({}, {})'.format(round(bu, 4), round(bv, 4)))
+            annot.append(f'({round(bu, 4)}, {round(bv, 4)})')
             bx.append(bu)
             by.append(bv)
         plt.scatter(
@@ -508,7 +508,7 @@ def cie_diagram(
                     duvy.append(bv)
 
                 bottom = kelvin < 4000
-                label = '{}K'.format(kelvin) if kelvin != 100000 else '∞'
+                label = f'{kelvin}K' if kelvin != 100000 else '∞'
                 rotate = math.degrees(math.atan2(duvy[-1] - duvy[0], duvx[-1] - duvx[0]))
                 label_offset = alg.polar_to_rect(2, rotate + 90)
                 offset = duv_range[0 if bottom else 1] / 2

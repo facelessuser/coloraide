@@ -87,7 +87,7 @@ class Robertson1968(CCT):
             m2 = -((uv2[1] - uv[1]) / (uv2[0] - uv[0])) ** -1
             m = alg.lerp(m1, m2, factor)
             if sigfig:
-                template = '{{:.{}g}}'.format(sigfig)
+                template = f'{{:.{sigfig}g}}'
                 table.append(
                     (
                         float(t),

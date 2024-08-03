@@ -62,7 +62,7 @@ class TestRoundTrip:
             str2 = self.Color(c2.to_string(color=True, fit=False)).to_string(color=True, fit=False, precision=p)
             # Print failing results for debug purposes
             if str1 != str2:
-                print('----- Convert: {} <=> {} -----'.format(c1.space(), space))
+                print(f'----- Convert: {c1.space()} <=> {space} -----')
                 print('Name: ', name)
                 print('Original: ', color.to_string(color=True, fit=False, precision=p))
                 print(c1.space() + ': ', str1, c1[:])

@@ -140,7 +140,7 @@ def raytrace(args):
     bmax = [float(v) for v in args.bmax.strip()[1:-1].split(',')]
 
     for ray in args.ray:
-        start, end = [[float(v.strip()) for v in c.split(',')] for c in [r.strip()[1:-1] for r in ray.split('->')]]
+        start, end = ([float(v.strip()) for v in c.split(',')] for c in [r.strip()[1:-1] for r in ray.split('->')])
         intersect = raytrace_box(start, end, bmin=bmin, bmax=bmax)
         px, py, pz = zip(start, end) if not intersect else zip(start, intersect, end)
         data.append(
