@@ -222,7 +222,7 @@ Steps([Color.blackbody('srgb', t) for t in range(1000, 15000, 50)])
 ///
 
 This is an approach researched by Yoshi Ohno and aims to provide better accuracy. It uses a look up table similar to
-the Roberson method and employs a combined approach of a triangular solver and a parabolic solver. This can lead to
+the Robertson method and employs a combined approach of a triangular solver and a parabolic solver. This can lead to
 high accuracy if the table is large enough.
 
 Additionally, an "automatic expansion" technique can be used that starts with a small table and expands the table on
@@ -239,7 +239,7 @@ technique is then used to get close to the target using the spline as the data t
 are found via the automatic expansion, more accurate values are calculated at those locations and are used in the
 triangular and parabolic solver. This allows us to use a smaller table while mitigating the performance issues
 associated with the expansion technique, all while maintaining good accuracy. The technique is still slower than the
-[Roberson](#robertson-1968) approach, but it is a more accurate approach.
+[Robertson](#robertson-1968) approach, but it is a more accurate approach.
 
 ```py play
 color = Color.blackbody('srgb-linear', 5000, duv=0.02, method='ohno-2013')
