@@ -421,14 +421,23 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 /// warning | Experimental Gamut Mapping
 ///
 
+/// New | New in 3.4
+The default perceptual space is now OkLCh. Additionally, the `oklch-raytrace` and `lch-raytrace` variants have been
+removed. Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
+to learn how to use different perceptual spaces and even create your own `lch-raytrace` or `oklch-raytrace` variants.
+Also reference [Force Ray Trace Default Perceptual Space](#force-ray-trace-default-perceptual-space) to learn how to set
+the default ray trace perceptual space to your desired space or even how to force your custom approach as the default
+for all gamut mapping.
+///
+
 ColorAide has developed an experimental chroma reduction technique that employs ray tracing. This approach specifically
 targets RGB gamuts, or spaces that can be represented with RGB gamuts. Additionally, if ColorAide can detect a linear
 version of the targeted RGB gamut, that version will be used automatically for best results. Currently ColorAide can
 gamut map all officially supported color spaces as they either have an RGB gamut or can be coerced into one.
 
-The way this approach works is it takes a given color and converts it to a perceptual LCh like color space and then
-calculates the achromatic version of the color (chroma set to zero). If the achromatic color exceeds the maximum or
-minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
+The way this approach works is it takes a given color and converts it to a perceptual LCh like color space (the default
+being OkLCh) and then calculates the achromatic version of the color (chroma set to zero). If the achromatic color
+exceeds the maximum or minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
 
 Assuming the lightness is within bounds, a ray is cast from the inside of the cube, from the achromatic point to the
 current color. The intersection along this path with the RGB gamut surface is then found.
@@ -467,7 +476,8 @@ The results are comparable to MINDE using a low JND, but resolves much faster an
 time.
 
 ```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
+Color('oklch(90% 0.8 270)').fit('srgb', method='raytrace', pspace='lch-d65')
+Color('oklch(90% 0.8 270)').fit('srgb', method='lch-chroma', jnd=0)
 ```
 
 As noted earlier, this method specifically targets RGB gamuts. This is because the ray tracing is performed on a simple
@@ -488,33 +498,9 @@ may not provide the intended results. It should be noted that the currently sugg
 (`oklch-chroma`) does not do much better, so, for Okhsl and Okhsv, it is better to use the closest RGB gamut.
 
 ```py play
-Steps([c.fit('okhsl', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('okhsl', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 Steps([c.fit('okhsl', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-Steps([c.fit('srgb', method='oklch-raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-```
-
-#### LCh Ray Tracing Chroma Reduction
-
-/// success | The `lch-raytrace` gamut mapping is registered in `Color` by default.
-///
-
-This is a ray tracing approach to chroma reduction using CIELCh D65. This can be a faster approach to gamut mapping.
-
-```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='lch-raytrace')
-Color('oklch(90% 0.8 270)').fit('hsl', method='lch-raytrace')
-```
-
-#### OkLCh Ray Tracing Chroma Reduction
-
-/// success | The `oklch-raytrace` gamut mapping is registered in `Color` by default.
-///
-
-This is a ray tracing approach to chroma reduction using OkLCh. This can be a faster approach to gamut mapping.
-
-```py play
-Color('oklch(90% 0.8 270)').fit('srgb', method='oklch-raytrace')
-Color('oklch(90% 0.8 270)').fit('hsl', method='oklch-raytrace')
+Steps([c.fit('srgb', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 ```
 
 #### Ray Tracing Chroma Reduction in Any Perceptual Space
@@ -585,6 +571,61 @@ Steps([c.fit('srgb', method='raytrace', pspace='jzczhz') for c in Color.steps([y
 yellow = Color('color(display-p3 1 1 0)')
 lightness_mask = Color('color(--lchuv 0% none none)')
 Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lchuv')])
+```
+
+#### Force Ray Trace Default Perceptual Space
+
+Lastly, if we have a particular color space that we'd like to have as the default, we can derive a variant for our
+particular color space.
+
+```py play
+from coloraide.gamut.fit_raytrace import RayTrace
+from coloraide.everything import ColorAll as Base
+
+class HCTRayTrace(RayTrace):
+    """Apply gamut mapping using ray tracing."""
+
+    NAME = 'hct-raytrace'
+    PSPACE = "hct"
+
+class Color(Base): ...
+
+Color.register(HCTRayTrace)
+
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-raytrace') for tone in tones])
+```
+
+If desired, we can even overwrite the default ray trace method with our custom variant which now uses our preferred
+perceptual space as the default.
+
+```py play
+from coloraide.gamut.fit_raytrace import RayTrace
+from coloraide.everything import ColorAll as Base
+
+class MyRayTrace(RayTrace):
+    """Apply gamut mapping using ray tracing."""
+
+    NAME = 'raytrace'
+    PSPACE = "hct"
+
+class Color(Base): ...
+
+Color.register(MyRayTrace, overwrite=True)
+
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='raytrace') for tone in tones])
+```
+
+If we want to make ray tracing the default algorithm for all gamut mapping, we can simply set `FIT` to our method.
+
+```py
+class Color(Base):
+    FIT = 'raytrace'
+
+Color.register(MyRayTrace, overwrite=True)
 ```
 
 ## Why Not Just Clip?

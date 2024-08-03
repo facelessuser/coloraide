@@ -12,7 +12,6 @@ from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
-from ..deprecate import warn_deprecated
 from ..types import Vector, VectorLike
 from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
@@ -153,7 +152,7 @@ class RayTrace(Fit):
     """Gamut mapping by using ray tracing."""
 
     NAME = "raytrace"
-    PSPACE = "lch-d65"
+    PSPACE = "oklch"
 
     def fit(
         self,
@@ -161,18 +160,12 @@ class RayTrace(Fit):
         space: str,
         *,
         pspace: str | None = None,
-        lch: str | None = None,
         **kwargs: Any
     ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
         is_lab = False
-        if lch is not None and pspace is None:  # pragma: no cover
-            pspace = lch
-            warn_deprecated(
-                "'lch' parameter has been deprecated, please use 'pspace' to specify the perceptual space."
-            )
-        elif pspace is None:
+        if pspace is None:
             pspace = self.PSPACE
         is_lab = isinstance(color.CS_MAP[pspace], Labish)
 

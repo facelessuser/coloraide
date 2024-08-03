@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.4
+
+-   **NEW**: Experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELab (D65).
+-   **NEW**: Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
+    method have been removed, but users can still specify other perceptual spaces if desired via the `pspace` parameter.
+    Documentation has been added so users can create their own variants with the their desired pre-configured perceptual
+    color space and make it the default if they prefer.
+-   **NEW**: Remove deprecated `lab` parameter from experimental `raytrace` gamut mapping method. Users should use
+    `pspace` instead.
+
 ## 3.3.1
 
 -   **FIX**: Ray trace gamut mapping algorithm will better handle perceptual spaces like CAM16 and HCT which have
