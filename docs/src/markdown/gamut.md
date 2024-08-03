@@ -426,17 +426,17 @@ targets RGB gamuts, or spaces that can be represented with RGB gamuts. Additiona
 version of the targeted RGB gamut, that version will be used automatically for best results. Currently ColorAide can
 gamut map all officially supported color spaces as they either have an RGB gamut or can be coerced into one.
 
-The way this approach works is it takes a given color and converts it to a perceptual LCh like color space. Then the
-achromatic version of the color (chroma set to zero) is calculated. If the achromatic color exceeds the maximum or
+The way this approach works is it takes a given color and converts it to a perceptual LCh like color space and then
+calculates the achromatic version of the color (chroma set to zero). If the achromatic color exceeds the maximum or
 minimum lightness of the gamut, the respective maximum or minimum achromatic color is returned.
 
 Assuming the lightness is within bounds, a ray is cast from the inside of the cube, from the achromatic point to the
 current color. The intersection along this path with the RGB gamut surface is then found.
 
 /// note | Ray Trace Algorithm
-Ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that is
-selected is the first one encountered when following the ray from the origin point in the direction of the specified end
-point.
+The ray trace algorithm is based on the [slab method](https://en.wikipedia.org/wiki/Slab_method). The intersection that
+is selected is the first one encountered when following the ray from the origin point in the direction of the specified
+end point.
 ///
 
 The intersection of the line and the gamut surface represents an approximation of the the most saturated color for that
@@ -447,11 +447,11 @@ and lightness, we must refine our result with a few additional iterations.
 
 In order to converge on the actual chroma reduced color we seek, we can take the first intersection we find and correct
 the color in the perceptual color space by setting the hue and lightness back to the original color's hue and lightness.
-The corrected color becomes our new current color and should be much closer color on the reduced chroma line. We can
+The corrected color becomes our new current color and should be a much closer color on the reduced chroma line. We can
 repeat this process a few more times, each time finding a better, closer color on the path. After about three
 _additional_ iterations (a combined total of four for the entire process), we will be close enough where we can stop.
-Finally, we can then clip off floating point math errors. With this, we will now have an accurate approximation of the
-color we seek.
+Finally, we can then clip off floating point math errors. With this, we will now have a more accurate approximation of
+the color we seek.
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma.png)
 
@@ -542,7 +542,7 @@ others, and this can affect gamut mapping results, this does not mean the gamut 
 that some color models may work better under more constraints than others.
 
 Consider the example below. We take a very saturated yellow in Display P3 (`#!color color(display-p3 1 1 0)`) and then
-we interpolate it's whiteness between 0, masking off chroma so that we are only interpolating lightness. We do this
+we interpolate it's lightness between 0, masking off chroma so that we are only interpolating lightness. We do this
 interpolation in CIELCh, which is known to have chroma that can swing very far outside the visible spectrum when
 interpolating hues at more extreme lightness. Finally, we gamut map in various LCh models. What we can observe is some
 models will struggle to map some of these colors as the hue preservation can break down at extreme limits. In the cases
