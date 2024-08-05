@@ -249,7 +249,10 @@ MINDE chroma reduction is an approach that reduces the chroma in a perceptual co
 gamut of a targeted color space. As the exact point at which the color will be in gamut is unknown, the chroma is
 reduced using bisection. The color is compared periodically to the the clipped version of the current iteration to see
 if the ∆E distance between them is below the "just noticeable difference" (JND) defined for the color space. If the
-color is close enough to the clipped version, the clipped version is returned.
+color is close enough to the clipped version, the clipped version is returned. Because MINDE is used in conjunction
+with chroma reduction, a closer color can be found while reducing the chroma preventing too much chroma reduction in
+some cases which is particularly useful for some color spaces that have undesirable geometry in certain regions, such as
+CIELCh.
 
 Preserving lightness in this way is useful when creating tones or mixing and interpolating colors, but desiring to
 preserve their lightness for contrast. It also does a fairly accurate job at approaching the gamut surface. If the JND
@@ -260,13 +263,13 @@ Computationally, MINDE Chroma Reduction is slower to compute than clipping due t
 to get close enough to the gamut surface, but it generally provides good results, far surpassing naive clipping.
 
 It should be noted that most color spaces that have a defined gamut are tied to specific RGB gamuts. And when they are
-gamut mapped, they are done so in those RGB spaces. For instance HSL, which represents the sRGB gamut in a cylindrical
+gamut mapped, they are done so in those RGB spaces. For instance, HSL which represents the sRGB gamut in a cylindrical
 form will be gamut mapped in sRGB (though simple clipping may be done directly in HSL).
 
 There are a few color spaces/models that do not have a clearly defined gamuts. One such case is HPLuv, which is only
 defined as a cylindrical color space that represent only a subset of the sRGB color space. Additionally Okhsl and Okhsv
 are two cylindrical color spaces based on the perceptual Oklab color space that are meant to target the sRGB gamut, but
-are only a loose approximation which actually can slightly clip the sRGB gamut while simultaneously containing a few
+are only a loose approximation which can actually slightly clip the sRGB gamut while simultaneously containing a few
 colors that exceed the sRGB gamut. ColorAide will not automatically associate these color spaces with an RGB gamut. In
 the case of HPLuv, there is no specifically defined RGB gamut, and in the case of Okhsl and Okhsv, sRGB is the closest,
 but does not precisely represent the colors in Okhsl and Okhsv.
@@ -280,11 +283,13 @@ Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4
 ```
 
 Lastly, all MINDE Chroma Reduction methods allow the setting of the JND. The default is usually specific to the
-perceptual space being used, but it should be noted that while a lower JND will give you a theoretically better value,
-some color spaces have quirks due to their unique geometric shape. Consider the color `#!color color(display-p3 1 1 0)`.
-If we were to gamut map it in LCh with a very low JND, we can see that the odd shape of LCh can cause us to get a very
-desaturated color. By using the default JND of 2 for LCh, the fuzziness of the MINDE will catch the more saturated
-yellow. This isn't a problem in OkLCh, but it has its own quirks as well.
+perceptual space being used, but it should be noted that while a lower JND will give you a closer value to the gamut
+while holding lightness and hue constant, some color spaces have quirks due to their unique geometric shape. Consider
+the color `#!color color(display-p3 1 1 0)`. If we were to gamut map it in CIELCh with a very low JND, we can see that
+the odd shape of CIELCh in the yellow region can cause us to get a very desaturated color. By using the default JND of 2
+for CIELCh, the MINDE logic will catch the more saturated yellow before it reduces chroma all the way to the gamut
+surface. Such geometric quirks aren't present in all color spaces, so a space like OkLCh likely benefits less from this
+logic.
 
 /// tab | JND 0
 ![JND 0](images/jnd-0.png)
@@ -376,6 +381,8 @@ c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
 Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit={'method': 'raytrace', 'pspace': 'hct'}) for tone in tones])
 ```
+
+If more accuracy in HCT's atypical achromatic region is desired, the MINDE approach is available.
 ///
 
 Much like the other LCh chroma reduction algorithms, HCT Chroma performs gamut mapping exactly like
@@ -418,16 +425,15 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ### Ray Tracing Chroma Reduction
 
-/// warning | Experimental Gamut Mapping
-///
-
 /// New | New in 3.4
-The default perceptual space is now OkLCh. Additionally, the `oklch-raytrace` and `lch-raytrace` variants have been
-removed. Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
-to learn how to use different perceptual spaces and even create your own `lch-raytrace` or `oklch-raytrace` variants.
-Also reference [Force Ray Trace Default Perceptual Space](#force-ray-trace-default-perceptual-space) to learn how to set
-the default ray trace perceptual space to your desired space or even how to force your custom approach as the default
-for all gamut mapping.
+The default perceptual space is now OkLCh.
+
+Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
+to learn how to use different perceptual spaces.
+
+See [Force Ray Trace Default Perceptual Space](#force-ray-trace-default-perceptual-space) to learn how to set the
+default ray trace perceptual space to your desired space or even how to force your custom approach as the default for
+all gamut mapping.
 ///
 
 ColorAide has developed an experimental chroma reduction technique that employs ray tracing. This approach specifically
