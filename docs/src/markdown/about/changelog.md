@@ -1,8 +1,10 @@
 # Changelog
 
-## 3.4
+## 4.0
 
 -   **NEW**: Officially support Python 3.13.
+-   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
+-   **NEW**: Remove deprecated `npow` function. `spow` should be used instead.
 -   **BREAK**: Finalize the `raytrace` gamut mapping algorithm implementation and remove experimental label.
 
     -   Remove deprecated `lab` parameter from experimental `raytrace` gamut mapping method. Users should use
