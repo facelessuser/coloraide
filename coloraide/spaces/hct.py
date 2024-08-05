@@ -5,11 +5,6 @@ This implements the HCT color space as described. This is not a port of the Mate
 We simply, as described, create a color space with CIELAB L* and CAM16's C and h components.
 Environment settings are calculated with the assumption of L* 50.
 
-As ColorAide usually cares about setting powerless hues as NaN, especially for good interpolation,
-we've also calculated the cut off for chromatic colors and will properly enforce achromatic, powerless
-hues. This is because CAM16 actually resolves colors as achromatic before chroma reaches zero as
-lightness increases. In the SDR range, a Tone of 100 will have a cut off as high as ~2.87 chroma.
-
 Generally, the HCT color space is restricted to sRGB and SDR range in the Material library, but we do
 not have such restrictions.
 
