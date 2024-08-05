@@ -141,7 +141,7 @@ Color("zcam-jmh", [71.271, 32.313, 75.038], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide_extras.spaces.zcam_jmh import ZCAMJMh
+from coloraide.spaces.zcam_jmh import ZCAMJMh
 
 class Color(Base): ...
 

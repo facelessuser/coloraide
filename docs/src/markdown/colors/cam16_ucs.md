@@ -78,7 +78,7 @@ Color("cam16-ucs", [78.364, 9.6945, 28.629], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide_extras.spaces.cam16_ucs import CAM16UCS
+from coloraide.spaces.cam16_ucs import CAM16UCS
 
 class Color(Base): ...
 

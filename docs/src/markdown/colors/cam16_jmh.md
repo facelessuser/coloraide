@@ -140,7 +140,7 @@ Color("cam16-jmh", [78.364, 9.6945, 28.629], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide_extras.spaces.cam16_jmh import CAM16JMh
+from coloraide.spaces.cam16_jmh import CAM16JMh
 
 class Color(Base): ...
 

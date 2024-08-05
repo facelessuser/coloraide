@@ -71,7 +71,7 @@ Color("cam16-lcd", [68.056, 43.51, 71.293], 1).to_string()
 
 ```py
 from coloraide import Color as Base
-from coloraide_extras.spaces.cam16_ucs import CAM16LCD
+from coloraide.spaces.cam16_ucs import CAM16LCD
 
 class Color(Base): ...
 
