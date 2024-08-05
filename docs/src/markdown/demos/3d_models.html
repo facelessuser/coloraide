@@ -191,8 +191,8 @@
   <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.34.0/plotly.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Regular
@@ -1045,7 +1045,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/",
     fullStdLib: false
   })
 
@@ -1053,7 +1053,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await pyodide.loadPackage([
     'numpy',
     'scipy',
-    'https://files.pythonhosted.org/packages/a8/07/72953cf70e3bd3a24cbc3e743e6f8539abe6e3e6d83c3c0c83426eaffd39/plotly-5.18.0-py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/b8/f0/bcf716a8e070370d6598c92fcd328bd9ef8a9bda2c5562da5a835c66700b/plotly-5.23.0-py3-none-any.whl',
     package])
 
   // Set background color
