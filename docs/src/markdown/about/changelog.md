@@ -15,6 +15,10 @@
         spaces if desired via the `pspace` parameter. Additionally, documentation has been added so users can easily
         recreate the aforementioned pre-configured methods themselves or their own desired variants.
 
+-   **FIX**: HWB should not use a corrected HSL hue when the color yields a negative saturation as it does not calculate
+    the whiteness and blackness with the negative saturation. Using a corrected hue without the negative saturation
+    context leads to bad round trip with out of gamut colors.
+
 ## 3.3.1
 
 -   **FIX**: Ray trace gamut mapping algorithm will better handle perceptual spaces like CAM16 and HCT which have

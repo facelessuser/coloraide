@@ -36,7 +36,9 @@ class TestHWB(util.ColorAssertsPyTest):
         # Test percent ranges
         ('color(--hwb 0 0% 0%)', 'color(--hwb 0 0 none)'),
         ('color(--hwb 360 100% 100%)', 'color(--hwb 360 1 1 / 1)'),
-        ('color(--hwb -360 -100% -100%)', 'color(--hwb -360 -1 -1 / 1)')
+        ('color(--hwb -360 -100% -100%)', 'color(--hwb -360 -1 -1 / 1)'),
+        # Test out of gamut conversion
+        ('lab(100 104.3 -50.9)', 'color(--hwb 311.21 0.58776 -0.5935 / 1)')
     ]
 
     @pytest.mark.parametrize('color1,color2', COLORS)

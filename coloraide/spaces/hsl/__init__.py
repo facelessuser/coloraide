@@ -7,7 +7,7 @@ from ... import util
 from ...types import Vector
 
 
-def srgb_to_hsl(rgb: Vector) -> Vector:
+def srgb_to_hsl(rgb: Vector, correct_neg_sat: bool = True) -> Vector:
     """Convert sRGB to HSL."""
 
     r, g, b = rgb
@@ -29,7 +29,7 @@ def srgb_to_hsl(rgb: Vector) -> Vector:
         h *= 60.0
 
     # Adjust for negative saturation
-    if s < 0:
+    if correct_neg_sat and s < 0:
         s *= -1.0
         h += 180.0
 
