@@ -7,7 +7,7 @@ from ... import util
 from ...types import Vector
 
 
-def srgb_to_hsl(rgb: Vector, correct_neg_sat=True) -> Vector:
+def srgb_to_hsl(rgb: Vector, correct_neg_sat: bool = True) -> Vector:
     """Convert sRGB to HSL."""
 
     r, g, b = rgb
