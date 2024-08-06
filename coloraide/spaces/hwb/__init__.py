@@ -10,7 +10,8 @@ from ...types import Vector
 def srgb_to_hwb(srgb: Vector) -> Vector:
     """HWB to sRGB."""
 
-    return [srgb_to_hsl(srgb)[0], min(srgb), 1 - max(srgb)]
+    # Do not use a corrected hue due to negative saturation as HWB ignores the context of negative saturation.
+    return [srgb_to_hsl(srgb, correct_neg_sat=False)[0], min(srgb), 1 - max(srgb)]
 
 
 def hwb_to_srgb(hwb: Vector) -> Vector:
