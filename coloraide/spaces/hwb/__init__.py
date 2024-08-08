@@ -12,14 +12,14 @@ from ...types import Vector
 
 
 def hsv_to_hwb(hsv: Vector) -> Vector:
-    """HWB to sRGB."""
+    """HSV to HWB."""
 
     h, s, v = hsv
     return [util.constrain_hue(h), (1 - s) * v, 1 - v]
 
 
 def hwb_to_hsv(hwb: Vector) -> Vector:
-    """HWB to sRGB."""
+    """HWB to HSV."""
 
     h, w, b = hwb
     wb = w + b
