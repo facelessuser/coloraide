@@ -1,32 +1,38 @@
-"""HWB class."""
+"""
+HWB class.
+
+http://alvyray.com/Papers/CG/HWB_JGTv208.pdf
+"""
 from __future__ import annotations
 from ...spaces import Space, HWBish
-from ..hsl import srgb_to_hsl, hsl_to_srgb
+from ... import util
 from ...cat import WHITES
 from ...channels import Channel, FLG_ANGLE
 from ...types import Vector
 
 
-def srgb_to_hwb(srgb: Vector) -> Vector:
+def hsv_to_hwb(hsv: Vector) -> Vector:
     """HWB to sRGB."""
 
-    # Do not use a corrected hue due to negative saturation as HWB ignores the context of negative saturation.
-    return [srgb_to_hsl(srgb, correct_neg_sat=False)[0], min(srgb), 1 - max(srgb)]
+    h, s, v = hsv
+    return [util.constrain_hue(h), (1 - s) * v, 1 - v]
 
 
-def hwb_to_srgb(hwb: Vector) -> Vector:
+def hwb_to_hsv(hwb: Vector) -> Vector:
     """HWB to sRGB."""
 
     h, w, b = hwb
-    wb_sum = w + b
-    wb_factor = 1 - w - b
-    return [w / wb_sum] * 3 if wb_sum >= 1 else [c * wb_factor + w for c in hsl_to_srgb([h, 1, 0.5])]
+    wb = w + b
+    if wb >= 1:
+        return [util.constrain_hue(h), 0, w / wb]
+    v = 1 - b
+    return [util.constrain_hue(h), 1 - w / v if v else 1, v]
 
 
 class HWB(HWBish, Space):
     """HWB class."""
 
-    BASE = "srgb"
+    BASE = "hsv"
     NAME = "hwb"
     SERIALIZE = ("--hwb",)
     CHANNELS = (
@@ -48,11 +54,11 @@ class HWB(HWBish, Space):
         return (coords[1] + coords[2]) >= (1 - 1e-07)
 
     def to_base(self, coords: Vector) -> Vector:
-        """To sRGB from HWB."""
+        """To HSV from HWB."""
 
-        return hwb_to_srgb(coords)
+        return hwb_to_hsv(coords)
 
     def from_base(self, coords: Vector) -> Vector:
-        """From sRGB to HWB."""
+        """From HSV to HWB."""
 
-        return srgb_to_hwb(coords)
+        return hsv_to_hwb(coords)

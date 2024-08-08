@@ -4,7 +4,7 @@
 
 -   **NEW**: Officially support Python 3.13.
 -   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
--   **NEW**: Remove deprecated `npow` function. `spow` should be used instead.
+-   **NEW**: Remove deprecated `algebra.npow` function. `algebra.spow` should be used instead.
 -   **BREAK**: Finalize the `raytrace` gamut mapping algorithm implementation and remove experimental label.
 
     -   Remove deprecated `lab` parameter from experimental `raytrace` gamut mapping method. Users should use
@@ -15,9 +15,7 @@
         spaces if desired via the `pspace` parameter. Additionally, documentation has been added so users can easily
         recreate the aforementioned pre-configured methods themselves or their own desired variants.
 
--   **FIX**: HWB should not use a corrected HSL hue when the color yields a negative saturation as it does not calculate
-    the whiteness and blackness with the negative saturation. Using a corrected hue without the negative saturation
-    context leads to bad round trip with out of gamut colors.
+-   **FIX**: HWB and HSV cannot normalize hue and saturation the same way as HSL when saturation is negative.
 
 ## 3.3.1
 

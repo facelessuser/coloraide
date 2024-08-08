@@ -10,13 +10,25 @@ from ..gamut import Fit
 from ..spaces import Space, RGBish, HSLish, HSVish, HWBish, Labish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
-from ..spaces.hwb import hwb_to_srgb, srgb_to_hwb
+from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
 from ..types import Vector, VectorLike
 from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
+
+
+def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
+    """Convert HWB to sRGB."""
+
+    return hsv_to_srgb(hwb_to_hsv(coords))
+
+
+def srgb_to_hwb(coords: Vector) -> Vector:  # pragma: no cover
+    """Convert sRGB to HWB."""
+
+    return hsv_to_hwb(srgb_to_hsv(coords))
 
 
 def coerce_to_rgb(OrigColor: type[Color], cs: Space) -> tuple[type[Color], str]:

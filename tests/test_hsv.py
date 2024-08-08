@@ -70,7 +70,7 @@ class TestMiscHSV(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('color(--hsv 180 -1 1)').normalize(),
-            Color('color(--hsv 180 -1 1)')
+            Color('color(--hsv 0 0.5 2)')
         )
 
 

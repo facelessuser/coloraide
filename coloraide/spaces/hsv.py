@@ -1,7 +1,6 @@
 """HSV class."""
 from __future__ import annotations
 from ..spaces import Space, HSVish
-from .hsl import srgb_to_hsl, hsl_to_srgb
 from ..cat import WHITES
 from ..channels import Channel, FLG_ANGLE
 from .. import util
@@ -10,28 +9,50 @@ from ..types import Vector
 
 def hsv_to_srgb(hsv: Vector) -> Vector:
     """
-    HSV to HSL.
+    Convert HSV to sRGB.
 
-    https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
+    https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB_alternative
     """
 
     h, s, v = hsv
-    l = v * (1.0 - s / 2.0)
-    s = 0.0 if l == 0.0 or l == 1.0 else (v - l) / min(l, 1.0 - l)
+    h = util.constrain_hue(h) / 60
 
-    return hsl_to_srgb([h, s, l])
+    def f(n: int) -> float:
+        """Calculate the channels."""
+
+        k = (n + h) % 6
+        return v - v * s * max(0, min([k, 4 - k, 1]))
+
+    return [f(5), f(3), f(1)]
 
 
-def srgb_to_hsv(srgb: Vector) -> Vector:
+def srgb_to_hsv(rgb: Vector) -> Vector:
     """
-    HSL to HSV.
+    Convert sRGB to HSV.
 
-    https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
     """
 
-    h, s, l = srgb_to_hsl(srgb)
-    v = l + s * min(l, 1.0 - l)
-    s = 0.0 if v == 0.0 else 2 * (1.0 - l / v)
+    r, g, b = rgb
+    v = max(rgb)
+    mn = min(rgb)
+    h = 0.0
+    s = 0.0
+    c = v - mn
+
+    if c != 0.0:
+        if v == r:
+            h = (g - b) / c
+        elif v == g:
+            h = (b - r) / c + 2.0
+        else:
+            h = (r - g) / c + 4.0
+        h *= 60.0
+
+    if v:
+        s = c / v
 
     return [util.constrain_hue(h), s, v]
 
