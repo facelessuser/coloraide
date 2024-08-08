@@ -7,8 +7,14 @@ from ... import util
 from ...types import Vector
 
 
-def srgb_to_hsl(rgb: Vector, correct_neg_sat: bool = True) -> Vector:
-    """Convert sRGB to HSL."""
+def srgb_to_hsl(rgb: Vector) -> Vector:
+    """
+    Convert sRGB to HSL.
+
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
+    https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+    """
 
     r, g, b = rgb
     mx = max(rgb)
@@ -29,7 +35,7 @@ def srgb_to_hsl(rgb: Vector, correct_neg_sat: bool = True) -> Vector:
         h *= 60.0
 
     # Adjust for negative saturation
-    if correct_neg_sat and s < 0:
+    if s < 0:
         s *= -1.0
         h += 180.0
 
@@ -44,11 +50,12 @@ def hsl_to_srgb(hsl: Vector) -> Vector:
     """
 
     h, s, l = hsl
-    h = util.constrain_hue(h)
+    h = util.constrain_hue(h) / 30
 
     def f(n: int) -> float:
         """Calculate the channels."""
-        k = (n + h / 30) % 12
+
+        k = (n + h) % 12
         a = s * min(l, 1 - l)
         return l - a * max(-1, min(k - 3, 9 - k, 1))
 

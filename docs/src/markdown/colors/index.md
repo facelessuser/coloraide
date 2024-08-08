@@ -66,7 +66,7 @@ flowchart TB
             xyb --- srgb
             hsl --- srgb
             hsv --- srgb
-            hwb --- srgb
+               hwb --- hsv
 
     rec2020-linear --- xyz-d65
         rec2020 --- rec2020-linear
