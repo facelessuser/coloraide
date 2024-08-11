@@ -2274,6 +2274,20 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.minmax([])
 
+    def test_sign(self):
+        """Test sign."""
+
+        self.assertEqual(alg.sign(-3), -1)
+        self.assertEqual(alg.sign(3), 1)
+        self.assertEqual(alg.sign(-0.0), -0.0)
+        self.assertEqual(math.copysign(1, alg.sign(-0.0)), -1.0)
+        self.assertEqual(alg.sign(0.0), 0.0)
+        self.assertEqual(math.copysign(1, alg.sign(0.0)), 1.0)
+        self.assertTrue(math.isnan(alg.sign(math.nan)))
+        self.assertEqual(math.copysign(1, alg.sign(-math.nan)), -1)
+        self.assertTrue(math.isnan(alg.sign(-math.nan)))
+        self.assertEqual(math.copysign(1, alg.sign(math.nan)), 1)
+
 
 def test_pprint(capsys):
     """Test matrix print."""
