@@ -674,6 +674,35 @@ class Color(metaclass=ColorMeta):
 
     __str__ = __repr__
 
+    def _repr_html_(self) -> str:  # pragma: no cover
+        """
+        Return an HTML representation of the color for Jupyter and other aware libraries.
+
+        Colors are not gamut mapped, but returned as is.
+        """
+
+        svg = ''.join(
+            [
+                "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill-opacity='0.1'>",
+                "<rect width='50' height='50'/>",
+                "<rect x='50' y='50' width='50' height='50'/>",
+                "</svg>"
+            ]
+        )
+
+        return ''.join(
+            [
+                '<div style="margin: 10px 0; text-align: center;">',
+                '<div style="box-sizing: border-box; width: 52px; height: 52px; border: 1px solid hsl(0, 0%, 80%);',
+                f'background: url(&quot;data:image/svg+xml,{svg}&quot;) 0 0 / 0.75em 0.75em #fefefe; margin: 0 auto;">',
+                '<div style="box-sizing: border-box; width: 50px; height: 50px; '
+                f'background-color: {self.convert("oklab").to_string()}; border: 2px solid hsl(0, 0%, 90%);"></div>',
+                '</div>',
+                f'<div>{self.to_string(fit=False)}</div>'
+                '</div>'
+            ]
+        )
+
     def white(self, cspace: str = 'xyz') -> Vector:
         """Get the white point."""
 

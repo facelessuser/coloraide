@@ -3,6 +3,7 @@
 ## 4.0
 
 -   **NEW**: Officially support Python 3.13.
+-   **NEW**: Define HTML output representation for Jupyter via `_repr_html_`.
 -   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
 -   **NEW**: Remove deprecated `algebra.npow` function. `algebra.spow` should be used instead.
 -   **BREAK**: Finalize the `raytrace` gamut mapping algorithm implementation and remove experimental label.
