@@ -31,33 +31,35 @@ def main():
         '--jnd', type=float, default=-1.0,
         help="Set the JND for MINDE approaches. If set to -1, default JND is used."
     )
-    parser.add_argument(
-        '--traces', type=int, default=3,
-        help="Set the number of ray trace passes for ray trace approaches. Default is 3."
-    )
+    parser.add_argument('--pspace', default='oklch', help="Set the perceptual space for raytrace method.")
     args = parser.parse_args()
     method = args.method
 
+    pspace = ''
     if method == 'clip':
         if args.clip_space not in ('lch', 'oklch', 'hct'):
             raise ValueError(f'"{args.clip_space}" is an unsupported clipping space')
-        method = args.clip_space + '-chroma'
+        pspace = args.clip_space
+    elif method == 'raytrace':
+        pspace = args.pspace
+    elif method.endswith('-chroma'):
+        pspace = '-'.join(method.split('-')[:-1])
 
-    if method.startswith('lch'):
+    if (method.endswith('-chroma') and pspace == 'lch') or pspace == 'lch-d65':
         space = 'lch-d65'
         t_space = 'CIELCh D65'
         xaxis = 'c:0:264'
         yaxis = 'l:0:100'
         x = 'c'
         y = 'l'
-    elif method.startswith('oklch'):
+    elif pspace == 'oklch':
         space = 'oklch'
         t_space = 'OkLCh'
         xaxis = 'c:0:1.5'
         yaxis = 'l:0:1'
         x = 'c'
         y = 'l'
-    elif method.startswith('hct'):
+    elif pspace == 'hct':
         space = 'hct'
         t_space = 'HCT'
         xaxis = 'c:0:267'
@@ -71,12 +73,11 @@ def main():
         title = f'Clipping shown in {t_space}'
     elif args.method.endswith('-chroma'):
         title = f'MINDE and Chroma Reduction in {t_space}'
-    elif args.method.endswith('-raytrace'):
+    elif args.method.endswith('raytrace') or args.method.startswith('raytrace'):
         title = f'Ray Tracing Chroma Reduction in {t_space}'
 
     jnd = None if args.jnd == -1 else args.jnd
-    traces = args.traces
-    gmap = {'method': args.method, 'jnd': jnd, 'traces': traces}
+    gmap = {'method': args.method, 'jnd': jnd, 'pspace': pspace}
 
     orig = Color(args.color)
     color = orig.convert(space, in_place=True)
