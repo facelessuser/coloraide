@@ -71,6 +71,14 @@ M141 = [1, 4, 1]
 ################################
 # General math
 ################################
+def sign(x: float) -> float:
+    """Return the sign of a given value."""
+
+    if x and x == x:
+        return x / abs(x)
+    return x
+
+
 def order(x: float) -> int:
     """Get the order of magnitude of a number."""
 

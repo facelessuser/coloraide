@@ -224,7 +224,7 @@ class Ohno2013(CCT):
         x = (dp ** 2 - dn ** 2 + l ** 2) / (2 * l)
         t = tp + (tn - tp) * (x / l)
         vtx = vp + (vn - vp) * (x / l)
-        sign = math.copysign(1, v - vtx)
+        sign = alg.sign(v - vtx)
         duv = (dp ** 2 - x ** 2) ** (1 / 2) * sign
 
         # Parabolic solution
