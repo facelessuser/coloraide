@@ -346,7 +346,7 @@ def xyz_d65_to_zcam(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool 
     Cz = 100 * (Mz / env.qzw)
 
     # Step 16
-    Sz = 100 * (env.fl ** 0.6) * math.sqrt(Mz / Qz) if Qz else 0.0
+    Sz = 100 * (env.fl ** 0.6) * alg.nth_root(Mz / Qz, 2) if Qz else 0.0
 
     # Step 17
     Vz = math.sqrt((Jz - 58) ** 2 + 3.4 * (Cz ** 2))

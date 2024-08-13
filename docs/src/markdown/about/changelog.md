@@ -17,6 +17,7 @@
         recreate the aforementioned pre-configured methods themselves or their own desired variants.
 
 -   **FIX**: HWB and HSV cannot normalize hue and saturation the same way as HSL when saturation is negative.
+-   **FIX**: Fix corner case in ZCAM that could throw a domain error.
 
 ## 3.3.1
 
