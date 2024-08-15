@@ -6,15 +6,27 @@
 -   **NEW**: Define HTML output representation for Jupyter via `_repr_html_`.
 -   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
 -   **NEW**: Remove deprecated `algebra.npow` function. `algebra.spow` should be used instead.
+-   **NEW**: New generic `minde-chroma` gamut mapping method that allows specifying any perceptual space to operate in.
+    `oklch-chroma`, `lch-chroma`, and `hct-chroma` are now derived from `minde-chroma` and just default to using the
+    specified color space to provide backwards compatibility. `minde-chroma` defaults to using OkLCh by default.
+-   **NEW**: All MINDE chroma reduction methods now skip distance checks if a JND of zero is specified and will converge
+    to the gamut as close as possible much faster than it would previously.
+-   **NEW**: MINDE chroma reduction gamut mapping and ray trace gamut mapping now allow for specifying an `adaptive`
+    option which will bias the chroma reduction by the specified factor in a hue independent way relative to a midpoint
+    of L = 50%.
+-   **NEW**: MINDE chroma reduction plugins now dynamically figure out lightness range instead of requiring it to be
+-   **BREAK**: MINDE chroma reductions combines the `DE` class attribute and the `DE_OPTIONS` under `DE_OPTIONS`.
+    specified.
+-   **BREAK**: MINDE chroma reduction plugins specify the perceptual space via the `PSPACE` attribute instead of `SPACE`.
 -   **BREAK**: Finalize the `raytrace` gamut mapping algorithm implementation and remove experimental label.
 
-    -   Remove deprecated `lab` parameter from experimental `raytrace` gamut mapping method. Users should use
-       `pspace` instead.
+    -   Remove deprecated `lab` parameter from `raytrace` gamut mapping method. Users should use `pspace` instead to
+        specify the perceptual space to use.
     -   The `raytrace` gamut mapping method now uses OkLCh by default instead of CIELCh (D65).
-    -   Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
-        method have been removed. OkLCh is the default now and users can still specify CIELCh and other perceptual
-        spaces if desired via the `pspace` parameter. Additionally, documentation has been added so users can easily
-        recreate the aforementioned pre-configured methods themselves or their own desired variants.
+    -   Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the `raytrace` gamut mapping method have been
+        removed. OkLCh is the default now and users can still specify CIELCh and other perceptual spaces if desired via
+        the `pspace` parameter. Additionally, documentation has been added so users can easily recreate the
+        aforementioned pre-configured methods themselves or their own desired variants.
 
 -   **FIX**: HWB and HSV cannot normalize hue and saturation the same way as HSL when saturation is negative.
 -   **FIX**: Fix corner case in ZCAM that could throw a domain error.

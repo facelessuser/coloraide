@@ -192,6 +192,50 @@ class TestGamut(util.ColorAsserts, unittest.TestCase):
             'rgb(0 247.37 75.73)'
         )
 
+    def test_minde_lab(self):
+        """Test MINDE in Lab."""
+
+        options = {"method": 'minde-chroma', "pspace": 'oklab'}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.99673 0.99892 0.33034)')
+        )
+
+    def test_minde_adaptive_lightness_lab(self):
+        """Test MINDE adaptive lightness."""
+
+        options = {"method": 'minde-chroma', "pspace": 'oklab', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.99215 0.99432 0.32866)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.95641 0.95842 0.31554)')
+        )
+
+    def test_minde_adaptive_lightness_lch(self):
+        """Test MINDE adaptive lightness in ray trace."""
+
+        options = {"method": 'minde-chroma', "pspace": 'oklch', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.99215 0.99432 0.32866)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.95641 0.95842 0.31554)')
+        )
+
 
 class TestRayTrace(util.ColorAsserts, unittest.TestCase):
     """Test gamut mapping/fitting with ray tracing."""
@@ -218,6 +262,40 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         self.assertColorEqual(
             Color('display-p3', [1, 0, 0]).fit('srgb', method='raytrace', pspace='luv'),
             Color('color(display-p3 0.91916 0.25208 0.25208)')
+        )
+
+    def test_raytrace_adaptive_lightness_lab(self):
+        """Test ray trace adaptive lightness in ray trace."""
+
+        options = {"method": 'raytrace', "pspace": 'oklab', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.98128 0.9861 0.32546)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.89593 0.90035 0.29413)')
+        )
+
+    def test_raytrace_adaptive_lightness_lch(self):
+        """Test ray trace adaptive lightness in ray trace."""
+
+        options = {"method": 'raytrace', "pspace": 'oklch', "adaptive": 0.05}
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.98128 0.9861 0.32546)')
+        )
+
+        options['adaptive'] = 5
+
+        self.assertColorEqual(
+            Color('display-p3', [1, 1, 0]).fit('srgb', **options),
+            Color('color(display-p3 0.89593 0.90035 0.29413)')
         )
 
     def test_sdr_extremes_low(self):

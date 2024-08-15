@@ -7,16 +7,38 @@ from __future__ import annotations
 import math
 from .. import algebra as alg
 from ..gamut import Fit
-from ..spaces import Space, RGBish, HSLish, HSVish, HWBish, Labish
+from ..spaces import Space, RGBish, HSLish, HSVish, HWBish
 from ..spaces.hsl import hsl_to_srgb, srgb_to_hsl
 from ..spaces.hsv import hsv_to_srgb, srgb_to_hsv
 from ..spaces.hwb import hwb_to_hsv, hsv_to_hwb
 from ..spaces.srgb_linear import sRGBLinear
+from .tools import adaptive_hue_independent
 from ..types import Vector, VectorLike
 from typing import TYPE_CHECKING, Callable, Any  # noqa: F401
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
+
+
+def project_onto(p1: Vector, p2: Vector, p0: Vector) -> Vector:
+    """
+    Using 3 points, create two vectors with a shared origin and project the first vector onto the second.
+
+    - `p1`:  point used to define the magnitude of the first vector (`v1`) with origin `p0`.
+    - `p2`:  point used to define the magnitude of the second vector (`v2`) with origin `p0`.
+    - `p0`:  the origin point of both `v1` and `v2`.
+    """
+
+    # Separate into points
+    x1, y1, z1 = p1
+    x2, y2, z2 = p2
+    x3, y3, z3 = p0
+    # Create vector from points
+    v1 = [x1 - x3, y1 - y3, z1 - z3]
+    v2 = [x2 - x3, y2 - y3, z2 - z3]
+    # Project v1 onto v2 and convert back to a point
+    r = alg.vdot(v1, v2) / alg.vdot(v2, v2)
+    return [v2[0] * r + x3, v2[1] * r + y3, v2[2] * r + z3]
 
 
 def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
@@ -172,14 +194,14 @@ class RayTrace(Fit):
         space: str,
         *,
         pspace: str | None = None,
+        adaptive: float = 0.0,
         **kwargs: Any
     ) -> None:
         """Scale the color within its gamut but preserve L and h as much as possible."""
 
-        is_lab = False
         if pspace is None:
             pspace = self.PSPACE
-        is_lab = isinstance(color.CS_MAP[pspace], Labish)
+        polar = color.CS_MAP[pspace].is_polar()
 
         cs = color.CS_MAP[space]
         bmax = [1.0, 1.0, 1.0]
@@ -208,17 +230,30 @@ class RayTrace(Fit):
         achroma = mapcolor.clone()
 
         # Different perceptual spaces may have components in different orders, account for this
-        if is_lab:
-            l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-            light = mapcolor[l]
-            hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])[1]
-            achroma[a] = 0
-            achroma[b] = 0
-        else:
+        if polar:
             l, c, h = achroma._space.indexes()  # type: ignore[attr-defined]
             light = mapcolor[l]
+            chroma = mapcolor[c]
             hue = mapcolor[h]
+            ab = alg.polar_to_rect(chroma, hue)
             achroma[c] = 0
+        else:
+            l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+            light = mapcolor[l]
+            ab = (mapcolor[a], mapcolor[b])
+            chroma, hue = alg.rect_to_polar(*ab)
+            achroma[a] = 0
+            achroma[b] = 0
+
+        # If an alpha value is provided for adaptive lightness, calculate a lightness
+        # anchor point relative to the hue independent mid point. Scale lightness and
+        # chroma by the max lightness to get lightness between 0 and 1.
+        if adaptive:
+            max_light = color.new(space, [1.0, 1.0, 1.0]).convert(pspace)[l]
+            alight = adaptive_hue_independent(light / max_light, max(chroma, 0) / max_light, adaptive) * max_light
+            achroma[l] = alight
+        else:
+            alight = light
 
         # Floating point math can cause some deviations between the max and min
         # value in the achromatic RGB color. This is usually not an issue, but
@@ -230,13 +265,13 @@ class RayTrace(Fit):
         # When dealing with simple floating point deviations, little to no change
         # is observed, but for spaces like CAM16 or HCT, this can provide more
         # reasonable gamut mapping.
-        achromatic = [sum(achroma.convert(space)[:-1]) / 3] * 3
+        anchor = [sum(achroma.convert(space)[:-1]) / 3] * 3
 
         # Return white or black if the achromatic version is not within the RGB cube.
         # HDR colors currently use the RGB maximum lightness. We do not currently
         # clip HDR colors to SDR white, but that could be done if required.
         bmx = bmax[0]
-        point = achromatic[0]
+        point = anchor[0]
         if point >= bmx:
             color.update(space, bmax, mapcolor[-1])
         elif point <= 0:
@@ -249,18 +284,40 @@ class RayTrace(Fit):
             mapcolor.convert(space, in_place=True)
             for i in range(4):
                 if i:
-                    mapcolor.convert(pspace, in_place=True)
-                    if is_lab:
-                        chroma = alg.rect_to_polar(mapcolor[a], mapcolor[b])[0]
-                        ab = alg.polar_to_rect(chroma, hue)
-                        mapcolor[l] = light
-                        mapcolor[a] = ab[0]
-                        mapcolor[b] = ab[1]
+                    mapcolor.convert(pspace, in_place=True, norm=False)
+
+                    if adaptive:
+                        # Correct the point onto the desired interpolation path
+                        if polar:
+                            mapcolor[l], a_, b_ = project_onto(
+                                [mapcolor[l], *alg.polar_to_rect(mapcolor[c], mapcolor[h])],
+                                [light, *ab],
+                                [alight, 0.0, 0.0]
+                            )
+                            mapcolor[c], mapcolor[h] = alg.rect_to_polar(a_,b_)
+                        else:
+                            mapcolor[l], mapcolor[a], mapcolor[b] = project_onto(
+                                [mapcolor[l], mapcolor[a], mapcolor[b]],
+                                [light, *ab],
+                                [alight, 0.0, 0.0]
+                            )
                     else:
-                        mapcolor[l] = light
-                        mapcolor[h] = hue
+                        # Correct lightness and hue
+                        mapcolor[l] = alight
+                        if polar:
+                            mapcolor[h] = hue
+                        else:
+                            mapcolor[a], mapcolor[b] = alg.polar_to_rect(
+                                alg.rect_to_polar(mapcolor[a], mapcolor[b])[0],
+                                hue
+                            )
+
                     mapcolor.convert(space, in_place=True)
-                intersection = raytrace_box(achromatic, mapcolor[:-1], bmax=bmax)
+
+                # Cast a ray to our anchor point.
+                intersection = raytrace_box(anchor, mapcolor[:-1], bmax=bmax)
+
+                # Update color with the intersection point on the RGB surface.
                 if intersection:
                     mapcolor[:-1] = intersection
                     continue

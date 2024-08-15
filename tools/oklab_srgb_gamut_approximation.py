@@ -62,6 +62,12 @@ elif GAMUT == 'p3':
 
     RGBL_TO_LMS = alg.matmul(XYZ_TO_LMS, p3.RGB_TO_XYZ)
     LMS_TO_RGBL = alg.inv(RGBL_TO_LMS)
+elif GAMUT == 'a98-rgb':
+    import coloraide.spaces.a98_rgb_linear as a98
+    from coloraide import algebra as alg
+
+    RGBL_TO_LMS = alg.matmul(XYZ_TO_LMS, a98.RGB_TO_XYZ)
+    LMS_TO_RGBL = alg.inv(RGBL_TO_LMS)
 else:
     RGBL_TO_LMS = SRGBL_TO_LMS
     LMS_TO_RGBL = LMS_TO_SRGBL
