@@ -14,6 +14,7 @@ except ImportError:
     from coloraide.everything import ColorAll as Color
 from tools.slice_diagram import plot_slice  # noqa: E402
 from coloraide.util import fmt_float  # noqa: E402
+from coloraide import algebra as alg  # noqa: E402
 
 
 def main():
@@ -37,6 +38,7 @@ def main():
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--dpi', default=200, type=int, help="DPI of image.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
+    parser.add_argument('--title', '-t', default='', help='Title.')
     parser.add_argument(
         '--show-end-pt', '-s', action='store_true', help="Show the end point of gamut mapping with color preview."
     )
@@ -45,6 +47,7 @@ def main():
     method = args.method
     gmap = {'method': args.method}
     gmap.update(json.loads(args.gmap_options))
+    adaptive = gmap.get('adaptive', None)
 
     pspace = ''
     if method == 'clip':
@@ -83,7 +86,9 @@ def main():
         raise ValueError(f'"{args.method}" is an unsupported gamut mapping algorithm')
 
     title = ''
-    if args.method == 'clip':
+    if args.title:
+        title = args.title
+    elif args.method == 'clip':
         title = f'Clipping shown in {t_space}'
     elif args.method.endswith('-chroma'):
         title = f'MINDE and Chroma Reduction in {t_space}'
@@ -144,6 +149,18 @@ def main():
             markersize=2,
             antialiased=True
         )
+
+        if adaptive is not None:
+            plt.plot(
+                [mapcolor2[x], 0],
+                [mapcolor2[y], alg.lerp(mapcolor2[y], mapcolor[y], alg.ilerp(mapcolor2[x], mapcolor[x], 0))],
+                color='#aaaaaa88',
+                marker="",
+                linewidth=1.5,
+                # linestyle=':',
+                markersize=2,
+                antialiased=True
+            )
 
         plt.scatter(
             mapcolor[x],
