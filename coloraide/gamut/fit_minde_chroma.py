@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
+XYZ = 'xyz-d65'
 WHITE = util.xy_to_xyz(WHITES['2deg']['D65'])
 BLACK = [0.0, 0.0, 0.0]
 
@@ -78,20 +79,17 @@ class MINDEChroma(Fit):
         if de_options is None:
             de_options = self.DE_OPTIONS
 
-        white = color.new('xyz-d65', WHITE)
-        black = color.new('xyz-d65', BLACK)
-        max_light = white.convert(pspace)[l]
+        temp = color.new(XYZ, WHITE, mapcolor[-1]).convert(pspace, in_place=True)
+        max_light = temp[l]
 
         # Return white or black if lightness is out of dynamic range for lightness.
         # Extreme light case only applies to SDR, but dark case applies to all ranges.
         if not adaptive:
             if sdr and (lightness >= max_light or math.isclose(lightness, max_light, abs_tol=1e-6)):
-                white[-1] = mapcolor[-1]
-                clip_channels(color.update(white))
+                clip_channels(color.update(temp))
                 return
-            elif lightness <= black.convert(pspace)[l]:
-                black[-1] = mapcolor[-1]
-                clip_channels(color.update(black))
+            elif lightness <= temp.update(XYZ, BLACK).convert(pspace, in_place=True)[l]:
+                clip_channels(color.update(temp))
                 return
 
             low = 0.0
