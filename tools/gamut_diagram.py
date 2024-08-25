@@ -157,7 +157,6 @@ def main():
                 color='#aaaaaa88',
                 marker="",
                 linewidth=1.5,
-                # linestyle=':',
                 markersize=2,
                 antialiased=True
             )
