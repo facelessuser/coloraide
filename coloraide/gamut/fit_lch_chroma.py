@@ -7,6 +7,6 @@ class LChChroma(MINDEChroma):
     """LCh chroma gamut mapping class."""
 
     NAME = "lch-chroma"
-    LIMIT = 2.0
+    JND = 2.0
     DE_OPTIONS = {'method': '2000', 'space': 'lab-d65'}
     PSPACE = "lch-d65"

@@ -7,6 +7,6 @@ class HCTChroma(MINDEChroma):
     """HCT chroma gamut mapping class."""
 
     NAME = "hct-chroma"
-    LIMIT = 2.0
+    JND = 2.0
     DE_OPTIONS = {"method": "hct"}
     PSPACE = "hct"

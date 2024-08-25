@@ -41,7 +41,7 @@ class MINDEChroma(Fit):
     """
 
     NAME = "minde-chroma"
-    LIMIT = 0.02
+    JND = 0.02
     DE_OPTIONS = {"method": "ok"}  # type: dict[str, Any]
     PSPACE = "oklch"
     MIN_CONVERGENCE = 0.0001
@@ -73,7 +73,7 @@ class MINDEChroma(Fit):
         lightness = mapcolor[l]
         sdr = gamutcolor._space.DYNAMIC_RANGE == 'sdr'
         if jnd is None:
-            jnd = self.LIMIT
+            jnd = self.JND
         epsilon = calc_epsilon(jnd)
 
         if de_options is None:

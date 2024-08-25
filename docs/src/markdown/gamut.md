@@ -450,11 +450,11 @@ Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-c
 to learn how to use different perceptual spaces and how to set your own default.
 ///
 
-ColorAide has developed an experimental chroma reduction technique that employs ray tracing. Its aim is to provide
-faster chrome reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or
-spaces that can be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the targeted
-RGB gamut, that version will be used automatically for best results. Currently ColorAide can gamut map all officially
-supported color spaces as they either have an RGB gamut or can be coerced into one.
+ColorAide has developed a chroma reduction technique that employs ray tracing. Its aim is to provide faster chrome
+reduction for gamut mapping using constant lightness. This approach specifically targets RGB gamuts, or spaces that can
+be represented with RGB gamuts. Additionally, if ColorAide can detect a linear version of the targeted RGB gamut, that
+version will be used automatically for best results. Currently ColorAide can gamut map all officially supported color
+spaces as they either have an RGB gamut or can be coerced into one.
 
 The ray trace approach works by taking a given color and converting it to a perceptual Lab-ish or LCh-ish color space
 (the default being OkLCh) and then calculates the achromatic version of the color (chroma set to zero). Assuming the
@@ -652,7 +652,7 @@ class HCTChroma(MINDEChroma):
     """HCT chroma gamut mapping class."""
 
     NAME = "hct-chroma"
-    LIMIT = 2.0
+    JND = 2.0
     DE_OPTIONS = {"method": "hct"}
     PSPACE = "hct"
 
