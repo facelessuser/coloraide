@@ -9,6 +9,7 @@
 -   **NEW**: New generic `minde-chroma` gamut mapping method that allows specifying any Lab-ish or LCh-ish to operate
     in. `oklch-chroma`, `lch-chroma`, and `hct-chroma` are now derived from `minde-chroma` and just default to using the
     specified color space to provide backwards compatibility. `minde-chroma` defaults to using OkLCh by default.
+    `lch-chroma` is still ColorAide's default gamut mapping currently.
 -   **NEW**: All MINDE chroma reduction methods now skip distance checks if a JND of zero is specified. A JND of zero
     essentially disables the MINDE behavior and will reduce chroma as close to the gamut boundary as possible faster
     than it would previously.
