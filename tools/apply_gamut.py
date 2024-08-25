@@ -95,7 +95,10 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog='apply_gamut.py',
-        description='Force higher chroma and apply gamut mapping to an image.'
+        description=(
+            'Apply gamut mapping to an image.'
+            'Optionally force an artificial higher chroma to the image before gamut mapping.'
+        )
     )
     parser.add_argument('--input', '-i', help='Input image.')
     parser.add_argument('--output', '-o', help='Output name and location.')

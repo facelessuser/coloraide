@@ -1,10 +1,10 @@
 # Gamut Mapping
 
-Many color spaces are designed in such a way that they represent a specific range of colors. This is often done to
-target specific display types or mediums. The monitor you are reading this on can likely display millions of colors, but
-there are still colors it is not capable of displaying. So color spaces are often designed to represent such mediums, to
-make it easy for authors and artists to know exactly where those color boundaries are. This range of colors that a color
-space is designed for is called a color gamut.
+Many color spaces are designed to represent a specific range of colors. This is often done to target specific display
+types or mediums. The monitor this is being displayed on can likely display millions of colors, but there are still 
+colors it is not capable of displaying. So color spaces are often designed to represent such mediums to make it easy for
+authors and artists to know exactly where those color boundaries are. This range of colors that a color space is limited
+to and designed for is called a color gamut.
 
 There are some color spaces that are theoretically unbounded, and even some color spaces that are bounded but can
 actually still give meaningful data if extended, but often, when it comes time to display a color, paint a product, or
@@ -52,10 +52,10 @@ in any gamut that'd you'd like.
 
 ![Out of Gamut](images/oklab-gamuts-3d.png)
 
-Sometimes limits will be placed on the color space channels (as done above) for practicality, but theoretically, there
-are no bounds.
+Sometimes limits will be placed on the color space's channels (as done above) for practicality, but theoretically, there
+are no exact bounds.
 
-When we check a CIELab color, we will find that it is always considered in gamut as it has no gamut.
+When we check a CIELab color, we will find that it is always considered in gamut as it has no gamut itself.
 
 ```py play
 Color("lab(200% -20 40 / 1)").in_gamut()
@@ -88,10 +88,10 @@ Color('red').convert('orgb')[:]
 Color('red').convert('orgb').convert('srgb')[:]
 ```
 
-When testing with a tolerance, the color is considered in gamut, but when testing with a tolerance of zero, the color is
-considered out of gamut. Depending on what you are doing, this may not be an issue up until you are ready to finalize
-the color as very close to in gamut is usually good enough, so sometimes it may be desirable to have some tolerance, and
-other times not.
+When testing with a tolerance, the color is considered in gamut, but when testing with no tolerance (a tolerance of
+zero), the color is considered out of gamut. Depending on what you are doing, this may not be an issue up until you are
+ready to finalize the color as very close to in gamut is usually good enough, so sometimes it may be desirable to have
+some tolerance, and other times not.
 
 ```py play
 Color('red').convert('orgb').convert('srgb')[:]
@@ -117,8 +117,8 @@ Color('color(--hsv 0 0% 100.05%)').in_gamut('srgb', tolerance=0)
 
 But when we are using a tolerance, and we check one of these models **only** using the sRGB gamut, there are some cases
 where these cylindrical colors can exhibit coordinates wildly outside of the model's range but still very close to the
-sRGB gamut. This is isn't an error or a bug, but simply how the color model behaves with out of gamut colors. These
-values can still convert right back to the original color, but this might not always be the case with all color models.
+sRGB gamut. This isn't an error or a bug, but simply how the color model behaves with out of gamut colors. These values
+can still convert right back to the original color, but this might not always be the case with all color models.
 
 In this example, we have an sRGB color that is extremely close to being in gamut, but when we convert it to HSL,
 we can see wildly large saturation. But since it round trips back to sRGB just fine, it can exhibit extreme saturation,
@@ -165,16 +165,17 @@ that makes sense.
 
 ![Gamut Mapping](images/gamut-map-3d.png)
 
-There are various ways to map or compress values of an out of bound color to an in bound color, each with
-their own pros and cons. ColorAide offers a couple of methods related to gamut mapping: `#!py3 clip()` and
-`#!py3 fit()`. `#!py3 clip()` is a dedicated function that performs the speedy, yet naive, approach of simply truncating
-a color channel's value to fit within the specified gamut, and `#!py3 fit()` is a method that allows you to do more
-advanced gamut mapping approaches that, while often not as performant as simple, naive clipping, generally yield much
-better results.
+There are various ways to map or compress values of an out of bound color to an in bound color, each with their own pros
+and cons. ColorAide offers a couple of methods related to gamut mapping: `#!py3 clip()` and `#!py3 fit()`.
+`#!py3 clip()` is a dedicated function that performs the speedy, yet naive, approach of simply truncating a color
+channel's value to fit within the specified gamut, and `#!py3 fit()` is a method that allows using more advanced gamut
+mapping approaches that, while often not as performant and simple as naive clipping, generally yield much better
+results in certain contexts.
 
-While clipping won't always yield the best results, clipping is still very important and can be used to trim channel
-noise after certain mathematical operations or even used in other gamut mapping algorithms if used carefully. For this
-reason, clip has its own dedicated method for quick access: `#!py3 clip()`.
+While clipping won't always yield the most perceptually correct results, it can be a useful way get a color back into
+gamut. There may be better approaches, but clipping is still very important and can be used to trim channel noise after
+certain mathematical operations or even used in other gamut mapping algorithms if used carefully. For this reason, clip
+has its own dedicated method for quick access: `#!py3 clip()`.
 
 ```py play
 Color('rgb(270 30 120)').clip()
@@ -225,7 +226,7 @@ some are better than others.
 ///
 
 Clipping is a simple and naive approach to gamut mapping. If the color space is bounded by a gamut, clip will compare
-each channel's value against the bounds for that channel set the value to the limit it exceeds.
+each channel's value against the bounds for that channel and set the value to the limit it exceeds.
 
 Clip can be performed via `fit` by using the method name `clip` or by using the `clip()` method.
 
@@ -237,17 +238,16 @@ c.clip()
 ```
 
 Clipping is unique to all other clipping methods in that it has its own dedicated method `clip()` method and that its
-method name `clip` is reserved. While not always the best approach for gamut mapping in general, clip is very important
-to some other gamut mapping and has specific cases where its speed and simplicity are of great value.
-
-While clipping may not preserve perceptual colors very well, at times it can be useful, and preferred over other
-approaches.
+method name `clip` is reserved. While not always the best approach for all gamut mapping needs in general, clip is very
+important and its speed and simplicity are of great value.
 
 ### MINDE Chroma Reduction
 
-Chroma reduction is an approach that reduces the chroma in a perceptual color space until the color is within the
-gamut of a targeted color space. Pure chroma reduction has the advantage of preserving as much perceptual lightness and
-hue as possible, but it can come at the cost of colorfulness/chroma.
+Chroma reduction is an approach that reduces the chroma in a polar color space until the color is within the gamut of a
+targeted color space. Pure chroma reduction has the advantage of preserving as much lightness and hue as possible, and
+when performed within a perceptual space, it can preserve perceptual hue and lightness, but it comes at the cost of
+colorfulness/chroma. Pure chroma reduction may not always be desirable when gamut mapping images as some colorfulness
+will be lost.
 
 MINDE is an approach that tries to find the in gamut color with the shortest distance to out of gamut color. This can
 be better at finding an in gamut color with closer colorfulness but often comes at the cost of larger hue shifts and
@@ -259,14 +259,14 @@ distance, it can be returned early.
 
 The way this works is as follows. A given out of gamut color will have its chroma reduced via bisection to bring the
 color into gamut. In addition, local clipping will be applied at each step and the distance between that clipped color
-and the chroma reduced color will be compared. If the distance between the clipped and chroma reduced color is the JND,
-the clipped color will be returned.
+and the chroma reduced color will be compared. If the distance between the clipped and chroma reduced color is close
+enough to the JND, the clipped color will be returned.
 
 Visually, MINDE chroma reduction will allow a color that has decent constant lightness and will allow some hue shift
 as long as it is under what is noticeable by the eye. This doesn't mean no hue shift, and in certain regions, such as
-very dark colors or very light colors, hue shift can be greater because it is more difficult to notice in these
-situations. There are no perfectly perceptual spaces, so some do better than others and may allow for a larger JND or
-require a smaller JND, so such a value is relative to the color space and the ∆E color distancing algorithm used.
+very dark colors or very light colors, hue shift can be greater because it is more difficult to notice in such lightness
+ranges. Every perceptual space is different and some do better than others and may allow for a larger or smaller JND
+limits, so the JND is relative to the color space and the ∆E color distancing algorithm used.
 
 Preserving lightness in this way is useful when creating tones or mixing and interpolating colors. A constant lightness
 can also be useful when trying to control contrast.
@@ -280,13 +280,13 @@ required to determine the color distance and, in turn, can speed up the process.
 Lastly, all provided MINDE chroma reduction methods allow the controlling of the JND. This is useful if you want to
 adjust how close to the gamut boundary you approach before clipping. A larger JND may provide even more colorful colors
 while a lower JND will provide more accurate colors (relative to the perceptual space). If desired, setting the JND to 0
-can in improve performance by bypassing the MINDE logic altogether, but keep in mind that some perceptual spaces can
-have a geometry that can cause overly under-saturated just due to how the colors are distributed in the color space.
+can improve performance by bypassing the MINDE logic altogether, but keep in mind that some perceptual spaces can have
+a geometry that can cause overly under-saturated colors just due to how the colors are distributed in the color space.
 
 Consider the color `#!color color(display-p3 1 1 0)`. If we were to gamut map it in CIELCh with a very low JND, we can
 see that the odd shape of CIELCh in the yellow region can cause us to get a very desaturated color. By using the default
-JND of 2 for CIELCh, the MINDE logic will catch the more saturated yellow before it reduces chroma all the way to the
-gamut surface. Such geometric quirks aren't present in all color spaces, so a space like OkLCh will have a less
+JND of 2 for CIELCh, the MINDE logic will catch a more saturated yellow before it reduces chroma all the way to the
+gamut surface. Such geometric quirks aren't present in all color spaces, so in a space like OkLCh, it will have a less
 noticeable difference.
 
 /// tab | JND 0
@@ -386,7 +386,7 @@ c.fit(method='oklch-chroma', jnd=0.002)
 
 /// warning
 This approach was specifically added to help produce tonal palettes, but with the recent addition of the [ray trace
-approach to chroma reduction in any perceptual space](#ray-tracing-chroma-reduction-in-any-perceptual-space), it is
+approach to chroma reduction in any perceptual space](#gamut-mapping-in-any-perceptual-space), it is
 recommended that users apply that approach as it performs a tight chroma reduction much quicker, and it doesn't require
 a special ∆E method.
 
@@ -441,75 +441,13 @@ class Color(Base): ...
 Color.register([HCT(), DEHCT(), HCTChroma()])
 ```
 
-#### MINDE Chroma Reduction in Any Perceptual Space
-
-While ColorAide provides `oklch-chroma`, `lch-chroma`, and `hct-chroma` as pre-configured setups of MINDE chroma
-reduction, it is not limited to just performing this operation in only these perceptual spaces, but can be configured
-to apply this logic in any Lab-ish or LCh-ish color space via the `pspace` parameter.
-
-Additionally, you would need to specify and configure an appropriate ∆E distancing approach and determine an appropriate
-JND for said distancing approach. Ideally, a ∆E algorithm specific to the perceptual space is preferred to help prevent
-costly conversions to other color spaces. Performance of algorithm in different perceptual spaces is dependent on the
-∆E algorithm used, the JND selected, and how uniformly perceptual the color space is.
-
-As an example, the default uses OkLCh and uses the ∆E~ok~ distancing algorithm with a JND of 0.02. The LCh variant uses
-CIELCh D65 and uses ∆E~2000~ with a JND of 2. We can manually perform both of these by setting the perceptual space with
-`psapce`, the ∆E configuration via `de_options`, and the JND with `jnd`.
-
-``` py play
-gma_lch = {'pspace': 'lch-d65', 'de_options': {'method': '2000'}, 'jnd': 2}
-gma_oklch = {'pspace': 'oklch', 'de_options': {'method': 'ok'}, 'jnd': 0.02}
-
-Steps([c.fit('srgb', **gma_lch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-Steps([c.fit('srgb', **gma_oklch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
-```
-
-#### Force MINDE Chroma Reduction Default Perceptual Space
-
-Lastly, if we have a particular color space that we'd like to have as the default, we can derive a variant for our
-particular color space. We will use the `hct-chroma` plugin as an example.
-
-```py play
-from coloraide.everything import ColorAll as Base
-from coloraide.gamut.fit_minde_chroma import MINDEChroma
-
-class HCTChroma(MINDEChroma):
-    """HCT chroma gamut mapping class."""
-
-    NAME = "hct-chroma"
-    LIMIT = 2.0
-    DE_OPTIONS = {"method": "hct"}
-    PSPACE = "hct"
-
-class Color(Base): ...
-
-Color.register(HCTChroma())
-
-c = Color('hct', [325, 24, 50])
-tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
-```
-
-If we want to make ray tracing the default algorithm for all gamut mapping, we can simply set `FIT` to our method.
-
-```py
-class Color(Base):
-    FIT = 'hct-chroma'
-
-Color.register(HCTChroma(), overwrite=True)
-```
-
 ### Ray Tracing Chroma Reduction
 
 /// New | New in 3.4
 The default perceptual space is now OkLCh.
 
 Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
-to learn how to use different perceptual spaces.
-
-See [Force Ray Trace Default Perceptual Space](#force-ray-trace-default-perceptual-space) to learn how to set the
-default ray trace perceptual space to your desired space or even how to force your custom approach as the default for
-all gamut mapping.
+to learn how to use different perceptual spaces and how to set your own default.
 ///
 
 ColorAide has developed an experimental chroma reduction technique that employs ray tracing. Its aim is to provide
@@ -585,24 +523,35 @@ Steps([c.fit('okhsl', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.
 Steps([c.fit('srgb', method='raytrace') for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
 ```
 
-#### Ray Tracing Chroma Reduction in Any Perceptual Space
+### Gamut Mapping in Any Perceptual Space
 
-/// success | The `raytrace` gamut mapping is registered in `Color` by default.
-///
-
-This is a generic ray tracing approach that allows a user to specify any perceptual LCh-ish or Lab-ish color space for
-use in gamut mapping with ray tracing. Any perceptual space in the LCh-ish or Lab-ish form can be specified via the
-`pspace` parameter.
+ColorAide provides a couple gamut mapping approaches and a few using different perceptual spaces to perform the
+operation, but th `minde-chroma` and the `raytrace` gamut mapping allow for using any perceptual space to perform the
+gamut mapping operation in. Any perceptual space in the LCh-ish or Lab-ish form can be specified via the `pspace`
+parameter.
 
 ```py play
 Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', pspace='cam16-jmh')
 Color('oklch(50% 0.4 270)').fit('srgb', method='raytrace', pspace='luv')
 ```
 
-/// warning | Deprecated 3.3
-The `lch` parameter in the `raytrace` method has been deprecated in 3.3 in favor of the `pspace` parameter that allows
-for perceptual spaces in both LCh and Lab form.
-///
+For the MINDE chroma approach, you would need to specify and configure an appropriate ∆E distancing approach and
+determine an appropriate JND limit for said distancing approach. Ideally, a ∆E algorithm specific to the perceptual
+space is preferred to help prevent costly conversions to other color spaces. Performance of algorithm in different
+perceptual spaces is dependent on the ∆E algorithm used, the JND selected, and how uniformly perceptual the color space
+is.
+
+As an example, `minde-chroma` method uses OkLCh and uses the ∆E~ok~ distancing algorithm with a JND of 0.02. The LCh
+variant uses CIELCh D65 and uses ∆E~2000~ with a JND of 2. We can manually perform both of these by setting the
+perceptual space with `psapce`, the ∆E configuration via `de_options`, and the JND with `jnd`.
+
+``` py play
+gma_lch = {'pspace': 'lch-d65', 'de_options': {'method': '2000'}, 'jnd': 2}
+gma_oklch = {'pspace': 'oklch', 'de_options': {'method': 'ok'}, 'jnd': 0.02}
+
+Steps([c.fit('srgb', **gma_lch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+Steps([c.fit('srgb', **gma_oklch) for c in Color.steps(['oklch(90% 0.4 0)', 'oklch(90% 0.4 360)'], steps=100, space='oklch', hue='longer')])
+```
 
 It should be noted that gamut mapping will be limited by the capabilities of the perceptual space being used. Some color
 spaces can swing to varying degrees outside the visible spectrum and some perceptual models can tolerate this more than
@@ -655,14 +604,16 @@ lightness_mask = Color('color(--lchuv 0% none none)')
 Steps([c.fit('srgb', method='raytrace', pspace='lchuv') for c in Color.steps([yellow, lightness_mask], steps=20, space='lchuv')])
 ```
 
-#### Force Ray Trace Default Perceptual Space
+Lastly, if we have a particular color space that we'd like to have as the default, we can derive a variant for our particular
+color space using our preferred method of gamut mapping. Generally it is recommended to use the base plugins
+`minde-chroma` or `raytrace` as the base.
 
-Lastly, if we have a particular color space that we'd like to have as the default, we can derive a variant for our
-particular color space.
+/// tab | Ray Trace
 
 ```py play
 from coloraide.gamut.fit_raytrace import RayTrace
-from coloraide.everything import ColorAll as Base
+from coloraide.spaces.hct import HCT
+from coloraide import Color as Base
 
 class HCTRayTrace(RayTrace):
     """Apply gamut mapping using ray tracing."""
@@ -672,7 +623,7 @@ class HCTRayTrace(RayTrace):
 
 class Color(Base): ...
 
-Color.register(HCTRayTrace())
+Color.register([HCT(), HCTRayTrace()])
 
 c = Color('hct', [325, 24, 50])
 tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
@@ -688,141 +639,216 @@ class Color(Base):
 Color.register(HCTRayTrace(), overwrite=True)
 ```
 
+///
+
+/// tab | MINDE Chroma
+```py play
+from coloraide import Color as Base
+from coloraide.spaces.hct import HCT
+from coloraide.distance.delta_e_hct import DEHCT
+from coloraide.gamut.fit_minde_chroma import MINDEChroma
+
+class HCTChroma(MINDEChroma):
+    """HCT chroma gamut mapping class."""
+
+    NAME = "hct-chroma"
+    LIMIT = 2.0
+    DE_OPTIONS = {"method": "hct"}
+    PSPACE = "hct"
+
+class Color(Base): ...
+
+Color.register([HCT(), DEHCT(), HCTChroma()])
+
+c = Color('hct', [325, 24, 50])
+tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+Steps([c.clone().set('tone', tone).convert('srgb').to_string(hex=True, fit='hct-chroma') for tone in tones])
+```
+
+If we want to make ray tracing the default algorithm for all gamut mapping, we can simply set `FIT` to our method.
+
+```py
+class Color(Base):
+    FIT = 'hct-chroma'
+
+Color.register(HCTChroma(), overwrite=True)
+```
+///
+
 ### Adaptive Lightness
 
 Both MINDE chroma reduction and ray trace chroma reduction support adaptive lightness. This is an option to allow for
-a non-constant lightness chroma reduction. Adaptive lightness allows us to essentially choose an anchor point different
-than our constant lightness anchor. Choosing a different anchor point can allow us to choose a more colorful color by
-sacrificing some lightness.
+a non-constant lightness chroma reduction. Adaptive lightness allows us to essentially choose a dynamic anchor point
+different than our constant lightness anchor. Choosing a different anchor point can allow us to preserve more
+chroma/colorfulness by sacrificing some lightness.
 
-Essentially, a lightness point is selected in which the chroma reduction will be biased towards some factor. This is
-done by taking this target lightness point and calculating a new, non-constant anchor point relative to our target
-lightness based on how far away the out of gamut color is in the lightness direction vs the chroma direction. The larger
-our factor, the more heavily biased the chroma reduction will be towards our target lightness, the smaller the factor,
-the closer the chroma reduction will be to constant lightness.
+Essentially, a lightness focal point is selected by which the chroma reduction will be biased towards by some factor
+**ɑ**. This is done by taking this focal lightness and using it as a reference by which a new, non-constant lightness
+anchor point is calculated relative to this focal point. The anchor point is biased more or less towards this focal
+lightness depending on how large or small the **ɑ** value is respectively.
+
+Below shows examples of chroma reduction with a focal lightness of 50% and an **ɑ** value of 0, 0.5, and 5 respectively.
 
 /// tab | Constant Lightness (ɑ = 0)
+![Adaptive Lightness ɑ = 0](images/adaptive-0.png)
+///
+
+/// tab | Adaptive Lightness (ɑ = 0.5)
+![Adaptive Lightness ɑ = 0.5](images/adaptive-05.png)
 ///
 
 /// tab | Adaptive Lightness (ɑ = 5)
+![Adaptive Lightness ɑ = 5](images/adaptive-5.png)
 ///
 
-There are various ways in which adaptive lightness could be implemented, but we will talk about to basic approaches
-which we will call "hue independent" and "hue dependent". A hue independent approach will select some target lightness
-that is used as a focal point. This focal point can anywhere, but it will be the same regardless of the hue. This focal
-point will be used to calculate new anchor points relative to the focal point that will guide the chroma reduction. A
-hue dependent approach will select a lightness target that corresponds with the maximum chroma for the current hue in
-the target gamut, or the cusp. This creates a focal point that differs for every hue causing the anchor points to also
-differ for every hue.
+There are various ways in which adaptive lightness could be implemented, but we will talk about two basic approaches:
+hue independent and hue dependent.
+
+A hue independent approach will select some lightness focal point. This focal point can be anywhere, but it will be the
+same regardless of the hue. This focal point will be used to calculate new anchor points relative to the focal point
+based on the given **ɑ** that will guide the chroma reduction.
+
+A hue dependent approach will select a lightness focal point for each hue. In such approaches, the lightness selected
+is often a lightness value that corresponds with the maximum chroma for the current hue in the target gamut, this
+lightness and chroma point being called the cusp. By biasing chroma reduction towards the lightness of the cusp, it
+better accounts for the geometry of the perceptual color space and ensures that the process is providing colors with
+more, not less, chroma in all situations.
+
+/// tab | Hue Independent (ɑ = 0.5)
+![Hue Independent ɑ = 0](images/adaptive-hue-independent-05.png)
+///
+
+/// tab | Hue Dependent (ɑ = 0.5)
+![Hue Dependent ɑ = 0.5](images/adaptive-hue-dependent-05.png)
+///
+
+/// note
+The current algorithms we use to determine anchor points relative to a lightness focal point is described in the
+following article by the author of Oklab:
+
+- [Hue independent](https://bottosson.github.io/posts/gamutclipping/#adaptive-%2C-hue-independent).
+- [Hue dependent](https://bottosson.github.io/posts/gamutclipping/#adaptive-%2C-hue-dependent).
+
+These algorithms are not specific to Oklab and are general functions that can be applied to any similar color space.
+///
 
 Generally, the hue dependent approach is the more preferable approach, but it is more complex to calculate the cusp in
-every supported gamut for a every perceptual space in a performant way. Conversely, the hue independent approach
-requires no specialized calculation as the target lightness that is used as a focal point is a single, arbitrary point
-with no relation to the perceptual hue or the gamut making it fast and easy to calculate the required anchor points, but
-if a smaller factor is used, the advantage of hue dependent becomes less noticeable.
+every supported gamut for a every perceptual space in a performant, generic way. Conversely, the hue independent
+approach requires no specialized calculation as the lightness focal point is a single, arbitrary point with no relation
+to the perceptual hue or the gamut making it fast and easy to calculate the required anchor points, but its practical
+range will be more limited. If only a smaller factor is needed, the hue dependent approach could be a faster, and a more
+desirable approach.
 
 Currently, ColorAide only implements a hue independent approach as a generalized approach for _any_ perceptual space
-and _any_ target gamut is difficult, that's not to say that more specialized, limited hue dependent approaches can't be
-offered in the future, but none are currently offered.
+and _any_ target gamut is difficult, that's not to say that a more specialized, limited hue dependent approach can't be
+offered in the future, but none are currently offered at this time.
 
-To enable adaptive lightness, simply set the `adaptive` option in any MINDE chroma or ray trace approach. A factor of
-0 is basically constant lightness and while an approach close to 5 will heavily be biased towards the focal point. 
-Practical values are likely more in the range of 0 - 1, if not lower.
+To enable hue independent adaptive lightness, simply set the `adaptive` option in any MINDE chroma or ray trace
+gamut mapping method. A factor of 0 is equivalent to constant lightness and will disables adaptive lightness. Any other
+positive value will create a bias towards the focal point of 50% lightness. The biasing of the chroma reduction towards
+the focal point will increase as the provided factor increases. A practical range might be more in the ballpark of
+0 - 0.5, maybe even lower, but higher values can be used if desired.
 
-Generally, these can be used on any perceptual space against any target gamut, but it should noted that the ray trace
-algorithm in 90% of the perceptual spaces is reliable, but in a few it should be avoided.
+/// tab | Ray Trace
+```py play
+Steps(
+    [
+        c.fit('srgb', method='raytrace', pspace='oklch', adaptive=0.0)
+        for c in Color.steps(['oklch(80% 0.4 0)', 'oklch(80% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+Steps(
+    [
+        c.fit('srgb', method='raytrace', pspace='oklch', adaptive=0.5)
+        for c in Color.steps(['oklch(80% 0.4 0)', 'oklch(80% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+```
+///
+
+/// tab | MINDE Chroma
+```py play
+Steps(
+    [
+        c.fit('srgb', method='minde-chroma', pspace='oklch', adaptive=0.0, jnd=0)
+        for c in Color.steps(['oklch(80% 0.4 0)', 'oklch(80% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+Steps(
+    [
+        c.fit('srgb', method='minde-chroma', pspace='oklch', adaptive=0.5, jnd=0)
+        for c in Color.steps(['oklch(80% 0.4 0)', 'oklch(80% 0.4 360)'], space='oklch', steps=100, hue='longer')
+    ]
+)
+```
+///
+
+//// note | Adaptive Lightness with Ray Trace
+Generally, adaptive lightness can be used on any perceptual space against any target gamut, but it should be noted that
+the ray trace algorithm can have trouble if gamut mapping in certain perceptual spaces or if given high **ɑ** in others.
+In about 90% of the perceptual spaces, it can be sufficiently reliable. For instance, Oklab/OkLCh has no noticeable
+issues even up to an **ɑ** value of 5. Many times we can still take advantage of the speed improvements of ray trace
+with adaptive lightness, but in some cases, MINDE may be the only option due to its slower, but more direct approach at
+reducing chroma.
 
 The ray trace approach was designed to be a faster way to calculate constant lightness chroma reduction, something it
-excels at. Constant lightness is particularly well suited for this approach due to the gentle curves that the perceptual
-spaces follow in linear light RGB spaces. In some perceptual spaces, especially with larger ɑ values, the curves can be
-more extreme, or curve in multiple directions which can stress the algorithm. One perceptual space that is particularly
-sensitive to this problem using the ray trace approach is the Luv color, only the smallest ɑ are usable with Luv due to
-issues in the dark blue region.
+excels at. Constant lightness is particularly well suited for this approach as the chroma reduction lines of the
+perceptual space form gentle curves in the linear light RGB spaces. When using adaptive lightness, the lightness is no
+longer constant and in some perceptual spaces can causes the curves to be more severe or bend in multiple dimensions
+causing the algorithm to be slightly less accurate or, in some cases, extremely less accurate, especially when using
+larger **ɑ** values.
 
-Generally, the results for adaptive lightness using the ray trace approach will be pretty good, especially with smaller
-adaptive ɑ values, but if using certain perceptual spaces, there may be areas of less accuracy, and in the case of Luv,
-a regions that are completely off. MINDE will generally be more accurate, but slower.
+The worst offender out of the perceptual spaces that ColorAide currently offers is Luv/LCh~uv~. This particular space
+bends the blue hues differently than most of the others. When using constant lightness, Luv/LCH~uv~ works great, but as
+soon as adaptive lightness is introduced, even at low levels of **ɑ** = 0.05, the ray trace algorithm will struggle in
+the dark blue region.
 
+Comparing constant lightness and adaptive lightness in Luv/LCH~uv~ with the ray trace method in the dark blue region, we
+can see that with constant lightness the results are quite accurate. When we enable adaptive lightness, it creates an
+extreme curve in the dark blue region that can cause some of our traces along the chroma reduction curve to find colors
+that are completely inaccurate. Additionally, we can run these same tests using the MINDE approach (with JND set to zero
+for similar results) and see results in both cases are accurate.
 
-## Why Not Just Clip?
-
-In the past, clipping has been the default way in which out of gamut colors have been handled in web browsers. It is
-fast, and has generally been fine as most browsers have been constrained to using sRGB. Additionally, it can perform
-better in some circumstances depending on what you are doing.
-
-ColorAide currently only has clipping and chroma reduction approaches to gamut mapping. Clipping, which is often done in
-the RGB gamut, can often be preferred when colorfulness is found to be most important as it will keep colors vivid,
-though hue and lightness can change. For instance, in photos, if you have colors that are entirely in one gamut and that
-gamut is fairly close to a smaller target gamut, clipping can provide reasonable results. Clipping a Display P3 or even
-a Rec. 2020 photo may give visually, reasonable results.
-
-When preserving chroma, the lightness and hue is prioritized. In the target gamut there may simply not be a color vivid
-enough with that hue and lightness to map to. When the gamut difference of the source and target are large enough, the
-results in some color regions can be less ideal.
-
-Consider the example below that displays colors in a Rec. 2020 image. When comparing clipping to chroma reduction, we
-can see that the clipping results feel arguably more natural. Note that the original will be modified by the browser
-you are viewing it in to display it on your monitor.
-
-/// tab | Original
-![Rec. 2020 Spectrum](./images/rec2020-spectrum.jpg)
-///
-
-/// tab | Clip
-![Rec. 2020 Spectrum Clipped](./images/rec2020-spectrum-clip.jpg)
-///
-
-///tab | Chroma Reduction
-![Rec. 2020 Spectrum Clipped](./images/rec2020-spectrum-reduce.jpg)
-///
-
-This doesn't mean clipping or preserving color is simply superior as there are use cases where preserving lightness
-is more preferable.
-
-Let's consider some common cases that arise in CSS, cases that often require placing text on colored backgrounds. If we
-wanted to generate tones using LCH, we can select a color and convert it to that space. Then we can just adjust the
-lightness. A gamut mapping approach such as chroma reduction will ensure the chroma is reasonable for each level of
-lightness making decent tones, while clipping will instead favor the colorfulness not retaining the lightness and
-sometimes even the hue.
-
+/// tab | Ray Trace
 ```py play
-tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
-green = Color('green').convert('lch-d65')
-
-Steps([green.clone().set('l', tone).fit('srgb', method='raytrace', pspace='lch-d65') for tone in tones])
-Steps([green.clone().set('l', tone).clip('srgb') for tone in tones])
-```
-
-If creating gradients that may have text overlaid on them, clipping doesn't keep consistent or expected lightness
-either. Colors of the same lightness don't always have the same maximum chroma within a certain color gamut.
-
-In the example below, we interpolate between two colors, both of which have 75% lightness. What we would expect is that
-the colors will have a similar lightness close to 75%, but clipping will yield much darker, vivid colors with
-inconsistent lightness, while chroma reduction will have colors that are generally closer to the expected lightness.
-
-```py play
-
 Steps(
     [
-        c.fit('srgb', method='raytrace', pspace='lch-d65')
-        for c in Color.steps(['color(--lch-d65 75% 120 0)', 'color(--lch-d65 75% 120 360)'], space='lch-d65', steps=500, hue='longer')
+        c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.0)
+        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
     ]
 )
-
 Steps(
     [
-        c.clip('srgb')
-        for c in Color.steps(['color(--lch-d65 75% 120 0)', 'color(--lch-d65 75% 120 360)'], space='lch-d65', steps=500, hue='longer')
+        c.fit('srgb', method='raytrace', pspace='lchuv', adaptive=0.5)
+        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
     ]
 )
 ```
+///
 
-No perceptual color space is perfect and no gamut mapping approach perfect for all situations either. There are other
-gamut mapping approaches that can even offer compromises providing better better hue preservation than clipping with
-less shifts in lightness.
+/// tab | MINDE Chroma
+```py play
+Steps(
+    [
+        c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.0, jnd=0)
+        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+    ]
+)
+Steps(
+    [
+        c.fit('srgb', method='minde-chroma', pspace='lchuv', adaptive=0.5, jnd=0)
+        for c in Color.steps(['color(--lchuv 10% 100 270)', 'color(--lchuv 90% 100 270)'], space='luv', steps=100)
+    ]
+)
+```
+///
 
-In the future, it is possible that ColorAide can expose more approaches that provide compromises between preserving
-lightness and colorfulness, but it is good to know why some approaches may be more favorable at times than others.
+If you are using a perceptual space such as Oklab, you will likely have no issues and can take full advantage of the
+speed improvements that ray trace brings. If you are using one of the few perceptual spaces that stress the algorithm
+too much, such as Luv/LCh~uv~, you may want to use MINDE which is more accurate, but slower. When using MINDE, if you
+want to also have the closest chroma reduction while maintaining the hue, then selecting a JND of 0 will not only
+increase its speed, but provide results closer to ray trace, albeit still slower.
+////
 
 ## Pointer's Gamut
 

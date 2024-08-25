@@ -16,3 +16,5 @@
 *[SVG]: Scalable Vector Graphics
 *[UCS]: Uniform Chromaticity Space
 *[WCAG]: Web Content Accessibility Guidelines
+*[LUT]: look up table
+*[LUTs]: look up tables
