@@ -199,8 +199,9 @@ def rect_to_polar(a: float, b: float) -> tuple[float, float]:
 def polar_to_rect(c: float, h: float) -> tuple[float, float]:
     """Take rectangular coordinates and make them polar."""
 
-    a = c * math.cos(math.radians(h))
-    b = c * math.sin(math.radians(h))
+    r = math.radians(h)
+    a = c * math.cos(r)
+    b = c * math.sin(r)
     return a, b
 
 

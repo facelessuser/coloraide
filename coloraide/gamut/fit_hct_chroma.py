@@ -1,18 +1,12 @@
 """HCT gamut mapping."""
 from __future__ import annotations
-from ..gamut.fit_lch_chroma import LChChroma
+from ..gamut.fit_minde_chroma import MINDEChroma
 
 
-class HCTChroma(LChChroma):
+class HCTChroma(MINDEChroma):
     """HCT chroma gamut mapping class."""
 
     NAME = "hct-chroma"
-
-    EPSILON = 0.01
-    LIMIT = 2.0
-    DE = "hct"
-    DE_OPTIONS = {}
-    SPACE = "hct"
-    MIN_LIGHTNESS = 0
-    MAX_LIGHTNESS = 100
-    MIN_CONVERGENCE = 0.0001
+    JND = 2.0
+    DE_OPTIONS = {"method": "hct"}
+    PSPACE = "hct"

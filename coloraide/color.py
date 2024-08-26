@@ -60,6 +60,7 @@ from .distance.delta_e_z import DEZ
 from .contrast import ColorContrast
 from .contrast.wcag21 import WCAG21Contrast
 from .gamut import Fit
+from .gamut.fit_minde_chroma import MINDEChroma
 from .gamut.fit_lch_chroma import LChChroma
 from .gamut.fit_oklch_chroma import OkLChChroma
 from .gamut.fit_raytrace import RayTrace
@@ -1424,6 +1425,7 @@ Color.register(
         DEZ(),
 
         # Fit
+        MINDEChroma(),
         LChChroma(),
         OkLChChroma(),
         RayTrace(),

@@ -3,6 +3,7 @@ from functools import lru_cache
 from PIL import Image
 from PIL import ImageCms
 import time
+import json
 import argparse
 import sys
 import os
@@ -14,6 +15,8 @@ try:
     from coloraide_extras.everything import ColorAll as Color
 except ImportError:
     from coloraide.everything import ColorAll as Color
+
+GMAP = {}
 
 
 def printt(t):
@@ -46,11 +49,8 @@ def printt(t):
 
 
 @lru_cache(maxsize=1024 * 1024)
-def apply_gamut_map(amount, p, gamut, fit, jnd, pspace):
+def apply_gamut_map(amount, p, gamut):
     """Apply filter."""
-
-    if jnd is not None:
-        jnd = float(jnd)
 
     has_alpha = len(p) > 3
     color = Color(gamut, [x / 255 for x in p[:3]], p[3] / 255 if has_alpha else 1)
@@ -59,11 +59,11 @@ def apply_gamut_map(amount, p, gamut, fit, jnd, pspace):
     # Fit the color back into the color gamut and return the results
     return tuple(
         int(x * 255)
-        for x in color.convert('srgb').fit(method=fit, jnd=jnd, pspace=pspace)[:4 if has_alpha else -1]
+        for x in color.convert('srgb').fit(**GMAP)[:4 if has_alpha else -1]
     )
 
 
-def process_image(img, output, amount, gamut, fit, jnd, pspace):
+def process_image(img, output, amount, gamut):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
@@ -82,7 +82,7 @@ def process_image(img, output, amount, gamut, fit, jnd, pspace):
         print('> 0%', end='\r')
         for i in range(im.size[0]):
             for j in range(im.size[1]):
-                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut, fit, jnd, pspace)
+                pixels[i, j] = apply_gamut_map(amount, pixels[i, j], gamut)
             print(f'> {int((i * j) * factor)}%', end="\r")
         print('> 100%')
         t = time.perf_counter_ns() - start
@@ -95,25 +95,28 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog='apply_gamut.py',
-        description='Force higher chroma and apply gamut mapping to an image.'
+        description=(
+            'Apply gamut mapping to an image.'
+            'Optionally force an artificial higher chroma to the image before gamut mapping.'
+        )
     )
     parser.add_argument('--input', '-i', help='Input image.')
     parser.add_argument('--output', '-o', help='Output name and location.')
     parser.add_argument('--amount', '-a', type=float, help='Amount to increase chroma.')
     parser.add_argument('--gamut', default='srgb', help="Photo's current gamut.")
     parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
-    parser.add_argument('--gamut-jnd', '-j', help="Adjust JND of old style chroma reduction.")
-    parser.add_argument('--gamut-pspace', '-p', default="oklch", help="Specify perceptual space of ray trace method.")
+    parser.add_argument('--gamut-options', '-G', default="{}", help="Define gamut mapping options.")
     args = parser.parse_args()
+
+    global GMAP
+    GMAP = {'method': args.gamut_map}
+    GMAP.update(json.loads(args.gamut_options))
 
     process_image(
         args.input,
         args.output,
         args.amount,
-        args.gamut,
-        args.gamut_map,
-        args.gamut_jnd,
-        args.gamut_pspace
+        args.gamut
     )
 
     return 0

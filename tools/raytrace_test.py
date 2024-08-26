@@ -8,7 +8,8 @@ import json
 sys.path.insert(0, os.getcwd())
 
 import tools.gamut_3d_plotly as plt3d  # noqa: E402
-from coloraide.gamut.fit_raytrace import raytrace_box  # noqa: E402
+from coloraide.gamut.fit_raytrace import raytrace_box, project_onto  # noqa: E402
+from coloraide.gamut.tools import adaptive_hue_independent  # noqa: E402
 from coloraide.gamut import fit_raytrace as fit  # noqa: E402
 from coloraide.everything import ColorAll as Color  # noqa: E402
 from coloraide import algebra as alg  # noqa: E402
@@ -100,7 +101,7 @@ def plot_interpolation(
 
     target = Color.CS_MAP[space]
     flags = {
-        'is_cyl': isinstance(target, target.is_polar()),
+        'is_cyl': target.is_polar(),
         'is_labish': isinstance(target, plt3d.Labish),
         'is_lchish': isinstance(target, plt3d.LChish),
         'is_hslish': isinstance(target, plt3d.HSLish),
@@ -190,7 +191,9 @@ def simulate_raytrace_gamut_mapping(args):
 
     options = json.loads(args.gmap_options)
     pspace = options.get('pspace', 'lch-d65')
-    is_lab = isinstance(color.CS_MAP[pspace], fit.Labish)
+    adaptive = options.get('adaptive', 0.0)
+
+    polar = color.CS_MAP[pspace].is_polar()
     space = args.gamut_rgb
 
     cs = color.CS_MAP[space]
@@ -219,16 +222,28 @@ def simulate_raytrace_gamut_mapping(args):
     mapcolor = color.convert(pspace, norm=False) if orig != pspace else color.clone().normalize(nans=False)
     achroma = mapcolor.clone()
     first = mapcolor.clone()
-    if is_lab:
-        l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
-        chroma, hue = alg.rect_to_polar(mapcolor[a], mapcolor[b])
-        achroma[a] = 0
-        achroma[b] = 0
-    else:
+    if polar:
         l, c, h = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        light = mapcolor[l]
         chroma = mapcolor[c]
         hue = mapcolor[h]
+        ab = alg.polar_to_rect(chroma, hue)
         achroma[c] = 0
+    else:
+        l, a, b = mapcolor._space.indexes()  # type: ignore[attr-defined]
+        ab = [mapcolor[a], mapcolor[b]]
+        light = mapcolor[l]
+        chroma, hue = alg.rect_to_polar(*ab)
+        achroma[a] = 0
+        achroma[b] = 0
+
+    if adaptive:
+        max_light = color.new(space, [1.0, 1.0, 1.0]).convert(pspace)[l]
+        alight = adaptive_hue_independent(light / max_light, max(chroma, 0) / max_light, adaptive) * max_light
+        achroma[l] = alight
+    else:
+        alight = light
+
     achromatic = [sum(achroma.clone().convert(space, in_place=True)[:-1]) / 3] * 3
 
     # Return white or black if the achromatic version is not within the RGB cube.
@@ -245,13 +260,6 @@ def simulate_raytrace_gamut_mapping(args):
         points.append(color.convert(space)[:-1])
         points.append(achromatic)
     else:
-        light = mapcolor[l]
-        if is_lab:
-            ab = alg.polar_to_rect(chroma, hue)
-            mapcolor[a] = ab[0]
-            mapcolor[b] = ab[1]
-        else:
-            mapcolor[c] = chroma
         gamutcolor = mapcolor.convert(space)
 
         # Create a ray from our current color to the color with zero chroma.
@@ -260,16 +268,34 @@ def simulate_raytrace_gamut_mapping(args):
         # through the new corrected color finding the intersection again.
         for i in range(4):
             if i:
-                gamutcolor.convert(pspace, in_place=True)
-                if is_lab:
-                    chroma = alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0]
-                    ab = alg.polar_to_rect(chroma, hue)
-                    gamutcolor[l] = light
-                    gamutcolor[a] = ab[0]
-                    gamutcolor[b] = ab[1]
+                gamutcolor.convert(pspace, in_place=True, norm=False)
+
+                if adaptive:
+                    # Correct the point onto the desired interpolation path
+                    if polar:
+                        gamutcolor[l], a_, b_ = project_onto(
+                            [gamutcolor[l], *alg.polar_to_rect(gamutcolor[c], gamutcolor[h])],
+                            [light, *ab],
+                            [alight, 0.0, 0.0]
+                        )
+                        gamutcolor[c], gamutcolor[h] = alg.rect_to_polar(a_,b_)
+                    else:
+                        gamutcolor[l], gamutcolor[a], gamutcolor[b] = project_onto(
+                            [gamutcolor[l], gamutcolor[a], gamutcolor[b]],
+                            [light, *ab],
+                            [alight, 0.0, 0.0]
+                        )
                 else:
-                    gamutcolor[l] = light
-                    gamutcolor[h] = hue
+                    # Correct lightness and hue
+                    gamutcolor[l] = alight
+                    if polar:
+                        gamutcolor[h] = hue
+                    else:
+                        gamutcolor[a], gamutcolor[b] = alg.polar_to_rect(
+                            alg.rect_to_polar(gamutcolor[a], gamutcolor[b])[0],
+                            hue
+                        )
+
                 gamutcolor.convert(space, in_place=True)
             intersection = raytrace_box(achromatic, gamutcolor[:-1], bmax=bmax)
             if intersection:
