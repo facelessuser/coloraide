@@ -167,28 +167,15 @@ have pivot points and the transition may not be quite as smooth at these locatio
 In this document, we use the term "continuous" in two ways when talking about interpolation: continuous vs
 [discrete ](#discrete-interpolation) and the interpolation method whose literal name is `continuous`.
 
-The `interpolate` method only creates continuous interpolations, meaning that for any point along the interpolation
-line, you will get a unique color. Continuous interpolation in this sense directly contrasts with with
-[discrete interpolation](#discrete-interpolation) which provides quantized color results where multiple inputs are
-associated with a limited set of colors along the interpolation line.
-
-The `continuous` interpolation method is simply a piecewise, linear interpolation method that interpolates defined
-channels continuously across one more undefined channels.
-
-Normal, piecewise interpolation only considers a single segments under interpolation at a time. When channels are
-undefined, the undefined channel on one end of a segment will adopt the value of the other defined channel on the other
-side of the segment, and if that other channel is also undefined, then any color interpolated between the two will also
-have no defined value for the channel. This approach to interpolation never considers any context beyond the segment it
-is looking at.
-
-The `continuous` interpolation method is a linear piecewise approach created for ColorAide that will actually
-interpolate through undefined channels, using context from all the colors to be interpolated. What this means is that if
-you have multiple colors, and one or more of the colors have the same channel undefined, the colors with that channel
-defined will have those values interpolated across the undefined gaps across all the segments. This is probably better
-illustrated with an example.
+The `continuous` interpolation approach, is simply a piecewise, linear interpolation method that interpolates defined
+channels continuously across two or more segments with undefined channels, essentially taking into account all the
+segments in the piecewise chain when processing undefined channels. This differs from the default CSS piecewise
+interpolation approach which only takes into context two segments at any given time. What this means is that if you have
+multiple colors, and one or more of the colors have the same channel undefined, the colors with that channel defined
+will be interpolated across the undefined gaps spanning one or more segments in the chain.
 
 In this example, we have 3 colors. The end colors both define lightness, but the middle color is undefined. We can see
-when we use normal, linear piecewise interpolation that we get a discontinuity. But with continuous linear
+that when we use normal, linear piecewise interpolation that we get a discontinuity. But with `continuous`
 interpolation, we get a smooth interpolation of the lightness through the undefined channel.
 
 ```py play
@@ -202,8 +189,10 @@ Color.interpolate(colors, space='oklab', method='continuous')
 ```
 
 Now, if have colors on the side that are not between two defined colors, all those colors will adopt the defined value
-of the one that is defined. This time we have a single color with all components defined, but all the colors to the
-left are missing the lightness. All colors with the undefined lightness will assume the lightness of the defined color.
+of the first color on either the right or left that is defined. In the example below, we have a single color with all
+components defined, but all the colors to the left are missing the lightness. Again, in the normal `linear` approach, we
+see a discontinuity, but with the `continous` approach, all colors with the undefined lightness will assume the
+lightness of the defined color.
 
 ```py play
 colors = [
@@ -214,6 +203,9 @@ colors = [
 Color.interpolate(colors, space='oklab', method='linear')
 Color.interpolate(colors, space='oklab', method='continuous')
 ```
+
+This approach is useful for more natural, multi-color interpolations and is used as foundation for our spline
+interpolation approaches which often require the context of at least four colors when applying their logic.
 
 ## Cubic Spline Interpolation
 
