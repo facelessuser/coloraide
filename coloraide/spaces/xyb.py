@@ -6,6 +6,7 @@ https://ds.jpeg.org/whitepapers/jpeg-xl-whitepaper.pdf
 from __future__ import annotations
 from .. import algebra as alg
 from ..spaces import Space, Labish
+from ..spaces.lab import ACHROMATIC_THRESHOLD
 from ..types import Vector
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -81,6 +82,11 @@ class XYB(Labish, Space):
         Channel("y", 0.0, 0.845),
         Channel("b", -0.45, 0.45, flags=FLG_MIRROR_PERCENT)
     )
+
+    def is_achromatic(self, coords: Vector) -> bool:
+        """Check if color is achromatic."""
+
+        return alg.rect_to_polar(coords[0], coords[2])[0] < ACHROMATIC_THRESHOLD
 
     def names(self) -> tuple[str, ...]:
         """Return Lab-ish names in the order L a b."""

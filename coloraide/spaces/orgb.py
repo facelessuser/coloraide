@@ -6,7 +6,7 @@ https://graphics.stanford.edu/~boulos/papers/orgb_sig.pdf
 from __future__ import annotations
 import math
 from .. import algebra as alg
-from ..spaces import Space, Labish
+from ..spaces.lab import Lab
 from ..types import Vector
 from ..cat import WHITES
 from ..channels import Channel, FLG_MIRROR_PERCENT
@@ -58,7 +58,7 @@ def orgb_to_srgb(lcc: Vector) -> Vector:
     return alg.matmul(LC1C2_TO_RGB, rotate(lcc, theta - theta0), dims=alg.D2_D1)
 
 
-class oRGB(Labish, Space):
+class oRGB(Lab):
     """oRGB color class."""
 
     BASE = 'srgb'
