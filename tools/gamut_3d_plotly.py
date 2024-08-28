@@ -446,13 +446,16 @@ def plot_gamut_in_space(
     opacity=1.0,
     edges=False,
     edge_color='#333333',
-    gmap='raytrace',
+    gmap=None,
     size=(800, 800),
     camera=None,
     aspect=None,
     projection='perspective'
 ):
     """Plot the given space in sRGB."""
+
+    if gmap is None:
+        gmap = {}
 
     io.templates.default = 'plotly_dark' if dark else 'plotly'
 
