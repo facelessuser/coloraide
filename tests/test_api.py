@@ -9,6 +9,34 @@ import math
 class TestMisc(util.ColorAsserts, unittest.TestCase):
     """Test miscellaneous API features."""
 
+    def test_coord_precision(self):
+        """Test coordinate precision."""
+
+        self.assertEqual(Color('purple').coords(precision=3), [0.502, 0.0, 0.502])
+
+    def test_alpha_precision(self):
+        """Test coordinate precision."""
+
+        self.assertEqual(Color('purple').set('alpha', 0.751).alpha(precision=1), 0.8)
+
+    def test_get_precision(self):
+        """Test coordinate precision via get."""
+
+        self.assertEqual(Color('purple').get('red', precision=3), 0.502)
+
+    def test_to_string_alpha_precision(self):
+        """Test control of alpha precision."""
+
+        self.assertEqual(
+            Color('purple').convert('lab').set('alpha', 0.5234).to_string(precision=3),
+            'lab(29.7 56.1 -36.3 / 0.523)'
+        )
+
+        self.assertEqual(
+            Color('purple').convert('lab').set('alpha', 0.5234).to_string(precision=0, precision_alpha=3),
+            'lab(30 56 -36 / 0.523)'
+        )
+
     def test_max_precision(self):
         """Test max precision."""
 
@@ -92,6 +120,17 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         c2 = Color(d)
 
         self.assertEqual(c1, c2)
+
+    def test_color_dict_precision(self):
+        """Color dictionary precision."""
+
+        c1 = Color('purple').set('alpha', 0.7512).convert('lab')
+        d = c1.to_dict(precision=3)
+
+        self.assertEqual(d, {'space': 'lab', 'coords': [29.7, 56.1, -36.3], 'alpha': 0.751})
+
+        d2 = c1.to_dict(precision=0, precision_alpha=2)
+        self.assertEqual(d2, {'space': 'lab', 'coords': [30.0, 56.0, -36.0], 'alpha': 0.75})
 
     def test_dict_input(self):
         """Test dictionary inputs."""

@@ -4,6 +4,11 @@
 
 -   **NEW**: Officially support Python 3.13.
 -   **NEW**: Define HTML output representation for Jupyter via `_repr_html_`.
+-   **NEW**: `get()`, `coords()`, `alpha()`, `to_dict()` can now return channel values with a specified precision via
+    the new `precision` parameter.
+-   **NEW**: `to_string()` and `to_dict()` now have an optional `precision_alpha` parameter to control the precision of
+    alpha channel independently from other channels. If only `precision` is specified, the alpha channel will assume the
+    same precision as all other channels.
 -   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
 -   **NEW**: Remove deprecated `algebra.npow` function. `algebra.spow` should be used instead.
 -   **NEW**: New generic `minde-chroma` gamut mapping method that allows specifying any Lab-ish or LCh-ish to operate
