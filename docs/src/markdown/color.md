@@ -62,10 +62,30 @@ Dictionaries must define the `space` key and the `coords` key containing values 
 `alpha` channel is kept separate and can be omitted, and if so, will be assumed as 1.
 
 ```py play
-d = Color('red').to_dict()
+d = Color('purple').to_dict()
 print(d)
 Color(d)
 ```
+
+You can also control the precision of the output values with the `precision` parameter.
+
+```py play
+d = Color('purple').to_dict(precision=3)
+print(d)
+Color(d)
+```
+
+If you need to control alpha precision separately, you can also specify the alpha channels precision separately with
+`precision_alpha`. This can be useful if you have radically different scaling between alpha and color coordinates.
+
+```py play
+d = Color('purple').set('alpha', 0.75).convert('lab').to_dict(precision=0, precision_alpha=3)
+print(d)
+Color(d)
+```
+
+/// new | New in 4.0: Precision Output Control
+///
 
 ### String Inputs
 

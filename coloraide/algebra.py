@@ -108,7 +108,7 @@ def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
         return _round(f)
 
     # Ignore infinity
-    if math.isinf(f):
+    if not math.isfinite(f):
         return f
 
     # Round to the specified precision

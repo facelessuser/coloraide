@@ -62,6 +62,20 @@ doing and the values you are working in.
 Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
 ```
 
+### Alpha Precision
+
+/// new | New in 4.0: Alpha Precision Control
+///
+
+There are some times where the channel coordinates may be scaled differently than the alpha channel which is always
+between 0 - 1. In these cases, it may be desirable to use a different precision for alpha, especially when rounding
+other channels to integers. `precision_alpha` allows for the alpha channel precision to be handled independently of all
+other channels. If only `precision` is provided, `precision_alpha` is assumed to be the same.
+
+```py play
+Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=0, precision_alpha=5)
+```
+
 ### Fit
 
 `fit` is set to `#!py3 True` by default and controls whether colors are fit to their gamut or not. Some color spaces are

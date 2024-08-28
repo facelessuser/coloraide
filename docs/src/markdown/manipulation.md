@@ -109,6 +109,18 @@ color.coords()
 color.coords(nans=False)
 ```
 
+You can control the precision of output values in either `coords()` or `alpha()` with the `precision` parameter.
+
+```py play
+color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)
+color
+color.coords(precision=2)
+color.alpha(precision=1)
+```
+
+/// new | New in 4.0: Precision Output Control
+///
+
 ### Access By Functions
 
 Colors can also be accessed and modified in more advanced ways with special access functions `get()` and `set()`.
@@ -192,6 +204,15 @@ color.set(
 )
 ```
 
+Lastly, you can control the precision of your output values with the `precision` parameter.
+
+```py play
+color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)
+color
+color.get('lightness', precision=2)
+color.get('alpha', precision=1)
+```
+
 /// warning | Indirect Channel Modifications
 Indirect channel modification is very useful, but keep in mind that it may give you access to color spaces that are
 incompatible due to gamut size. Additionally, the feature converts the color to the target color space, modifies it,
@@ -199,6 +220,9 @@ and then converts it back making it susceptible to any possible [round trip erro
 ///
 
 /// new | New in 1.5: Getting/Setting Multiple Channels
+///
+
+/// new | New in 4.0: Precision Output Control
 ///
 
 ## Undefined Values
