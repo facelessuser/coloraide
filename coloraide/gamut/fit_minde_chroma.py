@@ -88,7 +88,7 @@ class MINDEChroma(Fit):
             if sdr and (lightness >= max_light or math.isclose(lightness, max_light, abs_tol=1e-6)):
                 clip_channels(color.update(temp))
                 return
-            elif lightness <= temp.update(XYZ, BLACK).convert(pspace, in_place=True)[l]:
+            elif lightness <= temp.update(XYZ, BLACK, mapcolor[-1])[l]:
                 clip_channels(color.update(temp))
                 return
 
