@@ -614,10 +614,8 @@ class Color(metaclass=ColorMeta):
             return self if in_place else self.clone()
 
         # Actually convert the color
-        c, coords = convert.convert(self, space)
         this = self if in_place else self.clone()
-        this._space = c
-        this._coords[:-1] = coords
+        this._space, this._coords[:-1] = convert.convert(self, space)
 
         # Normalize achromatic colors, but skip if we internally don't need this.
         if norm and this._space.is_polar() and this.is_achromatic():
