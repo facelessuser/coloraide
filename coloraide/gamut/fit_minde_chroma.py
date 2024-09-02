@@ -26,11 +26,10 @@ def calc_epsilon(jnd: float) -> float:
 
 class MINDEChroma(Fit):
     """
-    LCh chroma gamut mapping class.
+    Chroma reduction with MINDE.
 
-    Adjust chroma (using binary search).
-    This helps preserve the other attributes of the color.
-    Compress chroma until we are are right at the JND edge while still out of gamut.
+    Adjust chroma (using binary search) which helps preserve perceptual hue and lightness.
+    Compress chroma until we are right at the JND edge while still out of gamut.
     Raise the lower chroma bound while we are in gamut or outside of gamut but still under the JND.
     Lower the upper chroma bound anytime we are out of gamut and above the JND.
     Too far under the JND we'll reduce chroma too aggressively.
@@ -98,11 +97,10 @@ class MINDEChroma(Fit):
             chroma, hue = (mapcolor[c], mapcolor[h]) if polar else alg.rect_to_polar(mapcolor[a], mapcolor[b])
             light = mapcolor[l]
             alight = adaptive_hue_independent(light / max_light, max(chroma, 0.0) / max_light, adaptive) * max_light
-            achroma = 0.0
-            low = 0
-            high = 1
+            achroma = low = 0.0
+            high = 1.0
 
-        clip_channels(gamutcolor._hotswap(mapcolor.convert(space, norm=False)))
+        clip_channels(gamutcolor)
 
         # Adjust chroma if we are not under the JND yet.
         if not jnd or mapcolor.delta_e(gamutcolor, **de_options) >= jnd:
@@ -112,14 +110,13 @@ class MINDEChroma(Fit):
             # If high and low get too close to converging,
             # we need to quit in order to prevent infinite looping.
             while (high - low) > self.MIN_CONVERGENCE:
+                value = (high + low) * 0.5
                 if not adaptive:
-                    value = (high + low) * 0.5
                     if polar:
                         mapcolor[c] = value
                     else:
                         mapcolor[a], mapcolor[b] = alg.polar_to_rect(value, hue)
                 else:
-                    value = (high + low) * 0.5
                     mapcolor[l], c_ =  alg.lerp(alight, light, value), alg.lerp(achroma, chroma, value)
                     if polar:
                         mapcolor[c] = c_
@@ -127,10 +124,12 @@ class MINDEChroma(Fit):
                         mapcolor[a], mapcolor[b] = alg.polar_to_rect(c_, hue)
 
                 # Avoid doing expensive delta E checks if in gamut
-                if lower_in_gamut and mapcolor.in_gamut(space, tolerance=0):
+                temp = mapcolor.convert(space, norm=False)
+                if lower_in_gamut and temp.in_gamut(tolerance=0):
                     low = value
                 else:
-                    clip_channels(gamutcolor._hotswap(mapcolor.convert(space, norm=False)))
+                    gamutcolor = temp
+                    clip_channels(gamutcolor)
                     # Bypass distance check if JND is 0
                     de = mapcolor.delta_e(gamutcolor, **de_options) if jnd else 0.0
                     if de < jnd:
@@ -149,4 +148,4 @@ class MINDEChroma(Fit):
                         # We are still outside the gamut and outside the JND
                         high = value
 
-        color._hotswap(gamutcolor.convert(orig, norm=False)).normalize()
+        color.update(gamutcolor)
