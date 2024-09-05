@@ -561,13 +561,14 @@ class Color(metaclass=ColorMeta):
 
         return math.isnan(self.get(name))
 
-    def _handle_color_input(self, color: ColorInput) -> Color:
+    @classmethod
+    def _handle_color_input(cls, color: ColorInput) -> Color:
         """Handle color input."""
 
         if isinstance(color, (str, Mapping)):
-            return self.new(color)
-        elif self._is_color(color):
-            return color if self._is_this_color(color) else self.new(color)
+            return cls.new(color)
+        elif cls._is_color(color):
+            return color if cls._is_this_color(color) else cls.new(color)
         else:
             raise TypeError(f"Unexpected type '{type(color)}'")
 
@@ -576,8 +577,9 @@ class Color(metaclass=ColorMeta):
 
         return self._space.NAME
 
+    @classmethod
     def new(
-        self,
+        cls,
         color: ColorInput,
         data: VectorLike | None = None,
         alpha: float = util.DEF_ALPHA,
@@ -585,7 +587,7 @@ class Color(metaclass=ColorMeta):
     ) -> Color:
         """Create new color object."""
 
-        return type(self)(color, data, alpha, **kwargs)
+        return cls(color, data, alpha, **kwargs)
 
     def clone(self) -> Color:
         """Clone."""
