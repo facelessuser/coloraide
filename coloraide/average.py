@@ -9,7 +9,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def average(
-    create: type[Color],
+    color_cls: type[Color],
     colors: Iterable[ColorInput],
     space: str,
     premultiplied: bool = True,
@@ -17,7 +17,7 @@ def average(
 ) -> Color:
     """Average a list of colors together."""
 
-    obj = create(space, [])
+    obj = color_cls(space, [])
 
     # Get channel information
     cs = obj.CS_MAP[space]

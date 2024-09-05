@@ -17,7 +17,7 @@ class CAT(Plugin, metaclass=ABCMeta):
     NAME = ""
 
     @abstractmethod
-    def adapt(self, w1: Tuple[float, float], w2: Tuple[float, float], xyz: VectorLike) -> Vector:
+    def adapt(self, w1: tuple[float, float], w2: tuple[float, float], xyz: VectorLike) -> Vector:
         """Adapt a given XYZ color using the provided white points."""
 ```
 

@@ -36,6 +36,9 @@
     `SPACE`. Users who have a derived, personal gamut mapping plugin need to update the name accordingly.
 -   **BREAK**: MINDE chroma reduction plugins now specify the JND under the `JND` class attribute instead of `LIMIT`.
     Users who have a derived, personal gamut mapping plugin need to update the name accordingly.
+-   **BREAK**: Interpolation plugin renamed the parameter `create` to `color_cls` which is a more descriptive and less
+    confusing name. If a user interpolation plugin is derived and overrides the `__init__` method, it should update to
+    use `color_cls` instead of `create`.
 -   **FIX**: HWB and HSV cannot normalize hue and saturation the same way as HSL when saturation is negative.
 -   **FIX**: Fix corner case in ZCAM that could throw a domain error.
 -   **FIX**: `Color.new()` was documented as a class method but was internally still a instance method. Ensure it is a

@@ -18,17 +18,17 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     @abstractmethod
     def interpolator(
         self,
-        coordinates: List[Vector],
+        coordinates: list[Vector],
         channel_names: Sequence[str],
-        create: Type['Color'],
-        easings: List[Callable[..., float] | None],
-        stops: Dict[int, float],
+        color_cls: type['Color'],
+        easings: list[Callable[..., float] | None],
+        stops: dict[int, float],
         space: str,
         out_space: str,
         progress: Union[Mapping[str, Callable[..., float]], Callable[..., float]] | None,
         premultiplied: bool,
         extrapolate: bool = False,
-        domain: List[float] | None = None,
+        domain: list[float] | None = None,
         hue: str = 'shorter',
         **kwargs: Any
     ) -> Interpolator:

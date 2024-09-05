@@ -72,7 +72,7 @@ class Interpolator(metaclass=ABCMeta):
         self,
         coordinates: Matrix,
         channel_names: Sequence[str],
-        create: type[Color],
+        color_cls: type[Color],
         easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
@@ -94,14 +94,14 @@ class Interpolator(metaclass=ABCMeta):
         self.coordinates = coordinates
         self.length = len(self.coordinates)
         self.channel_names = channel_names
-        self.create = create
+        self.color_cls = color_cls
         self.progress = progress
         self.space = space
         self._out_space = out_space
         self.extrapolate = extrapolate
         self.current_easing = None  # type: Mapping[str, Callable[..., float]] | Callable[..., float] | None
         self.hue = hue
-        cs = self.create.CS_MAP[space]
+        cs = self.color_cls.CS_MAP[space]
         if cs.is_polar():
             self.hue_index = cs.hue_index()  # type: ignore[attr-defined]
         else:
@@ -164,7 +164,7 @@ class Interpolator(metaclass=ABCMeta):
         return Linear().interpolator(
             coordinates=coords,
             channel_names=self.channel_names,
-            create=self.create,
+            color_cls=self.color_cls,
             easings=[None] * (len(coords) - 1),
             stops=stops,
             space=self.space,
@@ -180,7 +180,7 @@ class Interpolator(metaclass=ABCMeta):
     def out_space(self, space: str) -> None:
         """Set output space."""
 
-        if space not in self.create.CS_MAP:
+        if space not in self.color_cls.CS_MAP:
             raise ValueError(f"'{space}' is not a valid color space")
         self._out_space = space
 
@@ -383,7 +383,7 @@ class Interpolator(metaclass=ABCMeta):
             self.postdivide(coords)
 
         # Create the color and ensure it is in the correct color space.
-        color = self.create(self.space, coords[:-1], coords[-1])
+        color = self.color_cls(self.space, coords[:-1], coords[-1])
         return color.convert(self._out_space, in_place=True)
 
     def ease(self, t: float, channel_index: int) -> float:
@@ -472,7 +472,7 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         self,
         coordinates: Matrix,
         channel_names: Sequence[str],
-        create: type[Color],
+        color_cls: type[Color],
         easings: list[Callable[..., float] | None],
         stops: dict[int, float],
         space: str,
@@ -653,8 +653,8 @@ def carryforward_convert(color: Color, space: str, hue_index: int, powerless: bo
 
 
 def interpolator(
+    color_cls: type[Color],
     interpolator: str,
-    create: type[Color],
     colors: Sequence[ColorInput | stop | Callable[..., float]],
     space: str | None,
     out_space: str | None,
@@ -670,7 +670,7 @@ def interpolator(
 ) -> Interpolator:
     """Get desired blend mode."""
 
-    plugin = create.INTERPOLATE_MAP.get(interpolator)
+    plugin = color_cls.INTERPOLATE_MAP.get(interpolator)
     if not plugin:
         raise ValueError(f"'{interpolator}' is not a recognized interpolator")
 
@@ -678,16 +678,16 @@ def interpolator(
     stops = {}  # type: Any
 
     if space is None:
-        space = create.INTERPOLATE
+        space = color_cls.INTERPOLATE
 
     if not colors:
         raise ValueError('At least one color must be specified.')
 
     if isinstance(colors[0], stop):
-        current = create(colors[0].color)
+        current = color_cls(colors[0].color)
         stops[0] = colors[0].stop
     elif not callable(colors[0]):
-        current = create(colors[0])
+        current = color_cls(colors[0])
         stops[0] = None
     else:
         raise ValueError('Cannot have an easing function as the first item in an interpolation list')
@@ -758,7 +758,7 @@ def interpolator(
     return plugin.interpolator(
         coords,
         current._space.channels,
-        create,
+        color_cls,
         easings,
         stops,
         space,

@@ -1119,8 +1119,8 @@ class Color(metaclass=ColorMeta):
         """
 
         return interpolate.interpolator(
-            method if method is not None else cls.INTERPOLATOR,
             cls,
+            method if method is not None else cls.INTERPOLATOR,
             colors=colors,
             space=space,
             out_space=out_space,
