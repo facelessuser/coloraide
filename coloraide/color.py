@@ -1207,11 +1207,12 @@ class Color(metaclass=ColorMeta):
         """Blend colors using the specified blend mode."""
 
         if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
-            bcolor = [self._handle_color_input(c) for c in backdrop]
+            colors = [self._handle_color_input(c) for c in backdrop]
         else:
-            bcolor = [self._handle_color_input(backdrop)]
+            colors = [self._handle_color_input(backdrop)]
+        colors.insert(0, self)
 
-        color = compositing.compose(self, bcolor, blend, operator, space, out_space)
+        color = compositing.compose(type(self), colors, blend, operator, space, out_space)
         return self._hotswap(color) if in_place else color
 
     def delta_e(
