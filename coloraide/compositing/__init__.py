@@ -9,7 +9,8 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from typing import TYPE_CHECKING
+from ..types import ColorInput, Vector
+from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
@@ -18,11 +19,12 @@ if TYPE_CHECKING:  # pragma: no cover
 def clip_channel(coord: float, channel: Channel) -> float:
     """Clipping channel."""
 
-    a = channel.low  # type: float | None
-    b = channel.high  # type: float | None
+    if channel.bound:
+        a = channel.low  # type: float | None
+        b = channel.high  # type: float | None
 
     # These parameters are unbounded
-    if not channel.bound:  # pragma: no cover
+    else:  # pragma: no cover
         # Will not execute unless we have a space that defines some coordinates
         # as bound and others as not. We do not currently have such spaces.
         a = None
