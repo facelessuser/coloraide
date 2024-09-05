@@ -38,6 +38,8 @@
     Users who have a derived, personal gamut mapping plugin need to update the name accordingly.
 -   **FIX**: HWB and HSV cannot normalize hue and saturation the same way as HSL when saturation is negative.
 -   **FIX**: Fix corner case in ZCAM that could throw a domain error.
+-   **FIX**: `Color.new()` was documented as a class method but was internally still a instance method. Ensure it is a
+    class method.
 
 ## 3.3.1
 
