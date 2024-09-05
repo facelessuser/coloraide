@@ -9,8 +9,7 @@ from . import porter_duff
 from . import blend_modes
 from .. import algebra as alg
 from ..channels import Channel
-from ..types import ColorInput, Vector
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
