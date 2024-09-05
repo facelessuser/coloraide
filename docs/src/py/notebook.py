@@ -402,7 +402,7 @@ def evaluate(node, g, loop=False):
         try:
             for n in node.body:
                 yield from evaluate(n, g, loop)
-        except ExceptionGroup as e:
+        except ExceptionGroup as e:  # noqa: F821
             for n in node.handlers:
                 if n.name:
                     g[n.name] = e
