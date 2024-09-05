@@ -266,8 +266,9 @@ Return
 ## `#!py Color.new` {#new}
 
 ```py
+@classmethod
 def new(
-    self,
+    cls,
     color: ColorInput,
     data: VectorLike | None = None,
     alpha: float = util.DEF_ALPHA,
