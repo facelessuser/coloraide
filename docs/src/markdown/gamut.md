@@ -322,7 +322,8 @@ Steps([c.fit('srgb', method='oklch-chroma') for c in Color.steps(['oklch(90% 0.4
 /// success | The `lch-chroma` gamut mapping is registered in `Color` by default
 ///
 
-LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space. This is the default in ColorAide.
+LCh Chroma applies MINDE Chroma Reduction within the CIELCh color space and is currently the default approach in
+ColorAide.
 
 /// note
 As most colors in ColorAide use a D65 white point by default, LCh D65 is used as the gamut mapping color space.
@@ -443,7 +444,10 @@ Color.register([HCT(), DEHCT(), HCTChroma()])
 
 ### Ray Tracing Chroma Reduction
 
-/// New | New in 3.4
+/// warning | Experimental Gamut Mapping
+///
+
+/// New | New in 4.0
 The default perceptual space is now OkLCh.
 
 Please see [Ray Tracing Chroma Reduction in Any Perceptual Space](#ray-tracing-chroma-reduction-in-any-perceptual-space)
