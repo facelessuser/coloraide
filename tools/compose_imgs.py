@@ -48,13 +48,19 @@ def printt(t):
 def apply_compositing(background, blend, operator, pixels, fit, space):
     """Apply compositing."""
 
-    color = Color('srgb', [x / 255 for x in pixels[0][:-1]], pixels[0][3] / 255)
-    backdrops = [Color('srgb', [x / 255 for x in p[:3]], p[3] / 255) for p in pixels[1:]]
-    color.compose(backdrops, blend=blend, operator=operator, in_place=True, space=space, out_space='srgb').clip()
+    result = Color.layer(
+        [Color('srgb', [x / 255 for x in p[:-1]], p[-1] / 255) for p in pixels],
+        blend=blend,
+        operator=operator,
+        space=space,
+        out_space='srgb'
+    ).clip()
+
     # Overlay first layer on background color in isolation
     if background != 'transparent':
-        color.compose(background, in_place=True).clip()
-    return tuple(int(x * 255) for x in color.fit(method=fit)[:4])
+        result = Color.layer([result, background]).clip()
+
+    return tuple(int(x * 255) for x in result.fit(method=fit)[:4])
 
 
 def process_image(imgs, bg, output, blend, porter_duff, fit, space):

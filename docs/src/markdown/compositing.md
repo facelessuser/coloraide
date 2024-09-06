@@ -1,11 +1,23 @@
 # Compositing and Blending
 
-Alpha compositing and blending are tied together under the umbrella of compositing. Each is just an aspect of
-the overall compositing of colors. Blend is run first, followed by alpha compositing.
+Alpha compositing and blending are tied together under the umbrella of compositing. Each is just an aspect of the
+overall compositing of colors. Compositing simply controls how colors are resolved when they are layered on top of each
+other.
 
 ColorAide implements both alpha compositing and blending as described in the [Compositing and Blending Level 1][compositing-level-1]
-specification. Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `compose` method
-uses the `normal` blend mode and the `source-over` Porter Duff operator.
+specification. Alpha composting is based on [Porter Duff compositing][porter-duff]. By default, the `layer` method is
+used to layer colors on top of each other applying the appropriate compositing, using the `normal` blend mode and the
+`source-over` Porter Duff operator by default.
+
+/// warning | Deprecated 4.0
+`compose` method was deprecated in favor of the new `layer` method.
+///
+
+
+/// new | New in 4.0
+A new `layer` method was added which uses a more intuitive name and aligns with how how multiple colors are handled in
+other similar APIs such as `average()`, `interpolate()`, etc.
+///
 
 ## Blending
 
@@ -29,16 +41,17 @@ But there are many blend modes that could be used, all of which yield different 
   <span class="circle circle-2"></span>
 </span>
 
-When composing, the blend mode can be controlled separately in ColorAide. Here, we again use the `multiply` example
-and replicate it in ColorAide. To apply blending in ColorAide, simply call `compose` with a backdrop color, and the
-calling color will be used as the source.
+When layering colors, the blend mode can be controlled separately in ColorAide. Below, we use the `multiply` example and
+replicate it in ColorAide. To apply various blend modes in ColorAide, simply call `layer` with a list of colors.
+Colors will be layered on top of each other where the left most color is on top and the right most color will be on the
+bottom.
 
 /// tab | Display P3
 ```py play
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, blend='multiply', space="display-p3")
+Color.layer([c1, c2], blend='multiply', space="display-p3")
 ```
 ///
 
@@ -47,15 +60,15 @@ c1.compose(c2, blend='multiply', space="display-p3")
 c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, blend='multiply', space="srgb")
+Color.layer([c1, c2], blend='multiply', space="srgb")
 ```
 ///
 
 /// tip
-`compose()` can output the results in any color space you need by setting `out_space`.
+`layer()` can output the results in any color space you need by setting `out_space`.
 
 ```py play
-Color('#07c7ed').compose(Color('#fc3d99'), blend='multiply', space='srgb', out_space='hsl')
+Color.layer(['#07c7ed', '#fc3d99'], blend='multiply', space='srgb', out_space='hsl')
 ```
 ///
 
@@ -64,9 +77,8 @@ As some browsers apply compositing based on the display's current color space, w
 and Display P3 so that the examples can be compared on different displays. Which of the above matches your browser?
 ///
 
-ColorAide allows you to blend a source over multiple backdrops quite easily as well. Simply send in a list, and the
-colors will be blended from right to left with the right most color being on the bottom of the stack, and the base color
-being used as the source (on the very top).
+ColorAide allows for layering any number of colors as well, simply list of as many colors as you like ordered from left
+to right, left being the top most color.
 
 <span class="isolate blend-multiply">
   <span class="circle circle-1"></span>
@@ -80,7 +92,7 @@ c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c3 = Color('#f5d311')
 c1, c2, c3
-c1.compose([c2, c3], blend='multiply', space="display-p3")
+Color.layer([c1, c2, c3], blend='multiply', space="display-p3")
 ```
 ///
 
@@ -90,12 +102,12 @@ c1 = Color('#07c7ed')
 c2 = Color('#fc3d99')
 c3 = Color('#f5d311')
 c1, c2, c3
-c1.compose([c2, c3], blend='multiply', space="srgb")
+Color.layer([c1, c2, c3], blend='multiply', space="srgb")
 ```
 ///
 
-Lastly, if for any reason, it is desired to compose with blending disabled (e.g. just run alpha compositing), then you
-can simply set `blend` to `#!py3 False`.
+Lastly, if for any reason, it is desired to layer the colors with the blending step disabled (e.g. just run alpha
+compositing), then you can simply set `blend` to `#!py3 False`.
 
 [`multiply`](#multiply) is just one of many blend modes that are offered in ColorAide, check out
 [Blend Modes](#blend-modes) to learn about other blend modes.
@@ -119,17 +131,17 @@ semi-transparent layers on top of each other.
   <span class="circle circle-2" style="opacity: 0.5"></span>
 </span>
 
-Given two colors, ColorAide can replicate this behavior and determine the resultant color by applying compositing. We
-will use the demonstration above and replicate the result in the example below. Below we set the source color to
-`#!color Color('#07c7ed').set('alpha', 0.5)` and the backdrop color to `#!color #fc3d99` and run it through the
-`compose` method. It should be noted that the default blend mode of `normal` is used in conjunction by default.
+Given two colors layered on top of each other, ColorAide can replicate this behavior and determine the resultant color
+by applying alpha compositing. We will use the demonstration above and replicate the result in the example below by
+setting the source color to `#!color Color('#07c7ed').set('alpha', 0.5)` and the backdrop color to `#!color #fc3d99` and
+then running it through the `layer` method.
 
 /// tab | Display P3
 ```py play
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, space="display-p3")
+Color.layer([c1, c2], space="display-p3")
 ```
 ///
 
@@ -138,7 +150,7 @@ c1.compose(c2, space="display-p3")
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, space="srgb")
+Color.layer([c1, c2], space="srgb")
 ```
 ///
 
@@ -162,7 +174,7 @@ backdrop is fully opaque, we just get the backdrop color unaltered.
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, operator='destination-over', space="display-p3")
+Color.layer([c1, c2], operator='destination-over', space="display-p3")
 ```
 ///
 
@@ -171,13 +183,13 @@ c1.compose(c2, operator='destination-over', space="display-p3")
 c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99')
 c1, c2
-c1.compose(c2, operator='destination-over', space="srgb")
+Color.layer([c1, c2], operator='destination-over', space="srgb")
 ```
 ///
 
-You can also apply alpha compositing to multiple layers at once. Simply send in a list of colors as the backdrop, and
-the colors will be composed from right to left with the right most color being on the bottom of the stack and the base
-color (the source) being on the very top.
+You can also apply alpha compositing to multiple layers at once. Simply send in a list of colors of any length, and the
+colors will be layered on top of each other from right to left with the right most color being on the bottom of the
+stack and the left color (the source) being on the very top.
 
 Here we are using the normal blend mode and 50% transparency on all the circles with an opaque white background. We will
 calculate the center color where all three layers overlap.
@@ -197,7 +209,7 @@ c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 bg = Color('white')
 c1, c2, c3, bg
-c1.compose([c2, c3, bg], blend='normal', space="display-p3")
+Color.layer([c1, c2, c3, bg], blend='normal', space="display-p3")
 ```
 ///
 
@@ -208,18 +220,18 @@ c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 bg = Color('white')
 c1, c2, c3, bg
-c1.compose([c2, c3, bg], blend='normal', space="srgb")
+Color.layer([c1, c2, c3, bg], blend='normal', space="srgb")
 ```
 ///
 
-Lastly, if for any reason, it is desired to run compose with alpha compositing disabled (e.g. just run blending),
-then you can simply set `operator` to `#!py3 False`.
+Lastly, if for any reason, it is desired to layer colors with alpha compositing disabled (e.g. just run blending), then
+you can simply set `operator` to `#!py3 False`.
 
 Check out [Compositing Operators](#compositing-operators) to learn about the many variations that are supported.
 
 ## Complex Compositing
 
-We've covered alpha compositing and blending and have demonstrated their use with simple two color examples and 
+We've covered alpha compositing and blending and have demonstrated their use with simple two color examples and
 multi-layered examples, but what about different blend modes mixed with alpha compositing?
 
 In this example, we will consider three circles, each with a unique color: `#!color #07c7ed`, `#!color #fc3d99`, and
@@ -246,16 +258,16 @@ c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 
-cw2 = c2.compose('white', blend='normal', space='display-p3')
-cw3 = c3.compose('white', blend='normal', space='display-p3')
+cw2 = Color.layer([c2, 'white'], blend='normal', space='display-p3')
+cw3 = Color.layer([c3, 'white'], blend='normal', space='display-p3')
 
-r1 = c2.compose(cw3, blend='multiply', space='display-p3')
-r2 = c1.compose(cw2, blend='multiply', space='display-p3')
-r3 = c1.compose(cw3, blend='multiply', space='display-p3')
+r1 = Color.layer([c2, cw3], blend='multiply', space='display-p3')
+r2 = Color.layer([c1, cw2], blend='multiply', space='display-p3')
+r3 = Color.layer([c1, cw3], blend='multiply', space='display-p3')
 
 r1, r2, r3
 
-c1.compose([c2, cw3], blend='multiply', space='display-p3')
+Color.layer([c1, c2, cw3], blend='multiply', space='display-p3')
 ```
 ///
 
@@ -265,16 +277,16 @@ c1 = Color('#07c7ed').set('alpha', 0.5)
 c2 = Color('#fc3d99').set('alpha', 0.5)
 c3 = Color('#f5d311').set('alpha', 0.5)
 
-cw2 = c2.compose('white', blend='normal', space='srgb')
-cw3 = c3.compose('white', blend='normal', space='srgb')
+cw2 = Color.layer([c2, 'white'], blend='normal', space='srgb')
+cw3 = Color.layer([c3, 'white'], blend='normal', space='srgb')
 
-r1 = c2.compose(cw3, blend='multiply', space='srgb')
-r2 = c1.compose(cw2, blend='multiply', space='srgb')
-r3 = c1.compose(cw3, blend='multiply', space='srgb')
+r1 = Color.layer([c2, cw3], blend='multiply', space='srgb')
+r2 = Color.layer([c1, cw2], blend='multiply', space='srgb')
+r3 = Color.layer([c1, cw3], blend='multiply', space='srgb')
 
 r1, r2, r3
 
-c1.compose([c2, cw3], blend='multiply', space='srgb')
+Color.layer([c1, c2, cw3], blend='multiply', space='srgb')
 ```
 ///
 
