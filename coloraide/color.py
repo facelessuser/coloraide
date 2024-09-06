@@ -1208,9 +1208,9 @@ class Color(metaclass=ColorMeta):
 
         if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
             colors = [self._handle_color_input(c) for c in backdrop]
+            colors.insert(0, self)
         else:
-            colors = [self._handle_color_input(backdrop)]
-        colors.insert(0, self)
+            colors = [self, self._handle_color_input(backdrop)]
 
         color = compositing.compose(type(self), colors, blend, operator, space, out_space)
         return self._hotswap(color) if in_place else color
