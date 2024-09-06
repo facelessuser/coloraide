@@ -57,6 +57,7 @@ Parameters
 def hint(
     mid: float,
 ) -> Callable[..., float]:
+    ...
 ```
 
 /// define
@@ -336,6 +337,7 @@ Return
 def clone(
     self
 ):
+    ...
 ```
 
 /// define
@@ -599,7 +601,6 @@ def luminance(
     self,
     *,
     white: VectorLike | None = cat.WHITES['2deg']['D65']
-
 ) -> float:
     ...
 ```
@@ -643,7 +644,7 @@ Parameters
 - 
     Parameters | Defaults     | Description
     ---------- | -------------| -----------
-    `color`    |              | A color string or [`Color`](#color) object representing a color.
+    `color`    |              | A color string, [`Color`](#color) object, or dictionary representing a color.
     `method`   | `#!py None`  | Specify the method used to obtain the contrast value. If `#!py None`, the default specified by the class will be used.
 
 Return
@@ -673,7 +674,7 @@ Parameters
 - 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
-    `color`    |              | A color string or [`Color`](#color) object representing a color.
+    `color`    |              | A color string, [`Color`](#color) object, or dictionary representing a color.
     `space`    | `#!py3 "lab"`| Color space to perform distancing algorithm in.
 
 Return
@@ -722,7 +723,7 @@ Parameters
 - 
     Parameters | Defaults     | Description
     ---------- | ------------ | -----------
-    `color`    |              | A color string or [`Color`](#color) object representing a color.
+    `color`    |              | A color string, [`Color`](#color) object, or dictionary representing a color.
     `method`   | `#!py None`  | String that specifies the method to use. If `#!py3 None`, the default will be used.
     `**kwargs` |              | Any distancing specific parameters to pass to ∆E method.
 
@@ -1007,7 +1008,7 @@ Parameters
 - 
     Parameters                 | Defaults                           | Description
     -------------------------- | ---------------------------------- | -----------
-    `color`                    |                                    | A color string, [`Color`](#color) object, and/or dictionary representing a color.
+    `color`                    |                                    | A color string, [`Color`](#color) object, or dictionary representing a color.
     `percent`                  | `#!py 0.5`                         | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
     `in_place`                 | `#!py False`                       | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py **interpolate_args`  | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
@@ -1032,6 +1033,7 @@ def average(
     powerelss: bool | None = None
     **kwargs: Any
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1109,7 +1111,7 @@ Parameters
     `name`      |                | The name of the filter that should be applied.
     `amount`    | See\ above     | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
     `space`     | `#!py3 None`   | Controls the algorithm used for simulating the given CVD.
-    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned. 
+    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `**kwargs`  |                | Additional filter specific parameters.
 
@@ -1176,6 +1178,10 @@ Return
 
 ## `#!py Color.compose` {#compose}
 
+/// warning | Deprecated 4.0
+`compose` method was deprecated in favor of the new [`layer`](#layer) method and will be removed at some future time.
+///
+
 ```py
 def compose(
     self,
@@ -1197,8 +1203,8 @@ Description
     for alpha compositing. The current color is treated as the source (top layer) and the provided color as the backdrop
     (bottom layer). Colors will be composited in the `srgb` color space unless otherwise specified.
 
-    Colors should generally be RGB-ish colors (sRGB, Display P3, A98 RGB, etc.). The algorithm is designed only for
-    RGB-ish colors. Non-RGB-ish colors are likely to provide nonsense results.
+    Compositing should generally be applied in RGB-ish color spaces (sRGB, Display P3, A98 RGB, etc.). The algorithm is
+    designed only for RGB-ish colors. Non-RGB-ish colors are likely to provide nonsense results.
 
     Supported blend modes are:
 
@@ -1224,7 +1230,7 @@ Parameters
 - 
     Parameters  | Defaults       | Description
     ----------- | -------------- | -----------
-    `backdrop`  |                | A background color represented with either a string or [`Color`](#color) object.
+    `backdrop`  |                | A background color or sequence of background colors represented with strings, [`Color`](#color) objects, and/or dictionaries representing a color.
     `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
     `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
     `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
@@ -1237,6 +1243,68 @@ Return
     `in_place` is `#!py3 True`.
 ///
 
+## `#!py Color.layer` {#layer}
+
+```py
+@classmethod
+def layer(
+    cls,
+    colors: Sequence[ColorInput],
+    *,
+    blend: str | bool = True,
+    operator: str | bool = True,
+    space: str | None = None,
+    out_space: str | None = None
+) -> Color:
+    ...
+```
+
+/// define
+Description
+
+-   Layer colors on time of each other and apply compositing which consists of a [blend mode](../compositing.md#blend-modes)
+    and a [Porter Duff operator](../compositing.md#compositing-operators) for alpha compositing. Colors are provided in
+    a list where the left most color is treated as the top most color and the right most color is treated as the bottom
+    most color. Colors will be composited in the `srgb` color space unless otherwise specified.
+
+    Compositing should generally be applied in RGB-ish color spaces (sRGB, Display P3, A98 RGB, etc.). The algorithm is
+    designed only for RGB-ish colors. Non-RGB-ish colors are likely to provide nonsense results.
+
+    Supported blend modes are:
+
+    Blend Modes  | &nbsp;       | &nbsp;       | &nbsp;
+    ------------ | ------------ | ------------ | ------------
+    `normal`     | `multiply`   | `darken`     | `lighten`
+    `burn`       | `dodge`      | `screen`     | `overlay`
+    `hard-light` | `exclusion`  | `difference` | `soft-light`
+    `hue`        | `saturation` | `luminosity` | `color`
+    `color`      | `hue`        | `saturation` | `luminosity`
+
+    Supported Port Duff operators are:
+
+    Operators          | &nbsp;        | &nbsp;             | &nbsp;
+    ------------------ | ------------- | ------------------ | ------------
+    `clear`            | `copy`        | `destination`      |`source-over`
+    `destination-over` | `source-in`   | `destination-in`   | `source-out`
+    `destination-out`  | `source-atop` | `destination-atop` | `xor`
+    `lighter`          | &nbsp;        | &nbsp;             | &nbsp;
+
+Parameters
+
+- 
+    Parameters  | Defaults       | Description
+    ----------- | -------------- | -----------
+    `colors`    |                | A sequence of color strings, [`Color`](#color) objects, and/or dictionaries representing a color.
+    `blend`     | `#!py3 None`   | A blend mode to use to use when compositing. Values should be a string specifying the name of the blend mode to use. If `#!py None`, [`normal`](#normal) will be used. If `#!py False`, blending will be skipped.
+    `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
+    `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
+    `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
+
+Return
+
+-   Returns a reference to the new [`Color`](#color) object.
+///
+
 ## `#!py Color.clip` {#clip}
 
 ```py
@@ -1244,6 +1312,7 @@ def clip(
     self,
     space: str | None = None
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1317,6 +1386,7 @@ def in_gamut(
     *,
     tolerance: float = util.DEF_FIT_TOLERANCE
 ) -> bool:
+    ...
 ```
 
 /// define
@@ -1346,6 +1416,7 @@ def get(
     *,
     nans: bool = True
 ) -> float | list[float]:
+    ...
 ```
 
 /// define
@@ -1379,6 +1450,7 @@ def set(
     *,
     nans: bool = True
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1551,6 +1623,7 @@ def blackbody(
     method: str | None = None,
     **kwargs: Any
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1587,6 +1660,7 @@ def cct(
     method: str | None = None,
     **kwargs: Any
 ) -> Vector:
+    ...
 ```
 
 /// define
@@ -1653,6 +1727,7 @@ def xy(
     *,
     white: VectorLike | None = None
 ) -> Vector:
+    ...
 ```
 
 /// define

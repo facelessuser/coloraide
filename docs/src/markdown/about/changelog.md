@@ -25,6 +25,10 @@
     of L = 50%.
 -   **NEW**: Remove deprecated `lab` parameter from experimental `raytrace` gamut mapping method. Users should use
     `pspace` instead to specify the perceptual space to use.
+-   **NEW**: Class method `layer()` added to replace `compose()` with a multi-color handling similar to other API
+    methods such as `interpolate()`, etc.
+-   **NEW**: `compose()` has been deprecated in favor of the new `layer()` method and will be removed at some future
+    time.
 -   **BREAK**: The experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELCh (D65).
 -   **BREAK**: Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
     method have been removed to reduce included plugins. OkLCh is the default now and users can still specify CIELCh and

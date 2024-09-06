@@ -17,6 +17,7 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
+from .deprecate import deprecated
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
@@ -1194,6 +1195,7 @@ class Color(metaclass=ColorMeta):
 
         return [c.convert(out_space, in_place=True) for c in harmonies.harmonize(self, name, space, **kwargs)]
 
+    @deprecated('Please use the class method Color.layer([source, backdrop])')
     def compose(
         self,
         backdrop: ColorInput | Sequence[ColorInput],
@@ -1203,7 +1205,7 @@ class Color(metaclass=ColorMeta):
         space: str | None = None,
         out_space: str | None = None,
         in_place: bool = False
-    ) -> Color:
+    ) -> Color:  # pragma: no cover
         """Blend colors using the specified blend mode."""
 
         if not isinstance(backdrop, str) and isinstance(backdrop, Sequence):
@@ -1214,6 +1216,24 @@ class Color(metaclass=ColorMeta):
 
         color = compositing.compose(type(self), colors, blend, operator, space, out_space)
         return self._hotswap(color) if in_place else color
+
+    @classmethod
+    def layer(
+        cls,
+        colors: Sequence[ColorInput],
+        *,
+        blend: str | bool = True,
+        operator: str | bool = True,
+        space: str | None = None,
+        out_space: str | None = None
+    ) -> Color:
+        """
+        Apply color compositing (blend modes and alpha blending) on a list of colors.
+
+        Colors are overlaid on each other with left being the top of the stack and right being the bottom of the stack.
+        """
+
+        return compositing.compose(cls, colors, blend, operator, space, out_space)
 
     def delta_e(
         self,
