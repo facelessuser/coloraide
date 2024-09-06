@@ -10,7 +10,8 @@ used to layer colors on top of each other applying the appropriate compositing, 
 `source-over` Porter Duff operator by default.
 
 /// warning | Deprecated 4.0
-`compose` method was deprecated in favor of the new `layer` method.
+[`compose`](./api/index.md#compose) method was deprecated in favor of the new `layer` method and will be removed at some
+future time.
 ///
 
 

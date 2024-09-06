@@ -57,6 +57,7 @@ Parameters
 def hint(
     mid: float,
 ) -> Callable[..., float]:
+    ...
 ```
 
 /// define
@@ -336,6 +337,7 @@ Return
 def clone(
     self
 ):
+    ...
 ```
 
 /// define
@@ -599,7 +601,6 @@ def luminance(
     self,
     *,
     white: VectorLike | None = cat.WHITES['2deg']['D65']
-
 ) -> float:
     ...
 ```
@@ -1032,6 +1033,7 @@ def average(
     powerelss: bool | None = None
     **kwargs: Any
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1177,7 +1179,7 @@ Return
 ## `#!py Color.compose` {#compose}
 
 /// warning | Deprecated 4.0
-`compose` method was deprecated in favor of the new [`layer`](#layer) method.
+`compose` method was deprecated in favor of the new [`layer`](#layer) method and will be removed at some future time.
 ///
 
 ```py
@@ -1254,6 +1256,7 @@ def layer(
     space: str | None = None,
     out_space: str | None = None
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1309,6 +1312,7 @@ def clip(
     self,
     space: str | None = None
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1382,6 +1386,7 @@ def in_gamut(
     *,
     tolerance: float = util.DEF_FIT_TOLERANCE
 ) -> bool:
+    ...
 ```
 
 /// define
@@ -1411,6 +1416,7 @@ def get(
     *,
     nans: bool = True
 ) -> float | list[float]:
+    ...
 ```
 
 /// define
@@ -1444,6 +1450,7 @@ def set(
     *,
     nans: bool = True
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1616,6 +1623,7 @@ def blackbody(
     method: str | None = None,
     **kwargs: Any
 ) -> Color:
+    ...
 ```
 
 /// define
@@ -1652,6 +1660,7 @@ def cct(
     method: str | None = None,
     **kwargs: Any
 ) -> Vector:
+    ...
 ```
 
 /// define
@@ -1718,6 +1727,7 @@ def xy(
     *,
     white: VectorLike | None = None
 ) -> Vector:
+    ...
 ```
 
 /// define
