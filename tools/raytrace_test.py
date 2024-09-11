@@ -2,6 +2,7 @@
 import sys
 import os
 import plotly.graph_objects as go
+import plotly.io as io
 import argparse
 import json
 
@@ -262,6 +263,10 @@ def simulate_raytrace_gamut_mapping(args):
     else:
         gamutcolor = mapcolor.convert(space)
 
+        # Threshold for anchor adjustment
+        low = 1e-6
+        high = bmx - low
+
         # Create a ray from our current color to the color with zero chroma.
         # Trace the line to the RGB cube finding the intersection.
         # In between iterations, correct the L and H and then cast a ray
@@ -297,7 +302,13 @@ def simulate_raytrace_gamut_mapping(args):
                         )
 
                 gamutcolor.convert(space, in_place=True)
-            intersection = raytrace_box(achromatic, gamutcolor[:-1], bmax=bmax)
+
+            coords = gamutcolor[:-1]
+            intersection = raytrace_box(achromatic, coords, bmax=bmax)
+
+            if i and all(low < x < high for x in coords):
+                achromatic = gamutcolor[:-1]
+
             if intersection:
                 points.append(gamutcolor[:-1])
                 points.append(intersection)
@@ -403,6 +414,7 @@ if __name__ == "__main__":
     )
     parser.add_argument('--height', '-H', type=int, default=800, help="Diagram height.")
     parser.add_argument('--width', '-W', type=int, default=800, help="Diagram width.")
+    parser.add_argument('--output', '-o', default='', help='Output file.')
     args = parser.parse_args()
 
     if args.gamut_color:
@@ -410,4 +422,18 @@ if __name__ == "__main__":
     else:
         fig = raytrace(args)
 
-    fig.show()
+
+    # Show or save the data as an image, etc.
+    if fig:
+        if args.output:
+            filetype = os.path.splitext(args.output)[1].lstrip('.').lower()
+            if filetype == 'html':
+                with open(args.output, 'w') as f:
+                    f.write(io.to_html(fig))
+            elif filetype == 'json':
+                io.write_json(fig, args.output)
+            else:
+                with open(args.output, 'wb') as f:
+                    f.write(fig.to_image(format=filetype))
+        else:
+            fig.show()

@@ -278,7 +278,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('display-p3', [1, 1, 0]).fit('srgb', **options),
-            Color('color(display-p3 0.89593 0.90035 0.29413)')
+            Color('color(display-p3 0.89593 0.90035 0.29412)')
         )
 
     def test_raytrace_adaptive_lightness_lch(self):
@@ -295,7 +295,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
 
         self.assertColorEqual(
             Color('display-p3', [1, 1, 0]).fit('srgb', **options),
-            Color('color(display-p3 0.89593 0.90035 0.29413)')
+            Color('color(display-p3 0.89593 0.90035 0.29412)')
         )
 
     def test_sdr_extremes_low(self):
@@ -341,7 +341,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         """Test tracing of face 2."""
 
         color = Color('oklch(90% .4 60)')
-        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.06478 60.008)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.9 0.06478 60)'))
 
     def test_trace_face3(self):
         """Test tracing of face 3."""
@@ -359,7 +359,7 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
         """Test tracing of face 5."""
 
         color = Color('oklch(30% .4 100)')
-        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.3 0.06237 99.999)'))
+        self.assertColorEqual(color.fit('srgb', method='raytrace', pspace='oklch'), Color('oklch(0.3 0.06237 100)'))
 
     def test_trace_face6(self):
         """Test tracing of face 6."""

@@ -29,6 +29,7 @@
     methods such as `interpolate()`, etc.
 -   **NEW**: `compose()` has been deprecated in favor of the new `layer()` method and will be removed at some future
     time.
+-   **NEW**: Improve experimental `raytrace` gamut mapping approach when performed in certain perceptual spaces.
 -   **BREAK**: The experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELCh (D65).
 -   **BREAK**: Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
     method have been removed to reduce included plugins. OkLCh is the default now and users can still specify CIELCh and

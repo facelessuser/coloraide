@@ -20,25 +20,22 @@ if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
 
-def project_onto(p1: Vector, p2: Vector, p0: Vector) -> Vector:
+def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     """
     Using 3 points, create two vectors with a shared origin and project the first vector onto the second.
 
-    - `p1`:  point used to define the magnitude of the first vector (`v1`) with origin `p0`.
-    - `p2`:  point used to define the magnitude of the second vector (`v2`) with origin `p0`.
-    - `p0`:  the origin point of both `v1` and `v2`.
+    - `a`:  point used to define the head of the first vector `OA`.
+    - `b`:  point used to define the head of the second vector `OB`.
+    - `o`:  the origin/tail point of both vector `OA` and `OB`.
     """
 
-    # Separate into points
-    x1, y1, z1 = p1
-    x2, y2, z2 = p2
-    x3, y3, z3 = p0
     # Create vector from points
-    v1 = [x1 - x3, y1 - y3, z1 - z3]
-    v2 = [x2 - x3, y2 - y3, z2 - z3]
-    # Project v1 onto v2 and convert back to a point
-    r = alg.vdot(v1, v2) / alg.vdot(v2, v2)
-    return [v2[0] * r + x3, v2[1] * r + y3, v2[2] * r + z3]
+    ox, oy, oz = o
+    vec_oa = [a[0] - ox, a[1] - oy, a[2] - oz]
+    vec_ob = [b[0] - ox, b[1] - oy, b[2] - oz]
+    # Project `vec_oa` onto `vec_ob` and convert back to a point
+    r = alg.vdot(vec_oa, vec_ob) / alg.vdot(vec_ob, vec_ob)
+    return [vec_ob[0] * r + ox, vec_ob[1] * r + oy, vec_ob[2] * r + oz]
 
 
 def hwb_to_srgb(coords: Vector) -> Vector:  # pragma: no cover
@@ -282,25 +279,37 @@ class RayTrace(Fit):
             # In between iterations, correct the L and H and then cast a ray
             # to the new corrected color finding the intersection again.
             mapcolor.convert(space, in_place=True)
+
+            # Interpolation path
+            if adaptive:
+                start = [light, *ab]
+                end = [alight, 0.0, 0.0]
+
+            # Threshold for anchor adjustment
+            low = 1e-6
+            high = bmx - low
+
             for i in range(4):
                 if i:
                     mapcolor.convert(pspace, in_place=True, norm=False)
 
+                    # Correct the point onto the desired interpolation path
                     if adaptive:
-                        # Correct the point onto the desired interpolation path
                         if polar:
                             mapcolor[l], a_, b_ = project_onto(
                                 [mapcolor[l], *alg.polar_to_rect(mapcolor[c], mapcolor[h])],
-                                [light, *ab],
-                                [alight, 0.0, 0.0]
+                                start,
+                                end
                             )
                             mapcolor[c], mapcolor[h] = alg.rect_to_polar(a_,b_)
                         else:
                             mapcolor[l], mapcolor[a], mapcolor[b] = project_onto(
                                 [mapcolor[l], mapcolor[a], mapcolor[b]],
-                                [light, *ab],
-                                [alight, 0.0, 0.0]
+                                start,
+                                end
                             )
+
+                    # Simple correction for constant lightness
                     else:
                         # Correct lightness and hue
                         mapcolor[l] = alight
@@ -314,8 +323,14 @@ class RayTrace(Fit):
 
                     mapcolor.convert(space, in_place=True)
 
-                # Cast a ray to our anchor point.
-                intersection = raytrace_box(anchor, mapcolor[:-1], bmax=bmax)
+                coords = mapcolor[:-1]
+                intersection = raytrace_box(anchor, coords, bmax=bmax)
+
+                # Adjust anchor point closer to surface to improve results for some spaces.
+                # Don't move point too close to the surface to avoid corner cases with some spaces.
+                # OkLCh/Oklab does not require this.
+                if i and all(low < x < high for x in coords):
+                    anchor = mapcolor[:-1]
 
                 # Update color with the intersection point on the RGB surface.
                 if intersection:
