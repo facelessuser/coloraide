@@ -11,19 +11,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test clear."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='clear'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='clear'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='clear'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='clear'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='clear'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='clear'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='clear'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='clear'),
             Color('transparent')
         )
 
@@ -31,19 +31,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test copy."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='copy'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='copy'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='copy'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='copy'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='copy'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='copy'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='copy'),
+            Color.layer(['transparent', 'transparent'], operator='copy'),
             Color('transparent')
         )
 
@@ -51,19 +51,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test destination."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='destination'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='destination'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='destination'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='destination'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='destination'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='destination'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='destination'),
+            Color.layer(['transparent', 'transparent'], operator='destination'),
             Color('transparent')
         )
 
@@ -71,19 +71,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test source over."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='source-over'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='source-over'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='source-over'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='source-over'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='source-over'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='source-over'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='source-over'),
+            Color.layer(['transparent', 'transparent'], operator='source-over'),
             Color('transparent')
         )
 
@@ -91,19 +91,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test destination over."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='destination-over'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='destination-over'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='destination-over'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='destination-over'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='destination-over'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='destination-over'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='destination-over'),
+            Color.layer(['transparent', 'transparent'], operator='destination-over'),
             Color('transparent')
         )
 
@@ -111,19 +111,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test source in."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='source-in'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='source-in'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='source-in'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='source-in'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='source-in'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='source-in'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='source-in'),
+            Color.layer(['transparent', 'transparent'], operator='source-in'),
             Color('transparent')
         )
 
@@ -131,19 +131,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test destination in."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='destination-in'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='destination-in'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='destination-in'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='destination-in'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='destination-in'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='destination-in'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='destination-in'),
+            Color.layer(['transparent', 'transparent'], operator='destination-in'),
             Color('transparent')
         )
 
@@ -151,19 +151,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test source out."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='source-out'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='source-out'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='source-out'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='source-out'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='source-out'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='source-out'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='source-out'),
+            Color.layer(['transparent', 'transparent'], operator='source-out'),
             Color('transparent')
         )
 
@@ -171,19 +171,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test destination out."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='destination-out'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='destination-out'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='destination-out'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='destination-out'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='destination-out'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='destination-out'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='destination-out'),
+            Color.layer(['transparent', 'transparent'], operator='destination-out'),
             Color('transparent')
         )
 
@@ -191,19 +191,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test source atop."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='source-atop'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='source-atop'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='source-atop'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='source-atop'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='source-atop'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='source-atop'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='source-atop'),
+            Color.layer(['transparent', 'transparent'], operator='source-atop'),
             Color('transparent')
         )
 
@@ -211,19 +211,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test destination atop."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='destination-atop'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='destination-atop'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='destination-atop'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='destination-atop'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='destination-atop'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='destination-atop'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='destination-atop'),
+            Color.layer(['transparent', 'transparent'], operator='destination-atop'),
             Color('transparent')
         )
 
@@ -231,19 +231,19 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test XOR."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='xor'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='xor'),
             Color('transparent')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='xor'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='xor'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='xor'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='xor'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='xor'),
+            Color.layer(['transparent', 'transparent'], operator='xor'),
             Color('transparent')
         )
 
@@ -251,18 +251,18 @@ class TestPorterDuffModes(util.ColorAsserts, unittest.TestCase):
         """Test lighter."""
 
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('color(srgb 0 0 1 / 1)', operator='lighter'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'color(srgb 0 0 1 / 1)'], operator='lighter'),
             Color('rgb(255 0 255)')
         )
         self.assertColorEqual(
-            Color('color(srgb 1 0 0 / 1)').compose('transparent', operator='lighter'),
+            Color.layer(['color(srgb 1 0 0 / 1)', 'transparent'], operator='lighter'),
             Color('color(srgb 1 0 0 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('color(srgb 0 0 1 / 1)', operator='lighter'),
+            Color.layer(['transparent', 'color(srgb 0 0 1 / 1)'], operator='lighter'),
             Color('color(srgb 0 0 1 / 1)')
         )
         self.assertColorEqual(
-            Color('transparent').compose('transparent', operator='lighter'),
+            Color.layer(['transparent', 'transparent'], operator='lighter'),
             Color('transparent')
         )
