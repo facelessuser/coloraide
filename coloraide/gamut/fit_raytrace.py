@@ -252,16 +252,11 @@ class RayTrace(Fit):
         else:
             alight = light
 
-        # Floating point math can cause some deviations between the max and min
-        # value in the achromatic RGB color. This is usually not an issue, but
-        # some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
+        # Some perceptual spaces, such as CAM16 or HCT, may compensate for adapting
         # luminance which may give an achromatic that is not quite achromatic,
         # causing a more sizeable delta between the max and min value in the
         # achromatic RGB color. To compensate for such deviations, take the
         # average value of the RGB components and use that as the achromatic point.
-        # When dealing with simple floating point deviations, little to no change
-        # is observed, but for spaces like CAM16 or HCT, this can provide more
-        # reasonable gamut mapping.
         anchor = [sum(achroma.convert(space)[:-1]) / 3] * 3
 
         # Return white or black if the achromatic version is not within the RGB cube.
@@ -311,7 +306,6 @@ class RayTrace(Fit):
 
                     # Simple correction for constant lightness
                     else:
-                        # Correct lightness and hue
                         mapcolor[l] = alight
                         if polar:
                             mapcolor[h] = hue
@@ -328,7 +322,6 @@ class RayTrace(Fit):
 
                 # Adjust anchor point closer to surface to improve results for some spaces.
                 # Don't move point too close to the surface to avoid corner cases with some spaces.
-                # OkLCh/Oklab does not require this.
                 if i and all(low < x < high for x in coords):
                     anchor = mapcolor[:-1]
 
