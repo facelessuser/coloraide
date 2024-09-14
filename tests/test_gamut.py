@@ -298,6 +298,16 @@ class TestRayTrace(util.ColorAsserts, unittest.TestCase):
             Color('color(display-p3 0.89593 0.90035 0.29412)')
         )
 
+    def test_edge_case_raytrace_adaptive_lightness_lch(self):
+        """Test edge case ray trace adaptive lightness."""
+
+        # Force projection out of range on high end.
+        options = {"method": 'raytrace', "pspace": 'lchuv', "adaptive": 0.5}
+        self.assertColorEqual(
+            Color('rec2020', [0, 0, 0.5]).fit('srgb', **options),
+            Color('color(rec2020 0.06611 0.06611 0.45269)')
+        )
+
     def test_sdr_extremes_low(self):
         """Test SDR extreme low case."""
 

@@ -35,6 +35,11 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     vec_ob = [b[0] - ox, b[1] - oy, b[2] - oz]
     # Project `vec_oa` onto `vec_ob` and convert back to a point
     r = alg.vdot(vec_oa, vec_ob) / alg.vdot(vec_ob, vec_ob)
+    # Some spaces may be project something that exceeds the range of our target vector.
+    if r > 1.0:
+        r = 1.0
+    elif r < 0.0:  # pragma: no cover
+        r = 0.0
     return [vec_ob[0] * r + ox, vec_ob[1] * r + oy, vec_ob[2] * r + oz]
 
 
@@ -275,8 +280,8 @@ class RayTrace(Fit):
             # to the new corrected color finding the intersection again.
             mapcolor.convert(space, in_place=True)
 
-            # Interpolation path
             if adaptive:
+                # Interpolation path
                 start = [light, *ab]
                 end = [alight, 0.0, 0.0]
 
@@ -323,7 +328,7 @@ class RayTrace(Fit):
                 # Adjust anchor point closer to surface to improve results for some spaces.
                 # Don't move point too close to the surface to avoid corner cases with some spaces.
                 if i and all(low < x < high for x in coords):
-                    anchor = mapcolor[:-1]
+                    anchor = coords
 
                 # Update color with the intersection point on the RGB surface.
                 if intersection:

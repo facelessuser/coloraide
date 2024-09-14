@@ -261,6 +261,8 @@ def simulate_raytrace_gamut_mapping(args):
         points.append(color.convert(space)[:-1])
         points.append(achromatic)
     else:
+        print('Initial:', mapcolor)
+        print('Anchor:', achroma.convert(pspace), '\n----')
         gamutcolor = mapcolor.convert(space)
 
         # Threshold for anchor adjustment
@@ -274,6 +276,7 @@ def simulate_raytrace_gamut_mapping(args):
         for i in range(4):
             if i:
                 gamutcolor.convert(pspace, in_place=True, norm=False)
+                print('Uncorrected:', gamutcolor)
 
                 if adaptive:
                     # Correct the point onto the desired interpolation path
@@ -290,6 +293,7 @@ def simulate_raytrace_gamut_mapping(args):
                             [light, *ab],
                             [alight, 0.0, 0.0]
                         )
+
                 else:
                     # Correct lightness and hue
                     gamutcolor[l] = alight
@@ -301,13 +305,15 @@ def simulate_raytrace_gamut_mapping(args):
                             hue
                         )
 
+                print('Corrected:', gamutcolor)
                 gamutcolor.convert(space, in_place=True)
+                print('Corrected RGB:', gamutcolor, '\n----')
 
             coords = gamutcolor[:-1]
             intersection = raytrace_box(achromatic, coords, bmax=bmax)
 
             if i and all(low < x < high for x in coords):
-                achromatic = gamutcolor[:-1]
+                achromatic = coords
 
             if intersection:
                 points.append(gamutcolor[:-1])
@@ -317,7 +323,9 @@ def simulate_raytrace_gamut_mapping(args):
                 continue
             break  # pragma: no cover
 
+        print('Final:', gamutcolor.convert(pspace, norm=False))
         color.update(space, [alg.clamp(x, 0.0, bmx) for x in gamutcolor[:-1]])
+        print('Clipped RGB:', color.convert(space))
 
     # If we have coerced a space to RGB, update the original
     if coerced:
