@@ -794,33 +794,20 @@ Steps(
 ```
 ///
 
-//// note | Adaptive Lightness with Ray Trace
+//// note
 Generally, adaptive lightness can be used within any perceptual space against any target gamut using the ray trace
-approach or MINDE chroma reduction approach. It should be noted though, that some spaces will not perform as well at
+or MINDE chroma reduction approach. With that said, it should be noted that some spaces will not perform as well at
 high **ɑ** values due to their geometry regardless of whether the ray trace or MINDE chroma reduction approach is used.
-Through our testing, results are generally comparable when using either approach.
 
-Out of all the Lab-ish and LCh-ish color spaces, there is one that stresses the ray trace algorithm enough when using
-hue independent adaptive lightness to cause a noticeable difference between the ray trace and MINDE chroma reduction
-approach, and that space is Luv/LCH~uv~.
+The one exception to the above statement is the Luv/LCH~uv~ color space which exhibited less accurate results in our
+testing when using the ray trace approach and high **ɑ** values that strayed too far from constant lightness. The dark
+blue region of Luv/LCH~uv~ created chroma reduction curves that pushed the ray trace algorithm too hard with adaptive
+lightness.
 
-The ray trace approach was originally designed to be a faster way to calculate chroma reduction with constant lightness,
-something it excels at. Constant lightness is particularly well suited for this approach as the chroma reduction lines
-of the perceptual space form gentle curves in the linear light RGB spaces. When using adaptive lightness, the lightness
-is no longer constant and, in some perceptual spaces, can causes the curves to be more severe causing the algorithm to
-be less accurate in certain regions, especially when using larger **ɑ** values.
-
-When using constant lightness and low adaptive **ɑ** values (around 0.05), Luv/LCH~uv~ and ray trace will behave pretty
-well, but if we push the **a** value higher, the algorithm will struggle in the dark blue region of Luv/LCH~uv~. This is
-because this space will create a bend in the chroma reduction path that is too severe for the ray trace algorithm to
-select the most optimal color. This is simply a limitation when the algorithm is pushed too hard. It may be possible to
-mitigate this issue in the future, but the current design does not account for these more extreme curves.
-
-As an example, we can observe constant lightness and an adaptive lightness level of 0.5 in Luv/LCH~uv~ with the ray
-trace method in the dark blue region. We can see that with constant lightness the results are quite accurate. When we
-enable an adaptive lightness level of 0.5, the chroma reduction path stresses the algorithm too much and yields less
-accurate results. Additionally, we can run these same tests using the MINDE approach (with JND set to zero for similar
-results) and see improved results in the adaptive lightness case.
+While Luv/LCH~uv~ is currently the only space provided by ColorAide that had trouble with high **ɑ** values when using
+the ray trace algorithm, there may be others that have yet to be implemented. In these rare cases, it may be better to
+use MINDE chroma reduction which, while slower, has a straightforward algorithm that is less likely to have issues. For
+all others, ray trace will give the best performance with comparable results.
 
 /// tab | Ray Trace
 ```py play
@@ -855,11 +842,6 @@ Steps(
 )
 ```
 ///
-
-When using almost any perceptual space with adaptive lightness and ray trace the results will be comparable with either
-MINDE or ray trace chroma reduction, but if using a high adaptive value in Luv/LCh~uv~ (or some other space that
-introduces similar responses), it may be better to use MINDE chroma reduction whose slower, more straight forward
-approach will have no issues in these such cases.
 ////
 
 ## Pointer's Gamut
