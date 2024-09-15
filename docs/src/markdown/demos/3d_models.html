@@ -424,7 +424,7 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
             cmap.append(s.to_string(hex=True))
@@ -541,7 +541,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
 
@@ -588,7 +588,7 @@ def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opaci
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
             cmap.append(s.to_string(hex=True))
@@ -817,7 +817,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
         l = len(gamut_mapping)
         for i, c in enumerate(gamut_mapping + non_mapped):
             c1 = Color(c)
-            c2 = Color(c).fit(gamut, method=gmap)
+            c2 = Color(c).fit(gamut, **gmap)
             c1.convert(space, in_place=True)
             c2.convert(space, in_place=True)
             x = []
