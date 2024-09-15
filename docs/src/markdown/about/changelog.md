@@ -11,10 +11,10 @@
     same precision as all other channels.
 -   **NEW**: Remove deprecated `model` parameter from `cam16` ∆E method. Space should be used instead.
 -   **NEW**: Remove deprecated `algebra.npow` function. `algebra.spow` should be used instead.
--   **NEW**: New generic `minde-chroma` gamut mapping method that allows specifying any Lab-ish or LCh-ish to operate
-    in. `oklch-chroma`, `lch-chroma`, and `hct-chroma` are now derived from `minde-chroma` and just default to using the
-    specified color space to provide backwards compatibility. `minde-chroma` defaults to using OkLCh by default.
-    `lch-chroma` is still ColorAide's default gamut mapping currently.
+-   **NEW**: New generic `minde-chroma` gamut mapping method that allows specifying any Lab-ish or LCh-ish space to
+    operate in. `oklch-chroma`, `lch-chroma`, and `hct-chroma` are now derived from `minde-chroma` and just default to
+    using the specified color space to provide backwards compatibility. `minde-chroma` defaults to using OkLCh by
+    default. `lch-chroma` is still ColorAide's default gamut mapping currently.
 -   **NEW**: All MINDE chroma reduction methods now skip distance checks if a JND of zero is specified. A JND of zero
     essentially disables the MINDE behavior and will reduce chroma as close to the gamut boundary as possible faster
     than it would previously.
@@ -28,9 +28,10 @@
 -   **NEW**: Class method `layer()` added to replace `compose()` with a multi-color handling similar to other API
     methods such as `interpolate()`, etc.
 -   **NEW**: `compose()` has been deprecated in favor of the new `layer()` method and will be removed at some future
-    time.
+    time but is available to help with transition.
 -   **NEW**: Improve experimental `raytrace` gamut mapping approach when performed in certain perceptual spaces.
--   **BREAK**: The experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELCh (D65).
+-   **NEW**: The experimental `raytrace` gamut mapping method now uses OkLCh by default instead of CIELCh (D65). Results
+    may vary.
 -   **BREAK**: Pre-configured `oklch-raytrace` and `lch-raytrace` variants of the experimental `raytrace` gamut mapping
     method have been removed to reduce included plugins. OkLCh is the default now and users can still specify CIELCh and
     other perceptual spaces if desired via the `pspace` parameter. Additionally, documentation has been added so users
