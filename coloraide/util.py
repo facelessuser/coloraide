@@ -4,7 +4,7 @@ import math
 from functools import wraps
 from . import algebra as alg
 from .types import Vector, VectorLike
-from typing import Any, Callable
+from typing import Any, Callable, Sequence
 
 DEF_PREC = 5
 DEF_FIT_TOLERANCE = 0.000075
@@ -182,6 +182,15 @@ def constrain_hue(hue: float) -> float:
     """Constrain hue to [0, 360)."""
 
     return hue % 360 if not math.isnan(hue) else hue
+
+
+def get_index(obj: Sequence[Any], idx: int, default: Any = None) -> Any:
+    """Get sequence value at index or return default if not present."""
+
+    try:
+        return obj[idx]
+    except IndexError:
+        return default
 
 
 def cmp_coords(c1: VectorLike, c2: VectorLike) -> bool:

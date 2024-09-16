@@ -118,6 +118,15 @@ color.coords(precision=2)
 color.alpha(precision=1)
 ```
 
+If per channel precision control is desired for `coords()` a list can be provided where each index in the list
+corresponds to the given channel at that index.
+
+```py play
+color = Color("purple")
+color
+color.coords(precision=[2, 3, 5])
+```
+
 /// new | New in 4.0: Precision Output Control
 ///
 
@@ -211,6 +220,15 @@ color = Color("hsl", [NaN, 0, 0.7534848], 0.523456)
 color
 color.get('lightness', precision=2)
 color.get('alpha', precision=1)
+```
+
+Channels can be requested with per channel precision control by providing a list of precision. Each index in the
+precision list corresponds to input index of each channel in the order they passed in.
+
+```py play
+color = Color('orange')
+color
+color.get(['alpha', 'oklch.lightness', 'oklch.hue'], precision=[5, 3, 0])
 ```
 
 /// warning | Indirect Channel Modifications

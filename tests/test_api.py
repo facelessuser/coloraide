@@ -33,7 +33,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
         )
 
         self.assertEqual(
-            Color('purple').convert('lab').set('alpha', 0.5234).to_string(precision=0, precision_alpha=3),
+            Color('purple').convert('lab').set('alpha', 0.5234).to_string(precision=[0, 0, 0, 3]),
             'lab(30 56 -36 / 0.523)'
         )
 
@@ -129,7 +129,7 @@ class TestMisc(util.ColorAsserts, unittest.TestCase):
 
         self.assertEqual(d, {'space': 'lab', 'coords': [29.7, 56.1, -36.3], 'alpha': 0.751})
 
-        d2 = c1.to_dict(precision=0, precision_alpha=2)
+        d2 = c1.to_dict(precision=[0, 0, 0, 2])
         self.assertEqual(d2, {'space': 'lab', 'coords': [30.0, 56.0, -36.0], 'alpha': 0.75})
 
     def test_dict_input(self):

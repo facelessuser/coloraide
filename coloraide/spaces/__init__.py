@@ -258,8 +258,7 @@ class Space(Plugin, metaclass=SpaceMeta):
         parent: Color,
         *,
         alpha: bool | None = None,
-        precision: int | None = None,
-        precision_alpha: int | None = None,
+        precision: int | Sequence[int] | None = None,
         fit: str | bool | dict[str, Any] = True,
         none: bool = False,
         percent: bool | Sequence[bool] = False,
@@ -272,7 +271,6 @@ class Space(Plugin, metaclass=SpaceMeta):
             color=True,
             alpha=alpha,
             precision=precision,
-            precision_alpha=precision_alpha,
             fit=fit,
             none=none,
             percent=percent
