@@ -90,6 +90,9 @@ def order(x: float) -> int:
 def round_half_up(n: float, scale: int = 0) -> float:
     """Round half up."""
 
+    if not isinstance(scale, int):
+        raise ValueError("'float' object cannot be interpreted as an integer")
+
     mult = 10.0 ** scale
     return math.floor(n * mult + 0.5) / mult
 

@@ -1113,6 +1113,8 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.round_half_up(3.5), 4)
         self.assertEqual(alg.round_half_up(3.9), 4)
         self.assertEqual(alg.round_half_up(4), 4)
+        with self.assertRaises(ValueError):
+            alg.round_half_up(3.56, 3.4)
 
     def test_scale(self):
         """Test rounding."""
