@@ -10,7 +10,9 @@ class TestCompositing(util.ColorAsserts, unittest.TestCase):
     def test_disable_compose(self):
         """Test that we can disable either blend or alpha compositing."""
 
-        c1 = Color.layer([Color('#07c7ed').set('alpha', 0.5), '#fc3d99'], blend='multiply', operator=False, space="srgb")
+        c1 = Color.layer(
+            [Color('#07c7ed').set('alpha', 0.5), '#fc3d99'], blend='multiply', operator=False, space="srgb"
+        )
         c2 = Color.layer([c1, '#fc3d99'], blend=False, space="srgb")
         self.assertColorEqual(
             Color.layer([Color('#07c7ed').set('alpha', 0.5), '#fc3d99'], blend='multiply', space="srgb"),

@@ -75,11 +75,11 @@ print(d)
 Color(d)
 ```
 
-If you need to control alpha precision separately, you can also specify the alpha channels precision separately with
-`precision_alpha`. This can be useful if you have radically different scaling between alpha and color coordinates.
+If you need to control channel precision separately for a given channel, you can provide a list of precision where each
+index in the list corresponds to the channel at that index. Omitted channels will assume default precision.
 
 ```py play
-d = Color('purple').set('alpha', 0.75).convert('lab').to_dict(precision=0, precision_alpha=3)
+d = Color('purple').set('alpha', 0.75).convert('lab').to_dict(precision=[0, 0, 0, 3])
 print(d)
 Color(d)
 ```

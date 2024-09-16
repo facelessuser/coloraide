@@ -37,8 +37,7 @@ def color_function(
     obj: Color,
     func: str | None,
     alpha: bool | None,
-    precision: int,
-    precision_alpha: int,
+    precision: int | Sequence[int],
     fit: str | bool | dict[str, Any],
     none: bool,
     percent: bool | Sequence[bool],
@@ -70,10 +69,10 @@ def color_function(
     # - A list of booleans will attempt formatting the associated channel as percent,
     #   anything not specified is assumed `False`.
     if isinstance(percent, bool):
-        plist = obj._space._percents if percent else []
-    else:
-        diff = l - len(percent)
-        plist = list(percent) + ([False] * diff) if diff > 0 else list(percent)
+        percent = obj._space._percents if percent else []
+
+    # Ensure precision list is filled
+    is_precision_list = not isinstance(precision, int)
 
     # Iterate the coordinates formatting them by scaling the values, formatting for percent, etc.
     for idx, value in enumerate(coords):
@@ -84,7 +83,7 @@ def color_function(
             string.append(COMMA if legacy else SPACE)
         channel = channels[idx]
 
-        if not (channel.flags & FLG_ANGLE) and plist and plist[idx]:
+        if not (channel.flags & FLG_ANGLE) and percent and util.get_index(percent, idx, False):
             span, offset = channel.span, channel.offset
         else:
             span = offset = 0.0
@@ -94,7 +93,7 @@ def color_function(
         string.append(
             util.fmt_float(
                 value,
-                precision_alpha if is_last else precision,
+                util.get_index(precision, idx, obj.PRECISION) if is_precision_list else precision,  # type: ignore[arg-type]
                 span,
                 offset
             )
@@ -178,8 +177,7 @@ def serialize_css(
     func: str = '',
     color: bool = False,
     alpha: bool | None = None,
-    precision: int | None = None,
-    precision_alpha: int | None = None,
+    precision: int | Sequence[int] | None = None,
     fit: bool | str | dict[str, Any] = True,
     none: bool = False,
     percent: bool | Sequence[bool] = False,
@@ -195,12 +193,9 @@ def serialize_css(
     if precision is None:
         precision = obj.PRECISION
 
-    if precision_alpha is None:
-        precision_alpha = precision
-
     # Color format
     if color:
-        return color_function(obj, None, alpha, precision, precision_alpha, fit, none, percent, False, 1.0)
+        return color_function(obj, None, alpha, precision, fit, none, percent, False, 1.0)
 
     # CSS color names
     if name:
@@ -214,6 +209,6 @@ def serialize_css(
 
     # Normal CSS named function format
     if func:
-        return color_function(obj, func, alpha, precision, precision_alpha, fit, none, percent, legacy, scale)
+        return color_function(obj, func, alpha, precision, fit, none, percent, legacy, scale)
 
     raise RuntimeError('Could not identify a CSS format to serialize to')  # pragma: no cover

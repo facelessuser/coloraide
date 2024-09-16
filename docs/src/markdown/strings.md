@@ -62,19 +62,26 @@ doing and the values you are working in.
 Color("rgb(30.3456% 75% 100%)").to_string(precision=1)
 ```
 
-### Alpha Precision
+There are some times where the channel coordinates need to have different precision, for instance the alpha channel
+which always has values between 0 - 1 may be a very different scale than CIELab which scales lightness between 0 - 100.
+In these cases, it may be desirable to use a different precision for alpha, especially when rounding other channels to
+integers.
 
-/// new | New in 4.0: Alpha Precision Control
-///
-
-There are some times where the channel coordinates may be scaled differently than the alpha channel which is always
-between 0 - 1. In these cases, it may be desirable to use a different precision for alpha, especially when rounding
-other channels to integers. `precision_alpha` allows for the alpha channel precision to be handled independently of all
-other channels. If only `precision` is provided, `precision_alpha` is assumed to be the same.
+If needed, users can control precision per channel by providing a list of precision, each index in the list
+corresponding to the channel at that index.
 
 ```py play
-Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=0, precision_alpha=5)
+Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0, 3])
 ```
+
+If a channel is omitted, the default precision is assumed for that channel.
+
+```py play
+Color("rgb(30.3456% 75% 100% / 0.75)").to_string(precision=[0, 0, 0])
+```
+
+/// new | New in 4.0: Per Channel Precision Control
+///
 
 ### Fit
 

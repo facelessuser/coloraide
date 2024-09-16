@@ -186,7 +186,7 @@ class Color(metaclass=ColorMeta):
     def __len__(self) -> int:
         """Get number of channels."""
 
-        return len(self._space.CHANNELS) + 1
+        return len(self._space.channels)
 
     @overload
     def __getitem__(self, i: str | int) -> float:
@@ -531,14 +531,14 @@ class Color(metaclass=ColorMeta):
         self,
         *,
         nans: bool = True,
-        precision: int | None = None,
-        precision_alpha: int | None = None
+        precision: int | Sequence[int] | None = None
     ) -> Mapping[str, Any]:
         """Return color as a data object."""
 
-        # Assume precision of other coordinates for alpha if only precision is specified
-        if precision is not None and precision_alpha is None:
+        if precision is None or isinstance(precision, int):
             precision_alpha = precision
+        else:
+            precision_alpha = util.get_index(precision, len(self._space.channels) - 1, self.PRECISION)
 
         return {
             'space': self.space(),
@@ -1293,38 +1293,51 @@ class Color(metaclass=ColorMeta):
         return contrast.contrast(method, self, color)
 
     @overload
-    def get(self, name: str, *, nans: bool = True, precision: int | None = None) -> float:
+    def get(self,
+        name: str,
+        *,
+        nans: bool = True,
+        precision: int | Sequence[int] | None = None
+    ) -> float:
         ...
 
     @overload
-    def get(self, name: list[str] | tuple[str, ...], *, nans: bool = True, precision: int | None = None) -> Vector:
+    def get(
+        self,
+        name: list[str] | tuple[str, ...],
+        *,
+        nans: bool = True,
+        precision: int | Sequence[int] | None = None
+    ) -> Vector:
         ...
 
     def get(
         self, name: str | list[str] | tuple[str, ...],
         *,
         nans: bool = True,
-        precision: int | None = None
+        precision: int | Sequence[int] | None = None
     ) -> float | Vector:
         """Get channel."""
+
+        is_plist = precision is not None and not isinstance(precision, int)
 
         # Handle single channel
         if isinstance(name, str):
             # Handle space.channel
             if '.' in name:
                 space, channel = name.split('.', 1)
+                obj = self.convert(space, norm=nans)
                 if nans:
-                    v = self.convert(space)[channel]
+                    v = obj[channel]
                 else:
-                    obj = self.convert(space, norm=nans)
                     i = obj._space.get_channel_index(channel)
                     v = obj._space.resolve_channel(i, obj._coords)
             elif nans:
                 v = self[name]
             else:
                 i = self._space.get_channel_index(name)
-                v = self._space.resolve_channel(i, self._coords)
-            return v if precision is None else alg.round_to(v, precision)
+                v = self._space.resolve_channel(self._space.get_channel_index(name), self._coords)
+            return v if precision is None else alg.round_to(v, util.get_index(precision, 0) if is_plist else precision)  # type: ignore[arg-type]
 
         # Handle list of channels
         else:
@@ -1332,7 +1345,7 @@ class Color(metaclass=ColorMeta):
             obj = self
             values = []
 
-            for n in name:
+            for e, n in enumerate(name):
                 # Handle space.channel
                 space, channel = n.split('.', 1) if '.' in n else (original_space, n)
                 if space != current_space:
@@ -1340,11 +1353,12 @@ class Color(metaclass=ColorMeta):
                     current_space = space
                 if nans:
                     v = obj[channel]
-                    values.append(v if precision is None else alg.round_to(v, precision))
                 else:
                     i = obj._space.get_channel_index(channel)
                     v = obj._space.resolve_channel(i, obj._coords)
-                    values.append(v if precision is None else alg.round_to(v, precision))
+                values.append(
+                    v if precision is None else alg.round_to(v, util.get_index(precision, e) if is_plist else precision)  # type: ignore[arg-type]
+                )
             return values
 
     def set(  # noqa: A003
@@ -1406,22 +1420,38 @@ class Color(metaclass=ColorMeta):
 
         return self
 
-    def coords(self, *, nans: bool = True, precision: int | None = None) -> Vector:
+    def coords(self, *, nans: bool = True, precision: int | Sequence[int] | None = None) -> Vector:
         """Get the color channels and optionally remove undefined values."""
 
-        if nans:
-            value = self[:-1]
+        # Full precision
+        if precision is None:
+            if nans:
+                return self[:-1]
+            else:
+                return [
+                    self._space.resolve_channel(index, self._coords)
+                    for index in range(len(self._coords) - 1)
+                ]
+        # Specific precision requested
+        elif isinstance(precision, int):
+            return [
+                alg.round_to(self[index] if nans else self._space.resolve_channel(index, self._coords), precision)
+                for index in range(len(self._coords) - 1)
+            ]
+        # Channel specific list of precision
         else:
-            value = [self._space.resolve_channel(index, self._coords) for index in range(len(self._coords) - 1)]
-        return value if precision is None else [alg.round_to(v, precision) for v in value]
+            return [
+                alg.round_to(
+                    self[index] if nans else self._space.resolve_channel(index, self._coords),
+                    util.get_index(precision, index, self.PRECISION)
+                )
+                for index in range(len(self._coords) - 1)
+            ]
 
     def alpha(self, *, nans: bool = True, precision: int | None = None) -> float:
         """Get the alpha channel."""
 
-        if nans:
-            value = self[-1]
-        else:
-            value = self._space.resolve_channel(-1, self._coords)
+        value = self[-1] if nans else self._space.resolve_channel(-1, self._coords)
         return value if precision is None else alg.round_to(value, precision)
 
 
