@@ -957,7 +957,8 @@ def render_notebook(*args, **kwargs):
         'pymdownx.blocks.details',
         'pymdownx.blocks.html',
         'pymdownx.blocks.definition',
-        'pymdownx.blocks.tab'
+        'pymdownx.blocks.tab',
+        'pymdownx.fancylists'
     ]
     extension_configs = {
         'markdown.extensions.toc': {
@@ -1027,6 +1028,9 @@ def render_notebook(*args, **kwargs):
                 'new', 'settings', 'note', 'abstract', 'info', 'tip', 'success',
                 'question', 'warning', 'failure', 'danger', 'bug', 'example', 'quote'
             ]
+        },
+        'pymdownx.fancylists': {
+            'inject_style': True
         },
         'pymdownx.blocks.details': {
             'types': [

@@ -495,14 +495,6 @@ surface, which in some spaces will help to converge closer to our ideal color th
 
 ![Ray Trace Gamut Mapping Example](images/raytrace-gma-improve.png)
 
-/// note
-For accuracy, iterations could be increased further which would reduce a potential ∆h shift even more, but ColorAide has
-opted to keep iterations at 4 which can gamut map colors to sRGB with ∆h shift of less than 1, and when gamut mapping
-to a larger space like Rec. 2020, still below a ∆h of 2. It can be noted that the further away the gamut boundary is
-from the achromatic line, the less accurate gamut mapping can be, but with a shift still below ∆h of 2 for a large space
-like Rec. 2020, the accuracy is plenty sufficient.
-///
-
 The results are comparable to MINDE using a low JND, but resolves much faster and within more predictable, consistent
 time.
 
