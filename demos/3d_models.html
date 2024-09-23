@@ -191,8 +191,8 @@
   <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.34.0/plotly.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Regular
@@ -424,7 +424,7 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
             # Ensure colors fit in output color gamut.
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
             cmap.append(s.to_string(hex=True))
@@ -541,7 +541,7 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
             # Adjust gamut to fit the display space
             s = c.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
 
@@ -588,7 +588,7 @@ def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opaci
             # Fit colors to output gamut
             s = t.convert('srgb')
             if not s.in_gamut():
-                s.fit(method=gmap)
+                s.fit(**gmap)
             else:
                 s.clip()
             cmap.append(s.to_string(hex=True))
@@ -649,13 +649,16 @@ def plot_gamut_in_space(
     opacity=1.0,
     edges=False,
     edge_color='#333333',
-    gmap='raytrace',
+    gmap=None,
     size=(800, 800),
     camera=None,
     aspect=None,
     projection='perspective'
 ):
     """Plot the given space in sRGB."""
+
+    if gmap is None:
+        gmap = {}
 
     io.templates.default = 'plotly_dark' if dark else 'plotly'
 
@@ -814,7 +817,7 @@ def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
         l = len(gamut_mapping)
         for i, c in enumerate(gamut_mapping + non_mapped):
             c1 = Color(c)
-            c2 = Color(c).fit(gamut, method=gmap)
+            c2 = Color(c).fit(gamut, **gmap)
             c1.convert(space, in_place=True)
             c2.convert(space, in_place=True)
             x = []
@@ -902,7 +905,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-3.3.1-py3-none-any.whl'
+let package = 'coloraide-4.0-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
@@ -1013,7 +1016,7 @@ fig = plot_gamut_in_space(
     opacity=${(edges) ? '0.2' : '1'},
     aspect={'x': ${ratio[0]}, 'y': ${ratio[1]}, 'z': ${ratio[2]}},
     projection='${projection}',
-    gmap='raytrace'
+    gmap={'method': 'raytrace'}
 )
 
 fig.to_json()
@@ -1045,7 +1048,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/",
     fullStdLib: false
   })
 
@@ -1053,7 +1056,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await pyodide.loadPackage([
     'numpy',
     'scipy',
-    'https://files.pythonhosted.org/packages/a8/07/72953cf70e3bd3a24cbc3e743e6f8539abe6e3e6d83c3c0c83426eaffd39/plotly-5.18.0-py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/b8/f0/bcf716a8e070370d6598c92fcd328bd9ef8a9bda2c5562da5a835c66700b/plotly-5.23.0-py3-none-any.whl',
     package])
 
   // Set background color
