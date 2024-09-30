@@ -16,7 +16,7 @@ future time.
 
 
 /// new | New in 4.0
-A new `layer` method was added which uses a more intuitive name and aligns with how how multiple colors are handled in
+A new `layer` method was added which uses a more intuitive name and aligns with how multiple colors are handled in
 other similar APIs such as `average()`, `interpolate()`, etc.
 ///
 

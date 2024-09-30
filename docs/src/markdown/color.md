@@ -148,8 +148,8 @@ If you'd like to generate a random color, simply call `Color.random` with a give
 
 Ranges are based on the color space's defined channel range. For color spaces with defined gamuts, the values will be
 confined to appropriate ranges. For color space's without defined gamuts, the ranges may be quite arbitrary in some
-cases. For color spaces with no hard, defined gamut, or gamuts that that far exceed practical usage it is recommend to
-fit the colors to whatever gamut you'd like, or simply use a target space with a clear defined gamut.
+cases. For color spaces with no hard, defined gamut, or gamuts that far exceed practical usage it is recommend to fit
+the colors to whatever gamut you'd like, or simply use a target space with a clear defined gamut.
 
 ```py play
 Color.random('lab').fit('srgb')

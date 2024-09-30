@@ -7,7 +7,7 @@ gamut. All default gamut mapping methods provided by ColorAide are provided via 
 
 ## Plugin Class
 
-Plugins are are created by subclassing `#!py3 coloraide.gamut.Fit`.
+Plugins are created by subclassing `#!py3 coloraide.gamut.Fit`.
 
 ```py
 class Fit(Plugin, metaclass=ABCMeta):

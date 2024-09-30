@@ -176,7 +176,7 @@
     conversion if the algorithm requires it.
 -   **NEW**: Channels can be accessed by `get` and `set` using their numerical value (as a string input).
 -   **NEW**: Color space plugins that specify the gamut space via `GAMUT_CHECK` must use that color space as a
-    reference when when gamut mapping or clipping by default.
+    reference when gamut mapping or clipping by default.
 -   **NEW**: New color space plugin attribute `CLIP_SPACE` added which will override the space specified by
     `GAMUT_CHECK` to force clipping in the origin space even if a gamut mapping space is defined. This is only used when
     it is advantageous to clip in the origin space, e.g. when faster and still practical.
@@ -536,7 +536,7 @@
     imperceptible amount of transparency. If alpha is very close (`#!py3 1e-6`) to being opaque, just round it to
     opaque.
 -   **FIX**: An easing function's output should not be clamped, only the input, and that only **needs** to occur on the
-    the outer range of an entire interpolation.
+    outer range of an entire interpolation.
 
 ## 1.0
 
@@ -625,7 +625,7 @@ a new Bezier interpolation method and added many more color spaces!
 
     -   `interpolate` and `steps` functions are now `@classmethod`s. This alleviates the awkward handling of
         interpolating colors greater than 2. Before, the first color always had to be an instance and then the rest had
-        to be fed into that instance, now the the methods can be called from the base class or an instance with all the
+        to be fed into that instance, now the methods can be called from the base class or an instance with all the
         colors fed in via a list. Only the colors in the list will be evaluated during interpolation.
     -   `Piecewise` object has been removed.
     -   `stop` objects are used to wrap colors to apply a new color stop.

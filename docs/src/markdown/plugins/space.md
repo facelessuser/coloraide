@@ -30,7 +30,7 @@ class XYZD65(Space):
     NAME = "xyz-d65"
 
     # One or more accepted identifiers that are allowed for the `color(space ...)` format.
-    # For this this specific color space, both `color(xyz x y z / a)` and `color(xyz-d65 x y z / a)` are accepted.
+    # For this specific color space, both `color(xyz x y z / a)` and `color(xyz-d65 x y z / a)` are accepted.
     # As `xyz` is listed first, `xyz` is the default used when printing in this format.
     SERIALIZE = ("xyz-d65", "xyz")
 
@@ -151,7 +151,7 @@ Color(red).convert(NAME)
 ```
 
 By default, assuming `COLOR_FORMAT` is `#!py3 True`, color strings will be parsed in the following format, where
-`SERIALIZE` is one one of the IDs specified via the `SERIALIZE` plugin property.
+`SERIALIZE` is one of the IDs specified via the `SERIALIZE` plugin property.
 
 ```py
 Color('color(SERIALIZE ...)')

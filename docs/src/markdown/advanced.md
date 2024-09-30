@@ -83,10 +83,10 @@ In general, ColorAide is careful to provide good round trip conversions where pr
 try to maintain a high level of accuracy so that when a color is converted to a different color and back that it will be
 very close, if not exactly, the same.
 
-In general, we are able to keep decent round tripping by not not clipping values during conversion and maintaining as
-high a level of precision as we can, but there are some cases where the high level of round trip accuracy cannot be
-maintained, or even at all. There are even reasons where we willfully choose to sacrifice some accuracy for convenience
-in order to uphold intuitive expectations for the user.
+In general, we are able to keep decent round tripping by not clipping values during conversion and maintaining as high a
+level of precision as we can, but there are some cases where the high level of round trip accuracy cannot be maintained,
+or even at all. There are even reasons where we willfully choose to sacrifice some accuracy for convenience in order to
+uphold intuitive expectations for the user.
 
 If you are a color scientist or you work in certain industries, there are definite reasons to uphold accuracy at all
 costs, but sometimes, you just want the colors to do the what you expect them to do. ColorAide tries to live in the
@@ -138,7 +138,7 @@ is with cylindrical color models.
 ColorAide aims to make colors easy to use, but the one case that can frustrate users is interpolating with an achromatic
 color using a cylindrical color space.
 
-Achromatic colors do not have a hue, but all conversions end up yielding something for hue, even it it has no practical
+Achromatic colors do not have a hue, but all conversions end up yielding something for hue, even it has no practical
 meaning. This can cause odd color shifts when interpolating with an achromatic color. In order to get logical results
 when doing interpolation, we detect when a color is achromatic (or very close to achromatic) and set the hues to
 undefined. This helps us to identify achromatic cases and helps us to prevent weird color shifts when interpolating

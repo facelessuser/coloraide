@@ -29,7 +29,7 @@ ColorAide particularly has a focus on the following:
 -   [x] Allow users to configure defaults to their liking.
 
 ColorAide is not meant to be the _one_ library to replace all other color libraries. There are many great libraries out
-there such such as: [Colour Science][colour-science], [Colorio][colorio], [Python Color Math][color-math], and many
+there such as: [Colour Science][colour-science], [Colorio][colorio], [Python Color Math][color-math], and many
 others. Some focus on the scientific aspects of colors and provide a wealth of various spaces, illuminants, access to
 complex color space visualizers, and numerous esoteric tools. Some are highly focused on speed. Some are powerful, but
 can be more complex to pick up by the average user.

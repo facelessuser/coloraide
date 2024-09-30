@@ -8,7 +8,7 @@ reference white.
 
 ## Plugin Class
 
-Plugins are are created by subclassing `#!py3 coloraide.cat.CAT`.
+Plugins are created by subclassing `#!py3 coloraide.cat.CAT`.
 
 ```py
 class CAT(Plugin, metaclass=ABCMeta):
@@ -21,7 +21,7 @@ class CAT(Plugin, metaclass=ABCMeta):
         """Adapt a given XYZ color using the provided white points."""
 ```
 
-Once registered, the plugin can then be used via `chromatic_adaptation` by passing its `NAME` via the the `method`
+Once registered, the plugin can then be used via `chromatic_adaptation` by passing its `NAME` via the `method`
 along two white points (as XYZ values): `w1` as the current white point and `w2` as the target white point.
 
 It should be noted that `chromatic_adaptation` is not usually directly used by the user, so a more likely approach is

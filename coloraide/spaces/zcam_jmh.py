@@ -137,7 +137,7 @@ class Environment:
 
     ref_white: The reference white in XYZ scaled by 100.
 
-    adapting_luminance: This is the the luminance of the adapting field. The units are in cd/m2.
+    adapting_luminance: This is the luminance of the adapting field. The units are in cd/m2.
         The equation is `L = (E * R) / π`, where `E` is the illuminance in lux, `R` is the reflectance,
         and `L` is the luminance. If we assume a perfectly reflecting diffuser, `R` is assumed as 1.
         For the "gray world" assumption, we must also divide by 5 (or multiply by 0.2 - 20%).

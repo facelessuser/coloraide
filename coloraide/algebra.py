@@ -146,7 +146,7 @@ def clamp(
     mn: SupportsFloatOrInt | None = None,
     mx: SupportsFloatOrInt | None = None
 ) -> SupportsFloatOrInt:
-    """Clamp the value to the the given minimum and maximum."""
+    """Clamp the value to the given minimum and maximum."""
 
     if mn is not None and mx is not None:
         return max(min(value, mx), mn)
@@ -1547,7 +1547,7 @@ class _SimpleBroadcast:
     def __iter__(self) -> Iterator[tuple[float, ...]]:  # pragma: no cover
         """Iterate."""
 
-        # Setup and and return the iterator.
+        # Setup and return the iterator.
         return self
 
 
@@ -1631,7 +1631,7 @@ class Broadcast:
     def __iter__(self) -> Broadcast:
         """Iterate."""
 
-        # Setup and and return the iterator.
+        # Setup and return the iterator.
         return self
 
 
@@ -2790,7 +2790,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
        of dependent variables.
 
     2. If we have [..., M, M] and [..., M, M] and it we have multiple sets of linear
-       equations it will be treated as as multiple [M, M] and [M] cases as described in 1).
+       equations it will be treated as multiple [M, M] and [M] cases as described in 1).
 
        If we have only one set of linear equations, it will be treated as a [..., M, M] and
        [..., M, K] case as described in 3).

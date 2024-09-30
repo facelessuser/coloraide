@@ -19,7 +19,7 @@ colors that the human eye can't even see.
 ![Gamut Comparison](images/gamut-compare.png)
 
 In order to visually represent a color from a wider gamut color space, such as Display P3, in a more narrow color space,
-such as sRGB, a suitable color within the more narrow color space must must be selected and be shown in its place. This
+such as sRGB, a suitable color within the more narrow color space must be selected and be shown in its place. This
 selecting of a suitable replacement is called gamut mapping.
 
 ColorAide defines a couple methods to help identify when a color is outside the gamut bounds of a color space and to
@@ -393,7 +393,7 @@ a special ∆E method.
 
 On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
 atypical achromatic response, but differences should be imperceptible to the eye at such lightness levels making the
-the improved performance of the ray trace approach much more desirable.
+improved performance of the ray trace approach much more desirable.
 
 ```py play
 c = Color('hct', [325, 24, 50])
@@ -473,7 +473,7 @@ is selected is the first one encountered when following the ray from the origin 
 end point.
 ///
 
-The intersection of the line and the gamut surface represents an approximation of the the most saturated color for that
+The intersection of the line and the gamut surface represents an approximation of the most saturated color for that
 lightness and hue, but because the RGB space is not perceptual, the initial approximation is likely to be off because
 decreasing chroma and holding lightness and hue constant in a perceptual space will create a curved path through the
 RGB space. In order to converge on a point as close as possible to the actual most saturated color with the given hue

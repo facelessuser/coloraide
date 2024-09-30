@@ -866,7 +866,7 @@ Parameters
     `colors`        |                   | A list of color strings, [`Color`](#color) objects, dictionaries representing a color, [`stop`](#piecewise) objects, or easing functions.
     `space`         | `#!py "lab"`      | Color space to interpolate in.
     `out_space`     | `#!py None`       | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
-    `progress`      | `#!py None`       | An optional function that that allows for custom logic to perform non-linear interpolation.
+    `progress`      | `#!py None`       | An optional function that allows for custom logic to perform non-linear interpolation.
     `hue`           | `#!py "shorter"`  | Define how color spaces which have hue angles are interpolated. Default evaluates between the shortest angle.
     `premultiplied` | `#!py True`       | Use premultiplied alpha when interpolating.
     `extrapolate`   | `#!py False`      | Interpolations should extrapolate when values exceed the domain range ([0, 1] by default).
@@ -1003,7 +1003,7 @@ Description
 
 -   Interpolates between two colors returning a color that represents the mixing of the base color and the provided
     `color` mixed at the provided `percent`, where `percent` applies to how much the provided `color` contributes to the
-    the final result.
+    final result.
 
 Parameters
 
@@ -1012,7 +1012,7 @@ Parameters
     -------------------------- | ---------------------------------- | -----------
     `color`                    |                                    | A color string, [`Color`](#color) object, or dictionary representing a color.
     `percent`                  | `#!py 0.5`                         | A numerical value between 0 - 1 representing the percentage at which the parameter `color` will be mixed.
-    `in_place`                 | `#!py False`                       | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `in_place`                 | `#!py False`                       | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `#!py **interpolate_args`  | See\ [`interpolate`](#interpolate) | Keyword arguments defined in [`interpolate`](#interpolate).
 
 Return
@@ -1113,7 +1113,7 @@ Parameters
     `name`      |                | The name of the filter that should be applied.
     `amount`    | See\ above     | A numerical value adjusting to what degree the filter is applied. Input range can vary depending on the filter being used. Default can also dependent on the filter being used.
     `space`     | `#!py3 None`   | Controls the algorithm used for simulating the given CVD.
-    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `in_place`  | `#!py3 False`  | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified via `space`.
     `**kwargs`  |                | Additional filter specific parameters.
 
@@ -1237,7 +1237,7 @@ Parameters
     `operator`  | `#!py3 None`   | A Porter Duff operator to use for alpha compositing. Values should be a string specifying the name of the operator to use. If `#!py None`, [`source-over`](#source-over) will be used. If `#!py False`, alpha compositing will be skipped.
     `space`     | `#!py3 None`   | A color space to perform the overlay in. If `#!py None`, the base color's space will be used.
     `out_space` | `#!py None`    | Color space that the new color should be in. If `#!py None`, the return color will be in the same color space as specified by `space`.
-    `in_place`  | `#!py3 False`  | Boolean used to determine if the the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
+    `in_place`  | `#!py3 False`  | Boolean used to determine if the current color should be modified "in place" or a new [`Color`](#color) object should be returned.
 
 Return
 

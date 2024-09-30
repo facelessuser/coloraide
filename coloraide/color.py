@@ -473,7 +473,7 @@ class Color(metaclass=ColorMeta):
         if limits is None:
             limits = []
 
-        # Acquire the minimum and maximum for the channel and get a random value value between
+        # Acquire the minimum and maximum for the channel and get a random value between
         length = len(limits)
         coords = []
         for i in range(num_chan):
@@ -764,7 +764,7 @@ class Color(metaclass=ColorMeta):
         if cspace == 'xyz':
             raise ValueError('XYZ is not a luminant-chromaticity color space.')
 
-        # Convert to the the requested uv color space if required.
+        # Convert to the requested uv color space if required.
         return (
             self.convert_chromaticity('xyz', cspace, coords, white=white) if cspace != 'xy_1931' else coords
         )

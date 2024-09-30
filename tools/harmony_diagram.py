@@ -245,7 +245,7 @@ def main():
                 start = i - 1
                 end = i
 
-            # Ensure we we account for wrapping from 360 to 0
+            # Ensure we account for wrapping from 360 to 0
             h1 = maximums[start][0]
             h2 = maximums[end][1]
             dh = (h1 - h2)

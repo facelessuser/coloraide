@@ -22,9 +22,9 @@ series of experiments in which subjects set the intensities of three colors requ
 experiments and can be used to calculate a number of things, including the Planckian locus.
 
 /// tip | CMFs
-It should be noted that there isn't one set set of CMFs. Over the years there have been multiple attempts to come up
-with the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE
-via `coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
+It should be noted that there isn't one set of CMFs. Over the years there have been multiple attempts to come up with
+the best CMFs and often done at both 2˚ and 10˚ viewing angles. ColorAide only provides CMFS provided by the CIE via
+`coloraide.cmfs`, the CIE 1931 2 Degree Standard Observer being the default as it is still the common approach even
 though better CMFs have been provided.
 
 CMFS                            |

@@ -105,7 +105,7 @@ color pickers:
 And then ours. Ignoring the authors hue and our hue results for white
 and the oddly high chroma for the author's achromatic white in Okhsl
 (both of which are meaningless in an achromatic color), we can see that
-that we match quite well up to ~7 digits.
+we match quite well up to ~7 digits.
 
 ```
 # Okhsl

@@ -56,7 +56,7 @@ Row([color_d50, color_d65])
 ```
 
 In order to account for the differences in illuminants, we use chromatic adaptation to modify the chromaticities of the
-color so that that they account for the different illuminant and appear as they should under the new light source. This
+color so that they account for the different illuminant and appear as they should under the new light source. This
 happens automatically when we do call `convert()`. We can see that the white point gets adjusted such that the D50 white
 looks like the D65 white when in sRGB and D65 white looks like D50 white under Pro Photo.
 

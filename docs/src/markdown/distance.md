@@ -275,7 +275,7 @@ users can defer to the ray tracing approach which does not require a special ∆
 
 On occasions, MINDE approach can be slightly more accurate very close to white due to the way ray trace handles HCT's
 atypical achromatic response, but differences should be imperceptible to the eye at such lightness levels making the
-the improved performance of the ray trace approach much more desirable.
+improved performance of the ray trace approach much more desirable.
 
 ```py play
 c = Color('hct', [325, 24, 50])
@@ -324,7 +324,7 @@ Color('red').closest(['pink', 'yellow', 'green', 'blue', 'purple', 'maroon'], me
 ## Configuring Delta E Defaults
 
 A number of distancing algorithms have configurable features that can be set on demand. If you'd like to have these
-options set by default, you create a custom class and register the the plugins with the defaults of your choice.
+options set by default, you create a custom class and register the plugins with the defaults of your choice.
 
 In this example, we will configure ∆E^\*^~00~ to use CIE Lab D50 instead of D65 by default.
 

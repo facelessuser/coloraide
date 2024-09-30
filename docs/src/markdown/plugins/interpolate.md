@@ -7,7 +7,7 @@ plugins.
 
 ## Plugin Class
 
-Plugins are are created by subclassing `#!py3 coloraide.interpolate.Interpolate`.
+Plugins are created by subclassing `#!py3 coloraide.interpolate.Interpolate`.
 
 ```py
 class Interpolate(Plugin, metaclass=ABCMeta):

@@ -65,7 +65,7 @@ i = Color.interpolate(
 ///
 
 While ColorAide supports CSS color syntax, it's goal is not to necessarily mirror CSS in all aspects, though often we
-do provide ways ways to emulate the behavior.
+do provide ways to emulate the behavior.
 
 The default linear interpolation that ColorAide uses by default deviates from how CSS handles interpolation. More
 specifically, it deviates in how undefined hues are resolved during the interpolation steps which directly affects
@@ -308,10 +308,10 @@ So far, we've only shown examples of continuous interpolation methods. To clarif
 slightly different way than we discussed [earlier](#continuous-interpolation). When we say "continuous" here, we simply
 mean that the colors in the interpolation smoothly transition from one color to the other. But when creating charts or
 graphs, some times you'd like to categorize data such that a range of values correspond to a specific color. For this,
-we can use `discrete`, which like `intrpolate`, returns an interpolation object, but the the ranges will be discrete.
+we can use `discrete`, which like `intrpolate`, returns an interpolation object, but the ranges will be discrete.
 
 By default, ranges are calculated directly form the input colors. So if you had three colors, the interpolation would be
-broken up into 3 ranges. Compare this with the the "continuous" interpolation we methods we showed earlier.
+broken up into 3 ranges. Compare this with the "continuous" interpolation we methods we showed earlier.
 
 ```py play
 Color.discrete(['red', 'green', 'blue'])
@@ -442,7 +442,7 @@ In general, achromatic colors cannot have an arc length between them and other c
 between an achromatic color (or a color which simply does not define the hue), the applied hue fix-up will have little
 effect. With that said, when using [CSS linear interpolation](#css-linear-interpolation), the algorithm is a little
 different and it essentially creates pseudo arcs between color pairs with undefined hues and defined hues. Only with the
-`longer` hue fix-up does this become apparent. Below we compare CSS linear interpolation to our our default linear
+`longer` hue fix-up does this become apparent. Below we compare CSS linear interpolation to our default linear
 interpolation.
 
 /// tab | CSS Longer Interpolation
@@ -612,7 +612,7 @@ Color.steps(
 
 `steps` uses the color class's default ∆E method to calculate max ∆E, the current default ∆E being ∆E^\*^~ab~. While
 using something like ∆E^\*^~00~ is far more accurate, it is a much more expensive operation. If desired, the class's
-default ∆E can be changed via subclassing the color object and and changing `DELTA_E` class variable or by manually
+default ∆E can be changed via subclassing the color object and changing `DELTA_E` class variable or by manually
 specifying the method via the `delta_e` parameter.
 
 
@@ -705,7 +705,7 @@ aforementioned easing function except `linear`, which simply returns what is giv
 ///
 
 /// details-tip | More Common Cubic Bezier Easings
-The following were all acquired from from https://matthewlein.com/tools/ceaser.js.
+The following were all acquired from https://matthewlein.com/tools/ceaser.js.
 
 ```py
 ease_in_quad = cubic_bezier(0.550, 0.085, 0.680, 0.530)
