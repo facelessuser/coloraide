@@ -235,7 +235,7 @@ Color.register([DIN99o(), DE99o()])
 
 Delta\ E                                 | Symmetrical           | Name            | Parameters
 ---------------------------------------- | --------------------- | --------------- | --------------------
-∆E~cam16~                                | :octicons-check-16:   | `cam16`         | `model='ucs'`
+∆E~cam16~                                | :octicons-check-16:   | `cam16`         | `space='cam16-ucs'`
 
 The [CAM16 UCS](./colors/cam16_ucs.md) uniform color space applies an additional nonlinear transformation to lightness
 and colorfulness so that a color difference metric ΔE can be based more closely on Euclidean distance. This algorithm
@@ -251,16 +251,18 @@ In 3.3 the `model` parameter was deprecated and will be removed at some future t
 be used instead.
 ///
 
-The one or more of the CAM16 (UCS/SCD/LCD) color spaces and the ∆E algorithm must be registered to use.
+The CAM16 JMh color space, one or more of the CAM16 (UCS/SCD/LCD) color spaces, and the ∆E algorithm must be registered
+to use this ∆E method.
 
 ```py
 from coloraide import Color as Base
 from coloraide.distance.delta_e_cam16 import DECAM16
 from coloraide.spaces.cam16_ucs import CAM16UCS, CAM16SCD, CAM16LCD
+from coloraide.spaces.cam16_jmh import CAM16JMh
 
 class Color(Base): ...
 
-Color.register([CAM16UCS(), CAM16SCD(), CAM16LCD(), DECAM16()])
+Color.register([CAM16JMh(), CAM16UCS(), CAM16SCD(), CAM16LCD(), DECAM16()])
 ```
 
 ### Delta E HCT
