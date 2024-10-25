@@ -100,7 +100,7 @@ def round_half_up(n: float, scale: int = 0) -> float:
 def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
     """Round to the specified precision using "half up" rounding."""
 
-    _round = round_half_up if half_up else round  # type: Callable[..., float]  # type: ignore[assignment]
+    _round = round_half_up if half_up else round  # type: Callable[..., float]
 
     # Do no rounding, just return a float with full precision
     if p == -1:
@@ -2235,7 +2235,7 @@ def ndindex(*s: ShapeLike) -> Iterator[tuple[int, ...]]:
     """Iterate dimensions."""
 
     yield from it.product(
-        *(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s))  # type: ignore[call-overload]
+        *(range(d) for d in (s[0] if not isinstance(s[0], int) and len(s) == 1 else s))  # type: ignore[arg-type]
     )
 
 
