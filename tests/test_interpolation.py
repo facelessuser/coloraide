@@ -1563,7 +1563,7 @@ class TestInterpolation(util.ColorAsserts, unittest.TestCase):
                 space='srgb',
                 method='bspline'
             )(0.75),
-            Color('rgb(3.4932 38.425 174.66 / 0.76042)')
+            Color('rgb(3.4932 76.849 174.66 / 0.76042)')
         )
 
         self.assertColorEqual(

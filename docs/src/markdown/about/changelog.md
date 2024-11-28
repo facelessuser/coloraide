@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.1
+
+-   **FIX**: Fix issue with `continuous` interpolation and any that are derived from it (cubic spline interpolations)
+    that can cause bad hue fixup calculations.
+-   **FIX**: Fix issue with `continuous` interpolation and any that are derived from it (cubic spline interpolations)
+    that can cause premultiplication to be applied to a color twice.
+
 ## 4.0
 
 -   **NEW**: Officially support Python 3.13.
