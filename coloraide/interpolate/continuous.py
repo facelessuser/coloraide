@@ -156,7 +156,7 @@ class InterpolatorContinuous(Interpolator):
                 # Two good values, store the last good value and continue
                 if not a_nan and not b_nan:
                     if self.premultiplied and i == alpha:
-                        if i == 1:
+                        if x == 1:
                             self.premultiply(c1)
                         self.premultiply(c2)
                     last = b
