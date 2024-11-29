@@ -484,14 +484,16 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
 
         # Format source as Python console statements
         start = node.lineno
+        col_start = node.col_offset
         end = node.end_lineno
+        col_end = node.end_col_offset
         stmt = lines[start - 1: end]
         command = ''
         for i, line in enumerate(stmt, 0):
             if i == 0:
-                stmt[i] = '>>> ' + line
+                stmt[i] = '>>> ' + line[col_start:col_end]
             else:
-                stmt[i] = '... ' + line
+                stmt[i] = '... ' + line[col_start:col_end]
         command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
             command += '\n... '
