@@ -12,7 +12,7 @@ code snippets using `coloraide`.
 Transform Python code by executing it, transforming to a Python console output,
 and finding and outputting color previews.
 """
-# ruff: noqa: PGH001
+# ruff: noqa: S307
 import xml.etree.ElementTree as Etree
 from collections.abc import Sequence, Mapping
 from collections import namedtuple
