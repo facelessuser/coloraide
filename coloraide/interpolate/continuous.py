@@ -90,7 +90,7 @@ class InterpolatorContinuous(Interpolator):
         else:
             raise ValueError(f"Unknown hue adjuster '{hue}'")
 
-        c1 = color1[index] + offset
+        c1 = color1[index]
         c2 = (color2[index] % 360) + offset
 
         # Adjust hue, handle gaps across `NaN`s
@@ -156,7 +156,8 @@ class InterpolatorContinuous(Interpolator):
                 # Two good values, store the last good value and continue
                 if not a_nan and not b_nan:
                     if self.premultiplied and i == alpha:
-                        self.premultiply(c1)
+                        if x == 1:
+                            self.premultiply(c1)
                         self.premultiply(c2)
                     last = b
                     continue

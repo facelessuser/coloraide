@@ -386,7 +386,7 @@ class Color(metaclass=ColorMeta):
                     cls._get_convert_chain.cache_clear()
                 raise TypeError(f"Cannot register plugin of type '{type(i)}'")
 
-            if p.NAME != "*" and p.NAME not in mapping or overwrite:
+            if p.NAME != "*" and (p.NAME not in mapping or overwrite):
                 mapping[p.NAME] = p
             elif not silent:
                 if reset_convert_cache:  # pragma: no cover
