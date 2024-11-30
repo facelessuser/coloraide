@@ -320,6 +320,7 @@ class Interpolator(metaclass=ABCMeta):
         return [i[1] for i in ret]
 
     def premultiply(self, coords: Vector, alpha: float | None = None) -> None:
+        """Apply premultiplication to semi-transparent colors."""
 
         if alpha is not None:
             coords[-1] = alpha
