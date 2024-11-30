@@ -97,12 +97,12 @@ class Oklab(Lab):
     }
     WHITE = WHITES['2deg']['D65']
 
-    def to_base(self, oklab: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To XYZ."""
 
-        return oklab_to_xyz_d65(oklab)
+        return oklab_to_xyz_d65(coords)
 
-    def from_base(self, xyz: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From XYZ."""
 
-        return xyz_d65_to_oklab(xyz)
+        return xyz_d65_to_oklab(coords)

@@ -25,7 +25,7 @@ from typing import Callable, Sequence, Mapping, Any, TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from ..color import Color
 
-__all__ = ('stop', 'hint', 'get_interpolator')
+__all__ = ('stop', 'hint', 'interpolator', 'Interpolate', 'Interpolator')
 
 
 class stop:

@@ -156,12 +156,12 @@ class Okhsv(HSV):
     GAMUT_CHECK = None
     CLIP_SPACE = None
 
-    def to_base(self, okhsv: Vector) -> Vector:
+    def to_base(self, coords: Vector) -> Vector:
         """To Oklab from Okhsv."""
 
-        return okhsv_to_oklab(okhsv, LMS_TO_SRGBL, SRGBL_COEFF)
+        return okhsv_to_oklab(coords, LMS_TO_SRGBL, SRGBL_COEFF)
 
-    def from_base(self, oklab: Vector) -> Vector:
+    def from_base(self, coords: Vector) -> Vector:
         """From Oklab to Okhsv."""
 
-        return oklab_to_okhsv(oklab, LMS_TO_SRGBL, SRGBL_COEFF)
+        return oklab_to_okhsv(coords, LMS_TO_SRGBL, SRGBL_COEFF)
