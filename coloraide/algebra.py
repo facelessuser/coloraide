@@ -478,7 +478,7 @@ def naturalize_bspline_controls(coordinates: list[Vector]) -> None:
         m = _matrix_141(n)
 
         # Create C matrix from the data points
-        c = []
+        c = []  # type: Matrix
         for r in range(1, n + 1):
             if r == 1:
                 c.append([a * 6 - b for a, b in zip(coordinates[r], coordinates[r - 1])])
