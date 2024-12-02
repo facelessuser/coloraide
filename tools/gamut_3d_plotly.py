@@ -650,7 +650,7 @@ def plot_interpolation(
     extrapolate,
     steps,
     gmap,
-    opacity=1
+    simulate_alpha
 ):
     """Plot interpolations."""
 
@@ -688,16 +688,18 @@ def plot_interpolation(
 
         c.convert('srgb', in_place=True)
         c.fit(**gmap)
-        cmap.append(c.to_string(hex=True))
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+        else:
+            cmap.append(c.to_string(comma=True, alpha=False))
 
     trace = go.Scatter3d(
         x=x, y=y, z=z,
         mode = 'markers',
-        marker={'color': cmap},
+        marker={'color': cmap, 'opacity': 1},
         showlegend=False
     )
 
-    trace.update(opacity=opacity)
     fig.add_trace(trace)
 
 
@@ -747,6 +749,9 @@ def main():
     parser.add_argument('--interp-colors', default='', help='Interpolation colors separated by semicolons.')
     parser.add_argument('--interp-method', default='linear', help="Interplation method to use: linear, bezier, etc.")
     parser.add_argument('--interp-space', default='oklab', help="Interpolation space.")
+    parser.add_argument(
+        '--interp-alpha', action='store_true', help="Simulate interpolation opacity by overlaying on white"
+    )
     parser.add_argument('--hue', default='shorter', help="Hue interpolation handling.")
     parser.add_argument('--extrapolate', action='store_true', help='Extrapolate values.')
     parser.add_argument('--powerless', action='store_true', help="Treat achromatic hues as powerless.")
@@ -830,7 +835,8 @@ def main():
         args.powerless,
         args.extrapolate,
         args.steps,
-        gmap
+        gmap,
+        args.interp_alpha
     )
 
     # Plot gamut mapping examples
