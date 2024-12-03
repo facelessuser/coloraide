@@ -491,9 +491,9 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
         command = ''
         for i, line in enumerate(stmt, 0):
             if i == 0:
-                stmt[i] = '>>> ' + line[col_start:col_end]
+                stmt[i] = '>>> ' + (line[col_start:col_end] if isinstance(node, ast.Expr) else line)
             else:
-                stmt[i] = '... ' + line[col_start:col_end]
+                stmt[i] = '... ' + (line[col_start:col_end] if isinstance(node, ast.Expr) else line)
         command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
             command += '\n... '
