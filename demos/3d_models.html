@@ -850,7 +850,8 @@ def plot_interpolation(
     powerless,
     extrapolate,
     steps,
-    gmap
+    gmap,
+    simulate_alpha
 ):
     """Plot interpolations."""
 
@@ -887,17 +888,20 @@ def plot_interpolation(
         store_coords(c, x, y, z, flags)
 
         c.convert('srgb', in_place=True)
-        c.fit(method=gmap)
-        cmap.append(c.to_string(hex=True))
+        c.fit(**gmap)
+        if simulate_alpha:
+            cmap.append(Color.layer([c, 'white'], space='srgb').to_string(hex=True))
+        else:
+            cmap.append(c.to_string(comma=True, alpha=False))
 
-    fig.add_trace(
-        go.Scatter3d(
-            x=x, y=y, z=z,
-            mode = 'markers',
-            marker={'color': cmap},
-            showlegend=False
-        )
+    trace = go.Scatter3d(
+        x=x, y=y, z=z,
+        mode = 'markers',
+        marker={'color': cmap, 'opacity': 1},
+        showlegend=False
     )
+
+    fig.add_trace(trace)
 </script>
 <script type="text/javascript">
 let pyodide = null
