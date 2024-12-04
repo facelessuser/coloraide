@@ -26,8 +26,8 @@ def average(
 
     # Get channel information
     cs = obj.CS_MAP[space]
-    if cs.is_polar():  # type: ignore[attr-defined]
-        hue_index = cs.hue_index()
+    if cs.is_polar():
+        hue_index = cs.hue_index()  # type: ignore[attr-defined]
         has_radial = hasattr(cs, 'radial_index')
         is_hwb = not has_radial and isinstance(cs, HWBish)
     else:
@@ -93,9 +93,9 @@ def average(
     color = obj.update(space, sums[:-1], sums[-1])
     if cs.is_polar():
         if has_radial and math.isnan(color[hue_index]):
-            color[cs.radial_index()] = 0
+            color[cs.radial_index()] = 0  # type: ignore[attr-defined]
         elif is_hwb and math.isnan(color[hue_index]):
-            w, b = cs.indexes()[1:]
+            w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
             if color[w] + color[b] < 1:
                 color[w] = 1 - color[b]
     return color
