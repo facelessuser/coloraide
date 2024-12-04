@@ -57,8 +57,12 @@ def average(
                 totals[i] += 1
                 if i == hue_index:
                     rad = math.radians(coord)
-                    sin += (math.sin(rad) * alpha) if premultiplied else math.sin(rad)
-                    cos += (math.cos(rad) * alpha) if premultiplied else math.cos(rad)
+                    if premultiplied:
+                        sin += (math.sin(rad) * alpha)
+                        cos += (math.cos(rad) * alpha)
+                    else:
+                        sin += math.sin(rad)
+                        cos += math.cos(rad)
                 else:
                     sums[i] += (coord * alpha) if premultiplied and i != alpha_index else coord
             i += 1
