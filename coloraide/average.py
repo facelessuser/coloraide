@@ -50,7 +50,7 @@ def average(
         coords = obj[:]
         alpha = coords[-1]
         if math.isnan(alpha):
-            alpha = 1.0
+            alpha = 0.0
         i = 0
         for coord in coords:
             if not math.isnan(coord):
@@ -58,8 +58,8 @@ def average(
                 if i == hue_index:
                     rad = math.radians(coord)
                     if premultiplied:
-                        sin += (math.sin(rad) * alpha)
-                        cos += (math.cos(rad) * alpha)
+                        sin += math.sin(rad) * alpha
+                        cos += math.cos(rad) * alpha
                     else:
                         sin += math.sin(rad)
                         cos += math.cos(rad)
@@ -71,8 +71,7 @@ def average(
         raise ValueError('At least one color must be provided in order to average colors')
 
     # Get the mean
-    alpha_t = totals[-1]
-    sums[-1] = alpha = math.nan if not alpha_t else (sums[-1] / alpha_t)
+    sums[-1] = alpha = math.nan if not totals[-1] else (sums[-1] / totals[-1])
     for i in range(chan_count - 1):
         total = totals[i]
         if not total or (premultiplied and not alpha):

@@ -120,7 +120,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test averaging ignores undefined."""
 
         colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / none)'), Color('color(srgb 0 0 1)')]
-        self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.29804 0.33333)')
+        self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.13072 0.33333)')
 
     def test_evenly_distributed(self):
         """Test evenly distributed colors."""
