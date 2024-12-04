@@ -109,10 +109,10 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='srgb').to_string(color=True))
         self.assertEqual(
             results,
-            ['color(srgb 0 0.19608 0.5 / 0.66667)',
-             'color(srgb 0 0.19608 0.44444 / 0.75)',
-             'color(srgb 0 0.19608 0.4 / 0.83333)',
-             'color(srgb 0 0.19608 0.36364 / 0.91667)',
+            ['color(srgb 0 0.29412 0.5 / 0.66667)',
+             'color(srgb 0 0.26144 0.44444 / 0.75)',
+             'color(srgb 0 0.23529 0.4 / 0.83333)',
+             'color(srgb 0 0.2139 0.36364 / 0.91667)',
              'color(srgb 0 0.19608 0.33333)']
         )
 

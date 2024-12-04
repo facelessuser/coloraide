@@ -30,7 +30,7 @@ def average(
         hue_index = cs.hue_index()  # type: ignore[attr-defined]
         is_hwb = isinstance(cs, HWBish)
     else:
-        hue_index = 1
+        hue_index = -1
         is_hwb = False
     channels = cs.channels
     chan_count = len(channels)
