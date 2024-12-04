@@ -28,11 +28,10 @@ def average(
     cs = obj.CS_MAP[space]
     if cs.is_polar():
         hue_index = cs.hue_index()  # type: ignore[attr-defined]
-        has_radial = hasattr(cs, 'radial_index')
-        is_hwb = not has_radial and isinstance(cs, HWBish)
+        is_hwb = isinstance(cs, HWBish)
     else:
         hue_index = 1
-        has_radial = is_hwb = False
+        is_hwb = False
     channels = cs.channels
     chan_count = len(channels)
     alpha_index = chan_count - 1
@@ -92,10 +91,10 @@ def average(
     # Create the color and if polar and there is no defined hue, force an achromatic state.
     color = obj.update(space, sums[:-1], sums[-1])
     if cs.is_polar():
-        if has_radial and math.isnan(color[hue_index]):
-            color[cs.radial_index()] = 0  # type: ignore[attr-defined]
-        elif is_hwb and math.isnan(color[hue_index]):
+        if is_hwb and math.isnan(color[hue_index]):
             w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
             if color[w] + color[b] < 1:
                 color[w] = 1 - color[b]
+        elif math.isnan(color[hue_index]):
+            color[cs.radial_index()] = 0  # type: ignore[attr-defined]
     return color

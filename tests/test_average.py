@@ -122,6 +122,29 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / none)'), Color('color(srgb 0 0 1)')]
         self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.29804 0.33333)')
 
+    def test_evenly_distributed(self):
+        """Test evenly distributed colors."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hsl').to_string(color=True, none=True),
+            'color(--hsl none 0 0.41699)'
+        )
+
+    def test_hwb_handling(self):
+        """Test HWB handling."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hwb').to_string(color=True, none=True),
+            'color(--hwb none 0.83399 0.16601)'
+        )
+
+        self.assertEqual(
+            Color.average(['orange', 'purple', 'darkgreen'], space='hwb').to_string(color=True),
+            'color(--hwb 38.824 0 0.36863)'
+        )
+
     def test_all_undefined_hue(self):
         """Test all hues undefined."""
 
