@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.0.2
+
+-   **FIX**: Fix averaging issues.
+    -   Polar spaces should set hues to undefined when colors are evenly distributed as circular means cannot be found
+        in these cases.
+    -   When averaging within a polar space, if the hue is determined to be undefined during averaging, the color will
+        be treated as if achromatic.
+    -   Transparency, when premultiplication is enabled, is now taken into account when processing hues in averaging.
+    -   When premultiplication is enabled and a color has undefined transparency, it will be treated as if fully
+        transparent.
+
 ## 4.0.1
 
 -   **FIX**: Fix issue with `continuous` interpolation (and any that are derived from it, e.g., cubic spline
