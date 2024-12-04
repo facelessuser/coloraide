@@ -1,7 +1,7 @@
 """Average colors together."""
 from __future__ import annotations
 import math
-from .spaces import HSLish, HSVish, LChish, HWBish
+from .spaces import HWBish
 from .types import ColorInput
 from typing import Iterable, TYPE_CHECKING
 
