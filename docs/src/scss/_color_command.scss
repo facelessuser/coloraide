@@ -1,3 +1,5 @@
+@use "utilities/convert";
+
 div.color-command {
   margin: 1em 0;
   line-height: 0;
@@ -20,8 +22,8 @@ div.color-command {
 
 @media screen and (max-width: 44.9375em) {
   .md-typeset > div.color-command {
-    margin-right:  px2rem(-16px);
-    margin-left: px2rem(-16px);
+    margin-right:  convert.px2rem(-16px);
+    margin-left: convert.px2rem(-16px);
 
     .highlight code {
       border-radius: 0;

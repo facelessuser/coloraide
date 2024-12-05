@@ -306,7 +306,7 @@ markdown_extensions:
       inject_style: True
 
 extra_css:
-  - assets/coloraide-extras/extra-696a2734c9.css
+  - assets/coloraide-extras/extra-841546e069.css
 extra_javascript:
   - https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js
   - playground-config-152e791e.js

@@ -1,3 +1,5 @@
+@use "utilities/convert";
+
 .md-typeset textarea {
 
   scrollbar-color: var(--md-default-fg-color--lighter) transparent;
@@ -8,8 +10,8 @@
   }
 
   &::-webkit-scrollbar {
-      width: px2rem(4px);
-      height: px2rem(4px);
+      width: convert.px2rem(4px);
+      height: convert.px2rem(4px);
   }
 
   &::-webkit-scrollbar-corner {

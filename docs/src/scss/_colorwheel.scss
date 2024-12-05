@@ -1,3 +1,5 @@
+@use "utilities/convert";
+
 .color-wheel {
   --color-wheel-stops1: transparent;
   --color-wheel-stops2: transparent;
@@ -6,7 +8,7 @@
   --color-wheel-stops5: transparent;
   --color-wheel-bg: var(--md-default-bg-color);
 
-  margin: px2em(16px) 0;
+  margin: convert.px2em(16px) 0;
   overflow-x: scroll;
   overflow-y: hidden;
 
@@ -16,8 +18,8 @@
 
   // Override native scrollbar styles
   &::-webkit-scrollbar {
-    width: px2rem(4px);
-    height: px2rem(4px);
+    width: convert.px2rem(4px);
+    height: convert.px2rem(4px);
   }
 
   &::-webkit-scrollbar-corner {
@@ -45,8 +47,10 @@
 
   .wheel {
     min-width: max-content;
-    padding: px2em(5px);
+    padding: convert.px2em(5px);
     border-radius: 1000px;
+    // Workaround for chrome: fixes weird distortion
+    transform: rotate(0deg);
 
     .primary {
       width: 12em;

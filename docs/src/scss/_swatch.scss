@@ -1,3 +1,5 @@
+@use "utilities/convert";
+
 :root {
   --swatch-bar-border-color: hsl(0, 0%, 90%);
   --swatch-border-color: hsl(0, 0%, 85%);
@@ -22,8 +24,8 @@
 .swatch {
   display: inline-block;
   box-sizing: border-box;
-  width: px2em(20px);
-  height: px2em(20px);
+  width: convert.px2em(20px);
+  height: convert.px2em(20px);
   margin-right: 0.2em;
   margin-left: 0.25em;
   line-height: 0;
@@ -46,8 +48,8 @@
 
 .swatch-color {
   display: inline-block;
-  width: px2em(16.4px);
-  height: px2em(16.4px);
+  width: convert.px2em(16.4px);
+  height: convert.px2em(16.4px);
   margin: 0;
   padding: 0;
   vertical-align: text-bottom;
@@ -57,13 +59,13 @@
 
 .swatch-gradient {
   width: 100%;
-  height: px2em(48px);
+  height: convert.px2em(48px);
   margin: 0;
   border-radius: 0;
 
   .swatch-color {
     width: 100%;
-    height: px2em(44px);
+    height: convert.px2em(44px);
     border-radius: 0;
   }
 }
@@ -83,14 +85,14 @@ div.swatch-bar {
     }
 
     &:not(.swatch-gradient) {
-      width: px2em(48px);
-      height: px2em(48px);
+      width: convert.px2em(48px);
+      height: convert.px2em(48px);
       margin: 0;
       border-radius: 0;
 
       .swatch-color {
-        width: px2em(44px);
-        height: px2em(44px);
+        width: convert.px2em(44px);
+        height: convert.px2em(44px);
         margin: 0;
         border-radius: 0;
       }

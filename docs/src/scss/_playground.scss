@@ -1,3 +1,5 @@
+@use "utilities/convert";
+
 .playground-code {
   position: relative;
   width: 100%;
@@ -21,7 +23,7 @@
 }
 
 .playground-code pre {
-  height: calc(100% + px2rem(4px));
+  height: calc(100% + convert.px2rem(4px));
   margin: 0;
   pointer-events: none;
 }
@@ -61,15 +63,15 @@
 
 .playground-footer {
   margin-bottom: 1em;
-  padding: px2em(3px, 13.6px) px2em(16px, 13.6px) px2em(2px, 13.6px);
+  padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(2px, 13.6px);
   color: var(--md-code-hl-comment-color);
-  font-size: px2em(13.6px);
+  font-size: convert.px2em(13.6px);
   background: var(--md-code-bg-color);
-  border-bottom-right-radius: px2rem(2px);
-  border-bottom-left-radius: px2rem(2px);
+  border-bottom-right-radius: convert.px2rem(2px);
+  border-bottom-left-radius: convert.px2rem(2px);
 
   hr {
-    margin: 0 0 px2em(2px, 13.6px) 0;
+    margin: 0 0 convert.px2em(2px, 13.6px) 0;
   }
 
   .gamut {
