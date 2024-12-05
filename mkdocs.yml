@@ -306,12 +306,12 @@ markdown_extensions:
       inject_style: True
 
 extra_css:
-  - assets/coloraide-extras/extra-841546e069.css
+  - assets/coloraide-extras/extra-c9c195c408.css
 extra_javascript:
-  - https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js
+  - https://cdn.jsdelivr.net/npm/mermaid@11.3.0/dist/mermaid.min.js
   - playground-config-152e791e.js
-  - https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js
-  - assets/coloraide-extras/extra-notebook-lX1Ayavv.js
+  - https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js
+  - assets/coloraide-extras/extra-notebook-BTWSznik.js
 
 extra:
   social:
