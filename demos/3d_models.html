@@ -191,8 +191,8 @@
   <div>Copyright &copy; 2020 - 2023 <a href="https://github.com/facelessuser">Isaac Muse</a></div>
 </footer>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.34.0/plotly.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 <script id="init" type="text/python">
 from coloraide.everything import ColorAll as Color
 from coloraide.spaces import Regular
@@ -909,7 +909,7 @@ let busyTarget = null
 let colorSpaces = null
 let colorGamuts = null
 let lastModel = null
-let package = 'coloraide-4.0.1-py3-none-any.whl'
+let package = 'coloraide-4.1-py3-none-any.whl'
 const defaultSpace = 'lab'
 const defaultGamut = 'srgb'
 const exceptions = new Set(['hwb', 'ryb', 'ryb-biased'])
@@ -1034,7 +1034,7 @@ async function randomizeColor() {
 import json
 from coloraide.everything import ColorAll as Color
 c = Color.random('hsl', limits=[(0, 360), (0.3, 1), (0.3, 0.8)]).set('alpha', 0.75)
-dark = c.compose('white').contrast('black') < 4.5
+dark = Color.layer([c, 'white']).contrast('black') < 4.5
 json.dumps({'color': c.to_string(), 'dark': dark})
 `))
   const display = document.getElementById('display')
@@ -1052,7 +1052,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   busyTarget = document.getElementsByTagName('body')[0]
   showBusy(busyTarget, 'Setting up Environment...')
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/",
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/",
     fullStdLib: false
   })
 
@@ -1060,7 +1060,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await pyodide.loadPackage([
     'numpy',
     'scipy',
-    'https://files.pythonhosted.org/packages/b8/f0/bcf716a8e070370d6598c92fcd328bd9ef8a9bda2c5562da5a835c66700b/plotly-5.23.0-py3-none-any.whl',
+    'https://files.pythonhosted.org/packages/e5/ae/580600f441f6fc05218bd6c9d5794f4aef072a7d9093b291f1c50a9db8bc/plotly-5.24.1-py3-none-any.whl',
     package])
 
   // Set background color
