@@ -112,6 +112,19 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
              'color(srgb 0 0.19608 0.33333)']
         )
 
+    def test_average_with_undefined_alpha_result(self):
+        """Test average when the resulting alpha is undefined."""
+
+        colors = [
+            Color('color(srgb 1 1 0 / none)'),
+            Color('color(srgb 0 0.50196 0 / none)'),
+            Color('color(srgb 0 0 1 / none)')
+        ]
+        self.assertEqual(
+            Color.average(colors, space='srgb').to_string(color=True, none=True),
+            'color(srgb 0.33333 0.50065 0.33333 / none)'
+        )
+
     def test_average_ignore_undefined_alpha_premultiplied(self):
         """Test averaging ignores undefined."""
 

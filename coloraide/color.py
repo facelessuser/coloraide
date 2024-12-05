@@ -1155,7 +1155,7 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = space
 
-        if powerless is not None:
+        if powerless is not None:  # pragma: no cover
             warn_deprecated("The use of 'powerless' with 'average()' is deprecated as it is now always enabled")
 
         return average.average(
