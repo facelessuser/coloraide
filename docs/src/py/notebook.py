@@ -503,12 +503,11 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
             with StreamOut() as s:
                 # Execute code
                 for x in evaluate(node, g):
-                    result.append(x)
-
                     # Output captured standard out after statements
                     text = s.read()
                     if text:
                         result.append(AtomicString(text))
+                    result.append(x)
 
                 # Execution went well, so append command
                 console += command
