@@ -60,7 +60,7 @@ def iter_image(img, space, no_resize):
             if im.mode not in ('RGBA',):
                 im = im.convert('RGBA')
 
-        if not no_resize and im.size[0] > 500 or im.size[1] > 500:
+        if not no_resize and (im.size[0] > 500 or im.size[1] > 500):
             factor = 500 / max(im.size)
             new_im = im.resize((max(1, int(im.size[0] * factor)), max(1, int(im.size[1] * factor))))
         else:

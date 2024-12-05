@@ -10,7 +10,7 @@
     averaging, the color will be treated as if achromatic, setting saturation/chroma as necessary. This is needed to
     prevent serialization of achromatic colors to a non-achromatic color when undefined values are resolved.
 -   **FIX**: Fully transparent colors should only contribute alpha in color averaging, regardless of `premultiply`
-    setting. This prevents fully transparent color channels, which provide no meaniful data, from distorting averages.
+    setting. This prevents fully transparent color channels, which provide no meaningful data, from distorting averages.
 -   **FIX**: When averaging in a polar space, if a color is considered achromatic but does not have an undefined hue,
     the hue will be treated as undefined. Essentially the `powerless` parameter is now always `True`. This ensures that
     achromatic colors properly contribute to the average without distorting the hue.

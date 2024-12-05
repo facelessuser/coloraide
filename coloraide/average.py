@@ -103,6 +103,6 @@ def average(
             w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
             if color[w] + color[b] < 1:
                 color[w] = 1 - color[b]
-        elif math.isnan(color[hue_index]) and not math.isnan(color[cs.radial_index()]):
+        elif math.isnan(color[hue_index]) and not math.isnan(color[cs.radial_index()]):  # type: ignore[attr-defined]
             color[cs.radial_index()] = 0  # type: ignore[attr-defined]
     return color

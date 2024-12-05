@@ -38,7 +38,7 @@ Color.average(['purple', 'green', 'blue'])
 Color.average(['purple', 'green', 'blue'], space='hsl')
 ```
 
-It should be noted that when averaging colors with hues which are evently distributed around the color wheel, the result
+It should be noted that when averaging colors with hues which are evenly distributed around the color wheel, the result
 will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will discard
 chroma/saturation information, producing an achromatic color.
 
@@ -61,10 +61,10 @@ for i in range(12):
 
 There are cases where this approach of averaging may not be desired. It may be that color averaging is desired without
 considering transparency. If so, `premultiplied` can be disabled by setting it to `#!py False`. While the average of
-transparency is calculated, it can be discared from the final result if desired.
+transparency is calculated, it can be discarded from the final result if desired.
 
 It should be noted that when a color is fully transparent, its color components will be ignored, regardless of the
-`premultiplied` parameter, as fully transparent colors provide no meaniful color information.
+`premultiplied` parameter, as fully transparent colors provide no meaningful color information.
 
 ```py play
 for i in range(12):
@@ -84,7 +84,7 @@ Color.average(['white', 'color(srgb 0 0 1)'], space='hsl')
 ```
 
 When averaging hues in a polar space, implied achromatic hues are also treated as undefined as counting such hues would
-distort the average in a non-meaniful way.
+distort the average in a non-meaningful way.
 
 ```py play
 Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
