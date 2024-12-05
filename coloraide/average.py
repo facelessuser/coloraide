@@ -9,12 +9,14 @@ if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
 
+ACHROMATIC_THRESHOLD = 1e-4
+
+
 def average(
     color_cls: type[Color],
     colors: Iterable[ColorInput],
     space: str,
-    premultiplied: bool = True,
-    powerless: bool = False
+    premultiplied: bool = True
 ) -> Color:
     """
     Average a list of colors together.
@@ -45,15 +47,16 @@ def average(
     for c in colors:
         obj.update(c)
         # If cylindrical color is achromatic, ensure hue is undefined
-        if powerless and hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
+        if hue_index >= 0 and not math.isnan(obj[hue_index]) and obj.is_achromatic():
             obj[hue_index] = math.nan
         coords = obj[:]
         alpha = coords[-1]
         if math.isnan(alpha):
-            alpha = 0.0
+            alpha = 1.0
         i = 0
         for coord in coords:
-            if not math.isnan(coord):
+            # No need to average an undefined value or color components if alpha is zero
+            if not math.isnan(coord) and (premultiplied or alpha or i == alpha_index):
                 totals[i] += 1
                 if i == hue_index:
                     rad = math.radians(coord)
@@ -72,9 +75,11 @@ def average(
 
     # Get the mean
     sums[-1] = alpha = math.nan if not totals[-1] else (sums[-1] / totals[-1])
+    if math.isnan(alpha):
+        alpha = 1.0
     for i in range(chan_count - 1):
         total = totals[i]
-        if not total or (premultiplied and not alpha):
+        if not total or not alpha:
             sums[i] = math.nan
         elif i == hue_index:
             if premultiplied:
@@ -83,7 +88,7 @@ def average(
             else:
                 sin /= total
                 cos /= total
-            if abs(sin) <= 1e-14 and abs(cos) <= 1e-14:
+            if abs(sin) < ACHROMATIC_THRESHOLD and abs(cos) < ACHROMATIC_THRESHOLD:
                 sums[i] = math.nan
             else:
                 avg_theta = math.degrees(math.atan2(sin, cos))
@@ -98,6 +103,6 @@ def average(
             w, b = cs.indexes()[1:]  # type: ignore[attr-defined]
             if color[w] + color[b] < 1:
                 color[w] = 1 - color[b]
-        elif math.isnan(color[hue_index]):
+        elif math.isnan(color[hue_index]) and not math.isnan(color[cs.radial_index()]):
             color[cs.radial_index()] = 0  # type: ignore[attr-defined]
     return color

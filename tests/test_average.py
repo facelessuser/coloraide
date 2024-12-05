@@ -12,12 +12,8 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test that we force achromatic hues to undefined."""
 
         self.assertEqual(
-            Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl', powerless=True).to_string(),
-            'hsl(240 50% 75%)'
-        )
-        self.assertEqual(
             Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
-            'hsl(315 50% 75%)'
+            'hsl(240 50% 75%)'
         )
 
     def test_no_colors(self):
@@ -58,7 +54,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='srgb', premultiplied=False).to_string(color=True))
         self.assertEqual(
             results,
-            ['color(srgb 0 0.29804 0.33333 / 0.66667)',
+            ['color(srgb 0 0.19608 0.5 / 0.66667)',
              'color(srgb 0 0.29804 0.33333 / 0.75)',
              'color(srgb 0 0.29804 0.33333 / 0.83333)',
              'color(srgb 0 0.29804 0.33333 / 0.91667)',
@@ -92,7 +88,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='hsl', premultiplied=False).to_string(color=True))
         self.assertEqual(
             results,
-            ['color(--hsl 150 1 0.31569 / 0.66667)',
+            ['color(--hsl 180 1 0.34804 / 0.66667)',
              'color(--hsl 150 1 0.31569 / 0.75)',
              'color(--hsl 150 1 0.31569 / 0.83333)',
              'color(--hsl 150 1 0.31569 / 0.91667)',
@@ -120,7 +116,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test averaging ignores undefined."""
 
         colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / none)'), Color('color(srgb 0 0 1)')]
-        self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.13072 0.33333)')
+        self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.29804 0.33333)')
 
     def test_evenly_distributed(self):
         """Test evenly distributed colors."""
