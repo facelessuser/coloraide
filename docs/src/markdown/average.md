@@ -29,26 +29,28 @@ Color.average(['red', 'yellow', 'orange', 'green'])
 ColorAide can average colors in rectangular spaces and cylindrical spaces. When applying averaging in a cylindrical
 space, hues will be averaged taking the circular mean.
 
-Cylindrical averaging may not provide as good of results as using rectangular spaces, but is provided to provide a sane
-approach if a cylindrical space is used.
+Colors that appear to be achromatic will have their hue treated as undefined, even if the hue is defined.
 
-```py play
-Color.average(['orange', 'yellow', 'red'])
-Color.average(['orange', 'yellow', 'red'], space='hsl')
-```
-
-Because calculations are done in a cylindrical space, the averaged colors can be different than what is acquired with
-rectangular space averaging.
+Cylindrical averaging may provide very different results that averaging in rectangular spaces.
 
 ```py play
 Color.average(['purple', 'green', 'blue'])
 Color.average(['purple', 'green', 'blue'], space='hsl')
 ```
 
+It should be noted that when averaging colors with hues which are evently distributed around the color wheel, the result
+will produce an achromatic hue. When achromatic hues are produced during circular mean, the color will discard
+chroma/saturation information, producing an achromatic color.
+
+```py play
+Color.average(['red', 'green', 'blue'], space='hsl')
+```
+
 ## Averaging with Transparency
 
 ColorAide, by default, will account for transparency when averaging colors. Colors which are more transparent will have
-less of an impact on the average. This is done by premultiplying the colors before averaging.
+less of an impact on the average. This is done by premultiplying the colors before averaging, essentially weighting the
+color components where more opaque colors have a greater influence on the average.
 
 ```py play
 for i in range(12):
@@ -57,8 +59,12 @@ for i in range(12):
     )
 ```
 
-If you'd like to average the channels without taking transparency into consideration, simply set `premultiplied` to
-`#!py False`.
+There are cases where this approach of averaging may not be desired. It may be that color averaging is desired without
+considering transparency. If so, `premultiplied` can be disabled by setting it to `#!py False`. While the average of
+transparency is calculated, it can be discared from the final result if desired.
+
+It should be noted that when a color is fully transparent, its color components will be ignored, regardless of the
+`premultiplied` parameter, as fully transparent colors provide no meaniful color information.
 
 ```py play
 for i in range(12):
@@ -77,8 +83,8 @@ provided for averaging cylindrical colors, particularly achromatic colors.
 Color.average(['white', 'color(srgb 0 0 1)'], space='hsl')
 ```
 
-Implied achromatic hues are only considered undefined if `powerless` is enabled. This is similar to how interpolation
-works. By default, explicitly defined hues are respected if working directly in the averaging color space.
+When averaging hues in a polar space, implied achromatic hues are also treated as undefined as counting such hues would
+distort the average in a non-meaniful way.
 
 ```py play
 Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
@@ -94,7 +100,8 @@ for i in range(12):
     Color.average(['darkgreen', f'color(srgb 0 none 0 / {i / 11})', 'color(srgb 0 0 1)'])
 ```
 
-When `premultiplied` is enabled, premultiplication will not be applied to a color if its `alpha` is undefined.
+When `premultiplied` is enabled, premultiplication will not be applied to a color if its `alpha` is undefined as it is
+unknown how to weight the color, instead the color is treated with full weight.
 
 ```py play
 Color.average(['darkgreen', f'color(srgb 0 0.50196 0 / none)', 'color(srgb 0 0 1)'])
