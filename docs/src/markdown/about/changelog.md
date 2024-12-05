@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.1.0
+
+-   **NEW**: The `powerless` parameter is deprecated in `average()` as it is required to be always on for proper polar
+    space averaging.
+-   **FIX**: Polar space averaging was not setting hues to undefined when colors are evenly distributed. This is
+    required as circular means cannot be found in these cases.
+-   **FIX**: When averaging within a polar space, if the result hue is determined to be undefined at the end of
+    averaging, the color will be treated as if achromatic, setting saturation/chroma as necessary. This is needed to
+    prevent serialization of achromatic colors to a non-achromatic color when undefined values are resolved.
+-   **FIX**: Fully transparent colors should only contribute alpha in color averaging, regardless of `premultiply`
+    setting. This prevents fully transparent color channels, which provide no meaningful data, from distorting averages.
+-   **FIX**: When averaging in a polar space, if a color is considered achromatic but does not have an undefined hue,
+    the hue will be treated as undefined. Essentially the `powerless` parameter is now always `True`. This ensures that
+    achromatic colors properly contribute to the average without distorting the hue.
+
 ## 4.0.1
 
 -   **FIX**: Fix issue with `continuous` interpolation (and any that are derived from it, e.g., cubic spline

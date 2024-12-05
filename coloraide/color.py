@@ -17,7 +17,7 @@ from . import average
 from . import temperature
 from . import util
 from . import algebra as alg
-from .deprecate import deprecated
+from .deprecate import deprecated, warn_deprecated
 from itertools import zip_longest as zipl
 from .css import parse
 from .types import VectorLike, Vector, ColorInput
@@ -1155,12 +1155,14 @@ class Color(metaclass=ColorMeta):
         if out_space is None:
             out_space = space
 
+        if powerless is not None:  # pragma: no cover
+            warn_deprecated("The use of 'powerless' with 'average()' is deprecated as it is now always enabled")
+
         return average.average(
             cls,
             colors,
             space,
-            premultiplied,
-            powerless if powerless is not None else cls.POWERLESS,
+            premultiplied
         ).convert(out_space, in_place=True)
 
     def filter(  # noqa: A003

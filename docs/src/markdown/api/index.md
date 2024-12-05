@@ -1060,6 +1060,11 @@ Return
 
 ///
 
+/// warning | Deprecated 4.1
+`powerless` parameter has been deprecated in 4.1 and as it is now always enabled. The parameter no longer does anything
+and will be removed in the future.
+///
+
 ## `#!py Color.filter` {#cvd}
 
 ```py

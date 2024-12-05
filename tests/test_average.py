@@ -12,12 +12,8 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
         """Test that we force achromatic hues to undefined."""
 
         self.assertEqual(
-            Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl', powerless=True).to_string(),
-            'hsl(240 50% 75%)'
-        )
-        self.assertEqual(
             Color.average(['hsl(30 0 100)', 'color(srgb 0 0 1)'], space='hsl').to_string(),
-            'hsl(315 50% 75%)'
+            'hsl(240 50% 75%)'
         )
 
     def test_no_colors(self):
@@ -58,7 +54,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='srgb', premultiplied=False).to_string(color=True))
         self.assertEqual(
             results,
-            ['color(srgb 0 0.29804 0.33333 / 0.66667)',
+            ['color(srgb 0 0.19608 0.5 / 0.66667)',
              'color(srgb 0 0.29804 0.33333 / 0.75)',
              'color(srgb 0 0.29804 0.33333 / 0.83333)',
              'color(srgb 0 0.29804 0.33333 / 0.91667)',
@@ -75,10 +71,10 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='hsl').to_string(color=True))
         self.assertEqual(
             results,
-            ['color(--hsl 150 1 0.34804 / 0.66667)',
-             'color(--hsl 150 1 0.33725 / 0.75)',
-             'color(--hsl 150 1 0.32863 / 0.83333)',
-             'color(--hsl 150 1 0.32157 / 0.91667)',
+            ['color(--hsl 180 1 0.34804 / 0.66667)',
+             'color(--hsl 169.11 1 0.33725 / 0.75)',
+             'color(--hsl 160.89 1 0.32863 / 0.83333)',
+             'color(--hsl 154.72 1 0.32157 / 0.91667)',
              'color(--hsl 150 1 0.31569)']
         )
 
@@ -92,7 +88,7 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
             results.append(Color.average(colors, space='hsl', premultiplied=False).to_string(color=True))
         self.assertEqual(
             results,
-            ['color(--hsl 150 1 0.31569 / 0.66667)',
+            ['color(--hsl 180 1 0.34804 / 0.66667)',
              'color(--hsl 150 1 0.31569 / 0.75)',
              'color(--hsl 150 1 0.31569 / 0.83333)',
              'color(--hsl 150 1 0.31569 / 0.91667)',
@@ -116,11 +112,47 @@ class TestAverage(util.ColorAsserts, unittest.TestCase):
              'color(srgb 0 0.19608 0.33333)']
         )
 
+    def test_average_with_undefined_alpha_result(self):
+        """Test average when the resulting alpha is undefined."""
+
+        colors = [
+            Color('color(srgb 1 1 0 / none)'),
+            Color('color(srgb 0 0.50196 0 / none)'),
+            Color('color(srgb 0 0 1 / none)')
+        ]
+        self.assertEqual(
+            Color.average(colors, space='srgb').to_string(color=True, none=True),
+            'color(srgb 0.33333 0.50065 0.33333 / none)'
+        )
+
     def test_average_ignore_undefined_alpha_premultiplied(self):
         """Test averaging ignores undefined."""
 
         colors = [Color('darkgreen'), Color('color(srgb 0 0.50196 0 / none)'), Color('color(srgb 0 0 1)')]
         self.assertEqual(Color.average(colors, space='srgb').to_string(color=True), 'color(srgb 0 0.29804 0.33333)')
+
+    def test_evenly_distributed(self):
+        """Test evenly distributed colors."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hsl').to_string(color=True, none=True),
+            'color(--hsl none 0 0.41699)'
+        )
+
+    def test_hwb_handling(self):
+        """Test HWB handling."""
+
+        colors = ['red', 'green', 'blue']
+        self.assertEqual(
+            Color.average(colors, space='hwb').to_string(color=True, none=True),
+            'color(--hwb none 0.83399 0.16601)'
+        )
+
+        self.assertEqual(
+            Color.average(['orange', 'purple', 'darkgreen'], space='hwb').to_string(color=True),
+            'color(--hwb 38.824 0 0.36863)'
+        )
 
     def test_all_undefined_hue(self):
         """Test all hues undefined."""

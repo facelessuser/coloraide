@@ -5,6 +5,7 @@ import time
 import argparse
 import sys
 import os
+import json
 
 # We want to load ColorAide from the working directory to pick up the version under development
 sys.path.insert(0, os.getcwd())
@@ -51,11 +52,15 @@ def get_color(space, p):
     return Color('srgb', [x / 255 for x in p[:3]], p[3] / 255 if len(p) > 3 else 1).convert(space, in_place=True)
 
 
-def iter_image(img, space):
+def iter_image(img, space, no_resize):
     """Process the image applying the requested filter."""
 
     with Image.open(img) as im:
-        if im.size[0] > 500 or im.size[1] > 500:
+        if im.format == 'PNG':
+            if im.mode not in ('RGBA',):
+                im = im.convert('RGBA')
+
+        if not no_resize and (im.size[0] > 500 or im.size[1] > 500):
             factor = 500 / max(im.size)
             new_im = im.resize((max(1, int(im.size[0] * factor)), max(1, int(im.size[1] * factor))))
         else:
@@ -84,16 +89,20 @@ def main():
     parser.add_argument('--space', '-s', default='srgb', help='Color space to average in.')
     parser.add_argument('--out-space', '-o', default='srgb', help='Color space to average in.')
     parser.add_argument('--premultiplied', '-p', action='store_true', help="Premultiply values.")
-    parser.add_argument('--powerless', '-P', action='store_true', help="Treat achromatic hues as powerless.")
+    parser.add_argument('--no-resize', '-r', action='store_true', help="Disable resizing of image.")
+    parser.add_argument('--gamut-map', '-g', default="clip", help="Specify GMA method to use (default is clip).")
+    parser.add_argument('--gamut-options', '-G', default="{}", help="Define gamut mapping options.")
     args = parser.parse_args()
+
+    gmap = {'method': args.gamut_map}
+    gmap.update(json.loads(args.gamut_options))
 
     print(
         Color.average(
-            iter_image(args.input, args.space),
+            iter_image(args.input, args.space, args.no_resize),
             space=args.space,
             premultiplied=args.premultiplied,
-            powerless=args.powerless
-        ).convert(args.out_space).to_string()
+        ).convert(args.out_space).to_string(fit=gmap)
     )
 
     return 0
