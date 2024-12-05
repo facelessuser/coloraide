@@ -88,7 +88,6 @@ distort the average in a non-meaningful way.
 
 ```py play
 Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl')
-Color.average(['hsl(30 0 100)', 'hsl(240 100 50 / 1)'], space='hsl', powerless=True)
 ```
 
 While undefined logic is intended to handle achromatic hues, this logic will be applied to any channel. It should be
