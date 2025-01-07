@@ -2019,7 +2019,7 @@ def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ..., **kwar
     ...
 
 
-isclose = vectorize2(_isclose)  # type: ignore[assignment]
+isclose = vectorize2(_isclose)
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2042,7 +2042,7 @@ def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> Tenso
     ...
 
 
-isnan = vectorize1(math.isnan)  # type: ignore[assignment]
+isnan = vectorize1(math.isnan)
 
 
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
@@ -2086,7 +2086,7 @@ def multiply(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...
     ...
 
 
-multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")  # type: ignore[assignment]
+multiply = vectorize2(operator.mul, doc="Multiply two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2124,7 +2124,7 @@ def divide(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) 
     ...
 
 
-divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")  # type: ignore[assignment]
+divide = vectorize2(operator.truediv, doc="Divide two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2162,7 +2162,7 @@ def add(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> 
     ...
 
 
-add = vectorize2(operator.add, doc="Add two arrays or floats.")  # type: ignore[assignment]
+add = vectorize2(operator.add, doc="Add two arrays or floats.")
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2199,7 +2199,7 @@ def subtract(a: TensorLike, b: float | ArrayLike, *, dims: DimHints | None = ...
 def subtract(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...) -> Tensor:
     ...
 
-subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")  # type: ignore[assignment]
+subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")
 
 
 def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
