@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CAM16 LCD](../images/cam16-lcd-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CAM16 LCD color space.
-/////
 ////
 
 This is the LCD variant of the CAM16 UCS color space and is optimized for "large" color distancing. See

@@ -23,12 +23,9 @@ Name | Range
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![oRGB](../images/hunter-lab-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the Hunter Lab color space.
-/////
 ////
 
 The Hunter Lab color space, defined in 1948 by Richard S. Hunter, is another color space referred to as "Lab". Like

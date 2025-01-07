@@ -20,12 +20,9 @@ Name | Range
 `v`  | [0, 1]
 ////
 
-//// html | figure
 ![Okhsv 3D](../images/okhsv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 Okhsv color space in 3D
-/////
 ////
 
 Okhsv was created by Björn Ottosson and is a transform of the [Oklab](./oklab.md) color space that approximates the sRGB

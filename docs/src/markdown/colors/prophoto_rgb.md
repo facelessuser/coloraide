@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![ProPhoto RGB](../images/prophoto-rgb.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities
-/////
 ////
 
 The ProPhoto RGB color space, also known as ROMM RGB (Reference Output Medium Metric), is an output referred RGB color

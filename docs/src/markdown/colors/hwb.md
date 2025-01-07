@@ -20,12 +20,9 @@ Name | Range
 `b`  | [0, 1]
 ////
 
-//// html | figure
 ![HWB 3D](../images/hwb-3d.png)
-
-///// html | figcaption
+//// figure-caption
 HWB color space in 3D
-/////
 ////
 
 HWB is a cylindrical-coordinate representation of points in an [RGB](./srgb.md) color model, similar to HSL and HSV. It

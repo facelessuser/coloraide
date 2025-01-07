@@ -20,13 +20,9 @@ Name | Range
 `b`  | [0, 1]
 ////
 
-//// html | figure
 ![Rec. 2020](../images/rec2020.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- Rec. 2100 Chromaticities (Same as Rec. 2020)
-
-/////
 ////
 
 BT.2100, more commonly known by the abbreviations Rec. 2100 or BT.2100, introduced high-dynamic-range television

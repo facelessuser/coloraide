@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![Rec. 2120](../images/rec2020.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- Rec. 2020 Chromaticities (the same as Rec. 2100)
-/////
 ////
 
 The Linear Rec. 2100 space is the same as [Linear Rec. 2100](./rec2020_linear.md) and is essentially an alias required

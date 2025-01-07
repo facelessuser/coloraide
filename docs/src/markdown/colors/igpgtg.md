@@ -22,12 +22,9 @@ Name | Range
 ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![IgPgTg](../images/igpgtg-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the IgPgTg color space.
-/////
 ////
 
 IgPgTg uses the same structure as IPT, an established hue-uniform color space utilized in gamut mapping applications.

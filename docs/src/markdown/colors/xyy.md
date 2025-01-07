@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![xyY](../images/xyy-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the xyY color space.
-/////
 ////
 
 A derivative of the CIE 1931 XYZ space, the CIE xyY color space, is often used as a way to graphically present the

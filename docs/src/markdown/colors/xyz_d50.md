@@ -22,12 +22,9 @@ Name       | Range^\*^
 ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![XYZ D50 3D](../images/xyz-d50-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the XYZ D50 color space.
-/////
 ////
 
 XYZ D50 is the same as [XYZ D65](./xyz_d65.md) except it uses a D50 white point.

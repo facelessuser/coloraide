@@ -22,12 +22,9 @@ these two colors with a line. We can then select any point on the line to simula
 yield the first color, 100% would yield the second color, and 50% would yield a new color:
 `#!color Color.interpolate(['oklab(0.7 0.15 0.1)', 'oklab(0.7 -0.03 -0.12)'])(0.5)`.
 
-/// html | figure
 ![Linear Interpolation](images/linear-interpolation.png)
-
-//// html | figcaption
+/// figure-caption
 Interpolation performed at 50%
-////
 ///
 
 The `interpolate` method allows a user to create a linear interpolation function using two or more colors. By default, a

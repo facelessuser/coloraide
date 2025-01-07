@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![sRGB](../images/srgb.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- sRGB Chromaticities
-/////
 ////
 
 The sRGB Linear space is the same as [sRGB](./srgb.md) *except* that the transfer function is linear-light (there is no

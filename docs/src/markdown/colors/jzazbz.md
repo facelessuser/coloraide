@@ -23,12 +23,9 @@ Name | Range^\*^
 range of `jz` = [0, 1], `az` = [-1, 1] and `bz` = [1, 1] for percentage input and output.
 ////
 
-//// html | figure
 ![Jzazbz](../images/jzazbz-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the Jzazbz color space.
-/////
 ////
 
 Jzazbz is a a color space designed for perceptual uniformity in high dynamic range (HDR) and wide color gamut (WCG)

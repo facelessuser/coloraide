@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![DIN99o LCh](../images/lch99o-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the DIN99o LCh color space.
-/////
 ////
 
 DIN99o LCh is the cylindrical form of [DIN99o](./din99o.md).

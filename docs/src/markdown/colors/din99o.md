@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![DIN99o](../images/din99o-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the DIN99o color space.
-/////
 ////
 
 The DIN99 color space system is a further development of the CIELab color space system developed by the FNF / FNL 2

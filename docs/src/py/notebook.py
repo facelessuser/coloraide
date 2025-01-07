@@ -959,7 +959,8 @@ def render_notebook(*args, **kwargs):
         'pymdownx.blocks.html',
         'pymdownx.blocks.definition',
         'pymdownx.blocks.tab',
-        'pymdownx.fancylists'
+        'pymdownx.fancylists',
+        'pymdownx.blocks.caption'
     ]
     extension_configs = {
         'markdown.extensions.toc': {

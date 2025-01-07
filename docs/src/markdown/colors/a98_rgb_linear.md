@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![A98 RGB](../images/a98-rgb.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- Adobe(r) RGB 1998 Chromaticities
-/////
 ////
 
 The Linear A98 RGB space is the same as [A98 RGB](./a98_rgb.md) *except* that the transfer function is linear-light

@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![HCT](../images/hct-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the HCT color space.
-/////
 ////
 
 The HCT color space is Google's attempt at a perceptually accurate color system. Essentially, it is two color spaces

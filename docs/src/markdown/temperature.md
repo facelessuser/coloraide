@@ -8,12 +8,9 @@ expressed as the temperature (in Kelvins) something would need to be heated to g
 
 This response can be modeled with a Planckian or black body locus/curve and is often shown in chromaticity diagrams.
 
-//// html | figure
 ![Black body curve](images/blackbody.png)
-
-///// html | figcaption
+//// figure-caption
 1960 Chromaticity Diagram with black body curve in the range of 1,000K - 100,000K
-/////
 ////
 
 In order to calculate the Planckian locus, color matching functions (CMFs) are needed. The CMFs are obtained from a
@@ -68,13 +65,10 @@ connect a number of colors that are close to the locus with the same temperature
 uv point is away from the associated uv point on the black body curve, positive being above the curve and negative
 being below the curve
 
-//// html | figure
 ![Isotherms](images/isotherms.png)
-
-///// html | figcaption
+/// figure-caption
 1960 Chromaticity Diagram with black body curve and isotherms indicating +/- 0.03 ∆~uv~.
-/////
-////
+///
 
 We can calculate a color's associated temperature and its ∆~uv~ along the associated isotherm.
 
@@ -105,13 +99,10 @@ Keep in mind that if the color is not in the display gamut it will need to be ga
 will not exhibit the same temperature. How far off it is will be depends on the disparity of the gamut sizes and how the
 color was gamut mapped.
 
-//// html | figure
 ![Out of gamut CCT](images/cct-gamut.png)
-
-///// html | figcaption
+/// figure-caption
 CCT of 1200K in relation to the sRGB gamut.
-/////
-////
+///
 
 Colors that are outside the traditional RGB gamut (0 - 1) will be scaled to be within that range. If the color is beyond
 the gamut of the scaling color space, it will not convert back to the same temperature.

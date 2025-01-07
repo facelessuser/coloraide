@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![XYB](../images/xyb-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the XYB color space.
-/////
 ////
 
 XYB is a color space that was designed for use with the JPEG XL Image Coding System. It is an LMS-based color model

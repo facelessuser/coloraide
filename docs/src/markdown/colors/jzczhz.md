@@ -23,12 +23,9 @@ Name | Range
 range of `jz` = [0, 1] and `cz` = [0, 1] for percentage input and output.
 ////
 
-//// html | figure
 ![JzCzhz](../images/jzczhz-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the JzCzhz color space.
-/////
 ////
 
 JzCzhz is the cylindrical form of [Jzazbz](./jzazbz.md).

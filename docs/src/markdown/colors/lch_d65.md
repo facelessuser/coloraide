@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CIELCh D65 3D](../images/lch-d65-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIELCh D65 color space.
-/////
 ////
 
 CIELCh D65 is the same as [CIELCh](./lch.md) except it uses a D65 white point.

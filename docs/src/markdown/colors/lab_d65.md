@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CIELab D65 3D](../images/lab-d65-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIELab D50 color space.
-/////
 ////
 
 CIELab D65 is the same as [CIELab](./lab.md) except it uses a D65 white point.

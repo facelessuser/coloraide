@@ -22,12 +22,9 @@ Name  | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![oRGB](../images/orgb-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the oRGB color space.
-/////
 ////
 
 A new color model that is based on opponent color theory. Like HSV, it is designed specifically for computer graphics.

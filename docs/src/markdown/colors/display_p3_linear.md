@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![Display P3](../images/display-p3.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- Display P3 Chromaticities
-/////
 ////
 
 The Linear Display P3 space is the same as [Display P3](./display_p3.md) *except* that the transfer function is linear-light

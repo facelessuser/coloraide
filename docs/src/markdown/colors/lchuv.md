@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CIELCh~uv~](../images/lchuv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIELCh~uv~ color space.
-/////
 ////
 
 [CIELuv](./luv.md) is not an intuitive space to work with directly and instead is often converted to cylindrical

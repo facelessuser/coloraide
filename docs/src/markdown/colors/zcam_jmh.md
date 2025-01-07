@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![ZCAM JMh](../images/zcam-jmh-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the ZCAM JMh color space.
-/////
 ////
 
 A color appearance model (CAM) is a mathematical model that seeks to describe the perceptual aspects of human color

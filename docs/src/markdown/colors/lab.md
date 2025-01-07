@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CIELab D50 3D](../images/lab-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIELab D50 color space.
-/////
 ////
 
 The CIELab color space also referred to as L\*a\*b\* is a color space defined by the International Commission on

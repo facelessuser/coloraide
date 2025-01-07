@@ -20,12 +20,9 @@ Name | Range
 `b`  | [0, 65504]
 ////
 
-//// html | figure
 ![ACEScg](../images/acescg.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- ACES AP1 Chromaticities
-/////
 ////
 
 ACEScg is a color space often used by CG artists. It is "scene-referred" or linear. It doesn't have as wide a color

@@ -23,12 +23,9 @@ Name | Range
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![RLAB](../images/rlab-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the RLAB color space.
-/////
 ////
 
 The RLAB color-appearance space was developed by Fairchild and Berns for cross-media color reproduction applications in

@@ -22,12 +22,9 @@ Name       | Range^\*^
 ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![XYZ D65 3D](../images/xyz-d65-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the XYZ D65 color space.
-/////
 ////
 
 The CIE 1931 RGB color space and CIE 1931 XYZ color space were created by the International Commission on Illumination

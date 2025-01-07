@@ -20,12 +20,9 @@ Name | Range
 `l`  | [0, 100]
 ////
 
-//// html | figure
 ![HSLuv 3D](../images/hsluv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 HSLuv color space in 3D
-/////
 ////
 
 HSLuv is a human-friendly alternative to HSL. It was formerly known as "HUSL" and is a variation of the

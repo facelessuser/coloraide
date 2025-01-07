@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![A98 RGB](../images/a98-rgb.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- Adobe(r) RGB 1998 Chromaticities
-/////
 ////
 
 The Adobe(r) RGB (1998) color space or opRGB is a color space developed by Adobe Systems(r), Inc. in 1998. It was

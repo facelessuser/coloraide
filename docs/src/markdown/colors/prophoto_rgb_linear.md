@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![ProPhoto RGB](../images/prophoto-rgb.png)
-
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- ProPhoto RGB Chromaticities
-/////
 ////
 
 The Linear ProPhoto space is the same as [ProPhoto](./prophoto_rgb.md) *except* that the transfer function is linear-light

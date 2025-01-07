@@ -21,14 +21,12 @@ Name | Range
 
 ////
 
-//// html | figure
 
 ```py play wheel
 Color('ryb', [1, 0, 0]).harmony('wheel', space='ryb')
 ```
-///// html | figcaption
+//// figure-caption
 The RYB color wheel.
-/////
 ////
 
 The RYB color model is a subtractive color model in which red, yellow and blue pigments or dyes are added together

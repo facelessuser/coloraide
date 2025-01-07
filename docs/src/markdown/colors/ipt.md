@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Space is not bound to the range and is only used as a reference to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![IPT](../images/ipt-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the IPT color space.
-/////
 ////
 
 Ebner and Fairchild addressed the issue of non-constant lines of hue in their color space dubbed IPT. The IPT color

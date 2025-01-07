@@ -20,12 +20,9 @@ Name | Range
 `l`  | [0, 1]
 ////
 
-//// html | figure
 ![Okhsl 3D](../images/okhsl-3d.png)
-
-///// html | figcaption
+//// figure-caption
 Okhsl color space in 3D
-/////
 ////
 
 Okhsl was created by Björn Ottosson and is a transform of the [Oklab](./oklab.md) color space that approximates the sRGB

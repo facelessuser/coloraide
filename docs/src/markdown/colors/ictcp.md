@@ -23,12 +23,9 @@ Name       | Range^\*^
 range of `i` = [0, 1], `ct` = [-1, 1] and `cp` = [1, 1] for percentage input and output.
 ////
 
-//// html | figure
 ![ICtCp](../images/ictcp-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the ICtCp color space.
-/////
 ////
 
 ICtCp is a color space format with better perceptual uniformity than [CIELab](#cielab) and is used as a part of the

@@ -20,12 +20,9 @@ Name | Range
 `l`  | [0, 1]
 ////
 
-//// html | figure
 ![HSL 3D](../images/hsl-3d.png)
-
-///// html | figcaption
+//// figure-caption
 HSL color space in 3D
-/////
 ////
 
 HSL is an alternative representations of the [RGB](./srgb.md) color model, designed in the 1970s by computer graphics

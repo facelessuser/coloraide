@@ -23,12 +23,9 @@ Name | Range^\*^
 valid. As seen in the 3D rendering, while the coordinates are cylindrical, the shape of the space is not a cylinder.
 ////
 
-//// html | figure
 ![Cubehelix](../images/cubehelix-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the Cubehelix color space.
-/////
 ////
 
 Cubehelix is a color scheme created by Dave Green. It was originally created for the display of astronomical intensity

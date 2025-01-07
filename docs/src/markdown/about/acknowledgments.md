@@ -15,7 +15,12 @@ many aspects of our own API as its approach very much aligned with the direction
 
 ## Culori
 
-The [Culori](https://culorjs.org) library helped inspire the use of cubic splines as interpolation methods.
+The [Colorio][colorio] library helped inspire the use of cubic splines as interpolation methods.
+
+## Colour Science
+
+The [Colour Science][colour-science] project is a fantastic library that was used a great reference for comparing
+color behavior against. It's a fast, advanced library aimed at the more technical.
 
 ## References
 

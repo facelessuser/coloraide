@@ -22,12 +22,10 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![sRGB](../images/srgb.png)
 
-///// html | figcaption
+//// figure-caption
 CIE 1931 xy Chromaticity -- sRGB Chromaticities
-/////
 ////
 
 The sRGB space is a standard RGB (red, green, blue) color space that HP and Microsoft created cooperatively in 1996 to

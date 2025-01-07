@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CAM16 JMh](../images/cam16-jmh-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CAM16 JMh color space.
-/////
 ////
 
 A color appearance model (CAM) is a mathematical model that seeks to describe the perceptual aspects of human color

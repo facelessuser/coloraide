@@ -22,12 +22,9 @@ Name | Range^\*^
 ^\*^ Range denotes _in gamut_ colors, but the color space supports an extended range beyond the gamut.
 ////
 
-//// html | figure
 ![CMY](../images/cmy-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CMY color space.
-/////
 ////
 
 The CMY color model is a subtractive color model in which cyan, magenta and yellow pigments or dyes are added together

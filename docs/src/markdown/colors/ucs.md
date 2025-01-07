@@ -25,12 +25,9 @@ Name | Range^\*^
 ^\*^ Space is not bound to the range and is used to define percentage inputs/outputs.
 ////
 
-//// html | figure
 ![xyY](../images/ucs-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIE 1960 UCS color space.
-/////
 ////
 
 The CIE 1960 color space ("CIE 1960 UCS", variously expanded Uniform Color Space, Uniform Color Scale, Uniform

@@ -21,12 +21,9 @@ Name | Range
 `b`  | [0, 1]
 ////
 
-//// html | figure
 ![Prismatic](../images/prismatic.png)
-
-///// html | figcaption
+//// figure-caption
 Prismatic Illustrations
-/////
 ////
 
 The Prismatic model introduces a simple transform of the RGB color cube into a light/dark dimension and a 2D hue. The

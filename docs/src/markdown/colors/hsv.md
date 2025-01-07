@@ -20,12 +20,9 @@ Name | Range
 `v`  | [0, 1]
 ////
 
-//// html | figure
 ![HSV 3D](../images/hsv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 HSV color space in 3D
-/////
 ////
 
 HSV is a color space similar to the modern [RGB](./srgb.md) and CMYK models. The HSV color space has three components: hue,

@@ -22,12 +22,9 @@ Name | Range
 `l`  | [0, 100]
 ////
 
-//// html | figure
 ![HPLuv 3D](../images/hpluv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 HPLuv color space in 3D
-/////
 ////
 
 HPLuv is similar to [HSLuv](./hsluv.md) but takes as many colors as it can from [CIELCh~uv~](./lchuv.md) without

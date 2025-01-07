@@ -23,12 +23,9 @@ Name | Range^\*^
 relation to the Display P3 color space.
 ////
 
-//// html | figure
 ![CIELuv 3D](../images/luv-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the CIELuv D65 color space.
-/////
 ////
 
 CIELuv is similar to CIELab as they were both developed in 1976 as perceptually uniform color spaces, both are derived

@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/coloraide
 edit_uri: ""
 site_description: A library to aid in using colors
 copyright: |
-  Copyright &copy; 2020 - 2024 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2020 - 2025 <a href="https://github.com/facelessuser" target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -304,6 +304,7 @@ markdown_extensions:
       alternate_style: True
   - pymdownx.fancylists:
       inject_style: True
+  - pymdownx.blocks.caption:
 
 extra_css:
   - assets/coloraide-extras/extra.css

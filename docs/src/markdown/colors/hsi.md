@@ -20,12 +20,9 @@ Name | Range
 `i`  | [0, 1]
 ////
 
-//// html | figure
 ![HSI](../images/hsi-3d.png)
-
-///// html | figcaption
+//// figure-caption
 The sRGB gamut represented within the HSI color space.
-/////
 ////
 
 The HSI model is similar to models like HSL and HSV except that it uses I for intensity instead of Lightness or Value.
