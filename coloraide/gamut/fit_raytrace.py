@@ -34,7 +34,7 @@ def project_onto(a: Vector, b: Vector, o: Vector) -> Vector:
     vec_oa = [a[0] - ox, a[1] - oy, a[2] - oz]
     vec_ob = [b[0] - ox, b[1] - oy, b[2] - oz]
     # Project `vec_oa` onto `vec_ob` and convert back to a point
-    r = alg.vdot(vec_oa, vec_ob) / alg.vdot(vec_ob, vec_ob)
+    r = alg.matmul_x3(vec_oa, vec_ob, dims=alg.D1) / alg.matmul_x3(vec_ob, vec_ob, dims=alg.D1)
     # Some spaces may project something that exceeds the range of our target vector.
     if r > 1.0:
         r = 1.0

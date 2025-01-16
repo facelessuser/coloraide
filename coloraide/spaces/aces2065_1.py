@@ -28,13 +28,13 @@ MAX = 1.0
 def aces_to_xyz(aces: Vector) -> Vector:
     """Convert ACEScc to XYZ."""
 
-    return alg.matmul(AP0_TO_XYZ, aces, dims=alg.D2_D1)
+    return alg.matmul_x3(AP0_TO_XYZ, aces, dims=alg.D2_D1)
 
 
 def xyz_to_aces(xyz: Vector) -> Vector:
     """Convert XYZ to ACEScc."""
 
-    return alg.matmul(XYZ_TO_AP0, xyz, dims=alg.D2_D1)
+    return alg.matmul_x3(XYZ_TO_AP0, xyz, dims=alg.D2_D1)
 
 
 class ACES20651(sRGBLinear):

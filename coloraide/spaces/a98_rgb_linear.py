@@ -27,13 +27,13 @@ def lin_a98rgb_to_xyz(rgb: Vector) -> Vector:
     https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf
     """
 
-    return alg.matmul(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
+    return alg.matmul_x3(RGB_TO_XYZ, rgb, dims=alg.D2_D1)
 
 
 def xyz_to_lin_a98rgb(xyz: Vector) -> Vector:
     """Convert XYZ to linear-light a98-rgb."""
 
-    return alg.matmul(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
+    return alg.matmul_x3(XYZ_TO_RGB, xyz, dims=alg.D2_D1)
 
 
 class A98RGBLinear(sRGBLinear):

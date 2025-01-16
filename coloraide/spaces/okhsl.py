@@ -142,9 +142,9 @@ def oklab_to_linear_rgb(lab: Vector, lms_to_rgb: Matrix) -> Vector:
     that transform the LMS values to the linear RGB space.
     """
 
-    return alg.matmul(
+    return alg.matmul_x3(
         lms_to_rgb,
-        [c ** 3 for c in alg.matmul(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
+        [c ** 3 for c in alg.matmul_x3(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 
@@ -240,23 +240,23 @@ def find_gamut_intersection(
         mdt2 = 6 * (m_dt ** 2) * m_
         sdt2 = 6 * (s_dt ** 2) * s_
 
-        r = alg.vdot(lms_to_rgb[0], [l, m, s]) - 1
-        r1 = alg.vdot(lms_to_rgb[0], [ldt, mdt, sdt])
-        r2 = alg.vdot(lms_to_rgb[0], [ldt2, mdt2, sdt2])
+        r = alg.matmul_x3(lms_to_rgb[0], [l, m, s], dims=alg.D1) - 1
+        r1 = alg.matmul_x3(lms_to_rgb[0], [ldt, mdt, sdt], dims=alg.D1)
+        r2 = alg.matmul_x3(lms_to_rgb[0], [ldt2, mdt2, sdt2], dims=alg.D1)
 
         u_r = r1 / (r1 * r1 - 0.5 * r * r2)
         t_r = -r * u_r
 
-        g = alg.vdot(lms_to_rgb[1], [l, m, s]) - 1
-        g1 = alg.vdot(lms_to_rgb[1], [ldt, mdt, sdt])
-        g2 = alg.vdot(lms_to_rgb[1], [ldt2, mdt2, sdt2])
+        g = alg.matmul_x3(lms_to_rgb[1], [l, m, s], dims=alg.D1) - 1
+        g1 = alg.matmul_x3(lms_to_rgb[1], [ldt, mdt, sdt], dims=alg.D1)
+        g2 = alg.matmul_x3(lms_to_rgb[1], [ldt2, mdt2, sdt2], dims=alg.D1)
 
         u_g = g1 / (g1 * g1 - 0.5 * g * g2)
         t_g = -g * u_g
 
-        b = alg.vdot(lms_to_rgb[2], [l, m, s]) - 1
-        b1 = alg.vdot(lms_to_rgb[2], [ldt, mdt, sdt])
-        b2 = alg.vdot(lms_to_rgb[2], [ldt2, mdt2, sdt2])
+        b = alg.matmul_x3(lms_to_rgb[2], [l, m, s], dims=alg.D1) - 1
+        b1 = alg.matmul_x3(lms_to_rgb[2], [ldt, mdt, sdt], dims=alg.D1)
+        b2 = alg.matmul_x3(lms_to_rgb[2], [ldt2, mdt2, sdt2], dims=alg.D1)
 
         u_b = b1 / (b1 * b1 - 0.5 * b * b2)
         t_b = -b * u_b

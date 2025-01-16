@@ -39,15 +39,15 @@ IPT_TO_LMS_P = [
 def xyz_to_ipt(xyz: Vector) -> Vector:
     """XYZ to IPT."""
 
-    lms_p = [alg.spow(c, 0.43) for c in alg.matmul(XYZ_TO_LMS, xyz, dims=alg.D2_D1)]
-    return alg.matmul(LMS_P_TO_IPT, lms_p, dims=alg.D2_D1)
+    lms_p = [alg.spow(c, 0.43) for c in alg.matmul_x3(XYZ_TO_LMS, xyz, dims=alg.D2_D1)]
+    return alg.matmul_x3(LMS_P_TO_IPT, lms_p, dims=alg.D2_D1)
 
 
 def ipt_to_xyz(ipt: Vector) -> Vector:
     """IPT to XYZ."""
 
-    lms = [alg.nth_root(c, 0.43) for c in alg.matmul(IPT_TO_LMS_P, ipt, dims=alg.D2_D1)]
-    return alg.matmul(LMS_TO_XYZ, lms, dims=alg.D2_D1)
+    lms = [alg.nth_root(c, 0.43) for c in alg.matmul_x3(IPT_TO_LMS_P, ipt, dims=alg.D2_D1)]
+    return alg.matmul_x3(LMS_TO_XYZ, lms, dims=alg.D2_D1)
 
 
 class IPT(Lab):
