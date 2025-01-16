@@ -27,6 +27,7 @@ import math
 import operator
 import functools
 import itertools as it
+from .deprecate import deprecated
 from .types import (
     ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool,
     MatrixInt, MathType, Shape, ShapeLike, DimHints, SupportsFloatOrInt
@@ -1184,6 +1185,172 @@ def matmul(
     raise ValueError('Inputs require at least 1 dimension, scalars are not allowed')
 
 
+@overload
+def matmul_x3(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def matmul_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def matmul_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def matmul_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+def matmul_x3(
+    a: MatrixLike | VectorLike,
+    b: MatrixLike | VectorLike,
+    *,
+    dims: DimHints | None = None,
+) -> float | Vector | Matrix:
+    """
+    An optimized version of `matmul` that the total allowed dimensions to <= 2 and constrains dimensions lengths to 3.
+
+    By limited to the total dimensions to < 2 and the dimension lengths of 3, loops are no longer required to handle
+    an unknown number of dimensions or dimension lengths allowing for more optimized and faster performance at the
+    cost of being able to handle any size arrays.
+
+    For more flexibility with array sizes, use `matmul`.
+    """
+
+    if dims is None:
+        shape_a = shape(a)
+        shape_b = shape(b)
+        dims_a = len(shape_a)
+        dims_b = len(shape_b)
+    else:
+        dims_a, dims_b = dims
+
+    # Optimize to handle arrays <= 2-D
+    if dims_a == 1:
+        if dims_b == 1:
+            # Matrix multiply of two vectors
+            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]  # type: ignore[operator]
+        elif dims_b == 2:
+            # Matrix multiply of vector and a matrix
+            return [
+                a[0] * b[0][0] + a[1] * b[1][0] + a[2] * b[2][0],  # type: ignore[index, operator]
+                a[0] * b[0][1] + a[1] * b[1][1] + a[2] * b[2][1],  # type: ignore[index, operator]
+                a[0] * b[0][2] + a[1] * b[1][2] + a[2] * b[2][2]  # type: ignore[index, operator]
+            ]
+
+    elif dims_a == 2:
+        if dims_b == 1:
+            # Matrix multiply of matrix and a vector
+            return [
+                a[0][0] * b[0] + a[0][1] * b[1] + a[0][2] * b[2],  # type: ignore[index, operator]
+                a[1][0] * b[0] + a[1][1] * b[1] + a[1][2] * b[2],  # type: ignore[index, operator]
+                a[2][0] * b[0] + a[2][1] * b[1] + a[2][2] * b[2],  # type: ignore[index, operator]
+            ]
+        elif dims_b == 2:
+            return [
+                [
+                    a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0],  # type: ignore[index]
+                    a[0][0] * b[0][1] + a[0][1] * b[1][1] + a[0][2] * b[2][1],  # type: ignore[index]
+                    a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2] * b[2][2]  # type: ignore[index]
+                ],
+                [
+                    a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0],  # type: ignore[index]
+                    a[1][0] * b[0][1] + a[1][1] * b[1][1] + a[1][2] * b[2][1],  # type: ignore[index]
+                    a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2] * b[2][2]  # type: ignore[index]
+                ],
+                [
+                    a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0],  # type: ignore[index]
+                    a[2][0] * b[0][1] + a[2][1] * b[1][1] + a[2][2] * b[2][1],  # type: ignore[index]
+                    a[2][0] * b[0][2] + a[2][1] * b[1][2] + a[2][2] * b[2][2]  # type: ignore[index]
+                ]
+            ]
+
+    # N > 2 dimensions are not allowed
+    if dims_a > 2 or dims_b > 2:
+        raise ValueError('Inputs cannot exceed 2 dimensions')
+
+    # Scalars are not allowed
+    raise ValueError('Inputs require at least 1 dimension, scalars are not allowed')
+
+
+@overload
+def dot_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def dot_x3(a: float, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def dot_x3(a: VectorLike, b: float, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def dot_x3(a: float, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def dot_x3(a: MatrixLike, b: float, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def dot_x3(a: VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def dot_x3(a: VectorLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def dot_x3(a: MatrixLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def dot_x3(a: MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+def dot_x3(
+    a: MatrixLike | VectorLike | float,
+    b: MatrixLike | VectorLike | float,
+    dims: DimHints | None = None
+) -> float | Array:
+    """
+    An optimized version of `dot` that the total allowed dimensions to <= 2 and constrains dimensions lengths to 3.
+
+    By limited to the total dimensions to < 2 and the dimension lengths of 3, loops are no longer required to handle
+    an unknown number of dimensions or dimension lengths allowing for more optimized and faster performance at the
+    cost of being able to handle any size arrays.
+
+    For more flexibility with array sizes, use `dot`.
+    """
+
+    if dims is None:
+        shape_a = shape(a)
+        shape_b = shape(b)
+        dims_a = len(shape_a)
+        dims_b = len(shape_b)
+    else:
+        dims_a, dims_b = dims
+
+    if not dims_a or not dims_b:
+        return multiply_x3(a, b, dims=(dims_a, dims_b))
+
+    return matmul_x3(a, b, dims=(dims_a, dims_b))  # type: ignore[arg-type]
+
+
 def _matrix_chain_order(shapes: Sequence[Shape]) -> MatrixInt:
     """
     Calculate chain order.
@@ -1732,24 +1899,22 @@ class vectorize:
                 kwargs.update(zip(keys, vargs[size:]))
 
                 # Call the function with vectorized inputs
-                m.append(self.func(*inputs, **kwargs))
+                m.append(self.func(*inputs, **kwargs) if kwargs else self.func(*inputs))
 
             # Reshape return to match input shape
             return reshape(m, bcast.shape) if len(bcast.shape) != 1 else m
 
         # Nothing to vectorize, just run the function with the arguments
-        return self.func(*inputs, **kwargs)
+        return self.func(*inputs, **kwargs) if kwargs else self.func(*inputs)
 
 
-class vectorize1:
+class _vectorize1:
     """
-    A special version of vectorize that only broadcasts the first two inputs.
+    An optimized version of vectorize that is hard coded to broadcast only the first input.
 
-    This approach is faster than vectorize because it limits the inputs and allows us
-    to skip a lot of the generalized code that can slow the things down. Additionally,
-    we allow a `dims` keyword that allows you to specify the dimensions of the inputs
-    that can fast track a decision on how to process in the inputs. The positional
-    argument is always vectorized and are expected to be numbers.
+    This is faster than `vectorize` as it skips a lot of generalization code that allows a user
+    to specify specific parameters to broadcast. Additionally, users can specify `dims` allowing
+    us to skip analyzing the array to determine the size allowing for additional speedup.
 
     For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
     all inputs at the cost of speed.
@@ -1777,30 +1942,30 @@ class vectorize1:
         else:
             dims_a = len(shape(a))
 
+        func = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func  # type: Callable[..., Any]
+
         # Fast paths for scalar, vectors, and 2D matrices
         # Scalar
         if dims_a == 0:
-            return self.func(a, **kwargs)
+            return func(a)
         # Vector
         elif dims_a == 1:
-            return [self.func(i, **kwargs) for i in a]  # type: ignore[union-attr]
+            return [func(i) for i in a]  # type: ignore[union-attr]
         # 2D matrix
         elif dims_a == 2:
-            return [[self.func(c, **kwargs) for c in r] for r in a]  # type: ignore[union-attr]
+            return [[func(c) for c in r] for r in a]  # type: ignore[union-attr]
 
         # Unknown size or larger than 2D (slow)
-        return reshape([self.func(f, **kwargs) for f in flatiter(a)], shape(a))
+        return reshape([func(f) for f in flatiter(a)], shape(a))
 
 
-class vectorize2:
+class _vectorize2:
     """
-    A special version of vectorize that only broadcasts the first two inputs.
+    An optimized version of vectorize that is hard coded to broadcast only the first two inputs.
 
-    This approach is faster than vectorize because it limits the inputs and allows us
-    to skip a lot of the generalized code that can slow the things down. Additionally,
-    we allow a `dims` keyword that allows you to specify the dimensions of the inputs
-    that can fast track a decision on how to process in the inputs. The positional
-    arguments are always vectorized and are expected to be numbers.
+    This is faster than `vectorize` as it skips a lot of generalization code that allows a user
+    to specify specific parameters to broadcast. Additionally, users can specify `dims` allowing
+    us to skip analyzing the array to determine the size allowing for additional speedup.
 
     For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
     all inputs at the cost of speed.
@@ -1815,7 +1980,7 @@ class vectorize2:
         self.__name__ = self.func.__name__
         self.__doc__ = self.func.__doc__ if doc is None else doc
 
-    def _vector_apply(self, a: VectorLike, b: VectorLike, **kwargs: Any) -> Vector:
+    def _vector_apply(self, a: VectorLike, b: VectorLike, func: Callable[..., Any]) -> Any:
         """Apply a function to two vectors."""
 
         # Broadcast the vector
@@ -1824,7 +1989,7 @@ class vectorize2:
         elif len(b) == 1:
             b = [b[0]] * len(a)
 
-        return [self.func(x, y, **kwargs) for x, y in it.zip_longest(a, b)]
+        return [func(x, y) for x, y in it.zip_longest(a, b)]
 
     def __call__(
         self,
@@ -1834,6 +1999,8 @@ class vectorize2:
         **kwargs: Any
     ) -> Any:
         """Call the vectorized function."""
+
+        func = (lambda p1, p2, kw=kwargs: self.func(p1, p2, **kw)) if kwargs else self.func  # type: Callable[..., Any]
 
         if not dims or dims[0] > 2 or dims[1] > 2:
             shape_a = shape(a)
@@ -1846,19 +2013,19 @@ class vectorize2:
                 if dims_a == dims_b:
                     # Apply math to two N-D matrices
                     return reshape(
-                        [self.func(x, y, **kwargs) for x, y in zip(flatiter(a), flatiter(b))],
+                        [func(x, y) for x, y in zip(flatiter(a), flatiter(b))],
                         shape_a
                     )
                 elif not dims_a or not dims_b:
                     if not dims_a:
                         # Apply math to a number and an N-D matrix
-                        return reshape([self.func(a, x, **kwargs) for x in flatiter(b)], shape_b)
+                        return reshape([func(a, x) for x in flatiter(b)], shape_b)
                     # Apply math to an N-D matrix and a number
-                    return reshape([self.func(x, b, **kwargs) for x in flatiter(a)], shape_a)
+                    return reshape([func(x, b) for x in flatiter(a)], shape_a)
 
                 # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
                 bcast = broadcast(a, b)
-                return reshape([self.func(x, y, **kwargs) for x, y in bcast], bcast.shape)
+                return reshape([func(x, y) for x, y in bcast], bcast.shape)
         else:
             dims_a, dims_b = dims
 
@@ -1866,43 +2033,232 @@ class vectorize2:
         if dims_a == dims_b:
             if dims_a == 1:
                 # Apply math to two vectors
-                return self._vector_apply(a, b, **kwargs)  # type: ignore[arg-type]
+                return self._vector_apply(a, b, func)  # type: ignore[arg-type]
             elif dims_a == 2:
                 # Apply math to two 2-D matrices
                 la = len(a)  # type: ignore[arg-type]
                 lb = len(b)  # type: ignore[arg-type]
                 if la == 1 and lb != 1:
                     ra = a[0]  # type: ignore[index]
-                    return [self._vector_apply(ra, rb) for rb in b]  # type: ignore[arg-type, union-attr]
+                    return [self._vector_apply(ra, rb, func) for rb in b]  # type: ignore[arg-type, union-attr]
                 elif lb == 1 and la != 1:
                     rb = b[0]  # type: ignore[index]
-                    return [self._vector_apply(ra, rb) for ra in a]  # type: ignore[arg-type, union-attr]
+                    return [self._vector_apply(ra, rb, func) for ra in a]  # type: ignore[arg-type, union-attr]
                 return [
-                    self._vector_apply(ra, rb, **kwargs) for ra, rb in it.zip_longest(a, b)  # type: ignore[arg-type]
+                    self._vector_apply(ra, rb, func) for ra, rb in it.zip_longest(a, b)  # type: ignore[arg-type]
                 ]
             # Apply math to two scalars
-            return self.func(a, b, **kwargs)
+            return func(a, b)
 
         # Inputs containing a scalar on either side
         elif not dims_a or not dims_b:
             if dims_a == 1:
                 # Apply math to a vector and number
-                return [self.func(i, b, **kwargs) for i in a]  # type: ignore[union-attr]
+                return [func(i, b) for i in a]  # type: ignore[union-attr]
             elif dims_b == 1:
                 # Apply math to a number and a vector
-                return [self.func(a, i, **kwargs) for i in b]  # type: ignore[union-attr]
+                return [func(a, i) for i in b]  # type: ignore[union-attr]
             elif dims_a == 2:
                 # Apply math to 2-D matrix and number
-                return [[self.func(i, b, **kwargs) for i in row] for row in a]  # type: ignore[union-attr]
+                return [[func(i, b) for i in row] for row in a]  # type: ignore[union-attr]
             # Apply math to a number and a matrix
-            return [[self.func(a, i, **kwargs) for i in row] for row in b]  # type: ignore[union-attr]
+            return [[func(a, i) for i in row] for row in b]  # type: ignore[union-attr]
 
         # Inputs are at least 2-D dimensions or below on both sides
         if dims_a == 1:
             # Apply math to vector and 2-D matrix
-            return [self._vector_apply(a, row, **kwargs) for row in b]  # type: ignore[arg-type, union-attr]
+            return [self._vector_apply(a, row, func) for row in b]  # type: ignore[arg-type, union-attr]
         # Apply math to 2-D matrix and a vector
-        return [self._vector_apply(row, b, **kwargs) for row in a]  # type: ignore[arg-type, union-attr]
+        return [self._vector_apply(row, b, func) for row in a]  # type: ignore[arg-type, union-attr]
+
+
+class _vectorize1_x3:
+    """
+    A further optimized version of `_vectorize1` that limits arrays to dimensions of <= 2 and dimension to lengths of 3.
+
+    Like `_vectorize1`, this limits the broadcasting to the first parameter and is faster than `vectorize` as it skips
+    a lot of generalization code that allows a user to specify specific parameters to broadcast. Additionally, users
+    can specify `dims` allowing us to skip analyzing the array to determine the size allowing for additional speedup.
+    Lastly, dimensions are limited to a total less than 2 and the length of dimensions is limited to 3 which allows us
+    to avoid looping since the dimension length is always the same.
+
+    For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
+    all inputs at the cost of speed.
+    """
+
+    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None):
+        """Initialize."""
+
+        self.func = pyfunc
+
+        # Setup function name and docstring
+        self.__name__ = self.func.__name__
+        self.__doc__ = self.func.__doc__ if doc is None else doc
+
+    def __call__(
+        self,
+        a: ArrayLike | float,
+        dims: DimHints | None = None,
+        **kwargs: Any
+    ) -> Any:
+        """Call the vectorized function."""
+
+        if not dims:
+            shape_a = shape(a)
+            dims_a = len(shape_a)
+        else:
+            dims_a = dims[0]
+
+        if not (0 <= dims_a <= 2):
+            raise ValueError('Inputs cannot exceed 2 dimensions')
+
+        func = (lambda p1, kw=kwargs: self.func(p1, **kw)) if kwargs else self.func  # type: Callable[..., Any]
+
+        # Fast paths for scalar, vectors, and 2D matrices
+        # Scalar
+        if dims_a == 0:
+            return func(a)
+        # Vector
+        elif dims_a == 1:
+            return [func(a[0]), func(a[1]), func(a[2])]  # type: ignore[index]
+        # 2D matrix
+        return [
+            [func(a[0][0]), func(a[0][1]), func(a[0][2])],  # type: ignore[index]
+            [func(a[1][0]), func(a[1][1]), func(a[1][2])],  # type: ignore[index]
+            [func(a[2][0]), func(a[2][1]), func(a[2][2])]  # type: ignore[index]
+        ]
+
+
+class _vectorize2_x3:
+    """
+    A further optimized version of `_vectorize2` that limits arrays to dimensions of <= 2 and dimension to lengths of 3.
+
+    Like `_vectorize2`, this limits the broadcasting to the first two parameter and is faster than `vectorize` as it
+    skips a lot of generalization code that allows a user to specify specific parameters to broadcast. Additionally,
+    users can specify `dims` allowing us to skip analyzing the array to determine the size allowing for additional
+    speedup. Lastly, dimensions are limited to a total less than 2 and the length of dimensions is limited to 3 which
+    allows us to avoid looping since the dimension length is always the same.
+
+    For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
+    all inputs at the cost of speed.
+    """
+
+    def __init__(self, pyfunc: Callable[..., Any], doc: str | None = None):
+        """Initialize."""
+
+        self.func = pyfunc
+
+        # Setup function name and docstring
+        self.__name__ = self.func.__name__
+        self.__doc__ = self.func.__doc__ if doc is None else doc
+
+    def __call__(
+        self,
+        a: MatrixLike | VectorLike | float,
+        b: MatrixLike | VectorLike | float,
+        dims: DimHints | None = None,
+        **kwargs: Any
+    ) -> Any:
+        """Call the vectorized function."""
+
+        if not dims:
+            shape_a = shape(a)
+            shape_b = shape(b)
+            dims_a = len(shape_a)
+            dims_b = len(shape_b)
+        else:
+            dims_a, dims_b = dims
+
+        func = (lambda a, b, kw=kwargs: self.func(a, b, **kw)) if kwargs else self.func  # type: Callable[..., float]
+
+        if dims_a > 2 or dims_b > 2:
+            raise ValueError('Inputs cannot exceed 2 dimensions')
+
+        # Inputs are of equal size and shape
+        if dims_a == dims_b:
+            if dims_a == 1:
+                # Apply math to two vectors
+                return [func(a[0], b[0]), func(a[1], b[1]), func(a[2], b[2])]  # type: ignore[index]
+            elif dims_a == 2:
+                # Apply math to two 2-D matrices
+                return [
+                    [func(a[0][0], b[0][0]), func(a[0][1], b[0][1]), func(a[0][2], b[0][2])],  # type: ignore[index]
+                    [func(a[1][0], b[1][0]), func(a[1][1], b[1][1]), func(a[1][2], b[1][2])],  # type: ignore[index]
+                    [func(a[2][0], b[2][0]), func(a[2][1], b[2][1]), func(a[2][2], b[2][2])],  # type: ignore[index]
+                ]
+            # Apply math to two scalars
+            return func(a, b)
+
+        # Inputs containing a scalar on either side
+        elif not dims_a or not dims_b:
+            if dims_a == 1:
+                # Apply math to a vector and number
+                return [func(a[0], b), func(a[1], b), func(a[2], b)]  # type: ignore[index]
+            elif dims_b == 1:
+                # Apply math to a number and a vector
+                return [func(a, b[0]), func(a, b[1]), func(a, b[2])]  # type: ignore[index]
+            elif dims_a == 2:
+                # Apply math to 2-D matrix and number
+                return [
+                    [func(a[0][0], b), func(a[0][1], b), func(a[0][2], b)],  # type: ignore[index]
+                    [func(a[1][0], b), func(a[1][1], b), func(a[1][2], b)],  # type: ignore[index]
+                    [func(a[2][0], b), func(a[2][1], b), func(a[2][2], b)]  # type: ignore[index]
+                ]
+            # Apply math to a number and a matrix
+            return [
+                [func(a, b[0][0]), func(a, b[0][1]), func(a, b[0][2])],  # type: ignore[index]
+                [func(a, b[1][0]), func(a, b[1][1]), func(a, b[1][2])],  # type: ignore[index]
+                [func(a, b[2][0]), func(a, b[2][1]), func(a, b[2][2])]  # type: ignore[index]
+            ]
+
+        # Inputs are at least 2-D dimensions or below on both sides
+        if dims_a == 1:
+            # Apply math to vector and 2-D matrix
+            return [
+                [func(a[0], b[0][0]), func(a[1], b[0][1]), func(a[2], b[0][2])],  # type: ignore[index]
+                [func(a[0], b[1][0]), func(a[1], b[1][1]), func(a[2], b[1][2])],  # type: ignore[index]
+                [func(a[0], b[2][0]), func(a[1], b[2][1]), func(a[2], b[2][2])]  # type: ignore[index]
+            ]
+        # Apply math to 2-D matrix and a vector
+        return [
+            [func(a[0][0], b[0]), func(a[0][1], b[1]), func(a[0][2], b[2])],  # type: ignore[index]
+            [func(a[1][0], b[0]), func(a[1][1], b[1]), func(a[1][2], b[2])],  # type: ignore[index]
+            [func(a[2][0], b[0]), func(a[2][1], b[1]), func(a[2][2], b[2])]  # type: ignore[index]
+        ]
+
+
+def vectorize2(
+    pyfunc: Callable[..., Any],
+    doc: str | None = None,
+    params: int = 2,
+    only_x3: bool = False
+) -> Callable[..., Any]:
+    """
+    A more limited but faster version of `vectorize` that speed up performance at the cost of flexibility.
+
+    1. Broadcasted parameters are limited to the first 1 or 2 parameters via the `params` option (default 2).
+    2. Further limits the expectation of the array in the first 1 or 2 parameters to dimension lengths of 3.
+       Additionally, the total number of dimensions cannot exceed 2. `only_x3` enables this behavior and will
+       provide the most speed but provides the most limited environment for operations.
+
+    The limitations above allows the avoidance of additional generalized code that can slow the operation down.
+
+    For more flexibility, use `vectorize` which allows arbitrary vectorization of any and
+    all inputs at the cost of speed.
+    """
+
+    if params == 2:
+        return (_vectorize2_x3 if only_x3 else _vectorize2)(pyfunc, doc)
+    elif params == 1:
+        return (_vectorize1_x3 if only_x3 else _vectorize1)(pyfunc, doc)
+    raise ValueError("'vectorize2' does not support dimensions greater than 2 or less than 1")
+
+
+@deprecated("'vectorize1' is deprecated, use 'vectorize2(func, doc, params=1)' for the equivalent")
+def vectorize1(pyfunc: Callable[..., Any], doc: str | None = None) -> Callable[..., Any]:  # pragma: no cover
+    """An optimized version of vectorize that is hard coded to broadcast only the first input."""
+
+    return vectorize2(pyfunc, doc, params=1)
 
 
 @overload
@@ -1995,7 +2351,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
 def _isclose(a: float, b: float, *, equal_nan: bool = False, **kwargs: Any) -> bool:
     """Check if values are close."""
 
-    close = math.isclose(a, b, **kwargs)
+    close = math.isclose(a, b, **kwargs) if kwargs else math.isclose(a, b)
     return (math.isnan(a) and math.isnan(b)) if not close and equal_nan else close
 
 
@@ -2019,7 +2375,7 @@ def isclose(a: TensorLike, b: TensorLike, *, dims: DimHints | None = ..., **kwar
     ...
 
 
-isclose = vectorize2(_isclose)
+isclose = vectorize2(_isclose, doc="Test if a value or value(s) in an array are close to another value(s).")
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2042,13 +2398,13 @@ def isnan(a: TensorLike, *, dims: DimHints | None = ..., **kwargs: Any) -> Tenso
     ...
 
 
-isnan = vectorize1(math.isnan)
+isnan = vectorize2(math.isnan, doc="Test if a value or values in an array are NaN.", params=1)
 
 
 def allclose(a: MathType, b: MathType, **kwargs: Any) -> bool:
     """Test if all are close."""
 
-    return all(isclose(a, b, **kwargs))
+    return all(isclose(a, b, **kwargs) if kwargs else isclose(a, b))
 
 
 @overload  # type: ignore[no-overload-impl]
@@ -2202,6 +2558,134 @@ def subtract(a: float | ArrayLike, b: TensorLike, *, dims: DimHints | None = ...
 subtract = vectorize2(operator.sub, doc="Subtract two arrays or floats.")
 
 
+@overload  # type: ignore[no-overload-impl]
+def multiply_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def multiply_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def multiply_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def multiply_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def multiply_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+multiply_x3 = vectorize2(
+    operator.mul,
+    doc="Multiply two arrays or floats.\n\nOptimized for scalars, dimensions <= 2, and vectors of lengths of 3.",
+    only_x3=True
+)
+
+
+@overload  # type: ignore[no-overload-impl]
+def divide_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def divide_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def divide_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def divide_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def divide_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+divide_x3 = vectorize2(
+    operator.truediv,
+    doc="Divide two arrays or floats.\n\nOptimized for scalars, dimensions <= 2, and vectors of lengths of 3.",
+    only_x3=True
+)
+
+
+@overload  # type: ignore[no-overload-impl]
+def add_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def add_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def add_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def add_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def add_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+add_x3 = vectorize2(
+    operator.add,
+    doc="Add two arrays or floats.\n\nOptimized for scalars, dimensions <= 2, and vectors of lengths of 3.",
+    only_x3=True
+)
+
+
+@overload  # type: ignore[no-overload-impl]
+def subtract_x3(a: float, b: float, *, dims: DimHints | None = ...) -> float:
+    ...
+
+
+@overload
+def subtract_x3(a: float | VectorLike, b: VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def subtract_x3(a: VectorLike, b: float | VectorLike, *, dims: DimHints | None = ...) -> Vector:
+    ...
+
+
+@overload
+def subtract_x3(a: MatrixLike, b: float | VectorLike | MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+@overload
+def subtract_x3(a: float | VectorLike | MatrixLike, b: MatrixLike, *, dims: DimHints | None = ...) -> Matrix:
+    ...
+
+
+subtract_x3 = vectorize2(
+    operator.sub,
+    doc="Subtract two arrays or floats.\n\nOptimized for scalars, dimensions <= 2, and vectors of lengths of 3.",
+    only_x3=True
+)
+
+
 def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
     """Create and fill a shape with the given values."""
 
@@ -2308,7 +2792,7 @@ def transpose(array: TensorLike) -> Tensor:
     ...
 
 
-def transpose(array: ArrayLike | float) -> Array | float:
+def transpose(array: ArrayLike | float) -> float | Array:
     """
     A simple transpose of a matrix.
 
@@ -2327,7 +2811,7 @@ def transpose(array: ArrayLike | float) -> Array | float:
         total = prod(s)
 
     # Create the array
-    m = []  # type: Any
+    m = []  # type: Array
 
     # Calculate data sizes
     dims = len(s)
@@ -2368,7 +2852,7 @@ def transpose(array: ArrayLike | float) -> Array | float:
                     idx[x] += 1
                     break
 
-    return m  # type: ignore[no-any-return]
+    return m
 
 
 def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Array:
@@ -2404,7 +2888,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
         raise ValueError(f'Shape {new_shape} does not match the data total of {shape(array)}')
 
     # Create the array
-    m = []  # type: Any
+    m = []  # type: Array
 
     # Calculate data sizes
     dims = len(new_shape)
@@ -2427,7 +2911,7 @@ def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> float | Arr
         if not empty:
             t.append(next(data))
 
-    return m  # type: ignore[no-any-return]
+    return m
 
 
 def _shape(a: ArrayLike | float, s: Shape) -> Shape:
@@ -2540,7 +3024,7 @@ def diag(array: MatrixLike, k: int = 0) -> Vector:
     ...
 
 
-def diag(array: VectorLike | MatrixLike, k: int = 0) -> Array:
+def diag(array: VectorLike | MatrixLike, k: int = 0) -> Vector | Matrix:
     """Create a diagonal matrix from a vector or return a vector of the diagonal of a matrix."""
 
     s = shape(array)
@@ -3131,7 +3615,7 @@ def outer(a: float | ArrayLike, b: float | ArrayLike) -> Matrix:
     return [[x * y for y in v2] for x in flatiter(a)]
 
 
-def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
+def inner(a: float | ArrayLike, b: float | ArrayLike) -> Any:
     """Compute the inner product of two arrays."""
 
     shape_a = shape(a)

@@ -103,24 +103,24 @@ def adapt(
     yb = xyz_wb[1] / xyz_wo[1]
     yd = xyz_wd[1] / xyz_wo[1]
 
-    rgb_b = alg.dot(CAT02, xyz_b, dims=alg.D2_D1)
-    rgb_wb = alg.dot(CAT02, xyz_wb, dims=alg.D2_D1)
-    rgb_wd = alg.dot(CAT02, xyz_wd, dims=alg.D2_D1)
-    rgb_wo = alg.dot(CAT02, xyz_wo, dims=alg.D2_D1)
+    rgb_b = alg.matmul_x3(CAT02, xyz_b, dims=alg.D2_D1)
+    rgb_wb = alg.matmul_x3(CAT02, xyz_wb, dims=alg.D2_D1)
+    rgb_wd = alg.matmul_x3(CAT02, xyz_wd, dims=alg.D2_D1)
+    rgb_wo = alg.matmul_x3(CAT02, xyz_wo, dims=alg.D2_D1)
 
-    d_rgb_wb = alg.add(
-        alg.multiply(db * yb, alg.divide(rgb_wo, rgb_wb, dims=alg.D1), dims=alg.SC_D1),
+    d_rgb_wb = alg.add_x3(
+        alg.multiply_x3(db * yb, alg.divide_x3(rgb_wo, rgb_wb, dims=alg.D1), dims=alg.SC_D1),
         1 - db,
         dims=alg.D1_SC
     )
-    d_rgb_wd = alg.add(
-        alg.multiply(dd * yd, alg.divide(rgb_wo, rgb_wd, dims=alg.D1), dims=alg.SC_D1),
+    d_rgb_wd = alg.add_x3(
+        alg.multiply_x3(dd * yd, alg.divide_x3(rgb_wo, rgb_wd, dims=alg.D1), dims=alg.SC_D1),
         1 - dd,
         dims=alg.D1_SC
     )
-    d_rgb = alg.divide(d_rgb_wb, d_rgb_wd, dims=alg.D1)
-    rgb_d = alg.multiply(d_rgb, rgb_b, dims=alg.D1)
-    return alg.dot(CAT02_INV, rgb_d, dims=alg.D2_D1)
+    d_rgb = alg.divide_x3(d_rgb_wb, d_rgb_wd, dims=alg.D1)
+    rgb_d = alg.multiply_x3(d_rgb, rgb_b, dims=alg.D1)
+    return alg.matmul_x3(CAT02_INV, rgb_d, dims=alg.D2_D1)
 
 
 class Environment:

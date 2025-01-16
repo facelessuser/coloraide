@@ -37,14 +37,14 @@ def lab_to_xyz(lab: Vector, white: VectorLike) -> Vector:
     ]
 
     # Compute XYZ by scaling `xyz` by reference `white`
-    return alg.multiply(xyz, white, dims=alg.D1)
+    return alg.multiply_x3(xyz, white, dims=alg.D1)
 
 
 def xyz_to_lab(xyz: Vector, white: VectorLike) -> Vector:
     """Convert XYZ to CIE Lab using the reference white."""
 
     # compute `xyz`, which is XYZ scaled relative to reference white
-    xyz = alg.divide(xyz, white, dims=alg.D1)
+    xyz = alg.divide_x3(xyz, white, dims=alg.D1)
     # Compute `fx`, `fy`, and `fz`
     fx, fy, fz = (alg.nth_root(i, 3) if i > EPSILON else (KAPPA * i + 16) / 116 for i in xyz)
 
