@@ -21,6 +21,7 @@ from coloraide import algebra as alg  # noqa: E402
 from coloraide.temperature import ohno_2013  # noqa: E402
 from coloraide import cmfs  # noqa: E402
 from coloraide import gamut  # noqa: E402
+from coloraide.spaces import Labish
 
 ALL_WHITES = copy.deepcopy(WHITES)
 ALL_WHITES['2deg']['D60'] = ColorAll.CS_MAP['aces2065-1'].WHITE
@@ -133,14 +134,32 @@ def get_spline(x, y, steps=100):
     return tuple(list(i) for i in zip(*alg.interpolate(list(zip(x, y)), method='catrom').steps(steps)))
 
 
-def get_spectral_locus_labels(locus, waves, distance):
+def convert_chromaticity(xy, opt):
+    """Convert chromaticities."""
+
+    if opt.viewed_chromaticity == opt.chromaticity:
+        return xy
+
+    color = ColorAll.chromaticity(
+        opt.viewed_chromaticity,
+        xy,
+        opt.chromaticity,
+        white=opt.white
+    )
+    return color[opt.viewed_chromaticity_names[0]], color[opt.viewed_chromaticity_names[1]]
+
+
+def get_spectral_locus_labels(locus, waves, distance, opt):
     """Get the spectral locus wavelength labels."""
+
+    standard = opt.viewed_chromaticity == opt.chromaticity
 
     annotations = []
     for wave in sorted(waves):
-        x, y = locus(wave)
-        x1, y1 = locus(wave - 0.05)
-        x2, y2 = locus(wave + 0.05)
+        x, y = convert_chromaticity(locus(wave), opt)
+        x1, y1 = convert_chromaticity(locus(wave - 0.05), opt)
+        x2, y2 = convert_chromaticity(locus(wave + 0.05), opt)
+
         d1 = math.sqrt((x - x1) ** 2 + (y - y1) ** 2)
         d2 = math.sqrt((x2 - x) ** 2 + (y2 - y) ** 2)
         factor = d1 / (d1 + d2)
@@ -155,10 +174,12 @@ def get_spectral_locus_labels(locus, waves, distance):
         dx = 1.0 / length
         dy = m / length
 
+        noadjust = not standard or wave < 695
+
         # Values really close to 700 extend past the normal locus part and cause the orientation to be off,
         # so we force values greater than 695 to orient in sanely.
-        x0 = x + dx * (-distance if ((m >= 0 and not dirx) or (m < 0 and dirx and diry)) and wave < 695 else distance)
-        y0 = y + dy * (-distance if ((m >= 0 and diry) or (m < 0 and diry)) and wave < 695 else distance)
+        x0 = x + dx * (-distance if ((m >= 0 and not dirx) or (m < 0 and dirx and diry)) and noadjust else distance)
+        y0 = y + dy * (-distance if ((m >= 0 and diry) or (m < 0 and diry)) and noadjust else distance)
 
         rotate = math.degrees(math.atan2(y0 - y, x0 - x)) % 360
         if rotate > 150:
@@ -190,10 +211,23 @@ class DiagramOptions:
         elif observer != '2deg':
             raise ValueError(f"Unrecognized 'observer': {observer}")
 
+        self.viewed_chromaticity = None
         if mode not in ('1931', '1960', '1976'):
-            raise ValueError(f"Unrecognized 'mode': {mode}")
+            if ColorAll.CS_MAP.get(mode):
+                cs = ColorAll.CS_MAP[mode]
+                if isinstance(ColorAll.CS_MAP[mode], Labish):
+                    self.chromaticity = 'xy-1931'
+                    self.viewed_chromaticity = mode
+                    self.viewed_chromaticity_names = cs.names()[1:]
+            if self.viewed_chromaticity is None:
+                raise ValueError(f"Unrecognized 'mode': {mode}")
+        else:
+            if self.viewed_chromaticity is None:
+                self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
+            else:
+                self.chromaticity = ('xy-1931')
+            self.viewed_chromaticity = self.chromaticity
 
-        self.chromaticity = ('xy-' + mode) if mode == '1931' else ('uv-' + mode)
         if mode == "1931":
             self.spectral_locus_labels = labels_1931
             self.axis_labels = ('CIE x', 'CIE y')
@@ -208,13 +242,20 @@ class DiagramOptions:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1976 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
-        else:
+        elif mode == '1960':
             self.spectral_locus_labels = labels_1960
             self.axis_labels = ('CIE u', 'CIE v')
             if observer == '2deg':
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 2˚ Degree Standard Observer"
             else:
                 self.title = "CIE 1960 UCS Chromaticity Diagram - 10˚ Degree Standard Observer"
+        else:
+            self.spectral_locus_labels = labels_1960
+            self.axis_labels = self.viewed_chromaticity_names
+            if observer == '2deg':
+                self.title = f"CIE {mode} Chromaticity Diagram - 2˚ Degree Standard Observer"
+            else:
+                self.title = f"CIE {mode} Diagram - 10˚ Degree Standard Observer"
 
         self.cct = 'ohno-2013'
 
@@ -282,13 +323,16 @@ def cie_diagram(
             ys.append(y)
 
     spectral_locus = SpectralLocus(xs, ys, wavelength)
-    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.04)
+    annotations = get_spectral_locus_labels(spectral_locus, opt.spectral_locus_labels, 0.04, opt)
 
     xs, ys = spectral_locus.steps(len(xs) * 3)
 
     # Draw the bottom purple line
-    xs.append(xs[0])
-    ys.append(ys[0])
+    interp = alg.interpolate([[xs[-1], ys[-1]], [xs[0], ys[0]]])
+    xi, yi = zip(*[interp(i / 100) for i in range(1, 101)])
+    xs.extend(xi)
+    ys.extend(yi)
+
     spaces = []
 
     # Pointer gamut
@@ -297,6 +341,7 @@ def cie_diagram(
             bounds, color = p.split(':')
             sx = []
             sy = []
+            xy = []
             if bounds == 'max':
                 pts = gamut.pointer.pointer_gamut_boundary()
                 label = 'pointer'
@@ -307,15 +352,27 @@ def cie_diagram(
             pts.append(pts[0])
             for pt in pts:
                 x, y = Color.convert_chromaticity('xy-1931', opt.chromaticity, pt[:-1])[:-1]
-                sx.append(x)
-                sy.append(y)
+                if sx:
+                    interp = alg.interpolate([[sx[-1], sy[-1]], [x, y]])
+                    _sx, _sy = zip(*[interp(i / 100) for i in range(1, 101)])
+                    sx.extend(_sx)
+                    sy.extend(_sy)
+                    xy.extend([convert_chromaticity((a, b), opt) for a, b in zip(_sx, _sy)])
+                else:
+                    sx.append(x)
+                    sy.append(y)
+                    xy.append(convert_chromaticity((x, y), opt))
+
+            _x, _y = zip(*xy)
             spaces.append(
                 (
                     sx,
                     sy,
                     color,
                     label,
-                    mpltpath.Path(list(zip(sx, sy)))
+                    mpltpath.Path(list(zip(sx, sy))),
+                    _x,
+                    _y
                 )
             )
 
@@ -326,21 +383,29 @@ def cie_diagram(
             red = temp.mutate(space, [1, 0, 0]).split_chromaticity(opt.chromaticity)
             green = temp.mutate(space, [0, 1, 0]).split_chromaticity(opt.chromaticity)
             blue = temp.mutate(space, [0, 0, 1]).split_chromaticity(opt.chromaticity)
-            sx = [red[0], green[0], blue[0], red[0]]
-            sy = [red[1], green[1], blue[1], red[1]]
+            interp = alg.interpolate([red[:-1], green[:-1]])
+            sxy = [interp(i / 100) for i in range(101)]
+            interp = alg.interpolate([green[:-1], blue[:-1]])
+            sxy.extend([interp(i / 100) for i in range(1, 101)])
+            interp = alg.interpolate([blue[:-1], red[:-1]])
+            sxy.extend([interp(i / 100) for i in range(1, 101)])
+            sx, sy = zip(*sxy)
+            xy = list(zip(*[convert_chromaticity((a, b), opt) for a, b in zip(sx, sy)]))
             spaces.append(
                 (
                     sx,
                     sy,
                     color,
                     space,
-                    mpltpath.Path(list(zip(sx, sy)))
+                    mpltpath.Path(list(zip(sx, sy))),
+                    xy[0],
+                    xy[1]
                 )
             )
 
     # Generate fill colors for inside the spectral locus
     if colorize:
-        [plt.fill(s[0], s[1], '#888888') for s in spaces]
+        [plt.fill(s[5], s[6], '#888888') for s in spaces]
 
         px = []
         py = []
@@ -354,11 +419,14 @@ def cie_diagram(
                 o = 0.01 if spaces else opacity
                 if spaces:
                     for s in spaces:
-                        if s[-1].contains_point(r):
+                        if s[4].contains_point(r):
                             o = 1
                             break
-                px.append(r[0])
-                py.append(r[1])
+
+                xy = convert_chromaticity(r, opt)
+                px.append(xy[0])
+                py.append(xy[1])
+
                 srgb = Color.chromaticity(
                     'srgb',
                     r,
@@ -375,6 +443,9 @@ def cie_diagram(
             c=c,
             s=1
         )
+
+    for i in range(len(xs)):
+        xs[i], ys[i] = convert_chromaticity((xs[i], ys[i]), opt)
 
     # Plot spectral locus and label it
     plt.plot(
@@ -415,8 +486,8 @@ def cie_diagram(
     # Plot the RGB triangles
     for item in spaces:
         plt.plot(
-            item[0],
-            item[1],
+            item[5],
+            item[6],
             marker='o',
             color=item[2],
             label=item[3],
@@ -436,7 +507,7 @@ def cie_diagram(
         for wp in white_points:
             w = ALL_WHITES[observer][wp]
             annot.append(wp)
-            xy = Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1]
+            xy = convert_chromaticity(Color.convert_chromaticity('xy-1931', opt.chromaticity, w)[:-1], opt)
             wx.append(xy[0])
             wy.append(xy[1])
         plt.scatter(
@@ -494,8 +565,9 @@ def cie_diagram(
             t = kelvin
             c = Color.blackbody('xyz-d65', t, scale=False, method=opt.cct)
             bu, bv = c.split_chromaticity(opt.chromaticity, white=opt.white)[:-1]
-            uaxis.append(bu)
-            vaxis.append(bv)
+            buv = convert_chromaticity((bu, bv), opt)
+            uaxis.append(buv[0])
+            vaxis.append(buv[1])
 
             if isotherms and kelvin in ISOTHERMS:
                 duvx = []
@@ -518,7 +590,7 @@ def cie_diagram(
 
                 plt.annotate(
                     label,
-                    [bu, bv],
+                    convert_chromaticity([bu, bv], opt),
                     size=6,
                     color=opt.default_colorized_color if colorize else opt.default_color,
                     rotation=rotate,
@@ -528,6 +600,7 @@ def cie_diagram(
                     ha=ha
                 )
 
+                duvx, duvy = list(zip(*[convert_chromaticity((bu, bv), opt) for bu, bv in zip(duvx, duvy)]))
                 plt.plot(
                     duvx,
                     duvy,
