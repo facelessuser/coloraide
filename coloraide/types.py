@@ -1,3 +1,4 @@
+# noqa: A005
 """Typing."""
 from __future__ import annotations
 from typing import Union, Any, Mapping, Sequence, List, Tuple, TypeVar, TYPE_CHECKING
