@@ -1,6 +1,12 @@
 # Changelog
 
-## 4.1.0
+## 4.2
+
+-   **NEW**: Add new matrix math functions that are specifically optimized for matrices and vectors of length 3 and
+    leverage it in all appropriate places for a performance boost.
+-   **NEW**: Combine logic of `algebra` optimized vectorize functions and deprecate unnecessary function.
+
+## 4.1
 
 -   **NEW**: The `powerless` parameter is deprecated in `average()` as it is required to be always on for proper polar
     space averaging.

@@ -38,25 +38,25 @@ IGPGTG_TO_LMS = [
 def xyz_to_igpgtg(xyz: Vector) -> Vector:
     """XYZ to IgPgTg."""
 
-    lms_in = alg.matmul(XYZ_TO_LMS, xyz, dims=alg.D2_D1)
+    lms_in = alg.matmul_x3(XYZ_TO_LMS, xyz, dims=alg.D2_D1)
     lms = [
         alg.spow(lms_in[0] / 18.36, 0.427),
         alg.spow(lms_in[1] / 21.46, 0.427),
         alg.spow(lms_in[2] / 19435, 0.427)
     ]
-    return alg.matmul(LMS_TO_IGPGTG, lms, dims=alg.D2_D1)
+    return alg.matmul_x3(LMS_TO_IGPGTG, lms, dims=alg.D2_D1)
 
 
 def igpgtg_to_xyz(itp: Vector) -> Vector:
     """IgPgTg to XYZ."""
 
-    lms = alg.matmul(IGPGTG_TO_LMS, itp, dims=alg.D2_D1)
+    lms = alg.matmul_x3(IGPGTG_TO_LMS, itp, dims=alg.D2_D1)
     lms_in = [
         alg.nth_root(lms[0], 0.427) * 18.36,
         alg.nth_root(lms[1], 0.427) * 21.46,
         alg.nth_root(lms[2], 0.427) * 19435
     ]
-    return alg.matmul(LMS_TO_XYZ, lms_in, dims=alg.D2_D1)
+    return alg.matmul_x3(LMS_TO_XYZ, lms_in, dims=alg.D2_D1)
 
 
 class IgPgTg(IPT):

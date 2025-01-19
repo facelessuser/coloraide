@@ -1302,6 +1302,81 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(ValueError):
             alg.matmul(m1, m2)
 
+    def test_matmul_x3(self):
+        """
+        Test matrix multiplication.
+
+        Results should generally match 'dot' except scalars are not allowed and
+        logic for dimensions greater than 2 will be different. All other code
+        is shared.
+        """
+
+        self.assertEqual(alg.matmul_x3([1, 2, 3], [4, 5, 6]), 32)
+        self.assertEqual(alg.matmul_x3([4, 5, 6], [1, 2, 3]), 32)
+        self.assertEqual(
+            alg.matmul_x3(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                [1, 2, 3]
+            ),
+            [14, 32, 50]
+        )
+        self.assertEqual(
+            alg.matmul_x3(
+                [1, 2, 3],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [30, 36, 42]
+        )
+        self.assertEqual(
+            alg.matmul_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
+        )
+
+        # Scalars are not allowed
+        with self.assertRaises(ValueError):
+            alg.matmul_x3([1, 2, 3], 3)
+
+        with self.assertRaises(ValueError):
+            alg.matmul_x3(3, [1, 2, 3])
+
+        m1 = [[[[1, 2, 3, 4],
+                [5, 6, 7, 8]],
+               [[10, 20, 30, 40],
+                [50, 60, 70, 80]],
+               [[15, 25, 35, 45],
+                [55, 65, 75, 85]]]]
+
+        m2 = [[[[11, 21],
+                [31, 41],
+                [51, 61],
+                [71, 81]],
+               [[21, 11],
+                [41, 12],
+                [51, 13],
+                [81, 14]],
+               [[2, 17],
+                [2, 2],
+                [9, 8],
+                [3, 4]]],
+              [[[5, 1],
+                [5, 41],
+                [5, 61],
+                [5, 81]],
+               [[21, 3],
+                [41, 3],
+                [51, 3],
+                [81, 3]],
+               [[4, 9],
+                [6, 7],
+                [1, 2],
+                [1, 5]]]]
+
+        with self.assertRaises(ValueError):
+            alg.matmul_x3(m1, m2)
+
     def test_dot(self):
         """Test dot."""
 
@@ -1388,7 +1463,7 @@ class TestAlgebra(unittest.TestCase):
 
               [[30, 50, 70, 90],
                [110, 130, 150, 170]]]]
-        ),
+        )
 
         self.assertEqual(
             alg.dot([40, 0.3, 12, 9], m2),
@@ -1402,6 +1477,45 @@ class TestAlgebra(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             alg.dot([1, 2, 3], [4, 5, 6, 7], dims=alg.D1)
+
+    def test_dot_x3(self):
+        """Test dot."""
+
+        self.assertEqual(alg.dot_x3(2, 2), 4)
+        self.assertEqual(alg.dot_x3([1, 2, 3], 2), [2, 4, 6])
+        self.assertEqual(alg.dot_x3(2, [1, 2, 3]), [2, 4, 6])
+        self.assertEqual(alg.dot_x3([1, 2, 3], [4, 5, 6]), 32)
+        self.assertEqual(alg.dot_x3([4, 5, 6], [1, 2, 3]), 32)
+        self.assertEqual(
+            alg.dot_x3(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                [1, 2, 3]
+            ),
+            [14, 32, 50]
+        )
+        self.assertEqual(
+            alg.dot_x3(
+                [1, 2, 3],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [30, 36, 42]
+        )
+        self.assertEqual(
+            alg.dot_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
+        )
+
+        self.assertEqual(
+            alg.dot_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                dims=alg.D2
+            ),
+            [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
+        )
 
     def test_multi_dot(self):
         """Test multi-dot."""
@@ -1586,6 +1700,57 @@ class TestAlgebra(unittest.TestCase):
               [[45, 75, 105, 135], [165, 195, 225, 255]]]]
         )
 
+    def test_multiply_x3(self):
+        """Test multiply."""
+
+        self.assertEqual(alg.multiply_x3(2, 2), 4)
+        self.assertEqual(alg.multiply_x3([1, 2, 3], 2), [2, 4, 6])
+        self.assertEqual(alg.multiply_x3(2, [1, 2, 3]), [2, 4, 6])
+        self.assertEqual(alg.multiply_x3([1, 2, 3], [4, 5, 6]), [4, 10, 18])
+        self.assertEqual(alg.multiply_x3([4, 5, 6], [1, 2, 3]), [4, 10, 18])
+        self.assertEqual(
+            alg.multiply_x3(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                [1, 2, 3]
+            ),
+            [[1, 4, 9], [4, 10, 18], [7, 16, 27]]
+        )
+        self.assertEqual(
+            alg.multiply_x3(
+                [1, 2, 3],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[1, 4, 9], [4, 10, 18], [7, 16, 27]]
+        )
+        self.assertEqual(
+            alg.multiply_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[4, 8, 12], [4, 0, 6], [14, 24, 36]]
+        )
+        self.assertEqual(
+            alg.multiply_x3(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+            ),
+            [[4, 8, 12], [4, 0, 6], [14, 24, 36]]
+        )
+        self.assertEqual(
+            alg.multiply_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                2
+            ),
+            [[8, 8, 8], [2, 0, 2], [4, 6, 8]]
+        )
+        self.assertEqual(
+            alg.multiply_x3(
+                2,
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+            ),
+            [[8, 8, 8], [2, 0, 2], [4, 6, 8]]
+        )
+
     def test_divide(self):
         """Test divide."""
 
@@ -1668,6 +1833,66 @@ class TestAlgebra(unittest.TestCase):
         )
         self.assertEqual(alg.divide(8, 4), 2)
 
+    def test_divide_x3(self):
+        """Test divide."""
+
+        self.assertEqual(alg.divide_x3(4, 2), 2)
+        self.assertEqual(alg.divide_x3([2, 4, 6], 2), [1, 2, 3])
+        self.assertEqual(alg.divide_x3(2, [2, 4, 6]), [1.0, 0.5, 0.3333333333333333])
+        self.assertEqual(alg.divide_x3([4, 10, 18], [4, 5, 6]), [1, 2, 3])
+        self.assertEqual(alg.divide_x3([4, 10, 18], [1, 2, 3]), [4, 5, 6])
+        self.assertEqual(
+            alg.divide_x3(
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]],
+                [1, 2, 3]
+            ),
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        )
+        self.assertEqual(
+            alg.divide_x3(
+                [1, 2, 3],
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]]
+            ),
+            [
+                [1.0, 0.5, 0.3333333333333333],
+                [0.25, 0.2, 0.16666666666666666],
+                [0.14285714285714285, 0.125, 0.1111111111111111]
+            ]
+        )
+        self.assertEqual(
+            alg.divide_x3(
+                [[1, 4, 9], [4, 10, 18], [7, 16, 27]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
+        )
+        self.assertEqual(
+            alg.divide_x3(
+                [[4, 8, 12], [4, 0, 6], [14, 24, 36]],
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+            ),
+            [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+        )
+        self.assertEqual(
+            alg.divide_x3(
+                [[4, 8, 12], [4, 0, 6], [14, 24, 36]],
+                2
+            ),
+            [[2.0, 4.0, 6.0], [2.0, 0.0, 3.0], [7.0, 12.0, 18.0]]
+        )
+        self.assertEqual(
+            alg.divide_x3(
+                2,
+                [[4, 8, 12], [4, 1, 6], [14, 24, 36]]
+            ),
+            [
+                [0.5, 0.25, 0.16666666666666666],
+                [0.5, 2.0, 0.3333333333333333],
+                [0.14285714285714285, 0.08333333333333333, 0.05555555555555555]
+            ]
+        )
+        self.assertEqual(alg.divide_x3(8, 4), 2)
+
     def test_add(self):
         """Test addition."""
 
@@ -1688,6 +1913,36 @@ class TestAlgebra(unittest.TestCase):
 
         self.assertEqual(
             alg.subtract(
+                alg.reshape(alg.arange(9.0), (3, 3)),
+                alg.arange(3.0)
+            ),
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 3.0, 3.0],
+                [6.0, 6.0, 6.0]
+            ]
+        )
+
+    def test_add_x3(self):
+        """Test addition."""
+
+        self.assertEqual(
+            alg.add_x3(
+                alg.reshape(alg.arange(9.0), (3, 3)),
+                alg.arange(3.0)
+            ),
+            [
+                [0.0, 2.0, 4.0],
+                [3.0, 5.0, 7.0],
+                [6.0, 8.0, 10.0]
+            ]
+        )
+
+    def test_subtraction3(self):
+        """Test subtraction."""
+
+        self.assertEqual(
+            alg.subtract_x3(
                 alg.reshape(alg.arange(9.0), (3, 3)),
                 alg.arange(3.0)
             ),
@@ -1770,7 +2025,7 @@ class TestAlgebra(unittest.TestCase):
     def test_vectorize1(self):
         """Test `vectorize1`."""
 
-        cbrt = alg.vectorize1(lambda x: alg.nth_root(x, 3))
+        cbrt = alg.vectorize2(lambda x: alg.nth_root(x, 3), params=1)
 
         self.assertEqual(
             cbrt([8, 27]),
@@ -1779,6 +2034,39 @@ class TestAlgebra(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             cbrt([8, 27], 4)
+
+        cbrt_x3 = alg.vectorize2(lambda x: alg.nth_root(x, 3), params=1, only_x3=True)
+
+        self.assertEqual(
+            cbrt_x3([8, 27, 27]),
+            [2, 3, 3]
+        )
+
+        self.assertEqual(
+            cbrt_x3([8, 27, 27], dims=alg.D1),
+            [2, 3, 3]
+        )
+
+        self.assertEqual(
+            cbrt_x3(27),
+            3
+        )
+
+        self.assertEqual(
+            cbrt_x3(
+                [[8, 27, 27], [8, 27, 27], [8, 27, 27]]
+            ),
+            [[2, 3, 3], [2, 3, 3], [2, 3, 3]]
+        )
+
+        with self.assertRaises(ValueError):
+            cbrt_x3(
+                [
+                    [[8, 27, 27], [8, 27, 27], [8, 27, 27]],
+                    [[8, 27, 27], [8, 27, 27], [8, 27, 27]],
+                    [[8, 27, 27], [8, 27, 27], [8, 27, 27]]
+                ]
+            )
 
     def test_vectorize2(self):
         """Test `vectorize2`."""
@@ -1798,6 +2086,20 @@ class TestAlgebra(unittest.TestCase):
         with self.assertRaises(TypeError):
             log([10, 100])
 
+        with self.assertRaises(ValueError):
+            alg.vectorize2(math.log, params=3)
+
+        root = alg.vectorize2(alg.nth_root, only_x3=True)
+        with self.assertRaises(ValueError):
+            root(
+                [
+                    [[1, 2, 3], [1, 2, 3], [1, 2, 3]],
+                    [[1, 2, 3], [1, 2, 3], [1, 2, 3]],
+                    [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
+                ],
+                3
+            )
+
     def test_apply_two_inputs(self):
         """Test vectorize2 with two inputs."""
 
@@ -1810,13 +2112,13 @@ class TestAlgebra(unittest.TestCase):
     def test_apply_one_input(self):
         """Test apply with one input."""
 
-        sqrt = alg.vectorize1(math.sqrt)
+        sqrt = alg.vectorize2(math.sqrt, params=1)
         self.assertEqual(
             sqrt([[1, 4, 9], [16, 25, 36]]),
             [[1, 2, 3], [4, 5, 6]]
         )
 
-        isnan = alg.vectorize1(math.isnan)
+        isnan = alg.vectorize2(math.isnan, params=1)
         self.assertTrue(isnan(math.nan))
         self.assertEqual(isnan([2, math.nan, 1]), [False, True, False])
         self.assertEqual(isnan([[2, math.nan], [math.nan, 1]]), [[False, True], [True, False]])

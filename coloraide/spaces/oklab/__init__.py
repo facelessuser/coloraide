@@ -64,9 +64,9 @@ LMS_TO_XYZD65 = [
 def oklab_to_xyz_d65(lab: Vector) -> Vector:
     """Convert from Oklab to XYZ D65."""
 
-    return alg.matmul(
+    return alg.matmul_x3(
         LMS_TO_XYZD65,
-        [c ** 3 for c in alg.matmul(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
+        [c ** 3 for c in alg.matmul_x3(OKLAB_TO_LMS3, lab, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 
@@ -74,9 +74,9 @@ def oklab_to_xyz_d65(lab: Vector) -> Vector:
 def xyz_d65_to_oklab(xyz: Vector) -> Vector:
     """XYZ D65 to Oklab."""
 
-    return alg.matmul(
+    return alg.matmul_x3(
         LMS3_TO_OKLAB,
-        [alg.nth_root(c, 3) for c in alg.matmul(XYZD65_TO_LMS, xyz, dims=alg.D2_D1)],
+        [alg.nth_root(c, 3) for c in alg.matmul_x3(XYZD65_TO_LMS, xyz, dims=alg.D2_D1)],
         dims=alg.D2_D1
     )
 

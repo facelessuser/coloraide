@@ -159,7 +159,7 @@ class Environment:
         yw = xyz_w[1]
 
         # Cone response for reference white
-        rgb_w = alg.matmul(M16, xyz_w, dims=alg.D2_D1)
+        rgb_w = alg.matmul_x3(M16, xyz_w, dims=alg.D2_D1)
 
         # Surround: dark, dim, and average
         f, self.c, self.nc = SURROUND[self.surround]
@@ -182,7 +182,7 @@ class Environment:
         self.d_rgb_inv = [1 / coord for coord in self.d_rgb]
 
         # Achromatic response
-        rgb_cw = alg.multiply(rgb_w, self.d_rgb, dims=alg.D1)
+        rgb_cw = alg.multiply_x3(rgb_w, self.d_rgb, dims=alg.D1)
         rgb_aw = adapt(rgb_cw, self.fl)
         self.a_w = self.nbb * (2 * rgb_aw[0] + rgb_aw[1] + 0.05 * rgb_aw[2])
 
@@ -266,8 +266,8 @@ def cam16_to_xyz_d65(
     b = r * sin_h
 
     # Calculate back from cone response to XYZ
-    rgb_c = unadapt(alg.multiply(alg.matmul(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
-    return util.scale1(alg.matmul(MI6_INV, alg.multiply(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
+    rgb_c = unadapt(alg.multiply_x3(alg.matmul_x3(M1, [p2, a, b], dims=alg.D2_D1), 1 / 1403, dims=alg.D1_SC), env.fl)
+    return util.scale1(alg.matmul_x3(MI6_INV, alg.multiply_x3(rgb_c, env.d_rgb_inv, dims=alg.D1), dims=alg.D2_D1))
 
 
 def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool = False) -> Vector:
@@ -275,8 +275,8 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
 
     # Cone response
     rgb_a = adapt(
-        alg.multiply(
-            alg.matmul(M16, util.scale100(xyzd65), dims=alg.D2_D1),
+        alg.multiply_x3(
+            alg.matmul_x3(M16, util.scale100(xyzd65), dims=alg.D2_D1),
             env.d_rgb,
             dims=alg.D1
         ),
