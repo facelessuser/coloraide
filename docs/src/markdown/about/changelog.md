@@ -5,6 +5,7 @@
 -   **NEW**: Add new matrix math functions that are specifically optimized for matrices and vectors of length 3 and
     leverage it in all appropriate places for a performance boost.
 -   **NEW**: Combine logic of `algebra` optimized vectorize functions and deprecate unnecessary function.
+-   **NEW**: Some typing fixes and adjustments.
 
 ## 4.1
 
