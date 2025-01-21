@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from ..channels import Channel
 from ..css import serialize
 from ..types import VectorLike, Vector, Plugin
-from typing import Any, TYPE_CHECKING, Sequence
+from typing import Any, TYPE_CHECKING, Callable, Sequence
 import math
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -14,9 +14,17 @@ if TYPE_CHECKING:  # pragma: no cover
 class Regular:
     """Regular 3D color space usually with a range between 0 - 1."""
 
+    channels: tuple[Channel, ...]
+    get_channel_index: Callable[[str], int]
+
 
 class Cylindrical:
     """Cylindrical space."""
+
+    channels: tuple[Channel, ...]
+    get_channel_index: Callable[[str], int]
+    get_hue_name: Callable[[], str]
+    get_radial_name: Callable[[], str]
 
     def radial_name(self) -> str:
         """Radial name."""
@@ -31,26 +39,26 @@ class Cylindrical:
     def hue_index(self) -> int:  # pragma: no cover
         """Get hue index."""
 
-        return self.get_channel_index(self.hue_name())  # type: ignore[no-any-return, attr-defined]
+        return self.get_channel_index(self.hue_name())
 
     def radial_index(self) -> int:  # pragma: no cover
         """Get radial index."""
 
-        return self.get_channel_index(self.radial_name())  # type: ignore[no-any-return, attr-defined]
+        return self.get_channel_index(self.radial_name())
 
 
 class RGBish(Regular):
     """RGB-ish space."""
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return RGB-ish names in order R G B."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of RGB-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
     def linear(self) -> str:
         """Will return the name of the space which is the linear version of itself (if available)."""
@@ -61,29 +69,29 @@ class RGBish(Regular):
 class HSLish(Cylindrical):
     """HSL-ish space."""
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return HSL-ish names in order H S L."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of HSL-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
 
 class HSVish(Cylindrical):
     """HSV-ish space."""
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return HSV-ish names in order H S V."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of HSV-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
 
 class HWBish(Cylindrical):
@@ -94,29 +102,32 @@ class HWBish(Cylindrical):
 
         return "w"
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return HWB-ish names in order H W B."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of HWB-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
 
 class Labish:
     """Lab-ish color spaces."""
 
-    def names(self) -> tuple[str, ...]:
+    channels: tuple[Channel, ...]
+    get_channel_index: Callable[[str], int]
+
+    def names(self) -> tuple[Channel, ...]:
         """Return Lab-ish names in the order L a b."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
 
 class LChish(Cylindrical):
@@ -127,15 +138,15 @@ class LChish(Cylindrical):
 
         return "c"
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return LCh-ish names in the order L c h."""
 
-        return self.channels[:-1]  # type: ignore[no-any-return, attr-defined]
+        return self.channels[:-1]
 
     def indexes(self) -> list[int]:
         """Return the index of the Lab-ish channels."""
 
-        return [self.get_channel_index(name) for name in self.names()]  # type: ignore[attr-defined]
+        return [self.get_channel_index(name) for name in self.names()]
 
 
 alpha_channel = Channel('alpha', 0.0, 1.0, bound=True, limit=(0.0, 1.0))

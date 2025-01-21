@@ -77,6 +77,8 @@ class Harmony(metaclass=ABCMeta):
         if color._space.is_polar():
             return color
 
+        custom_space = None  # type: None | type['HarmonyLCh'] | type['HarmonyHSL']
+
         if isinstance(color._space, Labish):
             cs = color._space  # type: Space
             name = color.space()
@@ -95,12 +97,7 @@ class Harmony(metaclass=ABCMeta):
 
                     return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
 
-            class ColorCyl(type(color)):  # type: ignore[misc]
-                """Custom color."""
-
-            ColorCyl.register(HarmonyLCh())
-
-            return ColorCyl(color).convert('-harmony-cylinder')  # type: ignore[no-any-return]
+            custom_space = HarmonyLCh
 
         if isinstance(color._space, Regular):
 
@@ -123,10 +120,14 @@ class Harmony(metaclass=ABCMeta):
 
                     return self.ORIG_SPACE.is_achromatic(self.to_base(coords))
 
-            class ColorCyl(type(color)):  # type: ignore[no-redef, misc]
+            custom_space = HarmonyHSL
+
+        if custom_space is not None:
+
+            class ColorCyl(type(color)):  # type: ignore[misc]
                 """Custom color."""
 
-            ColorCyl.register(HarmonyHSL())
+            ColorCyl.register(custom_space())
 
             return ColorCyl(color).convert('-harmony-cylinder')  # type: ignore[no-any-return]
 

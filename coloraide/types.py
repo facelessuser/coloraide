@@ -39,7 +39,7 @@ DimHints = Tuple[int, int]
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
 
-MathType = TypeVar('MathType', float, VectorLike, MatrixLike, TensorLike)
+ArrayType = TypeVar('ArrayType', float, VectorLike, MatrixLike, TensorLike)
 
 
 class Plugin:
