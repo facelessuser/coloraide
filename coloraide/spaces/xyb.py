@@ -88,7 +88,7 @@ class XYB(Labish, Space):
 
         return alg.rect_to_polar(coords[0], coords[2])[0] < ACHROMATIC_THRESHOLD
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return Lab-ish names in the order L a b."""
 
         channels = self.channels

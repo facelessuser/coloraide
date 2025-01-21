@@ -187,7 +187,7 @@ class HCT(LChish, Space):
         # Account for both positive and negative chroma
         return coords[2] == 0 or abs(coords[1]) < ACHROMATIC_THRESHOLD
 
-    def names(self) -> tuple[str, ...]:
+    def names(self) -> tuple[Channel, ...]:
         """Return LCh-ish names in the order L C h."""
 
         channels = self.channels
