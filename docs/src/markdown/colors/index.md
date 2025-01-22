@@ -48,6 +48,8 @@ flowchart TB
     oklch --- oklab ----- xyz-d65
         okhsl --- oklab
         okhsv --- oklab
+        oklrab --- oklab
+            oklrch --- oklrab
 
     display-p3 --- display-p3-linear --- xyz-d65
 
@@ -138,6 +140,8 @@ flowchart TB
     oklch(OkLCh)
     okhsl(Okhsl)
     okhsv(Okhsv)
+    oklrab(Oklrab)
+    oklrch(OkLrCh)
     luv(Luv)
     lchuv(LChuv)
     hsluv(HSLuv)
@@ -199,6 +203,8 @@ flowchart TB
     click oklch "./oklch/" _self
     click okhsl "./okhsl/" _self
     click okhsv "./okhsv/" _self
+    click oklrab "./oklrab" _self
+    click oklrch "./oklrch" _self
     click luv "./luv/" _self
     click lchuv "./lchuv/" _self
     click hsluv "./hsluv/" _self
@@ -282,6 +288,8 @@ Color Space                                     | ID
 [Okhsv](./okhsv.md)                             | `okhsv`
 [Oklab](./oklab.md)                             | `oklab`
 [OkLCh](./oklch.md)                             | `oklch`
+[Oklrab](./oklrab.md)                           | `oklrab`
+[OkLrCh](./oklrch.md)                           | `oklrch`
 [oRGB](./orgb.md)                               | `orgb`
 [Prismatic](./prismatic.md)                     | `prismatic`
 [ProPhoto RGB](./prophoto_rgb.md)               | `prophoto-rgb`

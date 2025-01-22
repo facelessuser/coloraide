@@ -140,10 +140,14 @@ NaNs
 Numpy
 OETF
 Ohno
+OkL
 OkLCh
+OkLrCh
 Okhsl
 Okhsv
+Okl
 Oklab
+Oklrab
 Ottosson
 PQ
 Perceptibility

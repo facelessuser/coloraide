@@ -49,6 +49,8 @@ models = {
     'lch-d65': {'title': TEMPLATE.format('CIELCh D65'), 'filename': 'lch-d65-3d.png', 'azim': 300},
     'oklab': {'title': TEMPLATE.format('Oklab'), 'filename': 'oklab-3d.png'},
     'oklch': {'title': TEMPLATE.format('OkLCh'), 'filename': 'oklch-3d.png', 'azim': 300},
+    'oklrab': {'title': TEMPLATE.format('Oklrab'), 'filename': 'oklrab-3d.png'},
+    'oklrch': {'title': TEMPLATE.format('OkLrCh'), 'filename': 'oklrch-3d.png', 'azim': 300},
     'luv': {'title': TEMPLATE.format('CIELuv'), 'filename': 'luv-3d.png'},
     'lchuv': {'title': TEMPLATE.format('LChuv'), 'filename': 'lchuv-3d.png', 'azim': 300},
     'din99o': {'title': TEMPLATE.format('DIN99o'), 'filename': 'din99o-3d.png'},
