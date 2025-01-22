@@ -78,16 +78,16 @@ K_2 = 0.03
 K_3 = (1.0 + K_1) / (1.0 + K_2)
 
 
-def toe(x: float) -> float:
+def toe(x: float, k1: float = K_1, k2: float = K_2, k3: float = K_3) -> float:
     """Toe function for L_r."""
 
-    return 0.5 * (K_3 * x - K_1 + math.sqrt((K_3 * x - K_1) * (K_3 * x - K_1) + 4 * K_2 * K_3 * x))
+    return 0.5 * (k3 * x - k1 + math.sqrt((k3 * x - k1) * (k3 * x - k1) + 4 * k2 * k3 * x))
 
 
-def toe_inv(x: float) -> float:
+def toe_inv(x: float, k1: float = K_1, k2: float = K_2, k3: float = K_3) -> float:
     """Inverse toe function for L_r."""
 
-    return (x ** 2 + K_1 * x) / (K_3 * (x + K_2))
+    return (x ** 2 + k1 * x) / (k3 * (x + k2))
 
 
 def to_st(cusp: Vector) -> Vector:

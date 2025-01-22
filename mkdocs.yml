@@ -92,6 +92,7 @@ nav:
         - Lab D50: colors/lab.md
         - Lab D65: colors/lab_d65.md
         - Oklab: colors/oklab.md
+        - Oklrab: colors/oklrab.md
         - Luv: colors/luv.md
         - DIN99o: colors/din99o.md
         - Jzazbz: colors/jzazbz.md
@@ -109,6 +110,7 @@ nav:
         - LCh D50: colors/lch.md
         - LCh D65: colors/lch_d65.md
         - OkLCh: colors/oklch.md
+        - OkLrCh: colors/oklrch.md
         - LCh(uv): colors/lchuv.md
         - DIN99 LCh: colors/lch99o.md
         - JzCzhz: colors/jzczhz.md

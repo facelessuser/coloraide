@@ -9,6 +9,8 @@ from .spaces.hsluv import HSLuv
 from .spaces.hpluv import HPLuv
 from .spaces.okhsl import Okhsl
 from .spaces.okhsv import Okhsv
+from .spaces.oklrab import Oklrab
+from .spaces.oklrch import OkLrCh
 from .spaces.hsi import HSI
 from .spaces.ipt import IPT
 from .spaces.igpgtg import IgPgTg
@@ -60,6 +62,8 @@ ColorAll.register(
         LChuv(),
         Okhsl(),
         Okhsv(),
+        Oklrab(),
+        OkLrCh(),
         HSLuv(),
         HPLuv(),
         HSI(),
