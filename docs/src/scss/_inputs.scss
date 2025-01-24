@@ -22,7 +22,7 @@ textarea#__notebook-input,
   border: none;
   outline: none;
   cursor: text;
-  appearance: textarea;
+  appearance: auto;
   resize: vertical;
 
   &::selection {
