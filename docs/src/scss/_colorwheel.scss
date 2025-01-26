@@ -49,15 +49,13 @@
     min-width: max-content;
     padding: convert.px2em(5px);
     border-radius: 1000px;
-    // Workaround for chrome: fixes weird distortion
-    transform: rotate(0deg);
 
     .primary {
       width: 12em;
       height: 10.5em;
       margin: auto;
-      // Workaround for chrome: fixes weird distortion
-      transform: rotate(0deg);
+      // Workaround for chrome: fixes weird distortion: `translateZ`
+      transform: translateZ(0);
       clip-path: polygon(50% 0, 100% 100%, 0 100%);
 
       .primary-inner {
@@ -74,15 +72,14 @@
       margin: auto;
       background: var(--color-wheel-bg);
       border-radius: 1000px;
-      // Workaround for chrome: fixes weird distortion
-      transform: rotate(0deg);
 
       .secondary-inner {
         width: 14em;
         height: 14em;
         margin: auto;
         background: conic-gradient(var(--color-wheel-stops2));
-        transform: rotate(-135deg);
+        // Workaround for chrome: fixes weird distortion: `translateZ`
+        transform: rotate(225deg) translateZ(0);
         clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
       }
     }
