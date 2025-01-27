@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.1
+
+-   **NEW**: Hex output should force gamut mapping even if it is requested to disable it as output will be invalid
+    otherwise.
+
 ## 4.2
 
 -   **NEW**: Provide new color spaces Okl~r~ab/OkL~r~Ch which use a modified lightness prediction.

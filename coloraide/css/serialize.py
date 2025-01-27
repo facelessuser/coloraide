@@ -145,7 +145,7 @@ def hexadecimal(
 ) -> str:
     """Get the hex `RGB` value."""
 
-    coords = get_coords(obj, fit, False, False)
+    coords = get_coords(obj, fit if fit else True, False, False)
     a = get_alpha(obj, alpha, False, False)
 
     if a is not None:
