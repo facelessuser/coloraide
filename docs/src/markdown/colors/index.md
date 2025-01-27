@@ -38,80 +38,79 @@ Click any of the color spaces to jump to the related documentation.
 
 /// html | div.data-search-exclude
 ```diagram
-flowchart TB
+%%{init: {"flowchart": {"useMaxWidth": true}}}%%
+flowchart LR
 
-    acescc --- acescg ---- xyz-d65
-        acescct --- acescg
+    xyz-d65 --- srgb-linear
+        srgb-linear --- rec709
+        srgb-linear --- srgb
+            srgb --- hsl
+            srgb --- hsv
+               hsv --- hwb
+            srgb --- cmy
+            srgb --- cmyk
+            srgb --- ryb
+            srgb --- xyb
+            srgb --- cubehelix
+            srgb --- hsi
+            srgb --- orgb
+            srgb --- prismatic
 
-    aces2065-1 --- xyz-d65
+    xyz-d65 --- display-p3-linear --- display-p3
 
-    oklch --- oklab ----- xyz-d65
-        okhsl --- oklab
-        okhsv --- oklab
-        oklrab --- oklab
-            oklrch --- oklrab
+    xyz-d65 --- rec2020-linear  --- rec2020
+        rec2020-linear --- rec2100-linear
+            rec2100-linear --- rec2100-pq
+            rec2100-linear --- rec2100-hlg
 
-    display-p3 --- display-p3-linear --- xyz-d65
+    xyz-d65 --- a98-rgb-linear --- a98-rgb
 
-    a98-rgb --- a98-rgb-linear --- xyz-d65
+    xyz-d65 --- xyz-d50 --- prophoto-rgb-linear --- prophoto-rgb
 
-    srgb-linear --- xyz-d65
-        rec709 --- srgb-linear
-        srgb --- srgb-linear
-            cubehelix --- srgb
-            ryb --- srgb
-            orgb --- srgb
-            prismatic --- srgb
-            hsi --- srgb
-            cmy --- srgb
-            cmyk --- srgb
-            xyb --- srgb
-            hsl --- srgb
-            hsv --- srgb
-               hwb --- hsv
-
-    rec2020-linear --- xyz-d65
-        rec2020 --- rec2020-linear
-        rec2100-linear --- rec2020-linear
-            rec2100-pq --- rec2100-linear
-            rec2100-hlg --- rec2100-linear
-
-    prophoto-rgb --- prophoto-rgb-linear --- xyz-d50 ----- xyz-d65
-
-    lch --- lab --- xyz-d50
+    xyz-d50 --- lab --- lch
 
     xyz-d65 --- lab-d65 --- lch-d65
+
+    xyz-d65 --- oklab --- oklch
+        oklab --- okhsl
+        oklab --- okhsv
+        oklab --- oklrab --- oklrch
+
+    xyz-d65 --- jzazbz --- jzczhz
+
+    xyz-d65 --- ictcp
+
+    xyz-d65 --- luv --- lchuv
+        luv --- hsluv
+        luv --- hpluv
+
+    xyz-d65 --- din99o --- lch99o
 
     xyz-d65 --- cam16-jmh
         cam16-jmh --- cam16-ucs
         cam16-jmh --- cam16-scd
         cam16-jmh --- cam16-lcd
 
-    xyz-d65 --- zcam-jmh
-
     xyz-d65 --- hct
 
-    xyz-d65 --- jzazbz --- jzczhz
+    xyz-d65 --- aces2065-1
 
-    xyz-d65 --- ipt
-
-    xyz-d65 --- ictcp
-
-    xyz-d65 --- igpgtg
-
-    xyz-d65 --- din99o --- lch99o
+    xyz-d65 --- acescg --- acescc
+        acescg --- acescct
 
     xyz-d65 --- hunter-lab
 
+    xyz-d65 --- ipt
+
+    xyz-d65 --- igpgtg
+
     xyz-d65 --- rlab
 
-    xyz-d65 --- luv --- lchuv
-        luv --- hsluv
-        luv --- hpluv
+    xyz-d65 --- ucs
 
     xyz-d65 --- xyy
 
-    xyz-d65 --- ucs
+    xyz-d65 --- zcam-jmh
 
     xyz-d65(XYZ D65)
     xyz-d50(XYZ D50)
@@ -249,7 +248,6 @@ a specific color space for conversion or otherwise.
 Color Space                                     | ID
 ----------------------------------------------- | --------
 [A98 RGB](./aces2065_1.md)                      | `a98-rgb`
-[Linear A98 RGB](./a98_rgb_linear.md)           | `a98-rgb-linear`
 [ACES 2065-1](./aces2065_1.md)                  | `aces2065-1`
 [ACEScc](./acescc.md)                           | `acescc`
 [ACEScct](./acescct.md)                         | `acescct`
@@ -261,9 +259,9 @@ Color Space                                     | ID
 [CMY](./cmy.md)                                 | `cmy`
 [CMYK](./cmyk.md)                               | `cmyk`
 [Cubehelix](./cubehelix.md)                     | `cubehelix`
+[DIN99o LCh](./lch99o.md)                       | `lch99o`
 [DIN99o](./din99o.md)                           | `din99o`
 [Display P3](./display_p3.md)                   | `display-p3`
-[Linear Display P3](./display_p3_linear.md)     | `display-p3-linear`
 [HCT](./hct.md)                                 | `hct`
 [HPLuv](./hpluv.md)                             | `hpluv`
 [HSI](./hsi.md)                                 | `hsi`
@@ -281,7 +279,12 @@ Color Space                                     | ID
 [Lab (D65)](./lab_d65.md)                       | `lab-d65`
 [LCh (D50)](./lch.md)                           | `lch`
 [LCH (D65)](./lch_d65.md)                       | `lch-d65`
-[DIN99o LCh](./lch99o.md)                       | `lch99o`
+[Linear A98 RGB](./a98_rgb_linear.md)           | `a98-rgb-linear`
+[Linear Display P3](./display_p3_linear.md)     | `display-p3-linear`
+[Linear ProPhoto RGB](./prophoto_rgb_linear.md) | `prophoto-rgb-linear`
+[Linear Rec. 2020](./rec2020_linear.md)         | `rec2020-linear`
+[Linear Rec. 2100](./rec2100_linear.md)         | `rec2100-linear`
+[Linear sRGB](./srgb_linear.md)                 | `srgb-linear`
 [Luv LCh](./lchuv.md)                           | `lchuv`
 [Luv](./luv.md)                                 | `luv`
 [Okhsl](./okhsl.md)                             | `okhsl`
@@ -293,17 +296,13 @@ Color Space                                     | ID
 [oRGB](./orgb.md)                               | `orgb`
 [Prismatic](./prismatic.md)                     | `prismatic`
 [ProPhoto RGB](./prophoto_rgb.md)               | `prophoto-rgb`
-[Linear ProPhoto RGB](./prophoto_rgb_linear.md) | `prophoto-rgb-linear`
 [Rec. 2020](./rec2020.md)                       | `rec2020`
-[Linear Rec. 2020](./rec2020_linear.md)         | `rec2020-linear`
 [Rec. 2100 HLG](./rec2100_hlg.md)               | `rec2100-hlg`
-[Linear Rec. 2100](./rec2100_linear.md)         | `rec2100-linear`
 [Rec. 2100 PQ](./rec2100_pq.md)                 | `rec2100-pq`
 [Rec. 709](./rec709.md)                         | `rec709`
 [RLAB](./rlab.md)                               | `rlab`
 [RYB](./ryb.md)                                 | `ryb`
 [sRGB](./srgb.md)                               | `srgb`
-[Linear sRGB](./srgb_linear.md)                 | `srgb-linear`
 [UCS](./ucs.md)                                 | `ucs`
 [XYB](./xyb.md)                                 | `xyb`
 [xyY](./xyy.md)                                 | `xyy`
