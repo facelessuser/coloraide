@@ -2,7 +2,7 @@
 
 ## 4.2.1
 
--   **NEW**: Hex output should force gamut mapping even if it is requested to disable it as output will be invalid
+-   **FIX**: Hex output should force gamut mapping even if it is requested to disable it as output will be invalid
     otherwise.
 
 ## 4.2
