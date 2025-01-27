@@ -107,7 +107,8 @@ def plot_slice(
     max_chroma,
     gamut='srgb',
     gmap=None,
-    res=500
+    res=500,
+    scatter_size=16
 ):
     """Plot a slice."""
 
@@ -162,12 +163,14 @@ def main():
     parser.add_argument('--harmony', '-n', default='', help="Color harmony to use.")
     parser.add_argument('--gamut', '-g', default="srgb", help='Gamut to evaluate the color in (default is sRGB).')
     parser.add_argument('--map-colors', '-m', action='store_true', help="Gamut map colors to be within the gamut.")
-    parser.add_argument('--gamut-map-method', '-f', help="Gamut mapping space.")
+    parser.add_argument('--gamut-map-method', '-f', default="raytrace", help="Gamut mapping space.")
     parser.add_argument('--title', '-t', default='', help="Provide a title for the diagram.")
-    parser.add_argument('--resolution', '-r', default="800", help="How densely to render the figure.")
+    parser.add_argument('--resolution', '-r', type=int, default=400, help="How densely to render the figure.")
+    parser.add_argument('--scatter-size', '-S', type=int, default=4, help="Define scatter plot size.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
     parser.add_argument('--height', '-H', type=int, default=800, help="Height")
     parser.add_argument('--width', '-W', type=int, default=800, help="Width")
+
 
     args = parser.parse_args()
 
@@ -209,7 +212,7 @@ def main():
         }
     )
 
-    gmap = None if not args.gamut_map_method else args.gamut_map_method
+    gmap = args.gamut_map_method
 
     maximums = plot_slice(
         fig,
@@ -219,7 +222,8 @@ def main():
         float(args.max_chroma),
         gamut=args.gamut,
         gmap=gmap,
-        res=int(args.resolution)
+        res=args.resolution,
+        scatter_size=int(args.scatter_size)
     )
 
     if args.harmony:
