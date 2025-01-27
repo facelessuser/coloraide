@@ -29,7 +29,8 @@ opaqueness beyond the range of [0, 1]. ColorAide clamps alpha on every set.
 
 There are four features that allow ColorAide to mimic CSS behavior. All four features can be used on demand via special
 parameters when using the appropriate, related functions, but if desired, they can be forced to be enabled for a `Color`
-class. The for features are as follows:
+class. It should be noted that while all of these are defined in the CSS spec, some may not actually be implemented at
+this time. The four features are as follows:
 
 1.  Gamut mapping with `oklch-chroma` is the current CSS recommended approach. It provides a color space with better
     hue preservation, but the space does become a bit more distorted at very wide gamuts and can cause sane gamut
@@ -42,30 +43,31 @@ class. The for features are as follows:
     color with a defined hue, you will interpolate a full 360 degrees. We do not agree with this approach and feel in
     both `shorter` and `longer` hue fix-ups that there should be no arc to interpolate along.
 
-3.  Auto powerless handling in CSS will force hues to be interpolated as powerless if under certain circumstances. This
-    usually happens when a color space's chroma/saturation components are zero. While this behavior does make general
-    sense, and ensures that a user is always treating achromatic colors as achromatic, it cripples the user's control of
-    how a color is interpolated.
+3.  CSS defines a concept of auto powerless handling in CSS will force hues to be interpolated as powerless if under
+    certain circumstances. This usually happens when a color space's chroma/saturation components are zero. While this
+    behavior does make general sense, and ensures that a user is always treating achromatic colors as achromatic, it
+    cripples the user's control of how a color is interpolated.
 
     ColorAide, by default, respects what the user has explicitly specified. If a user has a component set as undefined,
-    it is treated as defined, it is explicitly set to a numerical value, it is treated defined. This makes interpolation
-    very transparent. Only through natural conversions do hues become achromatic. If a user has explicitly defined a
-    hue, they need to use `normalize()` to force ColorAide to update powerless hues.
+    it is treated as undefined, if it is explicitly set to a numerical value, it is treated defined. This makes
+    interpolation very transparent. Only through natural conversions or explicit user intervention do hues become
+    achromatic. If a user has explicitly defined a hue, they need to use `normalize()` to force ColorAide to update
+    powerless hues.
 
     With all of this said, there are times when a user may want to force powerless hues, even when not explicitly
-    defined, in these cases ColorAide can enforce this behavior.
+    defined, in these cases ColorAide can enforce this behavior during interpolation via the `powerless` parameter.
 
-4.  CSS also implements the idea of carrying forward undefined values during interpolation. Essentially, if a user
-    specifies an undefined components, but interpolation is performed in a different color space, after conversion, if
+4.  CSS also defines the idea of carrying forward undefined values during interpolation. Essentially, if a user
+    specifies an undefined component, but interpolation is performed in a different color space, after conversion, if
     the two color spaces have compatible components, the undefined values will be carried forward to the like
     components. This means that an undefined hue in HSL would be carried forward to LCh. A red component in sRGB would
     be carried over to Display P3.
 
     The concept is interesting, but it can sometimes be a bit surprising in some cases. Currently, ColorAide does not
-    enable this by default.
+    enable this by default, but it can be done so via the `carryforward` parameter when interpolating.
 
-If a CSS compatible color object is required, one can be derived from the base `Color` class. All four features can be
-forced as enabled by default as shown below.
+If a CSS compatible color object that has all these features enabled by default is required, one can be derived from the
+base `Color` class. All four features can be forced as enabled by default as shown below.
 
 ```py
 from coloraide import Color as Base
