@@ -32,12 +32,13 @@ It should be noted, that the idea of primary colors stems from the idea that the
 all colors can be made from. If you've spent any time with paint, you will know that not all colors can be made from
 red, yellow, and blue. There are colors like `#!color cyan` and `#!color magenta` that cannot be made with the
 traditional primary colors. The early work that helped create the first color wheels was done with the limited paints
-that was available at the time, and the color harmony concepts were built upon the early RYB color model.
+that was available at the time, and the color harmony concepts were built upon the early RYB color model. Modern
+printers actually use primary colors of `#!color magenta`, `#!color yellow`, and `#!color cyan`.
 
 In modern TVs and monitors, the RYB color model is not used. Paint has subtractive properties, but light has additive
 properties. Electronic screens create all their colors with light based methods that mix red, green, and blue lights. In
-addition, the human eye perceives colors using red, green, and blue light as well. This is As far as light is concerned,
-the primary colors are red, green, and blue.
+addition, the human eye perceives colors using red, green, and blue light as well. As far as light is concerned, the
+primary colors are red, green, and blue.
 
 In reality, we could create a color wheel from any of the various color spaces out there and end up with different
 results. If we were to compose a color wheel based on the common sRGB color space, we could base it off the 3 primary
