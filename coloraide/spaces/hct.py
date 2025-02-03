@@ -109,10 +109,13 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
         # If we are within range, return XYZ
         # If we are closer than last time, save the values
-        delta = abs(xyz[1] - y)
+        f0 = xyz[1] - y
+        delta = abs(f0)
+
+        if delta < threshold:
+            return xyz
+
         if delta < last:
-            if delta <= threshold:
-                return xyz
             best = j
             last = delta
 
@@ -122,8 +125,13 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         # f(j_root) = Y = y / 100
         # f(j) = (y ** 2) / j - 1
         # f'(j) = (2 * y) / j
+        # f'(j) = dx
+        # j = j - f0 / dx
         # ```
-        j = j - (xyz[1] - y) * j / (2 * xyz[1])
+        if xyz[1] == 0 or j == 0:  # pragma: no cover
+            break
+        # `dx` fraction is flipped so we can multiply by the derivative instead of divide
+        j -= f0 * j / (2 * xyz[1])
 
         attempt += 1
 
