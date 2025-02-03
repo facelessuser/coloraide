@@ -2592,6 +2592,25 @@ class TestAlgebra(unittest.TestCase):
         self.assertTrue(math.isnan(alg.sign(-math.nan)))
         self.assertEqual(math.copysign(1, alg.sign(math.nan)), 1)
 
+    def test_solve_newton_and_halley(self):
+        """Test solving with Newton."""
+
+        def f0(x):
+            return 2 * x ** 3 - 3 * x ** 2 - 3 * x + 2
+
+
+        def dx(x):
+            return 6 * x ** 2 - 6 * x - 3
+
+
+        def dx2(x):
+            return 12 * x - 6
+
+        # Newton
+        self.assertEqual(alg.solve_newton(1, f0, dx), (0.5, True))
+        # Halley
+        self.assertEqual(alg.solve_newton(1, f0, dx, dx2), (0.5, True))
+
 
 def test_pprint(capsys):
     """Test matrix print."""
