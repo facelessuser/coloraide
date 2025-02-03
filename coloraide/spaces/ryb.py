@@ -32,14 +32,14 @@ def srgb_to_ryb(rgb: Vector, cube_t: Matrix, cube: Matrix, biased: bool) -> Vect
     # Calculate the RYB value
     ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube)
     # Remove smoothstep easing if "biased" is enabled.
-    return [_solve_bezier(t, -2, 3, 0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
+    return [_solve_bezier(t, -2.0, 3.0, 0.0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 
 
 def ryb_to_srgb(ryb: Vector, cube_t: Matrix, biased: bool) -> Vector:
     """Convert RYB to sRGB."""
 
     # Bias interpolation towards corners if "biased" enable. Bias is a smoothstep easing function.
-    return alg.lerp3d(cube_t, [_bezier(t, -2, 3, 0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb)
+    return alg.lerp3d(cube_t, [_bezier(-2.0, 3.0, 0.0)(t) if 0 <= t <= 1 else t for t in ryb] if biased else ryb)
 
 
 class RYB(Regular, Space):

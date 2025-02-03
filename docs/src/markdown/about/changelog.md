@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.2
+
+-   **FIX**: Speed up solving of cubic bezier for easing functions.
+
 ## 4.2.1
 
 -   **FIX**: Hex output should force gamut mapping even if it is requested to disable it as output will be invalid

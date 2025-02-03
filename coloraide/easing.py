@@ -40,14 +40,14 @@ This greatly simplifies things and makes it faster.
 """
 from __future__ import annotations
 import functools
-import math
+from . import algebra as alg
 from typing import Callable
 
 EPSILON = 1e-6
 MAX_ITER = 8
 
 
-def _bezier(t: float, a: float, b: float, c: float) -> float:
+def _bezier(a: float, b: float, c: float, y: float = 0.0) -> Callable[[float], float]:
     """
     Calculate the bezier point.
 
@@ -55,13 +55,13 @@ def _bezier(t: float, a: float, b: float, c: float) -> float:
     Knowing this we can simplify the equation by precalculating them in.
     """
 
-    return a * t ** 3 + b * t ** 2 + c * t
+    return lambda x: a * x ** 3 + b * x ** 2 + c * x - y
 
 
-def _bezier_derivative(t: float, a: float, b: float, c: float) -> float:
+def _bezier_derivative(a: float, b: float, c: float) -> Callable[[float], float]:
     """Derivative of curve."""
 
-    return 3 * a * t ** 2 + 2 * b * t + c
+    return lambda x: 3 * a * x ** 2 + 2 * b * x + c
 
 
 def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
@@ -75,41 +75,27 @@ def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
     # Try Newtons method to see if we can find a suitable value
     x = 0.0
     t = 0.5
-    last = math.nan
-    for _ in range(MAX_ITER):
-        # See how close we are to the desired `x`
-        x = _bezier(t, a, b, c) - target
+    f0 = _bezier(a, b, c, y=target)
+    t, converged = alg.solve_newton(
+        t,
+        f0,
+        _bezier_derivative(a, b, c),
+        maxiter=MAX_ITER
+    )
 
-        # Get the derivative, but bail if it is too small,
-        # we will just keep looping otherwise.
-        dx = _bezier_derivative(t, a, b, c)
-
-        # Derivative is zero, we can't continue
-        if dx == 0:  # pragma: no cover
-            break
-
-        # Calculate new time and try again
-        t -= (x / dx)
-
-        # We converged on an solution
-        if t == last:  # pragma: no cover
-            return t
-
-        last = t
-
-    # We didn't fully converge but we are close, closer than our bisect epsilon
-    if abs(_bezier(t, a, b, c) - target) < EPSILON:
+    # We converged or we are close enough
+    if converged or abs(t - target) < EPSILON:
         return t
 
     # We couldn't achieve our desired accuracy with Newton,
     # so bisect at lower accuracy until we arrive at a suitable value
     low, high = 0.0, 1.0
     t = target
-    while abs(high - low) > EPSILON:
-        x = _bezier(t, a, b, c)
-        if abs(x - target) < EPSILON:
+    while abs(high - low) >= EPSILON:
+        x = f0(t)
+        if abs(x) < EPSILON:
             return t
-        if x > target:
+        if x > 0:
             high = t
         else:
             low = t
@@ -187,7 +173,7 @@ def _calc_bezier(
     t = _solve_bezier(target, a[0], b[0], c[0])
 
     # Use the found `t` to locate the `y`
-    y = _bezier(t, a[1], b[1], c[1])
+    y = _bezier(a[1], b[1], c[1])(t)
     return y
 
 

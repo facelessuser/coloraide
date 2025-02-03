@@ -209,6 +209,66 @@ def polar_to_rect(c: float, h: float) -> tuple[float, float]:
     return a, b
 
 
+def solve_newton(
+    x0: float,
+    f0: Callable[[float], float],
+    dx: Callable[[float], float],
+    dx2: Callable[[float], float] | None = None,
+    maxiter: int = 8,
+    epsilon: float = 1e-12
+) -> tuple[float, bool | None]:
+    """
+    Solve equation using Newton's method.
+
+    If the second derivative is given, Halley's method will be used as an additional step.
+
+    ```
+    newton = f0 / dx
+    halley = (f0 * dx) / (dx ** 2 - 0.5 * f0 * dx)
+    ```
+
+    Algebraically, we can pull the Newton stop out of the Halley method into two separate steps
+    that can be applied on top of each other.
+
+    ```
+    Step1: newton = f0 / dx
+    Step2: halley = newton * (1 - 0.5 * newton * d2 / d1)
+    ```
+    """
+
+    for _ in range(maxiter):
+        # Get result form equation when setting value to expected result
+        f = f0(x0)
+
+        # If the result is zero, we've converged
+        if f == 0:
+            return x0, True
+
+        # Cannot find a solution if derivative is zero
+        d1 = dx(x0)
+        if d1 == 0:
+            return x0, None
+
+        # Calculate new, hopefully closer value with Newton's method
+        newton =  f / d1
+
+        # If second derivative is provided, apply the additional Halley's method step
+        if dx2 is not None:
+            d2 = dx2(x0)
+            value = (0.5 * newton * d2) / d1
+            # If the value is greater than one, the solution is deviating away from the newton step
+            if abs(value) < 1:
+                newton *= 1 - value
+
+        # If change is under our epsilon, we can consider the result converged.
+        prev = x0
+        x0 -= newton
+        if abs(x0 - prev) < epsilon:
+            return x0, True
+
+    return x0, False
+
+
 ################################
 # Interpolation and splines
 ################################
