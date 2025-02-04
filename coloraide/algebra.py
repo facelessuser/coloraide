@@ -223,16 +223,16 @@ def solve_newton(
     If the second derivative is given, Halley's method will be used as an additional step.
 
     ```
-    newton = f0 / dx
-    halley = (f0 * dx) / (dx ** 2 - 0.5 * f0 * dx)
+    newton = f0 / d1
+    halley = (f0 * d1) / (d1 ** 2 - 0.5 * f0 * d2)
     ```
 
     Algebraically, we can pull the Newton stop out of the Halley method into two separate steps
     that can be applied on top of each other.
 
     ```
-    Step1: newton = f0 / dx
-    Step2: halley = newton * (1 - 0.5 * newton * d2 / d1)
+    Step1: newton = f0 / d1
+    Step2: halley = newton / (1 - 0.5 * newton * d2 / d1)
     ```
     """
 
@@ -258,7 +258,7 @@ def solve_newton(
             value = (0.5 * newton * d2) / d1
             # If the value is greater than one, the solution is deviating away from the newton step
             if abs(value) < 1:
-                newton *= 1 - value
+                newton /= 1 - value
 
         # If change is under our epsilon, we can consider the result converged.
         prev = x0
