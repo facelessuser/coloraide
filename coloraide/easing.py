@@ -87,8 +87,7 @@ def _solve_bezier(
         t,
         f0,
         _bezier_derivative(a, b, c),
-        maxiter=maxiter,
-        epsilon=eps
+        maxiter=maxiter
     )
 
     # We converged or we are close enough
