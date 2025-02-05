@@ -11,7 +11,7 @@ from .. import algebra as alg
 from ..channels import Channel
 from ..cat import WHITES
 from ..types import Vector, Matrix
-from ..easing import _bezier, _solve_bezier
+from ..easing import _bezier
 
 # In terms of RGB
 GOSSET_CHEN_CUBE = [
@@ -32,7 +32,7 @@ def srgb_to_ryb(rgb: Vector, cube_t: Matrix, cube: Matrix, biased: bool) -> Vect
     # Calculate the RYB value
     ryb = alg.ilerp3d(cube_t, rgb, vertices_t=cube)
     # Remove smoothstep easing if "biased" is enabled.
-    return [_solve_bezier(t, -2.0, 3.0, 0.0) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
+    return [_bezier(2, -3, 2)(t) if 0 <= t <= 1 else t for t in ryb] if biased else ryb
 
 
 def ryb_to_srgb(ryb: Vector, cube_t: Matrix, biased: bool) -> Vector:

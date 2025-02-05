@@ -243,6 +243,8 @@ def solve_newton(
     yn = xn - f(xn) / f'(xn)
     ostrowski = yn - f(xn) / (f(xn) - 2 * f(yn)) * (f(yn) / f'(xn))
     ```
+
+    Return result along with True if converged, False if did not converge, None if could not converge.
     """
 
     for _ in range(maxiter):
@@ -281,9 +283,9 @@ def solve_newton(
                 return x0, True
             fy_x2 = 2 * fy
             if fy_x2 == fx:
-                return x0, False
+                return x0, None
             x1 = x0 - fx / (fx - fy_x2) * (fy / d1)
-            if abs(x1 - x0) < epsilon:
+            if abs(x1 - prev) < epsilon:
                 return x1, True
             x0 = x1
 

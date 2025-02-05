@@ -43,7 +43,7 @@ import functools
 from . import algebra as alg
 from typing import Callable
 
-EPSILON = 1e-6
+EPSILON = 1e-12
 MAX_ITER = 8
 
 
@@ -87,7 +87,9 @@ def _solve_bezier(
         t,
         f0,
         _bezier_derivative(a, b, c),
-        maxiter=maxiter
+        maxiter=maxiter,
+        epsilon=eps,
+        ostrowski=True
     )
 
     # We converged or we are close enough

@@ -2,6 +2,7 @@
 
 ## 4.2.2
 
+-   **FIX**: More precise inverse of RYB Biased.
 -   **FIX**: Speed up solving of cubic bezier for easing functions.
 -   **FIX**: Protect against possible divide by zero in HCT reverse transform.
 
