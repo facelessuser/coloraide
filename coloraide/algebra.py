@@ -209,6 +209,40 @@ def polar_to_rect(c: float, h: float) -> tuple[float, float]:
     return a, b
 
 
+def solve_bisect(
+    low:float,
+    high: float,
+    f: Callable[[float], float],
+    start: float | None = None,
+    maxiter: int = 0,
+    epsilon: float = 1e-12
+) -> tuple[float, bool]:
+    """
+    Apply the bisect method to converge upon an answer.
+
+    Return the best answer based on the specified limits and also
+    return a boolen indicating if we confidently converged.
+    """
+
+    t = (high + low) * 0.5 if start is None else start
+    maxiter = 0
+
+    steps = 0
+    x = math.inf
+    while abs(high - low) >= epsilon and (not maxiter or steps < maxiter):
+        x = f(t)
+        if abs(x) < epsilon:
+            return t, True
+        if x > 0:
+            high = t
+        else:
+            low = t
+        t = (high + low) * 0.5
+        steps += 1
+
+    return t, abs(x) < epsilon
+
+
 def solve_newton(
     x0: float,
     f0: Callable[[float], float],

@@ -80,7 +80,6 @@ def _solve_bezier(
     """
 
     # Try Newtons method to see if we can find a suitable value
-    x = 0.0
     t = 0.5
     f0 = _bezier(a, b, c, y=target)
     t, converged = alg.solve_newton(
@@ -98,17 +97,7 @@ def _solve_bezier(
 
     # We couldn't achieve our desired accuracy with Newton,
     # so bisect at lower accuracy until we arrive at a suitable value
-    low, high = 0.0, 1.0
-    t = target
-    while abs(high - low) >= eps:
-        x = f0(t)
-        if abs(x) < eps:
-            return t
-        if x > 0:
-            high = t
-        else:
-            low = t
-        t = (high + low) * 0.5
+    t, converged = alg.solve_bisect(0.0, 1.0, f0, start=target, maxiter=maxiter, epsilon=eps)
 
     # Just return whatever we got closest to
     return t  # pragma: no cover
