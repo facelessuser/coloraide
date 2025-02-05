@@ -22,6 +22,12 @@ FORCE_OWN_GAMUT = {'ryb', 'ryb-biased'}
 CYL_GAMUT = {'hpluv', 'okhsl', 'okhsv'}
 
 
+def get_face_color(cmap, simplex):
+    """Get best color."""
+
+    return Color.average([cmap[simplex[0]], cmap[simplex[1]], cmap[simplex[2]]], space='srgb').to_string(hex=True)
+
+
 def create_custom_hsl(gamut):
     """Create a custom color object that has access to a special `hsl-gamut` space to map surface in."""
 
@@ -99,7 +105,7 @@ def create_custom_rgb(gamut):
     return ColorRGB
 
 
-def create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity):
+def create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity):
     """Create the 3D renders."""
 
     i, j, k = tri.simplices.T
@@ -111,7 +117,8 @@ def create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity):
             i=i,
             j=j,
             k=k,
-            vertexcolor=cmap
+            vertexcolor=cmap if not faces else None,
+            facecolor=[get_face_color(cmap, t) if not fcolor else fcolor for t in tri.simplices] if faces else None
         )
         mesh.update(hoverinfo='skip')
         mesh.update(opacity=opacity)
@@ -148,7 +155,7 @@ def create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity):
         fig.add_traces([lines])
 
 
-def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, ecolor, gmap):
+def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, faces, ecolor, fcolor, gmap):
     """
     Plot cylindrical disc on either top or bottom of an RGB cylinder.
 
@@ -229,7 +236,7 @@ def cyl_disc(fig, ColorCyl, space, gamut, location, resolution, opacity, edges, 
     # Calculate triangles
     tri = Delaunay(list(zip(u, v)))
 
-    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
+    create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity)
 
 
 def store_coords(c, x, y, z, flags):
@@ -274,7 +281,7 @@ def store_coords(c, x, y, z, flags):
         z.append(c[2])
 
 
-def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap):
+def render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap):
     """
     Renders the color space using an RGB cylinder that is then mapped to the given space.
 
@@ -347,20 +354,20 @@ def render_space_cyl(fig, space, gamut, resolution, opacity, edges, ecolor, gmap
     # Calculate the triangles
     tri = Delaunay(list(zip(u, v)))
 
-    create3d(fig, x, y, z, tri, cmap, edges, ecolor, opacity)
+    create3d(fig, x, y, z, tri, cmap, edges, faces, ecolor, fcolor, opacity)
 
     # Generate tops for spaces that do not normally get tops automatically.
     if flags['is_hwbish'] or space in CYL_GAMUT:
-        cyl_disc(fig, ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, ecolor, gmap)
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'top', resolution, opacity, edges, faces, ecolor, fcolor, gmap)
 
     if flags['is_cyl'] and not flags['is_labish'] and not flags['is_lchish']:
         # We normally get a bottom except in the case of HWB.
-        cyl_disc(fig, ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, ecolor, gmap)
+        cyl_disc(fig, ColorCyl, space, gamut_space, 'bottom', resolution, opacity, edges, faces, ecolor, fcolor, gmap)
 
     return fig
 
 
-def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, ecolor, gmap):
+def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opacity, edges, faces, ecolor, fcolor, gmap):
     """Render the RGB rectangular face."""
 
     x = []
@@ -392,10 +399,10 @@ def render_rect_face(fig, colorrgb, s1, s2, dim, space, gamut, resolution, opaci
 
     # Calculate triangles
     tri = Delaunay(list(zip(locals().get(dim[0]), locals().get(dim[1]))))
-    create3d(fig, X, Y, Z, tri, cmap, edges, ecolor, opacity)
+    create3d(fig, X, Y, Z, tri, cmap, edges, faces, ecolor, fcolor, opacity)
 
 
-def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
+def render_space_rect(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap):
     """Render rectangular space."""
 
     if space in FORCE_OWN_GAMUT:
@@ -423,16 +430,16 @@ def render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap):
     s2 = colorrgb.steps([cg, cc], steps=res, space=gamut)
     s3 = colorrgb.steps([cr, cm], steps=res, space=gamut)
     s4 = colorrgb.steps([ck, cb], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
-    render_rect_face(fig, colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
-    render_rect_face(fig, colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
-    render_rect_face(fig, colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s3, ('y', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
+    render_rect_face(fig, colorrgb, s3, s4, ('x', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
+    render_rect_face(fig, colorrgb, s4, s2, ('y', 'z'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
     s1 = colorrgb.steps([cb, cc], steps=res, space=gamut)
     s2 = colorrgb.steps([cm, cw], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
     s1 = colorrgb.steps([ck, cg], steps=res, space=gamut)
     s2 = colorrgb.steps([cr, cy], steps=res, space=gamut)
-    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, ecolor, gmap)
+    render_rect_face(fig, colorrgb, s1, s2, ('x', 'y'), space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
 
     return fig
 
@@ -445,7 +452,9 @@ def plot_gamut_in_space(
     resolution=200,
     opacity=1.0,
     edges=False,
+    faces=False,
     edge_color='#333333',
+    face_color='',
     gmap=None,
     size=(800, 800),
     camera=None,
@@ -547,10 +556,10 @@ def plot_gamut_in_space(
     target = Color.CS_MAP[space]
     if is_regular:
         # Use a rectangular space for RGB-ish spaces to give a sharper cube
-        return render_space_rect(fig, space, gamut, resolution, opacity, edges, edgecolor, gmap)
+        return render_space_rect(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
     else:
         # Render the space plot using a cylindrical space as the gamut space
-        return render_space_cyl(fig, space, gamut, resolution, opacity, edges, edgecolor, gmap)
+        return render_space_cyl(fig, space, gamut, resolution, opacity, edges, faces, edgecolor, face_color, gmap)
 
 
 def plot_gamut_frames(fig, space, gamut_wires, gmap):
@@ -569,6 +578,8 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
         opacity = 0.2
         ecolor = None
         edges = False
+        faces = False
+        fcolor = ''
         if color.startswith('edge('):
             parts = [c.strip() for c in color[5:-1].split(',')]
             if len(parts) == 1:
@@ -586,10 +597,10 @@ def plot_gamut_frames(fig, space, gamut_wires, gmap):
         is_regular = isinstance(target, Regular)
         if is_regular:
             # Use a rectangular space for RGB-ish spaces to give a sharper cube
-            render_space_rect(fig, space, gamut, res, opacity, edges, ecolor, gmap)
+            render_space_rect(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
         else:
             # Render the space plot using a cylindrical space as the gamut space
-            render_space_cyl(fig, space, gamut, res, opacity, edges, ecolor, gmap)
+            render_space_cyl(fig, space, gamut, res, opacity, edges, faces, ecolor, fcolor, gmap)
 
 
 def plot_colors(fig, space, gamut, gmap_colors, colors, gmap):
@@ -770,10 +781,16 @@ def main():
         )
     )
     parser.add_argument('--edges', '-e', action="store_true", help="Plot edges.")
+    parser.add_argument('--faces', '-f', action="store_true", help="Colorize faces for a low-res poly look.")
     parser.add_argument(
         '--edge-color',
         default="",
         help="Edge color. If no color is specified, edges will be based on vertices."
+    )
+    parser.add_argument(
+        '--face-color',
+        default="",
+        help="Face color. If no color is specified, faces will be calculated as the average of the vertices."
     )
     parser.add_argument('--dark', action="store_true", help="Use dark theme.")
     parser.add_argument('--output', '-o', default='', help='Output file.')
@@ -812,7 +829,9 @@ def main():
         resolution=res,
         opacity=args.opacity,
         edges=args.edges,
+        faces=args.faces,
         edge_color=args.edge_color,
+        face_color=args.face_color,
         gmap=gmap,
         size=(args.width, args.height),
         camera={'a': args.azimuth, 'e': args.elevation, 'r': args.distance},
