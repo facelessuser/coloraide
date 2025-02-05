@@ -71,6 +71,7 @@ Formatter
 GMA
 Gosset
 Gossett
+Grau
 HCT
 HDR
 HLG
@@ -129,6 +130,7 @@ MINDE
 MacAdam
 Machado
 Matcher
+Miquel
 MkDocs
 Mollon
 Monochromacy
@@ -148,6 +150,7 @@ Okhsv
 Okl
 Oklab
 Oklrab
+Ostrowski
 Ottosson
 PQ
 Perceptibility
@@ -285,6 +288,7 @@ mixin
 mixins
 monochromacy
 monotonicity
+nd
 nm
 oRGB
 opRGB

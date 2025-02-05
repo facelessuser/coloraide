@@ -215,33 +215,42 @@ def solve_newton(
     dx: Callable[[float], float],
     dx2: Callable[[float], float] | None = None,
     maxiter: int = 8,
-    epsilon: float = 1e-12
+    epsilon: float = 1e-12,
+    ostrowski: bool = False
 ) -> tuple[float, bool | None]:
     """
     Solve equation using Newton's method.
 
     If the second derivative is given, Halley's method will be used as an additional step.
+    Newton provides 2nd order convergence and Halley provides 3rd order convergence.
 
     ```
-    newton = f0 / d1
-    halley = (f0 * d1) / (d1 ** 2 - 0.5 * f0 * d2)
+    newton = yn = xn - f(xn) / f'(xn)
+    halley = xn - (f(xn) * f'(xn)) / (f'(xn) ** 2 - 0.5 * f(xn) * f''(xn))
     ```
 
     Algebraically, we can pull the Newton stop out of the Halley method into two separate steps
     that can be applied on top of each other.
 
     ```
-    Step1: newton = f0 / d1
-    Step2: halley = newton / (1 - 0.5 * newton * d2 / d1)
+    Step1: yn = f(xn) / f'(xn)
+    Step2: halley = xn - yn / (1 - 0.5 * yn * f''(xn) / f'(xn))
+    ```
+
+    If Ostrowski method is enabled, only one derivative is needed, but you can get 4th order convergence.
+
+    ```
+    yn = xn - f(xn) / f'(xn)
+    ostrowski = yn - f(xn) / (f(xn) - 2 * f(yn)) * (f(yn) / f'(xn))
     ```
     """
 
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
-        f = f0(x0)
+        fx = f0(x0)
 
         # If the result is zero, we've converged
-        if f == 0:
+        if fx == 0:
             return x0, True
 
         # Cannot find a solution if derivative is zero
@@ -250,10 +259,10 @@ def solve_newton(
             return x0, None
 
         # Calculate new, hopefully closer value with Newton's method
-        newton =  f / d1
+        newton =  fx / d1
 
         # If second derivative is provided, apply the additional Halley's method step
-        if dx2 is not None:
+        if dx2 is not None and not ostrowski:
             d2 = dx2(x0)
             value = (0.5 * newton * d2) / d1
             # If the value is greater than one, the solution is deviating away from the newton step
@@ -265,6 +274,18 @@ def solve_newton(
         x0 -= newton
         if abs(x0 - prev) < epsilon:
             return x0, True
+
+        if ostrowski:
+            fy = f0(x0)
+            if fy == 0:
+                return x0, True
+            fy_x2 = 2 * fy
+            if fy_x2 == fx:
+                return x0, False
+            x1 = x0 - fx / (fx - fy_x2) * (fy / d1)
+            if abs(x1 - x0) < epsilon:
+                return x1, True
+            x0 = x1
 
     return x0, False
 

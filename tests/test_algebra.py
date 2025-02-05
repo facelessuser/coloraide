@@ -2610,6 +2610,8 @@ class TestAlgebra(unittest.TestCase):
         self.assertEqual(alg.solve_newton(1, f0, dx), (0.5, True))
         # Halley
         self.assertEqual(alg.solve_newton(1, f0, dx, dx2), (0.5, True))
+        # Ostrowski
+        self.assertEqual(alg.solve_newton(1, f0, dx, ostrowski=True), (0.5, True))
 
 
 def test_pprint(capsys):
