@@ -250,6 +250,7 @@ def solve_newton(
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
         fx = f0(x0)
+        prev = x0
 
         # If the result is zero, we've converged
         if fx == 0:
@@ -272,7 +273,6 @@ def solve_newton(
                 newton /= 1 - value
 
         # If change is under our epsilon, we can consider the result converged.
-        prev = x0
         x0 -= newton
         if abs(x0 - prev) < epsilon:
             return x0, True
@@ -284,10 +284,10 @@ def solve_newton(
             fy_x2 = 2 * fy
             if fy_x2 == fx:
                 return x0, None
-            x1 = x0 - fx / (fx - fy_x2) * (fy / d1)
-            if abs(x1 - prev) < epsilon:
-                return x1, True
-            x0 = x1
+            x0 -= fx / (fx - fy_x2) * (fy / d1)
+
+            if abs(x0 - prev) < epsilon:
+                return x0, True
 
     return x0, False
 
