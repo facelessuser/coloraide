@@ -69,8 +69,8 @@ def _solve_bezier(
     a: float,
     b: float,
     c: float,
-    eps=EPSILON,
-    maxiter=MAX_ITER
+    eps: float = EPSILON,
+    maxiter: int = MAX_ITER
 ) -> float:
     """
     Solve curve to find a `t` that satisfies our desired `x`.
