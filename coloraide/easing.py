@@ -64,7 +64,14 @@ def _bezier_derivative(a: float, b: float, c: float) -> Callable[[float], float]
     return lambda x: 3 * a * x ** 2 + 2 * b * x + c
 
 
-def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
+def _solve_bezier(
+    target: float,
+    a: float,
+    b: float,
+    c: float,
+    eps=EPSILON,
+    maxiter=MAX_ITER
+) -> float:
     """
     Solve curve to find a `t` that satisfies our desired `x`.
 
@@ -80,20 +87,21 @@ def _solve_bezier(target: float, a: float, b: float, c: float) -> float:
         t,
         f0,
         _bezier_derivative(a, b, c),
-        maxiter=MAX_ITER
+        maxiter=maxiter,
+        epsilon=eps
     )
 
     # We converged or we are close enough
-    if converged or abs(t - target) < EPSILON:
+    if converged or abs(t - target) < eps:
         return t
 
     # We couldn't achieve our desired accuracy with Newton,
     # so bisect at lower accuracy until we arrive at a suitable value
     low, high = 0.0, 1.0
     t = target
-    while abs(high - low) >= EPSILON:
+    while abs(high - low) >= eps:
         x = f0(t)
-        if abs(x) < EPSILON:
+        if abs(x) < eps:
             return t
         if x > 0:
             high = t
