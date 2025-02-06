@@ -32,7 +32,7 @@ class TestCubicBezier(unittest.TestCase):
         """
 
         ease_in_out_expo = cubic_bezier(1.000, 0.000, 0.000, 1.000)
-        self.assertEqual(ease_in_out_expo(0.43), 0.14556294236066833)
+        self.assertEqual(ease_in_out_expo(0.43), 0.1453658094943762)
 
 
 class TestEasingMethods(unittest.TestCase):

@@ -40,11 +40,9 @@ This greatly simplifies things and makes it faster.
 """
 from __future__ import annotations
 import functools
+import math
 from . import algebra as alg
 from typing import Callable
-
-EPSILON = 1e-12
-MAX_ITER = 8
 
 
 def _bezier(a: float, b: float, c: float, y: float = 0.0) -> Callable[[float], float]:
@@ -69,8 +67,9 @@ def _solve_bezier(
     a: float,
     b: float,
     c: float,
-    eps: float = EPSILON,
-    maxiter: int = MAX_ITER
+    rtol: float = 1e-12,
+    atol: float = 9e-13,
+    maxiter: int = 8
 ) -> float:
     """
     Solve curve to find a `t` that satisfies our desired `x`.
@@ -87,17 +86,18 @@ def _solve_bezier(
         f0,
         _bezier_derivative(a, b, c),
         maxiter=maxiter,
-        epsilon=eps,
+        rtol=rtol,
+        atol=atol,
         ostrowski=True
     )
 
     # We converged or we are close enough
-    if converged or abs(t - target) < eps:
+    if converged or math.isclose(t, target, rel_tol=rtol, abs_tol=atol):
         return t
 
     # We couldn't achieve our desired accuracy with Newton,
     # so bisect at lower accuracy until we arrive at a suitable value
-    t, converged = alg.solve_bisect(0.0, 1.0, f0, start=target, maxiter=maxiter, epsilon=eps)
+    t, converged = alg.solve_bisect(0.0, 1.0, f0, start=target, maxiter=maxiter, rtol=rtol, atol=atol)
 
     # Just return whatever we got closest to
     return t  # pragma: no cover

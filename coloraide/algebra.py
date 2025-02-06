@@ -212,44 +212,48 @@ def polar_to_rect(c: float, h: float) -> tuple[float, float]:
 def solve_bisect(
     low:float,
     high: float,
-    f: Callable[[float], float],
+    f: Callable[..., float],
+    args: tuple[Any] | tuple[()] = (),
     start: float | None = None,
-    maxiter: int = 0,
-    epsilon: float = 1e-12
+    maxiter: int = 100,
+    rtol: float = 1e-12,
+    atol: float = 9e-13,
 ) -> tuple[float, bool]:
     """
     Apply the bisect method to converge upon an answer.
 
     Return the best answer based on the specified limits and also
-    return a boolen indicating if we confidently converged.
+    return a boolean indicating if we confidently converged.
     """
 
     t = (high + low) * 0.5 if start is None else start
-    maxiter = 0
 
-    steps = 0
-    x = math.inf
-    while abs(high - low) >= epsilon and (not maxiter or steps < maxiter):
-        x = f(t)
-        if abs(x) < epsilon:
+    x = math.nan
+    for _ in range(maxiter):
+        x = f(t, *args) if args else f(t)
+        if abs(x) == 0:
             return t, True
         if x > 0:
             high = t
         else:
             low = t
         t = (high + low) * 0.5
-        steps += 1
 
-    return t, abs(x) < epsilon
+        if math.isclose(low, high, rel_tol=rtol, abs_tol=atol):
+            break
+
+    return t, abs(x) < atol
 
 
 def solve_newton(
     x0: float,
-    f0: Callable[[float], float],
-    dx: Callable[[float], float],
-    dx2: Callable[[float], float] | None = None,
-    maxiter: int = 8,
-    epsilon: float = 1e-12,
+    f0: Callable[..., float],
+    dx: Callable[..., float],
+    dx2: Callable[..., float] | None = None,
+    args: tuple[Any] | tuple[()] = (),
+    maxiter: int = 50,
+    rtol: float = 1e-12,
+    atol: float = 9e-13,
     ostrowski: bool = False
 ) -> tuple[float, bool | None]:
     """
@@ -283,7 +287,7 @@ def solve_newton(
 
     for _ in range(maxiter):
         # Get result form equation when setting value to expected result
-        fx = f0(x0)
+        fx = f0(x0, *args) if args else f0(x0)
         prev = x0
 
         # If the result is zero, we've converged
@@ -291,16 +295,16 @@ def solve_newton(
             return x0, True
 
         # Cannot find a solution if derivative is zero
-        d1 = dx(x0)
+        d1 = dx(x0, *args) if args else dx(x0)
         if d1 == 0:
             return x0, None
 
         # Calculate new, hopefully closer value with Newton's method
         newton =  fx / d1
 
-        # If second derivative is provided, apply the additional Halley's method step
+        # If second derivative is provided, apply the Halley's method step: 3rd order convergence
         if dx2 is not None and not ostrowski:
-            d2 = dx2(x0)
+            d2 = dx2(x0, *args) if args else dx2(x0)
             value = (0.5 * newton * d2) / d1
             # If the value is greater than one, the solution is deviating away from the newton step
             if abs(value) < 1:
@@ -308,11 +312,12 @@ def solve_newton(
 
         # If change is under our epsilon, we can consider the result converged.
         x0 -= newton
-        if abs(x0 - prev) < epsilon:
+        if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
             return x0, True
 
+        # Use Ostrowski method: 4th order convergence
         if ostrowski:
-            fy = f0(x0)
+            fy = f0(x0, *args) if args else f0(x0)
             if fy == 0:
                 return x0, True
             fy_x2 = 2 * fy
@@ -320,7 +325,7 @@ def solve_newton(
                 return x0, None
             x0 -= fx / (fx - fy_x2) * (fy / d1)
 
-            if abs(x0 - prev) < epsilon:
+            if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
                 return x0, True
 
     return x0, False
