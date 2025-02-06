@@ -94,15 +94,13 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     rtol = 2e-12
     atol = 9e-13
 
-    max_attempt = 16
-
-    attempt = 0
+    maxiter = 16
     last = math.inf
     best = j
     xyz = [0.0] * 3
 
     # Try to find a J such that the returned y matches the returned y of the L*
-    while attempt < max_attempt:
+    for _ in range(maxiter):
         prev = j
         xyz[:] = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
@@ -137,7 +135,6 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         if j == 0 or abs(prev - j) < atol:  # pragma: no cover
             break
 
-        attempt += 1
 
     # We could not acquire the precision we desired, return our closest attempt.
     xyz[:] = cam16_to_xyz_d65(J=best, C=c, h=h, env=env)
