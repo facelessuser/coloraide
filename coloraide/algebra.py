@@ -239,7 +239,7 @@ def solve_bisect(
             low = t
         t = (high + low) * 0.5
 
-        if math.isclose(low, high, rel_tol=rtol, abs_tol=atol):
+        if math.isclose(low, high, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
             break
 
     return t, abs(x) < atol
@@ -321,11 +321,11 @@ def solve_newton(
             if fy == 0:
                 return x0, True
             fy_x2 = 2 * fy
-            if fy_x2 == fx:
+            if fy_x2 == fx:  # pragma: no cover
                 return x0, None
             x0 -= fx / (fx - fy_x2) * (fy / d1)
 
-            if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
+            if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
                 return x0, True
 
     return x0, False
