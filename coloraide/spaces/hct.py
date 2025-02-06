@@ -91,8 +91,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     else:
         j = 9.514440756550361e-06 * t * t + 0.08693057439788597 * t -21.928975842194614
 
-    rtol = 2e-12
-    atol = 9e-13
+    epsilon = 2e-12
 
     maxiter = 16
     last = math.inf
@@ -109,7 +108,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         f0 = xyz[1] - y
         delta = abs(f0)
 
-        if delta < atol:
+        if delta < epsilon:
             return xyz
 
         if delta < last:
@@ -132,7 +131,7 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
 
         # If J is zero, the next round will yield zero
         # If values are too close, we'll be better off using bisect
-        if j == 0 or abs(prev - j) < atol:  # pragma: no cover
+        if j == 0 or abs(prev - j) < epsilon:  # pragma: no cover
             break
 
 

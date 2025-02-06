@@ -215,7 +215,7 @@ def solve_bisect(
     f: Callable[..., float],
     args: tuple[Any] | tuple[()] = (),
     start: float | None = None,
-    maxiter: int = 100,
+    maxiter: int = 50,
     rtol: float = 1e-12,
     atol: float = 9e-13,
 ) -> tuple[float, bool]:
