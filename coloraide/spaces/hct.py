@@ -87,32 +87,31 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
     # Try to start with a reasonable initial guess for J
     # Calculated by curve fitting J vs T.
     if t > 0:
-        j = 0.00379058511492914 * t ** 2 + 0.608983189401032 * t + 0.9155088574762233
+        j = 0.00379058511492914 * t * t + 0.608983189401032 * t + 0.9155088574762233
     else:
-        j = 9.514440756550361e-06 * t ** 2 + 0.08693057439788597 * t -21.928975842194614
+        j = 9.514440756550361e-06 * t * t + 0.08693057439788597 * t -21.928975842194614
 
-    # Threshold of how close is close enough, and max number of attempts.
-    # More precision and more attempts means more time spent iterating.
-    # Higher required precision gives more accuracy but also increases the
-    # chance of not hitting the goal. 2e-12 allows us to convert round trip
-    # with reasonable accuracy of six decimal places or more.
-    threshold = 2e-12
-    max_attempt = 15
+    rtol = 2e-12
+    atol = 9e-13
+
+    max_attempt = 16
 
     attempt = 0
     last = math.inf
     best = j
+    xyz = [0.0] * 3
 
     # Try to find a J such that the returned y matches the returned y of the L*
-    while attempt <= max_attempt:
-        xyz = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
+    while attempt < max_attempt:
+        prev = j
+        xyz[:] = cam16_to_xyz_d65(J=j, C=c, h=h, env=env)
 
         # If we are within range, return XYZ
         # If we are closer than last time, save the values
         f0 = xyz[1] - y
         delta = abs(f0)
 
-        if delta < threshold:
+        if delta < atol:
             return xyz
 
         if delta < last:
@@ -128,15 +127,27 @@ def hct_to_xyz(coords: Vector, env: Environment) -> Vector:
         # f'(j) = dx
         # j = j - f0 / dx
         # ```
-        if xyz[1] == 0 or j == 0:  # pragma: no cover
-            break
+
+        # Newton: 2nd order convergence
         # `dx` fraction is flipped so we can multiply by the derivative instead of divide
-        j -= f0 * j / (2 * xyz[1])
+        j -= f0 * alg.zdiv(j, 2 * xyz[1])
+
+        # If J is zero, the next round will yield zero
+        # If values are too close, we'll be better off using bisect
+        if j == 0 or abs(prev - j) < atol:  # pragma: no cover
+            break
 
         attempt += 1
 
     # We could not acquire the precision we desired, return our closest attempt.
-    return cam16_to_xyz_d65(J=best, C=c, h=h, env=env)  # pragma: no cover
+    xyz[:] = cam16_to_xyz_d65(J=best, C=c, h=h, env=env)
+
+    # ```
+    # if not converged:
+    #     print('FAIL:', [h, c, t], xyz[1], y)
+    # ```
+
+    return xyz
 
 
 def xyz_to_hct(coords: Vector, env: Environment) -> Vector:
