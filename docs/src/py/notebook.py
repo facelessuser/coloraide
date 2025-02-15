@@ -493,7 +493,7 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
             if i == 0:
                 stmt[i] = '>>> ' + (line[col_start:col_end] if isinstance(node, ast.Expr) else line)
             else:
-                stmt[i] = '... ' + (line[col_start:col_end] if isinstance(node, ast.Expr) else line)
+                stmt[i] = '... ' + line
         command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
             command += '\n... '
