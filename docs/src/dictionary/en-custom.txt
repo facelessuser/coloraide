@@ -52,6 +52,7 @@ Cubehelix
 Culori
 Cz
 DCI
+De
 Deprecations
 Deregister
 Deregistration
