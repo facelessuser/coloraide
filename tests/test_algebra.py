@@ -2624,6 +2624,7 @@ class TestAlgebra(unittest.TestCase):
 
         v = [0.047770200571454854, 0.02780940276126581, 0.22476064520055364]
 
+        # Negative results can be returned
         result = alg.dot(alg.pinv(m), v)
         self.assertEqual(result, [-5.551115123125783e-17, 0.015208514422912689, 0.23455058216100527])
 
@@ -2647,20 +2648,23 @@ class TestAlgebra(unittest.TestCase):
 
         v = [0.047770200571454854, 0.02780940276126581, 0.22476064520055364]
 
-        a = alg.fnnls(m, v)[0]
+        res = alg.fnnls(m, v)
         b = alg.dot(alg.pinv(m), v)
 
         # We should have no negative values, but we should be close to the `pinv` approach.
-        self.assertTrue(all(_a >= 0 for _a in a))
-        self.assertTrue(all(math.isclose(_a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(a, b)))
+        self.assertTrue(all(_a >= 0 for _a in res[0]))
+        self.assertTrue(res[1] < 1e-10)
+        self.assertTrue(all(math.isclose(_a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(res[0], b)))
 
+        # This is purposely beyond the range of a reasonable solution
+        # There will be residual
         v = [0.6369580483012911, 0.262700212011267, 4.994106574466074e-17]
+        res = alg.fnnls(m, v)
 
-        a = alg.fnnls(m, v)[0]
-
-        # We should have no negative values, but we should be close to the `pinv` approach.
-        self.assertTrue(all(_a >= 0 for _a in a))
-        self.assertEqual(a, [1.477061311287275, 0.0, 0.0])
+        # We should have no negative values, but we will have residual
+        self.assertFalse(res[1] < 1e-10)
+        self.assertTrue(all(_a >= 0 for _a in res[0]))
+        self.assertEqual(res[0], [1.477061311287275, 0.0, 0.0])
 
 
 def test_pprint(capsys):

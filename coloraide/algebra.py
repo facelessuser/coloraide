@@ -3599,6 +3599,8 @@ def pinv(a: MatrixLike) -> Matrix:
     We currently 'assume' the matrix if full rank. If not, a singular matrix error
     will be thrown. Such matrices may still be invertible, but they would require
     a more advanced approach that we do not currently implement.
+
+    Negative results can be returned, use `fnnls` for a non-negative solution (if possible).
     """
 
     s = shape(a)
@@ -3894,7 +3896,7 @@ def fnnls(
     b: VectorLike,
     epsilon: float = 1e-12,
     max_iters: int = 0
-) -> tuple[Vector, float, int, bool]:
+) -> tuple[Vector, float]:
     """
     Fast non-negative least squares.
 
@@ -3947,15 +3949,15 @@ def fnnls(
 
             # Calculate step size, alpha, to prevent any x from going negative
             alpha = min(
-                [zdiv(x[_i], (x[_i] - s[_i]), float('inf')) for _i, _s in enumerate(s) if P[_i] * _s <= epsilon]
+                [zdiv(x[_i], (x[_i] - s[_i]), float('inf')) for _i in range(n) if P[_i] * s[_i] <= epsilon]
             )
 
             # Update the solution
             x = add(x, dot(alpha, subtract(s, x, dims=D1), dims=SC_D1), dims=D1)
 
             # Remove indexes in P where x == 0
-            for _i, _x in enumerate(x):
-                if _x <= epsilon:
+            for _i in range(n):
+                if x[_i] <= epsilon:
                     P[_i] = False
 
             # Solve least squares problem again
@@ -3971,4 +3973,4 @@ def fnnls(
 
     # Return our final result, for better or for worse
     res = math.hypot(*subtract(b, dot(A, x, dims=D2_D1), dims=D1))  # ||b-Ax||
-    return x, res, count, count < max_iters
+    return x, res
