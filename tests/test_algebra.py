@@ -2613,6 +2613,59 @@ class TestAlgebra(unittest.TestCase):
         # Ostrowski
         self.assertEqual(alg.solve_newton(1, f0, dx, ostrowski=True), (0.5, True))
 
+    def test_pinv(self):
+        """Test Moore-Penrose pseudo inverse."""
+
+        m = [
+            [0.4123907992659593, 0.3575843393838777, 0.1804807884018343],
+            [0.21263900587151033, 0.7151686787677553, 0.07219231536073373],
+            [0.019330818715591832, 0.11919477979462595, 0.9505321522496605]
+        ]
+
+        v = [0.047770200571454854, 0.02780940276126581, 0.22476064520055364]
+
+        # Negative results can be returned
+        result = alg.dot(alg.pinv(m), v)
+        self.assertEqual(result, [-5.551115123125783e-17, 0.015208514422912689, 0.23455058216100527])
+
+        wide = alg.pinv([[4, 5], [3, 3], [9, 7]])
+        self.assertEqual(alg.dot(wide, [3, 5, 6]), [0.29640718562873936, 0.538922155688625])
+
+        tall = alg.pinv([[4, 5, 3], [9, 7, 3]])
+        self.assertEqual(alg.dot(tall, [3, 5]), [0.2872727272727278, 0.2818181818181821, 0.14727272727272767])
+
+        with self.assertRaises(ValueError):
+            alg.pinv([1, 2, 3])
+
+    def test_fnnls(self):
+        """Test fast non-negative least squares method."""
+
+        m = [
+            [0.4123907992659593, 0.3575843393838777, 0.1804807884018343],
+            [0.21263900587151033, 0.7151686787677553, 0.07219231536073373],
+            [0.019330818715591832, 0.11919477979462595, 0.9505321522496605]
+        ]
+
+        v = [0.047770200571454854, 0.02780940276126581, 0.22476064520055364]
+
+        res = alg.fnnls(m, v)
+        b = alg.dot(alg.pinv(m), v)
+
+        # We should have no negative values, but we should be close to the `pinv` approach.
+        self.assertTrue(all(_a >= 0 for _a in res[0]))
+        self.assertTrue(res[1] < 1e-10)
+        self.assertTrue(all(math.isclose(_a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(res[0], b)))
+
+        # This is purposely beyond the range of a reasonable solution
+        # There will be residual
+        v = [0.6369580483012911, 0.262700212011267, 4.994106574466074e-17]
+        res = alg.fnnls(m, v)
+
+        # We should have no negative values, but we will have residual
+        self.assertFalse(res[1] < 1e-10)
+        self.assertTrue(all(_a >= 0 for _a in res[0]))
+        self.assertEqual(res[0], [1.477061311287275, 0.0, 0.0])
+
 
 def test_pprint(capsys):
     """Test matrix print."""

@@ -159,11 +159,11 @@ def clamp(
         return value
 
 
-def zdiv(a: float, b: float) -> float:
+def zdiv(a: float, b: float, default: float = 0.0) -> float:
     """Protect against zero divide."""
 
     if b == 0:
-        return 0.0
+        return default
     return a / b
 
 
@@ -3592,6 +3592,29 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     return _back_sub_matrix(u, _forward_sub_matrix(l, p, s2), s2)
 
 
+def pinv(a: MatrixLike) -> Matrix:
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+    We currently 'assume' the matrix if full rank. If not, a singular matrix error
+    will be thrown. Such matrices may still be invertible, but they would require
+    a more advanced approach that we do not currently implement.
+
+    Negative results can be returned, use `fnnls` for a non-negative solution (if possible).
+    """
+
+    s = shape(a)
+    if len(s) != 2:
+        raise ValueError('Inputs can only be matrices, vectors or tensors are not allowed')
+
+    t = transpose(a)
+    if s[0] >= s[1]:
+        p = matmul(inv(matmul(t, a, dims=D2)), t, dims=D2)
+    else:
+        p = matmul(t, inv(matmul(a, t, dims=D2)), dims=D2)
+    return p
+
+
 @overload
 def vstack(arrays: Sequence[float | Vector | Matrix]) -> Matrix:
     ...
@@ -3866,3 +3889,88 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
 
     # Shape the data.
     return reshape(m, new_shape)  # type: ignore[no-any-return]
+
+
+def fnnls(
+    A: MatrixLike,
+    b: VectorLike,
+    epsilon: float = 1e-12,
+    max_iters: int = 0
+) -> tuple[Vector, float]:
+    """
+    Fast non-negative least squares.
+
+    A fast non-negativity-constrained least squares
+    https://www.researchgate.net/publication/230554373_A_Fast_Non-negativity-constrained_Least_Squares_Algorithm
+    Rasmus Bro and Sijmen De Jong
+    Journal of Chemometrics. 11, 393–401 (1997)
+    """
+
+    n = len(A[0])
+
+    if not max_iters:
+        max_iters = n * 30
+
+    ATA = dot(transpose(A), A, dims=D2)
+    ATb = dot(transpose(A), b, dims=D2_D1)
+
+    x = zeros(n)  # type: Vector # type: ignore[assignment]
+    s = zeros(n)  # type: Vector # type: ignore[assignment]
+    w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)  # type: Vector
+
+    # P tracks positive elements in x
+    P = [False] * n  # type: VectorBool
+
+    # Continue until all values of x are positive (non-negative results only)
+    # or we exhaust the iterations.
+    count = 0
+    while sum(P) < n and max(w[_i] for _i in range(n) if not P[_i]) > epsilon and count < max_iters:
+        # Find the index that maximizes w
+        # This will be an index not in P
+        imx = 0
+        mx = float('-inf')
+        for _i in range(n):
+            if not P[_i]:
+                temp = w[_i]
+                if temp > mx:
+                    imx = _i
+                    mx = temp
+        P[imx] = True
+
+        # Solve least squares problem for columns and rows not in P
+        idx = [_i for _i in range(n) if P[_i]]
+        v = dot(inv([[ATA[_i][_j] for _j in idx] for _i in idx]), [ATb[_i] for _i in idx], dims=D2_D1)
+        for _i, _v in zip(idx, v):
+            s[_i] = _v
+
+        # Deal with negative values
+        while _any([s[_i] <= epsilon for _i in range(n) if P[_i]]):
+            count += 1
+
+            # Calculate step size, alpha, to prevent any x from going negative
+            alpha = min(
+                [zdiv(x[_i], (x[_i] - s[_i]), float('inf')) for _i in range(n) if P[_i] * s[_i] <= epsilon]
+            )
+
+            # Update the solution
+            x = add(x, dot(alpha, subtract(s, x, dims=D1), dims=SC_D1), dims=D1)
+
+            # Remove indexes in P where x == 0
+            for _i in range(n):
+                if x[_i] <= epsilon:
+                    P[_i] = False
+
+            # Solve least squares problem again
+            idx = [_i for _i in range(n) if P[_i]]
+            v = dot(inv([[ATA[_i][_j] for _j in idx] for _i in idx]), [ATb[_i] for _i in idx], dims=D2_D1)
+            s = [0.0] * len(s)
+            for _i, _v in zip(idx, v):
+                s[_i] = _v
+
+        # Update the solution
+        x = s[:]
+        w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)
+
+    # Return our final result, for better or for worse
+    res = math.hypot(*subtract(b, dot(A, x, dims=D2_D1), dims=D1))  # ||b-Ax||
+    return x, res

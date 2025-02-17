@@ -37,6 +37,7 @@ CVD
 CVDs
 Catmull
 Changelog
+Chemometrics
 Chroma
 Chromaticities
 Chromaticity
@@ -51,6 +52,7 @@ Cubehelix
 Culori
 Cz
 DCI
+De
 Deprecations
 Deregister
 Deregistration
@@ -95,6 +97,7 @@ IPT
 ITP
 ITU
 IgPgTg
+Illuminant
 Interpolator
 Itten
 Iz
@@ -105,6 +108,7 @@ JMh
 JND
 JSON
 Jacobian
+Jong
 Jsh
 Judd
 Jupyter
@@ -113,10 +117,13 @@ JzCzhz
 JzMzhz
 Jzazbz
 Kries
+Kubelka
 Kz
 LCh
 LChish
 LChuv
+LHTSS
+LLSS
 LMS
 Lab
 Labish
@@ -135,6 +142,7 @@ MkDocs
 Mollon
 Monochromacy
 Moroney
+Munk
 Mz
 NONINFRINGEMENT
 NaN
@@ -153,6 +161,7 @@ Oklrab
 Ostrowski
 Ottosson
 PQ
+Penrose
 Perceptibility
 Piecewise
 Planckian
@@ -177,6 +186,7 @@ RLAB
 ROMM
 RYB
 Raphson
+Rasmus
 SCD
 SDR
 SL
@@ -186,6 +196,7 @@ SVG
 Safdar
 Scalable
 Sharma
+Sijmen
 Sz
 TODO
 TORTIOUS
@@ -210,6 +221,7 @@ Vos
 Vz
 WCAG
 WCG
+Wijnen
 Wz
 XD
 XYB
@@ -256,16 +268,19 @@ desaturated
 deuteranomaly
 deuteranopia
 dichromacy
+differencing
 diffuser
 discretized
 docstring
 dyad
 easings
+emissive
 fixup
 formatter
 grayscale
 helixes
 hz
+illum
 illuminance
 illuminant
 illuminants
@@ -290,6 +305,9 @@ monochromacy
 monotonicity
 nd
 nm
+normalizations
+nx
+nxn
 oRGB
 opRGB
 opto
@@ -316,6 +334,7 @@ quantized
 quantizer
 rc
 reflectance
+reflectances
 repurpose
 rgb
 sRGB
