@@ -3911,66 +3911,73 @@ def fnnls(
     if not max_iters:
         max_iters = n * 30
 
-    ATA = dot(transpose(A), A, dims=D2)
-    ATb = dot(transpose(A), b, dims=D2_D1)
+    AT = transpose(A)
+    ATA = dot(AT, A, dims=D2)
+    ATb = dot(AT, b, dims=D2_D1)
 
-    x = zeros(n)  # type: Vector # type: ignore[assignment]
-    s = zeros(n)  # type: Vector # type: ignore[assignment]
+    x = [0.0] * n
+    s = [0.0] * n
     w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)  # type: Vector
 
     # P tracks positive elements in x
-    P = [False] * n  # type: VectorBool
+    # Does double duty as P and R vector outlined in the paper
+    P = [False] * n
 
     # Continue until all values of x are positive (non-negative results only)
     # or we exhaust the iterations.
     count = 0
-    while sum(P) < n and max(w[_i] for _i in range(n) if not P[_i]) > epsilon and count < max_iters:
+    while sum(P) < n and max(w[i] for i in range(n) if not P[i]) > epsilon and count < max_iters:
         # Find the index that maximizes w
         # This will be an index not in P
         imx = 0
         mx = float('-inf')
-        for _i in range(n):
-            if not P[_i]:
-                temp = w[_i]
+        for i in range(n):
+            if not P[i]:
+                temp = w[i]
                 if temp > mx:
-                    imx = _i
+                    imx = i
                     mx = temp
         P[imx] = True
 
         # Solve least squares problem for columns and rows not in P
-        idx = [_i for _i in range(n) if P[_i]]
-        v = dot(inv([[ATA[_i][_j] for _j in idx] for _i in idx]), [ATb[_i] for _i in idx], dims=D2_D1)
-        for _i, _v in zip(idx, v):
-            s[_i] = _v
+        idx = [i for i in range(n) if P[i]]
+        v = dot(inv([[ATA[i][j] for j in idx] for i in idx]), [ATb[i] for i in idx], dims=D2_D1)
+        for i, _v in zip(idx, v):
+            s[i] = _v
 
         # Deal with negative values
-        while _any([s[_i] <= epsilon for _i in range(n) if P[_i]]):
+        while _any([s[i] <= epsilon for i in range(n) if P[i]]):
             count += 1
 
             # Calculate step size, alpha, to prevent any x from going negative
             alpha = min(
-                [zdiv(x[_i], (x[_i] - s[_i]), float('inf')) for _i in range(n) if P[_i] * s[_i] <= epsilon]
+                [zdiv(x[i], (x[i] - s[i]), float('inf')) for i in range(n) if P[i] * (s[i] <= epsilon)]
             )
 
             # Update the solution
             x = add(x, dot(alpha, subtract(s, x, dims=D1), dims=SC_D1), dims=D1)
 
             # Remove indexes in P where x == 0
-            for _i in range(n):
-                if x[_i] <= epsilon:
-                    P[_i] = False
+            for i in range(n):
+                if x[i] <= epsilon:
+                    P[i] = False
 
             # Solve least squares problem again
-            idx = [_i for _i in range(n) if P[_i]]
-            v = dot(inv([[ATA[_i][_j] for _j in idx] for _i in idx]), [ATb[_i] for _i in idx], dims=D2_D1)
-            s = [0.0] * len(s)
-            for _i, _v in zip(idx, v):
-                s[_i] = _v
+            idx = [i for i in range(n) if P[i]]
+            v = dot(inv([[ATA[i][j] for j in idx] for i in idx]), [ATb[i] for i in idx], dims=D2_D1)
+            j = 0
+            l = len(idx)
+            for i in range(n):
+                if j < l and i == idx[j]:
+                    s[i] = v[j]
+                    j += 1
+                else:
+                    s[i] = 0.0
 
         # Update the solution
         x = s[:]
         w = subtract(ATb, dot(ATA, x, dims=D2_D1), dims=D1)
 
     # Return our final result, for better or for worse
-    res = math.hypot(*subtract(b, dot(A, x, dims=D2_D1), dims=D1))  # ||b-Ax||
+    res = math.hypot(*subtract(b, dot(A, x, dims=D2_D1), dims=D1))
     return x, res
