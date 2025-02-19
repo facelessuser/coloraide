@@ -125,8 +125,8 @@ def round_to(f: float, p: int = 0, half_up: bool = True) -> float:
 def minmax(value: VectorLike | Iterable[float]) -> tuple[float, float]:
     """Return the minimum and maximum value."""
 
-    mn = INF
-    mx = -INF
+    mn = math.inf
+    mx = -math.inf
     e = -1
 
     for i in value:
@@ -3064,6 +3064,24 @@ def _shape(a: ArrayLike | float, s: Shape) -> Shape:
     return (size,) + first
 
 
+def _quick_shape(a: ArrayLike) -> Shape:
+    """
+    Acquire shape taking shortcuts by assume a non-ragged, consistently shaped array.
+
+    No checking for consistency is performed allowing for a quicker check.
+    """
+
+    t = a  # type: Any
+    s = []
+    while isinstance(t, Sequence):
+        l = len(t)
+        s.append(l)
+        if not l:
+            break
+        t = t[0]
+    return tuple(s)
+
+
 def shape(a: ArrayLike | float) -> Shape:
     """Get the shape of a list."""
 
@@ -3906,7 +3924,10 @@ def fnnls(
     Journal of Chemometrics. 11, 393–401 (1997)
     """
 
-    n = len(A[0])
+    m, n = _quick_shape(A)
+
+    if m != len(b):
+        raise ValueError(f'Vector length of b must match first dimension of A: {m} != {len(b)}')
 
     if not max_iters:
         max_iters = n * 30
@@ -3930,13 +3951,12 @@ def fnnls(
         # Find the index that maximizes w
         # This will be an index not in P
         imx = 0
-        mx = float('-inf')
+        mx = -math.inf
         for i in range(n):
-            if not P[i]:
-                temp = w[i]
-                if temp > mx:
-                    imx = i
-                    mx = temp
+            if not P[i] and w[i] > mx:
+                imx = i
+                mx = w[i]
+
         P[imx] = True
 
         # Solve least squares problem for columns and rows not in P
@@ -3951,7 +3971,7 @@ def fnnls(
 
             # Calculate step size, alpha, to prevent any x from going negative
             alpha = min(
-                [zdiv(x[i], (x[i] - s[i]), float('inf')) for i in range(n) if P[i] * (s[i] <= epsilon)]
+                [zdiv(x[i], (x[i] - s[i]), math.inf) for i in range(n) if P[i] * (s[i] <= epsilon)]
             )
 
             # Update the solution
