@@ -24,6 +24,7 @@ matrix:
       - '.md-social__link'
       - '.swatch[title]'
       - '.playground .gamut'
+      - 'div.footer-status'
   - pyspelling.filters.context:
       context_visible_first: true
       delimiters:
