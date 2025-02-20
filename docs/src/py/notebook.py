@@ -94,7 +94,7 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <span class='gamut'>Gamut: {gamut}</span>
 </div>
 </div>
-</div>'''
+</div>'''  # noqa: E501
 
 code_id = 0
 
