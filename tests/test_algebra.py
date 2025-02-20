@@ -2656,6 +2656,12 @@ class TestAlgebra(unittest.TestCase):
         self.assertTrue(res[1] < 1e-10)
         self.assertTrue(all(math.isclose(_a, _b, rel_tol=1e-10, abs_tol=1e-11) for _a, _b in zip(res[0], b)))
 
+        with self.assertRaises(ValueError):
+            alg.fnnls(m, v + [1.0])
+
+        with self.assertRaises(ValueError):
+            alg.fnnls([], v + [1.0])
+
         # This is purposely beyond the range of a reasonable solution
         # There will be residual
         v = [0.6369580483012911, 0.262700212011267, 4.994106574466074e-17]
