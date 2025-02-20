@@ -11,6 +11,7 @@
   } catch {
     webspace = 'srgb'
   }
+  const sessions = {}
   let pyodide = null
   let busy = false
   let raw = ""
@@ -56,6 +57,15 @@ ${content}
   let notebookInstalled = false
   let playgroundInstalled = false
 
+  const destroySessions = () => {
+    // Destroy a sessions
+
+    Object.keys(sessions).forEach(key => {
+      sessions[key].destroy()
+      delete sessions[key]
+    })
+  }
+
   const fakeDOMContentLoaded = () => {
     // Send a fake `DOMContentLoaded`
     fake = true
@@ -93,18 +103,40 @@ ${content}
     // Execute Python code inside a playground
 
     const currentInputs = document.getElementById(`__playground-inputs_${currentID}`)
+    const session = currentInputs.getAttribute("session")
     currentInputs.setAttribute("readonly", "")
     pyodide.globals.set("id_num", currentID)
     pyodide.globals.set("action", "playground")
+    pyodide.globals.set("session_id", session)
+    const main = document.querySelector('main.md-main')
+    const live = main.getAttribute('livecode')
+    if (!live) {
+      destroySessions()
+      main.setAttribute('livecode', 'live')
+    }
+    if (session in sessions) {
+      pyodide.globals.set('SESSIONS', sessions[session])
+    } else {
+      pyodide.globals.set('SESSIONS', null)
+    }
     await pyodide.runPythonAsync(pycode)
+    if (session) {
+      sessions[session] = pyodide.globals.get('SESSIONS').copy()
+    }
     currentInputs.removeAttribute("readonly")
   }
 
   const pyrender = async text => {
     // Render an entire notebook page
 
+    destroySessions()
+    const main = document.querySelector('main.md-main')
+    if (main.getAttribute('livecode')) {
+      main.removeAttribute('livecode')
+    }
     pyodide.globals.set("content", text)
     pyodide.globals.set("action", "notebook")
+    pyodide.globals.set('SESSIONS', null)
     await pyodide.runPythonAsync(pycode)
     const src = document.getElementById("__notebook-input")
     if (src) {

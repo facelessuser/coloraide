@@ -79,7 +79,7 @@ template = '''<div class="playground" id="__playground_{el_id}">
 </div>
 <div class="playground-code hidden" id="__playground-code_{el_id}" data-search-exclude>
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</textarea>
+<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false" session="{session}">{raw_source}</textarea>
 </form>
 </div>
 <div class="playground-footer" data-search-exclude>
@@ -88,45 +88,59 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <button id="__playground-share_{el_id}" class="playground-share" title="Copy URL to current snippet">Share</button>
 <button id="__playground-run_{el_id}" class="playground-run hidden" title="Run code (Ctrl + Enter)">Run</button>
 <button id="__playground-cancel_{el_id}" class="playground-cancel hidden" title="Cancel edit (Escape)">Cancel</button>
+<div class='spacer'></div>
+<div class='footer-status'>
+<span class='session'>{session}</span>
 <span class='gamut'>Gamut: {gamut}</span>
+</div>
 </div>
 </div>'''
 
 code_id = 0
 
 
-class Ramp(list):
-    """Create a gradient from a list of colors."""
-
-
-class Steps(list):
-    """Create a special display of steps from a list of colors."""
-
-
-class Row(list):
-    """Restrict only the provided colors to a row."""
-
-
-class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
-    """Color tuple."""
-
-
-class AtomicString(str):
-    """Atomic string."""
-
-
-class Break(Exception):
-    """Break exception."""
-
-
-class Continue(Exception):
-    """Continue exception."""
-
-
 # Legacy names
-HtmlRow = Row
-HtmlSteps = Steps
-HtmlGradient = Ramp
+
+if 'SESSIONS' not in globals() or not globals()["SESSIONS"]:
+    SESSIONS = {}
+
+
+    class Ramp(list):
+        """Create a gradient from a list of colors."""
+
+
+    class Steps(list):
+        """Create a special display of steps from a list of colors."""
+
+
+    class Row(list):
+        """Restrict only the provided colors to a row."""
+
+
+    class ColorTuple(namedtuple('ColorTuple', ['string', 'color'])):
+        """Color tuple."""
+
+
+    class AtomicString(str):
+        """Atomic string."""
+
+
+    class Break(Exception):
+        """Break exception."""
+
+
+    class Continue(Exception):
+        """Continue exception."""
+
+    HtmlRow = Row
+    HtmlSteps = Steps
+    HtmlGradient = Ramp
+
+
+def reset():
+    """Reset hook."""
+
+    SESSIONS.clear()
 
 
 def _escape(txt):
@@ -446,16 +460,16 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
 
     # Setup global initialization
     if g is None:
-        g = {
-            "Ramp": Ramp,
-            "Steps": Steps,
-            "Row": Row,
-            'HtmlRow': HtmlRow,
-            'HtmlSteps': HtmlSteps,
-            'HtmlGradient': HtmlGradient
-        }
-    if init:
-        execute(init.strip(), g=g)
+        g = {}
+    if not g:
+        g["Ramp"] = Ramp
+        g["Steps"] = Steps
+        g["Row"] = Row
+        g['HtmlRow'] = HtmlRow
+        g['HtmlSteps'] = HtmlSteps
+        g['HtmlGradient'] = HtmlGradient
+        if init:
+            execute(init.strip(), g=g)
 
     # Build AST tree
     m = RE_INIT.match(cmd)
@@ -557,6 +571,12 @@ def color_command_validator(language, inputs, options, attrs, md):
     valid_inputs = {'exceptions', 'play', 'wheel'}
 
     for k, v in inputs.items():
+        if k == 'session':
+            if k not in SESSIONS:
+                SESSIONS[k] = {}
+            options[k] = SESSIONS[k]
+            options['session_name'] = v
+            continue
         if k in valid_inputs:
             options[k] = True
             continue
@@ -660,6 +680,8 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
     gamut = kwargs.get('gamut', WEBSPACE)
     wheel = options.get('wheel', False)
     play = options.get('play', False) if options is not None else False
+    session = options.get('session') if options is not None else None
+    session_name = options.get('session_name', '') if options is not None else ""
     # Support the old way
     if not play and language == 'playground':
         play = True
@@ -679,7 +701,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
             gamut = 'srgb'
             exceptions = options.get('exceptions', False) if options is not None else False
 
-            _, colors = execute(src.strip(), not exceptions, init=init)
+            _, colors = execute(src.strip(), not exceptions, init=init, g=session)
 
             l = len(colors)
             if l not in (12, 24, 48):
@@ -749,7 +771,7 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
             # Check if we should allow exceptions
             exceptions = options.get('exceptions', False) if options is not None else False
 
-            console, colors = execute(src.strip(), not exceptions, init=init)
+            console, colors = execute(src.strip(), not exceptions, init=init, g=session)
             el = _color_command_console(colors, gamut=gamut)
 
             el += md.preprocessors['fenced_code_block'].extension.superfences[0]['formatter'](
@@ -761,7 +783,13 @@ def _color_command_formatter(src="", language="", class_name=None, options=None,
                 **kwargs
             )
             el = f'<div class="color-command">{el}</div>'
-            el = template.format(el_id=code_id, raw_source=_escape(src), results=el, gamut=gamut)
+            el = template.format(
+                el_id=code_id,
+                raw_source=_escape(src),
+                results=el,
+                gamut=gamut,
+                session=f"Session: {session_name}" if session_name else ""
+            )
             code_id += 1
     except SuperFencesException:
         raise
@@ -850,11 +878,17 @@ def color_formatter(init='', gamut=WEBSPACE):
 #############################
 # Pyodide specific code
 #############################
-def _live_color_command_formatter(src, init='', gamut=WEBSPACE):
+def _live_color_command_formatter(src, init='', gamut=WEBSPACE, session=""):
     """Formatter wrapper."""
 
     try:
-        console, colors = execute(src.strip(), False, init=init)
+        if session:
+            if session not in SESSIONS:
+                SESSIONS[session] = {}
+            g = SESSIONS.get(session, {})
+        else:
+            g = {}
+        console, colors = execute(src.strip(), False, init=init, g=g)
         el = _color_command_console(colors, gamut=gamut)
 
         if not colors:
@@ -870,10 +904,10 @@ def _live_color_command_formatter(src, init='', gamut=WEBSPACE):
     return el
 
 
-def live_color_command_formatter(init='', gamut=WEBSPACE):
+def live_color_command_formatter(init='', gamut=WEBSPACE, session=""):
     """Return a Python command formatter with the provided imports."""
 
-    return partial(_live_color_command_formatter, init=init, gamut=gamut)
+    return partial(_live_color_command_formatter, init=init, gamut=gamut, session=session)
 
 
 def live_color_command_validator(language, inputs, options, attrs, md):
@@ -896,7 +930,8 @@ def render_console(*args, **kwargs):
         inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
         footer = document.querySelector("#__playground_{} .gamut".format(globals()['id_num']))
-        result = live_color_command_formatter(LIVE_INIT, gamut)(inputs.value)
+        session = globals()['session_id']
+        result = live_color_command_formatter(LIVE_INIT, gamut)(inputs.value, session=session)
         temp = document.createElement('div')
         temp.innerHTML = result
 

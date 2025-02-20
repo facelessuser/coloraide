@@ -120,18 +120,111 @@ represents deficiencies with the L cone, deuteranopia with the M cone, and trita
 properties only vary in the properties specific to a person's deficient cone(s) will have the potential to cause
 confusion for that person.
 
-Consider the example below. We generate 3 different color series, each specifically targeting a specific deficiency.
-This is done by generating a series of colors that have all properties equal except that they have variance in a
-different cone response. The first row varies only with the L cone response, the second only with the M cone response,
-and the third only with the S cone response. We then apply the filters for protanopia, deuteranopia, and tritanopia. We
-can see that while many of the colors are altered, the row that targets the deficient cone specific to the CVD all
-appear to be of the same color making it difficult to distinguish between any of them.
+Consider the example below. First we do a little setup so we can translate colors to the LMS space.
+
+```py {.md-max-height play session="cvd"}
+from coloraide import Color as Base
+from coloraide.cat import WHITES
+from coloraide.spaces import Space
+from coloraide import algebra as alg
+from coloraide.types import Vector
+from coloraide.channels import Channel
+
+
+class LMS(Space):
+    """The LMS class."""
+
+    BASE = "srgb-linear"
+    NAME = "lms"
+    SERIALIZE = ("--lms",)
+    CHANNELS = (
+        Channel("l", 0.0, 1.0),
+        Channel("m", 0.0, 1.0),
+        Channel("s", 0.0, 1.0)
+    )
+    CHANNEL_ALIASES = {
+        "long": "l",
+        "medium": "m",
+        "short": "s"
+    }
+    WHITE = WHITES['2deg']['D65']
+
+    LRGB_TO_LMS = [
+        [0.178824041258, 0.4351609057000001, 0.04119349692],
+        [0.034556423182, 0.27155382458, 0.038671308360000003],
+        [0.000299565576, 0.0018430896, 0.01467086136]
+    ]
+
+    LMS_TO_LRGB = [
+        [8.094435598032371, -13.050431460496926, 11.672058453917323],
+        [-1.0248505586646686, 5.401931309674973, -11.361471490598712],
+        [-0.03652974715933318, -0.412162807001268, 69.35132423820858]
+    ]
+
+    def to_base(self, coords: Vector) -> Vector:
+        """To XYZ."""
+
+        return alg.dot(self.LMS_TO_LRGB, coords, dims=alg.D2_D1)
+
+    def from_base(self, coords: Vector) -> Vector:
+        """From XYZ."""
+
+        return alg.dot(self.LRGB_TO_LMS, coords, dims=alg.D2_D1)
+
+
+class Color(Base):
+    ...
+
+
+Color.register(LMS())
+
+
+def get_limit(c, channel, upper=False):
+
+    if upper:
+        low = c[channel]
+        high = 1
+    else:
+        high = c[channel]
+        low = 0
+
+    temp = c.clone()
+
+    while abs(high - low) >= 0.002:
+        value = (high + low) * 0.5
+        temp[channel] = value
+        if temp.in_gamut('srgb', tolerance=0.01):
+            if upper:
+                low = value
+            else:
+                high = value
+        else:
+            if upper:
+                high = value
+            else:
+                low = value
+
+    return temp.clip('srgb')
+
+
+def confusion_line(c, cone):
+    """Generate colors on a line of confusion."""
+
+    lms = c.convert('lms')
+    high = get_limit(lms, cone, upper=True)
+    low = get_limit(lms, cone)
+    return Color.steps([low, high], steps=6, space='lms', out_space='srgb')
+```
+
+Then We generate 3 different color series, each specifically targeting a specific deficiency. This is done by generating
+a series of colors that have all properties equal except that they have variance in a different cone response. The first
+row varies only with the L cone response, the second only with the M cone response, and the third only with the S cone
+response. We then apply the filters for protanopia, deuteranopia, and tritanopia. We can see that while many of the
+colors are altered, the row that targets the deficient cone specific to the CVD all appear to be of the same color
+making it difficult to distinguish between any of them.
 
 /// tab | Normal
-```py play
-
---8<-- "confusion_lines.md"
-
+```py play session="cvd"
 confusing_colors = confusion_line(Color('orange'), 'l')
 Steps([c.clip() for c in confusing_colors])
 
@@ -144,10 +237,7 @@ Steps([c.clip() for c in confusing_colors])
 ///
 
 /// tab | Protanopia
-```py play
-
----8<-- "confusion_lines.md"
-
+```py play session="cvd"
 confusing_colors = confusion_line(Color('orange'), 'l')
 Steps([c.filter('protan').clip() for c in confusing_colors])
 
@@ -160,10 +250,7 @@ Steps([c.filter('protan').clip() for c in confusing_colors])
 ///
 
 /// tab | Deuteranopia
-```py play
-
----8<-- "confusion_lines.md"
-
+```py play session="cvd"
 confusing_colors = confusion_line(Color('orange'), 'l')
 Steps([c.filter('deutan').clip() for c in confusing_colors])
 
@@ -176,10 +263,7 @@ Steps([c.filter('deutan').clip() for c in confusing_colors])
 ///
 
 /// tab | Tritanopia
-```py play
-
----8<-- "confusion_lines.md"
-
+```py play session="cvd"
 confusing_colors = confusion_line(Color('orange'), 'l')
 Steps([c.filter('tritan').clip() for c in confusing_colors])
 

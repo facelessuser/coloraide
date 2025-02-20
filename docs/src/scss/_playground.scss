@@ -62,8 +62,10 @@
 }
 
 .playground-footer {
+  display: flex;
   margin-bottom: 1em;
   padding: convert.px2em(3px, 13.6px) convert.px2em(16px, 13.6px) convert.px2em(2px, 13.6px);
+  overflow: hidden;
   color: var(--md-code-hl-comment-color);
   font-size: convert.px2em(13.6px);
   background: var(--md-code-bg-color);
@@ -74,7 +76,16 @@
     margin: 0 0 convert.px2em(2px, 13.6px) 0;
   }
 
-  .gamut {
-    float: right;
+  .spacer {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .footer-status {
+    white-space: nowrap;
+  }
+
+  .session {
+    padding-right: 1em;
   }
 }
