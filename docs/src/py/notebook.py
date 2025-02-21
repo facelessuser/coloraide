@@ -493,22 +493,24 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
         import traceback
         return f'{traceback.format_exc()}', colors
 
+    last = -1
     for node in tree.body:
         result = []
 
         # Format source as Python console statements
         start = node.lineno
-        col_start = node.col_offset
         end = node.end_lineno
-        col_end = node.end_col_offset
-        stmt = lines[start - 1: end]
+        stmt = []
         command = ''
-        for i, line in enumerate(stmt, 0):
-            if i == 0:
-                stmt[i] = '>>> ' + (line[col_start:col_end] if isinstance(node, ast.Expr) else line)
-            else:
-                stmt[i] = '... ' + line
-        command += '\n'.join(stmt)
+        for i, line in enumerate(lines[start - 1: end], 0):
+            if line != last:
+                if i == 0:
+                    stmt.append('>>> ' + line)
+                else:
+                    stmt.append('... ' + line)
+            last = line
+        if stmt:
+            command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
             command += '\n... '
 
@@ -551,7 +553,8 @@ def execute(cmd, no_except=True, inline=False, init='', g=None):
                 repr(r) if isinstance(r, str) and not isinstance(r, AtomicString) else str(r),
                 '\n' if not isinstance(r, AtomicString) else ''
             )
-        console += result_text
+        if stmt:
+            console += result_text
 
     return console, colors
 
