@@ -17,11 +17,12 @@
   let raw = ""
   let gist = ""
   let editTemp = {}
+  const editorMgr = {}
+  let notebookEditor = null
   const reIdNum = /.*?_(\d+)$/
   let initialized = false
   let lastSearch = ""
   let fake = false
-  const tabStart = /^( {1,4}|\t)/
   // This is the Python payload that will be executed when the user
   // presses the `Run` button. It will execute the code, create a
   // Python console output, find color references, steps, and interpolation
@@ -76,21 +77,6 @@ ${content}
     window.document$.next()
   }
 
-  const textResize = inpt => {
-    // Resize inputs based on text height.
-
-    const scrollLeft = window.pageXOffset ||
-      (document.documentElement || document.body.parentNode || document.body).scrollLeft
-
-    const scrollTop  = window.pageYOffset ||
-      (document.documentElement || document.body.parentNode || document.body).scrollTop
-
-    inpt.style.height = "5px"
-    inpt.style.height = `${Math.min(inpt.scrollHeight, 408)}px`
-
-    window.scrollTo(scrollLeft, scrollTop)
-  }
-
   const encodeuri = uri => {
     // Encode the URI component.
 
@@ -102,9 +88,11 @@ ${content}
   const pyexecute = async currentID => {
     // Execute Python code inside a playground
 
-    const currentInputs = document.getElementById(`__playground-inputs_${currentID}`)
+    const currentInputs = document.getElementById(`__playground-code_${currentID}`)
     const session = currentInputs.getAttribute("session")
+    const editor = editorMgr[currentID]
     currentInputs.setAttribute("readonly", "")
+    pyodide.globals.set('__pyodide_input__', editor.getValue())
     pyodide.globals.set("id_num", currentID)
     pyodide.globals.set("action", "playground")
     pyodide.globals.set("session_id", session)
@@ -141,7 +129,25 @@ ${content}
     const src = document.getElementById("__notebook-input")
     if (src) {
       raw = text
-      src.value = text
+      if (!(src.env && src.env.editor)) {
+        if (notebookEditor) {
+          notebookEditor.destroy()
+        }
+        const editor = ace.edit( // eslint-disable-line no-undef
+          src,
+          {
+            maxLines: 30,
+            minLines: 5,
+            fontSize: '13.6px',
+            fontFamily: '"Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace',
+            printMargin: false,
+            theme: "ace/theme/dracula",
+            mode: "ace/mode/markdown"
+          }
+        )
+        notebookEditor = editor
+      }
+      src.env.editor.setValue(text)
     }
     if (window.location.hash) {
       // Force jumping to hashes
@@ -234,53 +240,6 @@ ${content}
     }
   }
 
-  const handleTab = e => {
-    // Prevent tab from tabbing out.
-
-    if (e.key === 'Tab') {
-      const target = e.target
-
-      if (target.selectionStart !== target.selectionEnd) {
-        e.preventDefault()
-
-        let start = target.selectionStart
-        let end = target.selectionEnd
-
-        const text = target.value
-
-        while (start > 0 && text[start - 1] !== '\n') {
-          start--
-        }
-        while (end > 0 && text[end - 1] !== '\n' && end < text.length) {
-          end++
-        }
-
-        let lines = text.substr(start, end - start).split('\n')
-
-        for (let i = 0; i < lines.length; i++) {
-
-          // Don't indent last line if cursor at start of line
-          if (i === lines.length - 1 && lines[i].length === 0) {
-            continue
-          }
-
-          // Indent or deindent
-          if (e.shiftKey) {
-            lines[i] = lines[i].replace(tabStart, '')
-          } else {
-            lines[i] = `    ${lines[i]}`
-          }
-        }
-        lines = lines.join('\n')
-
-        // Update the text area
-        target.value = text.substr(0, start) + lines + text.substr(end)
-        target.selectionStart = start
-        target.selectionEnd = start + lines.length
-      }
-    }
-  }
-
   const init = async first => {
     // Setup input highlighting and events to run Python code blocks.
 
@@ -290,23 +249,11 @@ ${content}
     if (notebook && first) {
       const notebookInput = document.getElementById("__notebook-input")
 
-      notebookInput.addEventListener("input", e => {
-        // Adjust textarea height on text input.
-
-        textResize(e.target)
-      })
-
-      notebookInput.addEventListener('keydown', handleTab)
-
       const editPage = document.getElementById("__notebook-edit")
       editPage.addEventListener("click", () => {
-        editTemp[notebookInput.id] = notebookInput.value
+        editTemp[notebookInput.id] = notebookInput.env.editor.getValue()
         document.getElementById("__notebook-render").classList.toggle("hidden")
         document.getElementById("__notebook-source").classList.toggle("hidden")
-        // Reset height
-        const inpt = document.getElementById("__notebook-input")
-        inpt.setAttribute('style', '')
-        textResize(document.getElementById("__notebook-input"))
       })
 
       document.getElementById("__notebook-md-gist").addEventListener("click", async e => {
@@ -329,9 +276,29 @@ ${content}
         }
       })
 
+      if (notebookInput.env && notebookInput.env.editor) {
+        notebookInput.env.editor.setValue(raw)
+      } else {
+        if (notebookEditor) {
+          notebookEditor.destroy()
+        }
+        const editor = ace.edit( // eslint-disable-line no-undef
+          notebookInput,
+          {
+            maxLines: 30,
+            minLines: 5,
+            fontSize: '13.6px',
+            fontFamily: '"Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace',
+            printMargin: false,
+            theme: "ace/theme/dracula",
+            mode: "ace/mode/markdown"
+          }
+        )
+        notebookEditor = editor
+      }
       document.getElementById("__notebook-input").value = raw
       document.getElementById("__notebook-cancel").addEventListener("click", () => {
-        notebookInput.value = editTemp[notebookInput.id]
+        notebookInput.env.editor.setValue(editTemp[notebookInput.id])
         delete editTemp[notebookInput.id]
         document.getElementById("__notebook-render").classList.toggle("hidden")
         document.getElementById("__notebook-source").classList.toggle("hidden")
@@ -339,7 +306,7 @@ ${content}
 
       document.getElementById("__notebook-submit").addEventListener("click", async() => {
         const render = document.getElementById("__notebook-render")
-        raw = document.getElementById("__notebook-input").value
+        raw = document.getElementById("__notebook-input").env.editor.getValue()
         render.classList.toggle("hidden")
         document.getElementById("__notebook-source").classList.toggle("hidden")
         const article = document.querySelector("article")
@@ -357,27 +324,12 @@ ${content}
     playgrounds.forEach(pg => {
 
       const currentID = pg.id.replace(reIdNum, "$1")
-      const inputs = document.getElementById(`__playground-inputs_${currentID}`)
       const results = document.getElementById(`__playground-results_${currentID}`)
       const pgcode = document.getElementById(`__playground-code_${currentID}`)
       const buttonEdit = document.querySelector(`button#__playground-edit_${currentID}`)
       const buttonShare = document.querySelector(`button#__playground-share_${currentID}`)
       const buttonRun = document.querySelector(`button#__playground-run_${currentID}`)
       const buttonCancel = document.querySelector(`button#__playground-cancel_${currentID}`)
-
-      inputs.addEventListener("input", () => {
-        // Adjust textarea height on text input.
-
-        textResize(inputs)
-      })
-
-      inputs.addEventListener('keydown', handleTab)
-
-      inputs.addEventListener("touchmove", e => {
-        // Stop propagation on "touchmove".
-
-        e.stopPropagation()
-      })
 
       results.addEventListener("click", e => {
         // Handle clicks on results and copies color from single color swatch when clicked.
@@ -413,22 +365,24 @@ ${content}
       buttonEdit.addEventListener("click", async() => {
         // Handle the button click: show source or execute source.
 
-        editTemp[currentID] = inputs.value
+        const editor = editorMgr[currentID]
+        editTemp[currentID] = editor.getValue()
         pgcode.classList.toggle("hidden")
         results.classList.toggle("hidden")
         buttonRun.classList.toggle("hidden")
         buttonCancel.classList.toggle("hidden")
         buttonEdit.classList.toggle("hidden")
         buttonShare.classList.toggle("hidden")
-        textResize(inputs)
-        inputs.focus()
+        editor.setValue(editor.getValue())
+        editor.focus()
       })
 
       buttonShare.addEventListener("click", async() => {
         // Handle the share click: copy URL with code as parameter.
 
         const base = window.location.pathname.split('/')[1]
-        const uri = encodeuri(inputs.value)
+        const editor = editorMgr[currentID]
+        const uri = encodeuri(editor.getValue())
         const loc = window.location
         let pathname = "/playground/"
         if (loc.pathname.startsWith(`/${base}/`)) {
@@ -480,15 +434,14 @@ ${content}
         buttonShare.classList.toggle("hidden")
         buttonRun.classList.toggle("hidden")
         buttonCancel.classList.toggle("hidden")
-
         delete editTemp[currentID]
         busy = false
       })
 
       buttonCancel.addEventListener("click", () => {
         // Cancel edit.
-
-        inputs.value = editTemp[currentID]
+        const editor = editorMgr[currentID]
+        editor.setValue(editTemp[currentID])
         delete editTemp[currentID]
         pgcode.classList.toggle("hidden")
         results.classList.toggle("hidden")
@@ -500,11 +453,36 @@ ${content}
     })
   }
 
+  const setupAce = async() => {
+    Object.keys(editorMgr).forEach(key => {
+      editorMgr[key].renderer.removeAllListeners()
+      editorMgr[key].destroy()
+    })
+
+    // editorMgr = {}
+    const editors = document.querySelectorAll('pre.playground-inputs')
+    editors.forEach(el => {
+      const id = el.id.replace(reIdNum, "$1")
+      const editor = ace.edit( // eslint-disable-line no-undef
+        el,
+        {
+          maxLines: 30,
+          minLines: 5,
+          fontSize: '13.6px',
+          fontFamily: '"Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace',
+          printMargin: false,
+          theme: "ace/theme/dracula",
+          mode: "ace/mode/python"
+        }
+      )
+      editorMgr[id] = editor
+    })
+  }
+
   const main = async(first, search) => {
     // Load external source to render in a playground.
     // This can be something like a file on a gist we must read in (?source=)
     // or raw code (?code=).
-
     editTemp = {}
 
     if (window.location.pathname.endsWith("/playground/")) {
@@ -561,6 +539,7 @@ ${content}
       gist = ""
       lastSearch = ""
       init(first)
+      await setupAce()
     }
   }
 
@@ -576,13 +555,15 @@ ${content}
   })
 
   // Attach main via subscribe (subscribes to Materials on page load and instant page loads)
-  window.document$.subscribe(() => {
+  window.document$.subscribe(async() => {
     // To get other libraries to reload, we may create a fake `DOMContentLoaded`
     // No need to process these events.
+
     if (fake) {
       fake = false
+      await setupAce()
       return
     }
-    main(true)
+    await main(true)
   })
 })()

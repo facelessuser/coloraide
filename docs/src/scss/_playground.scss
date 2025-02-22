@@ -1,15 +1,15 @@
 @use "utilities/convert";
 
+.md-header {
+  z-index: 5;
+}
+
 .playground-code {
   position: relative;
   width: 100%;
   height: 100%;
   margin-top: 2px;
   overflow: hidden;
-}
-
-.playground-code.hidden {
-  margin-top: 0;
 }
 
 .playground-code .highlight code {
@@ -23,9 +23,7 @@
 }
 
 .playground-code pre {
-  height: calc(100% + convert.px2rem(4px));
   margin: 0;
-  pointer-events: none;
 }
 
 .playground-results code {
@@ -52,12 +50,9 @@
   margin-bottom: 0;
 }
 
+.playground-code:not(.hidden) div.highlight ,
 .hidden .highlight,
 .hidden .playground-inputs {
-  display: none;
-}
-
-.playground-code:not(.hidden) div.highlight {
   display: none;
 }
 

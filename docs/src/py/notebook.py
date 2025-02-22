@@ -77,9 +77,9 @@ template = '''<div class="playground" id="__playground_{el_id}">
 <div class="playground-results" id="__playground-results_{el_id}">
 {results}
 </div>
-<div class="playground-code hidden" id="__playground-code_{el_id}" data-search-exclude>
+<div class="playground-code hidden" id="__playground-code_{el_id}" session="{session}" data-search-exclude>
 <form autocomplete="off">
-<textarea class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false" session="{session}">{raw_source}</textarea>
+<pre class="playground-inputs" id="__playground-inputs_{el_id}" spellcheck="false">{raw_source}</pre>
 </form>
 </div>
 <div class="playground-footer" data-search-exclude>
@@ -930,11 +930,10 @@ def render_console(*args, **kwargs):
 
     try:
         # Run code
-        inputs = document.getElementById("__playground-inputs_{}".format(globals()['id_num']))
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
         footer = document.querySelector("#__playground_{} .gamut".format(globals()['id_num']))
         session = globals()['session_id']
-        result = live_color_command_formatter(LIVE_INIT, gamut)(inputs.value, session=session)
+        result = live_color_command_formatter(LIVE_INIT, gamut)(globals()['__pyodide_input__'], session=session)
         temp = document.createElement('div')
         temp.innerHTML = result
 
