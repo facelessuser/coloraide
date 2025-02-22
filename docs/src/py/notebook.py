@@ -933,7 +933,7 @@ def render_console(*args, **kwargs):
         results = document.getElementById("__playground-results_{}".format(globals()['id_num']))
         footer = document.querySelector("#__playground_{} .gamut".format(globals()['id_num']))
         session = globals()['session_id']
-        result = live_color_command_formatter(LIVE_INIT, gamut)(globals()['__pyodide_input__'], session=session)
+        result = live_color_command_formatter(LIVE_INIT, gamut)(globals()['content'], session=session)
         temp = document.createElement('div')
         temp.innerHTML = result
 

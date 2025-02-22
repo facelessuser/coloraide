@@ -24,7 +24,7 @@ PLAYGROUND_WHEELS = [
     "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl"  # noqa: E501
 ]
 
-PLAYGROUND_PYODIDE_PKGS = []
+PLAYGROUND_PYODIDE_PKGS = ['micropip']
 
 MKDOCS_YML = 'docs/src/mkdocs.yml'
 

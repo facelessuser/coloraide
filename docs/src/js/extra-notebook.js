@@ -19,6 +19,11 @@
   let editTemp = {}
   const editorMgr = {}
   let notebookEditor = null
+  const installMatch = /^#[ \t]*micropip-require:[ \t]*((?:[-a-z0-1_]+[ \t]*)+)(?=\n|$)/
+  const installMdMatch = /^<!--[ \t]+micropip-require:[ \t]*((?:[-a-z0-1_]+[ \t]*)+)[ \t]+-->(?=\n|$)/
+  const installPrefix = /^#[ \t]*micropip-require:[ \t]*/
+  const installMdPrefix = /^<!--[ \t]+micropip-require:[ \t]*/
+  const installMdPost = /[ \t]+-->(?=\n|$)/
   const reIdNum = /.*?_(\d+)$/
   let initialized = false
   let lastSearch = ""
@@ -92,7 +97,23 @@ ${content}
     const session = currentInputs.getAttribute("session")
     const editor = editorMgr[currentID]
     currentInputs.setAttribute("readonly", "")
-    pyodide.globals.set('__pyodide_input__', editor.getValue())
+    const value = editor.getValue()
+    const match = installMatch.exec(value)
+    if (match) {
+      const installs = value.slice(match.index, match.index + match[0].length)
+        .replace(installPrefix, '')
+        .trim()
+        .split(' ')
+      try {
+        const micropip = pyodide.pyimport('micropip.install')
+        await micropip(installs)
+        pyodide.globals.set("content", value.slice(match.index + match[0].length))
+      } catch (err) {
+        pyodide.globals.set("content", value)
+      } // eslint-disable-line no-empty
+    } else {
+      pyodide.globals.set('content', value)
+    }
     pyodide.globals.set("id_num", currentID)
     pyodide.globals.set("action", "playground")
     pyodide.globals.set("session_id", session)
@@ -122,7 +143,23 @@ ${content}
     if (main.getAttribute('livecode')) {
       main.removeAttribute('livecode')
     }
-    pyodide.globals.set("content", text)
+    const match = installMdMatch.exec(text)
+    if (match) {
+      const installs = text.slice(match.index, match.index + match[0].length)
+        .replace(installMdPrefix, '')
+        .replace(installMdPost, '')
+        .trim()
+        .split(' ')
+      try {
+        const micropip = pyodide.pyimport('micropip.install')
+        await micropip(installs)
+        pyodide.globals.set("content", text.slice(match.index + match[0].length))
+      } catch (err) {
+        pyodide.globals.set("content", text)
+      } // eslint-disable-line no-empty
+    } else {
+      pyodide.globals.set("content", text)
+    }
     pyodide.globals.set("action", "notebook")
     pyodide.globals.set('SESSIONS', null)
     await pyodide.runPythonAsync(pycode)
