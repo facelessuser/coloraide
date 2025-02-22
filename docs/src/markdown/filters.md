@@ -216,6 +216,11 @@ def confusion_line(c, cone):
     return Color.steps([low, high], steps=6, space='lms', out_space='srgb')
 ```
 
+/// note | Editing Examples
+The LMS code above is part of the same session as the examples below (as noted in the bottom right corner). If you want
+to edit the examples, run the LMS code above at least once.
+///
+
 Then We generate 3 different color series, each specifically targeting a specific deficiency. This is done by generating
 a series of colors that have all properties equal except that they have variance in a different cone response. The first
 row varies only with the L cone response, the second only with the M cone response, and the third only with the S cone
