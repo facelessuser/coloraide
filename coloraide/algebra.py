@@ -29,8 +29,9 @@ import functools
 import itertools as it
 from .deprecate import deprecated
 from .types import (
-    ArrayLike, MatrixLike, VectorLike, TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool,
-    MatrixInt, ArrayType, Shape, ShapeLike, DimHints, SupportsFloatOrInt
+    ArrayLike, MatrixLike, FloatShape, VectorShape, MatrixShape, TensorShape, ArrayShape, VectorLike,
+    TensorLike, Array, Matrix, Tensor, Vector, VectorBool, MatrixBool, TensorBool, MatrixInt, ArrayType, Shape,
+    DimHints, SupportsFloatOrInt
 )
 from typing import Callable, Sequence, Iterator, Any, Iterable, overload
 
@@ -908,21 +909,21 @@ def acopy(a: ArrayLike) -> Array:
 
 
 @overload
-def _cross_pad(a: VectorLike, s: Shape) -> Vector:
+def _cross_pad(a: VectorLike, s: ArrayShape) -> Vector:
     ...
 
 
 @overload
-def _cross_pad(a: MatrixLike, s: Shape) -> Matrix:
+def _cross_pad(a: MatrixLike, s: ArrayShape) -> Matrix:
     ...
 
 
 @overload
-def _cross_pad(a: TensorLike, s: Shape) -> Tensor:
+def _cross_pad(a: TensorLike, s: ArrayShape) -> Tensor:
     ...
 
 
-def _cross_pad(a: ArrayLike, s: Shape) -> Array:
+def _cross_pad(a: ArrayLike, s: ArrayShape) -> Array:
     """Pad an array with 2-D vectors."""
 
     m = acopy(a)
@@ -953,8 +954,8 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     """Vector cross product."""
 
     # Determine shape of arrays
-    shape_a = shape(a)
-    shape_b = shape(b)
+    shape_a = shape(a)  # type: Shape
+    shape_b = shape(b)  # type: Shape
     dims_a = len(shape_a)
     dims_b = len(shape_b)
 
@@ -999,7 +1000,7 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
             # Cross a vector and an N-D matrix
             result = [vcross(a, r) for r in _extract_rows(b, shape_b)]  # type: ignore[arg-type]
 
-        return reshape(result, new_shape)
+        return reshape(result, tuple(new_shape))  # type: ignore[arg-type]
 
     # Cross an N-D and M-D matrix
     bcast = broadcast(a, b)
@@ -1024,10 +1025,10 @@ def cross(a: ArrayLike, b: ArrayLike) -> Any:
     if mdim > 1 and new_shape[-1] == 2:
         new_shape.pop(-1)
 
-    return reshape(data, new_shape)
+    return reshape(data, tuple(new_shape))  # type: ignore[arg-type]
 
 
-def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:
+def _extract_rows(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vector]:
     """Extract rows from an array."""
 
     if len(s) > 1 and s[1]:
@@ -1037,7 +1038,7 @@ def _extract_rows(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector
         yield m  # type: ignore[misc]
 
 
-def _extract_cols(m: ArrayLike, s: ShapeLike, depth: int = 0) -> Iterator[Vector]:
+def _extract_cols(m: ArrayLike, s: ArrayShape, depth: int = 0) -> Iterator[Vector]:
     """Extract columns from an array."""
 
     if len(s) > 2 and s[2]:
@@ -1146,8 +1147,8 @@ def dot(
     """
 
     if dims is None or dims[0] > 2 or dims[1] > 2:
-        shape_a = shape(a)
-        shape_b = shape(b)
+        shape_a = shape(a)  # type: Shape
+        shape_b = shape(b)  # type: Shape
         dims_a = len(shape_a)
         dims_b = len(shape_b)
 
@@ -1156,22 +1157,23 @@ def dot(
             if dims_a == 1:
                 # Dot product of vector and a M-D matrix
                 shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type, no-any-return]
+                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
             elif dims_b == 1:
                 # Dot product of vector and a M-D matrix
                 shape_c = shape_a[:-1]
-                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type, no-any-return]
+                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type]
             else:
                 # Dot product of N-D and M-D matrices
                 # Resultant size: `dot(xy, yz) = xz` or `dot(nxy, myz) = nxmz`
 
                 cols = list(_extract_cols(b, shape_b))  # type: ignore[arg-type]
-                return reshape(  # type: ignore[no-any-return]
+                new_shape = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]  # type: MatrixShape | TensorShape # type: ignore[assignment]
+                return reshape(
                     [
                         [sum(multiply(row, col)) for col in cols]
                         for row in _extract_rows(a, shape_a)  # type: ignore[arg-type]
                     ],
-                    shape_a[:-1] + shape_b[:-2] + shape_b[-1:]
+                    new_shape
                 )
     else:
         dims_a, dims_b = dims
@@ -1245,8 +1247,8 @@ def matmul(
     """
 
     if dims is None or dims[0] > 2 or dims[1] > 2:
-        shape_a = shape(a)
-        shape_b = shape(b)
+        shape_a = shape(a)  # type: ArrayShape
+        shape_b = shape(b)  # type: ArrayShape
         dims_a = len(shape_a)
         dims_b = len(shape_b)
 
@@ -1255,24 +1257,24 @@ def matmul(
             if dims_a == 1:
                 # Matrix multiply of vector and a M-D matrix
                 shape_c = shape_b[:-2] + shape_b[-1:]
-                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type, no-any-return]
+                return reshape([vdot(a, col) for col in _extract_cols(b, shape_b)], shape_c)  # type: ignore[arg-type]
             elif dims_b == 1:
                 # Matrix multiply of vector and a M-D matrix
                 shape_c = shape_a[:-1]
-                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type, no-any-return]
+                return reshape([vdot(row, b) for row in _extract_rows(a, shape_a)], shape_c)  # type: ignore[arg-type]
             elif shape_a[-1] == shape_b[-2]:
                 # Stacks of matrices are broadcast together as if the matrices were elements,
                 # respecting the signature `(n,k),(k,m)->(n,m)`.
                 common = _broadcast_shape([shape_a[:-2], shape_b[:-2]], max(dims_a, dims_b) - 2)
                 shape_a = common + shape_a[-2:]
-                a = broadcast_to(a, shape_a)
+                a = broadcast_to(a, shape_a)  # type: ignore[arg-type, assignment]
                 shape_b = common + shape_b[-2:]
-                b = broadcast_to(b, shape_b)
+                b = broadcast_to(b, shape_b)  # type: ignore[arg-type, assignment]
                 m2 = [
                     matmul(a1, b1, dims=D2)
                     for a1, b1 in zip(_extract_rows(a, shape_a[:-1]), _extract_rows(b, shape_b[:-1]))
                 ]
-                return reshape(m2, common + (shape_a[-2], shape_b[-1]))  # type: ignore[no-any-return]
+                return reshape(m2, common + (shape_a[-2], shape_b[-1]))  # type: ignore[arg-type]
 
             raise ValueError(
                 'Incompatible shapes in core dimensions (n?,k),(k,m?)->(n?,m?), {} != {}'.format(
@@ -1473,7 +1475,7 @@ def dot_x3(
     return matmul_x3(a, b, dims=(dims_a, dims_b))  # type: ignore[arg-type]
 
 
-def _matrix_chain_order(shapes: Sequence[Shape]) -> MatrixInt:
+def _matrix_chain_order(shapes: Sequence[ArrayShape]) -> MatrixInt:
     """
     Calculate chain order.
 
@@ -1571,7 +1573,7 @@ def multi_dot(arrays: Sequence[ArrayLike]) -> Any:
         pa = prod(shapes[0])
         pc = prod(shapes[2])
         cost1 = pa * shapes[2][0] + pc * shapes[0][0]
-        cost2 = pc * shapes[0][1] + pa * shapes[2][1]
+        cost2 = pc * shapes[0][1] + pa * shapes[2][1]  # type: ignore[misc]
         if cost1 < cost2:
             value = dot(dot(arrays[0], arrays[1], dims=D2), arrays[2], dims=D2)
         else:
@@ -1718,7 +1720,7 @@ class _SimpleBroadcast:
         self,
         arrays: Sequence[ArrayLike | float],
         shapes: Sequence[Shape],
-        new: ShapeLike
+        new: Shape
     ) -> None:
         """Initialize."""
 
@@ -1840,7 +1842,7 @@ class _SimpleBroadcast:
         return self
 
 
-def _broadcast_shape(shapes: list[Shape], max_dims: int, stage1_shapes: list[Shape] | None = None) -> Shape:
+def _broadcast_shape(shapes: Sequence[Shape], max_dims: int, stage1_shapes: list[Shape] | None = None) -> Shape:
     """Find the common shape."""
 
     # Adjust array shapes by padding out with '1's until matches max dimensions
@@ -1930,31 +1932,51 @@ def broadcast(*arrays: ArrayLike | float) -> Broadcast:
     return Broadcast(*arrays)
 
 
-def broadcast_to(a: ArrayLike | float, s: int | ShapeLike) -> Array:
+@overload
+def broadcast_to(a: ArrayLike | float, s: FloatShape) -> float:
+    ...
+
+
+@overload
+def broadcast_to(a: ArrayLike | float, s: int | VectorShape) -> Vector:
+    ...
+
+
+@overload
+def broadcast_to(a: ArrayLike | float, s: MatrixShape) -> Matrix:
+    ...
+
+
+@overload
+def broadcast_to(a: ArrayLike | float, s: TensorShape) -> Tensor:
+    ...
+
+
+def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
     """Broadcast array to a shape."""
 
-    if not isinstance(s, Sequence):
-        s = (s,)
+    _s = (s,) if not isinstance(s, Sequence) else tuple(s)
+    _a = [a] if not isinstance(a, Sequence) else a
 
-    if not isinstance(a, Sequence):
-        a = [a]
-
-    s_orig = shape(a)
+    s_orig = shape(_a)
     ndim_orig = len(s_orig)
-    ndim_target = len(s)
+    ndim_target = len(_s)
     if ndim_orig > ndim_target:
-        raise ValueError(f"Cannot broadcast {s_orig} to {s}")
+        raise ValueError(f"Cannot broadcast {s_orig} to {_s}")
+
+    if not ndim_target:
+        return _a  # type: ignore[return-value]
 
     s1 = list(s_orig)
     if ndim_orig < ndim_target:
         s1 = ([1] * (ndim_target - ndim_orig)) + s1
 
-    for d1, d2 in zip(s1, s):
+    for d1, d2 in zip(s1, _s):
         if d1 != d2 and (d1 != 1 or d1 > d2):
-            raise ValueError(f"Cannot broadcast {s_orig} to {s}")
+            raise ValueError(f"Cannot broadcast {s_orig} to {_s}")
 
-    m = list(_BroadcastTo(a, tuple(s1), tuple(s)))
-    return reshape(m, s) if len(s) > 1 else m
+    m = list(_BroadcastTo(a, tuple(s1), tuple(_s)))
+    return reshape(m, _s) if len(_s) > 1 else m  # type: ignore[arg-type]
 
 
 class vectorize:
@@ -2024,7 +2046,7 @@ class vectorize:
                 m.append(self.func(*inputs, **kwargs) if kwargs else self.func(*inputs))
 
             # Reshape return to match input shape
-            return reshape(m, bcast.shape) if len(bcast.shape) != 1 else m
+            return reshape(m, bcast.shape) if len(bcast.shape) != 1 else m  # type: ignore[arg-type]
 
         # Nothing to vectorize, just run the function with the arguments
         return self.func(*inputs, **kwargs) if kwargs else self.func(*inputs)
@@ -2147,7 +2169,7 @@ class _vectorize2:
 
                 # Apply math to an N-D matrix and an M-D matrix by broadcasting to a common shape.
                 bcast = broadcast(a, b)
-                return reshape([func(x, y) for x, y in bcast], bcast.shape)
+                return reshape([func(x, y) for x, y in bcast], bcast.shape)  # type: ignore[arg-type]
         else:
             dims_a, dims_b = dims
 
@@ -2384,27 +2406,27 @@ def vectorize1(pyfunc: Callable[..., Any], doc: str | None = None) -> Callable[.
 
 
 @overload
-def linspace(start: float, stop: float) -> Vector:
+def linspace(start: float, stop: float, num: int = 50, endpoint: bool = True) -> Vector:
     ...
 
 
 @overload
-def linspace(start: VectorLike, stop: VectorLike | float) -> Matrix:
+def linspace(start: VectorLike, stop: VectorLike | float, num: int = 50, endpoint: bool = True) -> Matrix:
     ...
 
 
 @overload
-def linspace(start: VectorLike | float, stop: VectorLike) -> Matrix:
+def linspace(start: VectorLike | float, stop: VectorLike, num: int = 50, endpoint: bool = True) -> Matrix:
     ...
 
 
 @overload
-def linspace(start: MatrixLike, stop: ArrayLike) -> Tensor:
+def linspace(start: MatrixLike, stop: ArrayLike, num: int = 50, endpoint: bool = True) -> Tensor:
     ...
 
 
 @overload
-def linspace(start: ArrayLike, stop: MatrixLike) -> Tensor:
+def linspace(start: ArrayLike, stop: MatrixLike, num: int = 50, endpoint: bool = True) -> Tensor:
     ...
 
 
@@ -2416,7 +2438,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
 
     # Return empty results over all the inputs for a request of 0
     if num == 0:
-        return full(broadcast(start, stop).shape + (0,), [])
+        return full(broadcast(start, stop).shape + (0,), [])  # type: ignore[return-value, arg-type]
 
     # Calculate denominator
     d = float(num - 1 if endpoint else num)
@@ -2434,18 +2456,18 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
     if dim1 <= 1 and dim2 <= 1:
         # Broadcast scalars to match vectors
         if dim1 == 0:
-            start = [start] * s2[0]  # type: ignore[assignment]
+            start = [start] * s2[0]  # type: ignore[assignment, misc]
             s1 = s2
         if dim2 == 0:
-            stop = [stop] * s1[0]  # type: ignore[assignment]
+            stop = [stop] * s1[0]  # type: ignore[assignment, misc]
             s2 = s1
 
         # Broadcast length 1 vectors to match other vector
-        if s1[0] != s2[0]:
-            if s1[0] == 1:
-                start = start * s2[0]  # type: ignore[operator]
-            elif s2[0] == 1:
-                stop = stop * s1[0]  # type: ignore[operator]
+        if s1[0] != s2[0]:  # type: ignore[misc]
+            if s1[0] == 1:  # type: ignore[misc]
+                start = start * s2[0]  # type: ignore[operator, misc]
+            elif s2[0] == 1:  # type: ignore[misc]
+                stop = stop * s1[0]  # type: ignore[operator, misc]
             else:
                 raise ValueError(f'Cannot broadcast start ({s1}) and stop ({s2})')
 
@@ -2467,7 +2489,7 @@ def linspace(start: ArrayLike | float, stop: ArrayLike | float, num: int = 50, e
             m.append(lerp(a, b, r / d if d != 0 else 0.0))
 
     # Reshape to the expected shape
-    return reshape(m, (num,) + bcast.shape)  # type: ignore[no-any-return]
+    return reshape(m, (num,) + bcast.shape)  # type: ignore[return-value, arg-type]
 
 
 def _isclose(a: float, b: float, *, equal_nan: bool = False, **kwargs: Any) -> bool:
@@ -2808,36 +2830,94 @@ subtract_x3 = vectorize2(
 )
 
 
-def full(array_shape: int | ShapeLike, fill_value: float | ArrayLike) -> Array:
+@overload
+def full(array_shape: FloatShape, fill_value: float | ArrayLike) -> float:
+    ...
+
+@overload
+def full(array_shape: int | VectorShape, fill_value: float | ArrayLike) -> Vector:
+    ...
+
+
+@overload
+def full(array_shape: MatrixShape, fill_value: float | ArrayLike) -> Matrix:
+    ...
+
+
+@overload
+def full(array_shape: TensorShape, fill_value: float | ArrayLike) -> Tensor:
+    ...
+
+
+def full(array_shape: int | Shape, fill_value: float | ArrayLike) -> Array | float:
     """Create and fill a shape with the given values."""
 
     # Ensure `shape` is a sequence of sizes
-    array_shape = (array_shape,) if not isinstance(array_shape, Sequence) else tuple(array_shape)
+    s = (array_shape,) if not isinstance(array_shape, Sequence) else tuple(array_shape)
 
     # Normalize `fill_value` to be an array.
     if not isinstance(fill_value, Sequence):
-        return reshape([fill_value] * prod(array_shape), array_shape)  # type: ignore[no-any-return]
+        return reshape([fill_value] * prod(s), s)  # type: ignore[arg-type]
 
     # If the shape doesn't fit the data, try and broadcast it.
     # If it does fit, just reshape it.
-    if shape(fill_value) != tuple(array_shape):
-        return broadcast_to(fill_value, array_shape)
-    return reshape(fill_value, array_shape)  # type: ignore[no-any-return]
+    if shape(fill_value) != s:
+        return broadcast_to(fill_value, s)  # type: ignore[arg-type]
+    return reshape(fill_value, s)  # type: ignore[arg-type]
 
 
-def ones(array_shape: int | ShapeLike) -> Array:
+@overload
+def ones(array_shape: FloatShape) -> float:
+    ...
+
+
+@overload
+def ones(array_shape: int | VectorShape) -> Vector:
+    ...
+
+
+@overload
+def ones(array_shape: MatrixShape) -> Matrix:
+    ...
+
+
+@overload
+def ones(array_shape: TensorShape) -> Tensor:
+    ...
+
+
+def ones(array_shape: int | Shape) -> Array | float:
     """Create and fill a shape with ones."""
 
-    return full(array_shape, 1.0)
+    return full(array_shape, 1.0)  # type: ignore[arg-type]
 
 
-def zeros(array_shape: int | ShapeLike) -> Array:
+@overload
+def zeros(array_shape: FloatShape) -> float:
+    ...
+
+@overload
+def zeros(array_shape: int | VectorShape) -> Vector:
+    ...
+
+
+@overload
+def zeros(array_shape: MatrixShape) -> Matrix:
+    ...
+
+
+@overload
+def zeros(array_shape: TensorShape) -> Tensor:
+    ...
+
+
+def zeros(array_shape: int | Shape) -> Array | float:
     """Create and fill a shape with zeros."""
 
-    return full(array_shape, 0.0)
+    return full(array_shape, 0.0)  # type: ignore[arg-type]
 
 
-def ndindex(*s: ShapeLike) -> Iterator[tuple[int, ...]]:
+def ndindex(*s: Shape) -> Iterator[tuple[int, ...]]:
     """Iterate dimensions."""
 
     yield from it.product(
@@ -2922,7 +3002,7 @@ def transpose(array: ArrayLike | float) -> float | Array:
     we don't have a need for that, nor the desire to figure it out :).
     """
 
-    s = shape(array)[::-1]
+    s = shape(array)[::-1]  # type: Shape
     if not s:
         return array  # type: ignore[return-value]
 
@@ -2977,7 +3057,28 @@ def transpose(array: ArrayLike | float) -> float | Array:
     return m
 
 
-def reshape(array: ArrayLike | float, new_shape: int | ShapeLike) -> Any:
+
+@overload
+def reshape(array: ArrayLike | float, new_shape: FloatShape) -> float:
+    ...
+
+
+@overload
+def reshape(array: ArrayLike | float, new_shape: int | VectorShape) -> Vector:
+    ...
+
+
+@overload
+def reshape(array: ArrayLike | float, new_shape: MatrixShape) -> Matrix:
+    ...
+
+
+@overload
+def reshape(array: ArrayLike | float, new_shape: TensorShape) -> Tensor:
+    ...
+
+
+def reshape(array: ArrayLike | float, new_shape: int | Shape) -> float | Array:
     """Change the shape of an array."""
 
     # Ensure floats are arrays
@@ -3064,7 +3165,27 @@ def _shape(a: ArrayLike | float, s: Shape) -> Shape:
     return (size,) + first
 
 
-def _quick_shape(a: ArrayLike) -> Shape:
+@overload
+def _quick_shape(a: float) -> FloatShape:
+    ...
+
+
+@overload
+def _quick_shape(a: VectorLike) -> VectorShape:
+    ...
+
+
+@overload
+def _quick_shape(a: MatrixLike) -> MatrixShape:
+    ...
+
+
+@overload
+def _quick_shape(a: TensorLike) -> TensorShape:
+    ...
+
+
+def _quick_shape(a: ArrayLike | float) -> Shape:
     """
     Acquire shape taking shortcuts by assume a non-ragged, consistently shaped array.
 
@@ -3080,6 +3201,26 @@ def _quick_shape(a: ArrayLike) -> Shape:
             break
         t = t[0]
     return tuple(s)
+
+
+@overload
+def shape(a: float) -> FloatShape:
+    ...
+
+
+@overload
+def shape(a: VectorLike) -> VectorShape:
+    ...
+
+
+@overload
+def shape(a: MatrixLike) -> MatrixShape:
+    ...
+
+
+@overload
+def shape(a: TensorLike) -> TensorShape:
+    ...
 
 
 def shape(a: ArrayLike | float) -> Shape:
@@ -3191,7 +3332,7 @@ def diag(array: VectorLike | MatrixLike, k: int = 0) -> Vector | Matrix:
         return m
     else:
         # Extract the requested diagonal from a rectangular 2-D matrix
-        size = s[1]
+        size = s[1]  # type: ignore[misc]
         d = []
         for i, r in enumerate(array):
             pos = i + k
@@ -3243,7 +3384,7 @@ def lu(
             )
         )
         for parts in zipped:
-            results.append(reshape(parts, first + shape(parts[0])))  # noqa: PERF401
+            results.append(reshape(parts, first + shape(parts[0])))   # type: ignore[arg-type]  # noqa: PERF401
         return tuple(results)
 
     # Wide or tall matrices
@@ -3342,7 +3483,7 @@ def _forward_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _forward_sub_matrix(a: Matrix, b: Matrix, s: Shape) -> Matrix:
+def _forward_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
     """Forward substitution for solution of `L x = b` where `b` is a matrix."""
 
     size1, size2 = s
@@ -3367,7 +3508,7 @@ def _back_sub_vector(a: Matrix, b: Vector, size: int) -> Vector:
     return b
 
 
-def _back_sub_matrix(a: Matrix, b: Matrix, s: Shape) -> Matrix:
+def _back_sub_matrix(a: Matrix, b: Matrix, s: ArrayShape) -> Matrix:
     """Back substitution for solution of `U x = b`."""
 
     size1, size2 = s
@@ -3473,7 +3614,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
     x = []  # type: Any
 
     # Broadcast the solving
-    if s2[-2] == size:
+    if s2[-2] == size:  # type: ignore[misc]
         if s2[-1] == size:
             p1 = prod(s)
             p2 = prod(s2)
@@ -3481,15 +3622,15 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             sol_m = not p2 % p1
             # Multiple equations sets with a single series of dependent variables per equation set (vectors)
             sol_v = not sol_m and not p1 % p2
-        elif s2[-2] == size:
+        elif s2[-2] == size:  # type: ignore[misc]
             # One matrix of equations with multiple series of K dependent variable sets (matrix)
-            p1 = prod(s[:-1])
-            p2 = prod(s2[:-1])
+            p1 = prod(s[:-1])  # type: ignore[misc]
+            p2 = prod(s2[:-1])  # type: ignore[misc]
             sol_m = not p2 % p1
     elif s2[-1] == size:
         # Multiple equations sets with a single series of dependent variables per equation set (vectors)
-        p1 = prod(s[:-2])
-        p2 = prod(s2[:-1])
+        p1 = prod(s[:-2])  # type: ignore[misc]
+        p2 = prod(s2[:-1])  # type: ignore[misc]
         sol_v = p1 == p2
 
     # Matrix and matrices
@@ -3498,7 +3639,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
         ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
         rows_sol = list(_extract_rows(b, s2))
         mb = [rows_sol[r:r + size] for r in range(0, len(rows_sol), size)]
-        ai_shape = s[-2:]
+        ai_shape = s[-2:]  # type: ignore[misc]
 
         p, l, u = lu(ma[0], p_indices=True, _shape=ai_shape)
 
@@ -3509,14 +3650,14 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             bi = [list(bi[i]) for i in p]
             s3 = (size, len(bi[0]))
             x.append(_back_sub_matrix(u, _forward_sub_matrix(l, bi, s3), s3))
-        return reshape(x, s2)  # type: ignore[no-any-return]
+        return reshape(x, s2)
 
     # Matrices and vectors
     elif sol_v:
         rows_equ = list(_extract_rows(a, s))
         ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
         mv = list(_extract_rows(b, s2))
-        ai_shape = s[-2:]
+        ai_shape = s[-2:]  # type: ignore[misc]
 
         for ai, vi in zip(ma, mv):
             p, l, u = lu(ai, p_indices=True, _shape=ai_shape)
@@ -3525,7 +3666,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
                 raise ValueError('Matrix is singular')
 
             x.append(_back_sub_vector(u, _forward_sub_vector(l, [vi[i] for i in p], size), size))
-        return reshape(x, s2)  # type: ignore[no-any-return]
+        return reshape(x, s2)
 
     raise ValueError(f"Could not broadcast {s} and {s2}")
 
@@ -3560,7 +3701,7 @@ def det(array: MatrixLike | TensorLike) -> float | Vector:
         dt = sign * prod(l[i][i] * u[i][i] for i in range(size))
         return 0.0 if not dt else dt
     else:
-        last = s[-2:]
+        last = s[-2:]  # type: ignore[misc]
         rows = list(_extract_rows(array, s))
         step = last[-2]
         return [det(rows[r:r + step]) for r in range(0, len(rows), step)]
@@ -3582,7 +3723,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Ensure we have a square matrix
     s = shape(matrix)
     dims = len(s)
-    last = s[-2:]
+    last = s[-2:]  # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
         raise ValueError('Matrix must be a N x N matrix')
 
@@ -3592,7 +3733,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
         rows = list(_extract_rows(matrix, s))
         step = last[-2]
         invert = [inv(rows[r:r + step]) for r in range(0, len(rows), step)]
-        return reshape(invert, s)  # type: ignore[no-any-return]
+        return reshape(invert, s)
 
     # Calculate the LU decomposition.
     size = s[0]
@@ -3665,7 +3806,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
             dims = 2
         elif dims == 1:
             a = [a]  # type: ignore[assignment]
-            s = (1, s[0])
+            s = (1, s[0])  # type: ignore[misc]
             dims = 2
 
         # Verify that we can apply the stacking
@@ -3679,7 +3820,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
                 raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
 
         # Stack the arrays
-        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))
+        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type, misc]
 
         # Update the last array tracker
         if not last or len(last) > len(s):
@@ -3693,7 +3834,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
     return m
 
 
-def _hstack_extract(a: ArrayLike | float, s: ShapeLike) -> Iterator[Array]:
+def _hstack_extract(a: ArrayLike | float, s: ArrayShape) -> Iterator[Array]:
     """Extract data from the second axis."""
 
     data = flatiter(a)
@@ -3778,7 +3919,7 @@ def hstack(arrays: Sequence[ArrayLike | float]) -> Array:
 
     # Shape the data to the new shape
     new_shape = largest[:axis] + (columns,) + largest[axis + 1:] if len(largest) > 1 else (columns,)
-    return reshape(m, new_shape)  # type: ignore[no-any-return]
+    return reshape(m, new_shape)  # type: ignore[return-value, arg-type]
 
 
 def outer(a: float | ArrayLike, b: float | ArrayLike) -> Matrix:
@@ -3903,10 +4044,10 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
 
     # Perform the actual inner product
     m = [[sum([x * y for x, y in it.zip_longest(r1, r2)]) for r2 in second] for r1 in first]
-    new_shape = shape_a[:-1] + shape_b[:-1]
+    new_shape = shape_a[:-1] + shape_b[:-1]  # type: ignore[misc]
 
     # Shape the data.
-    return reshape(m, new_shape)  # type: ignore[no-any-return]
+    return reshape(m, new_shape)  # type: ignore[arg-type]
 
 
 def fnnls(

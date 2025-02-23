@@ -2209,7 +2209,7 @@ class TestAlgebra(unittest.TestCase):
     def test_lerp2d(self):
         """Test 2D interpolation."""
 
-        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1, 1]]
+        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1.0, 1.0]]
         v = alg.lerp2d(alg.transpose(m), [0.5, 0.5])
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.525, 0.4875])]
         v = alg.lerp2d(alg.transpose(m), [0.0, 0.0])
@@ -2224,7 +2224,7 @@ class TestAlgebra(unittest.TestCase):
     def test_ilerp2d(self):
         """Test inverse 2D interpolation."""
 
-        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1, 1]]
+        m = [[0.1, 0.0], [1.0, 0.0], [0.0, .95], [1.0, 1.0]]
         v = alg.ilerp2d(alg.transpose(m), [0.525, 0.4875])
         [self.assertAlmostEqual(a, b) for a, b in zip(v, [0.5, 0.5])]
         v = alg.ilerp2d(alg.transpose(m), [0.1, 0.0])
