@@ -1,6 +1,7 @@
 # noqa: A005
 """Typing."""
 from __future__ import annotations
+import sys
 from typing import Union, Any, Mapping, Sequence, TypeVar, TypeAlias, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -35,7 +36,13 @@ ArrayInt = MatrixInt | VectorInt | TensorInt
 FloatShape = tuple[()]
 VectorShape = tuple[int]
 MatrixShape = tuple[int, int]
-TensorShape: TypeAlias = "tuple[int, int, int, *tuple[int, ...]]"
+
+if (3, 11) <= sys.version_info:
+    TensorShape: TypeAlias = "tuple[int, int, int, *tuple[int, ...]]"
+else:
+    # For versions below 3.10, just treat tensors as one deper than a Matrix.
+    # We don't directly use tensors in ColorAide even though they are supported.
+    TensorShape = tuple[int, int, int]
 
 ArrayShape = tuple[int, ...]
 Shape = FloatShape | ArrayShape
