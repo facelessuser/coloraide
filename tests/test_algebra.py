@@ -677,6 +677,14 @@ class TestAlgebra(unittest.TestCase):
             [3, 3, 3]
         )
 
+        self.assertEqual(
+            alg.broadcast_to(3, ()),
+            3
+        )
+
+        with self.assertRaises(ValueError):
+            alg.broadcast_to([1, 2, 3], ())
+
         # Can't broadcast to a smaller size
         with self.assertRaises(ValueError):
             alg.broadcast_to([[3, 3, 3], [3, 3, 3]], (3,))

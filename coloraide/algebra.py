@@ -1956,16 +1956,15 @@ def broadcast_to(a: ArrayLike | float, s: int | Shape) -> float | Array:
     """Broadcast array to a shape."""
 
     _s = (s,) if not isinstance(s, Sequence) else tuple(s)
-    _a = [a] if not isinstance(a, Sequence) else a
 
-    s_orig = shape(_a)
+    s_orig = shape(a)
     ndim_orig = len(s_orig)
     ndim_target = len(_s)
     if ndim_orig > ndim_target:
         raise ValueError(f"Cannot broadcast {s_orig} to {_s}")
 
     if not ndim_target:
-        return _a  # type: ignore[return-value]
+        return a  # type: ignore[return-value]
 
     s1 = list(s_orig)
     if ndim_orig < ndim_target:
