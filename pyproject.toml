@@ -9,7 +9,10 @@ name = "coloraide"
 description = "A color library for Python."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
+dependencies = [
+    "typing-extensions;python_version<'3.11'"
+]
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
@@ -30,7 +33,6 @@ keywords = [
 ]
 dynamic = [
     "classifiers",
-    "dependencies",
     "version",
 ]
 
@@ -142,7 +144,7 @@ legacy_tox_ini = """
     [tox]
     isolated_build = true
     envlist=
-        py38,py39,py310,py311,py312,py313,
+        py39,py310,py311,py312,py313,
         lint
 
     [testenv]

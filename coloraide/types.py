@@ -1,8 +1,12 @@
 # noqa: A005
 """Typing."""
 from __future__ import annotations
+import sys
 from typing import Union, Any, Mapping, Sequence, List, Tuple, TypeVar, TYPE_CHECKING
-
+if (3, 11) <= sys.version_info:
+    from typing import Unpack
+else:
+    from typing_extensions import Unpack
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
@@ -32,7 +36,13 @@ TensorInt = List[List[List[Union[int, Any]]]]
 ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
 
 # General algebra types
-Shape = Tuple[int, ...]
+FloatShape = Tuple[()]
+VectorShape = Tuple[int]
+MatrixShape = Tuple[int, int]
+TensorShape = Tuple[int, int, int, Unpack[Tuple[int, ...]]]
+
+ArrayShape = Tuple[int, ...]
+Shape = Union[FloatShape, ArrayShape]
 ShapeLike = Sequence[int]
 DimHints = Tuple[int, int]
 
