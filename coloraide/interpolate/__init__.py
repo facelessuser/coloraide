@@ -488,6 +488,17 @@ class Interpolate(Plugin, metaclass=ABCMeta):
     ) -> Interpolator:
         """Get the interpolator object."""
 
+    def get_space(self, space: str | None, color_cls: type[Color]) -> str:
+        """
+        Get and validate the color space for interpolation.
+
+        If no space is defined, return an appropriate default color space.
+        """
+
+        if space is None:
+            space = color_cls.INTERPOLATE
+        return space
+
 
 def calc_stops(stops: dict[int, float], count: int) -> dict[int, float]:
     """Calculate stops."""
@@ -678,8 +689,7 @@ def interpolator(
     # Construct piecewise interpolation object
     stops = {}  # type: Any
 
-    if space is None:
-        space = color_cls.INTERPOLATE
+    space = plugin.get_space(space, color_cls)
 
     if not colors:
         raise ValueError('At least one color must be specified.')
