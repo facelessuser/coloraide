@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.3
+
+-   **NEW**: Drop Python 3.8 support as it is "end of life".
+
 ## 4.2.2
 
 -   **FIX**: More precise inverse of RYB Biased.

@@ -144,7 +144,7 @@ legacy_tox_ini = """
     [tox]
     isolated_build = true
     envlist=
-        py38,py39,py310,py311,py312,py313,
+        py39,py310,py311,py312,py313,
         lint
 
     [testenv]
