@@ -1,7 +1,7 @@
 # noqa: A005
 """Typing."""
 from __future__ import annotations
-from typing import Union, Any, Mapping, Sequence, List, Tuple, TypeVar, TYPE_CHECKING
+from typing import Union, Any, Mapping, Sequence, TypeVar, TypeAlias, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
@@ -9,37 +9,38 @@ if TYPE_CHECKING:  # pragma: no cover
 ColorInput = Union['Color', str, Mapping[str, Any]]
 
 # Vectors, Matrices, and Arrays are assumed to be mutable lists
-Vector = List[float]
-Matrix = List[Vector]
-Tensor = List[List[List[Union[float, Any]]]]
-Array = Union[Matrix, Vector, Tensor]
+Vector = list[float]
+Matrix = list[Vector]
+Tensor = list[list[list[float | Any]]]
+Array = Matrix | Vector | Tensor
 
 # Anything that resembles a sequence will be considered "like" one of our types above
 VectorLike = Sequence[float]
 MatrixLike = Sequence[VectorLike]
-TensorLike = Sequence[Sequence[Sequence[Union[float, Any]]]]
-ArrayLike = Union[VectorLike, MatrixLike, TensorLike]
+TensorLike = Sequence[Sequence[Sequence[float | Any]]]
+ArrayLike = VectorLike | MatrixLike | TensorLike
 
 # Vectors, Matrices, and Arrays of various, specific types
-VectorBool = List[bool]
-MatrixBool = List[VectorBool]
-TensorBool = List[List[List[Union[bool, Any]]]]
-ArrayBool = Union[MatrixBool, VectorBool, TensorBool]
+VectorBool = list[bool]
+MatrixBool = list[VectorBool]
+TensorBool = list[list[list[bool | Any]]]
+ArrayBool = MatrixBool | VectorBool | TensorBool
 
-VectorInt = List[int]
-MatrixInt = List[VectorInt]
-TensorInt = List[List[List[Union[int, Any]]]]
-ArrayInt = Union[MatrixInt, VectorInt, TensorInt]
+VectorInt = list[int]
+MatrixInt = list[VectorInt]
+TensorInt = list[list[list[int | Any]]]
+ArrayInt = MatrixInt | VectorInt | TensorInt
 
 # General algebra types
-FloatShape = Tuple[()]
-VectorShape = Tuple[int]
-MatrixShape = Tuple[int, int]
-TensorShape = Tuple[int, int, int, *Tuple[int, ...]]
-ArrayShape = Tuple[int, ...]
+FloatShape = tuple[()]
+VectorShape = tuple[int]
+MatrixShape = tuple[int, int]
+TensorShape: TypeAlias = "tuple[int, int, int, *tuple[int, ...]]"
+
+ArrayShape = tuple[int, ...]
 Shape = FloatShape | ArrayShape
 ShapeLike = Sequence[int]
-DimHints = Tuple[int, int]
+DimHints = tuple[int, int]
 
 # For times when we must explicitly say we support `int` and `float`
 SupportsFloatOrInt = TypeVar('SupportsFloatOrInt', float, int)
