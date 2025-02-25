@@ -3624,13 +3624,13 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
             sol_v = not sol_m and not p1 % p2
         elif s2[-2] == size:  # type: ignore[misc]
             # One matrix of equations with multiple series of K dependent variable sets (matrix)
-            p1 = prod(s[:-1])  # type: ignore[misc, unused-ignore]
-            p2 = prod(s2[:-1])  # type: ignore[misc, unused-ignore]
+            p1 = prod(s[:-1])  # type: ignore[misc]
+            p2 = prod(s2[:-1])  # type: ignore[misc]
             sol_m = not p2 % p1
     elif s2[-1] == size:
         # Multiple equations sets with a single series of dependent variables per equation set (vectors)
-        p1 = prod(s[:-2])  # type: ignore[misc, unused-ignore]
-        p2 = prod(s2[:-1])  # type: ignore[misc, unused-ignore]
+        p1 = prod(s[:-2])  # type: ignore[misc]
+        p2 = prod(s2[:-1])  # type: ignore[misc]
         sol_v = p1 == p2
 
     # Matrix and matrices
@@ -3639,7 +3639,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
         ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
         rows_sol = list(_extract_rows(b, s2))
         mb = [rows_sol[r:r + size] for r in range(0, len(rows_sol), size)]
-        ai_shape = s[-2:]  # type: ignore[misc, unused-ignore]
+        ai_shape = s[-2:]  # type: ignore[misc]
 
         p, l, u = lu(ma[0], p_indices=True, _shape=ai_shape)
 
@@ -3657,7 +3657,7 @@ def solve(a: MatrixLike | TensorLike, b: ArrayLike) -> Array:
         rows_equ = list(_extract_rows(a, s))
         ma = [rows_equ[r:r + size] for r in range(0, len(rows_equ), size)]
         mv = list(_extract_rows(b, s2))
-        ai_shape = s[-2:]  # type: ignore[misc, unused-ignore]
+        ai_shape = s[-2:]  # type: ignore[misc]
 
         for ai, vi in zip(ma, mv):
             p, l, u = lu(ai, p_indices=True, _shape=ai_shape)
@@ -3701,7 +3701,7 @@ def det(array: MatrixLike | TensorLike) -> float | Vector:
         dt = sign * prod(l[i][i] * u[i][i] for i in range(size))
         return 0.0 if not dt else dt
     else:
-        last = s[-2:]  # type: ignore[misc, unused-ignore]
+        last = s[-2:]  # type: ignore[misc]
         rows = list(_extract_rows(array, s))
         step = last[-2]
         return [det(rows[r:r + step]) for r in range(0, len(rows), step)]
@@ -3723,7 +3723,7 @@ def inv(matrix: MatrixLike | TensorLike) -> Matrix | Tensor:
     # Ensure we have a square matrix
     s = shape(matrix)
     dims = len(s)
-    last = s[-2:]  # type: ignore[misc, unused-ignore]
+    last = s[-2:]  # type: ignore[misc]
     if dims < 2 or min(last) != max(last):
         raise ValueError('Matrix must be a N x N matrix')
 
@@ -3820,7 +3820,7 @@ def vstack(arrays: Sequence[ArrayLike | float]) -> Matrix | Tensor:
                 raise ValueError('All the input array dimensions except for the concatenation axis must match exactly')
 
         # Stack the arrays
-        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type, misc, unused-ignore]
+        m.extend(reshape(a, (prod(s[:1 - dims]),) + s[1 - dims:-1] + s[-1:]))  # type: ignore[arg-type, misc]
 
         # Update the last array tracker
         if not last or len(last) > len(s):
@@ -4044,7 +4044,7 @@ def inner(a: float | ArrayLike, b: float | ArrayLike) -> float | Array:
 
     # Perform the actual inner product
     m = [[sum([x * y for x, y in it.zip_longest(r1, r2)]) for r2 in second] for r1 in first]
-    new_shape = shape_a[:-1] + shape_b[:-1]  # type: ignore[misc, unused-ignore]
+    new_shape = shape_a[:-1] + shape_b[:-1]  # type: ignore[misc]
 
     # Shape the data.
     return reshape(m, new_shape)  # type: ignore[arg-type]
