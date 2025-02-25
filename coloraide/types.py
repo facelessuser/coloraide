@@ -3,7 +3,10 @@
 from __future__ import annotations
 import sys
 from typing import Union, Any, Mapping, Sequence, TypeVar, TYPE_CHECKING
-
+if (3, 11) <= sys.version_info:
+    from typing import Unpack
+else:
+    from typing_extensions import Unpack
 if TYPE_CHECKING:  # pragma: no cover
     from .color import Color
 
@@ -36,13 +39,7 @@ ArrayInt = MatrixInt | VectorInt | TensorInt
 FloatShape = tuple[()]
 VectorShape = tuple[int]
 MatrixShape = tuple[int, int]
-
-if (3, 11) <= sys.version_info:
-    TensorShape = tuple[int, int, int, *tuple[int, ...]]
-else:
-    # For versions below 3.10, just treat tensors as one deper than a Matrix.
-    # We don't directly use tensors in ColorAide even though they are supported.
-    TensorShape = tuple[int, int, int]
+TensorShape = tuple[int, int, int, Unpack[tuple[int, ...]]]
 
 ArrayShape = tuple[int, ...]
 Shape = FloatShape | ArrayShape
