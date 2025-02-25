@@ -2,6 +2,8 @@
 
 ## 4.3
 
+-   **NEW**: Interpolate plugins now define a `get_space` hook allowing them to validate and return an appropriate
+    default space if the normal default cannot be supported.
 -   **NEW**: Drop Python 3.8 support as it is "end of life".
 -   **FIX**: Typing fixes.
 

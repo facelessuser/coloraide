@@ -33,11 +33,23 @@ class Interpolate(Plugin, metaclass=ABCMeta):
         **kwargs: Any
     ) -> Interpolator:
         """Get the interpolator object."""
+
+    def get_space(self, space: str | None, color_cls: type[Color]) -> str:
+        """
+        Get and validate the color space for interpolation.
+
+        If no space is defined, return an appropriate default color space.
+        """
 ```
 
 Once registered, the plugin can then be used via `interpolate`, `steps`, or `mix` by passing its `NAME` via the `method`
 parameter along with any additional key word arguments to override default behavior. An `Interpolator` object will be
 returned which allows for interpolating between the given list of `colors`.
+
+The `Interpolate` class also defines a `get_space` method that will be passed a the user defined space (if one is
+specified) and can validate whether the space is supported, raising an error if not, or return the space. If a space
+is not specified, an appropriate default can be returned, usually `Color.INTERPOLATE` but can differ if the interpolator
+can only support very specific spaces.
 
 ```py
 color.interpolate(colors, method=NAME)
