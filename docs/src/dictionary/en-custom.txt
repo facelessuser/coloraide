@@ -35,6 +35,7 @@ CMYK
 CSS
 CVD
 CVDs
+Cardano
 Catmull
 Changelog
 Chemometrics

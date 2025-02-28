@@ -40,14 +40,13 @@ This greatly simplifies things and makes it faster.
 """
 from __future__ import annotations
 import functools
-import math
 from . import algebra as alg
 from typing import Callable
 
 
 def _bezier(a: float, b: float, c: float, y: float = 0.0) -> Callable[[float], float]:
     """
-    Calculate the bezier point.
+    Calculate the Bezier point.
 
     We know that P0 and P3 are always (0, 0) and (1, 1) respectively.
     Knowing this we can simplify the equation by precalculating them in.
@@ -56,51 +55,32 @@ def _bezier(a: float, b: float, c: float, y: float = 0.0) -> Callable[[float], f
     return lambda x: a * x ** 3 + b * x ** 2 + c * x - y
 
 
-def _bezier_derivative(a: float, b: float, c: float) -> Callable[[float], float]:
-    """Derivative of curve."""
-
-    return lambda x: 3 * a * x ** 2 + 2 * b * x + c
-
-
 def _solve_bezier(
     target: float,
     a: float,
     b: float,
-    c: float,
-    rtol: float = 1e-12,
-    atol: float = 9e-13,
-    maxiter: int = 8
+    c: float
 ) -> float:
     """
-    Solve curve to find a `t` that satisfies our desired `x`.
+    Solve curve to find a `t` that satisfies our desired `x` (target).
 
-    Try a few rounds of Newton's method which is generally faster. If we fail,
-    resort to binary search.
+    The `target` is expected to be within the range of 0 - 1, this will yield a `t` within that same range.
     """
 
-    # Try Newtons method to see if we can find a suitable value
-    t = 0.5
-    f0 = _bezier(a, b, c, y=target)
-    t, converged = alg.solve_newton(
-        t,
-        f0,
-        _bezier_derivative(a, b, c),
-        maxiter=maxiter,
-        rtol=rtol,
-        atol=atol,
-        ostrowski=True
-    )
+    # These Bezier curves are designed such that beyond the range 0 - 1 the response is linear,
+    # so it is assumed that any values at or exceeding this range `x == t`
+    if target <= 0.0 or target >= 1.0:
+        return target
 
-    # We converged or we are close enough
-    if converged or math.isclose(t, target, rel_tol=rtol, abs_tol=atol):
-        return t
+    roots = alg.solve_poly([a, b, c, -target])
+    # Find value within range
+    for r in roots:
+        # Solution is well within range
+        if 0 <= r <= 1:
+            return r
 
-    # We couldn't achieve our desired accuracy with Newton,
-    # so bisect at lower accuracy until we arrive at a suitable value
-    t, converged = alg.solve_bisect(0.0, 1.0, f0, start=target, maxiter=maxiter, rtol=rtol, atol=atol)
-
-    # Just return whatever we got closest to
-    return t  # pragma: no cover
+    # We should never hit this in normal situations
+    raise ValueError(f'Could not find a solution for {a}t ** 3 + {b}t ** 2 + {c} = {target}')
 
 
 def _extrapolate(t: float, p1: tuple[float, float], p2: tuple[float, float]) -> float:
@@ -157,18 +137,12 @@ def _calc_bezier(
     `t` that satisfies the `x` so that we can find the `y`.
     """
 
-    # We'll likely not get a nice round 0 or 1 using the methods below,
-    # but we know 0 and 1 should yield 0 and 1, so shortcut out and
-    # same some calculations.
-    if target in (0, 1):
-        return target
-
-    # Extrapolate per the spec
-    if target > 1 or target < 0:
-        return _extrapolate(target, p1, p2)
-
     # Solve for `t` in relation to `x`
     t = _solve_bezier(target, a[0], b[0], c[0])
+
+    # Extrapolate for `y` per the spec
+    if t > 1 or t < 0:
+        return _extrapolate(t, p1, p2)
 
     # Use the found `t` to locate the `y`
     y = _bezier(a[1], b[1], c[1])(t)

@@ -5,12 +5,13 @@
 -   **NEW**: Interpolate plugins now define a `get_space` hook allowing them to validate and return an appropriate
     default space if the normal default cannot be supported.
 -   **NEW**: Drop Python 3.8 support as it is "end of life".
+-   **NEW**: Solve cubic Bezier curves algebraically for faster more predictable results.
 -   **FIX**: Typing fixes.
 
 ## 4.2.2
 
 -   **FIX**: More precise inverse of RYB Biased.
--   **FIX**: Speed up solving of cubic bezier for easing functions.
+-   **FIX**: Speed up solving of cubic Bezier for easing functions.
 -   **FIX**: Protect against possible divide by zero in HCT reverse transform.
 
 ## 4.2.1
