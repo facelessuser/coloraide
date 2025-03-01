@@ -314,7 +314,7 @@ extra_css:
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/ace-builds@1.39.0/src-min-noconflict/ace.js
   - https://cdn.jsdelivr.net/npm/mermaid@11.3.0/dist/mermaid.min.js
-  - playground-config-f798db25.js
+  - playground-config-6766eb6d.js
   - https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js
   - assets/coloraide-extras/extra-notebook-BuQ8qEc0.js
 
