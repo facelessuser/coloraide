@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.3.1
+
+-   **FIX**: Optimized matrix math operations should handle column vectors.
+
 ## 4.3
 
 -   **NEW**: Interpolate plugins now define a `get_space` hook allowing them to validate and return an appropriate

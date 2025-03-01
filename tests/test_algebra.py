@@ -1343,6 +1343,17 @@ class TestAlgebra(unittest.TestCase):
             [[48, 60, 72], [8, 10, 12], [42, 51, 60]]
         )
 
+        self.assertEqual(
+            alg.matmul_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1], [4], [7]]
+            ),
+            alg.matmul(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1], [4], [7]]
+            )
+        )
+
         # Scalars are not allowed
         with self.assertRaises(ValueError):
             alg.matmul_x3([1, 2, 3], 3)
@@ -1961,6 +1972,42 @@ class TestAlgebra(unittest.TestCase):
             ]
         )
 
+        self.assertEqual(
+            alg.subtract_x3(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1], [4], [7]]
+            ),
+            alg.subtract(
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]],
+                [[1], [4], [7]]
+            )
+        )
+
+        self.assertEqual(
+            alg.subtract_x3(
+                [[1], [4], [7]],
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+            ),
+            alg.subtract(
+                [[1], [4], [7]],
+                [[4, 4, 4], [1, 0, 1], [2, 3, 4]]
+            )
+        )
+
+        self.assertEqual(
+            alg.subtract_x3(
+                [[1], [4], [7]],
+                [[4], [1], [2]]
+            ),
+            alg.subtract(
+                [[1], [4], [7]],
+                [[4], [1], [2]]
+            )
+        )
+
+        with self.assertRaises(ValueError):
+            alg.subtract_x3([[1, 1, 1], [2, 2, 2], [3, 3, 3]], [[1, 1], [2, 2], [3, 3]])
+
     def test_interpolate(self):
         """Test interpolation."""
 
@@ -2065,6 +2112,13 @@ class TestAlgebra(unittest.TestCase):
                 [[8, 27, 27], [8, 27, 27], [8, 27, 27]]
             ),
             [[2, 3, 3], [2, 3, 3], [2, 3, 3]]
+        )
+
+        self.assertEqual(
+            cbrt_x3(
+                [[8], [27], [8]]
+            ),
+            [[2], [3], [2]]
         )
 
         with self.assertRaises(ValueError):

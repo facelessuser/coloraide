@@ -1512,6 +1512,20 @@ def matmul_x3(
                 a[2][0] * b[0] + a[2][1] * b[1] + a[2][2] * b[2],  # type: ignore[index, operator]
             ]
         elif dims_b == 2:
+            # Matrix and column vector
+            if len(b[0]) == 1:  # type: ignore[arg-type]
+                return [
+                    [
+                        a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0],  # type: ignore[index]
+                    ],
+                    [
+                        a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0],  # type: ignore[index]
+                    ],
+                    [
+                        a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0],  # type: ignore[index]
+                    ]
+                ]
+            # Two full matrices
             return [
                 [
                     a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0],  # type: ignore[index]
@@ -2401,6 +2415,15 @@ class _vectorize1_x3:
         # Vector
         elif dims_a == 1:
             return [func(a[0]), func(a[1]), func(a[2])]  # type: ignore[index]
+
+        # Column vector
+        if len(a[0]) == 1:  # type: ignore[arg-type, index]
+            return [
+                [func(a[0][0])],  # type: ignore[index]
+                [func(a[1][0])],  # type: ignore[index]
+                [func(a[2][0])]  # type: ignore[index]
+            ]
+
         # 2D matrix
         return [
             [func(a[0][0]), func(a[0][1]), func(a[0][2])],  # type: ignore[index]
@@ -2460,6 +2483,31 @@ class _vectorize2_x3:
                 # Apply math to two vectors
                 return [func(a[0], b[0]), func(a[1], b[1]), func(a[2], b[2])]  # type: ignore[index]
             elif dims_a == 2:
+                l1 = len(a[0])  # type: ignore[arg-type, index]
+                l2 = len(b[0])  # type: ignore[arg-type, index]
+                if l1 != l2:
+                    if l2 == 1:
+                        # Column vector in first position
+                        return [
+                            [func(a[0][0], b[0][0]), func(a[0][1], b[0][0]), func(a[0][2], b[0][0])],  # type: ignore[index]
+                            [func(a[1][0], b[1][0]), func(a[1][1], b[1][0]), func(a[1][2], b[1][0])],  # type: ignore[index]
+                            [func(a[2][0], b[2][0]), func(a[2][1], b[2][0]), func(a[2][2], b[2][0])],  # type: ignore[index]
+                        ]
+                    elif l1 == 1:
+                        # Column vector in second position
+                        return [
+                            [func(a[0][0], b[0][0]), func(a[0][0], b[0][1]), func(a[0][0], b[0][2])],  # type: ignore[index]
+                            [func(a[1][0], b[1][0]), func(a[1][0], b[1][1]), func(a[1][0], b[1][2])],  # type: ignore[index]
+                            [func(a[2][0], b[2][0]), func(a[2][0], b[2][1]), func(a[2][0], b[2][2])],  # type: ignore[index]
+                        ]
+                    raise ValueError(f'Vectors of size {l1} and {l2} are not aligned')
+                elif l1 == 1:
+                    # 2 column vectors
+                    return [
+                        [func(a[0][0], b[0][0])],  # type: ignore[index]
+                        [func(a[1][0], b[1][0])],  # type: ignore[index]
+                        [func(a[2][0], b[2][0])],  # type: ignore[index]
+                    ]
                 # Apply math to two 2-D matrices
                 return [
                     [func(a[0][0], b[0][0]), func(a[0][1], b[0][1]), func(a[0][2], b[0][2])],  # type: ignore[index]
