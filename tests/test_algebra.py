@@ -2680,6 +2680,45 @@ class TestAlgebra(unittest.TestCase):
         self.assertTrue(all(_a >= 0 for _a in res[0]))
         self.assertEqual(res[0], [1.477061311287275, 0.0, 0.0])
 
+    def test_bisect(self):
+        """Test bisect."""
+
+        from coloraide.easing import _bezier
+
+        a, b, c = .5, -3, 2
+        t = 0.9
+        b = _bezier(a, b, c)(t)
+        f0 = _bezier(a, b, c, y=t)
+        r, converged = alg.solve_bisect(0.0, 1.0, f0, start=0.5)
+        self.assertTrue(converged)
+        self.assertEqual(r, 0.45396879531722334)
+
+    def test_solve_poly(self):
+        """Test cubic solving."""
+
+        # Cubic
+        self.assertEqual(alg.solve_poly([0.5, -3, 2, 0]), [5.23606797749979, 0.7639320225002102, 0.0])
+        self.assertEqual(alg.solve_poly([0.5, -3, 2, -0.9]), [5.310615451738684])
+        self.assertEqual(alg.solve_poly([1, -3, 2, 9]), [-1.240040987469445])
+
+        # Quadratic
+        self.assertEqual(alg.solve_poly([1, 8, 16]), [-4])
+        self.assertEqual(alg.solve_poly([0, 1, 8, 16]), [-4])
+        self.assertEqual(alg.solve_poly([3, -9, -81]), [6.908326913195984, -3.9083269131959844])
+        self.assertEqual(alg.solve_poly([1, 4, 16]), [])
+
+        # Linear
+        self.assertEqual(alg.solve_poly([3, -9]), [3])
+        self.assertEqual(alg.solve_poly([0, 0, 3, -9]), [3])
+
+        # 0 degree
+        self.assertEqual(alg.solve_poly([3]), [])
+        self.assertEqual(alg.solve_poly([0, 0, 0, 3]), [])
+
+        # 4th+ degree
+        with self.assertRaises(ValueError):
+            alg.solve_poly([1, 2, 3, 4, 5])
+
 
 def test_pprint(capsys):
     """Test matrix print."""

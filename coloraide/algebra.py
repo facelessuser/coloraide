@@ -23,6 +23,7 @@ used as long as the final results are converted to normal types. It is certainly
 that we could switch to using `numpy` in a major release in the future.
 """
 from __future__ import annotations
+import cmath
 import math
 import operator
 import functools
@@ -232,7 +233,7 @@ def solve_bisect(
     x = math.nan
     for _ in range(maxiter):
         x = f(t, *args) if args else f(t)
-        if abs(x) == 0:
+        if abs(x) == 0:  # pragma: no cover
             return t, True
         if x > 0:
             high = t
@@ -244,6 +245,143 @@ def solve_bisect(
             break
 
     return t, abs(x) < atol
+
+
+def _solve_quadratic(poly: Vector) -> Vector:
+    """
+    Solve a quadratic equation.
+
+    a - c represent the coefficients of the polynomial and t equals the target value.
+
+    All non-real roots are filtered out at the end.
+    """
+
+    a, b, c = poly
+
+    # Scale coefficients by `a` so that `a` is 1 and drops out of future calculations
+    if a != 1:
+        b /= a
+        c /= a
+
+    m = -b * 0.5
+    # Calculate the discriminant to determine number of roots and what type
+    discriminant = m ** 2 - c
+    # With `a` no longer a factor, we can greatly simplify the traditional quadratic formula
+    # Solutions: `m +/- (m ** 2 - c) ** (1/2)`
+    if discriminant < 0:
+        # No real roots
+        return []
+    elif discriminant > 0:
+        # Two real roots
+        return [
+            m + cmath.sqrt(discriminant).real,
+            m - cmath.sqrt(discriminant).real
+        ]
+    # Double root
+    return [m]
+
+
+def _solve_cubic(poly:Vector) -> Vector:
+    """
+    Solve a cubic equation using Cardano's Method.
+
+    a - d represent the coefficients of the polynomial and t equals the target value.
+
+    All non-real roots are filtered out at the end.
+
+    https://en.wikipedia.org/wiki/Cubic_equation#Cardano's_formula
+    """
+
+    a, b, c, d = poly
+
+    # Scale coefficients by `a` so that `a` is 1 and drops out of future calculations
+    if a != 1:
+        b /= a
+        c /= a
+        d /= a
+
+    # Transform equation to a form removing the squared term: `t^3 + pt + q = 0`
+    p = (3 * c - b ** 2) / 3
+    q = (2 * b ** 3 - 9 * b * c + 27 * d) / 27
+
+    # Calculate the discriminant to determine number of roots and what type
+    discriminant = (q ** 2 / 4 + p ** 3 / 27)
+
+    # Calculate `t = u^(1/3) + v^(1/3)`
+    # Cube root must not use `** (1 / 3)` if real.
+    # Should use `math.cbrt` or some signed power equivalent
+    # on systems that don't support it.
+    u3 = -q / 2 + cmath.sqrt(discriminant)
+    v3 = -q / 2 - cmath.sqrt(discriminant)
+    u = u3 ** (1 / 3) if u3.imag else nth_root(u3.real, 3)
+    v = v3 ** (1 / 3) if v3.imag else nth_root(v3.real, 3)
+    t = u + v
+
+    # Precalculate conversion from `t` back to `x`
+    # `x = t - b / 3`
+    k = b / 3
+
+    # Primitive roots: `pr = (-1 +/- -3 ** (1/2)) / 2 ~= -0.5 +/- 0.8660254037844386j`
+    # The complex part (`prc`) equivalent calculation: `(0.8660254037844386j) = 3 ** (1/3) / 2j`
+    prc = cmath.sqrt(3) / 2j
+
+    # We can find the other two roots by multiplying u and v with the primitive roots:
+    # ```
+    # t2 = pr1 * u + pr2 * v
+    # t3 = pr2 * u + pr1 * v
+    # ```
+    # With some algebraic manipulation and factoring the conversion to `x`
+    # ```
+    # x1 = (v + v) - k
+    # x2 = -0.5 * (u + v) + (u - v) * prc - k
+    # x3 = -0.5 * (u + v) - (u - v) * prc - k
+    # ```
+    td = (u - v)
+    if discriminant > 0:
+        # One real root
+        return [(t - k).real]
+    elif discriminant < 0:
+        # Three real roots
+        return [
+            (t - k).real,
+            (-0.5 * t + td * prc - k).real,
+            (-0.5 * t - td * prc - k).real
+        ]
+    # Three real roots, two of which are doubles
+    return [
+        (t - k).real,
+        (-0.5 * t + td * prc - k).real
+    ]
+
+
+def solve_poly(poly: Vector) -> Vector:
+    """
+    Solve the given polynomial.
+
+    Currently, only up to 3rd degree polynomials are supported.
+    """
+
+    # Remove leading zeros
+    count = 0
+    for pi in poly:
+        if pi == 0:
+            count += 1
+            continue
+        break
+    if count:
+        poly = poly[count:]
+
+    # Select the appropriate solver
+    l = len(poly)
+    if l > 4:
+        raise ValueError('Polynomials of degrees great than 3 are not currently supported')
+    elif l == 4:
+        return _solve_cubic(poly)
+    elif l == 3:
+        return _solve_quadratic(poly)
+    elif l == 2:
+        return [-poly[1] / poly[0]]
+    return []
 
 
 def solve_newton(
@@ -298,7 +436,7 @@ def solve_newton(
         # Cannot find a solution if derivative is zero
         d1 = dx(x0, *args) if args else dx(x0)
         if d1 == 0:
-            return x0, None
+            return x0, None  # pragma: no cover
 
         # Calculate new, hopefully closer value with Newton's method
         newton =  fx / d1
@@ -314,8 +452,7 @@ def solve_newton(
         # If change is under our epsilon, we can consider the result converged.
         x0 -= newton
         if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):
-            return x0, True
-
+            return x0, True  # pragma: no cover
         # Use Ostrowski method: 4th order convergence
         if ostrowski:
             fy = f0(x0, *args) if args else f0(x0)
@@ -329,7 +466,7 @@ def solve_newton(
             if math.isclose(x0, prev, rel_tol=rtol, abs_tol=atol):  # pragma: no cover
                 return x0, True
 
-    return x0, False
+    return x0, False  # pragma: no cover
 
 
 ################################
