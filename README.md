@@ -55,7 +55,7 @@ https://facelessuser.github.io/coloraide
 
 MIT
 
-[github-ci-image]: https://github.com/facelessuser/coloraide/workflows/build/badge.svg?branch=main&event=push
+[github-ci-image]: https://github.com/facelessuser/coloraide/workflows/build/badge.svg
 [github-ci-link]: https://github.com/facelessuser/coloraide/actions?query=workflow%3Abuild+branch%3Amain
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/coloraide/main.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333
 [codecov-link]: https://codecov.io/github/facelessuser/coloraide
