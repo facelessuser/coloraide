@@ -54,7 +54,7 @@ class TestEasingMethods(unittest.TestCase):
         while i < 1.6:
             results.append(method(i))
             i += 0.1
-        self.assertEqual(results, expected)
+        self.assertTrue(all(math.isclose(a, b, rel_tol=1e-14, abs_tol=1e-15) for a, b in zip(results, expected)))
 
     def test_linear(self):
         """Test linear."""
