@@ -22,19 +22,10 @@ from ..types import Vector, VectorLike
 M16 = CAT16.MATRIX
 MI6_INV = alg.inv(M16)
 
-# Calculate `[Ra', Ga', Ba']` from `[P2', a, b]`
 M1 = [
     [460.0, 451.0, 288.0],
     [460.0, -891.0, -261.0],
     [460.0, -220.0, -6300.0]
-]
-
-# Calculate `[P2' a, b, u]` from `[Ra', Ga', Ba']`
-M2 = [
-    [2.0, 1.0, 1 / 20],
-    [1.0, -12 / 11, 1 / 11],
-    [1.0 / 9, 1/9, -2 / 9],
-    [1.0, 1.0, 21 / 20]
 ]
 
 ADAPTED_COEF = 0.42
@@ -270,7 +261,7 @@ def cam16_to_xyz_d65(
     # Calculate red-green and yellow-blue components
     p1 = 5e4 / 13 * env.nc * env.ncb * et
     p2 = A / env.nbb
-    r = alg.zdiv(23 * (p2 + 0.305) * t, 23 * p1 + t * (11 * cos_h + 108 * sin_h))
+    r = 23 * (p2 + 0.305) * alg.zdiv(t, 23 * p1 + t * (11 * cos_h + 108 * sin_h))
     a = r * cos_h
     b = r * sin_h
 
@@ -292,19 +283,22 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
         env.fl
     )
 
-    p1, a, b, u = alg.matmul(M2, rgb_a, dims=alg.D2_D1)
-
     # Calculate hue from red-green and yellow-blue components
+    a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
+    b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
-    t = 5e4 / 13 * env.nc * env.ncb * alg.zdiv(et * math.hypot(a, b), u + 0.305)
+    t = (
+        5e4 / 13 * env.nc * env.ncb *
+        alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
+    )
     alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
-    A = env.nbb * p1
+    A = env.nbb * (2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2])
 
     J_root = alg.spow(A / env.a_w, 0.5 * env.c * env.z)
 
