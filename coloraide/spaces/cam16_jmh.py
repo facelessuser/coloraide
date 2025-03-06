@@ -283,22 +283,22 @@ def xyz_d65_to_cam16(xyzd65: Vector, env: Environment, calc_hue_quadrature: bool
         env.fl
     )
 
-    # Calculate hue from red-green and yellow-blue components
+    p1 = 2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2]
     a = rgb_a[0] + (-12 * rgb_a[1] + rgb_a[2]) / 11
     b = (rgb_a[0] + rgb_a[1] - 2 * rgb_a[2]) / 9
+    u = rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2]
+
+    # Calculate hue from red-green and yellow-blue components
     h_rad = math.atan2(b, a) % math.tau
 
     # Eccentricity
     et = 0.25 * (math.cos(h_rad + 2) + 3.8)
 
-    t = (
-        5e4 / 13 * env.nc * env.ncb *
-        alg.zdiv(et * math.sqrt(a ** 2 + b ** 2), rgb_a[0] + rgb_a[1] + 1.05 * rgb_a[2] + 0.305)
-    )
+    t = 5e4 / 13 * env.nc * env.ncb * alg.zdiv(et * math.hypot(a, b), u + 0.305)
     alpha = alg.spow(t, 0.9) * math.pow(1.64 - math.pow(0.29, env.n), 0.73)
 
     # Achromatic response
-    A = env.nbb * (2 * rgb_a[0] + rgb_a[1] + 0.05 * rgb_a[2])
+    A = env.nbb * p1
 
     J_root = alg.spow(A / env.a_w, 0.5 * env.c * env.z)
 
